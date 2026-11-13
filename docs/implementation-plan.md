@@ -123,9 +123,14 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
   identities. Represent scan bounds, retained summaries, knowledge layers and
   operation workspaces explicitly. Keep file/wire layouts in codecs and verify
   that state/mechanics targets have no database dependency.
-- Define the versioned random policy and controlled-choice injection. Test
-  primary/secondary laws, ties, retries, numeric boundaries, and implementation
-  replay without requiring original seed-to-sequence equality.
+- Define the versioned random policy and controlled-choice injection. Implement
+  [separate gameplay, presentation-content and cosmetic contexts](architecture.md#randomness-ownership),
+  with independent initialization and no gameplay sampler exposed to rendering.
+  Classify sites by their effects, retaining gameplay ownership for shared
+  gameplay/presentation outcomes and for gameplay callbacks invoked by dialogs.
+  Test original sampling laws, ties, retries and numeric boundaries in each
+  applicable domain, plus implementation replay and pending-interaction restore
+  without requiring original seed-to-sequence equality.
 - Implement the X02 v3 loader, operation adapters, scripted external services,
   comparator, and bounded run reports. Execute the three existing F01 fixtures;
   add independently reviewed cases for state and geometry.
@@ -189,9 +194,12 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 
 **Exit gate:** exact arithmetic/codec vectors and controlled-choice fixtures pass
 on native and WASM builds. Checkpoint repeat/restore is reproducible under the
-chosen policy. Partial I/O and fragmented/coalesced frame cases pass. Start
-bidirectional original raw-map/save checks for the implemented subset, recording
-unavailable captures or unimplemented fields as gaps. A tools-only build runs
+chosen policy. Presentation initialization and draws cannot advance gameplay
+contexts; cosmetic draws also leave presentation-content contexts unchanged.
+Controlled semantic operations agree with and without a presentation consumer.
+Partial I/O and fragmented/coalesced frame cases pass. Start bidirectional original
+raw-map/save checks for the implemented subset, recording unavailable captures or
+unimplemented fields as gaps. A tools-only build runs
 basic save inspection without SDL, ImGui, assets, Lua or SQLite. Catch2 covers
 truncated and unsupported records, unchanged input bytes, stable diffs, exact
 JSON integers, and stored-state inspection without load-time identity/counter

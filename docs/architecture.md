@@ -193,12 +193,60 @@ floating-point reassociation/fast-math where exact downstream results matter.
 Use the specification's reference evaluation order until an owner-backed equivalence
 argument and tests justify a change.
 
-Provide versioned random contexts and semantic sampling sites, with separate
-cosmetic randomness. The exact generator is an early implementation decision;
-sampling must retain F01's biases, retries, and reused values. Tests inject
-controlled logical choices; replay records complete contexts and ordered
-external inputs. Frame rate and worker scheduling cannot choose which gameplay
-decision receives a sample.
+### Randomness ownership
+
+Presentation-only randomness **must be independent of gameplay randomness**.
+Use versioned contexts and semantic sampling sites, with explicit ownership:
+
+| Randomness | Owner and consumers | Examples |
+| --- | --- | --- |
+| Gameplay | Session-owned contexts supplied only to the executing mechanics, AI, map generation and events, under the existing authority rules. A dialog does not change that ownership. | Combat, AI choices, world generation, diplomatic decisions that affect offers, treaties or other game state. |
+| Presentation content | A separate session-owned context for portable semantic report/dialog operations. Resolve choices once at their specified operation boundary and publish them in observer-filtered models. | P07 historian name/ranking kind, P09 council response continuations, V05 message variants that only select text, F04 council invitation location. |
+| Cosmetic presentation | Frontend-owned contexts, or equivalent injected contexts for optional presentation tests. These cannot advance either of the other contexts. | City-view scenery, spaceship stars and typing delays, reveal effects, stock sound variants. |
+
+The distinction depends on every consumer of a sampled value, not its caller's
+name or source file. If one choice affects both game state and presentation,
+sample once in the gameplay operation and pass the resolved result to the view;
+do not split it into independent rolls. A report's required city recalculation,
+AI invocation or other gameplay callback still executes as a named session
+operation with its own applicable gameplay context. Opening a council or report
+is therefore not automatically a pure query. Rendering never executes that
+operation implicitly.
+
+Enforce the separation in the service interfaces: renderers, media callbacks and
+view-model refreshes cannot access gameplay samplers or reseed gameplay contexts.
+Presentation content selection is also independent of cosmetic draws, so changing
+frame rate or skipping an animation cannot change the next historian or council
+response. Initialize the contexts independently, or derive their initial state
+from declared seed material and stable domain labels without drawing from another
+context. Do not seed presentation by consuming gameplay RNG, copy presentation
+state back into gameplay, or reproduce the original shared-stream/reseed coupling.
+Context identities cannot depend on native handles, allocation addresses, clocks
+sampled during rendering, or worker scheduling. Frame rate and worker scheduling
+cannot choose which gameplay decision receives a sample.
+
+The generator remains an implementation decision. Each retained selection keeps
+its owning specification's sampling law, including F01's range/modulo biases,
+thresholds, eligibility, retries, deterministic ties and reuse of sampled values.
+This includes meaningful report content and scenario-authored response choices;
+isolation does not authorize replacing their selection rules. Purely cosmetic
+behavior may change under X01's presentation policy. Omitting an unused sample
+must not omit required callbacks, mutations, resource effects or decision points.
+Original "primary" and "secondary" names identify sampling laws, not these new
+ownership domains. See [F01's random-context contract](algorithms/F01-determinism-and-arithmetic.md)
+and the [X01 presentation policy](algorithms/X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
+
+Tests inject controlled choices by semantic site and domain. Gameplay replay
+records complete gameplay contexts and ordered external inputs, including player
+responses and required callbacks. Preserve resolved interaction content and any
+presentation-content state needed to resume a pending operation or reproduce its
+semantic trace. Full visual replay may additionally record cosmetic contexts;
+gameplay continuation cannot depend on them. Headless execution resolves required
+semantic interactions and effects without running animation or sound samplers.
+Original-peer results remain authoritative and must never be rerolled by a local
+presentation consumer. Separation adds no required classic save or wire fields.
+
+### Saves and checkpoints
 
 Classic saves and new-engine checkpoints serve different purposes. F06 codecs
 preserve classic state and load transformations. A separately versioned replay
@@ -569,7 +617,10 @@ before handoff. Rendering is read-only: required recalculations historically
 performed by a report or dialog move into an explicit session operation at the
 same semantic boundary. Where classic logical view geometry affects gameplay
 (for example V08/P07 report admission), preserve it as a declared compatibility
-input independent of the new viewport and fonts.
+input independent of the new viewport and fonts. Apply the
+[randomness ownership rules](#randomness-ownership): presentation models carry
+resolved report/dialog choices, and repainting or rebuilding a view of the same
+interaction does not resample them. Cosmetic work uses only its own context.
 
 ## 7. Assets and content
 
@@ -774,6 +825,17 @@ already in `docs/algorithms/conformance/`. Missing scripted inputs fail; they
 never fall back to random values or real clocks. Hash explicit logical state,
 not native object memory. Separate regression evidence from original-game
 interoperability and optional original-presentation comparisons.
+
+Test randomness isolation with the same initial gameplay and presentation-content
+contexts, semantic operations, player responses and ordered external callbacks. Vary redraw count,
+frame rate, animation skip, sound settings, cosmetic seeds and graphical versus
+headless execution; gameplay state and future gameplay samples must agree.
+Cosmetic variation must also leave semantic content choices unchanged. Verify
+presentation initialization/teardown and pure visual openings cannot consume or
+reseed gameplay randomness. Separately test report/council selection laws with
+controlled content choices, pending-interaction restore, and gameplay callbacks
+triggered by dialogs. Do not require unchanged game state when adding or removing
+a semantic operation that the specifications say recalculates or mutates it.
 
 Use ImGui Test Engine for dialogs, menus, custom item interactions, focus,
 keyboard routing, accept/cancel, and changing targets. Catch2 checks the same
