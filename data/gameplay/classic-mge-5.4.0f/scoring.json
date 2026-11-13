@@ -1,0 +1,61 @@
+{
+  "format": "openciv2-scoring/1",
+  "citizens": {
+    "perCitizen": 1,
+    "perHappyCitizen": 1,
+    "perUnhappyCitizen": -1
+  },
+  "wonderPoints": 20,
+  "spaceshipPointsPerPopulationSuccess": 1,
+  "pollutionPointsPerTile": -10,
+  "peace": {
+    "firstEligibleTurn": 200,
+    "pointsPerTurn": 3,
+    "maximumPoints": 100
+  },
+  "futureTechnologyPoints": 5,
+  "barbarianActivity": {
+    "pointsPerLevel": 25,
+    "offsetPoints": -50
+  },
+  "conquest": {
+    "pointsPerEnemy": 100,
+    "basePoints": 400,
+    "turnReference": 570,
+    "pointsPerRemainingTurn": 2,
+    "noRestartMinimumTurn": 250,
+    "largeMapMultiplier": {
+      "numerator": 5,
+      "denominator": 4
+    },
+    "smallMapMultiplier": {
+      "numerator": 4,
+      "denominator": 5
+    }
+  },
+  "objectiveValue": {
+    "city": 1,
+    "wonder": 1
+  },
+  "scenario": {
+    "outcomePoints": {
+      "decisive-victory": 1000,
+      "marginal-victory": 750,
+      "draw": 500,
+      "marginal-defeat": 250,
+      "decisive-defeat": 0
+    },
+    "pointsPerObjective": 10,
+    "conquestMultiplier": 2
+  },
+  "rating": {
+    "difficultyFactors": {
+      "chieftain": 4,
+      "warlord": 5,
+      "prince": 6,
+      "king": 8,
+      "emperor": 10,
+      "deity": 13
+    }
+  }
+}

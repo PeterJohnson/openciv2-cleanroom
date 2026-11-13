@@ -2,7 +2,9 @@
 
 These JSON documents illustrate [version 1](../data-format.md). They are authored
 format examples, not imported original data, a full stock ruleset or a playable
-pack. Manifest hashes establish integrity, not gameplay completeness.
+pack. Manifest hashes establish integrity, not gameplay completeness. The manifest
+explicitly selects the shipped classic [built-in gameplay bundle](../gameplay-format.md);
+those complete operands do not fill the missing text-backed rules or council rows.
 [Schema validation](../schemas/README.md) passes for the nine complete document
 examples and intentionally rejects the rules and council fragments for their
 missing coverage. The repository checker verifies those exact omissions; an

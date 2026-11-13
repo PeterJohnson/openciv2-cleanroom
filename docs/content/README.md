@@ -77,13 +77,15 @@ save/wire formats. Track user-import provenance after conversion as well.
 
 ## Built-in gameplay data
 
-The [extraction assessment](built-in-gameplay-data.md) identifies specification-
-defined values that originally lived in the executable and could become semantic
-JSON customization points. It recommends calendar, spaceship, government,
-difficulty, combat and scoring data first, populated with the original values.
-This is a proposal; the current formats and loaders are not extended by it.
-Changed runtime values would be an explicit custom gameplay variant with different
-original-file/peer compatibility limits from the classic-default profile.
+The [first-wave formats](gameplay-format.md) and [shipped defaults](../../data/gameplay/classic-mge-5.4.0f/README.md)
+cover calendar, spaceship, government, difficulty, combat and scoring values
+previously fixed in the executable. Schemas, source pins and an offline developer
+loader validate these complete component scopes. C++ consumers and runtime
+profile/session integration remain open. The [assessment](built-in-gameplay-data.md)
+tracks later candidates; further component extraction is deferred until
+implementation reaches the owning mechanics. Changed operands require explicit
+custom mode and do not inherit the classic-default original-file/peer compatibility
+claim.
 
 ## Stock rules, text and other inputs
 

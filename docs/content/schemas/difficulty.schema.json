@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/difficulty.schema.json",
+  "title": "Difficulty",
+  "description": "Nominal starting modifiers, before the specified C05/V03 conditional adjustments and rounding. They do not encode AI decision heuristics.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-difficulty/1"
+    },
+    "difficulties": {
+      "type": "object",
+      "properties": {
+        "chieftain": {
+          "type": "object",
+          "properties": {
+            "aiBoxFactor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "humanResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "aiResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "aiBoxFactor",
+            "humanResearchMultiplier",
+            "aiResearchMultiplier"
+          ],
+          "additionalProperties": false
+        },
+        "warlord": {
+          "type": "object",
+          "properties": {
+            "aiBoxFactor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "humanResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "aiResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "aiBoxFactor",
+            "humanResearchMultiplier",
+            "aiResearchMultiplier"
+          ],
+          "additionalProperties": false
+        },
+        "prince": {
+          "type": "object",
+          "properties": {
+            "aiBoxFactor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "humanResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "aiResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "aiBoxFactor",
+            "humanResearchMultiplier",
+            "aiResearchMultiplier"
+          ],
+          "additionalProperties": false
+        },
+        "king": {
+          "type": "object",
+          "properties": {
+            "aiBoxFactor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "humanResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "aiResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "aiBoxFactor",
+            "humanResearchMultiplier",
+            "aiResearchMultiplier"
+          ],
+          "additionalProperties": false
+        },
+        "emperor": {
+          "type": "object",
+          "properties": {
+            "aiBoxFactor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "humanResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "aiResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "aiBoxFactor",
+            "humanResearchMultiplier",
+            "aiResearchMultiplier"
+          ],
+          "additionalProperties": false
+        },
+        "deity": {
+          "type": "object",
+          "properties": {
+            "aiBoxFactor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "humanResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "aiResearchMultiplier": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "aiBoxFactor",
+            "humanResearchMultiplier",
+            "aiResearchMultiplier"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "chieftain",
+        "warlord",
+        "prince",
+        "king",
+        "emperor",
+        "deity"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "difficulties"
+  ],
+  "additionalProperties": false
+}

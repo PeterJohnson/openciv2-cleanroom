@@ -1,0 +1,146 @@
+{
+  "format": "openciv2-calendar/1",
+  "profiles": {
+    "chieftain-warlord": {
+      "periods": [
+        {
+          "startYear": -4000,
+          "turnCount": 250,
+          "yearStep": 20
+        },
+        {
+          "startYear": 1000,
+          "turnCount": 50,
+          "yearStep": 10
+        },
+        {
+          "startYear": 1500,
+          "turnCount": 50,
+          "yearStep": 5
+        },
+        {
+          "startYear": 1750,
+          "turnCount": 50,
+          "yearStep": 2
+        },
+        {
+          "startYear": 1850,
+          "turnCount": 50,
+          "yearStep": 1
+        },
+        {
+          "startYear": 1900,
+          "turnCount": 100,
+          "yearStep": 1
+        }
+      ]
+    },
+    "prince": {
+      "periods": [
+        {
+          "startYear": -4000,
+          "turnCount": 60,
+          "yearStep": 50
+        },
+        {
+          "startYear": -1000,
+          "turnCount": 40,
+          "yearStep": 25
+        },
+        {
+          "startYear": 0,
+          "turnCount": 150,
+          "yearStep": 10
+        },
+        {
+          "startYear": 1500,
+          "turnCount": 50,
+          "yearStep": 5
+        },
+        {
+          "startYear": 1750,
+          "turnCount": 50,
+          "yearStep": 2
+        },
+        {
+          "startYear": 1850,
+          "turnCount": 50,
+          "yearStep": 1
+        }
+      ]
+    },
+    "king": {
+      "periods": [
+        {
+          "startYear": -4000,
+          "turnCount": 60,
+          "yearStep": 50
+        },
+        {
+          "startYear": -1000,
+          "turnCount": 40,
+          "yearStep": 25
+        },
+        {
+          "startYear": 0,
+          "turnCount": 50,
+          "yearStep": 20
+        },
+        {
+          "startYear": 1000,
+          "turnCount": 50,
+          "yearStep": 10
+        },
+        {
+          "startYear": 1500,
+          "turnCount": 50,
+          "yearStep": 5
+        },
+        {
+          "startYear": 1750,
+          "turnCount": 50,
+          "yearStep": 2
+        }
+      ]
+    },
+    "emperor-deity": {
+      "periods": [
+        {
+          "startYear": -4000,
+          "turnCount": 60,
+          "yearStep": 50
+        },
+        {
+          "startYear": -1000,
+          "turnCount": 40,
+          "yearStep": 25
+        },
+        {
+          "startYear": 0,
+          "turnCount": 75,
+          "yearStep": 20
+        },
+        {
+          "startYear": 1500,
+          "turnCount": 25,
+          "yearStep": 10
+        },
+        {
+          "startYear": 1750,
+          "turnCount": 50,
+          "yearStep": 2
+        },
+        {
+          "startYear": 1850,
+          "turnCount": 50,
+          "yearStep": 1
+        }
+      ]
+    }
+  },
+  "retirement": {
+    "warningYear": 2000,
+    "endYear": 2020,
+    "scenarioWarningLeadTurns": 5
+  }
+}

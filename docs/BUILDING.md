@@ -99,6 +99,7 @@ dependencies, then run:
 ```sh
 python -m pip install -r tools/requirements-schemas.txt
 python tools/check_content_schemas.py
+python tools/check_gameplay.py
 python -m unittest discover -s tests -p 'test_*.py' -v
 ```
 

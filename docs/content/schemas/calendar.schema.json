@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/calendar.schema.json",
+  "title": "Calendar",
+  "description": "Ordinary calendar periods and retirement boundaries. Continuity and ordering need semantic validation; F04/V08 retain the algorithms.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-calendar/1"
+    },
+    "profiles": {
+      "type": "object",
+      "properties": {
+        "chieftain-warlord": {
+          "type": "object",
+          "properties": {
+            "periods": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startYear": {
+                    "$ref": "common.schema.json#/$defs/integer"
+                  },
+                  "turnCount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "yearStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "startYear",
+                  "turnCount",
+                  "yearStep"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 6,
+              "maxItems": 6
+            }
+          },
+          "required": [
+            "periods"
+          ],
+          "additionalProperties": false
+        },
+        "prince": {
+          "type": "object",
+          "properties": {
+            "periods": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startYear": {
+                    "$ref": "common.schema.json#/$defs/integer"
+                  },
+                  "turnCount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "yearStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "startYear",
+                  "turnCount",
+                  "yearStep"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 6,
+              "maxItems": 6
+            }
+          },
+          "required": [
+            "periods"
+          ],
+          "additionalProperties": false
+        },
+        "king": {
+          "type": "object",
+          "properties": {
+            "periods": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startYear": {
+                    "$ref": "common.schema.json#/$defs/integer"
+                  },
+                  "turnCount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "yearStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "startYear",
+                  "turnCount",
+                  "yearStep"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 6,
+              "maxItems": 6
+            }
+          },
+          "required": [
+            "periods"
+          ],
+          "additionalProperties": false
+        },
+        "emperor-deity": {
+          "type": "object",
+          "properties": {
+            "periods": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "startYear": {
+                    "$ref": "common.schema.json#/$defs/integer"
+                  },
+                  "turnCount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "yearStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  }
+                },
+                "required": [
+                  "startYear",
+                  "turnCount",
+                  "yearStep"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 6,
+              "maxItems": 6
+            }
+          },
+          "required": [
+            "periods"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "chieftain-warlord",
+        "prince",
+        "king",
+        "emperor-deity"
+      ],
+      "additionalProperties": false
+    },
+    "retirement": {
+      "type": "object",
+      "properties": {
+        "warningYear": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "endYear": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "scenarioWarningLeadTurns": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "warningYear",
+        "endYear",
+        "scenarioWarningLeadTurns"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "profiles",
+    "retirement"
+  ],
+  "additionalProperties": false
+}

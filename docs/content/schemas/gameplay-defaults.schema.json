@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/gameplay-defaults.schema.json",
+  "title": "Gameplay Defaults",
+  "description": "Repository provenance ledger: pinned source specifications and pointer coverage for each shipped gameplay value. Not a runtime component.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-gameplay-defaults/1"
+    },
+    "baseline": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "const": "classic-mge-5.4.0f"
+        },
+        "revision": {
+          "const": 1
+        },
+        "manifest": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "semanticSha256": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "manifest",
+        "semanticSha256"
+      ],
+      "additionalProperties": false
+    },
+    "specifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][0-9]{2}$"
+          },
+          "path": {
+            "$ref": "common.schema.json#/$defs/relativePath"
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/sha256"
+          }
+        },
+        "required": [
+          "id",
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "component": {
+            "enum": [
+              "calendar",
+              "spaceship",
+              "governments",
+              "difficulty",
+              "combat",
+              "scoring"
+            ]
+          },
+          "pointer": {
+            "type": "string",
+            "pattern": "^/"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/nonemptyText"
+            },
+            "minItems": 1
+          },
+          "notes": {
+            "$ref": "common.schema.json#/$defs/nonemptyText"
+          }
+        },
+        "required": [
+          "component",
+          "pointer",
+          "sources",
+          "notes"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "baseline",
+    "specifications",
+    "bindings"
+  ],
+  "additionalProperties": false
+}

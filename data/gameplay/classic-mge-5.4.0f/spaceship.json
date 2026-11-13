@@ -1,0 +1,36 @@
+{
+  "format": "openciv2-spaceship/1",
+  "parts": {
+    "structural": {
+      "group": "structural",
+      "maximumCount": 39,
+      "massTons": 100
+    },
+    "propulsion": {
+      "group": "component",
+      "maximumCount": 8,
+      "massTons": 400
+    },
+    "fuel": {
+      "group": "component",
+      "maximumCount": 8,
+      "massTons": 400
+    },
+    "habitation": {
+      "group": "module",
+      "maximumCount": 4,
+      "massTons": 1600
+    },
+    "life-support": {
+      "group": "module",
+      "maximumCount": 4,
+      "massTons": 1600
+    },
+    "solar-energy": {
+      "group": "module",
+      "maximumCount": 4,
+      "massTons": 1600
+    }
+  },
+  "peoplePerHabitation": 10000
+}

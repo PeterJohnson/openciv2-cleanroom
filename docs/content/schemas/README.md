@@ -25,13 +25,23 @@ common `openciv2-` prefix and `/1` suffix.
 | `encyclopedia` | [encyclopedia.schema.json](encyclopedia.schema.json) | [encyclopedia.en.json](../examples/encyclopedia.en.json) |
 | `events` | [events.schema.json](events.schema.json) | [events.json](../examples/events.json) |
 | `classic-compatibility` | [classic-compatibility.schema.json](classic-compatibility.schema.json) | [classic-compatibility.json](../examples/classic-compatibility.json) |
+| `gameplay` | [gameplay.schema.json](gameplay.schema.json) | [Shipped manifest](../../../data/gameplay/classic-mge-5.4.0f/gameplay.json) |
+| `calendar` | [calendar.schema.json](calendar.schema.json) | [Classic periods](../../../data/gameplay/classic-mge-5.4.0f/calendar.json) |
+| `spaceship` | [spaceship.schema.json](spaceship.schema.json) | [Classic parts](../../../data/gameplay/classic-mge-5.4.0f/spaceship.json) |
+| `governments` | [governments.schema.json](governments.schema.json) | [Classic policy](../../../data/gameplay/classic-mge-5.4.0f/governments.json) |
+| `difficulty` | [difficulty.schema.json](difficulty.schema.json) | [Classic modifiers](../../../data/gameplay/classic-mge-5.4.0f/difficulty.json) |
+| `combat` | [combat.schema.json](combat.schema.json) | [Classic bonuses](../../../data/gameplay/classic-mge-5.4.0f/combat.json) |
+| `scoring` | [scoring.schema.json](scoring.schema.json) | [Classic score operands](../../../data/gameplay/classic-mge-5.4.0f/scoring.json) |
+| `gameplay-defaults` | [gameplay-defaults.schema.json](gameplay-defaults.schema.json) | [Source ledger](../gameplay-defaults.json), repository evidence only |
 | `text-resource-inventory` | [text-resource-inventory.schema.json](text-resource-inventory.schema.json) | [text-resources.json](../text-resources.json), repository evidence only |
 
 [common.schema.json](common.schema.json) supplies reusable `$defs` for IDs,
 paths, numbers, references, text runs and other shared concepts. It intentionally
 rejects standalone instances. The inventory is metadata, not a runtime pack
 component. Existing asset, build and conformance JSON contracts are separate from
-this content-format schema family.
+this content-format schema family. The [built-in gameplay contract](../gameplay-format.md)
+defines the six additional operands documents, bundle selection and provenance.
+There are 21 schemas: 18 content formats, two metadata formats and shared definitions.
 
 Objects reject unknown fields, including nested records, except within the
 explicit namespaced metadata `extensions`. Alternatives such as literal versus
@@ -48,6 +58,7 @@ root, in your development virtual environment:
 ```sh
 python -m pip install -r tools/requirements-schemas.txt
 python tools/check_content_schemas.py
+python tools/check_gameplay.py
 python -m unittest discover -s tests -p 'test_content_schemas.py' -v
 ```
 
@@ -58,6 +69,11 @@ omissions in the two fragments. The rules fragment lacks the full identity
 tables; the council fragment has one of 102 required era/opinion combinations.
 Other errors in those fragments fail the check. This exception belongs only to
 the repository's example check; there is no permissive fragment file format.
+
+The separate [gameplay checker](../../../tools/check_gameplay.py) loads the six
+shipped components, checks hashes/source pins and validates their specific
+semantic constraints and classic-value fingerprint. Its bounded bundle checks
+do not implement the complete content-pack semantic resolver.
 
 Supply explicit paths to check ordinary documents instead:
 

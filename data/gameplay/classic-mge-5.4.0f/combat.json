@@ -1,0 +1,32 @@
+{
+  "format": "openciv2-combat/1",
+  "strengthBonuses": {
+    "veteran": {
+      "numerator": 1,
+      "denominator": 2
+    },
+    "paradrop": {
+      "numerator": 1,
+      "denominator": 2
+    }
+  },
+  "defenseMultipliers": {
+    "fortification": {
+      "numerator": 3,
+      "denominator": 2
+    },
+    "fortress": {
+      "numerator": 2,
+      "denominator": 1
+    },
+    "cityWalls": {
+      "numerator": 3,
+      "denominator": 1
+    }
+  },
+  "antiAirMultipliers": {
+    "ordinaryAircraft": 3,
+    "destroyedAfterAttack": 5
+  },
+  "partisansAgainstZeroAttackMultiplier": 8
+}

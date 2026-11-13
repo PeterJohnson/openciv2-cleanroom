@@ -1,0 +1,35 @@
+{
+  "format": "openciv2-difficulty/1",
+  "difficulties": {
+    "chieftain": {
+      "aiBoxFactor": 15,
+      "humanResearchMultiplier": 6,
+      "aiResearchMultiplier": 14
+    },
+    "warlord": {
+      "aiBoxFactor": 13,
+      "humanResearchMultiplier": 8,
+      "aiResearchMultiplier": 13
+    },
+    "prince": {
+      "aiBoxFactor": 12,
+      "humanResearchMultiplier": 10,
+      "aiResearchMultiplier": 12
+    },
+    "king": {
+      "aiBoxFactor": 10,
+      "humanResearchMultiplier": 12,
+      "aiResearchMultiplier": 11
+    },
+    "emperor": {
+      "aiBoxFactor": 9,
+      "humanResearchMultiplier": 14,
+      "aiResearchMultiplier": 10
+    },
+    "deity": {
+      "aiBoxFactor": 8,
+      "humanResearchMultiplier": 14,
+      "aiResearchMultiplier": 10
+    }
+  }
+}

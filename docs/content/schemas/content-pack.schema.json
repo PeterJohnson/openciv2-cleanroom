@@ -208,6 +208,29 @@
     },
     "extensions": {
       "$ref": "common.schema.json#/$defs/extensions"
+    },
+    "gameplay": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "builtin": {
+              "const": "classic-mge-5.4.0f"
+            },
+            "revision": {
+              "const": 1
+            }
+          },
+          "required": [
+            "builtin",
+            "revision"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        }
+      ]
     }
   },
   "required": [
@@ -237,7 +260,8 @@
         "required": [
           "compatibility",
           "scenarios",
-          "resources"
+          "resources",
+          "gameplay"
         ],
         "properties": {
           "files": {

@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/spaceship.schema.json",
+  "title": "Spaceship",
+  "description": "Six fixed part identities/groups with capacities and masses; maximumCount is bounded by classic saved-count representability. Mass normalizes exactly to 100-ton units.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-spaceship/1"
+    },
+    "parts": {
+      "type": "object",
+      "properties": {
+        "structural": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "const": "structural"
+            },
+            "maximumCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32767
+            },
+            "massTons": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2147483647,
+              "multipleOf": 100
+            }
+          },
+          "required": [
+            "group",
+            "maximumCount",
+            "massTons"
+          ],
+          "additionalProperties": false
+        },
+        "propulsion": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "const": "component"
+            },
+            "maximumCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32767
+            },
+            "massTons": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2147483647,
+              "multipleOf": 100
+            }
+          },
+          "required": [
+            "group",
+            "maximumCount",
+            "massTons"
+          ],
+          "additionalProperties": false
+        },
+        "fuel": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "const": "component"
+            },
+            "maximumCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32767
+            },
+            "massTons": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2147483647,
+              "multipleOf": 100
+            }
+          },
+          "required": [
+            "group",
+            "maximumCount",
+            "massTons"
+          ],
+          "additionalProperties": false
+        },
+        "habitation": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "const": "module"
+            },
+            "maximumCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32767
+            },
+            "massTons": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2147483647,
+              "multipleOf": 100
+            }
+          },
+          "required": [
+            "group",
+            "maximumCount",
+            "massTons"
+          ],
+          "additionalProperties": false
+        },
+        "life-support": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "const": "module"
+            },
+            "maximumCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32767
+            },
+            "massTons": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2147483647,
+              "multipleOf": 100
+            }
+          },
+          "required": [
+            "group",
+            "maximumCount",
+            "massTons"
+          ],
+          "additionalProperties": false
+        },
+        "solar-energy": {
+          "type": "object",
+          "properties": {
+            "group": {
+              "const": "module"
+            },
+            "maximumCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 32767
+            },
+            "massTons": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2147483647,
+              "multipleOf": 100
+            }
+          },
+          "required": [
+            "group",
+            "maximumCount",
+            "massTons"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "structural",
+        "propulsion",
+        "fuel",
+        "habitation",
+        "life-support",
+        "solar-energy"
+      ],
+      "additionalProperties": false
+    },
+    "peoplePerHabitation": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "parts",
+    "peoplePerHabitation"
+  ],
+  "additionalProperties": false
+}

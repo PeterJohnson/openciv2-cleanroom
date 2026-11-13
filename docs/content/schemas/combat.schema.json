@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/combat.schema.json",
+  "title": "Combat",
+  "description": "Magnitudes at fixed U06 operations, not a stage program. Defense multipliers must have positive integral doubled values, validated semantically.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-combat/1"
+    },
+    "strengthBonuses": {
+      "type": "object",
+      "properties": {
+        "veteran": {
+          "$ref": "common.schema.json#/$defs/rational"
+        },
+        "paradrop": {
+          "$ref": "common.schema.json#/$defs/rational"
+        }
+      },
+      "required": [
+        "veteran",
+        "paradrop"
+      ],
+      "additionalProperties": false
+    },
+    "defenseMultipliers": {
+      "type": "object",
+      "properties": {
+        "fortification": {
+          "$ref": "common.schema.json#/$defs/rational"
+        },
+        "fortress": {
+          "$ref": "common.schema.json#/$defs/rational"
+        },
+        "cityWalls": {
+          "$ref": "common.schema.json#/$defs/rational"
+        }
+      },
+      "required": [
+        "fortification",
+        "fortress",
+        "cityWalls"
+      ],
+      "additionalProperties": false
+    },
+    "antiAirMultipliers": {
+      "type": "object",
+      "properties": {
+        "ordinaryAircraft": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "destroyedAfterAttack": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "ordinaryAircraft",
+        "destroyedAfterAttack"
+      ],
+      "additionalProperties": false
+    },
+    "partisansAgainstZeroAttackMultiplier": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "strengthBonuses",
+    "defenseMultipliers",
+    "antiAirMultipliers",
+    "partisansAgainstZeroAttackMultiplier"
+  ],
+  "additionalProperties": false
+}

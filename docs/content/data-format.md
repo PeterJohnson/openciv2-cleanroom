@@ -120,6 +120,12 @@ codec, including token delimiters and byte limits. Diagnose an unrepresentable
 export; do not substitute question marks or add new truncation. Owner-required
 truncation, such as C01 city-name publication, still applies.
 
+The six [built-in gameplay components](gameplay-format.md) separately supply
+selected values formerly fixed in the executable. They have shipped classic
+defaults and explicit custom-mode admission; they do not duplicate these
+text-backed records. Both native and classic text paths select the same gameplay
+bundle independently of text decoding.
+
 ## 3. Pack manifest
 
 Conventional filename: `content.json`. Format: `openciv2-content-pack/1`.
@@ -127,7 +133,8 @@ Conventional filename: `content.json`. Format: `openciv2-content-pack/1`.
 | Field | Meaning |
 | --- | --- |
 | `id`, `revision` | Stable pack ID and positive integer revision. Change revision whenever content/dependencies change. |
-| `profile` | Exactly `classic-mge-5.4.0f`; native authoring does not introduce different mechanics or identity counts. |
+| `profile` | Exactly `classic-mge-5.4.0f`, naming the algorithm and identity family. The separate gameplay bundle mode identifies any custom operands; it does not change identity counts or claim classic equivalence. |
+| `gameplay` | `{builtin:"classic-mge-5.4.0f",revision:1}`, or `{path,sha256}` selecting a complete `openciv2-gameplay/1` bundle. See [gameplay-format.md](gameplay-format.md). Root packs require it; overlays inherit by omission or replace the whole selection. |
 | `defaultLocale` | Nonempty locale tag, such as `en`; also a key in every selected localized component. |
 | `compatibility` | Null, or a descriptor for `openciv2-classic-compatibility/1`. Adds mappings not already supplied by the registered profile; no original files are required. |
 | `base` | Null for a standalone base pack; otherwise `{id,revision,sha256}` naming the exact parent manifest bytes. |
@@ -165,8 +172,8 @@ Graphics/fonts selected through the separate asset-package contract do not need
 to be duplicated here. An overlay replaces the entire `resources` list when
 present and otherwise inherits it; references must resolve in the final selection.
 
-A root pack supplies every manifest field and component, including explicit
-`compatibility: null` and `scenarios: []` when unused. An overlay may
+A root pack supplies every manifest field and component, including an explicit
+`gameplay` selection, `compatibility: null` and `scenarios: []` when unused. An overlay may
 omit a component to inherit it. A present component replaces the entire file;
 a present locale entry replaces that entire locale catalog. There is no row,
 string or event-list merge. Resolve parents first, then replacements; validate
@@ -688,6 +695,8 @@ pack cannot depend on those bytes being present.
 Classic saves/maps/scenarios, editor exports and N01–N05 messages retain their
 existing formats and identities. Native content IDs/revisions/hashes do not go
 into reserved bytes or become a required peer negotiation. An original peer
+cannot apply changed built-in gameplay values; the [gameplay compatibility gate](gameplay-format.md#8-runtime-and-compatibility-work-still-required)
+requires the classic baseline for original-peer play. An original peer
 cannot read these JSON files: export applicable rules/scenario resources through
 the classic codecs and provide equivalent content through the original workflow.
 Validate representability and content selection, not merely that both sides use

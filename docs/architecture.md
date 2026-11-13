@@ -632,6 +632,11 @@ selected packs for rules, city names, production preferences, messages/help/fact
 menus, briefings/credits, conditional council content, encyclopedia and events. The
 [per-file inventory](content/text-resources.md) identifies runtime, documentation,
 companion-tool and unconfirmed legacy inputs; it is not a loader-completion claim.
+A separately selected [built-in gameplay bundle](content/gameplay-format.md)
+supplies the first six extracted constant families with shipped original defaults.
+Its explicit custom mode is outside classic-equivalence claims; C++ consumers and
+session/save integration remain unimplemented. The content backend does not
+implicitly choose different built-in values.
 Original text files are optional inputs through compatibility adapters, not prerequisites for standalone play. Both decoders publish the same
 logical models and owner-defined operations; mechanics, AI and map generation
 never choose a different algorithm based on the content backend. Native files

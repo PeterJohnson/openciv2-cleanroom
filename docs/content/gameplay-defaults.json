@@ -1,0 +1,539 @@
+{
+  "format": "openciv2-gameplay-defaults/1",
+  "baseline": {
+    "id": "classic-mge-5.4.0f",
+    "revision": 1,
+    "manifest": {
+      "path": "data/gameplay/classic-mge-5.4.0f/gameplay.json",
+      "sha256": "97b3b58469109184284458902e44df1d206407e06b21ff60203c92d7b1788717"
+    },
+    "semanticSha256": "d3276f6cfe815b9b8412e2930a4d3acd49b831bb11277b21779b53448356a940"
+  },
+  "specifications": [
+    {
+      "id": "C03",
+      "path": "docs/algorithms/C03-city-economy-and-corruption.md",
+      "sha256": "23d4f8d3c3a3f1bc78a3816c761cb44d8b23de83451eb56f2975ca2e92bfd38a"
+    },
+    {
+      "id": "C05",
+      "path": "docs/algorithms/C05-city-growth-and-support.md",
+      "sha256": "1f3950429a13cb03c852a1d535fb9cd877a0f361313f79a0a710b4e1f015b83b"
+    },
+    {
+      "id": "F04",
+      "path": "docs/algorithms/F04-turn-sequencing.md",
+      "sha256": "d7806c9b46f749abb7d632f07a8d8ecdf1e522661fa858b2296b590a58ad1a6b"
+    },
+    {
+      "id": "U06",
+      "path": "docs/algorithms/U06-combat-and-veterancy.md",
+      "sha256": "41414d99cb3ab980afbc6fd081d25dfad5cc14803a221f7839e6bb975aa6dda0"
+    },
+    {
+      "id": "V02",
+      "path": "docs/algorithms/V02-governments-and-tax-rates.md",
+      "sha256": "718ffa568ac675192f482d40bef1c8214c1cbd1e0009a74b333195a5f3ef595a"
+    },
+    {
+      "id": "V03",
+      "path": "docs/algorithms/V03-research-and-technology.md",
+      "sha256": "d70fb09311fdfc3b946e853b631c28773ea4bd45abb0df9b20e6f650a433f45e"
+    },
+    {
+      "id": "V07",
+      "path": "docs/algorithms/V07-spaceship.md",
+      "sha256": "a8b1c2ae7d1ada4f35c464c8e6bc523c06c20e37cb5afffac0c1ae2ad9d456c6"
+    },
+    {
+      "id": "V08",
+      "path": "docs/algorithms/V08-scoring-victory-and-retirement.md",
+      "sha256": "3d91e49966ed4d79a4f784512d49aa0c438cb58fcdf6b1d350ebe70a8c032d98"
+    }
+  ],
+  "bindings": [
+    {
+      "component": "calendar",
+      "pointer": "/profiles",
+      "sources": [
+        "F04#5-turn-to-calendar-conversion"
+      ],
+      "notes": "Four complete six-period tables. Profile names bind to the adjusted-difficulty selector in gameplay-format.md."
+    },
+    {
+      "component": "calendar",
+      "pointer": "/retirement",
+      "sources": [
+        "V08#5-outcome-producers-and-scheduled-retirement",
+        "V08#6-pending-outcome-handling-and-continuation"
+      ],
+      "notes": "Exact equality boundaries; endYear also binds the post-report continuation gate. Scenario warning uses turn limit minus the lead."
+    },
+    {
+      "component": "spaceship",
+      "pointer": "/parts",
+      "sources": [
+        "V07#1-state-arithmetic-and-accepted-inputs",
+        "V07#2-part-capacities-and-group-queries",
+        "V07#5-adding-a-part-and-automatic-launch"
+      ],
+      "notes": "Fixed group membership, all hard-maximum consumers and mass entries; tons divide exactly by 100 before reference arithmetic."
+    },
+    {
+      "component": "spaceship",
+      "pointer": "/peoplePerHabitation",
+      "sources": [
+        "V07#1-state-arithmetic-and-accepted-inputs"
+      ],
+      "notes": "People represented by one habitation unit; does not change the saved effective-habitation count or V08 score unit."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/anarchy/maximumRateTenths",
+      "sources": [
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Nominal rate limit; government identity is not its localized name."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/anarchy/requiredAdvance",
+      "sources": [
+        "V02#1-state-accepted-inputs-and-arithmetic",
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Canonical advance identity association; original wonder/query/enabled gates remain in V02."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/anarchy/corruptionDivisor",
+      "sources": [
+        "C03#corruption-helper-and-analysis-scores"
+      ],
+      "notes": "Nominal effective-government divisor, after the specified celebration shift."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/despotism/maximumRateTenths",
+      "sources": [
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Nominal rate limit; government identity is not its localized name."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/despotism/requiredAdvance",
+      "sources": [
+        "V02#1-state-accepted-inputs-and-arithmetic",
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Canonical advance identity association; original wonder/query/enabled gates remain in V02."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/despotism/corruptionDivisor",
+      "sources": [
+        "C03#corruption-helper-and-analysis-scores"
+      ],
+      "notes": "Nominal effective-government divisor, after the specified celebration shift."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/monarchy/maximumRateTenths",
+      "sources": [
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Nominal rate limit; government identity is not its localized name."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/monarchy/requiredAdvance",
+      "sources": [
+        "V02#1-state-accepted-inputs-and-arithmetic",
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Canonical advance identity association; original wonder/query/enabled gates remain in V02."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/monarchy/corruptionDivisor",
+      "sources": [
+        "C03#corruption-helper-and-analysis-scores"
+      ],
+      "notes": "Nominal effective-government divisor, after the specified celebration shift."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/communism/maximumRateTenths",
+      "sources": [
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Nominal rate limit; government identity is not its localized name."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/communism/requiredAdvance",
+      "sources": [
+        "V02#1-state-accepted-inputs-and-arithmetic",
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Canonical advance identity association; original wonder/query/enabled gates remain in V02."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/communism/corruptionDivisor",
+      "sources": [
+        "C03#corruption-helper-and-analysis-scores"
+      ],
+      "notes": "Nominal effective-government divisor, after the specified celebration shift."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/fundamentalism/maximumRateTenths",
+      "sources": [
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Nominal rate limit; government identity is not its localized name."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/fundamentalism/requiredAdvance",
+      "sources": [
+        "V02#1-state-accepted-inputs-and-arithmetic",
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Canonical advance identity association; original wonder/query/enabled gates remain in V02."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/fundamentalism/corruptionDivisor",
+      "sources": [
+        "C03#corruption-helper-and-analysis-scores"
+      ],
+      "notes": "Nominal effective-government divisor, after the specified celebration shift."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/republic/maximumRateTenths",
+      "sources": [
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Nominal rate limit; government identity is not its localized name."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/republic/requiredAdvance",
+      "sources": [
+        "V02#1-state-accepted-inputs-and-arithmetic",
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Canonical advance identity association; original wonder/query/enabled gates remain in V02."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/republic/corruptionDivisor",
+      "sources": [
+        "C03#corruption-helper-and-analysis-scores"
+      ],
+      "notes": "Nominal effective-government divisor, after the specified celebration shift."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/democracy/maximumRateTenths",
+      "sources": [
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Nominal rate limit; government identity is not its localized name."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/democracy/requiredAdvance",
+      "sources": [
+        "V02#1-state-accepted-inputs-and-arithmetic",
+        "V02#2-shared-government-and-rate-queries"
+      ],
+      "notes": "Canonical advance identity association; original wonder/query/enabled gates remain in V02."
+    },
+    {
+      "component": "governments",
+      "pointer": "/governments/democracy/corruptionDivisor",
+      "sources": [
+        "C03#corruption-helper-and-analysis-scores"
+      ],
+      "notes": "Nominal effective-government divisor, after the specified celebration shift."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/chieftain/aiBoxFactor",
+      "sources": [
+        "C05#box-factors-and-settler-food"
+      ],
+      "notes": "Nominal initial rows derived from the C05 formula, before late adjustments and box-rule scaling."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/chieftain/humanResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/chieftain/aiResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/warlord/aiBoxFactor",
+      "sources": [
+        "C05#box-factors-and-settler-food"
+      ],
+      "notes": "Nominal initial rows derived from the C05 formula, before late adjustments and box-rule scaling."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/warlord/humanResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/warlord/aiResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/prince/aiBoxFactor",
+      "sources": [
+        "C05#box-factors-and-settler-food"
+      ],
+      "notes": "Nominal initial rows derived from the C05 formula, before late adjustments and box-rule scaling."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/prince/humanResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/prince/aiResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/king/aiBoxFactor",
+      "sources": [
+        "C05#box-factors-and-settler-food"
+      ],
+      "notes": "Nominal initial rows derived from the C05 formula, before late adjustments and box-rule scaling."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/king/humanResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/king/aiResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/emperor/aiBoxFactor",
+      "sources": [
+        "C05#box-factors-and-settler-food"
+      ],
+      "notes": "Nominal initial rows derived from the C05 formula, before late adjustments and box-rule scaling."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/emperor/humanResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/emperor/aiResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/deity/aiBoxFactor",
+      "sources": [
+        "C05#box-factors-and-settler-food"
+      ],
+      "notes": "Nominal initial rows derived from the C05 formula, before late adjustments and box-rule scaling."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/deity/humanResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "difficulty",
+      "pointer": "/difficulties/deity/aiResearchMultiplier",
+      "sources": [
+        "V03#7-research-cost"
+      ],
+      "notes": "Nominal initial M after actor/difficulty selection, before leader, paradigm and later adjustments."
+    },
+    {
+      "component": "combat",
+      "pointer": "/strengthBonuses/veteran",
+      "sources": [
+        "U06#attack-strength",
+        "U06#defense-strength"
+      ],
+      "notes": "Add half of the current strength with the original signed floor and retention; applies at both veteran consumers."
+    },
+    {
+      "component": "combat",
+      "pointer": "/strengthBonuses/paradrop",
+      "sources": [
+        "U06#attack-strength"
+      ],
+      "notes": "Apply after the veteran bonus, using its updated attack strength."
+    },
+    {
+      "component": "combat",
+      "pointer": "/defenseMultipliers",
+      "sources": [
+        "U06#defense-strength"
+      ],
+      "notes": "Selected protection replaces the preceding protection factor. Doubled normalized multiplier feeds the existing factor operation."
+    },
+    {
+      "component": "combat",
+      "pointer": "/antiAirMultipliers",
+      "sources": [
+        "U06#preparation-common-to-preview-and-execution"
+      ],
+      "notes": "Integer multipliers chosen by the existing anti-air and destroyed-after-attack conditions."
+    },
+    {
+      "component": "combat",
+      "pointer": "/partisansAgainstZeroAttackMultiplier",
+      "sources": [
+        "U06#preparation-common-to-preview-and-execution"
+      ],
+      "notes": "Only the fixed Partisans identity attacking a zero-attack defender."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/citizens",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/wonderPoints",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/spaceshipPointsPerPopulationSuccess",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/pollutionPointsPerTile",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/peace",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/futureTechnologyPoints",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/barbarianActivity",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/conquest",
+      "sources": [
+        "V08#score-calculation"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/objectiveValue",
+      "sources": [
+        "V08#shared-city-objective-value"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/scenario",
+      "sources": [
+        "V08#objective-score-procedure"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    },
+    {
+      "component": "scoring",
+      "pointer": "/rating",
+      "sources": [
+        "V08#3-score-report-rating-and-title"
+      ],
+      "notes": "Operands at the named V08 stage; exact score publication, arithmetic and gating are specified in gameplay-format.md."
+    }
+  ]
+}

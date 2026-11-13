@@ -1,0 +1,43 @@
+{
+  "format": "openciv2-gameplay/1",
+  "id": "classic-mge-5.4.0f",
+  "revision": 1,
+  "target": "classic-mge-5.4.0f",
+  "mode": "classic",
+  "components": {
+    "calendar": {
+      "path": "calendar.json",
+      "sha256": "0e4eef9528e22268b0d5e71658da916c14c339644640404d4152650e23b449bc"
+    },
+    "spaceship": {
+      "path": "spaceship.json",
+      "sha256": "37df99b530a03475d61db67e761a542f9fe8a3b04f97fe1259244d4be0386ebd"
+    },
+    "governments": {
+      "path": "governments.json",
+      "sha256": "a1e5637ac978348ea4cfe68e1e79a06328659e01fbe8b65a19c082b8e24280cf"
+    },
+    "difficulty": {
+      "path": "difficulty.json",
+      "sha256": "9a8dc452c7300a9a3ef881a6028a33190391dd3d0af5eaeb9ca887a22f6cb128"
+    },
+    "combat": {
+      "path": "combat.json",
+      "sha256": "bccf2d03ffdbcbfc151b2a31f8a5ec9b478c4b384e752232238751bc2172a01d"
+    },
+    "scoring": {
+      "path": "scoring.json",
+      "sha256": "846bdad54eb3655bcf4c6acc57cc7ea1b0977e8c5ba666ed68561d985144dca4"
+    }
+  },
+  "provenance": {
+    "authors": [
+      "OpenCiv2 contributors"
+    ],
+    "license": "MIT",
+    "notes": [
+      "Owned transcription of repository algorithm specifications; no original executable capture is claimed.",
+      "Complete first-wave component scope, not a complete stock rules/text pack or game implementation."
+    ]
+  }
+}

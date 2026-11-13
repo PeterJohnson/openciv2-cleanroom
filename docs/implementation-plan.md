@@ -129,6 +129,11 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 - Implement the X02 v3 loader, operation adapters, scripted external services,
   comparator, and bounded run reports. Execute the three existing F01 fixtures;
   add independently reviewed cases for state and geometry.
+- Bind the [six built-in gameplay components](content/gameplay-format.md) to their
+  owning mechanics. Default JSON, schemas, source pins, normalization and offline
+  bundle validation exist; runtime loading, consumer bindings, checkpoint/profile
+  admission and original-peer gates still need implementation. Keep original
+  defaults, AI heuristics and map generation unchanged.
 - Implement the [native JSON content contract](content/data-format.md), using the
   existing [schemas and structural checks](content/schemas/README.md) as the file
   boundary and adding semantic pack validation: versioned

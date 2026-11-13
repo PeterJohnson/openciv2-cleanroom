@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/gameplay.schema.json",
+  "title": "Gameplay",
+  "description": "Complete first-wave gameplay bundle. Classic mode requires effective values identical to the trusted baseline; custom mode does not assert original interoperability.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-gameplay/1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "target": {
+      "const": "classic-mge-5.4.0f"
+    },
+    "mode": {
+      "enum": [
+        "classic",
+        "custom"
+      ]
+    },
+    "components": {
+      "type": "object",
+      "properties": {
+        "calendar": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "spaceship": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "governments": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "difficulty": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "combat": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "scoring": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        }
+      },
+      "required": [
+        "calendar",
+        "spaceship",
+        "governments",
+        "difficulty",
+        "combat",
+        "scoring"
+      ],
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "authors": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/nonemptyText"
+          }
+        },
+        "license": {
+          "$ref": "common.schema.json#/$defs/nonemptyText"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/text"
+          }
+        }
+      },
+      "required": [
+        "authors",
+        "license",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "id",
+    "revision",
+    "target",
+    "mode",
+    "components",
+    "provenance"
+  ],
+  "additionalProperties": false
+}

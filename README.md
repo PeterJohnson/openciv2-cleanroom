@@ -33,6 +33,8 @@ X01 and X02 define that convention and its conformance checks.
   runtime text and events, with separate classic compatibility mappings/adapters.
 - [Content JSON Schemas](docs/content/schemas/README.md): document validation,
   examples and remaining semantic checks.
+- [Built-in gameplay data](docs/content/gameplay-format.md): six classic-default
+  components, customization boundary and offline validation.
 - [Classic text-file inventory](docs/content/text-resources.md): per-file runtime
   mappings, documentation-only files and explicit legacy/companion-tool limits.
 - [Application shell](docs/application-shell.md): implemented UI/platform boundaries

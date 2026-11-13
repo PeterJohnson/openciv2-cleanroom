@@ -1,7 +1,7 @@
 {
   "format": "openciv2-content-pack/1",
   "id": "example.format-demonstration",
-  "revision": 3,
+  "revision": 4,
   "profile": "classic-mge-5.4.0f",
   "defaultLocale": "en",
   "base": null,
@@ -73,5 +73,9 @@
       "id": "scenario.river-valley",
       "world": null
     }
-  ]
+  ],
+  "gameplay": {
+    "builtin": "classic-mge-5.4.0f",
+    "revision": 1
+  }
 }

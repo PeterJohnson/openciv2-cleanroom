@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/scoring.schema.json",
+  "title": "Scoring",
+  "description": "V08 score operands. Outcome selection, state reads, per-stage wrap/truncation, rating percent conversion and title calculation remain algorithms.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-scoring/1"
+    },
+    "citizens": {
+      "type": "object",
+      "properties": {
+        "perCitizen": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "perHappyCitizen": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "perUnhappyCitizen": {
+          "$ref": "common.schema.json#/$defs/integer"
+        }
+      },
+      "required": [
+        "perCitizen",
+        "perHappyCitizen",
+        "perUnhappyCitizen"
+      ],
+      "additionalProperties": false
+    },
+    "wonderPoints": {
+      "$ref": "common.schema.json#/$defs/integer"
+    },
+    "spaceshipPointsPerPopulationSuccess": {
+      "$ref": "common.schema.json#/$defs/integer"
+    },
+    "pollutionPointsPerTile": {
+      "$ref": "common.schema.json#/$defs/integer"
+    },
+    "peace": {
+      "type": "object",
+      "properties": {
+        "firstEligibleTurn": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "pointsPerTurn": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "maximumPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "firstEligibleTurn",
+        "pointsPerTurn",
+        "maximumPoints"
+      ],
+      "additionalProperties": false
+    },
+    "futureTechnologyPoints": {
+      "$ref": "common.schema.json#/$defs/integer"
+    },
+    "barbarianActivity": {
+      "type": "object",
+      "properties": {
+        "pointsPerLevel": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "offsetPoints": {
+          "$ref": "common.schema.json#/$defs/integer"
+        }
+      },
+      "required": [
+        "pointsPerLevel",
+        "offsetPoints"
+      ],
+      "additionalProperties": false
+    },
+    "conquest": {
+      "type": "object",
+      "properties": {
+        "pointsPerEnemy": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "basePoints": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "turnReference": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "pointsPerRemainingTurn": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "noRestartMinimumTurn": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "largeMapMultiplier": {
+          "$ref": "common.schema.json#/$defs/rational"
+        },
+        "smallMapMultiplier": {
+          "$ref": "common.schema.json#/$defs/rational"
+        }
+      },
+      "required": [
+        "pointsPerEnemy",
+        "basePoints",
+        "turnReference",
+        "pointsPerRemainingTurn",
+        "noRestartMinimumTurn",
+        "largeMapMultiplier",
+        "smallMapMultiplier"
+      ],
+      "additionalProperties": false
+    },
+    "objectiveValue": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "wonder": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "city",
+        "wonder"
+      ],
+      "additionalProperties": false
+    },
+    "scenario": {
+      "type": "object",
+      "properties": {
+        "outcomePoints": {
+          "type": "object",
+          "properties": {
+            "decisive-victory": {
+              "$ref": "common.schema.json#/$defs/integer"
+            },
+            "marginal-victory": {
+              "$ref": "common.schema.json#/$defs/integer"
+            },
+            "draw": {
+              "$ref": "common.schema.json#/$defs/integer"
+            },
+            "marginal-defeat": {
+              "$ref": "common.schema.json#/$defs/integer"
+            },
+            "decisive-defeat": {
+              "$ref": "common.schema.json#/$defs/integer"
+            }
+          },
+          "required": [
+            "decisive-victory",
+            "marginal-victory",
+            "draw",
+            "marginal-defeat",
+            "decisive-defeat"
+          ],
+          "additionalProperties": false
+        },
+        "pointsPerObjective": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "conquestMultiplier": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      },
+      "required": [
+        "outcomePoints",
+        "pointsPerObjective",
+        "conquestMultiplier"
+      ],
+      "additionalProperties": false
+    },
+    "rating": {
+      "type": "object",
+      "properties": {
+        "difficultyFactors": {
+          "type": "object",
+          "properties": {
+            "chieftain": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "warlord": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "prince": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "king": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "emperor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            },
+            "deity": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "chieftain",
+            "warlord",
+            "prince",
+            "king",
+            "emperor",
+            "deity"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "difficultyFactors"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "citizens",
+    "wonderPoints",
+    "spaceshipPointsPerPopulationSuccess",
+    "pollutionPointsPerTile",
+    "peace",
+    "futureTechnologyPoints",
+    "barbarianActivity",
+    "conquest",
+    "objectiveValue",
+    "scenario",
+    "rating"
+  ],
+  "additionalProperties": false
+}

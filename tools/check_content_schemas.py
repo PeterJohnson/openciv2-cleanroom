@@ -24,8 +24,8 @@ DRAFT = "https://json-schema.org/draft/2020-12/schema"
 SCHEMA_BASE = "https://openciv2.invalid/schemas/content/v1/"
 
 
-def read_json(path):
-    """Preserve exact JSON numbers and reject ambiguous/non-Unicode input."""
+def decode_json(raw):
+    """Decode exact bytes once, preserving numbers and rejecting ambiguous input."""
     def pairs(items):
         result = {}
         for key, value in items:
@@ -50,12 +50,15 @@ def read_json(path):
                 check_strings(item)
 
     value = json.loads(
-        Path(path).read_text(encoding="utf-8"), object_pairs_hook=pairs,
+        raw.decode("utf-8"), object_pairs_hook=pairs,
         parse_float=Decimal, parse_constant=constant,
     )
     check_strings(value)
     return value
 
+
+def read_json(path):
+    return decode_json(Path(path).read_bytes())
 
 def is_integer(checker, value):
     # JSON Schema's integer is mathematical: 2, 2.0 and 2e0 are equivalent.
@@ -167,7 +170,7 @@ def check_examples(schemas, root):
         if actual != expected:
             details = "; ".join(describe(error) for error in errors[:5]) or "no errors"
             raise ValueError(f"{path.name}: unexpected validation result: {details}")
-    return "Validated 13 schemas, 9 complete example documents and the inventory; 2 fragments rejected as expected."
+    return f"Validated {len(schemas.schemas)} schemas, 9 complete example documents and the inventory; 2 fragments rejected as expected."
 
 
 def describe(error):
@@ -183,8 +186,8 @@ def main(argv=None):
     try:
         schemas = SchemaSet(args.root / "docs/content/schemas")
         if not args.files:
-            if len(schemas.schemas) != 13:
-                raise ValueError("expected twelve file-format schemas and shared definitions")
+            if len(schemas.schemas) != 21:
+                raise ValueError("expected twenty file-format/metadata schemas and shared definitions")
             print(check_examples(schemas, args.root))
         else:
             failures = 0

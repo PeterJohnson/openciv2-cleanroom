@@ -1,0 +1,40 @@
+{
+  "format": "openciv2-governments/1",
+  "governments": {
+    "anarchy": {
+      "maximumRateTenths": 6,
+      "requiredAdvance": null,
+      "corruptionDivisor": 4
+    },
+    "despotism": {
+      "maximumRateTenths": 6,
+      "requiredAdvance": null,
+      "corruptionDivisor": 5
+    },
+    "monarchy": {
+      "maximumRateTenths": 7,
+      "requiredAdvance": "advance.monarchy",
+      "corruptionDivisor": 6
+    },
+    "communism": {
+      "maximumRateTenths": 8,
+      "requiredAdvance": "advance.communism",
+      "corruptionDivisor": 7
+    },
+    "fundamentalism": {
+      "maximumRateTenths": 8,
+      "requiredAdvance": "advance.fundamentalism",
+      "corruptionDivisor": 7
+    },
+    "republic": {
+      "maximumRateTenths": 8,
+      "requiredAdvance": "advance.republic",
+      "corruptionDivisor": 8
+    },
+    "democracy": {
+      "maximumRateTenths": 10,
+      "requiredAdvance": "advance.democracy",
+      "corruptionDivisor": 8
+    }
+  }
+}

@@ -1,7 +1,11 @@
 # Built-in gameplay data: extraction assessment
 
-Status: proposal and implementation backlog. No new runtime formats, configurable
-mechanics or compatibility exceptions are introduced by this assessment.
+Status: first-wave data files, schemas, provenance, manifest selection and offline
+validation are implemented in [gameplay-format.md](gameplay-format.md). Runtime
+consumers and compatibility/session integration remain open. Further JSON
+component extraction is deferred until implementation reaches the owning mechanics.
+Later groups below remain reference candidates, not immediate work; this assessment
+is not a gameplay conformance claim.
 
 The specifications contain useful gameplay data that the original executable
 supplied rather than reading from text files. Extracting selected values into
@@ -37,16 +41,17 @@ in `rules.json`; only the previously built-in spaceship data belongs in the new
 file. Scenario state/settings already represented by F06/S01 also remain distinct
 from shared gameplay defaults.
 
-The names below are proposed component filenames, not added manifest keys or
-released `format` identifiers. They describe game concepts rather than executable
-addresses or legacy table layouts.
+The first six filenames now have unreleased version 1 formats and complete
+original-value defaults for their declared initial scope. Later filenames remain
+proposals. They describe game concepts rather than executable addresses or legacy
+table layouts.
 
-## 2. Recommended first extraction
+## 2. First-wave extraction
 
 These six components have bounded initial scopes and concrete original values
-in the current specifications. “Ready” means the listed initial subset can be
-transcribed from the contract; it does not mean a loader or conformance evidence
-already exists.
+in the current specifications. The initial subsets below now have data/schema
+artifacts and developer validation. “Ready” describes source readiness, not
+implemented gameplay consumers or original-game conformance evidence.
 
 | Proposed file | Initial data and original-value examples | Owner and readiness |
 | --- | --- | --- |
@@ -169,9 +174,10 @@ and where numeric details should remain contracts.
 ## 6. Loading and compatibility design
 
 Use one resolved **built-in gameplay profile** alongside the existing text-backed
-content. This is a proposed architectural concept, not a new `profile` identifier
-accepted by today's schemas. Both native JSON and classic text input paths use
-the same selected built-in defaults. Selecting a user's `RULES.TXT` must not
+content. The [bundle manifest](gameplay-format.md#1-files-selection-and-common-rules)
+now makes this selection and its classic/custom mode explicit; it does not invent
+a different classic identity family. Both native JSON and classic text input paths
+use the same selected built-in defaults. Selecting a user's `RULES.TXT` must not
 remove this layer or cause duplicate definitions of its parameters.
 
 The implementation should ship a complete classic profile populated from the
@@ -219,6 +225,13 @@ state or hidden in unused bytes.
 
 ## 7. Extraction and validation backlog
 
+Completed for the first-wave scope: six populated components, eight schemas
+(including bundle/provenance), explicit content selection, offline resolution,
+normalization/fingerprints, source coverage and data-level regression checks.
+Consumer execution, runtime admission/reload, save/resume, custom multiplayer and
+original exchanges in steps 4–6 remain open. Arithmetic probes validate the
+transcription only; they are not implementations of the full owning operations.
+
 1. Start with `calendar.json` and `spaceship.json`, then the remaining first-wave
    components. For each field, record semantic name/unit, default, owning spec
    section, exact evaluation point and all consumers. Distinguish copied tables
@@ -246,10 +259,11 @@ state or hidden in unused bytes.
    validation failures, profile resolution, stable fingerprints and save/resume.
    Preserve original mixed-peer/file tests for the default profile and explicitly
    test rejection of incompatible custom runtime profiles.
-7. Only after the first slice works, extract city, recovery, work, trade,
-   environment, hut and espionage parameters in small groups. Keep AI/map and
-   general effect-system expansion deferred; update this assessment as concrete
-   schemas and consumer coverage replace proposals.
+7. Revisit city, recovery, work, trade, environment, hut and espionage
+   parameters as their owning mechanics are implemented. Further JSON component
+   extraction is deferred until then. Keep AI/map and general effect-system
+   expansion deferred; update this assessment as concrete schemas and consumer
+   coverage replace proposals.
 
 A semantic fraction alone does not determine evaluation. For example, U06's
 `strength += strength >> 1` includes a specified signed rounding operation and

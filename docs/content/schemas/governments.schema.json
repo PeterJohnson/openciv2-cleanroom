@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/governments.schema.json",
+  "title": "Governments",
+  "description": "Government policies use fixed semantic identities, independent of localized rule names. Non-null advance references require rule/profile resolution.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-governments/1"
+    },
+    "governments": {
+      "type": "object",
+      "properties": {
+        "anarchy": {
+          "type": "object",
+          "properties": {
+            "maximumRateTenths": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "requiredAdvance": {
+              "type": "null"
+            },
+            "corruptionDivisor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "maximumRateTenths",
+            "requiredAdvance",
+            "corruptionDivisor"
+          ],
+          "additionalProperties": false
+        },
+        "despotism": {
+          "type": "object",
+          "properties": {
+            "maximumRateTenths": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "requiredAdvance": {
+              "type": "null"
+            },
+            "corruptionDivisor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "maximumRateTenths",
+            "requiredAdvance",
+            "corruptionDivisor"
+          ],
+          "additionalProperties": false
+        },
+        "monarchy": {
+          "type": "object",
+          "properties": {
+            "maximumRateTenths": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "requiredAdvance": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "corruptionDivisor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "maximumRateTenths",
+            "requiredAdvance",
+            "corruptionDivisor"
+          ],
+          "additionalProperties": false
+        },
+        "communism": {
+          "type": "object",
+          "properties": {
+            "maximumRateTenths": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "requiredAdvance": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "corruptionDivisor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "maximumRateTenths",
+            "requiredAdvance",
+            "corruptionDivisor"
+          ],
+          "additionalProperties": false
+        },
+        "fundamentalism": {
+          "type": "object",
+          "properties": {
+            "maximumRateTenths": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "requiredAdvance": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "corruptionDivisor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "maximumRateTenths",
+            "requiredAdvance",
+            "corruptionDivisor"
+          ],
+          "additionalProperties": false
+        },
+        "republic": {
+          "type": "object",
+          "properties": {
+            "maximumRateTenths": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "requiredAdvance": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "corruptionDivisor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "maximumRateTenths",
+            "requiredAdvance",
+            "corruptionDivisor"
+          ],
+          "additionalProperties": false
+        },
+        "democracy": {
+          "type": "object",
+          "properties": {
+            "maximumRateTenths": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "requiredAdvance": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "corruptionDivisor": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483647
+            }
+          },
+          "required": [
+            "maximumRateTenths",
+            "requiredAdvance",
+            "corruptionDivisor"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "anarchy",
+        "despotism",
+        "monarchy",
+        "communism",
+        "fundamentalism",
+        "republic",
+        "democracy"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "governments"
+  ],
+  "additionalProperties": false
+}
