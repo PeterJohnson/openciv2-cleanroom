@@ -1,0 +1,25 @@
+{
+  "format": "openciv2-encyclopedia/1",
+  "locale": "en",
+  "topics": [
+    {
+      "id": "topic.trailblazers",
+      "kind": "unit",
+      "subject": "unit.trailblazers",
+      "title": "Trailblazers",
+      "body": "These travelers establish settlements and improve the surrounding land.",
+      "links": [
+        "topic.settlement"
+      ]
+    },
+    {
+      "id": "topic.settlement",
+      "kind": "concept",
+      "subject": null,
+      "title": "Settlement",
+      "body": "Choose settlement sites with the surrounding terrain in mind.",
+      "links": []
+    }
+  ],
+  "scenarioPolicies": []
+}

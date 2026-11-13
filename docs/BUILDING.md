@@ -85,14 +85,26 @@ M0's stdlib-only metadata checks need no external checkout or content:
 ```sh
 python3 tools/check_conformance.py
 python3 tools/check_assets.py
-python3 -m unittest discover -s tests -p 'test_*.py' -v
 cmake --build --preset desktop --target inventory-check
 ```
 
-Use `python` on Windows. The Python tests include formatter/hook checks, so install
-the pinned formatter below. CMake adds the metadata target/tests only when Python
+Use `python` on Windows. CMake adds the metadata target/tests only when Python
 3.9+ is available. These checks validate bookkeeping and hashes; they do not run
 X02 algorithms or establish gameplay compatibility.
+
+The full developer Python suite also checks content schemas and formatter/hooks.
+Use Python **3.11+**, install the pinned formatter below and the separate schema
+dependencies, then run:
+
+```sh
+python -m pip install -r tools/requirements-schemas.txt
+python tools/check_content_schemas.py
+python -m unittest discover -s tests -p 'test_*.py' -v
+```
+
+The [schema guide](content/schemas/README.md) describes document validation and
+its semantic limits. These packages are not needed for ordinary builds or the
+stdlib-only metadata checks above.
 
 `OC2_ASSETS_DIR` can explicitly name the approved asset source root or an extracted
 runtime package in GUI configurations. This enables `asset-check` and requires

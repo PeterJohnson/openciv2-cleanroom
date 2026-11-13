@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/documents.schema.json",
+  "title": "Scenario briefings and credits",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-documents/1"
+    },
+    "locale": {
+      "$ref": "common.schema.json#/$defs/locale"
+    },
+    "briefings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "scenario": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "message": {
+            "$ref": "common.schema.json#/$defs/id"
+          }
+        },
+        "required": [
+          "id",
+          "scenario",
+          "message"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "credits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "blocks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/creditBlock"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "blocks"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "locale",
+    "briefings",
+    "credits"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "creditBlock": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "enum": [
+                "heading",
+                "text"
+              ]
+            },
+            "text": {
+              "$ref": "common.schema.json#/$defs/text"
+            }
+          },
+          "required": [
+            "kind",
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "blank"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

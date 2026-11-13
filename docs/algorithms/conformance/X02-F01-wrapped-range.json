@@ -1,7 +1,7 @@
 {
   "format": "openciv2-conformance/3",
   "id": "X02.F01.wrapped-range",
-  "revision": 9,
+  "revision": 10,
   "target": {
     "game": "Civilization II Multiplayer Gold Edition",
     "version": "5.4.0f patch 3",
@@ -16,12 +16,12 @@
     {
       "id": "X01",
       "file": "../X01-classic-compatibility-contract.md",
-      "sha256": "c716280a1b287fcf16e58cc080e2c2fc37fb87cdd2c6878519915d0ac2a68a0c"
+      "sha256": "8aaca778ebe16101744c2268edf1f2bbe220aa064e98e95fdc09556ddb3d93ed"
     },
     {
       "id": "X02",
       "file": "../X02-whole-game-conformance.md",
-      "sha256": "0ec3c222bd0a75379ad38d30453e094bc9995fe5ad9bf25b49438624e7389ee8"
+      "sha256": "7b3306bd7d9a39f5aaedfd535769e711e46ddd711b8bcbc31d6976baa9b39a4e"
     }
   ],
   "boundary": {
@@ -162,7 +162,8 @@
       "Contract references refreshed for required original-file and mixed-peer interoperability; numeric expectations unchanged.",
       "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
       "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
-      "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence."
+      "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
+      "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
     ]
   },
   "limits": {

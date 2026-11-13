@@ -23,7 +23,10 @@ jobs:
       - run: python tools/format.py --check
       - run: python tools/check_conformance.py
       - run: python tools/check_assets.py
-      - name: Test metadata validation, staged-file handling and commit hook
+      - name: Install pinned content schema validator
+        run: python -m pip install -r tools/requirements-schemas.txt
+      - run: python tools/check_content_schemas.py
+      - name: Test metadata, content schemas, staged-file handling and commit hook
         run: python -m unittest discover -s tests -p "test_*.py" -v
 
   native:

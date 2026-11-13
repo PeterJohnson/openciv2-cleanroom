@@ -1,0 +1,17 @@
+{
+  "format": "openciv2-city-names/1",
+  "civilizations": [
+    {
+      "pluralName": "Riverfolk",
+      "cityNames": [
+        "Reedbank",
+        "Stoneford",
+        "North Quay"
+      ]
+    }
+  ],
+  "fallbackNames": [
+    "New Reach",
+    "Far Landing"
+  ]
+}

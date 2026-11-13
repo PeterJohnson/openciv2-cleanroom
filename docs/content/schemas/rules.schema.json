@@ -1,0 +1,734 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/rules.schema.json",
+  "title": "Classic gameplay rule definitions",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-rules/1"
+    },
+    "globalRules": {
+      "type": "object",
+      "properties": {
+        "roadMovementMultiplier": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "triremeLossDenominator": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "foodPerCitizen": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "foodBoxRows": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "shieldBoxRows": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "settlerFoodLowGovernment": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "settlerFoodHighGovernment": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "unhappinessCitySize": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "unhappinessEmpireSize": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "aqueductSize": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "sewerSize": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "technologyCostParadigm": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "transformationWork": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "monarchyFreeSupport": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "communismFreeSupport": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "fundamentalismFreeSupport": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "communismPalaceDistance": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "fundamentalismScienceLossPercent": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "productionSwitchLossPercent": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "paradropRange": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "spaceshipMassThrustParadigm": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "fundamentalismScienceCapTenths": {
+          "$ref": "common.schema.json#/$defs/integer"
+        }
+      },
+      "required": [
+        "roadMovementMultiplier",
+        "triremeLossDenominator",
+        "foodPerCitizen",
+        "foodBoxRows",
+        "shieldBoxRows",
+        "settlerFoodLowGovernment",
+        "settlerFoodHighGovernment",
+        "unhappinessCitySize",
+        "unhappinessEmpireSize",
+        "aqueductSize",
+        "sewerSize",
+        "technologyCostParadigm",
+        "transformationWork",
+        "monarchyFreeSupport",
+        "communismFreeSupport",
+        "fundamentalismFreeSupport",
+        "communismPalaceDistance",
+        "fundamentalismScienceLossPercent",
+        "productionSwitchLossPercent",
+        "paradropRange",
+        "spaceshipMassThrustParadigm",
+        "fundamentalismScienceCapTenths"
+      ],
+      "additionalProperties": false
+    },
+    "advances": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/advance"
+      },
+      "minItems": 100,
+      "maxItems": 100
+    },
+    "improvements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/improvement"
+      },
+      "minItems": 67,
+      "maxItems": 67
+    },
+    "units": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/unit"
+      },
+      "minItems": 62,
+      "maxItems": 62
+    },
+    "terrain": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/terrain"
+      },
+      "minItems": 33,
+      "maxItems": 33,
+      "contains": {
+        "type": "object",
+        "required": [
+          "irrigation",
+          "mining",
+          "transformation"
+        ]
+      },
+      "minContains": 11,
+      "maxContains": 11
+    },
+    "governments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/government"
+      },
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "tribes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/tribe"
+      },
+      "minItems": 21,
+      "maxItems": 21
+    },
+    "commodities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/name"
+      },
+      "minItems": 16,
+      "maxItems": 16
+    },
+    "orders": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/order"
+      },
+      "minItems": 12,
+      "maxItems": 12
+    },
+    "difficulties": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/name"
+      },
+      "minItems": 6,
+      "maxItems": 6
+    },
+    "diplomaticAttitudes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/name"
+      },
+      "minItems": 9,
+      "maxItems": 9
+    },
+    "wonderObsolescence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/wonderObsolescence"
+      },
+      "minItems": 28,
+      "maxItems": 28
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "globalRules",
+    "advances",
+    "improvements",
+    "units",
+    "terrain",
+    "governments",
+    "tribes",
+    "commodities",
+    "orders",
+    "difficulties",
+    "diplomaticAttitudes",
+    "wonderObsolescence"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "advance": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "aiValue": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "civilizedAiModifier": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/advanceReference"
+          },
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "epoch": {
+          "enum": [
+            "ancient",
+            "renaissance",
+            "industrial",
+            "modern"
+          ]
+        },
+        "category": {
+          "enum": [
+            "military",
+            "economic",
+            "social",
+            "academic",
+            "applied"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "aiValue",
+        "civilizedAiModifier",
+        "prerequisites",
+        "epoch",
+        "category"
+      ],
+      "additionalProperties": false
+    },
+    "improvement": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "costRows": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "upkeep": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "prerequisite": {
+          "$ref": "common.schema.json#/$defs/advanceReference"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "costRows",
+        "upkeep",
+        "prerequisite"
+      ],
+      "additionalProperties": false
+    },
+    "unit": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "obsoleteBy": {
+          "$ref": "common.schema.json#/$defs/advanceReference"
+        },
+        "domain": {
+          "enum": [
+            "land",
+            "air",
+            "sea"
+          ]
+        },
+        "movementPoints": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "range": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "attack": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "defense": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "hitPoints": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 250,
+          "multipleOf": 10
+        },
+        "firepower": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "costRows": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "capacity": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "role": {
+          "enum": [
+            "attack",
+            "defend",
+            "naval-superiority",
+            "air-superiority",
+            "sea-transport",
+            "settle",
+            "diplomacy",
+            "trade"
+          ]
+        },
+        "prerequisite": {
+          "$ref": "common.schema.json#/$defs/advanceReference"
+        },
+        "abilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "see-two",
+              "ignore-zoc",
+              "amphibious",
+              "submarine",
+              "attack-air",
+              "coast-bound",
+              "ignore-walls",
+              "carry-aircraft",
+              "paradrop",
+              "alpine",
+              "anti-horse-defense",
+              "fundamentalism-free-support",
+              "destroyed-after-attack",
+              "anti-air-defense",
+              "detect-submarines"
+            ]
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "obsoleteBy",
+        "domain",
+        "movementPoints",
+        "range",
+        "attack",
+        "defense",
+        "hitPoints",
+        "firepower",
+        "costRows",
+        "capacity",
+        "role",
+        "prerequisite",
+        "abilities"
+      ],
+      "additionalProperties": false
+    },
+    "terrainResult": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "terrain": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "required": [
+            "terrain"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "special": {
+              "enum": [
+                "no-result",
+                "improve-in-place"
+              ]
+            }
+          },
+          "required": [
+            "special"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "terrainWork": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/terrainResult"
+        },
+        "yieldBonus": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "workTurns": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "aiGovernmentThreshold": {
+          "$ref": "common.schema.json#/$defs/integer"
+        }
+      },
+      "required": [
+        "result",
+        "yieldBonus",
+        "workTurns",
+        "aiGovernmentThreshold"
+      ],
+      "additionalProperties": false
+    },
+    "government": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "maleTitle": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "femaleTitle": {
+          "$ref": "common.schema.json#/$defs/text"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "maleTitle",
+        "femaleTitle"
+      ],
+      "additionalProperties": false
+    },
+    "tribe": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "pluralName": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "adjective": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "leaderNames": {
+          "type": "object",
+          "properties": {
+            "male": {
+              "$ref": "common.schema.json#/$defs/text"
+            },
+            "female": {
+              "$ref": "common.schema.json#/$defs/text"
+            }
+          },
+          "required": [
+            "male",
+            "female"
+          ],
+          "additionalProperties": false
+        },
+        "preferredLeaderGender": {
+          "enum": [
+            "male",
+            "female"
+          ]
+        },
+        "preferredColor": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "cityStyle": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "personality": {
+          "type": "object",
+          "properties": {
+            "aggression": {
+              "$ref": "common.schema.json#/$defs/integer"
+            },
+            "expansion": {
+              "$ref": "common.schema.json#/$defs/integer"
+            },
+            "civilizationPreference": {
+              "$ref": "common.schema.json#/$defs/integer"
+            }
+          },
+          "required": [
+            "aggression",
+            "expansion",
+            "civilizationPreference"
+          ],
+          "additionalProperties": false
+        },
+        "governmentTitles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "government": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "male": {
+                "$ref": "common.schema.json#/$defs/text"
+              },
+              "female": {
+                "$ref": "common.schema.json#/$defs/text"
+              }
+            },
+            "required": [
+              "government",
+              "male",
+              "female"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "id",
+        "pluralName",
+        "adjective",
+        "leaderNames",
+        "preferredLeaderGender",
+        "preferredColor",
+        "cityStyle",
+        "personality",
+        "governmentTitles"
+      ],
+      "additionalProperties": false
+    },
+    "name": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "order": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "shortcutHint": {
+          "type": "string",
+          "maxLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "shortcutHint"
+      ],
+      "additionalProperties": false
+    },
+    "wonderObsolescence": {
+      "type": "object",
+      "properties": {
+        "wonder": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "advance": {
+          "$ref": "common.schema.json#/$defs/advanceReference"
+        }
+      },
+      "required": [
+        "wonder",
+        "advance"
+      ],
+      "additionalProperties": false
+    },
+    "baseTerrain": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "movementCost": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "defenseMultiplier": {
+          "$ref": "common.schema.json#/$defs/rational"
+        },
+        "food": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "shields": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "trade": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "irrigation": {
+          "$ref": "#/$defs/terrainWork"
+        },
+        "mining": {
+          "$ref": "#/$defs/terrainWork"
+        },
+        "transformation": {
+          "$ref": "#/$defs/terrainResult"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "movementCost",
+        "defenseMultiplier",
+        "food",
+        "shields",
+        "trade",
+        "irrigation",
+        "mining",
+        "transformation"
+      ],
+      "additionalProperties": false
+    },
+    "specialTerrain": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "name": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "movementCost": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "defenseMultiplier": {
+          "$ref": "common.schema.json#/$defs/rational"
+        },
+        "food": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "shields": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "trade": {
+          "$ref": "common.schema.json#/$defs/integer"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "movementCost",
+        "defenseMultiplier",
+        "food",
+        "shields",
+        "trade"
+      ],
+      "additionalProperties": false
+    },
+    "terrain": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/baseTerrain"
+        },
+        {
+          "$ref": "#/$defs/specialTerrain"
+        }
+      ]
+    }
+  }
+}

@@ -261,6 +261,11 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## 16. Credits
 
+[Native documents](../content/data-format.md#64-scenario-briefings-and-credits)
+supply ordered credit blocks under four identities corresponding to the classic
+About modes. Selected classic credit files retain their authored content and
+caller completion/close behavior; native catalogs need no original text files.
+
 Credits convey the selected authored credit text and allow semantic completion.
 Layout, scrolling, fonts, decorative imagery and native timers are optional.
 Required resource parsing and caller/network continuation remain; credits must not

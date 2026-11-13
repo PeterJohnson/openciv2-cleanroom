@@ -1,0 +1,549 @@
+{
+  "format": "openciv2-text/1",
+  "locale": "en",
+  "labels": [
+    {
+      "id": "label.treasury",
+      "text": "Treasury"
+    },
+    {
+      "id": "label.gold",
+      "text": "gold"
+    },
+    {
+      "id": "label.ok",
+      "text": "OK"
+    },
+    {
+      "id": "label.help",
+      "text": "Help"
+    },
+    {
+      "id": "label.cancel",
+      "text": "Cancel"
+    },
+    {
+      "id": "menu.example",
+      "text": "Example actions"
+    },
+    {
+      "id": "menu.purchase",
+      "text": "Purchase"
+    },
+    {
+      "id": "menu.help",
+      "text": "Help"
+    }
+  ],
+  "messages": [
+    {
+      "id": "example.purchase",
+      "parameters": {
+        "item": "text",
+        "cost": "integer"
+      },
+      "title": [
+        {
+          "text": "Purchase"
+        }
+      ],
+      "body": [
+        {
+          "text": "Spend "
+        },
+        {
+          "parameter": "cost"
+        },
+        {
+          "text": " gold to finish "
+        },
+        {
+          "parameter": "item"
+        },
+        {
+          "text": "?"
+        }
+      ],
+      "choices": [
+        {
+          "id": "confirm",
+          "label": [
+            {
+              "text": "Purchase"
+            }
+          ]
+        },
+        {
+          "id": "cancel",
+          "label": [
+            {
+              "text": "Cancel"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "example.edit",
+      "parameters": {
+        "draft": "text",
+        "enabled": "boolean"
+      },
+      "body": [
+        {
+          "text": "Review these sample values."
+        }
+      ],
+      "choices": [
+        {
+          "id": "accept",
+          "label": [
+            {
+              "text": "Apply"
+            }
+          ]
+        },
+        {
+          "id": "cancel",
+          "label": [
+            {
+              "text": "Cancel"
+            }
+          ]
+        }
+      ],
+      "inputs": [
+        {
+          "id": "name",
+          "kind": "text",
+          "label": [
+            {
+              "text": "Name"
+            }
+          ],
+          "initial": {
+            "parameter": "draft"
+          },
+          "maxLength": 15
+        },
+        {
+          "id": "enabled",
+          "kind": "checkbox",
+          "label": [
+            {
+              "text": "Enabled"
+            }
+          ],
+          "initial": {
+            "parameter": "enabled"
+          }
+        }
+      ],
+      "defaults": {
+        "choice": "accept"
+      }
+    },
+    {
+      "id": "example.scenario.briefing",
+      "parameters": {
+        "scenario": "text",
+        "paradigm": "integer",
+        "start": "text",
+        "end": "text"
+      },
+      "body": [
+        {
+          "parameter": "scenario"
+        },
+        {
+          "text": "\nFrom "
+        },
+        {
+          "parameter": "start"
+        },
+        {
+          "text": " to "
+        },
+        {
+          "parameter": "end"
+        },
+        {
+          "text": ". Research paradigm: "
+        },
+        {
+          "parameter": "paradigm"
+        },
+        {
+          "text": ".\nGuide the Riverfolk through the valley."
+        }
+      ],
+      "choices": [
+        {
+          "id": "continue",
+          "label": [
+            {
+              "text": "Continue"
+            }
+          ]
+        },
+        {
+          "id": "reselect",
+          "label": [
+            {
+              "text": "Choose another scenario"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "advice.military",
+      "parameters": {},
+      "body": [],
+      "choices": [],
+      "title": [
+        {
+          "text": "Military advice"
+        }
+      ]
+    },
+    {
+      "id": "advice.domestic",
+      "parameters": {},
+      "body": [],
+      "choices": [],
+      "title": [
+        {
+          "text": "Domestic advice"
+        }
+      ]
+    },
+    {
+      "id": "advice.trailblazers",
+      "parameters": {
+        "item": "text"
+      },
+      "body": [
+        {
+          "text": "The advisor recommends "
+        },
+        {
+          "parameter": "item"
+        },
+        {
+          "text": " to prepare new settlements."
+        }
+      ],
+      "choices": []
+    },
+    {
+      "id": "advice.default",
+      "parameters": {
+        "item": "text"
+      },
+      "body": [
+        {
+          "text": "The advisor recommends "
+        },
+        {
+          "parameter": "item"
+        },
+        {
+          "text": "."
+        }
+      ],
+      "choices": []
+    }
+  ],
+  "helpTopics": [
+    {
+      "id": "help.rules.road-movement-multiplier",
+      "subject": {
+        "globalRule": "roadMovementMultiplier"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Road movement multiplier"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.trireme-loss-denominator",
+      "subject": {
+        "globalRule": "triremeLossDenominator"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Trireme loss denominator"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.food-per-citizen",
+      "subject": {
+        "globalRule": "foodPerCitizen"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Food per citizen"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.food-box-rows",
+      "subject": {
+        "globalRule": "foodBoxRows"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Food box rows"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.shield-box-rows",
+      "subject": {
+        "globalRule": "shieldBoxRows"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Shield box rows"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.settler-food-low-government",
+      "subject": {
+        "globalRule": "settlerFoodLowGovernment"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Settler food low government"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.settler-food-high-government",
+      "subject": {
+        "globalRule": "settlerFoodHighGovernment"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Settler food high government"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.unhappiness-city-size",
+      "subject": {
+        "globalRule": "unhappinessCitySize"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Unhappiness city size"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.unhappiness-empire-size",
+      "subject": {
+        "globalRule": "unhappinessEmpireSize"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Unhappiness empire size"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.aqueduct-size",
+      "subject": {
+        "globalRule": "aqueductSize"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Aqueduct size"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.sewer-size",
+      "subject": {
+        "globalRule": "sewerSize"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Sewer size"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.technology-cost-paradigm",
+      "subject": {
+        "globalRule": "technologyCostParadigm"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Technology cost paradigm"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.transformation-work",
+      "subject": {
+        "globalRule": "transformationWork"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Transformation work"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.monarchy-free-support",
+      "subject": {
+        "globalRule": "monarchyFreeSupport"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Monarchy free support"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.communism-free-support",
+      "subject": {
+        "globalRule": "communismFreeSupport"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Communism free support"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.fundamentalism-free-support",
+      "subject": {
+        "globalRule": "fundamentalismFreeSupport"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Fundamentalism free support"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.communism-palace-distance",
+      "subject": {
+        "globalRule": "communismPalaceDistance"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Communism palace distance"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.fundamentalism-science-loss-percent",
+      "subject": {
+        "globalRule": "fundamentalismScienceLossPercent"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Fundamentalism science loss percent"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.production-switch-loss-percent",
+      "subject": {
+        "globalRule": "productionSwitchLossPercent"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Production switch loss percent"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.paradrop-range",
+      "subject": {
+        "globalRule": "paradropRange"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Paradrop range"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.spaceship-mass-thrust-paradigm",
+      "subject": {
+        "globalRule": "spaceshipMassThrustParadigm"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Spaceship mass thrust paradigm"
+        }
+      ]
+    },
+    {
+      "id": "help.rules.fundamentalism-science-cap-tenths",
+      "subject": {
+        "globalRule": "fundamentalismScienceCapTenths"
+      },
+      "parameters": {},
+      "body": [
+        {
+          "text": "Fundamentalism science cap tenths"
+        }
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "id": "unit.alpine-movement",
+      "parameters": {},
+      "body": [
+        {
+          "text": "Movement follows the alpine movement rule."
+        }
+      ]
+    }
+  ],
+  "productionAdvice": {
+    "headings": {
+      "military": "advice.military",
+      "domestic": "advice.domestic"
+    },
+    "recommendations": [
+      {
+        "productionName": "Trailblazers",
+        "message": "advice.trailblazers"
+      }
+    ],
+    "wonderMessage": "advice.default",
+    "defaultMessage": "advice.default"
+  }
+}

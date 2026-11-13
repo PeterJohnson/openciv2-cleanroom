@@ -53,14 +53,37 @@ no graphics-pack dependency. See the [font contract](asset-format.md#truetype-fo
 The build appends the full upstream font notice to its software notices. Font
 hashes are checked even for explicit local source overrides.
 
+## Standalone content and classic compatibility
+
+[The JSON format specification](data-format.md) defines version 1 packs for
+rules, city names, production preferences, semantic messages/help/facts/advice, menus,
+briefings/credits, conditional council content, encyclopedia topics and events.
+The [per-file text inventory](text-resources.md) maps all 31 observed TXT files
+and specification-established optional/variant inputs to runtime formats or an
+explicit documentation/ancillary disposition. Its [machine-readable ledger](text-resources.json)
+records observed filenames and hashes without distributing original payloads.
+Native catalogs describe game concepts; the separate classic compatibility
+descriptor carries source addresses and slot mappings.
+The [owned examples](examples/README.md) illustrate fields and references but deliberately lack complete playable tables
+and interaction coverage. [JSON Schemas and a developer checker](schemas/README.md)
+validate document structure. Runtime loaders/converters, semantic pack validation
+and a complete distributable base pack are not implemented.
+
+Standalone play must work without original text files. Users may select original
+or scenario text through compatibility adapters that retain the owning algorithm's
+parsing, fallback, conversions and meaningful partial effects. Both paths feed
+shared gameplay models; JSON does not change AI/map generation or classic
+save/wire formats. Track user-import provenance after conversion as well.
+
 ## Stock rules, text and other inputs
 
 | Input | Current inventory and distribution policy | Follow-up |
 | --- | --- | --- |
-| Default rules and leader/tribe names | No stock rule file is bundled. F03 specifies `RULES.<language>` syntax and table semantics, not an approved redistribution package. | M1: author bounded parser fixtures; M3–M5: supply licensed playable defaults with provenance. |
-| UI messages and labels | The shell's own short labels are authored in this repo. Classic `GAME` and `LABELS` resources and localized variants are absent. F03/P04 own lookup/substitution behavior. | M2–M5: author stock text and preserve explicit scenario/language overrides. |
-| Civilopedia and descriptive text | No stock `DESCRIBE`/`PEDIA` content is bundled. P08 defines sections and consumers. | M5: author licensed replacements; support user-selected scenario text. |
-| Scenarios, events, rules overrides, city preferences | No redistributable scenario corpus or `CITYPREF.TXT` is bundled. S01–S04/F03 specify contracts. | M1/M5: authored minimal fixtures, positive custom-content cases and explicit unsupported-input diagnostics. |
+| Default rules, leader/tribe and city names | Native JSON formats are specified; no complete stock rule/name set is bundled. F03/C01 own classic `RULES`/`CITY` compatibility and logical effects. | M1: both readers and paired authored fixtures; M3–M5: complete distributable standalone defaults with provenance. |
+| UI messages, labels, help, tutorial and editor text | JSON messages/inputs/defaults, named help/facts and production advice are specified; indexed/source bindings live in the compatibility descriptor. The shell has its own short labels; no full game catalog is bundled. The per-file inventory includes GAME/LABELS/ADVICE/HELP/DEBUG/HERALD/TUTORIAL and PEDIA templates/facts. | M2–M5: register every reachable interaction/lookup and supply native catalogs; test classic scenario/language overrides and partial publication. |
+| Menus, council, briefings and credits | JSON action trees, named council opinions/dialogue and scenario-ID document associations cover the established runtime families. Original text/art are not bundled. MAPMENU companion actions and unconfirmed LEADERS/SC consumers are explicitly distinguished. | M2/M5: implement action mappings, same-line council selection, final-world briefing lookup and all four credit modes; preserve caller effects. |
+| Civilopedia and descriptive text | Native JSON topics are specified; no complete prose set is bundled. P08 owns classic DESCRIBE/PEDIA compatibility and semantic consumers. | M5: author replacements and implement both content paths with correct topic/rule identities. |
+| Scenarios, events, rules overrides, city preferences | Native JSON preferences/events and classic CITYPREF/EVENTS compatibility are specified. No playable scenario corpus is bundled. | M1/M5: paired fixtures, authored content, partial-effect/reentry checks and explicit conversion diagnostics. |
 | Sound, music and movies | No runtime sound/media set is present in the approved graphics package. | M2/M5: extend the asset data contract and notices when authored audio arrives; preserve P10 completion/skip semantics with media disabled. |
 | Classic saves/maps/scenarios and imported graphics/text | User inputs, not a source of automatically redistributable stock content. Never scan unrelated directories or silently replace custom content. | M1 onward: explicit import paths, bounded parsers, provenance/hash receipts and original interchange tests. |
 | Three X02 F01 vectors | Authored specification-derived JSON in `docs/algorithms/conformance`; hashes/provenance in the registry. No original execution claimed. | M1: execute through the new runner. |

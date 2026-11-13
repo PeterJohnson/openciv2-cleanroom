@@ -120,7 +120,7 @@ first real operations arrive. Native menu sources currently compile into
 | --- | --- |
 | `oc2_base` | Logical IDs, explicit arithmetic, sampling policy, clocks, diagnostics, service contracts; C++ standard library only initially. |
 | `oc2_game` | Authoritative C++ runtime records and collections for F02 state, rule model, W/U/C/V mechanics, A01–A08, event execution; depends on `oc2_base`. No database dependency. |
-| `oc2_formats` | F03 parsing, F06 codecs, scenario/event parsing, classic text encoding; depends on `oc2_game`. No filesystem or GUI calls. |
+| `oc2_formats` | Native JSON content decoding and classic F03/text/scenario adapters into shared logical models; F06 codecs and classic encoding. Depends on `oc2_game`; no filesystem or GUI calls. |
 | `oc2_query` | Read-only projections of decoded records and live state, with explicit access contexts and stable ordering; depends on `oc2_game` and `oc2_formats`. No session loading, recalculation, command dispatch, or presentation types. |
 | `oc2_network` | N01–N03/N05 protocol state machines, encoders, synchronization and authority; depends on `oc2_game` and `oc2_formats`, injected transport/time. |
 | `oc2_session` | Embedded `SessionRuntime`, participant/controller bindings, scoped client API, mode/authority adapters, F04/F05/N04 orchestration, setup/load flows, AI scheduling, pending interactions, command descriptors/results and P01–P10 gameplay effects; composes game/formats/network/query libraries. |
@@ -626,13 +626,34 @@ custom graphics independently, retaining sheet identity, marker/palette and
 transparency meaning. The HD stock package must not silently replace authored
 scenario graphics. S04 exports remain classic-compatible.
 
-Graphics do not supply the complete game content set. F03 explicitly treats
-rule tables as external input, and P04/P08 require text resources. Inventory and
-provenance for stock rules, labels, Civilopedia text, and scenario fixtures are
-early delivery dependencies. Use small authored fixtures for initial tests;
-do not assume the specs contain a full distributable stock data set or obtain
-one from reconstruction source. Keep user-supplied classic data and any separately
-approved distributable content clearly identified.
+Graphics do not supply the complete game content set. Standalone play uses the
+[versioned native JSON content formats](content/data-format.md), with explicitly
+selected packs for rules, city names, production preferences, messages/help/facts,
+menus, briefings/credits, conditional council content, encyclopedia and events. The
+[per-file inventory](content/text-resources.md) identifies runtime, documentation,
+companion-tool and unconfirmed legacy inputs; it is not a loader-completion claim.
+Original text files are optional inputs through compatibility adapters, not prerequisites for standalone play. Both decoders publish the same
+logical models and owner-defined operations; mechanics, AI and map generation
+never choose a different algorithm based on the content backend. Native files
+describe game concepts and use semantic IDs/units. Optional compatibility
+metadata carries classic slots, source addresses and import associations;
+native consumers do not scan virtual text-file sections.
+
+`oc2_formats` owns these codecs and receives explicit byte sources. Native pack
+validation precedes installation; classic selected files retain F03/C01/P04/P08/
+P09/S02 fallback, conversions, retained state and partial-publication behavior.
+Do not route classic in-game reloads through a transaction that erases their
+required effects. Resolve native inheritance explicitly, keep scenario-authored
+classic overrides, and record source kind/hashes. JSON does not replace F06
+save formats or N02/N05 wire formats, add required original-peer negotiation,
+or make original peers capable of reading JSON packs.
+
+Inventory and provenance for complete native defaults, labels, Civilopedia text
+and scenario fixtures are delivery dependencies. Use small authored fixtures for
+initial tests; the [examples](content/examples/README.md) are deliberately not a
+playable pack. Do not assume the specs contain a full distributable stock data
+set or obtain one from reconstruction source. Keep user-supplied classic data
+and approved distributable content clearly identified after conversion too.
 
 The current asset dependency supplies graphics; stock sound can be added there
 later. Reserve audio/media identities and manifest versioning now, with an SDL

@@ -1,0 +1,277 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/content-pack.schema.json",
+  "title": "Content pack manifest",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-content-pack/1"
+    },
+    "id": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "profile": {
+      "const": "classic-mge-5.4.0f"
+    },
+    "defaultLocale": {
+      "$ref": "common.schema.json#/$defs/locale"
+    },
+    "compatibility": {
+      "anyOf": [
+        {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "base": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "sha256": {
+              "$ref": "common.schema.json#/$defs/sha256"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "sha256"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "files": {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "cityNames": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "cityPreferences": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        },
+        "text": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/descriptor"
+          },
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/locale"
+          }
+        },
+        "encyclopedia": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/descriptor"
+          },
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/locale"
+          }
+        },
+        "menus": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/descriptor"
+          },
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/locale"
+          }
+        },
+        "documents": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/descriptor"
+          },
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/locale"
+          }
+        },
+        "council": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "common.schema.json#/$defs/descriptor"
+          },
+          "propertyNames": {
+            "$ref": "common.schema.json#/$defs/locale"
+          }
+        },
+        "events": {
+          "$ref": "common.schema.json#/$defs/descriptor"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "world": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/descriptor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "world"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "kind": {
+            "enum": [
+              "audio",
+              "image",
+              "video"
+            ]
+          },
+          "path": {
+            "$ref": "common.schema.json#/$defs/relativePath"
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/sha256"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "authors": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/nonemptyText"
+          }
+        },
+        "license": {
+          "$ref": "common.schema.json#/$defs/nonemptyText"
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/text"
+          }
+        }
+      },
+      "required": [
+        "authors",
+        "license",
+        "notes"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "id",
+    "revision",
+    "profile",
+    "defaultLocale",
+    "base",
+    "files",
+    "provenance"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "base": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "base"
+        ]
+      },
+      "then": {
+        "required": [
+          "compatibility",
+          "scenarios",
+          "resources"
+        ],
+        "properties": {
+          "files": {
+            "required": [
+              "rules",
+              "cityNames",
+              "cityPreferences",
+              "text",
+              "encyclopedia",
+              "menus",
+              "documents",
+              "council",
+              "events"
+            ],
+            "properties": {
+              "documents": {
+                "minProperties": 1
+              },
+              "menus": {
+                "minProperties": 1
+              },
+              "council": {
+                "minProperties": 1
+              },
+              "text": {
+                "minProperties": 1
+              },
+              "encyclopedia": {
+                "minProperties": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

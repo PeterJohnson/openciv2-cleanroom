@@ -1,0 +1,1347 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/council.schema.json",
+  "title": "Council dialogue by era and opinion",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-council/1"
+    },
+    "locale": {
+      "$ref": "common.schema.json#/$defs/locale"
+    },
+    "eras": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/era"
+      },
+      "minItems": 3,
+      "maxItems": 3,
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "era": {
+                "const": "early"
+              }
+            },
+            "required": [
+              "era"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "era": {
+                "const": "middle"
+              }
+            },
+            "required": [
+              "era"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "era": {
+                "const": "late"
+              }
+            },
+            "required": [
+              "era"
+            ]
+          },
+          "minContains": 1,
+          "maxContains": 1
+        }
+      ]
+    },
+    "anarchy": {
+      "$ref": "#/$defs/anarchy"
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "locale",
+    "eras",
+    "anarchy"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "opening": {
+      "type": "object",
+      "properties": {
+        "caption": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "clip": {
+          "$ref": "common.schema.json#/$defs/clip"
+        }
+      },
+      "required": [
+        "caption"
+      ],
+      "additionalProperties": false
+    },
+    "anarchy": {
+      "type": "object",
+      "properties": {
+        "caption": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "clip": {
+          "$ref": "common.schema.json#/$defs/clip"
+        }
+      },
+      "required": [
+        "caption"
+      ],
+      "additionalProperties": false
+    },
+    "response": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "military"
+            },
+            "opinion": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "unit-shortage",
+                    "land-capability-lag",
+                    "naval-capability-lag",
+                    "no-barracks",
+                    "undefended-capital",
+                    "ready",
+                    "peaceful-power"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "response"
+            },
+            "caption": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/text"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "whenIncluded": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "whenSkipped": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "clip": {
+              "$ref": "common.schema.json#/$defs/clip"
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "kind",
+            "caption",
+            "whenIncluded",
+            "whenSkipped"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "science"
+            },
+            "opinion": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "science-lag",
+                    "low-science-rate",
+                    "research-building-shortage",
+                    "trade-shortage",
+                    "competitive-research",
+                    "reserved",
+                    "science-lead"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "response"
+            },
+            "caption": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/text"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "whenIncluded": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "whenSkipped": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "clip": {
+              "$ref": "common.schema.json#/$defs/clip"
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "kind",
+            "caption",
+            "whenIncluded",
+            "whenSkipped"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "economic"
+            },
+            "opinion": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "treasury-deficit",
+                    "economic-technology-needed",
+                    "economic-building-shortage",
+                    "trade-technology-needed",
+                    "trade-capacity-shortage",
+                    "low-surplus",
+                    "healthy-surplus"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "response"
+            },
+            "caption": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/text"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "whenIncluded": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "whenSkipped": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "clip": {
+              "$ref": "common.schema.json#/$defs/clip"
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "kind",
+            "caption",
+            "whenIncluded",
+            "whenSkipped"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "foreign"
+            },
+            "opinion": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "no-contact",
+                    "alliance-opportunity",
+                    "diplomatic-technology-needed",
+                    "poor-relations",
+                    "intelligence-needed",
+                    "seek-exchanges",
+                    "relations-established"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "response"
+            },
+            "caption": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/text"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "whenIncluded": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "whenSkipped": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "clip": {
+              "$ref": "common.schema.json#/$defs/clip"
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "kind",
+            "caption",
+            "whenIncluded",
+            "whenSkipped"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "domestic"
+            },
+            "opinion": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "democratic-disorder",
+                    "luxury-spending-needed",
+                    "unhappiness",
+                    "balanced-without-luxuries",
+                    "content",
+                    "celebrating"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "kind": {
+              "const": "response"
+            },
+            "caption": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/text"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "whenIncluded": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "whenSkipped": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "clip": {
+              "$ref": "common.schema.json#/$defs/clip"
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "kind",
+            "caption",
+            "whenIncluded",
+            "whenSkipped"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "chance": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "chance"
+        },
+        "probability": {
+          "$ref": "common.schema.json#/$defs/rational"
+        },
+        "onSuccess": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "onFailure": {
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      },
+      "required": [
+        "kind",
+        "probability",
+        "onSuccess",
+        "onFailure"
+      ],
+      "additionalProperties": false
+    },
+    "step": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/response"
+        },
+        {
+          "$ref": "#/$defs/chance"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "end"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "opinion": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "military"
+            },
+            "opinion": {
+              "enum": [
+                "unit-shortage",
+                "land-capability-lag",
+                "naval-capability-lag",
+                "no-barracks",
+                "undefended-capital",
+                "ready",
+                "peaceful-power"
+              ]
+            },
+            "opening": {
+              "$ref": "#/$defs/opening"
+            },
+            "start": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "dialogue": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/step"
+              },
+              "minProperties": 1,
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/id"
+              }
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "opening",
+            "start",
+            "dialogue"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "science"
+            },
+            "opinion": {
+              "enum": [
+                "science-lag",
+                "low-science-rate",
+                "research-building-shortage",
+                "trade-shortage",
+                "competitive-research",
+                "reserved",
+                "science-lead"
+              ]
+            },
+            "opening": {
+              "$ref": "#/$defs/opening"
+            },
+            "start": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "dialogue": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/step"
+              },
+              "minProperties": 1,
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/id"
+              }
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "opening",
+            "start",
+            "dialogue"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "economic"
+            },
+            "opinion": {
+              "enum": [
+                "treasury-deficit",
+                "economic-technology-needed",
+                "economic-building-shortage",
+                "trade-technology-needed",
+                "trade-capacity-shortage",
+                "low-surplus",
+                "healthy-surplus"
+              ]
+            },
+            "opening": {
+              "$ref": "#/$defs/opening"
+            },
+            "start": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "dialogue": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/step"
+              },
+              "minProperties": 1,
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/id"
+              }
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "opening",
+            "start",
+            "dialogue"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "foreign"
+            },
+            "opinion": {
+              "enum": [
+                "no-contact",
+                "alliance-opportunity",
+                "diplomatic-technology-needed",
+                "poor-relations",
+                "intelligence-needed",
+                "seek-exchanges",
+                "relations-established"
+              ]
+            },
+            "opening": {
+              "$ref": "#/$defs/opening"
+            },
+            "start": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "dialogue": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/step"
+              },
+              "minProperties": 1,
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/id"
+              }
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "opening",
+            "start",
+            "dialogue"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "advisor": {
+              "const": "domestic"
+            },
+            "opinion": {
+              "enum": [
+                "democratic-disorder",
+                "luxury-spending-needed",
+                "unhappiness",
+                "balanced-without-luxuries",
+                "content",
+                "celebrating"
+              ]
+            },
+            "opening": {
+              "$ref": "#/$defs/opening"
+            },
+            "start": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "dialogue": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/step"
+              },
+              "minProperties": 1,
+              "propertyNames": {
+                "$ref": "common.schema.json#/$defs/id"
+              }
+            }
+          },
+          "required": [
+            "advisor",
+            "opinion",
+            "opening",
+            "start",
+            "dialogue"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "era": {
+      "type": "object",
+      "properties": {
+        "era": {
+          "enum": [
+            "early",
+            "middle",
+            "late"
+          ]
+        },
+        "opinions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/opinion"
+          },
+          "minItems": 34,
+          "maxItems": 34,
+          "allOf": [
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "military"
+                  },
+                  "opinion": {
+                    "const": "unit-shortage"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "military"
+                  },
+                  "opinion": {
+                    "const": "land-capability-lag"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "military"
+                  },
+                  "opinion": {
+                    "const": "naval-capability-lag"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "military"
+                  },
+                  "opinion": {
+                    "const": "no-barracks"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "military"
+                  },
+                  "opinion": {
+                    "const": "undefended-capital"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "military"
+                  },
+                  "opinion": {
+                    "const": "ready"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "military"
+                  },
+                  "opinion": {
+                    "const": "peaceful-power"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "science"
+                  },
+                  "opinion": {
+                    "const": "science-lag"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "science"
+                  },
+                  "opinion": {
+                    "const": "low-science-rate"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "science"
+                  },
+                  "opinion": {
+                    "const": "research-building-shortage"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "science"
+                  },
+                  "opinion": {
+                    "const": "trade-shortage"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "science"
+                  },
+                  "opinion": {
+                    "const": "competitive-research"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "science"
+                  },
+                  "opinion": {
+                    "const": "reserved"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "science"
+                  },
+                  "opinion": {
+                    "const": "science-lead"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "economic"
+                  },
+                  "opinion": {
+                    "const": "treasury-deficit"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "economic"
+                  },
+                  "opinion": {
+                    "const": "economic-technology-needed"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "economic"
+                  },
+                  "opinion": {
+                    "const": "economic-building-shortage"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "economic"
+                  },
+                  "opinion": {
+                    "const": "trade-technology-needed"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "economic"
+                  },
+                  "opinion": {
+                    "const": "trade-capacity-shortage"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "economic"
+                  },
+                  "opinion": {
+                    "const": "low-surplus"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "economic"
+                  },
+                  "opinion": {
+                    "const": "healthy-surplus"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "foreign"
+                  },
+                  "opinion": {
+                    "const": "no-contact"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "foreign"
+                  },
+                  "opinion": {
+                    "const": "alliance-opportunity"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "foreign"
+                  },
+                  "opinion": {
+                    "const": "diplomatic-technology-needed"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "foreign"
+                  },
+                  "opinion": {
+                    "const": "poor-relations"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "foreign"
+                  },
+                  "opinion": {
+                    "const": "intelligence-needed"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "foreign"
+                  },
+                  "opinion": {
+                    "const": "seek-exchanges"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "foreign"
+                  },
+                  "opinion": {
+                    "const": "relations-established"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "domestic"
+                  },
+                  "opinion": {
+                    "const": "democratic-disorder"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "domestic"
+                  },
+                  "opinion": {
+                    "const": "luxury-spending-needed"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "domestic"
+                  },
+                  "opinion": {
+                    "const": "unhappiness"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "domestic"
+                  },
+                  "opinion": {
+                    "const": "balanced-without-luxuries"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "domestic"
+                  },
+                  "opinion": {
+                    "const": "content"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            },
+            {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "advisor": {
+                    "const": "domestic"
+                  },
+                  "opinion": {
+                    "const": "celebrating"
+                  }
+                },
+                "required": [
+                  "advisor",
+                  "opinion"
+                ]
+              },
+              "minContains": 1,
+              "maxContains": 1
+            }
+          ]
+        }
+      },
+      "required": [
+        "era",
+        "opinions"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

@@ -62,7 +62,7 @@
     {
       "id": "C01",
       "path": "docs/algorithms/C01-city-lifecycle-and-ownership.md",
-      "sha256": "9b1b6b46af36894c9f68e9642472e16217bd51e2a8e5d869b9d905a00a770b0e",
+      "sha256": "9313800a5e90896182526c8dfc98cfe071126fb7ecba48dfae044b8b7fdf370c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -139,7 +139,7 @@
     {
       "id": "F03",
       "path": "docs/algorithms/F03-rules-and-configuration.md",
-      "sha256": "1185edd23734fe860755ebf7c50cc2093af0320ca865be5c8b11f17a2a512c55",
+      "sha256": "63292eece3ad52408dabe3f013bef7b72dd9e1629d7e43bd547542d57e8d1876",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -223,14 +223,14 @@
     {
       "id": "P04",
       "path": "docs/algorithms/P04-text-and-dialogs.md",
-      "sha256": "c26f17c7c052af69b5566b9c322f54c79ee96193157e709039e720508ad83d8e",
+      "sha256": "e1291dcde4218fb0b767e87c4fa73940f8f313d2ea9f858df2bd774da1290e7e",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P05",
       "path": "docs/algorithms/P05-input-and-command-dispatch.md",
-      "sha256": "3c9b111c22e5d59940be5bd4e85ad92460c9ff8c4ae4ba13a7d6a47bc4697224",
+      "sha256": "4469a0840dc6d342b6b7a2c56d920a592c40c15a84683ff4cd7357eae6c864d6",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -251,35 +251,35 @@
     {
       "id": "P08",
       "path": "docs/algorithms/P08-civilopedia-and-technology-tree.md",
-      "sha256": "584a3b958f9e34ed17669323e332365ef41693a78644a9596bfe7bf218f07fd3",
+      "sha256": "1b6cda66da99151f913a0f50eafee6845a73996518797fe90d9884c7cd60deef",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P09",
       "path": "docs/algorithms/P09-council-and-throne-room.md",
-      "sha256": "05af0dd8689ecd0187058476ba8e4585f00971a146b4e6f576c73de823b56431",
+      "sha256": "52e65ac54d9980dbebd2a12f438ccfe0b4f14498139d45523b304d3a59a423cd",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P10",
       "path": "docs/algorithms/P10-audio-video-and-animation.md",
-      "sha256": "ab7ef4bfa531f3567576197a979bae42da5eec752d1fa48d6cb371bbd20bf144",
+      "sha256": "266f8b849801ab2d8888acb131f29a88f2d7298d7b39afc9ecaf27daccbdf60b",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S01",
       "path": "docs/algorithms/S01-scenario-loading-and-parameters.md",
-      "sha256": "681ff7618f8a9367330cc53ae8f41b1992b9408c441ca9e05cef56849fbc4c8f",
+      "sha256": "a846960d1f38974bf393e1c3a1c89faa3ce2b23101772e4b1e703253ff6fbc30",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S02",
       "path": "docs/algorithms/S02-event-language-and-execution.md",
-      "sha256": "7d372b9aa05a767a3c7170d7cceafd55485dd7bb4bc8ea488467dd61d1086a8d",
+      "sha256": "e818e25a811b29e3906b4eea7bec238b9ac6a47a77b85d98f9617d570f967f2c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -447,14 +447,14 @@
     {
       "id": "X01",
       "path": "docs/algorithms/X01-classic-compatibility-contract.md",
-      "sha256": "c716280a1b287fcf16e58cc080e2c2fc37fb87cdd2c6878519915d0ac2a68a0c",
+      "sha256": "8aaca778ebe16101744c2268edf1f2bbe220aa064e98e95fdc09556ddb3d93ed",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "X02",
       "path": "docs/algorithms/X02-whole-game-conformance.md",
-      "sha256": "0ec3c222bd0a75379ad38d30453e094bc9995fe5ad9bf25b49438624e7389ee8",
+      "sha256": "7b3306bd7d9a39f5aaedfd535769e711e46ddd711b8bcbc31d6976baa9b39a4e",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     }
@@ -569,9 +569,9 @@
   "fixtures": [
     {
       "id": "X02.F01.equal-range",
-      "revision": 9,
+      "revision": 10,
       "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
-      "sha256": "d0ab4ea7208b77f0380126b328548f721cc85ec1909df98b7f862f509b1c01e5",
+      "sha256": "567e9963bff4771615618392e0b58e4bcedf6cac706bdb0a23c474d96a54a3ae",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "not-run",
@@ -579,9 +579,9 @@
     },
     {
       "id": "X02.F01.primary-modulo",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
-      "sha256": "a4b7c398080f44e8d80b7b90505603151fe8835cd6d2ce0984582ba9ae10124d",
+      "sha256": "6a15e7fc410a6ebd78a666d64f93650bddd7c1b5e288e8ce64cbf468f21d6346",
       "operation": "F01.primaryModuloFromCode",
       "provenance": "specification-vector",
       "executionStatus": "not-run",
@@ -589,9 +589,9 @@
     },
     {
       "id": "X02.F01.wrapped-range",
-      "revision": 9,
+      "revision": 10,
       "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
-      "sha256": "39462a18eca6d56f31c563e2c772032a76fccc9aba5e58b70df682d21331959f",
+      "sha256": "f52888a9cb1a346dfc4be733d9ce78f12c7e15536012948a9eb37819745c48b7",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "not-run",

@@ -29,15 +29,23 @@ X01 and X02 define that convention and its conformance checks.
   registrations, fixture provenance, coverage rows and unresolved integration gaps.
 - [Content inventory](docs/content/README.md): verified asset release, data contracts,
   stock-content gaps and external original-game comparison procedure.
+- [Standalone JSON content](docs/content/data-format.md): semantic rules, names,
+  runtime text and events, with separate classic compatibility mappings/adapters.
+- [Content JSON Schemas](docs/content/schemas/README.md): document validation,
+  examples and remaining semantic checks.
+- [Classic text-file inventory](docs/content/text-resources.md): per-file runtime
+  mappings, documentation-only files and explicit legacy/companion-tool limits.
 - [Application shell](docs/application-shell.md): implemented UI/platform boundaries
   and current limitations.
 
 The initial C++20/CMake/SDL3 shell provides native macOS/Windows menus, ImGui
 Linux/browser menus and dialogs, and a development view with illustrative tiles. Drawn text uses pinned DejaVu
 TrueType fonts rasterized at runtime; headless builds need no font data.
-It has no game simulation, asset-pack loader, save inspection, command console
-or Lua runtime yet. Catch2 covers the portable shell and SDL integration; ImGui
-Test Engine covers the drawn interface.
+It has no game simulation, asset-pack or game-content loader, save inspection,
+command console or Lua runtime yet. JSON content formats and the classic text
+compatibility boundary are specified; a complete standalone content set remains
+part of the implementation plan. Catch2 covers the portable shell and SDL
+integration; ImGui Test Engine covers the drawn interface.
 
 To build with explicitly enabled pinned dependency downloads (CMake 3.24+,
 Ninja, and a C++20 compiler required):

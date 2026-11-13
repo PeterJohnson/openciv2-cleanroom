@@ -1,0 +1,35 @@
+{
+  "format": "openciv2-menus/1",
+  "locale": "en",
+  "menus": [
+    {
+      "id": "example",
+      "label": "menu.example",
+      "items": [
+        {
+          "id": "purchase",
+          "kind": "action",
+          "action": "example.purchase",
+          "label": "menu.purchase"
+        },
+        {
+          "id": "divider",
+          "kind": "separator"
+        },
+        {
+          "id": "help-group",
+          "kind": "submenu",
+          "label": "menu.help",
+          "items": [
+            {
+              "id": "help",
+              "kind": "action",
+              "action": "example.help",
+              "label": "menu.help"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

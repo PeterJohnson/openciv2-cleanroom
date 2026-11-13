@@ -52,6 +52,17 @@ allocation and platform mechanics are recorded in [Appendix C](#appendix-c-origi
 state changes and externally visible results without reproducing those mechanisms.
 Exact numeric domains and file/wire encodings remain required wherever specified.
 
+## Native definitions and classic event grammar
+
+[Native JSON event definitions](../content/data-format.md#8-scenario-events)
+provide a standalone authoring path into these logical records. Classic EVENTS
+text remains supported with the grammar, name resolution and parsing effects
+below. Native completeness checks do not narrow classic nominal acceptance.
+Both paths use the same list matching, live action flags/parameters, fixed action
+order, wildcard retention and late Consumed publication. JSON object member
+order is not action execution order. Content definitions never replace F06's
+saved event continuation state on an ordinary resume.
+
 ## 1. State, value domains and input profiles
 
 An event has one trigger kind, an enabled-action set, a JustOnce flag and a
@@ -94,9 +105,10 @@ optional. State-dependent ordering and callbacks remain required.
 
 Original scenario files and exported scenarios retain this language, trigger
 probabilities and persistent event state. A different generator may change which
-eligible random trigger matches, without changing its formula or introducing
-cleanroom-only scenario syntax. In mixed multiplayer, keep each caller's specified
-execution authority and state publication. A received event effect is not a
+eligible random trigger matches without changing its formula. Native JSON
+authoring is separate from the classic scenario/event-text format; classic
+exports and original peers continue to use the syntax specified here. In mixed
+multiplayer, keep each caller's specified execution authority and state publication. A received event effect is not a
 request for every peer to roll the trigger again. N01–N03 own those boundaries;
 F06 owns persistence and S01 scenario interchange.
 

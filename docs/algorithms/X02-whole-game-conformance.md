@@ -861,6 +861,33 @@ variants for omitted legacy transports are optional.
 | Original host with cleanroom human client, then cleanroom host with original human client | Complete sequential and simultaneous turns, including host-owned AI/global work, client-owned upkeep, combat, huts, diplomacy and random scenario events at their specified owners. Apply existing commands/state diffs once, respect visibility and barriers, and agree on the fields published to each peer. No common RNG seed or new required packet. |
 | Mixed-session transitions | Exercise new-game setup, loaded saves/scenarios, running join/reconnect, save/resume and host transfer in both directions. Preserve pending work, identities, role/resume gates and publication order; do not replay completed work or demand the former host's RNG state. |
 
+### Required native and classic content variants
+
+The [native JSON formats](../content/data-format.md) add an independent content
+input path, not a different gameplay target. Add these cases within G01–G03,
+G13/G14 and G19–G22 as their owners are implemented:
+
+- A complete native pack starts and continues a game without original text or
+  an original installation. Record resolved pack/file hashes and use only the
+  declared content sources; example fragments do not satisfy this case.
+- Equivalent authored classic/JSON rules produce identical logical tables and
+  conditional gameplay effects, including movement/HP conversion once, disabled
+  reference fixup, fixed classic IDs, meaningful numeric conversions and reload
+  preservation. Native validation is tested separately from classic partial reads.
+- Both name/preference paths preserve ordered names/overflow, cursor lifetime,
+  duplicate build preferences and retained NoDefend. Include names used by events.
+- Native text/encyclopedia and selected classic overrides preserve information,
+  parameters, topic/choice identity, visibility, cancel/default effects and actual
+  protocol responses. Test locale selection and unsupported conversion diagnostics.
+- Native/classic events share matching and execution, fixed action order despite
+  JSON key order, reentry, late Consumed publication and saved continuation.
+- Classic exports and original-peer sessions use equivalent applicable content;
+  native pack metadata does not alter classic bytes or become required negotiation.
+  A passing JSON conversion is not an original-game interoperability run.
+
+These are required tests, not completed captures. The format specification and
+owned examples alone establish neither runtime parsing nor gameplay equivalence.
+
 ### Required presentation and policy variants
 
 | Variant | Required observations |

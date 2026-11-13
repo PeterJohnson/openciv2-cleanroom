@@ -1,0 +1,93 @@
+{
+  "format": "openciv2-documents/1",
+  "locale": "en",
+  "briefings": [
+    {
+      "id": "river-valley",
+      "message": "example.scenario.briefing",
+      "scenario": "scenario.river-valley"
+    }
+  ],
+  "credits": [
+    {
+      "id": "base",
+      "blocks": [
+        {
+          "kind": "heading",
+          "text": "Base content"
+        },
+        {
+          "kind": "text",
+          "text": "Format examples: OpenCiv2 contributors."
+        },
+        {
+          "kind": "blank"
+        },
+        {
+          "kind": "text",
+          "text": "Independently authored demonstration content."
+        }
+      ]
+    },
+    {
+      "id": "multiplayer",
+      "blocks": [
+        {
+          "kind": "heading",
+          "text": "Multiplayer content"
+        },
+        {
+          "kind": "text",
+          "text": "Format examples: OpenCiv2 contributors."
+        },
+        {
+          "kind": "blank"
+        },
+        {
+          "kind": "text",
+          "text": "Independently authored demonstration content."
+        }
+      ]
+    },
+    {
+      "id": "fantastic-worlds",
+      "blocks": [
+        {
+          "kind": "heading",
+          "text": "Additional worlds"
+        },
+        {
+          "kind": "text",
+          "text": "Format examples: OpenCiv2 contributors."
+        },
+        {
+          "kind": "blank"
+        },
+        {
+          "kind": "text",
+          "text": "Independently authored demonstration content."
+        }
+      ]
+    },
+    {
+      "id": "scenarios",
+      "blocks": [
+        {
+          "kind": "heading",
+          "text": "Scenario content"
+        },
+        {
+          "kind": "text",
+          "text": "Format examples: OpenCiv2 contributors."
+        },
+        {
+          "kind": "blank"
+        },
+        {
+          "kind": "text",
+          "text": "Independently authored demonstration content."
+        }
+      ]
+    }
+  ]
+}

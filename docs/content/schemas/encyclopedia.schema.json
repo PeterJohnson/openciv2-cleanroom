@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/encyclopedia.schema.json",
+  "title": "Encyclopedia topics and scenario policy",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-encyclopedia/1"
+    },
+    "locale": {
+      "$ref": "common.schema.json#/$defs/locale"
+    },
+    "scenarioPolicies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "scenario": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "descriptionsAvailable": {
+            "type": "boolean"
+          },
+          "showStandardAdvanceFacts": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "scenario",
+          "descriptionsAvailable",
+          "showStandardAdvanceFacts"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/topic"
+      }
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "locale",
+    "scenarioPolicies",
+    "topics"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "topic": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "kind": {
+          "enum": [
+            "advance",
+            "improvement",
+            "wonder",
+            "unit",
+            "terrain",
+            "government",
+            "concept"
+          ]
+        },
+        "subject": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "$ref": "common.schema.json#/$defs/text"
+        },
+        "body": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/id"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "subject",
+        "title",
+        "body",
+        "links"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "concept"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "subject": {
+                "type": "null"
+              },
+              "body": {
+                "$ref": "common.schema.json#/$defs/text"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "subject": {
+                "$ref": "common.schema.json#/$defs/id"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

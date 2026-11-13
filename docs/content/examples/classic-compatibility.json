@@ -1,0 +1,400 @@
+{
+  "format": "openciv2-classic-compatibility/1",
+  "profile": "classic-mge-5.4.0f",
+  "encoding": "windows-1252",
+  "ruleSlots": {
+    "advances": [
+      {
+        "id": "advance.markmaking",
+        "slot": 1
+      }
+    ],
+    "improvements": [
+      {
+        "id": "building.council-house",
+        "slot": 1
+      },
+      {
+        "id": "wonder.beacon",
+        "slot": 39
+      }
+    ],
+    "units": [
+      {
+        "id": "unit.trailblazers",
+        "slot": 0
+      }
+    ],
+    "terrain": [
+      {
+        "id": "terrain.drylands",
+        "slot": 0
+      }
+    ],
+    "governments": [
+      {
+        "id": "government.first-rule",
+        "slot": 1
+      }
+    ],
+    "tribes": [
+      {
+        "id": "tribe.riverfolk",
+        "slot": 0
+      }
+    ],
+    "commodities": [
+      {
+        "id": "commodity.fibers",
+        "slot": 0
+      }
+    ],
+    "orders": [
+      {
+        "id": "order.example",
+        "slot": 1
+      }
+    ],
+    "difficulties": [
+      {
+        "id": "difficulty.first",
+        "slot": 0
+      }
+    ],
+    "diplomaticAttitudes": [
+      {
+        "id": "attitude.first",
+        "slot": 0
+      }
+    ]
+  },
+  "textLookups": {
+    "en": [
+      {
+        "source": {
+          "resource": "LABELS",
+          "section": "LABELS",
+          "index": 323
+        },
+        "target": {
+          "kind": "label",
+          "id": "label.gold"
+        }
+      },
+      {
+        "source": {
+          "resource": "LABELS",
+          "section": "POPUPS",
+          "index": 0
+        },
+        "target": {
+          "kind": "label",
+          "id": "label.ok"
+        }
+      },
+      {
+        "source": {
+          "resource": "LABELS",
+          "section": "POPUPS",
+          "index": 1
+        },
+        "target": {
+          "kind": "label",
+          "id": "label.help"
+        }
+      },
+      {
+        "source": {
+          "resource": "LABELS",
+          "section": "POPUPS",
+          "index": 2
+        },
+        "target": {
+          "kind": "label",
+          "id": "label.cancel"
+        }
+      },
+      {
+        "source": {
+          "resource": "EXAMPLE",
+          "section": "PURCHASE"
+        },
+        "target": {
+          "kind": "message",
+          "id": "example.purchase"
+        }
+      },
+      {
+        "source": {
+          "resource": "EXAMPLE",
+          "section": "EDIT"
+        },
+        "target": {
+          "kind": "message",
+          "id": "example.edit"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 0
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.road-movement-multiplier"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 1
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.trireme-loss-denominator"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 2
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.food-per-citizen"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 3
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.food-box-rows"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 4
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.shield-box-rows"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 5
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.settler-food-low-government"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 6
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.settler-food-high-government"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 7
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.unhappiness-city-size"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 8
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.unhappiness-empire-size"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 9
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.aqueduct-size"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 10
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.sewer-size"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 11
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.technology-cost-paradigm"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 12
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.transformation-work"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 13
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.monarchy-free-support"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 14
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.communism-free-support"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 15
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.fundamentalism-free-support"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 16
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.communism-palace-distance"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 17
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.fundamentalism-science-loss-percent"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 18
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.production-switch-loss-percent"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 19
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.paradrop-range"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 20
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.spaceship-mass-thrust-paradigm"
+        }
+      },
+      {
+        "source": {
+          "resource": "DEBUG",
+          "section": "EDITCOSMIC",
+          "index": 21
+        },
+        "target": {
+          "kind": "help",
+          "id": "help.rules.fundamentalism-science-cap-tenths"
+        }
+      },
+      {
+        "source": {
+          "resource": "PEDIA",
+          "section": "PEDIAUNITFACTS",
+          "index": 9
+        },
+        "target": {
+          "kind": "fact",
+          "id": "unit.alpine-movement"
+        }
+      }
+    ]
+  },
+  "scenarioFiles": [
+    {
+      "file": "example.scn",
+      "scenario": "scenario.river-valley"
+    }
+  ],
+  "scenarioResources": [],
+  "retainedUnitFlags": []
+}

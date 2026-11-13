@@ -42,6 +42,20 @@ allocation and platform mechanics are recorded in [Appendix E](#appendix-e-origi
 state changes and externally visible results without reproducing those mechanisms.
 Exact numeric domains and file/wire encodings remain required wherever specified.
 
+## Native topic and classic text compatibility
+
+[Native JSON encyclopedia topics](../content/data-format.md#7-encyclopedia)
+supply standalone prose and links with explicit rule identities. PEDIA prompt
+templates and named facts use the
+[text catalog](../content/data-format.md#61-text-and-interaction-catalogs); they
+are distinct from DESCRIBE topic descriptions. An unavailable description does
+not remove an otherwise eligible rule entry or its computed facts. This document
+continues to own category/availability, rule facts, prerequisite relationships,
+visibility and required effects. DESCRIBE/PEDIA parsing remains the classic
+adapter path; those source files are not mandatory for native content. Selected
+classic scenario descriptions must survive that path instead of being silently
+replaced by native stock prose.
+
 ## 1. Inputs, state and compatibility
 
 Nominal inputs are initialized rules, populated description indices, supported

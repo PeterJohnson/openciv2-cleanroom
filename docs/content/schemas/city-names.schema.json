@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/city-names.schema.json",
+  "title": "Civilization city-name lists",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-city-names/1"
+    },
+    "civilizations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pluralName": {
+            "$ref": "common.schema.json#/$defs/text"
+          },
+          "cityNames": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^[^\\r\\n]*(?![\\s\\S])",
+              "description": "Encoding, trimming, classic terminator and byte-limit checks remain semantic."
+            }
+          }
+        },
+        "required": [
+          "pluralName",
+          "cityNames"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "fallbackNames": {
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^[^\\r\\n]*(?![\\s\\S])",
+            "description": "Encoding, trimming, classic terminator and byte-limit checks remain semantic."
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "civilizations",
+    "fallbackNames"
+  ],
+  "additionalProperties": false
+}

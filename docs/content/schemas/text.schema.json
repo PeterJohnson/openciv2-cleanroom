@@ -1,0 +1,378 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/text.schema.json",
+  "title": "Semantic text catalog",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-text/1"
+    },
+    "locale": {
+      "$ref": "common.schema.json#/$defs/locale"
+    },
+    "labels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "text": {
+            "$ref": "common.schema.json#/$defs/text"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/message"
+      }
+    },
+    "helpTopics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/helpTopic"
+      }
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fact"
+      }
+    },
+    "productionAdvice": {
+      "type": "object",
+      "properties": {
+        "headings": {
+          "type": "object",
+          "properties": {
+            "military": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "domestic": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "required": [
+            "military",
+            "domestic"
+          ],
+          "additionalProperties": false
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productionName": {
+                "$ref": "common.schema.json#/$defs/text"
+              },
+              "message": {
+                "$ref": "common.schema.json#/$defs/id"
+              }
+            },
+            "required": [
+              "productionName",
+              "message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "wonderMessage": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "defaultMessage": {
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      },
+      "required": [
+        "headings",
+        "recommendations",
+        "wonderMessage",
+        "defaultMessage"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "locale",
+    "labels",
+    "messages",
+    "helpTopics",
+    "facts",
+    "productionAdvice"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "message": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "parameters": {
+          "$ref": "common.schema.json#/$defs/parameters"
+        },
+        "body": {
+          "$ref": "common.schema.json#/$defs/runs"
+        },
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "label": {
+                "$ref": "common.schema.json#/$defs/runs"
+              }
+            },
+            "required": [
+              "id",
+              "label"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "title": {
+          "$ref": "common.schema.json#/$defs/runs"
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/input"
+          }
+        },
+        "defaults": {
+          "type": "object",
+          "properties": {
+            "choice": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "choice"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "parameters",
+        "body",
+        "choices"
+      ],
+      "additionalProperties": false
+    },
+    "input": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/textInput"
+        },
+        {
+          "$ref": "#/$defs/checkboxInput"
+        }
+      ]
+    },
+    "textInput": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "kind": {
+          "const": "text"
+        },
+        "label": {
+          "$ref": "common.schema.json#/$defs/runs"
+        },
+        "initial": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "literal": {
+                  "$ref": "common.schema.json#/$defs/text"
+                }
+              },
+              "required": [
+                "literal"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "parameter": {
+                  "$ref": "common.schema.json#/$defs/id"
+                }
+              },
+              "required": [
+                "parameter"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "maxLength": {
+          "$ref": "common.schema.json#/$defs/positiveInteger"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "checkboxInput": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "kind": {
+          "const": "checkbox"
+        },
+        "label": {
+          "$ref": "common.schema.json#/$defs/runs"
+        },
+        "initial": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "literal": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "literal"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "parameter": {
+                  "$ref": "common.schema.json#/$defs/id"
+                }
+              },
+              "required": [
+                "parameter"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "helpTopic": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "subject": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "globalRule": {
+                  "$ref": "common.schema.json#/$defs/globalRule"
+                }
+              },
+              "required": [
+                "globalRule"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "rule": {
+                  "$ref": "common.schema.json#/$defs/id"
+                }
+              },
+              "required": [
+                "rule"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "interaction": {
+                  "$ref": "common.schema.json#/$defs/id"
+                }
+              },
+              "required": [
+                "interaction"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "parameters": {
+          "$ref": "common.schema.json#/$defs/parameters"
+        },
+        "body": {
+          "$ref": "common.schema.json#/$defs/runs"
+        }
+      },
+      "required": [
+        "id",
+        "subject",
+        "parameters",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "fact": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "parameters": {
+          "$ref": "common.schema.json#/$defs/parameters"
+        },
+        "body": {
+          "$ref": "common.schema.json#/$defs/runs"
+        }
+      },
+      "required": [
+        "id",
+        "parameters",
+        "body"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

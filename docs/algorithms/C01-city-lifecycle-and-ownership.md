@@ -262,6 +262,13 @@ Pending and NoCity are different results; no timeout rollback is implied.
 
 ## Default city naming
 
+The classic provider reads CITY text as below. The [native JSON city-name
+provider](../content/data-format.md#5-city-names-and-production-preferences)
+supplies ordered name lists for explicitly named civilizations and a shared
+fallback pool, without exposing file sections or requiring that file.
+Retain the live civilization-name lookup, cursor/wrap, retry and published-name
+behavior; native storage does not add unique names or an ID-based fallback.
+
 Capture the city's owner c. Form section text from the pooled civilization
 plural-name label at the absolute value of the current leader's signed label
 index. The leader slot is read through c's **live tribe reference** whenever

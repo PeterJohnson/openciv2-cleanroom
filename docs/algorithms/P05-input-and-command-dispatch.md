@@ -116,6 +116,11 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## 5. Menu model, construction and presentation
 
+[Native JSON menus](../content/data-format.md#63-menus) supply labeled action
+trees; registered action identities preserve the command routes and live state
+below. The classic MENU row-to-action mapping remains its adapter contract.
+Resource labels and shortcut hints do not register new executable commands.
+
 Expose the supported commands and apply §6 availability. Resolve an accepted
 command to its semantic command identity, then invoke §7. Scenario-authored labels
 and offered values remain supported; menu group geometry, widget storage and

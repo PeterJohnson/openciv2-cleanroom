@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/city-preferences.schema.json",
+  "title": "City production preference update",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-city-preferences/1"
+    },
+    "humanCityDefensePriority": {
+      "enum": [
+        "deprioritize",
+        "unchanged"
+      ]
+    },
+    "buildPreferences": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/id"
+      },
+      "maxItems": 32
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "humanCityDefensePriority",
+    "buildPreferences"
+  ],
+  "additionalProperties": false
+}

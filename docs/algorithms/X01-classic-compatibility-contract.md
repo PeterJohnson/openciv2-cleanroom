@@ -152,6 +152,28 @@ eliminating stateful attempts, randomizing deterministic decisions, bypassing
 required gameplay/network callbacks or ignoring their nondeterministic inputs.
 Cosmetic choices follow the separate presentation policy.
 
+### Standalone content and classic text adapters
+
+Original text files are optional runtime inputs. A standalone implementation
+uses the project's [versioned JSON content formats](../content/data-format.md)
+and independently supplied complete defaults. The native and classic paths feed
+the same logical rules, naming, semantic interaction and event execution; content
+format does not select different mechanics, AI heuristics or map generation.
+
+Classic RULES/CITY/CITYPREF, GAME/LABELS/menu/advice/encyclopedia/council and
+scenario event/text inputs remain supported through their owning adapters.
+Their nominal custom domains, lookup/fallback, significant conversions, retained
+state, publication and failure effects remain required when that path is selected.
+Native validation may use its own explicit authoring rules; it cannot silently
+narrow classic support or replace scenario-authored content with stock JSON.
+
+Standalone does not mean data-free: full rule values, ordered names and semantic
+content must be supplied. Defining formats or providing small examples is not a
+playable-content or conformance claim. Native IDs/hashes remain outside classic
+save/scenario/wire bytes; an original peer uses equivalent classic content and
+requires no new content-format negotiation. Explicit classic export reports
+unrepresentable data rather than silently changing names, identities or rules.
+
 ### Presentation and semantic interaction policy
 
 A replacement may use new stock art, layouts, fonts, rendering and playback

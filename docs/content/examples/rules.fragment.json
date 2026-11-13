@@ -1,0 +1,188 @@
+{
+  "format": "openciv2-rules/1",
+  "globalRules": {
+    "roadMovementMultiplier": 3,
+    "triremeLossDenominator": 2,
+    "foodPerCitizen": 2,
+    "foodBoxRows": 10,
+    "shieldBoxRows": 10,
+    "settlerFoodLowGovernment": 1,
+    "settlerFoodHighGovernment": 2,
+    "unhappinessCitySize": 7,
+    "unhappinessEmpireSize": 14,
+    "aqueductSize": 8,
+    "sewerSize": 12,
+    "technologyCostParadigm": 10,
+    "transformationWork": 20,
+    "monarchyFreeSupport": 3,
+    "communismFreeSupport": 3,
+    "fundamentalismFreeSupport": 8,
+    "communismPalaceDistance": 1,
+    "fundamentalismScienceLossPercent": 50,
+    "productionSwitchLossPercent": 50,
+    "paradropRange": 10,
+    "spaceshipMassThrustParadigm": 75,
+    "fundamentalismScienceCapTenths": 5
+  },
+  "advances": [
+    {
+      "id": "advance.markmaking",
+      "name": "Markmaking",
+      "aiValue": 3,
+      "civilizedAiModifier": 1,
+      "prerequisites": [
+        {
+          "special": "none"
+        },
+        {
+          "special": "none"
+        }
+      ],
+      "epoch": "ancient",
+      "category": "academic"
+    }
+  ],
+  "improvements": [
+    {
+      "id": "building.council-house",
+      "name": "Council House",
+      "costRows": 10,
+      "upkeep": 0,
+      "prerequisite": {
+        "special": "none"
+      }
+    },
+    {
+      "id": "wonder.beacon",
+      "name": "Beacon",
+      "costRows": 20,
+      "upkeep": 0,
+      "prerequisite": {
+        "advance": "advance.markmaking"
+      }
+    }
+  ],
+  "wonderObsolescence": [
+    {
+      "wonder": "wonder.beacon",
+      "advance": {
+        "special": "none"
+      }
+    }
+  ],
+  "units": [
+    {
+      "id": "unit.trailblazers",
+      "name": "Trailblazers",
+      "obsoleteBy": {
+        "special": "none"
+      },
+      "domain": "land",
+      "movementPoints": 2,
+      "range": 0,
+      "attack": 0,
+      "defense": 1,
+      "firepower": 1,
+      "costRows": 4,
+      "capacity": 0,
+      "role": "settle",
+      "prerequisite": {
+        "special": "none"
+      },
+      "abilities": [],
+      "hitPoints": 30
+    }
+  ],
+  "terrain": [
+    {
+      "id": "terrain.drylands",
+      "name": "Drylands",
+      "movementCost": 1,
+      "food": 0,
+      "shields": 1,
+      "trade": 0,
+      "irrigation": {
+        "result": {
+          "special": "improve-in-place"
+        },
+        "yieldBonus": 1,
+        "workTurns": 5,
+        "aiGovernmentThreshold": 0
+      },
+      "mining": {
+        "result": {
+          "special": "no-result"
+        },
+        "yieldBonus": 0,
+        "workTurns": 5,
+        "aiGovernmentThreshold": 0
+      },
+      "transformation": {
+        "terrain": "terrain.drylands"
+      },
+      "defenseMultiplier": {
+        "numerator": 2,
+        "denominator": 2
+      }
+    }
+  ],
+  "governments": [
+    {
+      "id": "government.first-rule",
+      "name": "First Rule",
+      "maleTitle": "Speaker",
+      "femaleTitle": "Speaker"
+    }
+  ],
+  "tribes": [
+    {
+      "id": "tribe.riverfolk",
+      "cityStyle": 1,
+      "adjective": "Riverfolk",
+      "pluralName": "Riverfolk",
+      "leaderNames": {
+        "male": "Arin",
+        "female": "Rin"
+      },
+      "preferredLeaderGender": "female",
+      "preferredColor": 1,
+      "personality": {
+        "aggression": 0,
+        "expansion": 1,
+        "civilizationPreference": 0
+      },
+      "governmentTitles": [
+        {
+          "government": "government.first-rule",
+          "male": "Keeper",
+          "female": "Keeper"
+        }
+      ]
+    }
+  ],
+  "commodities": [
+    {
+      "id": "commodity.fibers",
+      "name": "Fibers"
+    }
+  ],
+  "orders": [
+    {
+      "id": "order.example",
+      "name": "Example Order",
+      "shortcutHint": ""
+    }
+  ],
+  "difficulties": [
+    {
+      "id": "difficulty.first",
+      "name": "First Difficulty"
+    }
+  ],
+  "diplomaticAttitudes": [
+    {
+      "id": "attitude.first",
+      "name": "First Attitude"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "format": "openciv2-events/1",
+  "events": [
+    {
+      "id": "event.envoy",
+      "trigger": {
+        "type": "turn",
+        "turn": 10
+      },
+      "actions": {
+        "showText": {
+          "lines": [
+            "An envoy delivers a gift."
+          ]
+        },
+        "changeTreasury": {
+          "receiver": {
+            "civilizationSlot": 1
+          },
+          "amount": 50
+        }
+      },
+      "once": true
+    }
+  ]
+}

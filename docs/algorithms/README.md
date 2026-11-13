@@ -64,6 +64,17 @@ formats are unchanged. Purely cosmetic city-scene generation is presentation;
 W02 terrain generation remains required. New UI geometry does not change W01
 coordinates, topology, distance or resource predicates.
 
+## Native content and classic adapters
+
+[Versioned JSON content](../content/data-format.md) supplies standalone rules,
+names, semantic text, encyclopedia and event definitions. Original text files
+remain optional user inputs through compatibility adapters. Both paths preserve
+the same gameplay model; F03/C01/P04/P08/P09/S02 own classic parsing and required
+consumer behavior. Native formats do not change AI, map generation, classic
+file/wire encodings or scenario override obligations. Complete distributable
+content and runtime readers remain separate from format examples and conformance
+claims; X02 includes paired native/classic content cases.
+
 ## Numeric specification convention
 
 All 65 specifications follow [F01's behavioral-equivalence rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges).

@@ -51,6 +51,25 @@ allocation and platform mechanics are recorded in [Appendix C](#appendix-c-origi
 state changes and externally visible results without reproducing those mechanisms.
 Exact numeric domains and file/wire encodings remain required wherever specified.
 
+## Classic and native content paths
+
+The text grammar below owns the classic compatibility adapter. Standalone play
+uses [native JSON rules/preferences](../content/data-format.md#4-rules), decoded
+through an explicit semantic-to-rule normalization boundary. JSON expresses
+actual hit points, named global parameters and tribe definitions; it does not
+mirror RULES columns. Preserve scaling, clamps, signed consumer views,
+enabled-before-fixup behavior and identity positions exactly once. For example
+JSON hitPoints 30 corresponds to classic HP input 3; it is not multiplied by
+ten again. Identity mappings belong to the profile/compatibility descriptor.
+Native table completeness and validation are defined by that format, not
+retroactively imposed on classic files.
+
+Keep caller-controlled name/leader preservation and retained-state lifetimes on
+both paths. A classic reload retains this document's lookup/default/partial-effect
+contract; native pack prevalidation does not make that operation transactional.
+Actual complete stock data remains a separate content dependency, not a hidden
+original-file requirement or a table inferred from these parser algorithms.
+
 ## 1. Boundary, inputs and retained state
 
 Inputs are the rule files and their search directories, the language's file

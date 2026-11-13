@@ -1,0 +1,311 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/common.schema.json",
+  "title": "Shared content primitives",
+  "description": "Referenced definitions; this is not a standalone content-file schema.",
+  "not": {},
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_.-]*(?![\\s\\S])"
+    },
+    "text": {
+      "type": "string"
+    },
+    "nonemptyText": {
+      "type": "string",
+      "minLength": 1
+    },
+    "locale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "integer": {
+      "type": "integer",
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "nonnegativeInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "positiveInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2147483647
+    },
+    "sha256": {
+      "type": "string",
+      "minLength": 64,
+      "maxLength": 64,
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": {
+        "anyOf": [
+          {
+            "pattern": "\\\\"
+          },
+          {
+            "pattern": "^/|/$|//"
+          },
+          {
+            "pattern": "(^|/)\\.{1,2}(/|$)"
+          },
+          {
+            "pattern": "^[A-Za-z][A-Za-z0-9+.-]*:"
+          },
+          {
+            "pattern": "[\\u0000-\\u001f\\u007f]"
+          }
+        ]
+      },
+      "description": "Relative slash-separated path. Symlink containment is checked after schema validation."
+    },
+    "basename": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/$defs/relativePath"
+        },
+        {
+          "not": {
+            "pattern": "/"
+          }
+        }
+      ]
+    },
+    "worldFilename": {
+      "allOf": [
+        {
+          "$ref": "common.schema.json#/$defs/basename"
+        },
+        {
+          "pattern": "\\.[^./]+$"
+        }
+      ]
+    },
+    "resourceStem": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]*(?![\\s\\S])"
+    },
+    "descriptor": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "common.schema.json#/$defs/relativePath"
+        },
+        "sha256": {
+          "$ref": "common.schema.json#/$defs/sha256"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "additionalProperties": false
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Metadata only, with dot-separated namespace keys such as org.example.notes.",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_-]*(?:\\.[a-z][a-z0-9_-]*)+(?![\\s\\S])"
+      }
+    },
+    "globalRule": {
+      "enum": [
+        "roadMovementMultiplier",
+        "triremeLossDenominator",
+        "foodPerCitizen",
+        "foodBoxRows",
+        "shieldBoxRows",
+        "settlerFoodLowGovernment",
+        "settlerFoodHighGovernment",
+        "unhappinessCitySize",
+        "unhappinessEmpireSize",
+        "aqueductSize",
+        "sewerSize",
+        "technologyCostParadigm",
+        "transformationWork",
+        "monarchyFreeSupport",
+        "communismFreeSupport",
+        "fundamentalismFreeSupport",
+        "communismPalaceDistance",
+        "fundamentalismScienceLossPercent",
+        "productionSwitchLossPercent",
+        "paradropRange",
+        "spaceshipMassThrustParadigm",
+        "fundamentalismScienceCapTenths"
+      ]
+    },
+    "advanceReference": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "advance": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "required": [
+            "advance"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "special": {
+              "enum": [
+                "none",
+                "never"
+              ]
+            }
+          },
+          "required": [
+            "special"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "rational": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "$ref": "common.schema.json#/$defs/nonnegativeInteger"
+        },
+        "denominator": {
+          "$ref": "common.schema.json#/$defs/positiveInteger"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "additionalProperties": false,
+      "description": "Exact fraction. Its application-specific ratio constraints require semantic validation."
+    },
+    "civilizationSelector": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "civilizationSlot": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7
+            }
+          },
+          "required": [
+            "civilizationSlot"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "special": {
+              "enum": [
+                "anybody",
+                "trigger-attacker",
+                "trigger-defender"
+              ]
+            }
+          },
+          "required": [
+            "special"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "coordinate": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "rectangle": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/coordinate"
+      },
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "run": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "text": {
+              "$ref": "common.schema.json#/$defs/text"
+            }
+          },
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "parameter": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "required": [
+            "parameter"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "$ref": "common.schema.json#/$defs/run"
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "text",
+          "integer",
+          "boolean"
+        ]
+      },
+      "propertyNames": {
+        "$ref": "common.schema.json#/$defs/id"
+      }
+    },
+    "clip": {
+      "type": "object",
+      "properties": {
+        "resource": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "startFrame": {
+          "$ref": "common.schema.json#/$defs/integer"
+        },
+        "endFrame": {
+          "$ref": "common.schema.json#/$defs/integer"
+        }
+      },
+      "required": [
+        "resource",
+        "startFrame",
+        "endFrame"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

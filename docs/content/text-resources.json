@@ -1,0 +1,355 @@
+{
+  "format": "openciv2-text-resource-inventory/1",
+  "scope": "Observed 31 top-level TXT files in one supplied MGE resource collection, plus specification-established optional/pattern inputs. Not a pristine-stock or exhaustive edition/corpus claim. No runtime execution or importer acceptance is claimed.",
+  "files": [
+    {
+      "file": "ADVICE.TXT",
+      "observedName": "ADVICE.TXT",
+      "bytes": 5799,
+      "sha256": "0f6a2220dd1afd5f57e22d442aa3f43cb23b8ed2dddb378e1537ea476f7db8cb",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "text",
+      "owner": "P06; A02; A08",
+      "description": "Advisor prompt fragments and live name-keyed recommendations; preserve header/body composition, @DEFAULT and @WONDER."
+    },
+    {
+      "file": "ALEXANDR.TXT",
+      "observedName": "ALEXANDR.TXT",
+      "bytes": 791,
+      "sha256": "f4b3b7b2e9b1e4a18ea945dc21e4090e497d566e3b34e352c25ba5279a2a0049",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents + text",
+      "owner": "S01",
+      "description": "Associated SCENARIO briefing; the text is present, but a matching world is not established by this inventory."
+    },
+    {
+      "file": "CITY.TXT",
+      "observedName": "CITY.TXT",
+      "bytes": 6785,
+      "sha256": "8155cce5e5771520feab366948c9d3ffaa34738ccc0b48a6ec09a73aba399c87",
+      "disposition": "runtime-core",
+      "nativeComponent": "cityNames",
+      "owner": "C01",
+      "description": "Ordered tribe-name lists and EXTRA overflow; live plural-name lookup and naming cursors."
+    },
+    {
+      "file": "CIV2FANW.TXT",
+      "observedName": "CIV2FANW.TXT",
+      "bytes": 8799,
+      "sha256": "a6e8951e1de27350c6736378d20a93a00b508c4016f44cd6482fd8b9261eb807",
+      "disposition": "documentation-only",
+      "nativeComponent": null,
+      "owner": null,
+      "description": "Fantastic Worlds installation/player notes, not event definitions or rules."
+    },
+    {
+      "file": "CIV2FAQ.TXT",
+      "observedName": "CIV2FAQ.TXT",
+      "bytes": 10002,
+      "sha256": "f4542d1cab01241e501fbd2579f723ccc6dcd13515881c0cf585b601f9030e8f",
+      "disposition": "documentation-only",
+      "nativeComponent": null,
+      "owner": null,
+      "description": "Troubleshooting FAQ."
+    },
+    {
+      "file": "COUNCIL0.TXT",
+      "observedName": "COUNCIL0.TXT",
+      "bytes": 11079,
+      "sha256": "b8878a92bc2bc06d22b6497c9b6802577762b3bdb5dccdf31dfdb23dc6792a71",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "council",
+      "owner": "P09",
+      "description": "Conditional chapters/captions for variant 0; map all opinion entries, including same-line continuations."
+    },
+    {
+      "file": "COUNCIL1.TXT",
+      "observedName": "COUNCIL1.TXT",
+      "bytes": 11315,
+      "sha256": "4d1e63261666cee628e4486e405876dd528918422e35635cacf91726ccaf9442",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "council",
+      "owner": "P09",
+      "description": "Conditional chapters/captions for variant 1."
+    },
+    {
+      "file": "COUNCIL2.TXT",
+      "observedName": "COUNCIL2.TXT",
+      "bytes": 11068,
+      "sha256": "22dd5123fd717d1527412a50d61bff005609b15ea1fc67f78073ed9ee469fc78",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "council",
+      "owner": "P09",
+      "description": "Conditional chapters/captions for variant 2."
+    },
+    {
+      "file": "CREDITS.TXT",
+      "observedName": "CREDITS.TXT",
+      "bytes": 2801,
+      "sha256": "73a723ebf06e8cd95e0fce6a9ffb1ac6bb5798cf78abcde82e6f9a373d0ba45f",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents",
+      "owner": "P10; P05",
+      "description": "CREDITS section, About mode 0 / native base."
+    },
+    {
+      "file": "DEBUG.TXT",
+      "observedName": "DEBUG.TXT",
+      "bytes": 8936,
+      "sha256": "d7169e2146df0df2dc1a6d6a82145ce64201994e75a0495ce58709c5008718e3",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "text",
+      "owner": "P04; S03; S04",
+      "description": "Cheat/editor/diagnostic prompts and raw ordered tables such as EDITCOSMIC. The filename does not make it development-only."
+    },
+    {
+      "file": "DESCRIBE.TXT",
+      "observedName": "Describe.txt",
+      "bytes": 213099,
+      "sha256": "421cda9df5c930a6071293f75ba3c7bfbb0b0fb591efb63e0501cc31f56eb5c2",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "encyclopedia",
+      "owner": "P08",
+      "description": "Rule-to-description indices and concept entries; preserve absent descriptions, identities and owner sorting."
+    },
+    {
+      "file": "FCREDITS.TXT",
+      "observedName": "fcredits.txt",
+      "bytes": 2112,
+      "sha256": "8d1e02a0e388e97d73cf4eecc8749efd6290e41c2ef2a111798c3bdc01793996",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents",
+      "owner": "P10; P05",
+      "description": "CREDITS section, About mode 2 / native fantastic-worlds."
+    },
+    {
+      "file": "GAME.TXT",
+      "observedName": "Game.txt",
+      "bytes": 108656,
+      "sha256": "431132fc67b9f7b917bba0dc6f1f36c546cb55b88d43854bc4e11fc3b74c0ced",
+      "disposition": "runtime-core",
+      "nativeComponent": "text",
+      "owner": "F03; P04 and callers",
+      "description": "Named game/network/dialog resources and live substitutions, choices, controls and ordered fragments."
+    },
+    {
+      "file": "HELP.TXT",
+      "observedName": "HELP.TXT",
+      "bytes": 24221,
+      "sha256": "0c4acad8b44654a23971d39388d659f291ef1085a1fbfb084b822895303432ce",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "text",
+      "owner": "P04; S03; S04",
+      "description": "Editor/rule/event help topics; help is runtime information, not a README."
+    },
+    {
+      "file": "HERALD.TXT",
+      "observedName": "HERALD.TXT",
+      "bytes": 456,
+      "sha256": "74796493376351896a25157ae2fa430d8735380db749c689e1092e5d4a85b2ee",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "text",
+      "owner": "P04; P10",
+      "description": "HERALDWARNING prompt and enable/disable choices. New UI may replace obsolete hardware wording under X01; selected authored content still has a mapping."
+    },
+    {
+      "file": "LABELS.TXT",
+      "observedName": "Labels.txt",
+      "bytes": 13279,
+      "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd",
+      "disposition": "runtime-core",
+      "nativeComponent": "text",
+      "owner": "P04",
+      "description": "Indexed LABELS and POPUPS; native bindings retain identities. STRINGHEAP is classic allocation metadata, not required native prose."
+    },
+    {
+      "file": "LEADERS.TXT",
+      "observedName": "LEADERS.TXT",
+      "bytes": 2426,
+      "sha256": "11d3b73da204fc6360af4cbeeefdd3fb3fda62bbbd4651de2e57e41795076411",
+      "disposition": "legacy-unconfirmed",
+      "nativeComponent": null,
+      "owner": "F03",
+      "description": "Separate unsectioned leader table. No runtime consumer established here; F03 reads RULES/LEADERS. Do not treat this as an automatic override or assume identical data. An explicit authoring import would populate semantic tribe definitions."
+    },
+    {
+      "file": "MAPMENU.TXT",
+      "observedName": "MAPMENU.TXT",
+      "bytes": 728,
+      "sha256": "0b5665cc4d671e7186832df20b3148e2bb70788af964585b12d9d515c34e5bba",
+      "disposition": "companion-tool",
+      "nativeComponent": "menus",
+      "owner": "P05 format boundary; companion actions unregistered",
+      "description": "Menu groups for the separate map-editor executable. Native tree covers labels/grouping; its distinct command registry is additional tool work."
+    },
+    {
+      "file": "MENU.TXT",
+      "observedName": "Menu.txt",
+      "bytes": 2496,
+      "sha256": "cf1ac5f4f202a0afa3654e3abdfd3a5176a22e1fc002a9446cf4f52b5fd3a545",
+      "disposition": "runtime-core",
+      "nativeComponent": "menus",
+      "owner": "P05",
+      "description": "Main menu titles/item labels; fixed row-to-action map, no resource-defined shortcut handlers."
+    },
+    {
+      "file": "MISC.TXT",
+      "observedName": "MISC.TXT",
+      "bytes": 21210,
+      "sha256": "f85674795031026019070a46f28fcf32fca145259fcedbc4a9c0f5164a514eb9",
+      "disposition": "documentation-only",
+      "nativeComponent": null,
+      "owner": null,
+      "description": "Prose notes about changes from the first game; not a rules table."
+    },
+    {
+      "file": "MPCREDITS.TXT",
+      "observedName": "mpcredits.txt",
+      "bytes": 1287,
+      "sha256": "884ef9fb68b9cbe5af0e8dca40ac2d184cb1ec4eaf5b2c34826b141af24c1c3f",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents",
+      "owner": "P10; P05",
+      "description": "CREDITS section, About mode 1 / native multiplayer."
+    },
+    {
+      "file": "PATCH.TXT",
+      "observedName": "PATCH.TXT",
+      "bytes": 9091,
+      "sha256": "5481fb8974667a8147ae672a4ed9040cb0bec5569eb4fee62bca1ec6dc034cb6",
+      "disposition": "documentation-only",
+      "nativeComponent": null,
+      "owner": null,
+      "description": "Patch notes, including sample CITYPREF syntax. Samples do not become active preferences."
+    },
+    {
+      "file": "PEDIA.TXT",
+      "observedName": "PEDIA.TXT",
+      "bytes": 16673,
+      "sha256": "01ea9f900a2847cbc350600d59159b420bdc16eb3a3bde006b2ddec788a5fe77",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "text",
+      "owner": "P08; P04",
+      "description": "Civilopedia prompt/choice templates and ordered fact lists. DESCRIBE supplies topic descriptions; the two files are not interchangeable. Native content uses named messages/facts; the adapter retains row mapping."
+    },
+    {
+      "file": "README.TXT",
+      "observedName": "README.TXT",
+      "bytes": 11902,
+      "sha256": "5f46248d3d449d1b30ecbb33f08b91dd6d0d6aacdaa20db668164b6e73c18b20",
+      "disposition": "documentation-only",
+      "nativeComponent": null,
+      "owner": null,
+      "description": "Installation/release instructions, including example configuration sections."
+    },
+    {
+      "file": "READMEV13.TXT",
+      "observedName": "Readmev13.txt",
+      "bytes": 6738,
+      "sha256": "af3f684698b3099429b9774ca5fa9dab700a65783bd5466d04edf4738adf1111",
+      "disposition": "documentation-only",
+      "nativeComponent": null,
+      "owner": null,
+      "description": "Multiplayer patch history and release instructions."
+    },
+    {
+      "file": "ROME.TXT",
+      "observedName": "ROME.TXT",
+      "bytes": 1210,
+      "sha256": "b5c92aee69de50b4a648b50fbe3f37371e110d773e1ac233fdfd4415069ab4c0",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents + text",
+      "owner": "S01",
+      "description": "SCENARIO briefing associated with the final selected ROME world."
+    },
+    {
+      "file": "RULES.TXT",
+      "observedName": "RULES.TXT",
+      "bytes": 26906,
+      "sha256": "8a6f98b8260405091cd41d574c30bb05aa805c99a1f4357c49a73cf382fc2c03",
+      "disposition": "runtime-core",
+      "nativeComponent": "rules",
+      "owner": "F03",
+      "description": "All rule tables, including units, advances and leaders. No separate UNITS.TXT or ADVANCES.TXT input is established for this profile."
+    },
+    {
+      "file": "SC.TXT",
+      "observedName": "SC.TXT",
+      "bytes": 2600,
+      "sha256": "1c20667543d0eff8a2b3fd18d9427a9d7c590ebee4896e1e128ad4eaca2f58b8",
+      "disposition": "legacy-unconfirmed",
+      "nativeComponent": null,
+      "owner": "P10",
+      "description": "Unsectioned credits-like text. No reader established here; P10 mode 3 explicitly selects SCREDITS/CREDITS, not SC. Retain as ancillary material, not silently relabel as runtime credits."
+    },
+    {
+      "file": "SCREDITS.TXT",
+      "observedName": "SCREDITS.TXT",
+      "bytes": 1400,
+      "sha256": "86f1786a7b9d07ec73a0d3ce01dd9a0d1453d89880d8fc2935d6ac46b78b4c01",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents",
+      "owner": "P10; P05",
+      "description": "CREDITS section, About mode 3 / native scenarios."
+    },
+    {
+      "file": "TUTORIAL.TXT",
+      "observedName": "TUTORIAL.TXT",
+      "bytes": 12833,
+      "sha256": "4e126db8587d08895222569f265955ee979a578d3f4a126bef5fdcd900838aea",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "text",
+      "owner": "P05; P04 and tutorial callers",
+      "description": "Tutorial messages and live parameters; activation/one-time state belongs to the caller, not to the catalog."
+    },
+    {
+      "file": "WWII.TXT",
+      "observedName": "WWII.TXT",
+      "bytes": 564,
+      "sha256": "1e2cfb88b2d0b20ddb2000b5170a052d5627746a54e79cbf34ba587b778ffc35",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents + text",
+      "owner": "S01",
+      "description": "SCENARIO briefing associated with the final selected WWII world."
+    }
+  ],
+  "additionalInputs": [
+    {
+      "selector": "CITYPREF.<language>",
+      "disposition": "runtime-optional",
+      "nativeComponent": "cityPreferences",
+      "owner": "F03; A02",
+      "description": "NODEFEND and ordered AUTOBUILD preferences; absent in the observed collection."
+    },
+    {
+      "selector": "EVENTS.<language> or explicitly supplied event filename",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "events",
+      "owner": "S02; F03",
+      "description": "BEGINEVENTS grammar for selected scenarios; filenames are supplied by callers, not discovered by glob."
+    },
+    {
+      "selector": "<final-selected-world-stem>.<language>",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "documents + text",
+      "owner": "S01; F06",
+      "description": "SCENARIO briefing; use the final selected alternate path, not the initially requested stem."
+    },
+    {
+      "selector": "<selected-resource-stem>.FRE/.GER/.ITA/.SPA",
+      "disposition": "runtime-conditional",
+      "nativeComponent": "same as corresponding TXT resource",
+      "owner": "F03; P04",
+      "description": "Language variants, including scenario-local overrides. Not observed or validated in this collection."
+    }
+  ],
+  "otherTextInputs": [
+    {
+      "file": "CIV.INI",
+      "disposition": "platform-configuration",
+      "nativeComponent": null,
+      "owner": "F03 startup service boundary; X01",
+      "description": "User/platform startup settings, not a stock rules/text pack. Locale maps to explicit native pack selection; no original INI is required for standalone play."
+    }
+  ]
+}

@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/text-resource-inventory.schema.json",
+  "title": "Observed classic text-resource inventory",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-text-resource-inventory/1"
+    },
+    "scope": {
+      "$ref": "common.schema.json#/$defs/nonemptyText"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "$ref": "common.schema.json#/$defs/basename"
+          },
+          "observedName": {
+            "$ref": "common.schema.json#/$defs/basename"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "$ref": "common.schema.json#/$defs/sha256"
+          },
+          "disposition": {
+            "enum": [
+              "runtime-core",
+              "runtime-conditional",
+              "runtime-optional",
+              "documentation-only",
+              "companion-tool",
+              "legacy-unconfirmed",
+              "platform-configuration",
+              "unclassified",
+              "ancillary"
+            ]
+          },
+          "nativeComponent": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/nonemptyText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/nonemptyText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "$ref": "common.schema.json#/$defs/nonemptyText"
+          }
+        },
+        "required": [
+          "file",
+          "observedName",
+          "bytes",
+          "sha256",
+          "disposition",
+          "nativeComponent",
+          "owner",
+          "description"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "documentation-only"
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "properties": {
+                "nativeComponent": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "enum": [
+                    "runtime-core",
+                    "runtime-conditional",
+                    "runtime-optional"
+                  ]
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "properties": {
+                "nativeComponent": {
+                  "$ref": "common.schema.json#/$defs/nonemptyText"
+                },
+                "owner": {
+                  "$ref": "common.schema.json#/$defs/nonemptyText"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "additionalInputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "selector": {
+            "$ref": "common.schema.json#/$defs/nonemptyText"
+          },
+          "disposition": {
+            "enum": [
+              "runtime-core",
+              "runtime-conditional",
+              "runtime-optional",
+              "documentation-only",
+              "companion-tool",
+              "legacy-unconfirmed",
+              "platform-configuration",
+              "unclassified",
+              "ancillary"
+            ]
+          },
+          "nativeComponent": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/nonemptyText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/nonemptyText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "$ref": "common.schema.json#/$defs/nonemptyText"
+          }
+        },
+        "required": [
+          "selector",
+          "disposition",
+          "nativeComponent",
+          "owner",
+          "description"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "documentation-only"
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "properties": {
+                "nativeComponent": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "enum": [
+                    "runtime-core",
+                    "runtime-conditional",
+                    "runtime-optional"
+                  ]
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "properties": {
+                "nativeComponent": {
+                  "$ref": "common.schema.json#/$defs/nonemptyText"
+                },
+                "owner": {
+                  "$ref": "common.schema.json#/$defs/nonemptyText"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "otherTextInputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "$ref": "common.schema.json#/$defs/basename"
+          },
+          "disposition": {
+            "enum": [
+              "runtime-core",
+              "runtime-conditional",
+              "runtime-optional",
+              "documentation-only",
+              "companion-tool",
+              "legacy-unconfirmed",
+              "platform-configuration",
+              "unclassified",
+              "ancillary"
+            ]
+          },
+          "nativeComponent": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/nonemptyText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/nonemptyText"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "$ref": "common.schema.json#/$defs/nonemptyText"
+          }
+        },
+        "required": [
+          "file",
+          "disposition",
+          "nativeComponent",
+          "owner",
+          "description"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "const": "documentation-only"
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "properties": {
+                "nativeComponent": {
+                  "type": "null"
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "enum": [
+                    "runtime-core",
+                    "runtime-conditional",
+                    "runtime-optional"
+                  ]
+                }
+              },
+              "required": [
+                "disposition"
+              ]
+            },
+            "then": {
+              "properties": {
+                "nativeComponent": {
+                  "$ref": "common.schema.json#/$defs/nonemptyText"
+                },
+                "owner": {
+                  "$ref": "common.schema.json#/$defs/nonemptyText"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "scope",
+    "files",
+    "additionalInputs",
+    "otherTextInputs"
+  ],
+  "additionalProperties": false
+}

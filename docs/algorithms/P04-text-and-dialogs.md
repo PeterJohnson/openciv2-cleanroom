@@ -47,6 +47,19 @@ allocation and platform mechanics are recorded in [Appendix E](#appendix-e-origi
 state changes and externally visible results without reproducing those mechanisms.
 Exact numeric domains and file/wire encodings remain required wherever specified.
 
+## Native text and classic resource compatibility
+
+Standalone catalogs use [native JSON text and interaction records](../content/data-format.md#6-text-and-interaction-catalogs).
+They preserve information, parameters, semantic choices and caller effects while
+using new prose/layouts. Native inputs/defaults and named help/fact/advice
+content also cover editor/help/tutorial resources; classic source addresses
+belong to the adapter/compatibility descriptor, not the native text catalog. The
+[per-file inventory](../content/text-resources.md) records those consumers. Classic
+resource parsing, indexed substitutions and fallback below remain the compatibility-adapter contract for user-selected text;
+they do not require native catalogs to reproduce classic control markup. Preserve
+scenario-authored content and do not translate unsupported resource semantics
+into a different command or a stock fallback silently.
+
 ## 1. Inputs, state and compatibility
 
 Nominal inputs are complete classic text resources, valid label/parameter indices,

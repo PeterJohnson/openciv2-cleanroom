@@ -1,0 +1,468 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openciv2.invalid/schemas/content/v1/events.schema.json",
+  "title": "Scenario event definitions",
+  "description": "Version 1 draft. Structural validation only; the content contract also requires semantic and cross-file checks.",
+  "type": "object",
+  "properties": {
+    "format": {
+      "const": "openciv2-events/1"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "trigger": {
+            "$ref": "#/$defs/trigger"
+          },
+          "once": {
+            "type": "boolean"
+          },
+          "actions": {
+            "$ref": "#/$defs/actions"
+          }
+        },
+        "required": [
+          "id",
+          "trigger",
+          "once",
+          "actions"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "extensions": {
+      "$ref": "common.schema.json#/$defs/extensions"
+    }
+  },
+  "required": [
+    "format",
+    "events"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "trigger": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "unitKilled"
+            },
+            "unit": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "attacker": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "defender": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            }
+          },
+          "required": [
+            "type",
+            "unit",
+            "attacker",
+            "defender"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "cityTaken"
+            },
+            "cityName": {
+              "$ref": "common.schema.json#/$defs/text"
+            },
+            "attacker": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "defender": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            }
+          },
+          "required": [
+            "type",
+            "cityName",
+            "attacker",
+            "defender"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "turn"
+            },
+            "turn": {
+              "oneOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/nonnegativeInteger"
+                },
+                {
+                  "const": "every"
+                }
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "turn"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "turnInterval"
+            },
+            "interval": {
+              "$ref": "common.schema.json#/$defs/nonnegativeInteger"
+            }
+          },
+          "required": [
+            "type",
+            "interval"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "randomTurn"
+            },
+            "denominator": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          "required": [
+            "type",
+            "denominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "negotiation"
+            },
+            "talker": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "talkerType": {
+              "enum": [
+                "human",
+                "computer",
+                "either"
+              ]
+            },
+            "listener": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "listenerType": {
+              "enum": [
+                "human",
+                "computer",
+                "either"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "talker",
+            "talkerType",
+            "listener",
+            "listenerType"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "scenarioLoaded"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "noSchism"
+            },
+            "defender": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            }
+          },
+          "required": [
+            "type",
+            "defender"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "receivedTechnology"
+            },
+            "receiver": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "technology": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "required": [
+            "type",
+            "receiver",
+            "technology"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "actions": {
+      "type": "object",
+      "properties": {
+        "playSound": {
+          "type": "object",
+          "properties": {
+            "sound": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "required": [
+            "sound"
+          ],
+          "additionalProperties": false
+        },
+        "playMusic": {
+          "type": "object",
+          "properties": {
+            "track": {
+              "$ref": "common.schema.json#/$defs/positiveInteger"
+            }
+          },
+          "required": [
+            "track"
+          ],
+          "additionalProperties": false
+        },
+        "createUnit": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "oneOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/id"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "special": {
+                      "const": "any-unit"
+                    }
+                  },
+                  "required": [
+                    "special"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "owner": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "veteran": {
+              "type": "boolean"
+            },
+            "homeCityName": {
+              "$ref": "common.schema.json#/$defs/text"
+            },
+            "locations": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/coordinate"
+              },
+              "minItems": 1,
+              "maxItems": 10
+            }
+          },
+          "required": [
+            "unit",
+            "owner",
+            "veteran",
+            "homeCityName",
+            "locations"
+          ],
+          "additionalProperties": false
+        },
+        "moveUnit": {
+          "type": "object",
+          "properties": {
+            "unit": {
+              "oneOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/id"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "special": {
+                      "const": "any-unit"
+                    }
+                  },
+                  "required": [
+                    "special"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "owner": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "rectangle": {
+              "$ref": "common.schema.json#/$defs/rectangle"
+            },
+            "destination": {
+              "$ref": "common.schema.json#/$defs/coordinate"
+            },
+            "quantity": {
+              "oneOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/nonnegativeInteger"
+                },
+                {
+                  "const": "all"
+                }
+              ]
+            }
+          },
+          "required": [
+            "unit",
+            "owner",
+            "rectangle",
+            "destination",
+            "quantity"
+          ],
+          "additionalProperties": false
+        },
+        "changeTerrain": {
+          "type": "object",
+          "properties": {
+            "terrain": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "rectangle": {
+              "$ref": "common.schema.json#/$defs/rectangle"
+            }
+          },
+          "required": [
+            "terrain",
+            "rectangle"
+          ],
+          "additionalProperties": false
+        },
+        "makeAggression": {
+          "type": "object",
+          "properties": {
+            "who": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "whom": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            }
+          },
+          "required": [
+            "who",
+            "whom"
+          ],
+          "additionalProperties": false
+        },
+        "changeTreasury": {
+          "type": "object",
+          "properties": {
+            "receiver": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "amount": {
+              "$ref": "common.schema.json#/$defs/integer"
+            }
+          },
+          "required": [
+            "receiver",
+            "amount"
+          ],
+          "additionalProperties": false
+        },
+        "destroyCivilization": {
+          "type": "object",
+          "properties": {
+            "whom": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            }
+          },
+          "required": [
+            "whom"
+          ],
+          "additionalProperties": false
+        },
+        "grantTechnology": {
+          "type": "object",
+          "properties": {
+            "receiver": {
+              "$ref": "common.schema.json#/$defs/civilizationSelector"
+            },
+            "technology": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          },
+          "required": [
+            "receiver",
+            "technology"
+          ],
+          "additionalProperties": false
+        },
+        "showText": {
+          "type": "object",
+          "properties": {
+            "lines": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/text"
+              },
+              "maxItems": 20
+            }
+          },
+          "required": [
+            "lines"
+          ],
+          "additionalProperties": false
+        },
+        "suppressWonderMovies": {
+          "const": true
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    }
+  }
+}

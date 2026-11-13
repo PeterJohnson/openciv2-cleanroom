@@ -1,0 +1,8 @@
+{
+  "format": "openciv2-city-preferences/1",
+  "humanCityDefensePriority": "unchanged",
+  "buildPreferences": [
+    "building.council-house",
+    "building.council-house"
+  ]
+}

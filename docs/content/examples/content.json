@@ -1,0 +1,77 @@
+{
+  "format": "openciv2-content-pack/1",
+  "id": "example.format-demonstration",
+  "revision": 3,
+  "profile": "classic-mge-5.4.0f",
+  "defaultLocale": "en",
+  "base": null,
+  "files": {
+    "rules": {
+      "path": "rules.fragment.json",
+      "sha256": "1f86092c970245ec52bc7b4dbad8670174e45f09a6397d4fb492cef6892a1659"
+    },
+    "cityNames": {
+      "path": "city-names.json",
+      "sha256": "889329f7699e791944a5bdb89d99900d32e836695ed000fd8c8a9d74c894b72b"
+    },
+    "cityPreferences": {
+      "path": "city-preferences.json",
+      "sha256": "87997e78163dfeec9cedb922ea9bb806d399bcc78fbe1775108b8b383f02056d"
+    },
+    "text": {
+      "en": {
+        "path": "text.en.json",
+        "sha256": "2850f874f5e89cd6966b791b15e135ce0212112754b2d62687dcf2e58510e3ae"
+      }
+    },
+    "encyclopedia": {
+      "en": {
+        "path": "encyclopedia.en.json",
+        "sha256": "7b3472ac3085157605836d364c7f7e3eb46a86ec0d90b547aa67f1f71840340e"
+      }
+    },
+    "events": {
+      "path": "events.json",
+      "sha256": "d4be8e519d5ec3c093254b9a534f7b21f9a4aebb7762e46da25eedbb22d99327"
+    },
+    "menus": {
+      "en": {
+        "path": "menus.en.json",
+        "sha256": "75ca9282179bbd548c82fd971facdb9ee96cdabde99d6c56cc3d8840c5e7aefb"
+      }
+    },
+    "documents": {
+      "en": {
+        "path": "documents.en.json",
+        "sha256": "bf4dbc463970ca1fc2210751cc9f6303b78c4e502880287898cde2c188d268fe"
+      }
+    },
+    "council": {
+      "en": {
+        "path": "council.en.json",
+        "sha256": "76cbcee19f2b698d908b71c52c604c468688d5fd589787c2d123c79962bdee4a"
+      }
+    }
+  },
+  "resources": [],
+  "provenance": {
+    "authors": [
+      "OpenCiv2 contributors"
+    ],
+    "license": "MIT",
+    "notes": [
+      "Owned examples derived from repository format/algorithm contracts.",
+      "Intentionally incomplete rules and interaction coverage; not a playable pack or stock balance data."
+    ]
+  },
+  "compatibility": {
+    "path": "classic-compatibility.json",
+    "sha256": "6a00093c0bc9506107196210905ca8e9af56153bfcf99518a035a145d44f7b1e"
+  },
+  "scenarios": [
+    {
+      "id": "scenario.river-valley",
+      "world": null
+    }
+  ]
+}

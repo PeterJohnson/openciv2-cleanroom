@@ -129,10 +129,20 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 - Implement the X02 v3 loader, operation adapters, scripted external services,
   comparator, and bounded run reports. Execute the three existing F01 fixtures;
   add independently reviewed cases for state and geometry.
-- Implement F03 rules and text-encoding foundations, accepting nominal custom
-  content and retaining specified consumer conversions. Implement explicit
-  classic record codecs, raw maps, and the first supported save load/export path.
-  Expand version/mode coverage incrementally and label limitations.
+- Implement the [native JSON content contract](content/data-format.md), using the
+  existing [schemas and structural checks](content/schemas/README.md) as the file
+  boundary and adding semantic pack validation: versioned
+  manifests, explicit dependency/hash resolution, rules/names/preferences and
+  diagnostics. Implement F03/C01 classic text compatibility adapters into the same
+  logical models, accepting nominal custom content and retaining specified
+  conversions, fallback and partial effects. Test equivalent authored inputs
+  through both paths, including movement/HP scaling exactly once, stable classic
+  slots, city-name order and retained NoDefend. Native validation does not narrow
+  the classic adapter's required domain. Add explicit content validation and
+  conversion tools with separate outputs and provenance receipts.
+- Implement classic record codecs, raw maps, and the first supported save
+  load/export path. Keep content IDs/hashes outside classic payloads and original
+  peer negotiation; expand version/mode coverage and label limitations.
 - Separate decoded file records from F06's ordered session load. Add native
   `oc2 inspect`, `oc2 validate` and `oc2 diff` for the supported record domain,
   with human-readable and versioned, lossless JSON output, documented exit
@@ -356,9 +366,23 @@ be session-local; saved task restoration and hotseat isolation close in M5.
 
 Owners: S01–S04, N04, P01–P10; F03/F06 and the actual mutation owners.
 
-- Complete scenario setup, authored resources, event grammar/triggers/actions,
-  one-shot state, action ordering, and load/save continuation. Exercise real
-  mechanics for reactive events and random-turn laws.
+- Complete scenario setup, authored resources, native JSON events and classic
+  event grammar into the same S02 execution model: one-shot state, fixed action
+  order, reentry and load/save continuation. Exercise real mechanics for reactive
+  events and random-turn laws. Native event object key order must not reorder
+  actions or move Consumed publication before effects.
+- Supply complete redistributable native rules/city names and all runtime text
+  families in the [per-file inventory](content/text-resources.md), with provenance.
+  Implement semantic JSON messages/inputs/defaults, labels, named help/facts and
+  production advice, menu action trees, encyclopedia, scenario-ID briefings/credits
+  and council dialogue. Keep slots/source addresses in the compatibility descriptor
+  alongside their classic adapters. Register every reachable required resource
+  and test standalone startup without original files, five-component locale
+  selection, dynamic advice keys, all credits modes and final-alternative briefing
+  lookup. Exercise council accepted-state retention, same-line continuations,
+  opinion/seen-category gates and the three-chapter limit. Keep documentation-only
+  files out of runtime input selection and report unclassified legacy inputs.
+  Partial format examples do not satisfy this playable-content gate.
 - Complete world/scenario/rules/asset editor operations, apply/cancel behavior,
   and classic exports. Load exported maps/scenarios/assets in the original game;
   a cleanroom import of its own output is insufficient.

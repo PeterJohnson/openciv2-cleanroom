@@ -1,0 +1,52 @@
+{
+  "format": "openciv2-council/1",
+  "locale": "en",
+  "eras": [
+    {
+      "era": "early",
+      "opinions": [
+        {
+          "advisor": "military",
+          "opinion": "land-capability-lag",
+          "opening": {
+            "caption": "Military: Consider the defense of our towns."
+          },
+          "start": "science-response",
+          "dialogue": {
+            "science-response": {
+              "kind": "response",
+              "advisor": "science",
+              "opinion": "science-lag",
+              "caption": "Science: New learning can aid our defenses.",
+              "whenIncluded": "military-response",
+              "whenSkipped": "chance-after-skipped-response"
+            },
+            "military-response": {
+              "kind": "response",
+              "advisor": "military",
+              "opinion": null,
+              "caption": null,
+              "whenIncluded": "end",
+              "whenSkipped": "end"
+            },
+            "chance-after-skipped-response": {
+              "kind": "chance",
+              "probability": {
+                "numerator": 1,
+                "denominator": 2
+              },
+              "onSuccess": "end",
+              "onFailure": "end"
+            },
+            "end": {
+              "kind": "end"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "anarchy": {
+    "caption": "The council waits while a new government is formed."
+  }
+}

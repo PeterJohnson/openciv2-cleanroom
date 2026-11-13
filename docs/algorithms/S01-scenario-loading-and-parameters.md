@@ -161,6 +161,13 @@ A full reload repeats those children; a local dialog retry does not.
 
 ### Common briefing after a successful load
 
+[Native briefing documents](../content/data-format.md#64-scenario-briefings-and-credits)
+associate a semantic scenario identity with a registered text message; the
+compatibility layer associates identity-less classic worlds after final-file
+selection. They supply the same information and continuation choices. The associated language-file
+lookup below remains the classic adapter path, including its generic fallback;
+native content must not bypass the surrounding load/setup mutations.
+
 Each of the three entry routines below performs this ordered phase:
 
 1. Replace the final selected path's extension with the active language

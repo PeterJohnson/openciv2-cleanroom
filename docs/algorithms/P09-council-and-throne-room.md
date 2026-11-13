@@ -242,6 +242,13 @@ return 1. Panel capture's early return does not turn this success into failure.
 
 ## 4. Council chapter grammar
 
+[Native council content](../content/data-format.md#65-conditional-council-content)
+represents these choices as named opinions and explicit response/chance
+continuations. A converter resolves parser acceptance into those paths rather
+than putting a retained parser flag in the native file. Preserve opinion tests,
+seen-response categories, random-selection law and authored captions. The grammar
+below remains the classic text adapter; new layouts/media do not change its selection semantics.
+
 Select-chapter(category) returns 0 immediately only when signed category>4.
 Nominal categories 0..4 select that advice key in the current media-stem text
 file. A negative category is not an original safe rejection and needs established
