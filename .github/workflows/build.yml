@@ -4,11 +4,11 @@ permissions:
   contents: read
 
 jobs:
-  formatting:
+  metadata-and-formatting:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-24.04, macos-15, windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -20,94 +20,99 @@ jobs:
           python -c "import json, subprocess, sys;
           version = json.load(open('dependencies.json'))['tools']['clang-format'];
           subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'clang-format==' + version])"
-      - name: Check source formatting
-        run: python tools/format.py --check
-      - name: Test staged-file handling and commit hook
-        run: python -m unittest discover -s tests -p test_format.py -v
+      - run: python tools/format.py --check
+      - run: python tools/check_conformance.py
+      - run: python tools/check_assets.py
+      - name: Test metadata validation, staged-file handling and commit hook
+        run: python -m unittest discover -s tests -p "test_*.py" -v
 
-  desktop:
+  native:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-24.04, macos-15, windows-2022]
+        mode: [desktop, headless]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Linux build dependencies
-        if: runner.os == 'Linux'
+      - uses: ./.github/actions/toolchain
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+        with:
+          arch: x64
+      - name: Linux GUI build dependencies
+        if: runner.os == 'Linux' && matrix.mode == 'desktop'
         run: sudo apt-get update && sudo apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxfixes-dev libxss-dev libwayland-dev libxkbcommon-dev libdecor-0-dev libasound2-dev libpulse-dev libegl1-mesa-dev libgl1-mesa-dev
-      - name: Configure
-        run: cmake -S . -B build/ci -DOC2_FETCH_SDL=ON -DOC2_FETCH_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Debug -DOC2_GUI_TESTS=ON
-      - name: Build
-        run: cmake --build build/ci --config Debug --parallel 4
-      - name: Test
-        run: ctest --test-dir build/ci -C Debug --output-on-failure
-      - name: GUI test reports and failure screenshots
+      - name: Configure pinned toolchain
+        shell: bash
+        run: |
+          args=(-DOC2_VERIFY_TOOLCHAIN=ON -DOC2_FETCH_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Debug)
+          if [ "${{ matrix.mode }}" = desktop ]; then
+            args+=(-DOC2_FETCH_SDL=ON -DOC2_GUI_TESTS=ON)
+          else
+            args+=(-DOC2_BUILD_GUI=OFF)
+          fi
+          if [ "$RUNNER_OS" = Windows ]; then
+            args+=(-G Ninja "-DCMAKE_C_COMPILER=$LLVM_PATH/bin/clang-cl.exe" "-DCMAKE_CXX_COMPILER=$LLVM_PATH/bin/clang-cl.exe")
+          elif [ "$RUNNER_OS" = macOS ]; then
+            args+=(-G Ninja "-DCMAKE_C_COMPILER=$(xcrun --find clang)" "-DCMAKE_CXX_COMPILER=$(xcrun --find clang++)")
+          else
+            args+=(-G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++)
+          fi
+          cmake -S . -B build/ci "${args[@]}"
+      - run: cmake --build build/ci --config Debug --parallel 4
+      - run: ctest --test-dir build/ci -C Debug --output-on-failure --output-junit test-results.xml
+      - name: Build identities and test evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: openciv2-gui-${{ runner.os }}
-          path: build/ci/gui-results/
+          name: openciv2-${{ matrix.os }}-${{ matrix.mode }}
+          path: |
+            build/ci/build-identity.txt
+            build/ci/test-results.xml
+            build/ci/Testing/Temporary/LastTest.log
+            build/ci/gui-results/
           if-no-files-found: ignore
 
-  headless:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        include:
-          - os: ubuntu-latest
-            cxx: clang++
-            cc: clang
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Configure without graphical dependencies
-        shell: bash
-        run: |
-          args=()
-          if [ -n "${{ matrix.cxx }}" ]; then
-            args+=("-DCMAKE_CXX_COMPILER=${{ matrix.cxx }}" "-DCMAKE_C_COMPILER=${{ matrix.cc }}")
-          fi
-          cmake -S . -B build/headless-ci -DOC2_BUILD_GUI=OFF -DOC2_FETCH_DEPENDENCIES=ON "${args[@]}"
-      - run: cmake --build build/headless-ci --config Debug --parallel 4
-      - run: ctest --test-dir build/headless-ci -C Debug --output-on-failure
-
   sanitizers:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Configure headless sanitizers
-        run: cmake --preset sanitize -DOC2_FETCH_DEPENDENCIES=ON
-      - run: cmake --build --preset sanitize
-      - run: ctest --preset sanitize
+      - uses: ./.github/actions/toolchain
+      - run: cmake --preset sanitize -DOC2_FETCH_DEPENDENCIES=ON -DOC2_VERIFY_TOOLCHAIN=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+      - run: cmake --build --preset sanitize --parallel 4
+      - run: ctest --preset sanitize --output-junit test-results.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: openciv2-sanitizers
+          path: |
+            build/sanitize/build-identity.txt
+            build/sanitize/test-results.xml
+            build/sanitize/Testing/Temporary/LastTest.log
 
   web:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - name: Read toolchain pins
+      - uses: ./.github/actions/toolchain
         id: pins
-        run: |
-          echo "emsdk=$(jq -r '.tools.emsdk' dependencies.json)" >> "$GITHUB_OUTPUT"
-          echo "playwright=$(jq -r '.tools.playwright' dependencies.json)" >> "$GITHUB_OUTPUT"
+        with:
+          web: 'true'
       - uses: mymindstorm/setup-emsdk@v14
         with:
           version: ${{ steps.pins.outputs.emsdk }}
           actions-cache-folder: emsdk-cache
-      - name: Configure
-        run: cmake --preset web
-      - name: Build
-        run: cmake --build build/web --parallel 4
-      - name: WASM unit tests
-        run: ctest --preset web
+      - run: cmake --preset web -DOC2_VERIFY_TOOLCHAIN=ON
+      - run: cmake --build build/web --parallel 4
+      - run: ctest --preset web --output-junit test-results.xml
       - name: Browser test dependencies
         run: |
           npm install --no-save --package-lock=false playwright@${{ steps.pins.outputs.playwright }}
           npx playwright install --with-deps chromium
-      - name: Browser smoke test
-        run: node tests/web_smoke.cjs build/web
+      - run: node tests/web_smoke.cjs build/web
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: openciv2-web
           path: |
@@ -115,3 +120,6 @@ jobs:
             build/web/openciv2.js
             build/web/openciv2.wasm
             build/web/THIRD_PARTY_NOTICES.txt
+            build/web/build-identity.txt
+            build/web/test-results.xml
+            build/web/Testing/Temporary/LastTest.log

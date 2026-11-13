@@ -575,8 +575,11 @@ input independent of the new viewport and fonts.
 
 Use [PeterJohnson/openciv2-assets](https://github.com/PeterJohnson/openciv2-assets),
 available locally at `~/project/openciv2-assets`. Its inspected checkout was
-`c4161c1843e8e06a5cf864e1633b6f6221abb797`; this is a planning observation,
-not a dependency lock or a claim that a release has been downloaded.
+`c4161c1843e8e06a5cf864e1633b6f6221abb797`. M0 also verified the published
+2026.11.07.1 runtime archive and pinned its URL/hash in `dependencies.json`.
+The [content inventory](content/README.md) separates source and release evidence;
+the [format contract](content/asset-format.md) records the observed pack/layout
+format and the remaining font-schema gap.
 
 The asset repository documents a runtime package containing `atlas-hd.pack`,
 bitmap fonts, layout data, generated layout constants, provenance, and notices.
@@ -588,10 +591,12 @@ resolver code. A generated constants header is eligible only as reviewed
 data-only asset output. See the asset repository's
 [runtime package guide](https://github.com/PeterJohnson/openciv2-assets/blob/c4161c1843e8e06a5cf864e1633b6f6221abb797/docs/ASSET-DEPENDENCIES.md).
 
-The build accepts an explicit asset directory or pinned release archive/hash.
-Use `OC2_ASSETS_DIR` as the CMake cache setting; a developer preset can point to
-the sibling checkout. Invalid explicit paths fail clearly. A source checkout
-can use its standalone runtime pack builder; run no review/comparison pipeline
+M0 accepts `OC2_ASSETS_DIR` as an explicit CMake cache setting for an asset
+source root or extracted runtime package and exposes an `asset-check` target.
+A developer preset can point to the sibling checkout; invalid explicit GUI paths
+fail clearly. Automatic archive acquisition, runtime loading and packaging remain
+M2/M7 work. The archive/hash pin is available for explicit acquisition. A source
+checkout can use its standalone runtime pack builder; run no review/comparison pipeline
 and require no `openciv2` checkout or original executable. CI/release builds
 consume immutable runtime packages with checked inventory and checksums. Pure
 game tests need only small owned fixtures and do not build the graphics pack.
@@ -680,7 +685,9 @@ directories per native or Emscripten toolchain. Enable Objective-C++ only for th
 macOS adapter. Commit portable presets for debug, release, sanitizers, headless,
 and web; keep machine paths in untracked user presets. Record exact dependency
 and emsdk versions in [dependencies.json](../dependencies.json), updating the
-tested set together.
+tested set together. M0 also pins CI CMake/compiler baselines and emits a
+configuration identity report; `OC2_VERIFY_TOOLCHAIN` enforces those versions.
+See [M0 execution evidence](m0-validation.md) for actual runs and platform gaps.
 Use pinned FetchContent inputs or explicit compatible installed packages,
 with downloads opt-in and cached/offline operation supported. Never track a
 dependency's moving branch as a reproducible build input.

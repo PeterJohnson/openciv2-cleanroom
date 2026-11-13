@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "sourceRepository": "https://github.com/PeterJohnson/openciv2-assets",
+  "sourceRevision": "c4161c1843e8e06a5cf864e1633b6f6221abb797",
+  "runtimeRelease": {
+    "version": "2026.11.07.1",
+    "url": "https://github.com/PeterJohnson/openciv2-assets/releases/download/v2026.11.07.1/openciv2-assets-2026.11.07.1.zip",
+    "sha256": "13d370f9e94371112992ef6e40a3731eac3cb0f302dc9a3143c95ad88704a253",
+    "files": {
+      "LICENSE": {
+        "sha256": "096ca0db8d513b0124403a582613db987b08dd41c7997a47103e30a7367b209b",
+        "size": 1070
+      },
+      "THIRD-PARTY.txt": {
+        "sha256": "facee4e3dbf3dabb16c21defa4c39e69267f7d594c69f80d4a526d42a26a6b8e",
+        "size": 7830
+      },
+      "data/ATLAS-PROVENANCE.md": {
+        "sha256": "d4d2b37be1b39ac7ae94f746f59ea49c597f9c9ff08c5b781ed908841cb5d357",
+        "size": 9206
+      },
+      "data/atlas-hd.pack": {
+        "sha256": "08321e5c1f18267293d84fe9cbed0e9709996eb139f1b570a3cf68d100f4e4c3",
+        "size": 249792878
+      },
+      "data/cityview-rects.json": {
+        "sha256": "72459173409e051136a75ae01cb98190213a40d83d2fcdedee52c25e89727050",
+        "size": 2636
+      },
+      "data/fonts.bin": {
+        "sha256": "6c36598b273b937eb53db224a9cfab82381bb46d43c72140682cff8abcb4bfeb",
+        "size": 10738010
+      },
+      "data/fonts_aa.bin": {
+        "sha256": "fdd8df78d58a0ad29d2f31303ffc0c8699b8924595e188566c803f2b30ae7393",
+        "size": 36266976
+      },
+      "include/hd_layouts.h": {
+        "sha256": "3e140c98278a1f9d2782802d5a5de3d84ce9453e106aab1267c29b06399aa0ac",
+        "size": 8568
+      }
+    }
+  },
+  "selection": {
+    "files": 840,
+    "bytes": 277941567,
+    "extensions": {
+      ".png": 829,
+      ".json": 11
+    },
+    "inventorySha256": "1361d612b283b3798eaf0575abfae79f6a15bf34d29fcfa87b210d782e105808"
+  },
+  "inspectedFiles": {
+    "runtime-inputs.json": {
+      "size": 30689,
+      "sha256": "e4868b8e46ab06e68bfc214f763c1fd178de4e8e2eb24dc7eb755206d7bfdf90"
+    },
+    "contracts/cityview-rects.json": {
+      "size": 2636,
+      "sha256": "72459173409e051136a75ae01cb98190213a40d83d2fcdedee52c25e89727050"
+    },
+    "assets/atlas-hd/PROVENANCE.md": {
+      "size": 9414,
+      "sha256": "dceaf637f2c66ae4fbe505114f1eabfb1fae78bf8494407d20f7aeefcd57a7c6"
+    },
+    "assets/atlas-hd/fonts/provenance.json": {
+      "size": 3650,
+      "sha256": "96de508e8b014ba6527002a8d62b6900bbe5085634fe11a52926b2da602bbf41"
+    },
+    "LICENSE": {
+      "size": 1070,
+      "sha256": "096ca0db8d513b0124403a582613db987b08dd41c7997a47103e30a7367b209b"
+    },
+    "THIRD-PARTY.txt": {
+      "size": 7830,
+      "sha256": "facee4e3dbf3dabb16c21defa4c39e69267f7d594c69f80d4a526d42a26a6b8e"
+    },
+    "data/native/fonts.bin": {
+      "size": 10738010,
+      "sha256": "6c36598b273b937eb53db224a9cfab82381bb46d43c72140682cff8abcb4bfeb"
+    },
+    "data/native/fonts_aa.bin": {
+      "size": 36266976,
+      "sha256": "fdd8df78d58a0ad29d2f31303ffc0c8699b8924595e188566c803f2b30ae7393"
+    },
+    "assets/atlas-hd/city/panorama/layout.json": {
+      "size": 6088,
+      "sha256": "228a6d28d60a5ecf0415686a951f718f9b68f55379e2d79a6eba111ba6979862"
+    },
+    "assets/atlas-hd/compatibility/bindings.json": {
+      "size": 67190,
+      "sha256": "5af14b9ee9e43bce5000ffe36a0784f9e3ba24abd3a59718e710e01be12d1566"
+    },
+    "assets/atlas-hd/coverage.json": {
+      "size": 389897,
+      "sha256": "b4bfc7b05f70104827cf975d4b4e46f2c9f414b48d2c9369f3122b1e0731072b"
+    },
+    "assets/atlas-hd/interface/citizens/bindings.json": {
+      "size": 8411,
+      "sha256": "f6053d5417957d9787fb661cfc86a6ae9d0f8c23c5a678bcd463fa19b78e5766"
+    },
+    "assets/atlas-hd/interface/economy/bindings.json": {
+      "size": 774,
+      "sha256": "a372015e53fd5ed0b117e900a8d4c9ff6b9a9d3558570fe39b4fe27d38f91a94"
+    },
+    "assets/atlas-hd/interface/knowledge/bindings.json": {
+      "size": 2026,
+      "sha256": "8cde5c032d49aeee22771ecdd003870a07ab62ab6e65221eee465be15d89c6cb"
+    },
+    "assets/atlas-hd/interface/reports/knowledge.json": {
+      "size": 10984,
+      "sha256": "87620bc34ce1d3347f6574443bf5ecae5a9eb7da107e9bd70de8ceccef84cdfe"
+    },
+    "assets/atlas-hd/manifest.json": {
+      "size": 1462561,
+      "sha256": "90cbb0271fcd6a440142d4dbe6eb75a30d7a96061ca7284632047beb1d570578"
+    },
+    "assets/atlas-hd/map/city-anchors.json": {
+      "size": 13005,
+      "sha256": "5b00b329a7662ff9b6ead3cde6ef64ff31eb8ef3570868fd8b091a2d1e6e414a"
+    },
+    "assets/atlas-hd/map/unit-anchors.json": {
+      "size": 2874,
+      "sha256": "cafa8734b84b32e59e27b69a17e356969d2c336eae714cc4ebb938655daaefcf"
+    },
+    "assets/atlas-hd/space-layout.json": {
+      "size": 7039,
+      "sha256": "276a61fd2a6cbe145c71514567023d14919c074e72b0560c0bf21973e71ea67f"
+    }
+  },
+  "runtimeFiles": [
+    "LICENSE",
+    "THIRD-PARTY.txt",
+    "data/ATLAS-PROVENANCE.md",
+    "data/atlas-hd.pack",
+    "data/cityview-rects.json",
+    "data/fonts.bin",
+    "data/fonts_aa.bin",
+    "include/hd_layouts.h"
+  ],
+  "gaps": [
+    "asset-font-schema",
+    "asset-runtime-release",
+    "stock-content"
+  ],
+  "atlasEntries": 2105
+}

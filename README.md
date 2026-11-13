@@ -25,6 +25,10 @@ X01 and X02 define that convention and its conformance checks.
 - [Implementation plan](docs/implementation-plan.md): phased delivery, dependencies,
   test gates and specification coverage.
 - [Building and testing](docs/BUILDING.md): desktop, headless, WASM, and GUI automation.
+- [Conformance inventory](docs/conformance/README.md): validated operation/state
+  registrations, fixture provenance, coverage rows and unresolved integration gaps.
+- [Content inventory](docs/content/README.md): verified asset release, data contracts,
+  stock-content gaps and external original-game comparison procedure.
 - [Application shell](docs/application-shell.md): implemented UI/platform boundaries
   and current limitations.
 

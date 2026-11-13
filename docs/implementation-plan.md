@@ -63,7 +63,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
-| M0 — partial | C++20/CMake targets, dependency archive/hash manifest, offline/download policy, desktop/headless/release/sanitizer/web presets, pinned clang-format policy/commands and staged commit hook, Catch2, ImGui automation, CI definitions for formatting and four-platform builds | X02 registry/coverage ledger, content and asset-format inventory, full compiler/platform execution evidence |
+| M0 — implementation complete; platform gate pending | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan | Execute the pinned macOS/Windows jobs and retain reports; see [M0 evidence](m0-validation.md). Runtime reader/font and playable-content work is assigned to M1/M2/M5, not claimed complete. |
 | M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | C++ F01/F02/W01 state, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI with optional SQLite export, scoped queries, SessionRuntime/controller contracts and continuations |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
@@ -486,13 +486,15 @@ and does not replace, X02's operation-level coverage ledger.
 
 The next implementation changes should build on the integrated shell:
 
-1. Complete M0's operation/state registry, coverage ledger, and content inventory;
-   retain the existing CMake/Catch2/platform build boundary.
+1. Run the pinned macOS/Windows CI jobs to close M0's remaining platform evidence
+   gate. Maintain the [registries/ledger](conformance/README.md) and
+   [content inventory](content/README.md) as operations and inputs arrive.
 2. Implement F01 sampling/arithmetic adapters and execute the existing three
    X02 vectors with the version 3 loader/comparator.
 3. Implement F02 identities/state and W01 geometry using C++ records and
    collections, with retained-state fixtures and no database dependency.
-4. Specify and implement the asset data reader and content manifest; connect it
+4. Resolve the font/layout data gaps and implement the independent asset reader
+   against the [inspected package contract](content/asset-format.md); connect it
    to the existing SDL3/ImGui shell and finish native menu/platform verification.
 5. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
    expose stored-record queries and the inspection/validation/diff CLI.

@@ -56,6 +56,47 @@ With tests enabled, Catch2 is the only third-party dependency. With
 `BUILD_TESTING=OFF` as well, this builds just the portable view-model library
 and needs no third-party dependency. Future game libraries inherit this boundary.
 
+## Pinned CI toolchains and inventories
+
+CI installs CMake **3.31.10** and enforces the versions in `dependencies.json`
+with `OC2_VERIFY_TOOLCHAIN=ON`. Linux uses Clang 20.1.8; Windows uses clang-cl
+20.1.8 with Visual Studio 2022's SDK/libraries and the Ninja generator; macOS selects Xcode 16.4 / AppleClang
+17.0.0.17000013; WASM uses emsdk 4.0.23 / Clang 22.0.0. Runner labels are
+`ubuntu-24.04`, `windows-2022`, and `macos-15`, not moving `*-latest` aliases.
+Hosted images/OS libraries may still change; compiler drift fails configuration
+instead of silently redefining the baseline. The macOS/Windows baseline awaits
+actual execution evidence. Normal developer builds retain CMake 3.24+ and other
+compatible C++20 compilers; strict verification is opt-in outside CI.
+
+Every configure writes `build-identity.txt` with the actual compiler, CMake,
+platform, lock hash, source overrides and build options. It records
+`configured-only`, not a successful build/test claim. CI uploads it alongside
+CTest JUnit/logs and GUI reports, associated with the workflow's source revision.
+[M0 validation](m0-validation.md) records the locally tested scope and gaps.
+The CI matrix selects the baseline; presets remain portable developer workflows.
+
+M0's stdlib-only metadata checks need no external checkout or content:
+
+```sh
+python3 tools/check_conformance.py
+python3 tools/check_assets.py
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+cmake --build --preset desktop --target inventory-check
+```
+
+Use `python` on Windows. The Python tests include formatter/hook checks, so install
+the pinned formatter below. CMake adds the metadata target/tests only when Python
+3.9+ is available. These checks validate bookkeeping and hashes; they do not run
+X02 algorithms or establish gameplay compatibility.
+
+`OC2_ASSETS_DIR` can explicitly name the approved asset source root or an extracted
+runtime package in GUI configurations. This enables `asset-check` and requires
+Python for that optional check. It does not yet load/copy/install graphics.
+Invalid explicit GUI paths fail; headless builds do not inspect the path. See the
+[asset contract](content/asset-format.md#cmake-and-runtime-integration) and
+[inventory](content/README.md) for exact scope, package pins and missing font data.
+No automatic sibling lookup, asset downloads or old-game tools run during builds.
+
 ## Formatting and commits
 
 Use **clang-format 20.1.8**, pinned in `dependencies.json`, and Python 3.9+ for

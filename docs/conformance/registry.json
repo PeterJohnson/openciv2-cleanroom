@@ -1,0 +1,601 @@
+{
+  "schemaVersion": 1,
+  "inventoryVersion": 1,
+  "scope": "Repository specification inventory; two pure F01 operations and two process token state keys. Not an exhaustive operation or original-source-entry inventory.",
+  "specifications": [
+    {
+      "id": "A01",
+      "path": "docs/algorithms/A01-ai-strategy-and-assessment.md",
+      "sha256": "d91ab120d171797f9775fac79f68e51c6ea102de0ef073176af88df3dc516219",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "A02",
+      "path": "docs/algorithms/A02-ai-city-production.md",
+      "sha256": "f431a801657e97c11b3d7d55feb710c9119e2843aa190ae536297fbfd1fcb751",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "A03",
+      "path": "docs/algorithms/A03-ai-settlement-and-terrain-work.md",
+      "sha256": "6cce91a1b57677231ce9ac7f4845ff573f6cf6255ee2578838f940e781a92b7d",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "A04",
+      "path": "docs/algorithms/A04-ai-ground-tactics.md",
+      "sha256": "0d9b386d76a7e6d2661c45800abc65d53710a857d89b457149427444e1be97c1",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "A05",
+      "path": "docs/algorithms/A05-ai-naval-and-transport.md",
+      "sha256": "36a72c327ddd4a7d8f5e5938500c511899a41ce58c19581a4e7758bc399abeb2",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "A06",
+      "path": "docs/algorithms/A06-ai-air-and-nuclear.md",
+      "sha256": "29a20ad3d711573976c5ebc62e1bf1b156754ad1fb61e07434fd6359a507a088",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "A07",
+      "path": "docs/algorithms/A07-ai-special-unit-missions.md",
+      "sha256": "e12aebb932fe1bde1efc17d0da2503485cd09f163173d2889c91e23e3d76b2b1",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "A08",
+      "path": "docs/algorithms/A08-ai-research-government-and-diplomacy.md",
+      "sha256": "24d0fc7664340523ecdd020ac387687bfd4f247e07ad45f353caf2db9c313f81",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C01",
+      "path": "docs/algorithms/C01-city-lifecycle-and-ownership.md",
+      "sha256": "9b1b6b46af36894c9f68e9642472e16217bd51e2a8e5d869b9d905a00a770b0e",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C02",
+      "path": "docs/algorithms/C02-city-tiles-and-worker-assignment.md",
+      "sha256": "b300d0e65d3c33e2402acb961b24d96f24123e532f2bc8afb4f7ebc79f620b76",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C03",
+      "path": "docs/algorithms/C03-city-economy-and-corruption.md",
+      "sha256": "23d4f8d3c3a3f1bc78a3816c761cb44d8b23de83451eb56f2975ca2e92bfd38a",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C04",
+      "path": "docs/algorithms/C04-city-happiness-and-disorder.md",
+      "sha256": "71c5d0f2c9ec513029ddc83048defc7a1b222381c96ea139fd51441d018b938c",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C05",
+      "path": "docs/algorithms/C05-city-growth-and-support.md",
+      "sha256": "1f3950429a13cb03c852a1d535fb9cd877a0f361313f79a0a710b4e1f015b83b",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C06",
+      "path": "docs/algorithms/C06-city-production-and-purchasing.md",
+      "sha256": "f21041ce09faaee31302f7eb4a432505916efe6d6ff9586280a14ba9745e6d89",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C07",
+      "path": "docs/algorithms/C07-trade-and-commodities.md",
+      "sha256": "7841978fa4113af480db7ad638c907be5dc4f0110e892b2c87160a57a7f4fbc7",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C08",
+      "path": "docs/algorithms/C08-buildings-and-wonders.md",
+      "sha256": "b5734bc7a1148310f2cb3f7138b9093521fc921da7d0f687bb87b14a07fa4e7b",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "C09",
+      "path": "docs/algorithms/C09-city-capture-and-revolt.md",
+      "sha256": "f78afa5d9025b3aaf173daa71dc9808379f8e174d10d40ff91da7694e0e2548b",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "F01",
+      "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
+      "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238",
+      "specificationStatus": "specified",
+      "registrationStatus": "partial"
+    },
+    {
+      "id": "F02",
+      "path": "docs/algorithms/F02-game-state-and-invariants.md",
+      "sha256": "29d0b13cfd2a1b5f8f8c0da2b752ff158a7731e5abcd9e84dcc8ecbf753a2ff5",
+      "specificationStatus": "specified",
+      "registrationStatus": "partial"
+    },
+    {
+      "id": "F03",
+      "path": "docs/algorithms/F03-rules-and-configuration.md",
+      "sha256": "1185edd23734fe860755ebf7c50cc2093af0320ca865be5c8b11f17a2a512c55",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "F04",
+      "path": "docs/algorithms/F04-turn-sequencing.md",
+      "sha256": "d7806c9b46f749abb7d632f07a8d8ecdf1e522661fa858b2296b590a58ad1a6b",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "F05",
+      "path": "docs/algorithms/F05-game-setup-and-starting-positions.md",
+      "sha256": "a126c4162abe782ea9b13db3c51901e7eab876492814f7a64083a1c4d2b8068d",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "F06",
+      "path": "docs/algorithms/F06-save-load-and-file-formats.md",
+      "sha256": "18346497f3743706cb2f930bab31f0b5e37f572f11df3279fd87e6de0f89b067",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "N01",
+      "path": "docs/algorithms/N01-multiplayer-session-and-lobby.md",
+      "sha256": "181e60c852031811500029537077323e50cf6932165a2ee857b139a5bbbdfe72",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "N02",
+      "path": "docs/algorithms/N02-network-commands-and-state-synchronization.md",
+      "sha256": "d669cd57811d98e815130df06b80bf8e2d9337349a4c76d7f0d09e3b59dd460e",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "N03",
+      "path": "docs/algorithms/N03-multiplayer-turn-sequencing.md",
+      "sha256": "0874a55f35c1601ec4fd443023eb128a677706eb8f1551531a2fc1cf03c7400c",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "N04",
+      "path": "docs/algorithms/N04-hotseat-and-player-handoff.md",
+      "sha256": "3f350c71d6251fa60d778adb4fd35e18ecaf885e27ecfd7e243239f9af8e88be",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "N05",
+      "path": "docs/algorithms/N05-transport-and-wire-protocol.md",
+      "sha256": "2667369afd392f4b58701c780d2d1e264c24111eacc226e18e4655b54678c2f5",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P01",
+      "path": "docs/algorithms/P01-map-projection-and-interaction.md",
+      "sha256": "bbfc0aa43abf318ed42004c0d3d8316acdd85e7f9671978ae167961050a72546",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P02",
+      "path": "docs/algorithms/P02-map-rendering-and-minimap.md",
+      "sha256": "06cacaff343129489fd326245a1c9e48bdf0c66187e0b34f480f342f05e678f7",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P03",
+      "path": "docs/algorithms/P03-graphics-and-asset-processing.md",
+      "sha256": "e04a80feb08e4f0eeddce7a00456de752443ea542c80ac857cf814eb63cf434e",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P04",
+      "path": "docs/algorithms/P04-text-and-dialogs.md",
+      "sha256": "c26f17c7c052af69b5566b9c322f54c79ee96193157e709039e720508ad83d8e",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P05",
+      "path": "docs/algorithms/P05-input-and-command-dispatch.md",
+      "sha256": "3c9b111c22e5d59940be5bd4e85ad92460c9ff8c4ae4ba13a7d6a47bc4697224",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P06",
+      "path": "docs/algorithms/P06-city-interface.md",
+      "sha256": "723e81e3a597373912d3797fc576d76518779a24b7d7e9235b4a2a88247c8e91",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P07",
+      "path": "docs/algorithms/P07-advisors-reports-and-history.md",
+      "sha256": "4bd88b287ff962defb99a24f3827c1858e377b7492ccb5115a3f1767919bab9e",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P08",
+      "path": "docs/algorithms/P08-civilopedia-and-technology-tree.md",
+      "sha256": "584a3b958f9e34ed17669323e332365ef41693a78644a9596bfe7bf218f07fd3",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P09",
+      "path": "docs/algorithms/P09-council-and-throne-room.md",
+      "sha256": "05af0dd8689ecd0187058476ba8e4585f00971a146b4e6f576c73de823b56431",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "P10",
+      "path": "docs/algorithms/P10-audio-video-and-animation.md",
+      "sha256": "ab7ef4bfa531f3567576197a979bae42da5eec752d1fa48d6cb371bbd20bf144",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "S01",
+      "path": "docs/algorithms/S01-scenario-loading-and-parameters.md",
+      "sha256": "681ff7618f8a9367330cc53ae8f41b1992b9408c441ca9e05cef56849fbc4c8f",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "S02",
+      "path": "docs/algorithms/S02-event-language-and-execution.md",
+      "sha256": "7d372b9aa05a767a3c7170d7cceafd55485dd7bb4bc8ea488467dd61d1086a8d",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "S03",
+      "path": "docs/algorithms/S03-world-and-scenario-editors.md",
+      "sha256": "a987952ea53b1054af491ac791d3df5bd637e9d291a0d7fb349e5b23454a6599",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "S04",
+      "path": "docs/algorithms/S04-rules-and-asset-editors.md",
+      "sha256": "66f2e5e2957da5d0c11628de45c1e87d52773ea6ebaf0bd325d503e64f1b7785",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "U01",
+      "path": "docs/algorithms/U01-unit-lifecycle-and-stacks.md",
+      "sha256": "09a81d3046992e33e0a88a55ec3bdac03f4cf50dce4305f19ccb024e7d4f908f",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "U02",
+      "path": "docs/algorithms/U02-movement-and-zones-of-control.md",
+      "sha256": "3823d26742add7a09f693b6a5e39bcd3c71cd8efcf6f2bbece9eca135ca218aa",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "U03",
+      "path": "docs/algorithms/U03-pathfinding-and-goto.md",
+      "sha256": "b30cbed9ad5603c38fd459caf3b57f6cd45c1408047734ffde110686519e97cd",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "U04",
+      "path": "docs/algorithms/U04-unit-orders-and-activation.md",
+      "sha256": "a72c95310a36e5d83b07ba4fd0bc5988eb9c045b091adb6a99aa35089ae696fb",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "U05",
+      "path": "docs/algorithms/U05-transport-and-special-movement.md",
+      "sha256": "8f787980457224e8c8624dffb45fcdda6e67fc8cadf98ce66b3510f5bfa85663",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "U06",
+      "path": "docs/algorithms/U06-combat-and-veterancy.md",
+      "sha256": "41414d99cb3ab980afbc6fd081d25dfad5cc14803a221f7839e6bb975aa6dda0",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "U07",
+      "path": "docs/algorithms/U07-nuclear-attacks.md",
+      "sha256": "4aa44c5a7212a03516b95f1edeb5d9d0ef849e2de3d4863cd5c65b2d98458b42",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V01",
+      "path": "docs/algorithms/V01-civilization-lifecycle-and-civil-war.md",
+      "sha256": "5e29fdb744266cdb61249f52d12987eee610fdec3737eaabfc8452e48d0f839a",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V02",
+      "path": "docs/algorithms/V02-governments-and-tax-rates.md",
+      "sha256": "718ffa568ac675192f482d40bef1c8214c1cbd1e0009a74b333195a5f3ef595a",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V03",
+      "path": "docs/algorithms/V03-research-and-technology.md",
+      "sha256": "d70fb09311fdfc3b946e853b631c28773ea4bd45abb0df9b20e6f650a433f45e",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V04",
+      "path": "docs/algorithms/V04-diplomacy-and-treaties.md",
+      "sha256": "705b0c90df764e6160331c4d91b9b2d9c577e0ecc291d2d414bb281281a029c7",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V05",
+      "path": "docs/algorithms/V05-diplomatic-negotiation.md",
+      "sha256": "5f9d2af7cb5218dbefdfcdde88cdc2333c0811524431e07162042c539f6d962b",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V06",
+      "path": "docs/algorithms/V06-espionage-and-bribery.md",
+      "sha256": "773aed805c6402299cc48125f65e4a95de8ab4c55a324b6c0a009102dbd51096",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V07",
+      "path": "docs/algorithms/V07-spaceship.md",
+      "sha256": "a8b1c2ae7d1ada4f35c464c8e6bc523c06c20e37cb5afffac0c1ae2ad9d456c6",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "V08",
+      "path": "docs/algorithms/V08-scoring-victory-and-retirement.md",
+      "sha256": "3d91e49966ed4d79a4f784512d49aa0c438cb58fcdf6b1d350ebe70a8c032d98",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "W01",
+      "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
+      "sha256": "e26984910e31566dafb5debd73ab28db04eb492463f9c20a6476a6825b4de38a",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "W02",
+      "path": "docs/algorithms/W02-map-generation.md",
+      "sha256": "ea4a44e6b28fd56dd88954eb500960595737d846c7650883e25da8f29e4b6d16",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "W03",
+      "path": "docs/algorithms/W03-visibility-and-exploration.md",
+      "sha256": "2374886f1cf95d6879e740b111941ca2f25d1fa68d7fe7db61d4e333bafc407a",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "W04",
+      "path": "docs/algorithms/W04-terrain-work-and-improvements.md",
+      "sha256": "e977fa10850ef607d1e62922527a1d41176c4d5b44b0af6f2d7f3856e4905c22",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "W05",
+      "path": "docs/algorithms/W05-pollution-and-global-warming.md",
+      "sha256": "c283d898ed3b58ea836f0655ad706e743dff4cb729846d108ee2899609fcfa1b",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "W06",
+      "path": "docs/algorithms/W06-huts-and-barbarians.md",
+      "sha256": "c09dc1ec22fde33ade7b7c634f21039a16c28388466eb095bf7885249f4ea636",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "X01",
+      "path": "docs/algorithms/X01-classic-compatibility-contract.md",
+      "sha256": "c716280a1b287fcf16e58cc080e2c2fc37fb87cdd2c6878519915d0ac2a68a0c",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    },
+    {
+      "id": "X02",
+      "path": "docs/algorithms/X02-whole-game-conformance.md",
+      "sha256": "0ec3c222bd0a75379ad38d30453e094bc9995fe5ad9bf25b49438624e7389ee8",
+      "specificationStatus": "specified",
+      "registrationStatus": "not-registered"
+    }
+  ],
+  "operations": [
+    {
+      "id": "F01.primaryModuloFromCode",
+      "owner": "F01",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#3-primary-sampling-law",
+      "arguments": {
+        "code": "i32",
+        "n": "i32"
+      },
+      "result": "i32",
+      "reads": [],
+      "writes": [],
+      "preconditions": "0 <= code <= 32767; 1 <= n <= 2147483647",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "No references or state arguments.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": null
+    },
+    {
+      "id": "F01.secondaryRangeFromCode",
+      "owner": "F01",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#4-secondary-sampling-law",
+      "arguments": {
+        "lo": "i32",
+        "hi": "i32",
+        "U": "u32"
+      },
+      "result": "i32",
+      "reads": [],
+      "writes": [],
+      "preconditions": "all i32 endpoints and all u32 codes; equal, reversed and wrapped ranges included",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "No references or state arguments.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": null
+    }
+  ],
+  "states": [
+    {
+      "id": "F02.nextUnitToken",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "valueType": "u32",
+      "lifetime": "process",
+      "collectionOrder": "scalar",
+      "crossReferences": [],
+      "initialValue": "1",
+      "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
+      "implementation": null
+    },
+    {
+      "id": "F02.nextCityToken",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "valueType": "u32",
+      "lifetime": "process",
+      "collectionOrder": "scalar",
+      "crossReferences": [],
+      "initialValue": "1",
+      "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
+      "implementation": null
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "X02.F01.equal-range",
+      "revision": 9,
+      "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
+      "sha256": "d0ab4ea7208b77f0380126b328548f721cc85ec1909df98b7f862f509b1c01e5",
+      "operation": "F01.secondaryRangeFromCode",
+      "provenance": "specification-vector",
+      "executionStatus": "not-run",
+      "runReport": null
+    },
+    {
+      "id": "X02.F01.primary-modulo",
+      "revision": 8,
+      "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
+      "sha256": "a4b7c398080f44e8d80b7b90505603151fe8835cd6d2ce0984582ba9ae10124d",
+      "operation": "F01.primaryModuloFromCode",
+      "provenance": "specification-vector",
+      "executionStatus": "not-run",
+      "runReport": null
+    },
+    {
+      "id": "X02.F01.wrapped-range",
+      "revision": 9,
+      "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
+      "sha256": "39462a18eca6d56f31c563e2c772032a76fccc9aba5e58b70df682d21331959f",
+      "operation": "F01.secondaryRangeFromCode",
+      "provenance": "specification-vector",
+      "executionStatus": "not-run",
+      "runReport": null
+    }
+  ]
+}

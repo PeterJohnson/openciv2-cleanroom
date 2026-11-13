@@ -11,6 +11,7 @@ option(OC2_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(OC2_GUI_TESTS "Build Dear ImGui Test Engine GUI tests (desktop testing only)" OFF)
 option(OC2_FETCH_DEPENDENCIES "Allow downloading hash-pinned dependencies" OFF)
 include(cmake/Formatting.cmake)
+include(cmake/Assets.cmake)
 
 add_library(oc2_options INTERFACE)
 target_compile_features(oc2_options INTERFACE cxx_std_20)
@@ -114,3 +115,7 @@ if(BUILD_TESTING)
     endif()
   endif()
 endif()
+
+include(cmake/Metadata.cmake)
+# Record identities after targets, platform languages and dependencies are selected.
+include(cmake/Toolchain.cmake)

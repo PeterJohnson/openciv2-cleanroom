@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "inventoryVersion": 1,
+  "rows": [
+    {
+      "id": "F01.primaryModuloFromCode",
+      "owner": "F01",
+      "operation": "F01.primaryModuloFromCode",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#3-primary-sampling-law",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
+          "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238",
+          "function": "F01.primaryModuloFromCode",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "0 <= code <= 32767; 1 <= n <= 2147483647",
+      "caseIds": [
+        "X02.F01.primary-modulo"
+      ],
+      "comparisonSurfaces": [
+        "return",
+        "empty-state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "not-implemented",
+      "lastRun": null,
+      "gaps": [
+        "x02-runner"
+      ]
+    },
+    {
+      "id": "F01.secondaryRangeFromCode",
+      "owner": "F01",
+      "operation": "F01.secondaryRangeFromCode",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#4-secondary-sampling-law",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
+          "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238",
+          "function": "F01.secondaryRangeFromCode",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "all i32 endpoints and all u32 codes; equal, reversed and wrapped ranges included",
+      "caseIds": [
+        "X02.F01.equal-range",
+        "X02.F01.wrapped-range"
+      ],
+      "comparisonSurfaces": [
+        "return",
+        "empty-state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "not-implemented",
+      "lastRun": null,
+      "gaps": [
+        "x02-runner"
+      ]
+    }
+  ],
+  "integrationFamilies": [
+    {
+      "id": "G01",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "F05 new/random/custom/premade setup \u2192 W02/W01/U03 \u2192 V01 starts; repeat a second game in the same process",
+      "comparisonSurfaces": "Every generation checkpoint, setup versus generator-entry decisions, start search/compensation, retained name/token state; all size presets, odd height, both topologies and retained maps",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G02",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "F03 rules/options plus consuming mechanics and P03 assets",
+      "comparisonSurfaces": "Default/custom tables, nominal section/reference/default behavior and asset overrides; declared malformed-input rejection with safe cleanup; accepted prefix/wrap and partial effects only within supported domains",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G03",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "F06 save/load through S01/P05 and resume F04/N03/N04",
+      "comparisonSurfaces": "Bidirectional original-file interchange, exact versioned bytes, partial I/O, legacy conversion, event strings/passwords, renewed identities, mode adaptation, caches and resumed phase; classic loading without new RNG metadata",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G04",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "One complete human and AI civilization turn under F04, including all city passes, diplomacy/census and movement",
+      "comparisonSurfaces": "Old/new-year order, ascending/descending scans, both city recalculations, deleted-city exits, event hooks, notices, autosave and controlled decisions/same-policy replay",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G05",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "U01\u2013U05 movement, goto, activation, transport/fuel/airlift/paradrop with W03/W04 and P01/P05",
+      "comparisonSurfaces": "Costs versus estimates, failed orders, zone control, stack/cargo links, visibility/contact, reentry and active-unit changes",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G06",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "U06 combat \u2192 C09 capture \u2192 V01 elimination/civil war, S02 hooks, U01 losses and V04 treaties",
+      "comparisonSurfaces": "Strength/round draws, simultaneous or ordered loss, plunder/Palace/partisans, ownership/rehoming, notice ordering and remote branch differences",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G07",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "U07 weapon or W05 meltdown \u2192 blast \u2192 U01/C01/W05 effects with N02/P10",
+      "comparisonSurfaces": "SDI admission, no-action damage distinction, exact blast/damage order, pollution and required completion/callback effects; cosmetic sound/animation durations may differ",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G08",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "C02\u2013C08 economy/production/trade/research through V02/V03 and P06",
+      "comparisonSurfaces": "Whole-width moods, tax/luxury rounding, growth/support, wonder expiry/upgrades, commodity ranking/delivery/reciprocal routes, overflow and partial completion",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G09",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "V04/V05 negotiations and V06 missions with A08, W03, C09, S02 and P07",
+      "comparisonSurfaces": "Local/remote decisions, cancellation, attitude/treaty order, bribery/incitement price, success/escape, live dialog recipients and retained-input boundaries",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G10",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "W04\u2013W06 work, pollution/warming, huts and raids through U04/A03/F04",
+      "comparisonSurfaces": "Donor transfer, terrain conversion, remembered features, failed placement/retries, primary/secondary sampling laws, barbarian ransom/elimination",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G11",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "A01 assessment/orchestration through A02\u2013A08 and real movement/production/diplomacy children",
+      "comparisonSurfaces": "Tie direction, repeated candidate scans, scratch retention, government/difficulty/role variants, empty candidate sets, changed targets after callbacks",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G12",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "C06/V07 spaceship build/launch/arrival or V08 conquest/retirement with P07/P10/F06",
+      "comparisonSurfaces": "Race flags, score/objectives/Hall of Fame, pending reason changes, Continue choices, media fallback/cleanup and later session state",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G13",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "S01 scenario load \u2192 S02 parser/events \u2192 real mutation owners",
+      "comparisonSurfaces": "Original and cleanroom-exported scenarios, missing/custom sections, all trigger classes, one-shot persistence, random-turn probabilities, action chaining, reactive events and load/save continuation",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G14",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "S03/S04 editor apply/cancel \u2192 F03/F06 serialization \u2192 normal consumers",
+      "comparisonSurfaces": "Validation versus retained edits, rule references, asset conversion, derived refresh, actual reload effects and original-game reload of classic exports, excluded overwrite handling",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G15",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "N04 hotseat setup/load/turn handoff with F04/U04/P01\u2013P07",
+      "comparisonSurfaces": "Effective human/observer changes, concealed knowledge, password cancellation, per-player view retention, second handoff and quitting mid-transition",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G16",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "N01 lobby/admission and N05 discovery/transport \u2192 N02 startup",
+      "comparisonSurfaces": "Original TCP/IP host/cleanroom client and reverse, UDP discovery; peer/tribe identity, password/world exchange, provider errors, partial frames, routing, duplicate/stale input and exact accepted bytes; no new negotiation prerequisite",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G17",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "N03 sequential and simultaneous host/client turns with F04/S02/U04/P05",
+      "comparisonSurfaces": "Mixed original/cleanroom peers in both host roles; AI/local/remote phases, barriers, timeout/heartbeat/drag holds, queued completion, original authority and late reply effects",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G18",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "N02 state diff/resync/load with N01/N05 peers",
+      "comparisonSurfaces": "Exact section/checksum bytes, authoritative versus mirror mutations, failed sends, busy queues, disconnect, mixed-session save/resume, join/reconnect and host transfer in both directions during pending work",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G19",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "P01\u2013P05 map controls, input dispatch, resources and graphics/text",
+      "comparisonSurfaces": "Semantic tile/object selection versus movement, visibility, custom assets/text, available commands, busy gates, queued network events/timers and cancellation; no mandatory original geometry/pixels",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G20",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "P06 city UI and P07 reports with actual C/V mechanics",
+      "comparisonSurfaces": "Worker/production changes, city deletion/ownership changes while open, report values/ranks and visibility, recalculation effects, tax/ship/herald, Parley/chat routing; new layouts and display sorting preserve identities",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G21",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "P08 Civilopedia and P09 council/throne with F03/V03/C03/V04/V08",
+      "comparisonSurfaces": "Accessible topics/prerequisite relationships, custom text/media and knowledge visibility, council opinion priority and query effects, throne qualification/persistent choices; decorative geometry/frame traces optional",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G22",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "P10 media \u2192 P05 callbacks \u2192 P07/P09/V08 callers",
+      "comparisonSurfaces": "Supported authored media, meaningful notices, completion/skip/cancel outcomes, no lost/duplicated simulation work, responsive network processing and unchanged turn-timeout policy; native samples/codec/frame/pixel traces optional",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    },
+    {
+      "id": "G23",
+      "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
+      "scenario": "Failure and safe-policy variants across each relevant family",
+      "comparisonSurfaces": "Declared rejection/cleanup outside nominal inputs; harmless UI errors/fallback without fabricated acceptance; retained committed effects and required I/O/network failure paths; every OOB write prevented and required unknown reads explicit",
+      "caseIds": [],
+      "lastRun": null,
+      "gaps": [
+        "integration-fixtures"
+      ]
+    }
+  ],
+  "gaps": [
+    {
+      "id": "operation-inventory",
+      "milestone": "M1\u2013M7",
+      "domain": "All families beyond the two registered F01 mappings and two F02 state keys.",
+      "knownPrefix": "65 specification documents cataloged; no exhaustive original-entry inventory claim.",
+      "closureEvidence": "Register each implemented operation and full shared state closure from owning specs; reconcile unresolved source evidence through specification updates only."
+    },
+    {
+      "id": "x02-runner",
+      "milestone": "M1",
+      "domain": "Three F01 specification vectors.",
+      "knownPrefix": "Metadata is validated; gameplay adapters and trace comparator do not exist.",
+      "closureEvidence": "Implement version 3 loader, adapters and comparator; attach reports with fixture/spec hashes and tested implementation revision."
+    },
+    {
+      "id": "integration-fixtures",
+      "milestone": "M3\u2013M7",
+      "domain": "G01\u2013G23 integration joins and required variants.",
+      "knownPrefix": "Required scenario descriptions only, not captured or executed goldens.",
+      "closureEvidence": "Author bounded fixtures, obtain independent observations and run real parent/child integrations."
+    },
+    {
+      "id": "native-platform-evidence",
+      "milestone": "M0",
+      "domain": "macOS and Windows desktop/headless jobs.",
+      "knownPrefix": "CI definitions exist; no execution evidence available in this Linux checkout and no configured remote.",
+      "closureEvidence": "Run pinned CI jobs on macOS and Windows and retain build identity plus CTest reports before closing the M0 platform gate."
+    },
+    {
+      "id": "asset-font-schema",
+      "milestone": "M2",
+      "domain": "C2FONTS2 and C2FONTAA metrics/glyph encoding.",
+      "knownPrefix": "Magic, byte counts, hashes and provenance inventoried; detailed field encoding unavailable as data documentation.",
+      "closureEvidence": "Obtain a data-only font format contract from the asset package or replace caches with licensed, documented font input; do not inspect legacy reader/probe code."
+    },
+    {
+      "id": "asset-runtime-release",
+      "milestone": "M2",
+      "domain": "Runtime graphics package, layouts and decoder.",
+      "knownPrefix": "Published 2026.11.07.1 archive and per-file hashes verified; pack index checked. Runtime decoding is not implemented.",
+      "closureEvidence": "Implement independent PNG/font/layout readers and confirm semantic consumption of the pinned package; resolve asset-font-schema before accepting its glyph payloads."
+    },
+    {
+      "id": "stock-content",
+      "milestone": "M1\u2013M5",
+      "domain": "Default rules, labels, Civilopedia/scenario text and sound.",
+      "knownPrefix": "Specs define parsing/semantics; asset checkout contains graphics, not a complete playable content set.",
+      "closureEvidence": "Author and license redistributable defaults/test fixtures; support explicit user classic-content imports and add audio contract when available."
+    },
+    {
+      "id": "original-access",
+      "milestone": "M1\u2013M7",
+      "domain": "Original file and mixed-peer interoperability; W02 target measurements.",
+      "knownPrefix": "Target image hash exists in X02 vectors; no original executable or observations acquired here.",
+      "closureEvidence": "Use a separately provisioned original installation and external comparison protocol in docs/content/README.md; record executable hash, inputs and bounded observations."
+    }
+  ]
+}
