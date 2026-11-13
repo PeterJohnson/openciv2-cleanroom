@@ -20,6 +20,28 @@ X01 and X02 define that convention and its conformance checks.
   SDL3/ImGui presentation, platform menus, assets, persistence and networking.
 - [Implementation plan](docs/implementation-plan.md): phased delivery, dependencies,
   test gates and specification coverage.
+- [Building and testing](docs/BUILDING.md): desktop, headless, WASM, and GUI automation.
+- [Application shell](docs/application-shell.md): implemented UI/platform boundaries
+  and current limitations.
+
+The initial C++20/CMake/SDL3 shell provides native macOS/Windows menus, ImGui
+Linux/browser menus and dialogs, and a development view with illustrative tiles.
+It has no game simulation or asset-pack loader yet. Catch2 covers the portable
+shell and SDL integration; ImGui Test Engine covers the drawn interface.
+
+To build with explicitly enabled pinned dependency downloads (CMake 3.24+,
+Ninja, and a C++20 compiler required):
+
+```sh
+cmake --preset desktop-fetch
+cmake --build --preset desktop-fetch --parallel 4
+ctest --preset desktop-fetch
+```
+
+Use `headless-fetch` for tests without SDL/ImGui, or `gui-tests` to include GUI
+automation. Offline source overrides and platform prerequisites are described
+in the build guide. The [current status](docs/implementation-plan.md#current-implementation-status)
+distinguishes implemented infrastructure from remaining milestone gates.
 
 Implementation code must be written from this repository's specifications, not
 copied or derived from OpenCiv2 or Civ2 decompilation/reconstruction source. The

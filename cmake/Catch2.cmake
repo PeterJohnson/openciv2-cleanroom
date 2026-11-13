@@ -1,0 +1,13 @@
+include(cmake/Dependencies.cmake)
+string(JSON oc2_catch_version GET "${oc2_dependency_lock}" libraries Catch2 version)
+if(NOT FETCHCONTENT_SOURCE_DIR_CATCH2 AND NOT OC2_FETCH_DEPENDENCIES)
+  find_package(Catch2 ${oc2_catch_version} EXACT CONFIG QUIET)
+endif()
+if(NOT TARGET Catch2::Catch2WithMain)
+  set(CATCH_INSTALL_DOCS OFF CACHE BOOL "" FORCE)
+  set(CATCH_INSTALL_EXTRAS OFF CACHE BOOL "" FORCE)
+  oc2_fetch_dependency(Catch2)
+  list(APPEND CMAKE_MODULE_PATH "${catch2_SOURCE_DIR}/extras")
+  configure_file("${catch2_SOURCE_DIR}/LICENSE.txt"
+    "${CMAKE_CURRENT_BINARY_DIR}/CATCH2_LICENSE.txt" COPYONLY)
+endif()

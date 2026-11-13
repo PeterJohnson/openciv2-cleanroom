@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "libraries": {
+    "SDL3": {
+      "version": "3.4.2",
+      "url": "https://codeload.github.com/libsdl-org/SDL/tar.gz/refs/tags/release-3.4.2",
+      "sha256": "515ee4ad6e910e0ad8d8bbccb24ac52dd16c419e23eea3fb83541d20130c7aaa"
+    },
+    "imgui": {
+      "version": "1.93.0",
+      "url": "https://codeload.github.com/ocornut/imgui/tar.gz/refs/tags/v1.93.0",
+      "sha256": "f7bf6bc76e5d79d40d751096663e6c5d18daf08129dd52e7f7b09e4251c8eeee"
+    },
+    "imgui_test_engine": {
+      "version": "176a41dd07985ccb65287a569047ab93f2c7f5d0",
+      "url": "https://codeload.github.com/ocornut/imgui_test_engine/tar.gz/176a41dd07985ccb65287a569047ab93f2c7f5d0",
+      "sha256": "05e9dab6713ea1ce7cca0d99a8614f461ad7bc9f7623bd1757e403500c6b6a82"
+    },
+    "Catch2": {
+      "version": "3.8.1",
+      "url": "https://codeload.github.com/catchorg/Catch2/tar.gz/refs/tags/v3.8.1",
+      "sha256": "18b3f70ac80fccc340d8c6ff0f339b2ae64944782f8d2fca2bd705cf47cadb79"
+    }
+  },
+  "tools": { "emsdk": "4.0.23", "playwright": "1.58.2" }
+}

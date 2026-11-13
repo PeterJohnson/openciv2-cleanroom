@@ -1,7 +1,9 @@
 # Architecture
 
-Status: proposed implementation architecture. No implementation or conformance
-is claimed by this document. Delivery order and acceptance gates are in the
+Status: implementation architecture, with an initial application shell integrated.
+The [shell implementation](application-shell.md) records the implemented subset;
+the libraries and capabilities below are the target design, not a conformance
+claim. Delivery status and acceptance gates are in the
 [implementation plan](implementation-plan.md).
 
 Build a C++20 game with CMake, SDL3, and Dear ImGui for macOS, Linux, Windows,
@@ -84,6 +86,12 @@ Use a small number of libraries with internal subsystem directories; the 65
 specifications are ownership boundaries, not a requirement for 65 libraries.
 Proposed CMake targets:
 
+Currently implemented: `oc2_viewmodel`, `oc2_frontend`, `oc2_options`, ImGui
+dependency targets, and the application/test executables. The shell lives in
+`src/viewmodel/`; it contains no simulation. Add the remaining targets as their
+first real operations arrive. Native menu sources currently compile into
+`oc2_frontend` and can split into the listed adapter targets when needed.
+
 | Target | Responsibility and allowed dependencies |
 | --- | --- |
 | `oc2_base` | Logical IDs, explicit arithmetic, sampling policy, clocks, diagnostics, service contracts; C++ standard library only initially. |
@@ -96,7 +104,7 @@ Proposed CMake targets:
 | `oc2_frontend` | SDL window/input/render/audio and ImGui dialogs, custom drawing, map and minimap; depends on view models and content. |
 | `oc2_io_native`, `oc2_io_web` | Storage, time and transport implementations. Native headless I/O must not link SDL; web glue stays out of portable libraries. |
 | `oc2_menu_macos`, `oc2_menu_windows`, `oc2_menu_imgui` | Implement a shared menu contract; native handles stay in these graphical targets. |
-| `openciv2`, `oc2_headless`, `oc2_tests`, `oc2_ui_tests` | Composition roots for the game, conformance/replay CLI, Catch2, and ImGui Test Engine. |
+| `openciv2`, `oc2_headless`, `oc2_tests`, `oc2_runtime_tests`, `oc2_ui_tests` | Composition roots for the game, conformance/replay CLI, portable Catch2, SDL integration tests, and ImGui Test Engine. |
 | `oc2_net_bridge` | Separate native browser transport bridge; built only when requested. No game simulation. |
 
 Keep public interfaces small and use ordinary C++20 headers and source files.
@@ -338,8 +346,9 @@ classic resource-name lookup without depending on host case sensitivity.
 Use target-based CMake with `cxx_std_20`, extensions disabled, and separate build
 directories per native or Emscripten toolchain. Enable Objective-C++ only for the
 macOS adapter. Commit portable presets for debug, release, sanitizers, headless,
-and web; keep machine paths in untracked user presets. Select exact dependency
-and emsdk versions together at bootstrap and record them in a lock manifest.
+and web; keep machine paths in untracked user presets. Record exact dependency
+and emsdk versions in [dependencies.json](../dependencies.json), updating the
+tested set together.
 Use pinned FetchContent inputs or explicit compatible installed packages,
 with downloads opt-in and cached/offline operation supported. Never track a
 dependency's moving branch as a reproducible build input.

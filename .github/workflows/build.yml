@@ -1,0 +1,96 @@
+name: Build and test
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Linux build dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxfixes-dev libxss-dev libwayland-dev libxkbcommon-dev libdecor-0-dev libasound2-dev libpulse-dev libegl1-mesa-dev libgl1-mesa-dev
+      - name: Configure
+        run: cmake -S . -B build/ci -DOC2_FETCH_SDL=ON -DOC2_FETCH_DEPENDENCIES=ON -DCMAKE_BUILD_TYPE=Debug -DOC2_GUI_TESTS=ON
+      - name: Build
+        run: cmake --build build/ci --config Debug --parallel 4
+      - name: Test
+        run: ctest --test-dir build/ci -C Debug --output-on-failure
+      - name: GUI test reports and failure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openciv2-gui-${{ runner.os }}
+          path: build/ci/gui-results/
+          if-no-files-found: ignore
+
+  headless:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            cxx: clang++
+            cc: clang
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure without graphical dependencies
+        shell: bash
+        run: |
+          args=()
+          if [ -n "${{ matrix.cxx }}" ]; then
+            args+=("-DCMAKE_CXX_COMPILER=${{ matrix.cxx }}" "-DCMAKE_C_COMPILER=${{ matrix.cc }}")
+          fi
+          cmake -S . -B build/headless-ci -DOC2_BUILD_GUI=OFF -DOC2_FETCH_DEPENDENCIES=ON "${args[@]}"
+      - run: cmake --build build/headless-ci --config Debug --parallel 4
+      - run: ctest --test-dir build/headless-ci -C Debug --output-on-failure
+
+  sanitizers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure headless sanitizers
+        run: cmake --preset sanitize -DOC2_FETCH_DEPENDENCIES=ON
+      - run: cmake --build --preset sanitize
+      - run: ctest --preset sanitize
+
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read toolchain pins
+        id: pins
+        run: |
+          echo "emsdk=$(jq -r '.tools.emsdk' dependencies.json)" >> "$GITHUB_OUTPUT"
+          echo "playwright=$(jq -r '.tools.playwright' dependencies.json)" >> "$GITHUB_OUTPUT"
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: ${{ steps.pins.outputs.emsdk }}
+          actions-cache-folder: emsdk-cache
+      - name: Configure
+        run: cmake --preset web
+      - name: Build
+        run: cmake --build build/web --parallel 4
+      - name: WASM unit tests
+        run: ctest --preset web
+      - name: Browser test dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright@${{ steps.pins.outputs.playwright }}
+          npx playwright install --with-deps chromium
+      - name: Browser smoke test
+        run: node tests/web_smoke.cjs build/web
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openciv2-web
+          path: |
+            build/web/openciv2.html
+            build/web/openciv2.js
+            build/web/openciv2.wasm
+            build/web/THIRD_PARTY_NOTICES.txt

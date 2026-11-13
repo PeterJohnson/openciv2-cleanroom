@@ -1,9 +1,10 @@
 # Implementation plan
 
-Status: proposed roadmap for the [architecture](architecture.md). The repository
-currently contains 65 algorithm specifications and three portable conformance
-vectors; it has no game implementation or build system. Milestones below are
-work to do, not completed compatibility claims.
+Status: roadmap for the [architecture](architecture.md), with an initial SDL3
+application shell and build/test infrastructure integrated. The repository also
+contains 65 algorithm specifications and three portable conformance vectors.
+Gameplay and the X02 runner are not implemented. Milestones below describe
+delivery gates, not completed compatibility claims.
 
 Deliver vertical slices through the portable game and graphical frontend while
 growing the same conformance corpus. Establish file/wire formats and external
@@ -28,6 +29,32 @@ start during M1/M2; do not wait for M6 to discover protocol problems. Implement
 each mechanic's UI and network publication contracts as it arrives, and maintain
 the M6 integration backlog throughout M3–M5. This is a dependency plan, not a
 calendar estimate.
+
+## Current implementation status
+
+The shell was integrated from `codex/sdl3-core` through `c01bcef`, preserving the
+current algorithm specifications rather than merging that branch's older copies.
+See [application-shell.md](application-shell.md) for the code boundaries and
+imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
+
+| Milestone | Implemented subset | Remaining before the exit gate |
+| --- | --- | --- |
+| M0 — partial | C++20/CMake targets, dependency archive/hash manifest, offline/download policy, desktop/headless/release/sanitizer/web presets, Catch2, ImGui automation, four-platform CI definitions | X02 registry/coverage ledger, content and asset-format inventory, full compiler/platform execution evidence |
+| M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | F01/F02/W01, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs and semantic session continuations |
+| M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
+| M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
+
+Local merge verification uses Linux/GCC 15.2, SDL3 3.4.2, and the dependency pins
+in `dependencies.json`. Native CTest passes 11 entries, including seven ImGui
+scenarios at each of three densities (21 scenario runs). The separate headless
+build passes five Catch2 cases, also passing with ASan/UBSan. These results cover
+the application shell only. The Emscripten 4.0.23 Release build passes all five
+portable Catch2 cases under Node and the Chromium smoke test with pinned
+Playwright 1.58.2 (startup, menus/dialogs, resizing, 2x density, Quit/Restart).
+The browser harness now fails explicitly if its local HTTP listener cannot bind.
+A release shell build/smoke run also passes; headless library-only configuration
+needs no dependencies. macOS/Windows compilation and native menu interaction
+remain unverified locally; CI definitions alone are not execution evidence.
 
 ## M0 — Establish the project and its evidence boundary
 
@@ -271,14 +298,15 @@ and does not replace, X02's operation-level coverage ledger.
 
 ## Immediate implementation backlog
 
-The first implementation changes should be small and reviewable:
+The next implementation changes should build on the integrated shell:
 
-1. Bootstrap CMake, pinned Catch2, a headless target and native/WASM CI.
+1. Complete M0's operation/state registry, coverage ledger, and content inventory;
+   retain the existing CMake/Catch2/platform build boundary.
 2. Implement F01 sampling/arithmetic adapters and execute the existing three
    X02 vectors with the version 3 loader/comparator.
 3. Implement F02 identities/state and W01 geometry with retained-state fixtures.
-4. Specify the asset data reader and content manifest; bootstrap SDL3/ImGui and
-   the four-platform menu shell alongside the portable foundations.
+4. Specify and implement the asset data reader and content manifest; connect it
+   to the existing SDL3/ImGui shell and finish native menu/platform verification.
 5. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
    connect the first playable slice.
 
