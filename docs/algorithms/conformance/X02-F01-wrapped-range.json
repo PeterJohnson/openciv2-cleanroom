@@ -1,0 +1,173 @@
+{
+  "format": "openciv2-conformance/3",
+  "id": "X02.F01.wrapped-range",
+  "revision": 9,
+  "target": {
+    "game": "Civilization II Multiplayer Gold Edition",
+    "version": "5.4.0f patch 3",
+    "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+  },
+  "specifications": [
+    {
+      "id": "F01",
+      "file": "../F01-determinism-and-arithmetic.md",
+      "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238"
+    },
+    {
+      "id": "X01",
+      "file": "../X01-classic-compatibility-contract.md",
+      "sha256": "c716280a1b287fcf16e58cc080e2c2fc37fb87cdd2c6878519915d0ac2a68a0c"
+    },
+    {
+      "id": "X02",
+      "file": "../X02-whole-game-conformance.md",
+      "sha256": "0ec3c222bd0a75379ad38d30453e094bc9995fe5ad9bf25b49438624e7389ee8"
+    }
+  ],
+  "boundary": {
+    "level": "primitive",
+    "operation": "F01.secondaryRangeFromCode",
+    "start": "pure mapping entry with explicit code argument",
+    "stop": "normal return followed by exit snapshot",
+    "arguments": {
+      "lo": {
+        "$type": "i32",
+        "value": "-2147483648"
+      },
+      "hi": {
+        "$type": "i32",
+        "value": "1"
+      },
+      "U": {
+        "$type": "u32",
+        "value": "1015568748"
+      }
+    },
+    "suppliedChildren": []
+  },
+  "profile": {
+    "domain": "accepted-off-nominal",
+    "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+    "restrictions": [],
+    "deviations": []
+  },
+  "entry": {
+    "state": {},
+    "retainedInputs": [],
+    "blobs": []
+  },
+  "randomness": {
+    "mode": "controlled-choices",
+    "policy": null,
+    "contexts": {},
+    "choices": []
+  },
+  "environment": {
+    "protocol": "scripted-v1",
+    "inputs": [],
+    "unexpected": "fail"
+  },
+  "expected": {
+    "outcome": "return",
+    "result": {
+      "$type": "i32",
+      "value": "1639699275"
+    },
+    "state": {},
+    "trace": [
+      {
+        "seq": 0,
+        "id": "root.enter",
+        "kind": "enter",
+        "call": "root",
+        "payload": {
+          "operation": "F01.secondaryRangeFromCode",
+          "parent": null,
+          "arguments": {
+            "lo": {
+              "$type": "i32",
+              "value": "-2147483648"
+            },
+            "hi": {
+              "$type": "i32",
+              "value": "1"
+            },
+            "U": {
+              "$type": "u32",
+              "value": "1015568748"
+            }
+          }
+        }
+      },
+      {
+        "seq": 1,
+        "id": "root.return",
+        "kind": "return",
+        "call": "root",
+        "payload": {
+          "result": {
+            "$type": "i32",
+            "value": "1639699275"
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "id": "root.exit",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "exit",
+          "state": {}
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "stateScope": "complete-boundary",
+    "traceKinds": [
+      "enter",
+      "return",
+      "snapshot"
+    ],
+    "exclusions": [],
+    "normalizations": [],
+    "order": {
+      "before": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independent": []
+    }
+  },
+  "evidence": {
+    "kind": "specification-vector",
+    "sources": [
+      {
+        "file": "../F01-determinism-and-arithmetic.md",
+        "section": "4-secondary-sampling-law",
+        "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238"
+      }
+    ],
+    "limitations": [
+      "Explicit sampling-law code, not a seed-to-sequence expectation or original-program recording.",
+      "Replaces a version 1 original-state example; historical validation is not promoted to new-policy runtime coverage.",
+      "Only the pure numeric mapping is covered; no sampler distribution, implementation replay, runner or game session is validated.",
+      "Contract references refreshed for required original-file and mixed-peer interoperability; numeric expectations unchanged.",
+      "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
+      "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
+      "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence."
+    ]
+  },
+  "limits": {
+    "events": 64,
+    "providerRequests": 16,
+    "hostMilliseconds": 1000
+  }
+}
