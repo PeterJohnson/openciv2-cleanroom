@@ -1,9 +1,11 @@
 """M0 metadata checks reject stale evidence and unsafe asset inputs without a game."""
 
 import json
+import os
 from pathlib import Path
 import shutil
 import struct
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -34,6 +36,28 @@ class RegistryTests(unittest.TestCase):
     def test_checked_in_inventory_without_external_inputs(self):
         self.assertIn("no gameplay executed", conformance.validate(self.root))
         self.assertIn("no external files", assets.check_inventory(self.root))
+
+    def test_windows_style_checkout_preserves_inventory_bytes(self):
+        shutil.copyfile(conformance.ROOT / ".gitattributes", self.root / ".gitattributes")
+        binary = b"\x00\x01\n\x02\r\n\xff"
+        (self.root / "binary.dat").write_bytes(binary)
+        checkout = self.root / "checkout"
+        # Exercise Git's Windows newline setting without inheriting user hooks,
+        # attributes, or index/worktree overrides, and without changing this repo.
+        env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+        env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT="0")
+        for args in (
+            ["init"],
+            ["config", "core.autocrlf", "true"],
+            ["config", "core.attributesFile", os.devnull],
+            ["add", "docs", "dependencies.json", ".gitattributes", "binary.dat"],
+            ["checkout-index", "--all", f"--prefix={checkout.as_posix()}/"],
+        ):
+            result = subprocess.run(["git", *args], cwd=self.root, env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("no gameplay executed", conformance.validate(checkout))
+        self.assertIn("no external files", assets.check_inventory(checkout))
+        self.assertEqual((checkout / "binary.dat").read_bytes(), binary)
 
     def test_changed_specification_requires_review(self):
         path = next((self.root / "docs/algorithms").glob("F01-*.md"))

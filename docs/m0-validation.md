@@ -1,9 +1,9 @@
 # M0 implementation and validation
 
 M0's repository implementation is complete. Its full platform exit gate remains
-open until the pinned macOS and Windows jobs execute successfully. This Linux
-checkout has no configured Git remote; CI definitions and compiler availability
-checks are not execution evidence. See `native-platform-evidence` in the
+open until all pinned native desktop/headless jobs execute successfully. The first
+GitHub Actions run provides partial platform evidence and exposes three CI setup
+issues, described below. See `native-platform-evidence` in the
 [coverage ledger](conformance/coverage.json).
 
 ## Delivered boundaries
@@ -115,3 +115,40 @@ TTF data before executable/transfer compression; it does not require a new runti
 filesystem path or an original bitmap-cache parser. The architecture, M2 plan and
 content ledger now track remaining font platform/text work rather than an unknown
 bitmap format. macOS/Windows execution remains pending.
+
+## First GitHub Actions run — 2026-11-13 UTC
+
+[Run 43489505500](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43489505500)
+tested revision `c0aa93e`. Six jobs passed: Linux/macOS metadata, Linux/macOS
+headless, Linux sanitizers and WASM (including Node tests and Chromium smoke).
+The five failed jobs have three shared setup causes:
+
+- Windows metadata, headless and desktop jobs failed specification byte hashes
+  because Git converted Markdown to CRLF. Both Windows builds and all their C++
+  tests passed, including desktop startup, runtime fonts and all three ImGui
+  density runs using SDL's dummy video/software render drivers.
+- Linux desktop configuration stopped because SDL requires `libxtst-dev` for
+  the enabled X11 XTest support.
+- macOS desktop generation lacked Objective-C++ compile/archive rules in SDL's
+  directory scope because the parent enabled that language after loading SDL.
+
+The follow-up fixes enforce LF for text checkouts (retaining binary detection),
+install the missing Linux package, and enable Objective-C/Objective-C++ in the
+parent GUI scope before loading dependencies. Expected specification/fixture
+hashes and compiler/dependency versions are unchanged. A temporary Git checkout
+with `core.autocrlf=true` reproduces the original hash failure and passes with the
+new attributes, including a binary-preservation check. An isolated CMake language
+scope reproduction produces the same three missing-rule errors with the old
+ordering and configures/builds with the new ordering on Linux; it does not verify
+the macOS SDK or native menu implementation.
+
+Local follow-up validation passes all 73 Python tests, schema/gameplay-data
+checks, formatting and workflow YAML parsing. A fresh strict Clang 20.1.8 /
+CMake 3.31.10 Linux desktop build in `build/ci-fix-desktop` uses pinned SDL 3.4.2
+from source with X11/XTest and Wayland enabled; all 13 CTests pass, including the
+three GUI density runs. Source overrides and asset/font inputs match the local
+setup above. This does not substitute for the hosted Ubuntu package-install step.
+
+Passing hosted reports after these fixes are still required to close the platform
+gate. The successful Windows GUI tests exercise the dummy video driver; they do
+not establish native-display or native-menu interaction coverage.

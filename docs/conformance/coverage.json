@@ -344,9 +344,9 @@
     {
       "id": "native-platform-evidence",
       "milestone": "M0",
-      "domain": "macOS and Windows desktop/headless jobs.",
-      "knownPrefix": "CI definitions exist; no execution evidence available in this Linux checkout and no configured remote.",
-      "closureEvidence": "Run pinned CI jobs on macOS and Windows and retain build identity plus CTest reports before closing the M0 platform gate."
+      "domain": "Pinned native desktop/headless jobs on macOS, Linux and Windows.",
+      "knownPrefix": "Run 43489505500 at c0aa93e passed Linux/macOS headless. Windows builds and C++ tests passed, including dummy-driver runtime/GUI tests, but inventory failed after CRLF checkout conversion. Linux/macOS desktop configuration failed; see docs/m0-validation.md for the three setup fixes.",
+      "closureEvidence": "Rerun all pinned native jobs after the checkout, Linux dependency and macOS language-scope fixes; retain build identity plus passing CTest reports before closing the M0 platform gate."
     },
     {
       "id": "runtime-font-platforms",

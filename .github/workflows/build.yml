@@ -46,7 +46,7 @@ jobs:
           arch: x64
       - name: Linux GUI build dependencies
         if: runner.os == 'Linux' && matrix.mode == 'desktop'
-        run: sudo apt-get update && sudo apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxfixes-dev libxss-dev libwayland-dev libxkbcommon-dev libdecor-0-dev libasound2-dev libpulse-dev libegl1-mesa-dev libgl1-mesa-dev
+        run: sudo apt-get update && sudo apt-get install -y libx11-dev libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxfixes-dev libxss-dev libxtst-dev libwayland-dev libxkbcommon-dev libdecor-0-dev libasound2-dev libpulse-dev libegl1-mesa-dev libgl1-mesa-dev
       - name: Configure pinned toolchain
         shell: bash
         run: |
