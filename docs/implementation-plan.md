@@ -3,8 +3,9 @@
 Status: roadmap for the [architecture](architecture.md), with an initial SDL3
 application shell and build/test infrastructure integrated. The repository also
 contains 65 algorithm specifications and three portable conformance vectors.
-Gameplay and the X02 runner are not implemented. Milestones below describe
-delivery gates, not completed compatibility claims.
+Gameplay, save inspection tools, the in-game console, Lua user automation and
+the X02 runner are not implemented. Milestones below describe delivery gates,
+not completed compatibility claims.
 
 Deliver vertical slices through the portable game and graphical frontend while
 growing the same conformance corpus. Establish file/wire formats and external
@@ -16,10 +17,10 @@ later mechanics. Keep all four platform builds active from the first shell.
 | Milestone | Result | Depends on |
 | --- | --- | --- |
 | M0 | Cleanroom workflow, content inventory, build/test skeleton | Existing specs |
-| M1 | Portable state, arithmetic, fixtures, rule/file foundations | M0 |
+| M1 | Portable state, arithmetic, fixtures, rule/file foundations and save inspection | M0 |
 | M2 | SDL/ImGui shell, native menus, asset adapter on four platforms | M0; M1 interfaces |
-| M3 | Interactive map and bounded city/unit turn slice | M1 + M2 |
-| M4 | Complete single-player mechanics and classic AI | M3 |
+| M3 | Interactive map, bounded city/unit turn slice and command console | M1 + M2 |
+| M4 | Complete single-player mechanics/classic AI; initial Lua player automation | M3 |
 | M5 | Scenarios, editors, complete semantic UI and hotseat | M4; incremental work after M3 |
 | M6 | Original-compatible native multiplayer and browser bridge | M1 protocol foundations + M4/M5 integration |
 | M7 | Conformance closure, packaging, release evidence | M5 + M6 |
@@ -29,6 +30,14 @@ start during M1/M2; do not wait for M6 to discover protocol problems. Implement
 each mechanic's UI and network publication contracts as it arrives, and maintain
 the M6 integration backlog throughout M3–M5. This is a dependency plan, not a
 calendar estimate.
+
+The [tools and automation architecture](architecture.md#5-inspection-tools-console-and-user-automation)
+adds clients of the portable implementation. Deliver stored-save inspection in
+M1 and the console in M3; start Lua automation once M3's query, command-result and
+interaction contracts work. The automation slice can progress alongside M4
+mechanics. It does not require moving classic AI or map generation out of C++.
+Track these extension features separately from evidence of original-game
+compatibility; they must preserve the owning operation's classic behavior.
 
 ## Current implementation status
 
@@ -40,9 +49,9 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
 | M0 — partial | C++20/CMake targets, dependency archive/hash manifest, offline/download policy, desktop/headless/release/sanitizer/web presets, Catch2, ImGui automation, four-platform CI definitions | X02 registry/coverage ledger, content and asset-format inventory, full compiler/platform execution evidence |
-| M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | F01/F02/W01, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs and semantic session continuations |
+| M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | F01/F02/W01, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI, queries and semantic session continuations |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
-| M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
+| M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
 Local merge verification uses Linux/GCC 15.2, SDL3 3.4.2, and the dependency pins
 in `dependencies.json`. Native CTest passes 11 entries, including seven ImGui
@@ -101,9 +110,22 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
   content and retaining specified consumer conversions. Implement explicit
   classic record codecs, raw maps, and the first supported save load/export path.
   Expand version/mode coverage incrementally and label limitations.
+- Separate decoded file records from F06's ordered session load. Add native
+  `oc2 inspect`, `oc2 validate` and `oc2 diff` for the supported record domain,
+  with human-readable and versioned, lossless JSON output, documented exit
+  statuses, format/field diagnostics and no input writes. Report unsupported
+  sections and missing rules explicitly; keep stored values distinct from
+  computed interpretations. Compare both bytes and decoded fields by file slots.
+- Introduce `oc2_query` with owned records, stable ordering and provenance for
+  file inspection and live-state queries. Establish observer/authority contexts
+  and prove queries neither mutate retained state nor consume gameplay RNG.
+  Add graphical view models as consumers without sharing rendering types.
 - Define command/effect/interaction records and cooperative continuation APIs.
   Prove a fake decision can resume an operation, a callback can change a live
   read, and cancellation can retain an already-published effect.
+  Add descriptor schemas for semantic names, typed arguments, access classes
+  and help, plus correlated submission/pending/interaction/completion results.
+  Keep descriptor parsing separate from the owning execution checks.
 - Implement N05 incremental framing plus N02 envelope/state-image primitives
   against fake streams. Schedule independently authored original-peer discovery
   and handshake captures as soon as these boundaries are available.
@@ -112,7 +134,11 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 on native and WASM builds. Checkpoint repeat/restore is reproducible under the
 chosen policy. Partial I/O and fragmented/coalesced frame cases pass. Start
 bidirectional original raw-map/save checks for the implemented subset, recording
-unavailable captures or unimplemented fields as gaps.
+unavailable captures or unimplemented fields as gaps. A tools-only build runs
+save inspection without SDL, ImGui, assets or Lua. Catch2 covers truncated and
+unsupported records, unchanged input bytes, stable diffs, exact JSON integers,
+and stored-state inspection without load-time identity/counter transformations.
+Do not advertise a loaded-state view before its actual load path exists.
 
 ## M2 — Prove the graphical and platform boundaries
 
@@ -159,6 +185,17 @@ for the chosen domain; keep unsupported mechanics visibly unavailable.
   retained state and resume gates, not just a fresh-process happy path.
 - Save and reload the slice through F06. Continue after reload and compare its
   specified transformations. Keep replay checkpoints separate from classic saves.
+- Add the portable console parser and an ImGui console panel with help, queries,
+  completion, history and structured command results. Expose the slice's normal
+  player actions through the same registry/dispatch as menus, including pending
+  interactions and replies. Verify typed input cannot leak into map shortcuts.
+- Add player-scoped city/unit/known-map queries and semantic event subscriptions
+  with explicit ordering and delivery cursors. Filter query results, completion,
+  events and errors by the session's observer context. Keep developer/editor
+  diagnostics separate from the normal player's API.
+- Enable explicit loaded-state CLI analysis for the implemented F06 domain in
+  an isolated session with declared rules, entry state and RNG/services. Label
+  load transformations and partial failure separately from the stored view.
 - Add interface seams for combat, diplomacy, AI, events, and network authority;
   no placeholder child counts as a completed integrated operation.
 
@@ -166,7 +203,11 @@ for the chosen domain; keep unsupported mechanics visibly unavailable.
 turns with a city and units, saves, reloads, and continues. Key state/results
 agree between frontends. Cover changed/deleted targets, fog privacy, cancellation,
 and the first G03/G05/G08/G19/G20 joins. This is a bounded playable prototype,
-not complete single-player compatibility.
+not complete single-player compatibility. Direct session calls, console commands
+and GUI actions agree for the supported player operations, including rejection,
+pending decisions and partial effects. Queries leave state and RNG unchanged;
+fogged information and stale identities cannot escape through console results
+or completion. Loaded-state inspection is reproducible for declared inputs.
 
 ## M4 — Complete single-player mechanics and AI
 
@@ -199,6 +240,39 @@ families have concrete cases, including custom rules and failure variants.
 Any unclosed evidence gap remains scoped and reported rather than hidden by
 successful playthroughs.
 
+### Initial Lua automation slice
+
+Owners: the extension API, with P05 player dispatch, W03 query privacy, F04 event
+boundaries and each command's existing mechanic. This work depends on M3's
+contracts, not on the completion of every classic AI policy.
+
+- Add optional `oc2_automation` and `OC2_ENABLE_SCRIPTING`; pin a stock Lua
+  runtime and binding API for native/WASM in the dependency manifest. Keep
+  basic console and tools builds independent of the interpreter.
+- Bind permitted queries, events, commands and correlated results. Implement
+  an example production policy using an authored fixture: observe own-city
+  production completion, query current choices, submit a normal choice, wait
+  for its result. Do not replace A02 or change automated opponents' decisions.
+- Implement task start/pause/cancel and waiting at declared session boundaries,
+  stable event ordering, bounded queues/output and task diagnostics. Bound
+  instructions, memory and host calls, including infinite-loop and allocation
+  failures, without blocking protocol/deadline service. Preserve committed
+  effects and normal interaction defaults when tasks stop.
+- Expose a restricted library/capability set with explicit script selection;
+  block direct state writes and implicit file/process/network/native-module
+  access. Test permission and observer boundaries independently of the GUI.
+- Record emitted commands for gameplay replay without executing scripts again.
+  Specify explicit versioned task state and script identity for later resume;
+  keep Lua VM/coroutine state out of classic save and wire formats. Provide a
+  script-private RNG only with recorded policy/state, separate from game RNG.
+
+**Automation exit gate:** the same example policy runs headlessly, in the game
+and in WASM, issuing the same command sequence for the same ordered observations.
+Compare its outcomes with equivalent manual commands. Cover rejected commands,
+changed/deleted targets, script errors after a completed command, runaway code,
+memory limits, cancellation and pending interactions. M4's initial scripts may
+be session-local; saved task restoration and hotseat isolation close in M5.
+
 ## M5 — Complete scenarios, editors, UI, and hotseat
 
 Owners: S01–S04, N04, P01–P10; F03/F06 and the actual mutation owners.
@@ -215,6 +289,15 @@ Owners: S01–S04, N04, P01–P10; F03/F06 and the actual mutation owners.
   new drawing read-only. Retain gameplay-relevant classic view inputs.
 - Implement N04 roster, passwords, handoff, per-player views, save/resume and
   concealment. Test cached map/dialog/report information across two handoffs.
+- Extend concealment to console history, output/completion caches and script
+  observations. Suspend outgoing-player tasks and detach their subscriptions;
+  resume only under that player's restored authority with current target checks.
+- Implement explicit automation checkpoint/sidecar state, schema/version and
+  script-hash checks, event cursors and pending-command reconciliation. Verify
+  that resuming does not duplicate a command already accepted or completed.
+  Missing/mismatched metadata leaves automation stopped while classic saves
+  still load normally. Provide separately enabled editor commands through the
+  same descriptors without granting those capabilities to player scripts.
 - Add sound from the asset repo when available. Complete supported authored
   media decoding independently of stock audio availability; test fallback,
   completion, skip/cancel, and incoming events during playback.
@@ -224,6 +307,8 @@ changed-owner/deleted targets, timeout/reply cases, and retained edits after
 cancel. Original interchange works for the advertised scenario/editor domain.
 GUI tests exercise semantic outcomes and custom controls; desktop smoke tests
 cover both native menus and browser tests cover persistence/import/export.
+Scripted and console-driven play pass hotseat concealment and save/resume tests,
+including absent sidecars, changed scripts and interrupted pending work.
 
 ## M6 — Complete multiplayer and the browser transport path
 
@@ -240,6 +325,11 @@ Owners: N01–N05, with F04/F06, simulation, scenario, and P05 interaction joins
 - Run multiple cleanroom peers under a deterministic fake transport, then live
   original/cleanroom mixed sessions in both host roles. Replay captured transcripts
   for regression; retain live runs as a distinct interoperability requirement.
+- Exercise local console/script commands with original peers in both host roles.
+  Verify ordinary N02 authority, request/result routing and exactly-once effects
+  with no new wire fields or peer runtime requirement. Test stale authority,
+  disconnect/reconnect, host transfer and task suspension/resume; received
+  resolved outcomes must never cause a script to apply or reroll them again.
 - Build the browser bridge with explicit endpoint/session access and native
   TCP listeners/UDP discovery. Prove transport address/routing semantics, bridge
   loss, browser suspension, and host migration. Publish the bridge deployment
@@ -266,6 +356,11 @@ local-play web preview if bridge evidence is still incomplete.
 - Produce desktop bundles/packages and web artifacts with pinned content,
   checksums, notices, dependency inventory, documented save locations, and
   capability limits. Verify clean installation without a development checkout.
+- Package the native inspection CLI and document output/API versions, exit
+  statuses, console commands and example player scripts. Exercise tools-only,
+  scripting-disabled and headless scripting configurations. Include script
+  import/export and task-state persistence in browser packaging tests; do not
+  bundle Lua into targets that do not use it.
 - Publish bounded test reports with specification/fixture/policy/content hashes,
   original executable identity where used, exact tested platforms, and remaining
   gaps. Never infer whole-game conformance from test counts alone.
@@ -308,7 +403,12 @@ The next implementation changes should build on the integrated shell:
 4. Specify and implement the asset data reader and content manifest; connect it
    to the existing SDL3/ImGui shell and finish native menu/platform verification.
 5. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
-   connect the first playable slice.
+   expose stored-record queries and the inspection/validation/diff CLI.
+6. Establish command descriptors, observer-filtered queries and correlated
+   results as real playable operations arrive; connect the console in M3 and
+   compare it with the graphical and headless callers.
+7. Add the M4 Lua production-policy slice after those interfaces work, then
+   close task persistence/hotseat and mixed-peer cases in M5/M6.
 
 For each change: cite the owning specification, implement the smallest coherent
 operation, test its meaningful boundary and failures, update its coverage row,

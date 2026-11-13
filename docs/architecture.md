@@ -9,8 +9,10 @@ claim. Delivery status and acceptance gates are in the
 Build a C++20 game with CMake, SDL3, and Dear ImGui for macOS, Linux, Windows,
 and browser WebAssembly through Emscripten. The game implementation, including
 AI, persistence, session orchestration, and networking, runs without a graphical
-framework. The graphical application is one client of that implementation;
-the conformance runner is another.
+framework. The graphical application, save inspection tools, conformance runner,
+and user automation are clients of the same portable implementation. An in-game
+console and Lua scripts use player queries and semantic commands; they do not
+require implementing the core algorithms in Lua.
 
 ## 1. Cleanroom and compatibility boundary
 
@@ -69,13 +71,26 @@ flowchart TD
     app --> platform[Native menus / storage / transport adapters]
     frontend --> views[Presentation models]
     views --> session[Session and interaction coordinator]
+    views --> query[Read-only queries]
+    frontend --> console[Portable console]
+    console --> session
+    console --> query
+    console -. optional .-> automation[Lua automation]
+    automation --> session
+    automation --> query
+    cli[Save inspection CLI] --> formats[Rules / save / scenario codecs]
+    cli --> query
     runner[Headless runner / Catch2] --> session
+    runner -. optional .-> automation
     session --> game[Game state / mechanics / AI / events]
-    session --> formats[Rules / save / scenario codecs]
+    session --> query
+    session --> formats
     session --> network[Classic protocol and network sessions]
     network --> formats
     network --> game
     formats --> game
+    query --> game
+    query --> formats
     frontend --> content[Asset package / image / font / media data]
     content --> base[Types / arithmetic / randomness / service contracts]
     game --> base
@@ -97,14 +112,18 @@ first real operations arrive. Native menu sources currently compile into
 | `oc2_base` | Logical IDs, explicit arithmetic, sampling policy, clocks, diagnostics, service contracts; C++ standard library only initially. |
 | `oc2_game` | F02 state, rule model, W/U/C/V mechanics, A01–A08, event execution; depends on `oc2_base`. |
 | `oc2_formats` | F03 parsing, F06 codecs, scenario/event parsing, classic text encoding; depends on `oc2_game`. No filesystem or GUI calls. |
+| `oc2_query` | Read-only projections of decoded records and live state, with explicit access contexts and stable ordering; depends on `oc2_game` and `oc2_formats`. No session loading, recalculation, command dispatch, or presentation types. |
 | `oc2_network` | N01–N03/N05 protocol state machines, encoders, synchronization and authority; depends on `oc2_game` and `oc2_formats`, injected transport/time. |
-| `oc2_session` | F04/F05 orchestration, N04, setup/load flows, pending interactions, command routing and gameplay effects required by P01–P10; composes the portable game/formats/network libraries. |
-| `oc2_viewmodel` | Observer-filtered map/dialog/report/menu models and frontend intent mapping; depends on portable session APIs. No SDL/ImGui types. |
+| `oc2_session` | F04/F05 orchestration, N04, setup/load flows, pending interactions, command descriptors/results, query access and gameplay effects required by P01–P10; composes game/formats/network/query libraries. |
+| `oc2_viewmodel` | Observer-filtered map/dialog/report/menu models and frontend intent mapping; depends on portable session/query APIs. No SDL/ImGui types. |
+| `oc2_console` | Command parsing, help/completion and structured output over session/query APIs; no SDL/ImGui or required scripting runtime. |
+| `oc2_automation` | Optional Lua bindings, task scheduling and explicit script state over session/query APIs. Core libraries do not depend on Lua. |
 | `oc2_content` | Runtime asset package, CPU image/font data, asset identities and lookup; depends on portable types and selected independent decoders. No GPU objects. |
-| `oc2_frontend` | SDL window/input/render/audio and ImGui dialogs, custom drawing, map and minimap; depends on view models and content. |
+| `oc2_frontend` | SDL window/input/render/audio and ImGui dialogs, custom drawing, map, minimap and console panel; depends on view models, content and console. |
 | `oc2_io_native`, `oc2_io_web` | Storage, time and transport implementations. Native headless I/O must not link SDL; web glue stays out of portable libraries. |
 | `oc2_menu_macos`, `oc2_menu_windows`, `oc2_menu_imgui` | Implement a shared menu contract; native handles stay in these graphical targets. |
 | `openciv2`, `oc2_headless`, `oc2_tests`, `oc2_runtime_tests`, `oc2_ui_tests` | Composition roots for the game, conformance/replay CLI, portable Catch2, SDL integration tests, and ImGui Test Engine. |
+| `oc2_cli` (executable `oc2`) | Native save inspection, validation and diff tools over formats/query/native I/O. Explicit loaded-state analysis additionally uses session APIs. No GUI or required Lua dependency. |
 | `oc2_net_bridge` | Separate native browser transport bridge; built only when requested. No game simulation. |
 
 Keep public interfaces small and use ordinary C++20 headers and source files.
@@ -198,7 +217,151 @@ does not prove that protocol dispatch or deadlines remain correct. Browser
 suspension is an external interruption handled through N01/N03 timeout/reconnect
 rules, not a promise of background execution.
 
-## 5. Presentation and platform menus
+## 5. Inspection tools, console, and user automation
+
+These are planned engine features, not changes to classic simulation rules or
+claims that the current shell already supports gameplay commands. Keep user
+automation distinct from the specified classic AI and S02 scenario event system.
+
+### Shared queries and command contracts
+
+Expose a portable query service independently of display-specific view models.
+Return owned, read-only records with stable IDs, ordering, observation revision,
+and provenance (stored, remembered, currently visible, or explicitly computed).
+Do not expose mutable C++ pointers or Lua userdata that can modify world state.
+The session supplies the caller's observer and authority context; scripts cannot
+select an unrestricted observer or grant themselves editor privileges.
+
+Ordinary player queries expose only that player's permitted knowledge under
+W03/N04. Apply the same filtering to events, errors, completion suggestions,
+and retained console output. Omniscient offline inspection and developer/editor
+diagnostics use separate, explicit access contexts. Inspection of a save does
+not grant privileges in a running session. A query must not secretly run a city
+recalculation or consume gameplay RNG; required report/dialog effects remain
+named session operations with their specified publication boundaries.
+
+Add a versioned command descriptor registry alongside session dispatch: semantic
+name, typed arguments and target identities, help text, access class, and result
+schema. Console parsing, completion, scripts and tests consume these descriptors;
+the owning operation still implements validation. Availability is a hint with
+P05 semantics, not authorization to execute later. Player automation uses the
+player admission path, never the internal AI or scenario path.
+
+Each submission gets a correlation identity and explicit lifecycle results:
+rejected, pending, awaiting interaction, completed, cancelled, or failed.
+Distinguish acceptance from completion and disclose any effects already committed.
+Bind interaction replies to their current identity and recipient. Revalidate
+stale targets and authority when execution resumes, following the operation's
+contract. Console batches and scripts are sequences of ordinary commands, not
+transactions; cancellation or a script error does not undo earlier commands.
+
+### Saved-game inspection CLI
+
+Provide a native `oc2` executable that works without SDL, ImGui, graphical assets,
+or a Lua runtime. Proposed commands, not currently implemented:
+
+```sh
+oc2 inspect game.sav --cities --json
+oc2 validate game.sav
+oc2 diff before.sav after.sav --json
+```
+
+The default view is the decoded file as stored. F06's record codecs preserve
+field widths, retained bytes, slot holes and raw identifiers without executing
+the gameplay load sequence. Report source format/version, supported sections,
+unknown or uninterpreted data, and field/offset diagnostics. Missing external
+rules leave rule-dependent interpretation unavailable rather than fabricated.
+Separate structural errors, compatibility limitations and semantic diagnostics;
+a successful parse alone does not certify a playable save or conformance.
+
+Offer an explicit loaded-state mode only when the relevant F06/session path is
+implemented. It runs in an isolated session with declared rules, entry state,
+RNG policy and supplied services, and labels transformations separately from
+stored values. Actual loading renews lifetimes, normalizes fields, rebuilds
+selected counters and can consume randomness; it is not a neutral decode.
+An incomplete load produces an explicit partial result, never a successful view.
+
+Inspection, validation and diff never rewrite their inputs or repair state.
+Provide stable, versioned JSON output with lossless integer representation,
+deterministic ordering, diagnostics separate from data, and documented exit
+statuses. Diffs distinguish byte changes from decoded field changes and match
+records by file slot/identity semantics, not newly allocated runtime lifetimes.
+Reuse the pure decoding/query APIs for future browser file inspection; the
+native CLI itself is not a browser requirement.
+
+### In-game command console
+
+Build an ImGui panel for input, history, completion and output on top of the
+portable console. Start with help, queries and commands from the playable slice;
+unsupported operations remain unavailable. Keep basic commands usable when Lua
+is disabled. Text input follows the same focus/capture rules as dialogs.
+
+Route commands through the same session dispatch as menus and other controls.
+An operation requiring a choice can use the existing dialog or a typed console
+reply to that interaction; neither path bypasses busy states or network routing.
+Clear or isolate history, results, completion caches and task output on hotseat
+handoff, observer changes and session replacement.
+
+### Lua user automation
+
+Use an optional embedded stock Lua interpreter for high-level player automation.
+Pin one runtime and binding API version for native and WASM builds when this
+target is introduced; do not depend on JIT availability. C++ continues to own
+state, arithmetic, mechanics, persistence and authority. Moving classic AI or
+map-generation algorithms into scripts is a separate design decision requiring
+its own conformance evidence. Lua's
+[embedding API](https://www.lua.org/manual/5.5/manual.html#1) supports host-provided
+functions; the interface below is our engine contract.
+
+Expose permitted queries (own cities/units, known tiles, available production),
+semantic events (turn start, production completion, command result), and normal
+commands (production choices, worker assignments, movement, interaction replies).
+For example, a production policy handles an own-city completion event, queries
+current permitted choices, submits a choice and waits for its result. It does
+not write the city's production field or reproduce city mechanics.
+
+Run tasks on the session's mutation lane at declared command/event boundaries.
+Queue script notifications rather than reentering scripts from a gameplay
+callback. Specify event ordering, subscription lifetime, delivery cursor and
+overflow behavior; never silently drop events needed to resume a task. A script
+can wait for a command, interaction or semantic event without blocking rendering,
+protocol dispatch or deadlines. Preserve existing compatibility boundaries even
+when the runtime needs to yield for responsiveness.
+
+Bound instruction work, memory, host-call work, command queues and output. Expose
+cancel/pause controls and useful script/line diagnostics. Lua instruction hooks
+alone cannot bound time spent inside a host function: keep host calls bounded
+or asynchronous. Catch runtime errors at the binding boundary without bypassing
+C++ cleanup; disable the failed task and report committed command effects.
+Stop further submissions on cancellation; in-flight operations still follow
+their normal completion/cancel and mandatory-reply contracts.
+
+Load scripts only through explicit user selection, not automatically from a
+classic save or scenario. Give the runtime a restricted library set and explicit
+capabilities; no default filesystem, process, native-module, debug or network
+access. Route script import/export through platform adapters. Treat this as a
+bounded extension environment, not a claim of strong isolation for hostile code.
+Developer/editor capabilities are separately enabled and cannot be reached from
+normal player scripts.
+
+Record submitted commands, ordered external inputs and RNG context for gameplay
+replay; replay does not rerun scripts and duplicate their commands. Reproducing
+automation decisions additionally needs the script hash, runtime/API versions,
+ordered observations and any script-private RNG state. Script randomness never
+draws from gameplay RNG. Persist only explicit versioned task data at supported
+boundaries, not VM stacks, closures or suspended coroutines. Store it with task
+identities, pending command/event cursors and script identity in new-engine
+checkpoints or hash-bound sidecars, outside classic saves and wire messages.
+Without matching metadata, load the classic game normally with automation
+stopped; require an explicit restart instead of guessing task state.
+
+In multiplayer, scripts run locally on behalf of an authorized player and emit
+the same requests as manual play. Original peers require no interpreter or new
+message format. Remote results remain authoritative under N02 and are never
+reapplied or rerolled by a script. Suspend tasks on loss of player authority or
+hotseat handoff, and revalidate pending work on resume/reconnect.
+
+## 6. Presentation and platform menus
 
 Use SDL3 for windowing, input, 2D rendering, and audio. Start with `SDL_Renderer`
 and Dear ImGui's SDL3 platform and SDL_Renderer3 backends. The expected workload
@@ -247,7 +410,7 @@ same semantic boundary. Where classic logical view geometry affects gameplay
 (for example V08/P07 report admission), preserve it as a declared compatibility
 input independent of the new viewport and fonts.
 
-## 6. Assets and content
+## 7. Assets and content
 
 Use [PeterJohnson/openciv2-assets](https://github.com/PeterJohnson/openciv2-assets),
 available locally at `~/project/openciv2-assets`. Its inspected checkout was
@@ -296,7 +459,7 @@ independent media decoders against that domain before claiming scenario support.
 Do not let missing media, a browser audio permission, or a skipped animation
 suppress a game effect or required reply.
 
-## 7. Persistence and networking
+## 8. Persistence and networking
 
 Classic codecs read/write explicit field widths, little-endian values, strings,
 and retained bytes. They never dump C++ objects. Keep file bytes, N02 state
@@ -341,7 +504,7 @@ succeeds. The
 documents IDBFS synchronization. Desktop and browser path adapters must preserve
 classic resource-name lookup without depending on host case sensitivity.
 
-## 8. Build, tests, and delivery
+## 9. Build, tests, and delivery
 
 Use target-based CMake with `cxx_std_20`, extensions disabled, and separate build
 directories per native or Emscripten toolchain. Enable Objective-C++ only for the
@@ -359,6 +522,12 @@ ImGui, graphics assets, display servers, or an original installation. Runtime
 packaging carries only the selected data, application, and dependency notices.
 macOS app bundles, Windows packages, Linux packages, and web JS/WASM/data outputs
 are produced from the same source and locked content inputs.
+
+When implemented, gate native tools with `OC2_BUILD_TOOLS` and Lua bindings with
+`OC2_ENABLE_SCRIPTING`, independently of `OC2_BUILD_GUI` and `BUILD_TESTING`.
+These are planned options, not current presets. A tools-only build must run save
+inspection without GUI or Lua packages; enabling scripts in headless tests must
+not acquire SDL. The console parser remains usable with scripting disabled.
 
 Catch2 v3 owns unit and portable integration tests. CTest groups fast mechanics,
 formats, replay, network, UI, and external interoperability suites. Use native
@@ -379,6 +548,16 @@ portable view models and command semantics. Native menu behavior also needs
 platform adapter tests and real desktop smoke tests; ImGui tests cannot validate
 AppKit or Win32 menus. Visual regression images of our UI supplement semantic
 checks, with original screenshots used only as optional comparisons.
+
+Catch2 also covers stored versus loaded inspection, malformed/unsupported saves,
+lossless JSON, stable diffs, query non-mutation/privacy and descriptor validation.
+Drive a supported operation through direct session calls, console input and Lua
+and compare semantic outcomes, including stale targets and partial effects.
+Test instruction/memory limits, bounded host calls, cancellation, task restore,
+missing script metadata, event order and duplicate-command prevention on native
+and WASM. ImGui tests cover console focus, history, completion, interaction
+replies and hotseat concealment. Mixed-peer tests prove that automation uses the
+ordinary protocol and preserves authority through reconnect/host transfer.
 
 Pin ImGui and its test engine as a tested pair. The test engine has its own
 [license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt);

@@ -18,6 +18,9 @@ X01 and X02 define that convention and its conformance checks.
   comparison rules, integration cases and evidence gaps.
 - [Architecture](docs/architecture.md): cleanroom boundary, C++20/CMake libraries,
   SDL3/ImGui presentation, platform menus, assets, persistence and networking.
+- [Tools and automation](docs/architecture.md#5-inspection-tools-console-and-user-automation):
+  planned save inspection CLI, in-game console and Lua player automation over
+  shared portable queries and commands.
 - [Implementation plan](docs/implementation-plan.md): phased delivery, dependencies,
   test gates and specification coverage.
 - [Building and testing](docs/BUILDING.md): desktop, headless, WASM, and GUI automation.
@@ -26,8 +29,9 @@ X01 and X02 define that convention and its conformance checks.
 
 The initial C++20/CMake/SDL3 shell provides native macOS/Windows menus, ImGui
 Linux/browser menus and dialogs, and a development view with illustrative tiles.
-It has no game simulation or asset-pack loader yet. Catch2 covers the portable
-shell and SDL integration; ImGui Test Engine covers the drawn interface.
+It has no game simulation, asset-pack loader, save inspection, command console
+or Lua runtime yet. Catch2 covers the portable shell and SDL integration; ImGui
+Test Engine covers the drawn interface.
 
 To build with explicitly enabled pinned dependency downloads (CMake 3.24+,
 Ninja, and a C++20 compiler required):
