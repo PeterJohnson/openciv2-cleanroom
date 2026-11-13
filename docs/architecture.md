@@ -80,8 +80,12 @@ flowchart TD
     automation --> query
     cli[Save inspection CLI] --> formats[Rules / save / scenario codecs]
     cli --> query
+    cli -. optional .-> export[SQLite snapshot exporter]
+    export --> query
+    export --> sqlite[SQLite]
     runner[Headless runner / Catch2] --> session
     runner -. optional .-> automation
+    runner -. optional .-> export
     session --> game[Game state / mechanics / AI / events]
     session --> query
     session --> formats
@@ -110,7 +114,7 @@ first real operations arrive. Native menu sources currently compile into
 | Target | Responsibility and allowed dependencies |
 | --- | --- |
 | `oc2_base` | Logical IDs, explicit arithmetic, sampling policy, clocks, diagnostics, service contracts; C++ standard library only initially. |
-| `oc2_game` | F02 state, rule model, W/U/C/V mechanics, A01–A08, event execution; depends on `oc2_base`. |
+| `oc2_game` | Authoritative C++ runtime records and collections for F02 state, rule model, W/U/C/V mechanics, A01–A08, event execution; depends on `oc2_base`. No database dependency. |
 | `oc2_formats` | F03 parsing, F06 codecs, scenario/event parsing, classic text encoding; depends on `oc2_game`. No filesystem or GUI calls. |
 | `oc2_query` | Read-only projections of decoded records and live state, with explicit access contexts and stable ordering; depends on `oc2_game` and `oc2_formats`. No session loading, recalculation, command dispatch, or presentation types. |
 | `oc2_network` | N01–N03/N05 protocol state machines, encoders, synchronization and authority; depends on `oc2_game` and `oc2_formats`, injected transport/time. |
@@ -124,6 +128,7 @@ first real operations arrive. Native menu sources currently compile into
 | `oc2_menu_macos`, `oc2_menu_windows`, `oc2_menu_imgui` | Implement a shared menu contract; native handles stay in these graphical targets. |
 | `openciv2`, `oc2_headless`, `oc2_tests`, `oc2_runtime_tests`, `oc2_ui_tests` | Composition roots for the game, conformance/replay CLI, portable Catch2, SDL integration tests, and ImGui Test Engine. |
 | `oc2_cli` (executable `oc2`) | Native save inspection, validation and diff tools over formats/query/native I/O. Explicit loaded-state analysis additionally uses session APIs. No GUI or required Lua dependency. |
+| `oc2_export_sqlite` | Optional native analysis adapter: writes immutable query records to a versioned SQLite snapshot. Depends on `oc2_query` and SQLite; no dependency on it from game, formats, session or query libraries. |
 | `oc2_net_bridge` | Separate native browser transport bridge; built only when requested. No game simulation. |
 
 Keep public interfaces small and use ordinary C++20 headers and source files.
@@ -134,9 +139,23 @@ Source-level include and CMake dependency checks enforce the graphical boundary.
 
 ## 3. State and deterministic execution
 
-`GameState` contains logical world state, not packed classic structs. Separate
-process-retained state, session state, world state, retained derived/scratch
-state, and presentation-local state according to
+Use ordinary C++ structures and containers as the authoritative runtime state.
+Start with typed `Unit`, `City`, `Civilization` and `Tile` records, arrays or
+stable slot pools for entities, and contiguous map storage. Reference entities
+through typed identities instead of long-lived pointers whose validity depends
+on container allocation. Keep visibility/remembered layers, retained caches and
+operation workspaces explicit. Choose storage layout for clarity and measured
+access patterns while preserving the specified logical behavior.
+
+`GameState` contains logical world state; F06/N02 codecs own classic file/wire
+layouts separately. SQLite is only an optional derived export for inspection
+and analysis, never the live state store or a second authoritative copy. Game
+operations, AI and user automation access the C++ state through their existing
+interfaces. No SQL statements, database transactions or schema constraints
+govern gameplay mutations, iteration or publication boundaries.
+
+Separate process-retained state, session state, world state, retained
+derived/scratch state, and presentation-local state according to
 [F02](algorithms/F02-game-state-and-invariants.md). A new game, a load, and a
 process restart have different reset behavior.
 
@@ -147,6 +166,12 @@ caches. Distinguish the turn civilization, local player, viewing civilization,
 human roster, and network executor. Validate a slot/token pair only where that
 operation's contract calls for lifetime validation; bare classic references
 retain their specified meaning.
+
+Retained summaries remain explicit fields even when they could be recomputed
+from other records. A computed count or analysis query must not replace a stale
+census that a later operation is specified to read. Preserve live reads and
+scan-bound changes where required; a snapshot is an observation, not a general
+replacement for the algorithm's state access.
 
 One execution lane owns mutation for a session. The initial application runs it
 cooperatively on the main thread; tests drive it directly. Background work may
@@ -288,6 +313,48 @@ statuses. Diffs distinguish byte changes from decoded field changes and match
 records by file slot/identity semantics, not newly allocated runtime lifetimes.
 Reuse the pure decoding/query APIs for future browser file inspection; the
 native CLI itself is not a browser requirement.
+
+### Optional SQLite analysis export
+
+Add a native CLI export over the same decoded records and query projections:
+
+```sh
+# Proposed interface; requires the optional exporter when implemented.
+oc2 export game.sav --sqlite analysis.sqlite
+```
+
+Default to stored-file data, with the same explicit opt-in for loaded-state
+interpretation as inspection. Later, the headless runner can export selected
+session snapshots for cross-turn comparisons and conformance diagnostics. Capture
+live state on its owning execution lane at a declared observation boundary into
+owned immutable records; database writing may then proceed independently. Do
+not read a changing world piecemeal while inserting rows or add gameplay callbacks
+merely to service an export.
+
+Version the analysis schema independently of classic codecs and command APIs.
+Include snapshot identity, source file hash or session/revision identity, view
+mode (stored, loaded or live), observer/access scope, relevant rules/input
+provenance, and supported/omitted sections. Tables may expose civilizations,
+city/unit slots, tiles and retained summaries. Preserve slots, holes, scan bounds,
+raw identifiers and lifetime meaning where included; scope keys to their source
+snapshot. Keep retained values separate from calculated analysis fields and mark
+unknown or unavailable values explicitly. Export exact logical integers and
+document encodings; analysis must not silently repair or normalize state.
+
+Player-session exports contain only observer-permitted data, including metadata
+and diagnostics. Offline save inspection or explicit developer captures may use
+their separate broader access contexts. Export a separate destination without
+overwriting the source. A failed or cancelled write must not publish an apparently
+complete snapshot or alter gameplay. Transactions may make export publication
+atomic; they do not define the game operation's mutation semantics.
+
+An exported database is a disposable analysis artifact, not a classic save,
+replay checkpoint, or automatic input to the simulation. Editing it has no
+effect on the game. Consumers can use SQL tools for joins, aggregation and
+comparisons without keeping a database synchronized with every live mutation.
+Basic text/JSON inspection and all runtime features remain available without
+SQLite. Browser export and an in-game SQL interface are outside the initial
+scope; this decision adds neither as a runtime requirement.
 
 ### In-game command console
 
@@ -529,6 +596,12 @@ These are planned options, not current presets. A tools-only build must run save
 inspection without GUI or Lua packages; enabling scripts in headless tests must
 not acquire SDL. The console parser remains usable with scripting disabled.
 
+Gate `oc2_export_sqlite` with the planned `OC2_ENABLE_SQLITE_EXPORT` option,
+default OFF, independently of scripting and GUI support. Pin and record SQLite
+and its notices when implementing the exporter. Fetch/link it only for enabled
+export consumers and their tests. Core libraries, basic CLI inspection and the
+normal WASM build must configure without SQLite; the initial exporter is native.
+
 Catch2 v3 owns unit and portable integration tests. CTest groups fast mechanics,
 formats, replay, network, UI, and external interoperability suites. Use native
 test discovery there; cross-compiled WASM tests need an explicit JS/browser
@@ -558,6 +631,14 @@ missing script metadata, event order and duplicate-command prevention on native
 and WASM. ImGui tests cover console focus, history, completion, interaction
 replies and hotseat concealment. Mixed-peer tests prove that automation uses the
 ordinary protocol and preserves authority through reconnect/host transfer.
+
+For SQLite export, compare logical rows with the source query records, including
+numeric boundaries, slot holes, retained counters and stored/loaded differences.
+Test schema/provenance metadata, observer filtering, consistent snapshot capture,
+failed/cancelled publication and unchanged source state/RNG/files. Check logical
+contents rather than requiring byte-identical SQLite files. Exercise builds
+with export enabled and disabled, including a headless tools build, and verify
+the optional dependency never reaches core targets.
 
 Pin ImGui and its test engine as a tested pair. The test engine has its own
 [license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt);

@@ -3,9 +3,9 @@
 Status: roadmap for the [architecture](architecture.md), with an initial SDL3
 application shell and build/test infrastructure integrated. The repository also
 contains 65 algorithm specifications and three portable conformance vectors.
-Gameplay, save inspection tools, the in-game console, Lua user automation and
-the X02 runner are not implemented. Milestones below describe delivery gates,
-not completed compatibility claims.
+Gameplay, save inspection/SQLite export tools, the in-game console, Lua user
+automation and the X02 runner are not implemented. Milestones below describe
+delivery gates, not completed compatibility claims.
 
 Deliver vertical slices through the portable game and graphical frontend while
 growing the same conformance corpus. Establish file/wire formats and external
@@ -39,6 +39,12 @@ mechanics. It does not require moving classic AI or map generation out of C++.
 Track these extension features separately from evidence of original-game
 compatibility; they must preserve the owning operation's classic behavior.
 
+Runtime state uses ordinary C++ records and containers. Add optional native
+[SQLite export](architecture.md#optional-sqlite-analysis-export) after M1's
+decoded-record/query foundation; extend it to loaded and selected live snapshots
+with M3. SQLite remains a derived analysis output, with no core dependency and
+no requirement to keep a second live state store synchronized.
+
 ## Current implementation status
 
 The shell was integrated from `codex/sdl3-core` through `c01bcef`, preserving the
@@ -49,7 +55,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
 | M0 — partial | C++20/CMake targets, dependency archive/hash manifest, offline/download policy, desktop/headless/release/sanitizer/web presets, Catch2, ImGui automation, four-platform CI definitions | X02 registry/coverage ledger, content and asset-format inventory, full compiler/platform execution evidence |
-| M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | F01/F02/W01, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI, queries and semantic session continuations |
+| M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | C++ F01/F02/W01 state, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI with optional SQLite export, queries and semantic session continuations |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
@@ -100,6 +106,10 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 
 - Implement arithmetic and logical types, F02 pools/lifetimes and retained state,
   W01 topology/coordinates, and explicit process/new-game/load boundaries.
+  Use C++ records, arrays/stable slot pools and contiguous map storage with typed
+  identities. Represent scan bounds, retained summaries, knowledge layers and
+  operation workspaces explicitly. Keep file/wire layouts in codecs and verify
+  that state/mechanics targets have no database dependency.
 - Define the versioned random policy and controlled-choice injection. Test
   primary/secondary laws, ties, retries, numeric boundaries, and implementation
   replay without requiring original seed-to-sequence equality.
@@ -120,6 +130,13 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
   file inspection and live-state queries. Establish observer/authority contexts
   and prove queries neither mutate retained state nor consume gameplay RNG.
   Add graphical view models as consumers without sharing rendering types.
+- Add optional `oc2_export_sqlite` and `oc2 export ... --sqlite ...` for the
+  supported stored-record domain. Gate it with `OC2_ENABLE_SQLITE_EXPORT`,
+  default OFF, and pin SQLite when adding the implementation. Export a
+  separate analysis file with versioned schema, source hash/view mode/access
+  scope and coverage metadata. Preserve identities, slots, retained values and
+  exact integers; label unknown values and distinguish computed fields. Make
+  export failure leave source files/state intact and no completed output claim.
 - Define command/effect/interaction records and cooperative continuation APIs.
   Prove a fake decision can resume an operation, a callback can change a live
   read, and cancellation can retain an already-published effect.
@@ -135,10 +152,15 @@ on native and WASM builds. Checkpoint repeat/restore is reproducible under the
 chosen policy. Partial I/O and fragmented/coalesced frame cases pass. Start
 bidirectional original raw-map/save checks for the implemented subset, recording
 unavailable captures or unimplemented fields as gaps. A tools-only build runs
-save inspection without SDL, ImGui, assets or Lua. Catch2 covers truncated and
-unsupported records, unchanged input bytes, stable diffs, exact JSON integers,
-and stored-state inspection without load-time identity/counter transformations.
+basic save inspection without SDL, ImGui, assets, Lua or SQLite. Catch2 covers
+truncated and unsupported records, unchanged input bytes, stable diffs, exact
+JSON integers, and stored-state inspection without load-time identity/counter
+transformations.
 Do not advertise a loaded-state view before its actual load path exists.
+With SQLite export enabled, its logical rows agree with the source query records,
+including holes, numeric boundaries and stale retained summaries. Schema/source
+metadata and failure/cancellation tests pass. Disabling export removes SQLite
+from configuration and linkage without disabling text/JSON inspection.
 
 ## M2 — Prove the graphical and platform boundaries
 
@@ -196,6 +218,11 @@ for the chosen domain; keep unsupported mechanics visibly unavailable.
 - Enable explicit loaded-state CLI analysis for the implemented F06 domain in
   an isolated session with declared rules, entry state and RNG/services. Label
   load transformations and partial failure separately from the stored view.
+- Extend optional SQLite export to that loaded view and selected headless
+  session snapshots. Capture immutable records at declared boundaries with
+  revision and observer metadata; export them without mutating state or consuming
+  RNG. Compare snapshots across turns using explicit identities and test that
+  player-scoped exports, including diagnostics, cannot reveal hidden data.
 - Add interface seams for combat, diplomacy, AI, events, and network authority;
   no placeholder child counts as a completed integrated operation.
 
@@ -361,6 +388,11 @@ local-play web preview if bridge evidence is still incomplete.
   scripting-disabled and headless scripting configurations. Include script
   import/export and task-state persistence in browser packaging tests; do not
   bundle Lua into targets that do not use it.
+- Document the optional native SQLite exporter, analysis schema and sample
+  cross-snapshot queries. Verify enabled/disabled export packaging, source and
+  access provenance, and opening an export with an independent SQLite client.
+  Keep SQLite out of core, ordinary web and non-export tool packages; analysis
+  databases are not supported save files or replay checkpoints.
 - Publish bounded test reports with specification/fixture/policy/content hashes,
   original executable identity where used, exact tested platforms, and remaining
   gaps. Never infer whole-game conformance from test counts alone.
@@ -399,11 +431,13 @@ The next implementation changes should build on the integrated shell:
    retain the existing CMake/Catch2/platform build boundary.
 2. Implement F01 sampling/arithmetic adapters and execute the existing three
    X02 vectors with the version 3 loader/comparator.
-3. Implement F02 identities/state and W01 geometry with retained-state fixtures.
+3. Implement F02 identities/state and W01 geometry using C++ records and
+   collections, with retained-state fixtures and no database dependency.
 4. Specify and implement the asset data reader and content manifest; connect it
    to the existing SDL3/ImGui shell and finish native menu/platform verification.
 5. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
    expose stored-record queries and the inspection/validation/diff CLI.
+   Build optional SQLite snapshot export on those same records and queries.
 6. Establish command descriptors, observer-filtered queries and correlated
    results as real playable operations arrive; connect the console in M3 and
    compare it with the graphical and headless callers.
