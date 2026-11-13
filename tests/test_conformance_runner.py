@@ -122,6 +122,83 @@ class ConformanceRunnerTests(unittest.TestCase):
             case = runner.load_fixture(path, self.root)
             self.assertIsNone(runner.compare(case, case["expected"]))
 
+    def use_state_case(self, suffix):
+        self.path = self.root / f"docs/algorithms/conformance/X02-F02-{suffix}.json"
+        self.case = runner.load_fixture(self.path, self.root)
+
+    def test_state_closure_and_array_domains_are_required_before_execution(self):
+        self.use_state_case("unit-reserve-hole")
+        changes = [
+            lambda c: c["entry"]["state"].pop("F02.effectiveHumanSet"),
+            lambda c: c["entry"]["state"]["F02.unitEnd"].update(value="2049"),
+            lambda c: c["entry"]["state"]["F02.unitTokenScan"].pop(),
+            lambda c: c["entry"]["state"]["F02.unitTokenScan"].append({"$type": "u32", "value": "0"}),
+            lambda c: c["entry"]["state"]["F02.unitTokenScan"][0].update({"$type": "i32"}),
+            lambda c: c["entry"]["state"]["F02.unitTokenScan"][0].update(value="-1"),
+            lambda c: c["entry"]["state"]["F02.militaryCounts"].pop(),
+            lambda c: c["entry"]["state"]["F02.militaryCounts"][1].update(value="32768"),
+            lambda c: c["entry"]["state"]["F02.militaryCounts"][1].update(value="-32769"),
+            lambda c: c["entry"]["state"]["F02.effectiveHumanSet"].update(value="256"),
+            lambda c: c["boundary"]["arguments"]["owner"].update(value="8"),
+            lambda c: c["expected"]["state"]["F02.unitTokenScan"].pop(),
+        ]
+        for change in changes:
+            case = deepcopy(self.case)
+            change(case)
+            self.path.write_text(json.dumps(case), encoding="utf-8")
+            with self.subTest(change=change), patch.object(runner.subprocess, "run") as invoke:
+                self.assertEqual(runner.execute(self.path, ["adapter"], self.root)["status"], "invalid-fixture")
+                invoke.assert_not_called()
+
+    def test_state_comparison_preserves_slots_and_unchanged_fields(self):
+        self.use_state_case("unit-reserve-hole")
+        for key in ("F02.unitTokenScan", "F02.militaryCounts"):
+            actual = deepcopy(self.case["expected"])
+            actual["state"][key][0], actual["state"][key][1] = actual["state"][key][1], actual["state"][key][0]
+            self.assertEqual(runner.compare(self.case, actual)["surface"], "state")
+        actual = deepcopy(self.case["expected"])
+        actual["trace"][-1]["payload"]["state"]["F02.effectiveHumanSet"]["value"] = "0"
+        self.assertEqual(runner.compare(self.case, actual)["surface"], "trace.root.exit.payload")
+        actual = deepcopy(self.case["expected"])
+        actual["state"].pop("F02.militaryCounts")
+        with self.assertRaisesRegex(ValueError, "missing registered state"):
+            runner.compare(self.case, actual)
+
+    def test_state_adapter_receives_entry_values_and_never_expected_outputs(self):
+        self.use_state_case("unit-token-initial")
+        actual = deepcopy(self.case["expected"])
+        self.load(lambda c: (c["expected"]["state"]["F02.nextUnitToken"].update(value="999"),
+                            c["expected"]["trace"][-1]["payload"]["state"]["F02.nextUnitToken"].update(value="999")))
+        process = subprocess.CompletedProcess([], 0, json.dumps(actual), "")
+        with patch.object(runner.subprocess, "run", return_value=process) as invoke:
+            report = runner.execute(self.path, ["adapter"], self.root)
+            self.assertEqual(report["status"], "failed")
+            self.assertEqual(report["firstMismatch"]["surface"], "state")
+            self.assertEqual(invoke.call_args.args[0], ["adapter", "F02.assignUnitToken"])
+            self.assertEqual(invoke.call_args.kwargs["input"], "1\n200\n")
+
+    def test_absence_is_distinct_from_slot_zero_and_snapshot_must_match(self):
+        self.use_state_case("unit-reserve-military-limit")
+        actual = deepcopy(self.case["expected"])
+        actual["result"] = {"$type": "u16", "value": "0"}
+        self.assertEqual(runner.compare(self.case, actual)["surface"], "result")
+        for result in ({"$type": "null", "value": "0"}, {"$type": "i32", "value": "-1"},
+                       {"$type": "u16", "value": "2048"}):
+            with self.subTest(result=result), self.assertRaises(ValueError):
+                self.load(lambda c: c["expected"].update(result=result))
+        with self.assertRaisesRegex(ValueError, "exit trace/state disagreement"):
+            self.load(lambda c: c["expected"]["trace"][-1]["payload"]["state"]["F02.unitEnd"].update(value="0"))
+
+    def test_registration_cannot_omit_preserved_process_counter(self):
+        self.use_state_case("unit-token-wrap")
+        path = self.root / "docs/conformance/registry.json"
+        registry = json.loads(path.read_text())
+        op = next(row for row in registry["operations"] if row["id"] == "F02.assignUnitToken")
+        op["reads"].remove("F02.nextCityToken")
+        path.write_text(json.dumps(registry), encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "state closure mismatch"):
+            runner.load_fixture(self.path, self.root)
+
     def test_parser_rejects_duplicate_keys_nonfinite_and_trailing_data(self):
         for data in ('{"format":"a","format":"b"}', '{"x":NaN}', '{} garbage'):
             with self.subTest(data=data):

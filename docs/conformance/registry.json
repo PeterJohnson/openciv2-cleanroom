@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 1,
+  "inventoryVersion": 2,
   "scope": "Repository specification inventory; two pure F01 operations and two process token state keys. Not an exhaustive operation or original-source-entry inventory.",
   "specifications": [
     {
@@ -538,6 +538,133 @@
       ],
       "independenceClaims": [],
       "implementation": "src/base/arithmetic.cpp"
+    },
+    {
+      "id": "F02.assignUnitToken",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "arguments": {},
+      "result": "u32",
+      "reads": [
+        "F02.nextUnitToken",
+        "F02.nextCityToken"
+      ],
+      "writes": [
+        "F02.nextUnitToken"
+      ],
+      "preconditions": "All u32 counter positions, including wrap through zero. The second counter is observed only for preservation.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Scan tokens and scan bound do not alias. No callback or concurrent mutation within the primitive. No unit record initialization or limit notice is included.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": "src/state/identities.cpp"
+    },
+    {
+      "id": "F02.assignCityToken",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "arguments": {},
+      "result": "u32",
+      "reads": [
+        "F02.nextUnitToken",
+        "F02.nextCityToken"
+      ],
+      "writes": [
+        "F02.nextCityToken"
+      ],
+      "preconditions": "All u32 counter positions, including wrap through zero. The second counter is observed only for preservation.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Scan tokens and scan bound do not alias. No callback or concurrent mutation within the primitive. No unit record initialization or limit notice is included.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": "src/state/identities.cpp"
+    },
+    {
+      "id": "F02.reserveUnitSlot",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "arguments": {
+        "owner": "u8"
+      },
+      "result": "unit-slot-or-null",
+      "reads": [
+        "F02.unitEnd",
+        "F02.unitTokenScan",
+        "F02.militaryCounts",
+        "F02.effectiveHumanSet"
+      ],
+      "writes": [
+        "F02.unitEnd"
+      ],
+      "preconditions": "Owner 0..7; unitEnd 0..2048; token view length equals entry unitEnd; eight i16 military counts and a u8 human mask. Caller owns the full-capacity pool. Result is a u16 unit slot 0..2047 or typed null for NoSlot.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Scan tokens and scan bound do not alias. No callback or concurrent mutation within the primitive. No unit record initialization or limit notice is included.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": "src/state/identities.cpp"
     }
   ],
   "states": [
@@ -551,7 +678,7 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": null
+      "implementation": "src/state/identities.hpp"
     },
     {
       "id": "F02.nextCityToken",
@@ -563,7 +690,57 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": null
+      "implementation": "src/state/identities.hpp"
+    },
+    {
+      "id": "F02.unitEnd",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "valueType": "u32",
+      "lifetime": "world",
+      "collectionOrder": "scalar",
+      "crossReferences": [],
+      "initialValue": null,
+      "publication": "Exclusive unit scan bound, 0..2048; reservation increments only on successful extension.",
+      "implementation": "src/state/identities.hpp"
+    },
+    {
+      "id": "F02.unitTokenScan",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "valueType": "u32[]",
+      "lifetime": "operation view of world",
+      "collectionOrder": "ascending unit slots [0, entry unitEnd); the fixed entry view retains its length at exit",
+      "crossReferences": [
+        "F02.unitEnd"
+      ],
+      "initialValue": null,
+      "publication": "Read-only token-field view for reservation. All and only entry-scanned slots are supplied. No other unit fields or slots are read or written. Extension does not initialize the new slot.",
+      "implementation": "src/state/identities.hpp"
+    },
+    {
+      "id": "F02.militaryCounts",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "valueType": "i16[]",
+      "lifetime": "world retained summaries",
+      "collectionOrder": "civilization slots 0..7",
+      "crossReferences": [],
+      "initialValue": null,
+      "publication": "Recorded signed cyclic military counts, not a recomputed census. Reservation preserves all eight values.",
+      "implementation": "src/state/identities.hpp"
+    },
+    {
+      "id": "F02.effectiveHumanSet",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "valueType": "u8",
+      "lifetime": "session",
+      "collectionOrder": "bit n corresponds to civilization slot n",
+      "crossReferences": [],
+      "initialValue": null,
+      "publication": "Effective human set at entry, separate from controller assignments or the persistent roster. Reservation preserves it.",
+      "implementation": "src/state/identities.hpp"
     }
   ],
   "fixtures": [
@@ -593,6 +770,76 @@
       "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
       "sha256": "d999aa6511004c53e3d3e56a372ba0b4347183b863179dc5ab7cc64744c86079",
       "operation": "F01.secondaryRangeFromCode",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.unit-token-initial",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-initial.json",
+      "sha256": "4f036cc7e55124096867b6af7db72528271bf5abe2e18a0e2640134608e72015",
+      "operation": "F02.assignUnitToken",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.unit-token-wrap",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-wrap.json",
+      "sha256": "b2622acaaf0c03ad005a140f2aa96c2443afb5f91caeb1bf6c0eb35057a8be90",
+      "operation": "F02.assignUnitToken",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.unit-token-zero",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-zero.json",
+      "sha256": "42bfe3ff39c6c26bcd2f682c96522a9538ad15d92e7f9cec890b6cef7025e2e7",
+      "operation": "F02.assignUnitToken",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.city-token-wrap",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-city-token-wrap.json",
+      "sha256": "d8da36841399b6aa82d6ab9d32d64200b44db6eb7bdc443baceb64b0885d25df",
+      "operation": "F02.assignCityToken",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.unit-reserve-hole",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-hole.json",
+      "sha256": "077bc62da65599cce471322f715e9e31ad40d415bcf575f9a20fa211b346203e",
+      "operation": "F02.reserveUnitSlot",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.unit-reserve-extend",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-extend.json",
+      "sha256": "5bc5d9f7b8a375d84a7c0ca54badd79ee2a716b641b7bba798e1bf30d2b9ae06",
+      "operation": "F02.reserveUnitSlot",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.unit-reserve-military-limit",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
+      "sha256": "cf03a2471556f783e6c1a2164e39df7e3cc0dcfe3063a76c80419a9284f21f40",
+      "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
       "executionStatus": "passed",
       "runReport": "docs/conformance/reports/f01-native.json"

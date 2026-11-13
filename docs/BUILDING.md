@@ -92,10 +92,10 @@ Use `python` on Windows. CMake adds the metadata target/tests only when Python
 3.9+ is available. These checks validate bookkeeping and hashes; they do not run
 X02 algorithms or establish gameplay compatibility.
 
-With `BUILD_TESTING=ON` and Python available, CTest also runs `conformance_f01`:
-the [initial M1 runner](m1-foundations.md) invokes the test-only C++ adapter for
-the three pure F01 fixtures and writes `conformance-results.json`. WASM runs the
-same adapter under Node. This is separate from metadata checks and has no GUI
+With `BUILD_TESTING=ON` and Python available, CTest also runs `conformance_foundations`:
+the [M1 runner](m1-foundations.md) invokes the test-only C++ adapter for
+three pure F01 and seven stateful F02 fixtures and writes `conformance-results.json`.
+WASM runs the same adapter under Node. This is separate from metadata checks and has no GUI
 or asset dependency. Ordinary library builds and Catch2 tests still work with
 Python discovery disabled.
 

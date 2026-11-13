@@ -65,7 +65,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
 | M0 — complete | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan; all 11 hosted CI jobs pass | None for M0; see the [completion review and retained reports](m0-validation.md#m0-completion-review--2026-11-13-utc). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts have a separate pinned dependency. |
-| M1 — started | Portable `oc2_base` F01 arithmetic, sampling mappings, tick conversion and isolated versioned random contexts/checkpoints; all three pure X02 fixtures execute through C++ adapters on native/WASM with retained reports | F02/W01 state, generalized X02 state/providers/choice injection/replay, runtime content and rules/save/wire codecs, save inspection CLI with optional SQLite export, scoped queries, SessionRuntime/controller contracts and continuations |
+| M1 — started | Portable `oc2_base` F01 arithmetic/`WrappingI32`, sampling, ticks and isolated random contexts; `oc2_game` F02 process tokens and unit-slot reservation; three pure F01 and seven stateful F02 X02 fixtures execute through C++ adapters on native/WASM | Remaining F02 records/pools/lifecycle and W01 state; generalized X02 types/providers/choice injection/replay; runtime content and rules/save/wire codecs; save inspection/SQLite export; scoped queries; SessionRuntime/controller contracts and continuations |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native menu/display interaction validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
@@ -120,9 +120,9 @@ maps these requirements to passing hosted reports and the existing inventories.
 
 Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 
-The [first foundation slice](m1-foundations.md) and [random policy](random-policy.md)
+The [initial foundation slices](m1-foundations.md) and [random policy](random-policy.md)
 are implemented. The requirements below remain the complete milestone scope;
-passing pure F01 vectors does not close M1 or its integration gates.
+passing F01/F02 leaf vectors does not close M1 or its integration gates.
 
 - Implement arithmetic and logical types, F02 pools/lifetimes and retained state,
   W01 topology/coordinates, and explicit process/new-game/load boundaries.
@@ -538,11 +538,12 @@ M0 is complete. Build the next implementation changes on the integrated shell,
 maintaining the [registries/ledger](conformance/README.md) and
 [content inventory](content/README.md) as operations and inputs arrive:
 
-1. Extend the bounded X02 runner to stateful registrations, scripted providers,
-   semantic choice injection and implementation replay while retaining the
-   three passing F01 vectors and random-context isolation tests.
-2. Implement F02 identities/state and W01 geometry using C++ records and
-   collections, with retained-state fixtures and no database dependency.
+1. Extend the bounded F01/F02 X02 runner to composite registrations, scripted
+   providers, semantic choice injection and implementation replay, retaining the
+   ten passing foundation vectors and random-context isolation tests.
+2. Extend F02 identities/reservation into full records, pools and lifecycle;
+   implement W01 geometry using C++ records and collections, with retained-state
+   fixtures and no database dependency.
 3. Resolve layout data gaps and implement the independent graphics reader
    against the [inspected package contract](content/asset-format.md); connect it
    to the existing SDL3/ImGui shell and finish native menu/platform verification.

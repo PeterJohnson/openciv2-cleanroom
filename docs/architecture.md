@@ -113,8 +113,9 @@ Use a small number of libraries with internal subsystem directories; the 65
 specifications are ownership boundaries, not a requirement for 65 libraries.
 Proposed CMake targets:
 
-Currently implemented: `oc2_viewmodel`, `oc2_frontend`, `oc2_options`, ImGui
-dependency targets, and the application/test executables. The shell lives in
+Currently implemented: `oc2_base`, the initial F02 primitives in `oc2_game`,
+`oc2_viewmodel`, `oc2_frontend`, `oc2_options`, ImGui dependency targets, and the
+application/test executables. The shell lives in
 `src/viewmodel/`; it contains no simulation. Add the remaining targets as their
 first real operations arrive. Native menu sources currently compile into
 `oc2_frontend` and can split into the listed adapter targets when needed.

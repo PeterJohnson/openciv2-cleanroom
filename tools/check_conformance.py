@@ -133,9 +133,9 @@ def validate(root=ROOT):
             require(item["executionStatus"] in {"passed", "failed"}, "unknown execution status")
             require(op["implementation"] is not None, "unimplemented operation claimed executed")
             report = read_json(local_file(root, item["runReport"]))
-            require(report["format"] == "openciv2-conformance-run/2" and report["runnerScope"] == "pure-f01-v1",
+            from run_conformance import SCOPE, SOURCES, compare, load_fixture, validate_adapter_identity
+            require(report["format"] == "openciv2-conformance-run/2" and report["runnerScope"] == SCOPE,
                     "unsupported execution report")
-            from run_conformance import SOURCES, compare, validate_adapter_identity
             require(set(report["implementationSources"]) == set(SOURCES), "incomplete implementation identity")
             for source, expected_hash in report["implementationSources"].items():
                 require(digest(local_file(root, source)) == expected_hash, "execution report implementation changed")
@@ -154,6 +154,7 @@ def validate(root=ROOT):
                     "execution report contract mismatch")
             require(case["status"] == item["executionStatus"], "execution report status mismatch")
             if case["status"] == "passed":
+                load_fixture(path, root)  # Enforce the registered state/typed-value closure too.
                 require(compare(fixture, case["actual"]) is None and case["firstMismatch"] is None,
                         "execution report does not match fixture")
                 require(case["consumed"] == {"providers": 0, "choices": 0, "events": 3}, "execution report consumption mismatch")

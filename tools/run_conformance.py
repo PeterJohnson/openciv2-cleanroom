@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Execute the registered pure F01 subset of X02 v3 against a C++ adapter.
+"""Execute bounded F01/F02 foundation operations from X02 v3 through C++.
 
 Python is a developer-only host driver. It never calculates the operation result
 and never sends expectations to the implementation. Unsupported case features
-fail explicitly; this is not yet the general state/provider/reentry runner.
+fail explicitly; this is not yet the general composite/provider/reentry runner.
 """
 import argparse
 from datetime import datetime, timezone
@@ -20,13 +20,28 @@ ROOT = Path(__file__).resolve().parents[1]
 OPERATIONS = {
     "F01.primaryModuloFromCode": {"code": "i32", "n": "i32"},
     "F01.secondaryRangeFromCode": {"lo": "i32", "hi": "i32", "U": "u32"},
+    "F02.assignUnitToken": {},
+    "F02.assignCityToken": {},
+    "F02.reserveUnitSlot": {"owner": "u8"},
 }
+SCOPE = "f01-f02-state-v1"
+TOKEN_STATE = {"F02.nextUnitToken": "u32", "F02.nextCityToken": "u32"}
+RESERVATION_STATE = {"F02.unitEnd": "u32", "F02.unitTokenScan": "u32[]",
+                     "F02.militaryCounts": "i16[]", "F02.effectiveHumanSet": "u8"}
+STATES = {op: (TOKEN_STATE if op in ("F02.assignUnitToken", "F02.assignCityToken") else
+               RESERVATION_STATE if op == "F02.reserveUnitSlot" else {}) for op in OPERATIONS}
+RESULTS = {op: ("unit-slot-or-null" if op == "F02.reserveUnitSlot" else
+                "u32" if op.startswith("F02.") else "i32") for op in OPERATIONS}
+WRITES = {op: (["F02.nextUnitToken"] if op == "F02.assignUnitToken" else
+               ["F02.nextCityToken"] if op == "F02.assignCityToken" else
+               ["F02.unitEnd"] if op == "F02.reserveUnitSlot" else []) for op in OPERATIONS}
 TARGET = {"game": "Civilization II Multiplayer Gold Edition", "version": "5.4.0f patch 3",
           "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"}
 EVENTS = {"root.enter": "enter", "root.return": "return", "root.exit": "snapshot"}
 ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake",
                    "cmake/ConformanceIdentity.cmake", "src/base/arithmetic.hpp",
                    "src/base/arithmetic.cpp", "src/base/random.hpp", "src/base/random.cpp",
+                   "src/state/identities.hpp", "src/state/identities.cpp",
                    "tools/conformance_adapter.cpp")
 RUNNER_SOURCES = ("tools/run_conformance.py", "tools/check_conformance.py")
 SOURCES = ADAPTER_SOURCES + RUNNER_SOURCES
@@ -75,9 +90,49 @@ def integer(value, kind):
     require(re.fullmatch(r"0|-?[1-9][0-9]*", text) is not None, "noncanonical integer")
     require(len(text) <= 11, "integer out of range")
     number = int(text)
-    low, high = (-2147483648, 2147483647) if kind == "i32" else (0, 4294967295)
+    low, high = {"i16": (-32768, 32767), "i32": (-2147483648, 2147483647),
+                 "u8": (0, 255), "u16": (0, 65535), "u32": (0, 4294967295)}[kind]
     require(low <= number <= high, "integer out of range")
     return number
+
+
+def state_values(state, operation, scan_length=None):
+    """Exact registered closure; arrays preserve every supplied slot in order."""
+    require(isinstance(state, dict), "state must be an object")
+    fields = STATES[operation]
+    supported(set(state) <= set(fields), "state outside supported operation closure")
+    require(set(state) == set(fields), "missing registered state input")
+    result = {}
+    for key, kind in fields.items():
+        if kind.endswith("[]"):
+            values = state[key]
+            require(isinstance(values, list), "state array must be an array")
+            expected_length = 8 if key == "F02.militaryCounts" else scan_length
+            require(len(values) <= 2048 and (expected_length is None or len(values) == expected_length),
+                    "state array length does not match registered view")
+            result[key] = [integer(value, kind[:-2]) for value in values]
+        else:
+            result[key] = integer(state[key], kind)
+    if operation == "F02.reserveUnitSlot":
+        require(result["F02.unitEnd"] <= 2048, "unit scan bound exceeds capacity")
+    return result
+
+
+def result_value(value, operation):
+    kind = RESULTS[operation]
+    if kind == "unit-slot-or-null":
+        if value == {"$type": "null"}:
+            return None
+        result = integer(value, "u16")
+        require(result < 2048, "unit slot exceeds capacity")
+        return result
+    return integer(value, kind)
+
+
+def entry_scan_length(case):
+    if case["boundary"]["operation"] == "F02.reserveUnitSlot":
+        return integer(case["entry"]["state"]["F02.unitEnd"], "u32")
+    return None
 
 
 def checked_file(root, directory, relative, digest):
@@ -90,7 +145,7 @@ def checked_file(root, directory, relative, digest):
     return path
 
 
-def trace_events(trace):
+def trace_events(trace, operation, scan_length):
     require(isinstance(trace, list), "trace must be an array")
     by_id = {}
     for seq, event in enumerate(trace):
@@ -110,10 +165,11 @@ def trace_events(trace):
                 integer(payload["arguments"][key], kind)
         elif event["kind"] == "return":
             object_keys(payload, "result", "return payload")
-            integer(payload["result"], "i32")
+            result_value(payload["result"], operation)
         else:
             object_keys(payload, "label state", "snapshot payload")
-            require(payload["label"] == "exit" and payload["state"] == {}, "invalid exit snapshot")
+            require(payload["label"] == "exit", "invalid exit snapshot")
+            state_values(payload["state"], operation, scan_length)
         by_id[event["id"]] = event
     require(set(by_id) == set(EVENTS), "missing selected event")
     return by_id
@@ -122,7 +178,7 @@ def trace_events(trace):
 def validate_order(order, events, registered):
     object_keys(order, "before independent", "comparison.order")
     require(isinstance(order["before"], list), "before must be an array")
-    supported(order["independent"] == [], "pure F01 operations have no independent events")
+    supported(order["independent"] == [], "foundation operations have no independent events")
     edges = set()
     for edge in order["before"]:
         require(isinstance(edge, list) and len(edge) == 2 and
@@ -166,19 +222,28 @@ def load_fixture(path, root=ROOT):
         registered = specs[pin["id"]]
         require(resolved == (root / registered["path"]).resolve() and pin["sha256"] == registered["sha256"], "registry/specification mismatch")
         pins[pin["id"]] = pin["sha256"]
-    require(set(pins) == {"F01", "X01", "X02"}, "pure F01 contract pins incomplete")
     boundary = case["boundary"]
     object_keys(boundary, "level operation start stop arguments suppliedChildren", "boundary")
     name(boundary["operation"], "operation")
     supported(boundary["operation"] in OPERATIONS, "operation has no executable adapter")
-    supported(boundary["level"] == "primitive" and boundary["suppliedChildren"] == [], "only pure primitive boundaries supported")
-    require(boundary["start"] == "pure mapping entry with explicit code argument" and
+    op_id = boundary["operation"]
+    owner = op_id.split(".")[0]
+    require(set(pins) == {"F01", "X01", "X02", owner}, "foundation contract pins incomplete")
+    supported(boundary["level"] == "primitive" and boundary["suppliedChildren"] == [], "only leaf primitive boundaries supported")
+    start = ("pure mapping entry with explicit code argument" if owner == "F01" else
+             "state primitive entry with complete registered inputs")
+    require(boundary["start"] == start and
             boundary["stop"] == "normal return followed by exit snapshot", "unsupported start/stop boundary")
     arguments = OPERATIONS[boundary["operation"]]
     operation = next((row for row in registry["operations"] if row["id"] == boundary["operation"]), None)
-    require(operation is not None and operation["owner"] == "F01" and
-            operation["arguments"] == arguments and operation["result"] == "i32", "adapter/registry contract mismatch")
-    require(all(operation[key] == [] for key in ("reads", "writes", "callbacks", "suppliedChildren", "acceptedFaults", "partialEffects", "independenceClaims"))
+    require(operation is not None and operation["owner"] == owner and
+            operation["arguments"] == arguments and operation["result"] == RESULTS[op_id], "adapter/registry contract mismatch")
+    require(operation["reads"] == list(STATES[op_id]) and operation["writes"] == WRITES[op_id],
+            "adapter/registry state closure mismatch")
+    state_registry = {row["id"]: row for row in registry["states"]}
+    require(all(key in state_registry and state_registry[key]["valueType"] == kind
+                for key, kind in STATES[op_id].items()), "adapter/registry state type mismatch")
+    require(all(operation[key] == [] for key in ("callbacks", "suppliedChildren", "acceptedFaults", "partialEffects", "independenceClaims"))
             and operation["invocation"] == "root" and len(operation["events"]) == 3 and
             set(operation["events"]) == set(EVENTS) and
             operation["stopBoundaries"] == ["normal return followed by exit snapshot"], "adapter cannot satisfy registry closure")
@@ -186,24 +251,31 @@ def load_fixture(path, root=ROOT):
     values = {key: integer(boundary["arguments"][key], kind) for key, kind in arguments.items()}
     if boundary["operation"] == "F01.primaryModuloFromCode":
         require(0 <= values["code"] <= 32767 and values["n"] > 0, "primary mapping precondition")
+    if op_id == "F02.reserveUnitSlot":
+        require(values["owner"] < 8, "civilization owner outside 0..7")
     profile = case["profile"]
     object_keys(profile, "domain safety restrictions deviations", "profile")
     require(profile["domain"] in ("nominal", "accepted-off-nominal", "restricted"), "unknown profile")
     name(profile["safety"], "safety policy")
     supported(profile["restrictions"] == profile["deviations"] == [], "restricted/deviating comparisons not implemented")
     object_keys(case["entry"], "state retainedInputs blobs", "entry")
-    supported(case["entry"] == {"state": {}, "retainedInputs": [], "blobs": []}, "nonempty state/blob closure not implemented")
+    supported(case["entry"]["retainedInputs"] == case["entry"]["blobs"] == [], "retained-input/blob installation not implemented")
+    state_values(case["entry"]["state"], op_id)
+    scan_length = entry_scan_length(case)
+    state_values(case["entry"]["state"], op_id, scan_length)
     object_keys(case["randomness"], "mode policy contexts choices", "randomness")
-    supported(case["randomness"] == {"mode": "controlled-choices", "policy": None, "contexts": {}, "choices": []}, "only explicit-code pure mappings supported; no RNG fallback")
+    supported(case["randomness"] == {"mode": "controlled-choices", "policy": None, "contexts": {}, "choices": []}, "only operations without random consumption supported; no RNG fallback")
     object_keys(case["environment"], "protocol inputs unexpected", "environment")
     supported(case["environment"] == {"protocol": "scripted-v1", "inputs": [], "unexpected": "fail"}, "providers/reentry not implemented")
     expected = case["expected"]
     object_keys(expected, "outcome result state trace", "expected")
-    supported(expected["outcome"] == "return" and expected["state"] == {}, "only normal pure returns supported")
-    integer(expected["result"], "i32")
-    events = trace_events(expected["trace"])
+    supported(expected["outcome"] == "return", "only normal returns supported")
+    state_values(expected["state"], op_id, scan_length)
+    result_value(expected["result"], op_id)
+    events = trace_events(expected["trace"], op_id, scan_length)
     require(events["root.enter"]["payload"] == {"operation": boundary["operation"], "parent": None, "arguments": boundary["arguments"]}, "entry trace does not match boundary")
     require(events["root.return"]["payload"]["result"] == expected["result"], "return trace/result disagreement")
+    require(events["root.exit"]["payload"]["state"] == expected["state"], "exit trace/state disagreement")
     comparison = case["comparison"]
     object_keys(comparison, "stateScope traceKinds order exclusions normalizations", "comparison")
     supported(comparison["stateScope"] == "complete-boundary" and comparison["exclusions"] == comparison["normalizations"] == [], "projected/normalized comparisons not implemented")
@@ -232,8 +304,10 @@ def load_fixture(path, root=ROOT):
 def compare(case, actual):
     """X02 §6: typed equality, exact semantic IDs and required dependencies."""
     object_keys(actual, "outcome result state trace", "adapter output")
-    integer(actual["result"], "i32")
-    events = trace_events(actual["trace"])
+    operation = case["boundary"]["operation"]
+    result_value(actual["result"], operation)
+    state_values(actual["state"], operation, entry_scan_length(case))
+    events = trace_events(actual["trace"], operation, entry_scan_length(case))
     for key in ("outcome", "result", "state"):
         if actual[key] != case["expected"][key]:
             return {"surface": key, "expected": case["expected"][key], "actual": actual[key]}
@@ -266,9 +340,20 @@ def execute(path, command, root=ROOT):
         return {**report, "status": "budget-exhausted", "error": "three required events exceed event limit"}
     operation = case["boundary"]["operation"]
     args = [case["boundary"]["arguments"][key]["value"] for key in OPERATIONS[operation]]
+    state = state_values(case["entry"]["state"], operation, entry_scan_length(case))
+    # The adapter receives only actual inputs. State travels on stdin to avoid
+    # platform command-line limits; field order belongs to this test protocol.
+    words = []
+    for key in STATES[operation]:
+        value = state[key]
+        if isinstance(value, list):
+            words.extend(str(item) for item in value)
+        else:
+            words.append(str(value))
     try:
         process = subprocess.run([*command, operation, *args], capture_output=True, text=True,
-                                 encoding="utf-8", timeout=case["limits"]["hostMilliseconds"] / 1000)
+                                 encoding="utf-8", input="\n".join(words) + ("\n" if words else ""),
+                                 timeout=case["limits"]["hostMilliseconds"] / 1000)
         if process.returncode != 0:
             return {**report, "status": "adapter-failure", "exitCode": process.returncode, "error": process.stderr}
         actual = json.loads(process.stdout, object_pairs_hook=inventory.unique_object,
@@ -330,7 +415,7 @@ def main():
                 "build identity does not match the adapter; rebuild the conformance adapter")
     changed = subprocess.run(["git", "status", "--porcelain", "--", *SOURCES], cwd=root,
                              capture_output=True, text=True)
-    report = {"format": "openciv2-conformance-run/2", "runnerScope": "pure-f01-v1",
+    report = {"format": "openciv2-conformance-run/2", "runnerScope": SCOPE,
               "createdUtc": datetime.now(timezone.utc).isoformat(), "implementationRevision": revision.stdout.strip() or None,
               "uncommittedImplementationChanges": bool(changed.stdout),
               "implementationSources": {**identity["sources"], **{path: sources[path] for path in RUNNER_SOURCES}},

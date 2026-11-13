@@ -1,40 +1,44 @@
 {
   "format": "openciv2-conformance-run/2",
-  "runnerScope": "pure-f01-v1",
-  "createdUtc": "2026-11-13T23:35:24.966252+00:00",
-  "implementationRevision": "90e3185ac7fb5b407330e8edd13074bc0879741c",
+  "runnerScope": "f01-f02-state-v1",
+  "createdUtc": "2026-11-13T23:51:13.727462+00:00",
+  "implementationRevision": "92860dea07527a9709c169d9a417d62f2f2ed4eb",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "59df511f039c19f3af39e8050ba22f4442f023ae84d018ab8bfb10113f32793a",
+    "CMakeLists.txt": "5216d8826a1b716f249b67c599af8643fd58bc8f531fc33ee2f21be8b3324f0f",
     "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
     "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
-    "cmake/ConformanceIdentity.cmake": "ef823bdf0d54985fda575c79e0b5dd05731613d6c425aea050635a844af1a419",
+    "cmake/ConformanceIdentity.cmake": "c804c2a9e9a312bc89801985da99d1ee09a976200e53e674bd1b7377454e9933",
     "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
     "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
     "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
     "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
-    "tools/conformance_adapter.cpp": "9d4ac78ba04f8642fc1b9376db2ac924f0334306e243d8907401a7b0a17f6c2a",
-    "tools/run_conformance.py": "b6869b9ee38a9822c1f0bed54dd1e15d8fececd5fdfcfd52a2371542e8bf1ffc",
-    "tools/check_conformance.py": "a05195cd7a1685228b3c60fefa032b54f89a58b3be1305790929ca363b0a5115"
+    "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
+    "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
+    "tools/conformance_adapter.cpp": "422bdc3b26640ee4ff9fafdee0ab34d9ee3637375e8b43e1af29c582e352ec27",
+    "tools/run_conformance.py": "52ab8807819bf15fa2d5685e8b6ce8403cdd5c35366e6ed7a78e19189f333a10",
+    "tools/check_conformance.py": "42ea581723a21263eef078e294ced9b74876c0d396b738dbc7d0b62a2e0c589e"
   },
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "59df511f039c19f3af39e8050ba22f4442f023ae84d018ab8bfb10113f32793a",
+      "CMakeLists.txt": "5216d8826a1b716f249b67c599af8643fd58bc8f531fc33ee2f21be8b3324f0f",
       "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
       "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
-      "cmake/ConformanceIdentity.cmake": "ef823bdf0d54985fda575c79e0b5dd05731613d6c425aea050635a844af1a419",
+      "cmake/ConformanceIdentity.cmake": "c804c2a9e9a312bc89801985da99d1ee09a976200e53e674bd1b7377454e9933",
       "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
       "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
       "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
       "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
-      "tools/conformance_adapter.cpp": "9d4ac78ba04f8642fc1b9376db2ac924f0334306e243d8907401a7b0a17f6c2a"
+      "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
+      "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
+      "tools/conformance_adapter.cpp": "422bdc3b26640ee4ff9fafdee0ab34d9ee3637375e8b43e1af29c582e352ec27"
     },
     "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=/tmp/openciv2-emsdk/upstream/emscripten/em++\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Release\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n"
   },
   "adapterArtifacts": {
-    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.js": "292b39763868e2d2f7736bb33b9eb9bb137cd5ac3054f299baa9797856dc1ff8",
-    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.wasm": "1955850f2b7c9813a4b217b74cab4dadd5292087c69fd555e1b13ef2b3950f7c"
+    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.js": "4a1c4062798aa1257e17cf24933fc91e6d2eb426ff29b1b42ee780a4fa84bcbe",
+    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.wasm": "82bc0653c4f79ba03ffbc7f46d966639675c974462aa94dcd7a2ed8c0d0331e4"
   },
   "host": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=/tmp/openciv2-emsdk/upstream/emscripten/em++\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Release\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",
@@ -466,6 +470,1382 @@
             "payload": {
               "label": "exit",
               "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F02-city-token-wrap.json",
+      "sha256": "d8da36841399b6aa82d6ab9d32d64200b44db6eb7bdc443baceb64b0885d25df",
+      "id": "X02.F02.city-token-wrap",
+      "revision": 1,
+      "operation": "F02.assignCityToken",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "F02",
+          "file": "../F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F02-game-state-and-invariants.md",
+            "section": "3-slots-lifetime-tokens-and-absence",
+            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+          "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u32",
+          "value": "4294967295"
+        },
+        "state": {
+          "F02.nextUnitToken": {
+            "$type": "u32",
+            "value": "99"
+          },
+          "F02.nextCityToken": {
+            "$type": "u32",
+            "value": "0"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F02.assignCityToken",
+              "parent": null,
+              "arguments": {}
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u32",
+                "value": "4294967295"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F02.nextUnitToken": {
+                  "$type": "u32",
+                  "value": "99"
+                },
+                "F02.nextCityToken": {
+                  "$type": "u32",
+                  "value": "0"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-extend.json",
+      "sha256": "5bc5d9f7b8a375d84a7c0ca54badd79ee2a716b641b7bba798e1bf30d2b9ae06",
+      "id": "X02.F02.unit-reserve-extend",
+      "revision": 1,
+      "operation": "F02.reserveUnitSlot",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "F02",
+          "file": "../F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F02-game-state-and-invariants.md",
+            "section": "3-slots-lifetime-tokens-and-absence",
+            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+          "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
+          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u16",
+          "value": "3"
+        },
+        "state": {
+          "F02.unitEnd": {
+            "$type": "u32",
+            "value": "4"
+          },
+          "F02.unitTokenScan": [
+            {
+              "$type": "u32",
+              "value": "11"
+            },
+            {
+              "$type": "u32",
+              "value": "12"
+            },
+            {
+              "$type": "u32",
+              "value": "13"
+            }
+          ],
+          "F02.militaryCounts": [
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "1948"
+            },
+            {
+              "$type": "i16",
+              "value": "5"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            }
+          ],
+          "F02.effectiveHumanSet": {
+            "$type": "u8",
+            "value": "2"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F02.reserveUnitSlot",
+              "parent": null,
+              "arguments": {
+                "owner": {
+                  "$type": "u8",
+                  "value": "1"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u16",
+                "value": "3"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F02.unitEnd": {
+                  "$type": "u32",
+                  "value": "4"
+                },
+                "F02.unitTokenScan": [
+                  {
+                    "$type": "u32",
+                    "value": "11"
+                  },
+                  {
+                    "$type": "u32",
+                    "value": "12"
+                  },
+                  {
+                    "$type": "u32",
+                    "value": "13"
+                  }
+                ],
+                "F02.militaryCounts": [
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "1948"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "5"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  }
+                ],
+                "F02.effectiveHumanSet": {
+                  "$type": "u8",
+                  "value": "2"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-hole.json",
+      "sha256": "077bc62da65599cce471322f715e9e31ad40d415bcf575f9a20fa211b346203e",
+      "id": "X02.F02.unit-reserve-hole",
+      "revision": 1,
+      "operation": "F02.reserveUnitSlot",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "F02",
+          "file": "../F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F02-game-state-and-invariants.md",
+            "section": "3-slots-lifetime-tokens-and-absence",
+            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+          "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
+          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u16",
+          "value": "1"
+        },
+        "state": {
+          "F02.unitEnd": {
+            "$type": "u32",
+            "value": "4"
+          },
+          "F02.unitTokenScan": [
+            {
+              "$type": "u32",
+              "value": "11"
+            },
+            {
+              "$type": "u32",
+              "value": "0"
+            },
+            {
+              "$type": "u32",
+              "value": "13"
+            },
+            {
+              "$type": "u32",
+              "value": "0"
+            }
+          ],
+          "F02.militaryCounts": [
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "2000"
+            },
+            {
+              "$type": "i16",
+              "value": "5"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            }
+          ],
+          "F02.effectiveHumanSet": {
+            "$type": "u8",
+            "value": "2"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F02.reserveUnitSlot",
+              "parent": null,
+              "arguments": {
+                "owner": {
+                  "$type": "u8",
+                  "value": "1"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u16",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F02.unitEnd": {
+                  "$type": "u32",
+                  "value": "4"
+                },
+                "F02.unitTokenScan": [
+                  {
+                    "$type": "u32",
+                    "value": "11"
+                  },
+                  {
+                    "$type": "u32",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "u32",
+                    "value": "13"
+                  },
+                  {
+                    "$type": "u32",
+                    "value": "0"
+                  }
+                ],
+                "F02.militaryCounts": [
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "2000"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "5"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  }
+                ],
+                "F02.effectiveHumanSet": {
+                  "$type": "u8",
+                  "value": "2"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
+      "sha256": "cf03a2471556f783e6c1a2164e39df7e3cc0dcfe3063a76c80419a9284f21f40",
+      "id": "X02.F02.unit-reserve-military-limit",
+      "revision": 1,
+      "operation": "F02.reserveUnitSlot",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "F02",
+          "file": "../F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F02-game-state-and-invariants.md",
+            "section": "3-slots-lifetime-tokens-and-absence",
+            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+          "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
+          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "null"
+        },
+        "state": {
+          "F02.unitEnd": {
+            "$type": "u32",
+            "value": "3"
+          },
+          "F02.unitTokenScan": [
+            {
+              "$type": "u32",
+              "value": "11"
+            },
+            {
+              "$type": "u32",
+              "value": "12"
+            },
+            {
+              "$type": "u32",
+              "value": "13"
+            }
+          ],
+          "F02.militaryCounts": [
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "1949"
+            },
+            {
+              "$type": "i16",
+              "value": "5"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            },
+            {
+              "$type": "i16",
+              "value": "0"
+            }
+          ],
+          "F02.effectiveHumanSet": {
+            "$type": "u8",
+            "value": "2"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F02.reserveUnitSlot",
+              "parent": null,
+              "arguments": {
+                "owner": {
+                  "$type": "u8",
+                  "value": "1"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "null"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F02.unitEnd": {
+                  "$type": "u32",
+                  "value": "3"
+                },
+                "F02.unitTokenScan": [
+                  {
+                    "$type": "u32",
+                    "value": "11"
+                  },
+                  {
+                    "$type": "u32",
+                    "value": "12"
+                  },
+                  {
+                    "$type": "u32",
+                    "value": "13"
+                  }
+                ],
+                "F02.militaryCounts": [
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "1949"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "5"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  },
+                  {
+                    "$type": "i16",
+                    "value": "0"
+                  }
+                ],
+                "F02.effectiveHumanSet": {
+                  "$type": "u8",
+                  "value": "2"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-initial.json",
+      "sha256": "4f036cc7e55124096867b6af7db72528271bf5abe2e18a0e2640134608e72015",
+      "id": "X02.F02.unit-token-initial",
+      "revision": 1,
+      "operation": "F02.assignUnitToken",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "F02",
+          "file": "../F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F02-game-state-and-invariants.md",
+            "section": "3-slots-lifetime-tokens-and-absence",
+            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+          "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u32",
+          "value": "1"
+        },
+        "state": {
+          "F02.nextUnitToken": {
+            "$type": "u32",
+            "value": "2"
+          },
+          "F02.nextCityToken": {
+            "$type": "u32",
+            "value": "200"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F02.assignUnitToken",
+              "parent": null,
+              "arguments": {}
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F02.nextUnitToken": {
+                  "$type": "u32",
+                  "value": "2"
+                },
+                "F02.nextCityToken": {
+                  "$type": "u32",
+                  "value": "200"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-wrap.json",
+      "sha256": "b2622acaaf0c03ad005a140f2aa96c2443afb5f91caeb1bf6c0eb35057a8be90",
+      "id": "X02.F02.unit-token-wrap",
+      "revision": 1,
+      "operation": "F02.assignUnitToken",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "F02",
+          "file": "../F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F02-game-state-and-invariants.md",
+            "section": "3-slots-lifetime-tokens-and-absence",
+            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+          "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u32",
+          "value": "4294967295"
+        },
+        "state": {
+          "F02.nextUnitToken": {
+            "$type": "u32",
+            "value": "0"
+          },
+          "F02.nextCityToken": {
+            "$type": "u32",
+            "value": "9"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F02.assignUnitToken",
+              "parent": null,
+              "arguments": {}
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u32",
+                "value": "4294967295"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F02.nextUnitToken": {
+                  "$type": "u32",
+                  "value": "0"
+                },
+                "F02.nextCityToken": {
+                  "$type": "u32",
+                  "value": "9"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-zero.json",
+      "sha256": "42bfe3ff39c6c26bcd2f682c96522a9538ad15d92e7f9cec890b6cef7025e2e7",
+      "id": "X02.F02.unit-token-zero",
+      "revision": 1,
+      "operation": "F02.assignUnitToken",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "F02",
+          "file": "../F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F02-game-state-and-invariants.md",
+            "section": "3-slots-lifetime-tokens-and-absence",
+            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+          "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u32",
+          "value": "0"
+        },
+        "state": {
+          "F02.nextUnitToken": {
+            "$type": "u32",
+            "value": "1"
+          },
+          "F02.nextCityToken": {
+            "$type": "u32",
+            "value": "9"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F02.assignUnitToken",
+              "parent": null,
+              "arguments": {}
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u32",
+                "value": "0"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F02.nextUnitToken": {
+                  "$type": "u32",
+                  "value": "1"
+                },
+                "F02.nextCityToken": {
+                  "$type": "u32",
+                  "value": "9"
+                }
+              }
             }
           }
         ]

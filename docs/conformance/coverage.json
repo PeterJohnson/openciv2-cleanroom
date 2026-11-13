@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 1,
+  "inventoryVersion": 2,
   "rows": [
     {
       "id": "F01.primaryModuloFromCode",
@@ -53,6 +53,94 @@
       "comparisonSurfaces": [
         "return",
         "empty-state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
+    },
+    {
+      "id": "F02.assignUnitToken",
+      "owner": "F02",
+      "operation": "F02.assignUnitToken",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "function": "F02.assignUnitToken",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "All u32 counter positions, including wrap through zero. The second counter is observed only for preservation.",
+      "caseIds": [
+        "X02.F02.unit-token-initial",
+        "X02.F02.unit-token-wrap",
+        "X02.F02.unit-token-zero"
+      ],
+      "comparisonSurfaces": [
+        "typed return",
+        "complete registered state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
+    },
+    {
+      "id": "F02.assignCityToken",
+      "owner": "F02",
+      "operation": "F02.assignCityToken",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "function": "F02.assignCityToken",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "All u32 counter positions, including wrap through zero. The second counter is observed only for preservation.",
+      "caseIds": [
+        "X02.F02.city-token-wrap"
+      ],
+      "comparisonSurfaces": [
+        "typed return",
+        "complete registered state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
+    },
+    {
+      "id": "F02.reserveUnitSlot",
+      "owner": "F02",
+      "operation": "F02.reserveUnitSlot",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#3-slots-lifetime-tokens-and-absence",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "function": "F02.reserveUnitSlot",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "Owner 0..7; unitEnd 0..2048; token view length equals entry unitEnd; eight i16 military counts and a u8 human mask. Caller owns the full-capacity pool. Result is a u16 unit slot 0..2047 or typed null for NoSlot.",
+      "caseIds": [
+        "X02.F02.unit-reserve-hole",
+        "X02.F02.unit-reserve-extend",
+        "X02.F02.unit-reserve-military-limit"
+      ],
+      "comparisonSurfaces": [
+        "typed return",
+        "complete registered state exit snapshot",
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
@@ -319,15 +407,15 @@
     {
       "id": "operation-inventory",
       "milestone": "M1\u2013M7",
-      "domain": "All families beyond the two registered F01 mappings and two F02 state keys.",
+      "domain": "All operations beyond two F01 mappings and three F02 identity/reservation primitives; larger shared-state closures remain unregistered.",
       "knownPrefix": "65 specification documents cataloged; no exhaustive original-entry inventory claim.",
       "closureEvidence": "Register each implemented operation and full shared state closure from owning specs; reconcile unresolved source evidence through specification updates only."
     },
     {
       "id": "x02-general-runner",
       "milestone": "M1",
-      "domain": "Stateful/composite X02 fixtures beyond the two pure F01 mappings.",
-      "knownPrefix": "A bounded host Python loader/comparator executes all three pure F01 fixtures through a C++ adapter on native and WASM. Nonempty state, providers/reentry, semantic choice tapes, implementation replay, blobs and projections are explicitly unsupported.",
+      "domain": "Composite and stateful X02 fixtures beyond registered F01/F02 leaf operations.",
+      "knownPrefix": "The bounded Python runner executes F01 pure mappings and F02 token/reservation primitives through real C++ adapters. It validates scalar/ordered-array state closure and typed absence. Providers/reentry, semantic choices, implementation replay, blobs and projections remain explicitly unsupported.",
       "closureEvidence": "Implement registered stateful adapters, complete typed values/blobs, scripted providers and callbacks, semantic choices and replay contexts, safe-stop prefixes and justified independence comparisons; attach bounded execution reports."
     },
     {

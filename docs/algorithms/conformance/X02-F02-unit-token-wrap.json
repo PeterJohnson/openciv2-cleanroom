@@ -1,0 +1,175 @@
+{
+  "format": "openciv2-conformance/3",
+  "id": "X02.F02.unit-token-wrap",
+  "revision": 1,
+  "target": {
+    "game": "Civilization II Multiplayer Gold Edition",
+    "version": "5.4.0f patch 3",
+    "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+  },
+  "specifications": [
+    {
+      "id": "F01",
+      "file": "../F01-determinism-and-arithmetic.md",
+      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+    },
+    {
+      "id": "F02",
+      "file": "../F02-game-state-and-invariants.md",
+      "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+    },
+    {
+      "id": "X01",
+      "file": "../X01-classic-compatibility-contract.md",
+      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+    },
+    {
+      "id": "X02",
+      "file": "../X02-whole-game-conformance.md",
+      "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+    }
+  ],
+  "boundary": {
+    "level": "primitive",
+    "operation": "F02.assignUnitToken",
+    "start": "state primitive entry with complete registered inputs",
+    "stop": "normal return followed by exit snapshot",
+    "arguments": {},
+    "suppliedChildren": []
+  },
+  "profile": {
+    "domain": "accepted-off-nominal",
+    "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+    "restrictions": [],
+    "deviations": []
+  },
+  "entry": {
+    "state": {
+      "F02.nextUnitToken": {
+        "$type": "u32",
+        "value": "4294967295"
+      },
+      "F02.nextCityToken": {
+        "$type": "u32",
+        "value": "9"
+      }
+    },
+    "retainedInputs": [],
+    "blobs": []
+  },
+  "randomness": {
+    "mode": "controlled-choices",
+    "policy": null,
+    "contexts": {},
+    "choices": []
+  },
+  "environment": {
+    "protocol": "scripted-v1",
+    "inputs": [],
+    "unexpected": "fail"
+  },
+  "expected": {
+    "outcome": "return",
+    "result": {
+      "$type": "u32",
+      "value": "4294967295"
+    },
+    "state": {
+      "F02.nextUnitToken": {
+        "$type": "u32",
+        "value": "0"
+      },
+      "F02.nextCityToken": {
+        "$type": "u32",
+        "value": "9"
+      }
+    },
+    "trace": [
+      {
+        "seq": 0,
+        "id": "root.enter",
+        "kind": "enter",
+        "call": "root",
+        "payload": {
+          "operation": "F02.assignUnitToken",
+          "parent": null,
+          "arguments": {}
+        }
+      },
+      {
+        "seq": 1,
+        "id": "root.return",
+        "kind": "return",
+        "call": "root",
+        "payload": {
+          "result": {
+            "$type": "u32",
+            "value": "4294967295"
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "id": "root.exit",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "exit",
+          "state": {
+            "F02.nextUnitToken": {
+              "$type": "u32",
+              "value": "0"
+            },
+            "F02.nextCityToken": {
+              "$type": "u32",
+              "value": "9"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "stateScope": "complete-boundary",
+    "traceKinds": [
+      "enter",
+      "return",
+      "snapshot"
+    ],
+    "exclusions": [],
+    "normalizations": [],
+    "order": {
+      "before": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independent": []
+    }
+  },
+  "evidence": {
+    "kind": "specification-vector",
+    "sources": [
+      {
+        "file": "../F02-game-state-and-invariants.md",
+        "section": "3-slots-lifetime-tokens-and-absence",
+        "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+      }
+    ],
+    "limitations": [
+      "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
+      "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
+      "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+    ]
+  },
+  "limits": {
+    "events": 64,
+    "providerRequests": 16,
+    "hostMilliseconds": 1000
+  }
+}
