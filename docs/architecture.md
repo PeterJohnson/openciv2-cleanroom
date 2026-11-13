@@ -30,8 +30,11 @@ Implementation rules:
   Do not read, copy, translate, link, generate from, or otherwise derive game code
   from `openciv2` or the Civ2 decompilation/reconstruction work. This includes
   their renderers, build helpers, tests, and historical execution harnesses.
-  Source-navigation links in the specifications are provenance, not instructions
-  for implementers to consult those sources.
+  External code links, filenames and source-derived harness notes belong only
+  in clearly marked validation/provenance sections. They record historical
+  research and do not authorize consulting those sources for implementation,
+  tests or build integration. Keep implementation catalogs and algorithm prose
+  free of source-navigation shortcuts; specify required formats and behavior here.
 - Use the original game as an external comparison and interoperability target.
   Independently authored drivers may supply inputs and capture observable state,
   files, packets, and interaction outcomes. Original executable code is never

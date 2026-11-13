@@ -1,7 +1,7 @@
 {
   "format": "openciv2-conformance/3",
   "id": "X02.F01.equal-range",
-  "revision": 10,
+  "revision": 11,
   "target": {
     "game": "Civilization II Multiplayer Gold Edition",
     "version": "5.4.0f patch 3",
@@ -11,17 +11,17 @@
     {
       "id": "F01",
       "file": "../F01-determinism-and-arithmetic.md",
-      "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238"
+      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
     },
     {
       "id": "X01",
       "file": "../X01-classic-compatibility-contract.md",
-      "sha256": "8aaca778ebe16101744c2268edf1f2bbe220aa064e98e95fdc09556ddb3d93ed"
+      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
     },
     {
       "id": "X02",
       "file": "../X02-whole-game-conformance.md",
-      "sha256": "7b3306bd7d9a39f5aaedfd535769e711e46ddd711b8bcbc31d6976baa9b39a4e"
+      "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
     }
   ],
   "boundary": {
@@ -152,7 +152,7 @@
       {
         "file": "../F01-determinism-and-arithmetic.md",
         "section": "4-secondary-sampling-law",
-        "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238"
+        "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
       }
     ],
     "limitations": [

@@ -770,6 +770,12 @@ semantics are N02/N05 obligations, not inferred from a successful local send.
 
 ## Appendix B. Evidence, validation and remaining integration
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary evidence is OpenCiv2 revision
 `a71e8aefffe04e6f719e0e213b027b128a747711`, targeting the classic build above.
 The inspected movement bodies are unchanged in the reference checkout at

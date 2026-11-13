@@ -925,7 +925,7 @@ Original unit shield X/Y arrays each have64 signed32 cells; normal sheet output
 visits63 sprites. Offset accesses occur on entry for **all editor modes** and
 on OK before the save callback. Higher Y indices can read the following X
 array; higher X indices can read citizen-sprite rectangles, padding or pointers.
-The independent `icon_editor.cpp` models these mapped addresses, including
+The independent reconstruction models these mapped addresses, including
 writes. Such mapping is evidence of the bug, not authorization to assign those
 unrelated fields in the cleanroom game. Defined backing reads remain separate;
 array-exceeding writes are always excluded under X01, even for ordinary advance
@@ -980,6 +980,12 @@ service. Full-options restoration after preview remains required on normal
 return, even if a callback changed another option.
 
 ## Appendix B. Evidence and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 Primary evidence is OpenCiv2 at
 `a71e8aefffe04e6f719e0e213b027b128a747711`, inspected at OpenCiv2 comparison revision

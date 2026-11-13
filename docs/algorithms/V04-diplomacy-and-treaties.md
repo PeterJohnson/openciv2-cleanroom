@@ -669,6 +669,12 @@ C08 separately owns Eiffel's one-time acquisition halving and attitude effects.
 
 ## Appendix A — Evidence and representation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary pin: OpenCiv2 `a71e8aefffe04e6f719e0e213b027b128a747711`, compared with
 OpenCiv2 revision `fc2155ccdb2123c1137babab6fa39e38152278c9`.
 Sources: [diplomacy](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/diplomacy.cpp),

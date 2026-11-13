@@ -35,8 +35,10 @@ metadata tests; normal builds and headless Catch2 tests do not require Python.
 Rows own the two registered operation contracts. `evidenceEntries` identify the
 local specification path/hash and operation; no original function-address or
 source-fragment inventory is claimed. Do not follow the specs' reconstruction
-source links to fill these fields. Specification clarification is the route for
-missing behavior/evidence. A future independently supplied source-coverage audit
+source links to fill these fields or extract/translate their harnesses into tests.
+Historical source-reference sections are provenance only. Specification
+clarification and independently captured original-game observations are the route
+for missing behavior/evidence. A future independently supplied source-coverage audit
 must remain distinguishable from this cleanroom operation inventory.
 
 The ledger also records all G01–G23 integration families, with their required

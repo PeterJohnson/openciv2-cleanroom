@@ -574,6 +574,12 @@ specified even when it loses pending work.
 
 ## Appendix B. Evidence, verification and remaining joins
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary source is OpenCiv2 revision
 `a71e8aefffe04e6f719e0e213b027b128a747711`, inspected in the unchanged reference
 checkout at `fc2155ccdb2123c1137babab6fa39e38152278c9`. The relevant implementation

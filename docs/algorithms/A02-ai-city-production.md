@@ -746,7 +746,7 @@ production -39 reads EBP+39-0xef = EBP-0xc8.
 
 ### Original arithmetic disagreement
 
-Independent `src/city_production_choice.cpp` represents expired-wonder adjustment
+The independent reconstruction represents expired-wonder adjustment
 as `6*score+25*difficulty` at its inspected revision. Primary source uses
 `3*score+50*difficulty`. A fresh bounded disassembly of the pinned executable,
 `0049d9f2`…`0049da35`, establishes the latter:
@@ -779,6 +779,12 @@ original optional recommendation stores are signed32. The host port's final
 pointer-sized store does not enlarge the classic output value's domain.
 
 ## Appendix B. Evidence and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 Primary OpenCiv2 pin: `a71e8aefffe04e6f719e0e213b027b128a747711`, inspected at
 `fc2155ccdb2123c1137babab6fa39e38152278c9`. All **26 selected complete bodies**

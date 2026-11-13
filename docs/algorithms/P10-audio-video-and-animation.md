@@ -425,6 +425,12 @@ pixel or successful playback continuation is implied.
 
 ## Appendix B. Evidence and ownership
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary reference revision: `a71e8aefffe04e6f719e0e213b027b128a747711`, especially
 [sound.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/sound.cpp)
 and the hand-written

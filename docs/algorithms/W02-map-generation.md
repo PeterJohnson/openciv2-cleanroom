@@ -967,6 +967,12 @@ compares its own declared random contexts separately.
 
 ## Appendix B: Source traceability
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 These references allow maintainers to audit the specification. An implementer
 can use the procedures above and the referenced F01 primitives without inspecting
 the source.

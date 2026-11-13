@@ -11,7 +11,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
           "function": "F01.primaryModuloFromCode",
           "originalAddress": null
         }
@@ -41,7 +41,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
           "function": "F01.secondaryRangeFromCode",
           "originalAddress": null
         }

@@ -489,7 +489,7 @@ The target executable SHA-256 is
 
 ### Nearest-region disagreement
 
-Independent `src/ai_unit.cpp` compares the city-site value against the owned
+The independent reconstruction compares the city-site value against the owned
 nearest region. The original uses the unrestricted nearest city's land region,
 as in the primary source:
 
@@ -536,6 +536,12 @@ or city writes are excluded bugs; deliberate in-bounds timer/priority/size wrap
 is a separate compatibility obligation.
 
 ## Appendix B. Evidence and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 | Contract | Primary source at the pinned revision |
 | --- | --- |

@@ -1176,6 +1176,12 @@ F06/N02 own persistent/wire layouts; no packed struct is required for gameplay.
 
 ## Appendix B. Evidence and validation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary source revision:
 `a71e8aefffe04e6f719e0e213b027b128a747711` in OpenCiv2. The selected bodies were
 read in checkout `fc2155ccdb2123c1137babab6fa39e38152278c9` and **76 scoped

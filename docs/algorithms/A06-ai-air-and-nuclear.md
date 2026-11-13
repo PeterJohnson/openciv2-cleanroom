@@ -433,6 +433,12 @@ required scalar wrap behavior.
 
 ## Appendix B. Source traceability and validation limits
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary evidence is
 [OpenCiv2 ai.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/ai.cpp)
 at `a71e8aefffe04e6f719e0e213b027b128a747711`, with the selected complete bodies

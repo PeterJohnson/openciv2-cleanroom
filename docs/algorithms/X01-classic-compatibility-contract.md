@@ -481,10 +481,10 @@ label such as “default run.”
 
 ### Known differences that later documents must account for
 
-[BUGS.md](https://github.com/PeterJohnson/openciv2/blob/ce18e5e52e19870cf1598651eee7c1a97d517519/docs/BUGS.md) is the detailed evidence ledger. The following routing
-table identifies important exceptions to using current classic source as an
-unqualified original oracle. It is not a substitute for auditing each family's
-other selectable fixes and stale-local presets.
+The following table routes known reconstruction differences to their owning
+behavioral contracts. Section 6 records historical provenance separately; external
+source code is not an implementation oracle. This table is not exhaustive; each
+owner's contract states the applicable behavior and unresolved inputs.
 
 | Evidence | Difference or unresolved input | Owning specifications |
 | --- | --- | --- |
@@ -598,6 +598,12 @@ must remain visible; any narrower supported domain must be declared under X01's
 input policy.
 
 ## 6. Traceability and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 | Evidence at the pinned OpenCiv2 revision | Use here |
 | --- | --- |

@@ -866,6 +866,12 @@ would still be excluded bugs, never corruption to reproduce.
 
 ## Appendix B. Source traceability and validation limits
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary evidence is OpenCiv2 at
 `a71e8aefffe04e6f719e0e213b027b128a747711`; the selected bodies are unchanged
 in OpenCiv2 comparison revision `fc2155ccdb2123c1137babab6fa39e38152278c9`.

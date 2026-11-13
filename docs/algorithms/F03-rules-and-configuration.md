@@ -1022,6 +1022,12 @@ debug-break/exit boundary; no table rollback occurs.
 
 ## Appendix B. Evidence, differences and validation limits
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 ### Source traceability
 
 The pinned source revisions at the start of this document determine the

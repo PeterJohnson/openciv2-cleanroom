@@ -718,6 +718,12 @@ hexadecimal. Additional preserved bits are not assigned invented semantics.
 
 ## Appendix B: Source traceability and validation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 The evidence here is recovered-operation/source inspection and reconstruction
 agreement, not a new observation of the original executable. The logical model
 does not grant unspecified reads a zero default.

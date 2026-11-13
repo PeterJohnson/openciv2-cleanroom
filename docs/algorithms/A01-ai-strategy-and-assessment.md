@@ -660,7 +660,7 @@ separate joined traces, not just a single static-state census.
 - The nominal power table has eight local entries, with only slots 1…7 read as
   candidates; slot 0 is first written if no candidate beats -1. History is
   150 samples × 8 civilization columns. A negative original sample can address
-  earlier game-state storage. Independent `power_ranking.cpp` models some such
+  earlier game-state storage. The independent reconstruction models some such
   addresses, but those writes are excluded bugs under X01; no cleanroom
   implementation must recreate adjacent parameter corruption.
 - The discarded military subtotal in ordinary power scans all 62 types. For
@@ -689,6 +689,12 @@ separate joined traces, not just a single static-state census.
   should be changed based on a more intuitive reading of a local name/comment.
 
 ## Appendix B. Evidence and validation
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 Primary OpenCiv2 pin: `a71e8aefffe04e6f719e0e213b027b128a747711`, inspected at
 `fc2155ccdb2123c1137babab6fa39e38152278c9`. All **25 selected complete bodies**

@@ -846,6 +846,12 @@ methods like the original message dispatcher.
 
 ## Appendix B. Evidence, checks and remaining integration
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 | Contract | External evidence and original entry |
 | --- | --- |
 | Stack validation/accessors | [unit.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/unit.cpp): validation `005b2590`, next `005b2c82`, last `005b2cc3`, first `005b2d39`, owner lookup `005b2daf`, nth `005b2f92`. |

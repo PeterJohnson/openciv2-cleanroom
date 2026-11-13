@@ -18,12 +18,9 @@ and the shared multiplayer opponent selector. Those callers reuse the world
 generation and initialization algorithms here without adopting the single-player wizard's
 cancellation rules.
 
-Evidence is pinned to OpenCiv2
-`36a4cbeabbfc709b3c3d37e531d948d9e42250d8` and the independent reconstruction in
-`civ2` at
-`4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`. Appendix B distinguishes original
-behavior from port fixes, including an unresolved incoming value that can
-matter during an ordinary advanced start.
+Appendix B distinguishes original behavior from port fixes, including an
+unresolved incoming value that can matter during an ordinary advanced start.
+The main algorithm states the required inputs and behavior.
 
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
@@ -792,6 +789,17 @@ the scoring procedure. Do not reproduce adjacent-state corruption or turn the
 unused counts into an invented crowding penalty.
 
 ## Appendix B. Source traceability and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
+Evidence is pinned to OpenCiv2
+`36a4cbeabbfc709b3c3d37e531d948d9e42250d8` and the independent reconstruction in
+`civ2` at
+`4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`.
 
 The external OpenCiv2 links below use published revision
 `a71e8aefffe04e6f719e0e213b027b128a747711`. Every linked file or directory was

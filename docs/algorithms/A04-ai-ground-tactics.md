@@ -757,8 +757,8 @@ Original executable SHA-256:
 
 ### Exploration gate disagreement
 
-The primary source uses `game.game_flags & GAME_SCENARIO`; independent
-`src/ai_unit.cpp` uses `gGameParameters.customRules & 0x80` in this one gate.
+The primary source uses `game.game_flags & GAME_SCENARIO`; the independent
+reconstruction uses `gGameParameters.customRules & 0x80` in this one gate.
 Fresh bounded original disassembly at `005415ae`…`005415d4` resolves it:
 `005415b0` reads word `00655af0`, then tests low mask 0x80. Game state begins at
 `00655ae8`, so this is its offset-8 game/map flags, not offset-0 custom rules.
@@ -768,7 +768,7 @@ lookahead. This static instruction check is not a native gameplay replay.
 
 ### Shared-entry and Trade-Goto differences
 
-Independent `src/ai_unit.cpp` hoists pillage into its normal non-sea route and
+The independent reconstruction hoists pillage into its normal non-sea route and
 skips it on transport re-entry. The original shared transport entry at `0053be12`
 checks cached domain, and `0053be19` sends non-sea actors to `0053f012`, the
 pillage prefix. Naval-goal exits at `0053da75`, `0053ee87` and `0053eea0` also
@@ -830,6 +830,12 @@ is required by those sampled values. Only actual producers or supplied retained
 reads may satisfy a later input; an unresolved branch must stop at its boundary.
 
 ## Appendix B. Evidence and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 | Contract | Primary source at the pinned revision |
 | --- | --- |

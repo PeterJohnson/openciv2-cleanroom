@@ -896,6 +896,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Evidence and source identity
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 The target executable is classic MGE 5.4.0f patch 3, SHA-256
 `edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c`.
 The primary reconstruction is pinned at

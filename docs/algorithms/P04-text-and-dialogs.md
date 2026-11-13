@@ -471,6 +471,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Evidence identity and source navigation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Target executable SHA-256:
 `edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c`.
 Primary reconstruction revision is
@@ -518,10 +524,10 @@ objects need not match them.
 The original validation masks are Center1,OuterExtent2,SharedMargins4,Modal8;
 native base flags are514 (standard) and2050 (modal), plus1024 for caption and4096
 for resize. They encode the described options, not a required new object layout.
-Original entry `005534bc`; source owner
-[intro-style creation](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/window.cpp).
-This caller contract was source-reviewed during P07; P04's earlier finite
-fixtures do not exercise complete native creation or these callbacks.
+Original entry `005534bc`; Appendix A records the external provenance for
+intro-style creation. This caller contract was source-reviewed during P07;
+P04's earlier finite fixtures do not exercise complete native creation or these
+callbacks.
 
 | Logical flag | Original value |
 | --- | --- |
@@ -642,6 +648,12 @@ boundaries above distinguish supplied incoming state from those repairs. No
 uninitialized-value replacement or overwrite is silently required for conformance.
 
 ## Appendix C. Validation record
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 The historical research bundle included extracted source bodies, adapters,
 source hashes, original-byte probes and documentation checks. That scaffolding

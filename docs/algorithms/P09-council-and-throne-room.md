@@ -453,6 +453,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Evidence and original entry map
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary reconstruction is pinned at
 `a71e8aefffe04e6f719e0e213b027b128a747711`:
 [reports.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/reports.cpp)

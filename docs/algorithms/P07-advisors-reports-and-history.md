@@ -1450,6 +1450,12 @@ excluded irrespective of whether the source read was recovered.
 
 ## Appendix D. Evidence and validation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Target: Civilization II Multiplayer Gold Edition5.4.0f,patch3. Primary reference
 is OpenCiv2 revision`a71e8aefffe04e6f719e0e213b027b128a747711`; the selected
 source files are identical in the inspected checkout at

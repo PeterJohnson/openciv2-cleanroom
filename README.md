@@ -11,7 +11,8 @@ work may be reordered while preserving behaviorally significant dependencies;
 X01 and X02 define that convention and its conformance checks.
 
 - [Algorithm specifications](docs/algorithms/README.md): subsystem catalog,
-  ownership, writing conventions and source evidence.
+  ownership and behavioral contracts; historical provenance is separated from
+  implementation guidance.
 - [Compatibility contract (X01)](docs/algorithms/X01-classic-compatibility-contract.md):
   required behavior, supported inputs and permitted differences.
 - [Conformance (X02)](docs/algorithms/X02-whole-game-conformance.md): fixtures,
@@ -70,8 +71,11 @@ review and stage the result. Enable the staged-format check once per clone with
 Windows commands and existing-hook integration. CI also checks formatting.
 
 Implementation code must be written from this repository's specifications, not
-copied or derived from OpenCiv2 or Civ2 decompilation/reconstruction source. The
-original game may be used for comparisons and compatibility checks. The designated
+copied or derived from OpenCiv2 or Civ2 decompilation/reconstruction source.
+External code links and filenames in validation/provenance sections are research
+records, not permission to consult those files for implementation or tests. Treat
+missing behavior as a specification gap. The original game may be used externally
+for comparisons and compatibility checks. The designated
 `PeterJohnson/openciv2-assets` runtime content is an allowed data dependency.
 
 These documents define requirements; they do not establish completed
@@ -79,4 +83,4 @@ interoperability or whole-game validation.
 
 [MIT license](LICENSE). The specification collection's
 [source provenance](docs/algorithms/README.md#source-provenance) identifies the
-external reference repositories.
+external reference repositories for historical validation only.

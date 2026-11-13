@@ -738,6 +738,12 @@ omits the invalid write and retains the established valid continuation.
 
 ## Appendix B. Evidence, checks and remaining integration
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 The View-mode entry added with P05 is `view_map_pieces` (original `004897fa`)
 in independent `src/map_input.cpp` at revision
 `4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`; primary `ui_redraw_all_maps` in

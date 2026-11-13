@@ -13,42 +13,42 @@
     {
       "id": "C03",
       "path": "docs/algorithms/C03-city-economy-and-corruption.md",
-      "sha256": "23d4f8d3c3a3f1bc78a3816c761cb44d8b23de83451eb56f2975ca2e92bfd38a"
+      "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
     },
     {
       "id": "C05",
       "path": "docs/algorithms/C05-city-growth-and-support.md",
-      "sha256": "1f3950429a13cb03c852a1d535fb9cd877a0f361313f79a0a710b4e1f015b83b"
+      "sha256": "f540059ad057ddf00492b18c932148ad0d02acc70a5ae39a12874e66ee29f86f"
     },
     {
       "id": "F04",
       "path": "docs/algorithms/F04-turn-sequencing.md",
-      "sha256": "d7806c9b46f749abb7d632f07a8d8ecdf1e522661fa858b2296b590a58ad1a6b"
+      "sha256": "3804ebbb7f28934285a4dd2a8aabd454abe217d63f6591d44478d1e674fbc805"
     },
     {
       "id": "U06",
       "path": "docs/algorithms/U06-combat-and-veterancy.md",
-      "sha256": "41414d99cb3ab980afbc6fd081d25dfad5cc14803a221f7839e6bb975aa6dda0"
+      "sha256": "f7bf9c159edbee551decae08c2cd21bea3f5114fbaf4ee4ad884890ccc90b0e9"
     },
     {
       "id": "V02",
       "path": "docs/algorithms/V02-governments-and-tax-rates.md",
-      "sha256": "718ffa568ac675192f482d40bef1c8214c1cbd1e0009a74b333195a5f3ef595a"
+      "sha256": "40a574240d719adc5561dd5644b66ab2c62e14ec87229e41abb37ee03259cc61"
     },
     {
       "id": "V03",
       "path": "docs/algorithms/V03-research-and-technology.md",
-      "sha256": "d70fb09311fdfc3b946e853b631c28773ea4bd45abb0df9b20e6f650a433f45e"
+      "sha256": "abd695e24bf412ec15b4255235a29067bf44984c303744fb8866dc5a484db7fa"
     },
     {
       "id": "V07",
       "path": "docs/algorithms/V07-spaceship.md",
-      "sha256": "a8b1c2ae7d1ada4f35c464c8e6bc523c06c20e37cb5afffac0c1ae2ad9d456c6"
+      "sha256": "280112a3966366ad9ea6ebaf84b22c815fda38181b55d7ee3ce7cf64f65c1c04"
     },
     {
       "id": "V08",
       "path": "docs/algorithms/V08-scoring-victory-and-retirement.md",
-      "sha256": "3d91e49966ed4d79a4f784512d49aa0c438cb58fcdf6b1d350ebe70a8c032d98"
+      "sha256": "b9946b2ceb7fd90f9ec5d87b7de81314a42808f84597c9f5b221dc77a2c88674"
     }
   ],
   "bindings": [

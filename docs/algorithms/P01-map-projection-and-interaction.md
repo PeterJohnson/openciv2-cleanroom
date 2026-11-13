@@ -266,6 +266,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Source and original instruction traceability
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary reference: OpenCiv2 revision
 `a71e8aefffe04e6f719e0e213b027b128a747711`. The inspected worktree was
 `fc2155ccdb2123c1137babab6fa39e38152278c9`; selected reference bodies retain
@@ -387,6 +393,12 @@ because the original address happens to be mapped. Null receivers remain
 explicit failure boundaries after their documented entry effects.
 
 ## Appendix C. Validation record
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 The historical research bundle included source inventories, whole extracted
 bodies, a bounded C++ harness, source/binary probes and Markdown checks. That

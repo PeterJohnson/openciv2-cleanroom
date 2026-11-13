@@ -11,12 +11,9 @@ run and which state they observe. Their production, research, combat, AI,
 environment and presentation formulas belong to their owning documents.
 Section 12 records those dependencies and the remaining integration review.
 
-Evidence is pinned to OpenCiv2
-`554851eb19faedc57220e679597d7678bf409a08` and the independent reconstruction in
-`civ2` at
-`4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`. Original encodings, addresses and
-validation limits are in the appendices. An implementation can use different
-records and control structures while preserving the specified ordering.
+Original encodings and validation provenance are in the appendices. An
+implementation can use different records and control structures while preserving
+the specified behavior and ordering.
 
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
@@ -760,6 +757,17 @@ calendar reads and filename capacity matter for original-memory/failure tests;
 they are not a requirement to use unsafe indexing or fixed-size strings.
 
 ## Appendix B. Evidence and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
+Evidence is pinned to OpenCiv2
+`554851eb19faedc57220e679597d7678bf409a08` and the independent reconstruction in
+`civ2` at
+`4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`.
 
 ### Source traceability
 

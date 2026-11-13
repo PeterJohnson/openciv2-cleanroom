@@ -4,7 +4,11 @@ This collection describes classic Civilization II Multiplayer Gold Edition in
 sufficient detail for a cleanroom implementation. Its 65 specifications cover
 simulation, AI, scenarios, persistence, multiplayer and player interaction.
 Implementers should work from the behavioral contracts and declared inputs;
-source-navigation links support specification research and independent validation.
+external source references are confined to historical validation/provenance
+sections and are not implementation inputs. Do not open reconstruction source
+or reuse its harnesses to write code or tests. Report missing behavior as a
+specification gap and resolve it through a self-contained contract or independent
+original-game observations.
 
 Start with [X01's compatibility contract](X01-classic-compatibility-contract.md),
 then F01–F03 for arithmetic, shared state and rules, and W01 for map geometry.
@@ -14,9 +18,9 @@ A specification's presence does not establish implementation or conformance.
 
 IDs are stable references. Keep uppercase ID-prefixed filenames such as
 `F01-determinism-and-arithmetic.md` and update this index when ownership or scope
-changes. [Source provenance](#source-provenance) identifies the external reference
-repositories and evidence-link conventions. Reference sources, images and
-historical research harnesses are not dependencies of the cleanroom implementation.
+changes. [Source provenance](#source-provenance) records the collection's research
+history separately from implementation guidance. Source links and filenames
+there do not authorize reading or deriving implementation from those sources.
 
 ## Classic compatibility target
 
@@ -133,14 +137,6 @@ unchanged. Version 3 fixture metadata makes this comparison explicit.
 
 ### Foundations and game orchestration
 
-Research starting points: [game.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/game.cpp),
-[civ2types.h](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/include/civ2types.h),
-[state declarations](https://github.com/PeterJohnson/openciv2/tree/a71e8aefffe04e6f719e0e213b027b128a747711/src/data/state),
-[rules.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/rules.cpp), [civ.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/civ.cpp),
-[random.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/random.cpp), [crt.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/native/crt.cpp), and
-[retvals.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/retvals.cpp). The latter contains substantial save
-loading logic; the main `src/auto` file is not always the complete implementation.
-
 | ID | Document | Scope |
 | --- | --- | --- |
 | F01 | [Determinism and arithmetic](F01-determinism-and-arithmetic.md) | Sampling laws and biases, implementation reproducibility, clock inputs, range helpers, integer and floating-point conventions. Original generators are optional appendix evidence. Consumers own decisions and state-dependent ordering. |
@@ -151,11 +147,6 @@ loading logic; the main `src/auto` file is not always the complete implementatio
 | F06 | [Save, load and file formats](F06-save-load-and-file-formats.md) | Save, scenario, and map layouts; versions, sizes, byte order, record validation, strings, event storage, state restoration, mode adaptation, derived-state rebuilds, saved settings/window state, and partial-load failure behavior. |
 
 ### World and environment
-
-Research starting points: [map.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/map.cpp), [game.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/game.cpp),
-[unit.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/unit.cpp), and
-[retvals.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/retvals.cpp), including `unit_enter_hut` and
-`city_process_pollution`.
 
 | ID | Document | Scope |
 | --- | --- | --- |
@@ -168,10 +159,6 @@ Research starting points: [map.cpp](https://github.com/PeterJohnson/openciv2/blo
 
 ### Units and combat
 
-Research starting points: [unit.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/unit.cpp), [map.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/map.cpp),
-[civ.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/civ.cpp), and the unit/map state declarations. Examine
-human command callers and AI callers of the same operation.
-
 | ID | Document | Scope |
 | --- | --- | --- |
 | U01 | [Unit lifecycle and stacks](U01-unit-lifecycle-and-stacks.md) | Allocation, creation/deletion, ordered traversal and repair, relocation, cargo selection/grouping, home links, off-map units, unit visibility and bookkeeping; includes cascading removal and rehoming primitives, with explicit child and network contracts. |
@@ -183,11 +170,6 @@ human command callers and AI callers of the same operation.
 | U07 | [Nuclear attacks](U07-nuclear-attacks.md) | Delivery and interception checks, blast footprint, unit and city damage, pollution, diplomatic effects, and the exact ordering of cascading changes. Spy delivery enters through V06; ordinary battles remain U06. |
 
 ### Cities and trade
-
-Research starting points: [city.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/city.cpp),
-[civ.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/civ.cpp), [unit.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/unit.cpp), and
-[retvals.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/retvals.cpp), including `city_recalc`. Separate
-recalculation from the operations that commit a city's turn.
 
 | ID | Document | Scope |
 | --- | --- | --- |
@@ -203,12 +185,6 @@ recalculation from the operations that commit a city's turn.
 
 ### Civilizations and game outcomes
 
-Research starting points: [civ.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/civ.cpp),
-[diplomacy.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/diplomacy.cpp),
-[spaceship.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/spaceship.cpp),
-[unit.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/unit.cpp), [game.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/game.cpp), and
-[reports.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/reports.cpp).
-
 | ID | Document | Scope |
 | --- | --- | --- |
 | V01 | [Civilization lifecycle and civil war](V01-civilization-lifecycle-and-civil-war.md) | Civilization creation/reset, elimination and revival where supported, leader assignment, survival checks, civil-war eligibility and partition, transfers, and destroyed-civilization records. F05 owns initial setup orchestration; use C09 central-city selection and C01 elementary transfer. |
@@ -221,13 +197,6 @@ Research starting points: [civ.cpp](https://github.com/PeterJohnson/openciv2/blo
 | V08 | [Scoring, victory and retirement](V08-scoring-victory-and-retirement.md) | Score and rating components, scenario objectives, conquest and space outcomes, retirement warnings and year rules, endgame ordering, continuation, and Hall of Fame qualification/storage rules. |
 
 ### Artificial intelligence
-
-Research starting points: [ai.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/ai.cpp), the `city_choose_production` family in
-[city.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/city.cpp), [diplomacy.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/diplomacy.cpp),
-the civilization goal routines in [civ.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/civ.cpp), and
-`ai_choose_government` in [bigframes.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/bigframes.cpp).
-AI descriptions must include the actual scores, priorities, scan order, random
-choices, and fallbacks, not just strategic intent.
 
 | ID | Document | Scope |
 | --- | --- | --- |
@@ -242,13 +211,6 @@ choices, and fallbacks, not just strategic intent.
 
 ### Scenarios and editors
 
-Research starting points: `ScenarioEvents` and scenario/cheat entry points in
-[game.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/game.cpp), [editor.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/editor.cpp), the
-editors in [civ.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/civ.cpp), [city.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/city.cpp),
-[unit.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/unit.cpp), [map.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/map.cpp), and the
-sprite/sound editors in [graphics.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/graphics.cpp) and
-[sound.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/sound.cpp).
-
 | ID | Document | Scope |
 | --- | --- | --- |
 | S01 | [Scenario loading and parameters](S01-scenario-loading-and-parameters.md) | Parameter meanings/reset, briefing, single-player/network-host/hotseat preparation and local human selection, options, retry/cancel effects and resume publication. F06 owns loading/variant/resource context, F04 calendar, V08 objectives and S02 event execution. |
@@ -257,13 +219,6 @@ sprite/sound editors in [graphics.cpp](https://github.com/PeterJohnson/openciv2/
 | S04 | [Rules and asset editors](S04-rules-and-asset-editors.md) | Terrain/unit/building/technology/tribe/cosmic rule edits, references and rename propagation, sprite and sound edits, preview/apply/cancel behavior, and text/asset round trips. Parsing semantics remain F03. |
 
 ### Multiplayer and local sessions
-
-Research starting points: [network.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/network.cpp), the host/client loops in
-[game.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/game.cpp), [bigframes.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/bigframes.cpp),
-and [xdaemon.c](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/platform/xdaemon.c). Use the existing
-[XDaemon protocol document](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/docs/xdaemon-protocol.md) as historical evidence. N05 reconciles its capture/proposal statements with the
-independent XDaemon DLL source and original instructions; N05 owns the resulting
-transport contract.
 
 | ID | Document | Scope |
 | --- | --- | --- |
@@ -274,14 +229,6 @@ transport contract.
 | N05 | [Transport and wire protocol](N05-transport-and-wire-protocol.md) | Required original TCP framing, UDP discovery, IDs/routing, handshake, partial I/O, errors and shutdown. IPX/SPX, modem, serial and legacy lobby providers remain optional reference extensions. |
 
 ### Presentation and player interaction
-
-Research starting points: [mapview.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/mapview.cpp),
-[graphics.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/graphics.cpp), [text.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/text.cpp),
-[window.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/window.cpp), [controls.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/controls.cpp),
-[city.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/city.cpp), [reports.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/reports.cpp),
-[pedia.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/pedia.cpp), [sound.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/sound.cpp), and
-[throneroom.cpp](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/game/throneroom.cpp). Consult the platform adapters
-for observable timing, rasterization, and input behavior where needed.
 
 | ID | Document | Scope |
 | --- | --- | --- |
@@ -303,7 +250,7 @@ checked. They do not replace the subsystem specifications.
 
 | ID | Document | Scope |
 | --- | --- | --- |
-| X01 | [Classic compatibility contract](X01-classic-compatibility-contract.md) | Exact target build, supported inputs and game modes, observable equivalence, original quirks versus reconstruction assumptions, unavoidable deviations, and a cross-reference to each affected algorithm. Use BUGS.md to locate differences. |
+| X01 | [Classic compatibility contract](X01-classic-compatibility-contract.md) | Exact target build, supported inputs and game modes, observable equivalence, original quirks versus reconstruction assumptions, unavoidable deviations, and a cross-reference to each affected algorithm. Use the owning specification for each resolved difference. |
 | X02 | [Whole-game conformance](X02-whole-game-conformance.md) | Fixture/state format, random and external-input capture, phase snapshots, integration scenarios, expected outputs, source/function coverage ownership, and explicit validation gaps across the complete game. |
 
 ## Ownership and coverage rules
@@ -369,13 +316,6 @@ its call conditions, inputs, outputs, and ordering, then link to it. In particul
   N05 owns transport framing. UI documents own presentation and input translation,
   and link to the mechanics an accepted command invokes.
 
-For specification research, use [prototypes](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/src/auto/protos.h),
-[function names](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/re/function_names.tsv), source entry points and their
-callers, plus [state declarations](https://github.com/PeterJohnson/openciv2/tree/a71e8aefffe04e6f719e0e213b027b128a747711/src/data/state), to audit coverage.
-Include hand-reconstructed functions in `src/game`; the `src/auto` file list
-alone is insufficient. Source navigation may evolve, so preserve original entry
-addresses and the inspected revision alongside current names.
-
 Maintain [X02's ownership and coverage ledger](X02-whole-game-conformance.md#8-ownership-and-coverage-ledger)
 as implementations and independently captured fixtures are added.
 For every reachable classic behavior, assign an owner or an explicit disposition
@@ -421,9 +361,12 @@ Every document should contain:
    implementation random contexts, and external effects.
    Separate nominal examples from off-nominal compatibility cases, and both
    from diagnostic cases for excluded out-of-bounds-write bugs.
-7. A source-traceability appendix with revisions, function/address references,
-   original observations, and the validation limits. Source access must be optional
-   for the implementer reading the algorithm itself.
+7. A clearly labeled validation/provenance section for any retained external
+   source links, filenames, function/address locators and historical harness notes.
+   These are research records, not implementation instructions. Keep them out of
+   algorithm prose, catalog entries and implementation examples; implementers
+   must not consult those sources. Resolve missing behavior in the specification.
+   Keep independently observed original results distinct from source-derived checks.
 
 Describe the main algorithm using logical properties, named values and ordered
 operations that allow a new implementation to choose its own representation.
@@ -441,60 +384,57 @@ consumers. Keep examples self-contained when they illustrate the local algorithm
 and put general navigation and document ownership in this README. Retain
 references to caller behavior when it affects the specified state, such as
 using a repeatable layout key or retaining a sampled diplomacy threshold.
-Evidence links belong in the traceability appendix.
+External reconstruction-source and historical harness references belong only in
+explicitly marked validation/provenance sections. Keep file/wire/asset definitions
+self-contained; a link to a header or source table cannot supply a missing contract.
+Do not promote a source-derived harness or its expected outputs to an independently
+authored cleanroom test. Required encodings remain normative regardless of appendix
+placement.
 
-## Research and evidence
+## Historical validation and provenance
 
-Use OpenCiv2's classic paths as the starting evidence, together with original
-program observations and the independent reconstruction in the
-`civ2` repository. Pin the source revision and original executable
-version in each document. Source names and function boundaries are navigation
-aids; specification boundaries follow behavior.
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
-`CIV2_CLASSIC=1` is useful for comparisons, but it is not proof of original
-behavior in every state. [BUGS.md](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/docs/BUGS.md) records both selectable fixes and
-changes present in every mode, including replacements for reads of uninitialized
-locals. Each specification must identify relevant differences and distinguish an
-original behavior from a reconstruction assumption. If a result depends on
-unrecovered state, describe the required input or bounded observation rather than
-inventing a deterministic original result.
+These records explain how the existing specifications were researched; they do
+not prescribe a workflow for implementing this repository. New code and tests use
+the behavioral contracts, declared data and independently authored fixtures.
+The original executable can be exercised externally for comparison and file/peer
+interoperability. If a contract is incomplete, record the gap and clarify it;
+do not fill it by following a reconstruction-source link.
 
-Optional OpenCiv2 additions are not required by this collection. New presentation
-within X01 is permitted; gameplay rule changes and AI/map-generation changes
-remain outside the adopted policies. [EXTRAS.md](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/docs/EXTRAS.md) and the bug-fix notes are useful
-for finding branches to separate from classic behavior; their improvements are
-not normative requirements for these specifications.
-
-“Entire game” includes semantic UI/media behavior and the required TCP/IP and
-hotseat paths. Original visual/native fidelity and legacy transports are optional.
-The scope does not require reproducing compiler scaffolding, allocator internals, every Win32 wrapper, platform packaging, or third-party codec internals.
-Specify the externally visible contracts those services must satisfy. Record
-unsupported or unreachable paths explicitly: for example, the presence of PBEM
-code does not establish a playable PBEM mode in this MGE release
-([original mode notes](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/docs/STATUS.md)).
+Original observations and source-derived comparisons are different evidence.
+Historical classic-mode switches do not prove original behavior in every state;
+reconstructions include fixes, preset locals and optional additions. The owning
+specification must state the resolved rule and its limitations. Never adopt a
+repair or assume a value merely because a linked implementation uses it.
 
 ### Source provenance
 
-Source revisions in evidence appendices identify OpenCiv2 commits, not commits
-in this repository. The independent reconstruction is the external `civ2`
-repository at `4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`. Paths such as `src/...`
-and `Civ2/civ2.exe` are relative to the named reference repository; original
-binary hashes identify the inspected artifacts. No particular checkout location
-is required.
+Source revisions in evidence appendices identify external OpenCiv2 commits, not
+commits in this repository. The independent reconstruction is the external `civ2`
+repository at `4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`. Source filenames and
+paths such as `src/...` in those sections are relative to the named reference
+repository. They are not locations to read in this checkout or implementation
+files to recreate. Original binary hashes identify the inspected artifacts.
 
-Each specification retains its own evidence revision. This index's source links
-use `a71e8aefffe04e6f719e0e213b027b128a747711`. F04/F05 also link to that published
-revision: their linked files/directories were verified to match the Git objects
-at their later evidence pins. W02's enum-name header uses naming revision
-`ce18e5e52e19870cf1598651eee7c1a97d517519`, where `src/include/enums.h` exists;
-that naming reference does not change W02's implementation target.
+Each specification retains its own evidence revision. F04/F05's published source
+links use `a71e8aefffe04e6f719e0e213b027b128a747711`; their linked objects were
+historically checked against their later evidence pins. W02's enum-name reference
+uses naming revision `ce18e5e52e19870cf1598651eee7c1a97d517519`; it does not change
+the algorithm target or make the external header an implementation dependency.
+Retained citations are provenance, not authorization to consult source code.
 
-Historical research bundles, harnesses and their expected-result files remain
-external. Recorded results retain their stated scope and do not imply those
-artifacts are available here. Included portable fixtures are under
-[conformance/](conformance/); X02 defines their limits and the independent evidence
-needed for broader validation. Implementers use the main behavioral contracts
-and declared inputs; missing behavior should be reported as a specification gap.
+Historical research bundles, source-derived harnesses and expected-result files
+remain external. Recorded results retain their stated scope and do not imply
+those artifacts are available here or reusable as cleanroom implementation/tests.
+Included specification-vector fixtures are under [conformance/](conformance/);
+X02 distinguishes those from independent original-game observations and from
+implementation regression tests. Reading a provenance citation does not close a
+behavioral or validation gap.
 
 ## Validation plan
 
@@ -510,11 +450,10 @@ than maintaining a parallel document-completion checklist here.
 
 Each algorithm needs focused cases that check outputs and side effects at its
 boundary, followed by integration cases checking the order in which systems
-interact. For specification research, consult the [recorded unit-case inventory](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/tests/unit/cases.tsv),
-[replay scenarios](https://github.com/PeterJohnson/openciv2/tree/a71e8aefffe04e6f719e0e213b027b128a747711/harness/scripts), and the
-[development testing notes](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/docs/DEVELOPMENT.md) as external evidence when defining independent cases.
-Recorded coverage and successful replays have finite scope; do not promote them
-to exhaustive conformance claims.
+interact. Author cases from the stated contracts and independently captured
+original-game observations; do not extract or translate a reconstruction harness.
+Recorded historical coverage and successful replays have finite scope; do not
+promote them to independent cleanroom tests or exhaustive conformance claims.
 
 The whole-game case set should include:
 
@@ -546,5 +485,6 @@ game mode, custom-rule inputs, and relevant limits. Compare state mutations,
 controlled random decisions and conditional final state, ordered notifications/commands, serialized
 bytes, and semantic presentation outputs appropriate to the contract. Original
 pixel/sample/native-control output is an optional reference comparison. Use an
-independent implementation or original-program observations for expected behavior; a check
-that only repeats the specification's pseudocode is not sufficient evidence.
+independently derived cases and original-program observations for expected behavior;
+a check that only repeats the specification's pseudocode is not sufficient
+original-game evidence.

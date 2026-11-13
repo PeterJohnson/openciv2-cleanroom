@@ -465,6 +465,12 @@ padding or a neighboring region a larger array type.
 
 ## Appendix B. Sources, corrected evidence and checks
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 The primary reference files are pinned to OpenCiv2
 `a71e8aefffe04e6f719e0e213b027b128a747711` and were checked unchanged at local
 HEAD `fc2155ccdb2123c1137babab6fa39e38152278c9` for this scope.

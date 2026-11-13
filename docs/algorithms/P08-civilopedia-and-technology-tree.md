@@ -520,6 +520,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Evidence identity and source navigation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Behavioral target: original `Civ2/civ2.exe`, SHA-256
 `edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c`.
 Primary source navigation is pinned to
@@ -627,7 +633,7 @@ and their field layouts belong to F03's validation appendix.
 | Failed cursor query | Original ignores failure and can consume retained point data. BF-021 ignores the click; do not claim the repair is the original return/coordinate behavior |
 | Overlong terrain names | BF-043 expands private scratch; original overwrite remains excluded even though the name can arise from an otherwise accepted RULES line |
 | Unterminated improvement facts | BF-121 publishes unavailable facts at EOF; original null-line access is not an ordinary end-marker branch |
-| Primary port translation hook | `retvals.cpp` can substitute `lang_description` prose and a different cutoff. This is a port extension, not the original file-read algorithm in §14 |
+| Primary port translation hook | The port can substitute `lang_description` prose and a different cutoff. This is a port extension, not the original file-read algorithm in §14 |
 | Stale renderer after nested category switch | BF-071 adds category-change cancellation to improvement, wonder, unit, advance and tree renderers. The main algorithm describes original continuation; this repair can be declared separately. Every consequent OOB write is still excluded |
 | Extra scanned identities despite filtered-out rows | BF-212/214/215/217/220 reject wonder/improvement/unit/advance/terrain identity escape before rule lookup. Their stricter ingress domains are not original count-based terminators |
 

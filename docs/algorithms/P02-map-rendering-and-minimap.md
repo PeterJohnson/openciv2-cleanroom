@@ -344,6 +344,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Evidence and source ownership
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary OpenCiv2 pin:
 `a71e8aefffe04e6f719e0e213b027b128a747711`; inspected worktree HEAD
 `fc2155ccdb2123c1137babab6fa39e38152278c9`. Independent evidence repository
@@ -447,6 +453,12 @@ palette/font/game-state mutation. Scalar wrap, deliberate preview storage,
 backed reads and rendering quirks remain distinct from these excluded bugs.
 
 ## Appendix C. Validation record
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 The historical research bundle included pinned source inventories, complete
 extracted bodies, the bounded harness and document/binary checks. That

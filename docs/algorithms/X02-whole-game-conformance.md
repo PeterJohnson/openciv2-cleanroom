@@ -979,6 +979,12 @@ has been designed: they are part of the state and trace contract from the start.
 
 ## Appendix A. Original adapters and evidence routing
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Original snapshot adapters use each owner's representation appendix. Decode
 signed values and split overlapping valid views before comparison; identify
 uninitialized or partial output rather than copying all native bytes as trusted

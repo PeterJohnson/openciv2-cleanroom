@@ -451,6 +451,12 @@ wonders owned. No case below makes a random decision or changes a random context
 
 ## Appendix A — Representation and source evidence
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary evidence is OpenCiv2 commit
 `a71e8aefffe04e6f719e0e213b027b128a747711`, checked against the same selected
 bodies in OpenCiv2 revision `fc2155ccdb2123c1137babab6fa39e38152278c9`.

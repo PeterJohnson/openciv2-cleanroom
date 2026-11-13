@@ -563,6 +563,12 @@ history even though many consecutive returns are equal.
 
 ## Appendix C: Source traceability and validation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Original addresses below identify routines/data in the target executable; an
 implementer does not need to use those addresses.
 

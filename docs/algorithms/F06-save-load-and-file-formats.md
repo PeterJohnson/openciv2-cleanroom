@@ -1418,10 +1418,10 @@ safe policy, not an original adjacent-state mutation. The native file-choice
 request uses a 76-byte initialized prefix, flags `0x80e` plus `0x1000` when
 existence is required, and advertised filename capacity 256. Its service result
 uses low-byte-equals-one acceptance. Original source locators are save-menu
-`0047758c`, filter builder `00473e55` and native chooser `004731d2`; independent
-`src/local_turn.cpp` and `src/application_session.cpp` at revision
-`4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752` supply these caller contracts. The P05
-validation record identifies its bounded checks; full native Save/reload remains
+`0047758c`, filter builder `00473e55` and native chooser `004731d2`. The
+caller behavior is specified here; external source provenance is in Appendix B.
+The P05 validation record identifies its bounded checks; full native Save/reload
+remains
 a separate integration task.
 
 Reference records are packed directly from the original x86 state. A compatible
@@ -1456,6 +1456,17 @@ those operations differently. The source-informed independent writer identifies
 the original cleanup order; callback/fault fixtures must follow that order.
 
 ## Appendix B. Evidence and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
+The independent reconstruction's save-menu caller comparison used
+`src/local_turn.cpp` and `src/application_session.cpp` at revision
+`4cfdd2a4b43e1a99983cc6af3e993a52b8ad8752`; the required caller behavior is
+stated in this specification, not delegated to those files.
 
 All linked sources are external reference material pinned to the revision in
 the header. The cleanroom implementation does not need those files to implement

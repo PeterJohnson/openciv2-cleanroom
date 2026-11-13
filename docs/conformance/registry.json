@@ -6,455 +6,455 @@
     {
       "id": "A01",
       "path": "docs/algorithms/A01-ai-strategy-and-assessment.md",
-      "sha256": "d91ab120d171797f9775fac79f68e51c6ea102de0ef073176af88df3dc516219",
+      "sha256": "5bde6379312d9079de5ab18294a3bfdf0581043311359ee91c99260721b939a7",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A02",
       "path": "docs/algorithms/A02-ai-city-production.md",
-      "sha256": "f431a801657e97c11b3d7d55feb710c9119e2843aa190ae536297fbfd1fcb751",
+      "sha256": "a284047b6969374a1af926cb9fdf17150f2664d0d3632334f1a9ec4f40223a32",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A03",
       "path": "docs/algorithms/A03-ai-settlement-and-terrain-work.md",
-      "sha256": "6cce91a1b57677231ce9ac7f4845ff573f6cf6255ee2578838f940e781a92b7d",
+      "sha256": "8e3cc5c6e821e1be440d78b66c40fcd51c6c6dc973907e24202102449b723883",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A04",
       "path": "docs/algorithms/A04-ai-ground-tactics.md",
-      "sha256": "0d9b386d76a7e6d2661c45800abc65d53710a857d89b457149427444e1be97c1",
+      "sha256": "46c9dac62ab4ccc063c3203f9d7e54024d4dc1e0c30cd22e15a271bb871e83f2",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A05",
       "path": "docs/algorithms/A05-ai-naval-and-transport.md",
-      "sha256": "36a72c327ddd4a7d8f5e5938500c511899a41ce58c19581a4e7758bc399abeb2",
+      "sha256": "76307aaa19fc3822829eb2c639765c9658eb51a0d5bb42e98efc829ce0ee7c40",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A06",
       "path": "docs/algorithms/A06-ai-air-and-nuclear.md",
-      "sha256": "29a20ad3d711573976c5ebc62e1bf1b156754ad1fb61e07434fd6359a507a088",
+      "sha256": "54457ca33621869d70148b4caf4eb451fe640007ede223666b2bfe957b919f0a",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A07",
       "path": "docs/algorithms/A07-ai-special-unit-missions.md",
-      "sha256": "e12aebb932fe1bde1efc17d0da2503485cd09f163173d2889c91e23e3d76b2b1",
+      "sha256": "337ad65785c5ee31c4b030d04d8061f726dac0f5957c58d95df03f4bec2d46f5",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A08",
       "path": "docs/algorithms/A08-ai-research-government-and-diplomacy.md",
-      "sha256": "24d0fc7664340523ecdd020ac387687bfd4f247e07ad45f353caf2db9c313f81",
+      "sha256": "22763615dedd22111c3681e7e94db95f571ccff298a36805874846a0ffb7077e",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C01",
       "path": "docs/algorithms/C01-city-lifecycle-and-ownership.md",
-      "sha256": "9313800a5e90896182526c8dfc98cfe071126fb7ecba48dfae044b8b7fdf370c",
+      "sha256": "564630b5489c4951aa3fab48fad7360c3866bebdc383768b6e473b09bd9e0e78",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C02",
       "path": "docs/algorithms/C02-city-tiles-and-worker-assignment.md",
-      "sha256": "b300d0e65d3c33e2402acb961b24d96f24123e532f2bc8afb4f7ebc79f620b76",
+      "sha256": "890f9678c804e92e120b96aba95c59e115d59f76aecaa66899be6b127777a708",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C03",
       "path": "docs/algorithms/C03-city-economy-and-corruption.md",
-      "sha256": "23d4f8d3c3a3f1bc78a3816c761cb44d8b23de83451eb56f2975ca2e92bfd38a",
+      "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C04",
       "path": "docs/algorithms/C04-city-happiness-and-disorder.md",
-      "sha256": "71c5d0f2c9ec513029ddc83048defc7a1b222381c96ea139fd51441d018b938c",
+      "sha256": "3b10995f2d21c3f8fb542d40d1817759e313597761b24a786f65c2187b71496e",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C05",
       "path": "docs/algorithms/C05-city-growth-and-support.md",
-      "sha256": "1f3950429a13cb03c852a1d535fb9cd877a0f361313f79a0a710b4e1f015b83b",
+      "sha256": "f540059ad057ddf00492b18c932148ad0d02acc70a5ae39a12874e66ee29f86f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C06",
       "path": "docs/algorithms/C06-city-production-and-purchasing.md",
-      "sha256": "f21041ce09faaee31302f7eb4a432505916efe6d6ff9586280a14ba9745e6d89",
+      "sha256": "8609dbeedea9efdf303cbc561dd0c58c39d63a5ff18e9f926ab1cb84d31a8772",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C07",
       "path": "docs/algorithms/C07-trade-and-commodities.md",
-      "sha256": "7841978fa4113af480db7ad638c907be5dc4f0110e892b2c87160a57a7f4fbc7",
+      "sha256": "157f389a3fd7b979068566ccfc9cd8ce00d23f9254b3ed9dd1202645f60f2754",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C08",
       "path": "docs/algorithms/C08-buildings-and-wonders.md",
-      "sha256": "b5734bc7a1148310f2cb3f7138b9093521fc921da7d0f687bb87b14a07fa4e7b",
+      "sha256": "d1ced2e7e37b2b1efe914aa416847cf2bb27ce776deac24711758b9bfecf7c50",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C09",
       "path": "docs/algorithms/C09-city-capture-and-revolt.md",
-      "sha256": "f78afa5d9025b3aaf173daa71dc9808379f8e174d10d40ff91da7694e0e2548b",
+      "sha256": "44ad29e783a657a9dc1114cbbd187b03db141abe90cd99475ef87998eb8adc2d",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F01",
       "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-      "sha256": "71493ac25d78dca8d3c7fc47759efc6e3e4c58c9cf82278868c879cafa1c1238",
+      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
       "specificationStatus": "specified",
       "registrationStatus": "partial"
     },
     {
       "id": "F02",
       "path": "docs/algorithms/F02-game-state-and-invariants.md",
-      "sha256": "29d0b13cfd2a1b5f8f8c0da2b752ff158a7731e5abcd9e84dcc8ecbf753a2ff5",
+      "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
       "specificationStatus": "specified",
       "registrationStatus": "partial"
     },
     {
       "id": "F03",
       "path": "docs/algorithms/F03-rules-and-configuration.md",
-      "sha256": "63292eece3ad52408dabe3f013bef7b72dd9e1629d7e43bd547542d57e8d1876",
+      "sha256": "8846949fc51f14e86bad1f02bd0f50b7f2fd8b142fb2e9957394973e1b1f0995",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F04",
       "path": "docs/algorithms/F04-turn-sequencing.md",
-      "sha256": "d7806c9b46f749abb7d632f07a8d8ecdf1e522661fa858b2296b590a58ad1a6b",
+      "sha256": "3804ebbb7f28934285a4dd2a8aabd454abe217d63f6591d44478d1e674fbc805",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F05",
       "path": "docs/algorithms/F05-game-setup-and-starting-positions.md",
-      "sha256": "a126c4162abe782ea9b13db3c51901e7eab876492814f7a64083a1c4d2b8068d",
+      "sha256": "1f6ee0108af24fbb61abc447d4d0ae86a540dda93617c975b6a9bdd7321ae251",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F06",
       "path": "docs/algorithms/F06-save-load-and-file-formats.md",
-      "sha256": "18346497f3743706cb2f930bab31f0b5e37f572f11df3279fd87e6de0f89b067",
+      "sha256": "94403301ae17ba7d5a080c5d83c6d3fa370fd5fffc9dde256d29e04e67b90e75",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N01",
       "path": "docs/algorithms/N01-multiplayer-session-and-lobby.md",
-      "sha256": "181e60c852031811500029537077323e50cf6932165a2ee857b139a5bbbdfe72",
+      "sha256": "5a321c9753e7e378587d48e0f8c07b4bd3dfeaa781ea059a4f2ad62966f8edba",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N02",
       "path": "docs/algorithms/N02-network-commands-and-state-synchronization.md",
-      "sha256": "d669cd57811d98e815130df06b80bf8e2d9337349a4c76d7f0d09e3b59dd460e",
+      "sha256": "8c82ef05b2ada0dbfaa16c41727aa70e5b1d0d0ca27969b8ba4972019e612e92",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N03",
       "path": "docs/algorithms/N03-multiplayer-turn-sequencing.md",
-      "sha256": "0874a55f35c1601ec4fd443023eb128a677706eb8f1551531a2fc1cf03c7400c",
+      "sha256": "4e09d0d31a061362a14c0c5939c8cfec8c2d48a66caecaab41acd739e3128b91",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N04",
       "path": "docs/algorithms/N04-hotseat-and-player-handoff.md",
-      "sha256": "3f350c71d6251fa60d778adb4fd35e18ecaf885e27ecfd7e243239f9af8e88be",
+      "sha256": "5ad784f5e16408903d0a91c5ab830df26188e4e4feb16cde85c055e5ffb4a50f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N05",
       "path": "docs/algorithms/N05-transport-and-wire-protocol.md",
-      "sha256": "2667369afd392f4b58701c780d2d1e264c24111eacc226e18e4655b54678c2f5",
+      "sha256": "c34d225df9b06612fddba414d015233a0dc1417e5e7d073e674be444225c7563",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P01",
       "path": "docs/algorithms/P01-map-projection-and-interaction.md",
-      "sha256": "bbfc0aa43abf318ed42004c0d3d8316acdd85e7f9671978ae167961050a72546",
+      "sha256": "553e279815b63ca5368b2b6854d0e7d1bef13c8980edfef63a2a72d3f37efebb",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P02",
       "path": "docs/algorithms/P02-map-rendering-and-minimap.md",
-      "sha256": "06cacaff343129489fd326245a1c9e48bdf0c66187e0b34f480f342f05e678f7",
+      "sha256": "8499b5992ab3a439c0c57f42b354e6e8f1a12cc75ee405d9adbe17c63c3b4272",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P03",
       "path": "docs/algorithms/P03-graphics-and-asset-processing.md",
-      "sha256": "e04a80feb08e4f0eeddce7a00456de752443ea542c80ac857cf814eb63cf434e",
+      "sha256": "1506c7162e3b7b50c318fa57eaf9caee8037a399abbacafaa766161ace7b434f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P04",
       "path": "docs/algorithms/P04-text-and-dialogs.md",
-      "sha256": "e1291dcde4218fb0b767e87c4fa73940f8f313d2ea9f858df2bd774da1290e7e",
+      "sha256": "5a7ded59330cd2fa6a263e67af03c53558ee62a37a5dc9b5d287fca583b65b71",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P05",
       "path": "docs/algorithms/P05-input-and-command-dispatch.md",
-      "sha256": "4469a0840dc6d342b6b7a2c56d920a592c40c15a84683ff4cd7357eae6c864d6",
+      "sha256": "df2a4a8b4e3879fa5e389eaa9ccca26c511d060391c0ed6a00b9cf0e17d064ad",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P06",
       "path": "docs/algorithms/P06-city-interface.md",
-      "sha256": "723e81e3a597373912d3797fc576d76518779a24b7d7e9235b4a2a88247c8e91",
+      "sha256": "502af7de9a13a4d21affa49311bed6cb36707e28127a0af56ac5ba47a3aadef5",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P07",
       "path": "docs/algorithms/P07-advisors-reports-and-history.md",
-      "sha256": "4bd88b287ff962defb99a24f3827c1858e377b7492ccb5115a3f1767919bab9e",
+      "sha256": "158793bdcc8e0f895bdfcff7b99fe796e42daa46a8e50dfb20ca6b09c563b0cc",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P08",
       "path": "docs/algorithms/P08-civilopedia-and-technology-tree.md",
-      "sha256": "1b6cda66da99151f913a0f50eafee6845a73996518797fe90d9884c7cd60deef",
+      "sha256": "78ebd316f4369bcc46638e81f109f92f8876385441f60c6777673728a3bd8c8a",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P09",
       "path": "docs/algorithms/P09-council-and-throne-room.md",
-      "sha256": "52e65ac54d9980dbebd2a12f438ccfe0b4f14498139d45523b304d3a59a423cd",
+      "sha256": "2de3c32facd2070ac7744f6410dab5f18cb70f9318abe3d6fe28a8210e987479",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P10",
       "path": "docs/algorithms/P10-audio-video-and-animation.md",
-      "sha256": "266f8b849801ab2d8888acb131f29a88f2d7298d7b39afc9ecaf27daccbdf60b",
+      "sha256": "dffa7aa019c8ed7ef78ab90c23eeb174c895bd99fcbf075b976b77834f621109",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S01",
       "path": "docs/algorithms/S01-scenario-loading-and-parameters.md",
-      "sha256": "a846960d1f38974bf393e1c3a1c89faa3ce2b23101772e4b1e703253ff6fbc30",
+      "sha256": "a8197e97484bafdb7dafa9b168540d77e91583a8f02254ada63318cda3773f4c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S02",
       "path": "docs/algorithms/S02-event-language-and-execution.md",
-      "sha256": "e818e25a811b29e3906b4eea7bec238b9ac6a47a77b85d98f9617d570f967f2c",
+      "sha256": "e659734f1828e881c604059369178cc9a7a32eaa66490b37730c63194373a073",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S03",
       "path": "docs/algorithms/S03-world-and-scenario-editors.md",
-      "sha256": "a987952ea53b1054af491ac791d3df5bd637e9d291a0d7fb349e5b23454a6599",
+      "sha256": "af8611d275c64eb7ed097556501dee6dbd4ec0f34e1111652a3f10a5053c743b",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S04",
       "path": "docs/algorithms/S04-rules-and-asset-editors.md",
-      "sha256": "66f2e5e2957da5d0c11628de45c1e87d52773ea6ebaf0bd325d503e64f1b7785",
+      "sha256": "d70d879357db24b5c44900f9c811c3449b71d56be20306a2b33e3fbaa03ece3c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U01",
       "path": "docs/algorithms/U01-unit-lifecycle-and-stacks.md",
-      "sha256": "09a81d3046992e33e0a88a55ec3bdac03f4cf50dce4305f19ccb024e7d4f908f",
+      "sha256": "33336a50f11be73b4ff1ee4ad5d946132e6328b7b43e21bd7895e515a664798e",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U02",
       "path": "docs/algorithms/U02-movement-and-zones-of-control.md",
-      "sha256": "3823d26742add7a09f693b6a5e39bcd3c71cd8efcf6f2bbece9eca135ca218aa",
+      "sha256": "57f38e093e1aa45aa5e4ba5a2300da02e129726db4ee20f6c58921c7477026fd",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U03",
       "path": "docs/algorithms/U03-pathfinding-and-goto.md",
-      "sha256": "b30cbed9ad5603c38fd459caf3b57f6cd45c1408047734ffde110686519e97cd",
+      "sha256": "5da402a45e30dc1ea2b0b2599b642afb594666f26794ef3e73311226ce8565fc",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U04",
       "path": "docs/algorithms/U04-unit-orders-and-activation.md",
-      "sha256": "a72c95310a36e5d83b07ba4fd0bc5988eb9c045b091adb6a99aa35089ae696fb",
+      "sha256": "8d90c06f4929d70644e6ed2605982fb7171830ef14e3cbb1f69e41291e55cee1",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U05",
       "path": "docs/algorithms/U05-transport-and-special-movement.md",
-      "sha256": "8f787980457224e8c8624dffb45fcdda6e67fc8cadf98ce66b3510f5bfa85663",
+      "sha256": "2034c584720eb56106b011d6c1ceacce7503862764b34762b9e9c122f460f6de",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U06",
       "path": "docs/algorithms/U06-combat-and-veterancy.md",
-      "sha256": "41414d99cb3ab980afbc6fd081d25dfad5cc14803a221f7839e6bb975aa6dda0",
+      "sha256": "f7bf9c159edbee551decae08c2cd21bea3f5114fbaf4ee4ad884890ccc90b0e9",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U07",
       "path": "docs/algorithms/U07-nuclear-attacks.md",
-      "sha256": "4aa44c5a7212a03516b95f1edeb5d9d0ef849e2de3d4863cd5c65b2d98458b42",
+      "sha256": "47bfcd80c8177bf2d289c6f7f9c007ce0062ce35c22430be0d07ab3a15ca5767",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V01",
       "path": "docs/algorithms/V01-civilization-lifecycle-and-civil-war.md",
-      "sha256": "5e29fdb744266cdb61249f52d12987eee610fdec3737eaabfc8452e48d0f839a",
+      "sha256": "d0587d1662d34680b478b0265f68d121f0502bac18dab560f19a1b370e049660",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V02",
       "path": "docs/algorithms/V02-governments-and-tax-rates.md",
-      "sha256": "718ffa568ac675192f482d40bef1c8214c1cbd1e0009a74b333195a5f3ef595a",
+      "sha256": "40a574240d719adc5561dd5644b66ab2c62e14ec87229e41abb37ee03259cc61",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V03",
       "path": "docs/algorithms/V03-research-and-technology.md",
-      "sha256": "d70fb09311fdfc3b946e853b631c28773ea4bd45abb0df9b20e6f650a433f45e",
+      "sha256": "abd695e24bf412ec15b4255235a29067bf44984c303744fb8866dc5a484db7fa",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V04",
       "path": "docs/algorithms/V04-diplomacy-and-treaties.md",
-      "sha256": "705b0c90df764e6160331c4d91b9b2d9c577e0ecc291d2d414bb281281a029c7",
+      "sha256": "66e8555b45e9caa814d320e8557148f9558337b6f2508b5c72045525d7161da1",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V05",
       "path": "docs/algorithms/V05-diplomatic-negotiation.md",
-      "sha256": "5f9d2af7cb5218dbefdfcdde88cdc2333c0811524431e07162042c539f6d962b",
+      "sha256": "d650c7d961be8baefafa845ac4b7c525c3ce0dc953ab65a3dbd97172e0a9720c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V06",
       "path": "docs/algorithms/V06-espionage-and-bribery.md",
-      "sha256": "773aed805c6402299cc48125f65e4a95de8ab4c55a324b6c0a009102dbd51096",
+      "sha256": "2ddfc662220d7d5cb4d32f7635b1e4ed63a5c9a960a3b10cc62177dec73146e9",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V07",
       "path": "docs/algorithms/V07-spaceship.md",
-      "sha256": "a8b1c2ae7d1ada4f35c464c8e6bc523c06c20e37cb5afffac0c1ae2ad9d456c6",
+      "sha256": "280112a3966366ad9ea6ebaf84b22c815fda38181b55d7ee3ce7cf64f65c1c04",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V08",
       "path": "docs/algorithms/V08-scoring-victory-and-retirement.md",
-      "sha256": "3d91e49966ed4d79a4f784512d49aa0c438cb58fcdf6b1d350ebe70a8c032d98",
+      "sha256": "b9946b2ceb7fd90f9ec5d87b7de81314a42808f84597c9f5b221dc77a2c88674",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W01",
       "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-      "sha256": "e26984910e31566dafb5debd73ab28db04eb492463f9c20a6476a6825b4de38a",
+      "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W02",
       "path": "docs/algorithms/W02-map-generation.md",
-      "sha256": "ea4a44e6b28fd56dd88954eb500960595737d846c7650883e25da8f29e4b6d16",
+      "sha256": "c2bc0f21ff171bbab84e8990ec9a0cf5f8a309378de62a5fe3bea0281617f168",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W03",
       "path": "docs/algorithms/W03-visibility-and-exploration.md",
-      "sha256": "2374886f1cf95d6879e740b111941ca2f25d1fa68d7fe7db61d4e333bafc407a",
+      "sha256": "6485501b60efa42fd60d9b8f6b1ab2d509f8001bdcddcbeaf4102625a7595d95",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W04",
       "path": "docs/algorithms/W04-terrain-work-and-improvements.md",
-      "sha256": "e977fa10850ef607d1e62922527a1d41176c4d5b44b0af6f2d7f3856e4905c22",
+      "sha256": "f1a647e53576c217d109d8da1e72bf18155299ad5a557d9aca8714b204b73685",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W05",
       "path": "docs/algorithms/W05-pollution-and-global-warming.md",
-      "sha256": "c283d898ed3b58ea836f0655ad706e743dff4cb729846d108ee2899609fcfa1b",
+      "sha256": "c8b673017c8d57cce3220244e0f85c6e45609a580f8e66858a17a454fe568011",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W06",
       "path": "docs/algorithms/W06-huts-and-barbarians.md",
-      "sha256": "c09dc1ec22fde33ade7b7c634f21039a16c28388466eb095bf7885249f4ea636",
+      "sha256": "1235cee1f6f589c27b38622126992b700b9b98079ca2bc789953f3ffb6a7b306",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "X01",
       "path": "docs/algorithms/X01-classic-compatibility-contract.md",
-      "sha256": "8aaca778ebe16101744c2268edf1f2bbe220aa064e98e95fdc09556ddb3d93ed",
+      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "X02",
       "path": "docs/algorithms/X02-whole-game-conformance.md",
-      "sha256": "7b3306bd7d9a39f5aaedfd535769e711e46ddd711b8bcbc31d6976baa9b39a4e",
+      "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     }
@@ -569,9 +569,9 @@
   "fixtures": [
     {
       "id": "X02.F01.equal-range",
-      "revision": 10,
+      "revision": 11,
       "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
-      "sha256": "567e9963bff4771615618392e0b58e4bcedf6cac706bdb0a23c474d96a54a3ae",
+      "sha256": "078c418e131d2cf642709090e8157ac4fd22c3f9aefef58c90e26cea052e8431",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "not-run",
@@ -579,9 +579,9 @@
     },
     {
       "id": "X02.F01.primary-modulo",
-      "revision": 9,
+      "revision": 10,
       "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
-      "sha256": "6a15e7fc410a6ebd78a666d64f93650bddd7c1b5e288e8ce64cbf468f21d6346",
+      "sha256": "03f62f1b2e68ca29c680e022f26d3357ed1c69e280b3fe346d225652eb7a053b",
       "operation": "F01.primaryModuloFromCode",
       "provenance": "specification-vector",
       "executionStatus": "not-run",
@@ -589,9 +589,9 @@
     },
     {
       "id": "X02.F01.wrapped-range",
-      "revision": 10,
+      "revision": 11,
       "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
-      "sha256": "f52888a9cb1a346dfc4be733d9ce78f12c7e15536012948a9eb37819745c48b7",
+      "sha256": "d999aa6511004c53e3d3e56a372ba0b4347183b863179dc5ab7cc64744c86079",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "not-run",

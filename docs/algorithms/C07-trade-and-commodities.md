@@ -689,6 +689,12 @@ outside its intended object; it does not erase defined in-bounds scalar results.
 
 ## Appendix B — Evidence and validation
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Primary evidence is OpenCiv2 revision
 `a71e8aefffe04e6f719e0e213b027b128a747711`. Relevant bodies were verified unchanged
 in the read-only reference checkout used for this document.

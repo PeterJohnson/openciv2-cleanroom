@@ -15,12 +15,9 @@ Transport payloads are opaque here. A connection ID is not a civilization ID.
 P05 owns the application's native message pump; this contract states when that
 pump admits transport callbacks. F01 owns shared arithmetic conventions.
 
-The older [XDaemon protocol notes](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/docs/xdaemon-protocol.md)
-provide historical captures and a TCP port proposal. They are evidence, not a
-second algorithm owner. This specification reconciles them with the separate
-DLL reconstruction and focused original instructions; Appendix B lists material
-differences. No new network session or original DLL execution was performed for
-this document.
+Historical protocol captures, proposals and reconstruction comparisons are
+recorded in Appendix C; Appendix B lists their material differences. The framing
+and delivery contracts below are the implementation inputs.
 
 The required TCP/IP path must connect to unmodified original-game peers and
 preserve the framing, routing and delivery contracts below. RNG replacement
@@ -1017,6 +1014,19 @@ is unobservable is not adopted here. Capture claims are attributed to that
 existing evidence; they were not reproduced during this documentation work.
 
 ## Appendix C. Evidence and validation limits
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
+The older [XDaemon protocol notes](https://github.com/PeterJohnson/openciv2/blob/a71e8aefffe04e6f719e0e213b027b128a747711/docs/xdaemon-protocol.md)
+provide historical captures and a TCP port proposal. They are evidence, not a
+second algorithm owner. This specification reconciles them with the separate
+DLL reconstruction and focused original instructions; Appendix B lists material
+differences. No new network session or original DLL execution was performed for
+this document.
 
 The main-game/portable-port reference is pinned to
 `a71e8aefffe04e6f719e0e213b027b128a747711`, researched checkout

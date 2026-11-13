@@ -549,6 +549,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Evidence identity and original adapter
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 The behavioral target is classic MGE5.4.0f patch3. Primary source evidence is
 OpenCiv2 revision `a71e8aefffe04e6f719e0e213b027b128a747711`:
 

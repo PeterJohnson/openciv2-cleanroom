@@ -520,6 +520,12 @@ Original presentation procedures: [Appendix D](#appendix-d-original-presentation
 
 ## Appendix A. Evidence and source identity
 
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
+
 Target executable SHA-256:
 `edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c`.
 Primary reconstruction revision:
@@ -697,6 +703,12 @@ ResetTimerNotified. These describe the original adapter; a different timer
 provider may satisfy the same scheduling/message contract.
 
 ## Appendix C. Validation record
+
+> **Validation/provenance only.** Source links, filenames and historical harnesses
+> in this section are not implementation inputs. Implement from the behavioral
+> contracts and declared formats; do not consult or reuse reconstruction code
+> or source-derived harnesses for implementation or tests. Missing behavior is
+> a specification gap. This boundary does not make file/wire encodings optional.
 
 The documentation work used 35 hash-pinned independent source/header files and
 five primary files at the revisions above. Reference checkouts remained clean.
