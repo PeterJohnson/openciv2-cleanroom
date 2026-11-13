@@ -16,6 +16,15 @@ X01 and X02 define that convention and its conformance checks.
   required behavior, supported inputs and permitted differences.
 - [Conformance (X02)](docs/algorithms/X02-whole-game-conformance.md): fixtures,
   comparison rules, integration cases and evidence gaps.
+- [Architecture](docs/architecture.md): cleanroom boundary, C++20/CMake libraries,
+  SDL3/ImGui presentation, platform menus, assets, persistence and networking.
+- [Implementation plan](docs/implementation-plan.md): phased delivery, dependencies,
+  test gates and specification coverage.
+
+Implementation code must be written from this repository's specifications, not
+copied or derived from OpenCiv2 or Civ2 decompilation/reconstruction source. The
+original game may be used for comparisons and compatibility checks. The designated
+`PeterJohnson/openciv2-assets` runtime content is an allowed data dependency.
 
 These documents define requirements; they do not establish completed
 interoperability or whole-game validation.
