@@ -63,22 +63,21 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
-| M0 — implementation complete; platform gate pending | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan | Execute the pinned macOS/Windows jobs and retain reports; see [M0 evidence](m0-validation.md). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts now have a separate pinned dependency. |
+| M0 — complete | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan; all 11 hosted CI jobs pass | None for M0; see the [completion review and retained reports](m0-validation.md#m0-completion-review--2026-11-13-utc). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts have a separate pinned dependency. |
 | M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | C++ F01/F02/W01 state, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI with optional SQLite export, scoped queries, SessionRuntime/controller contracts and continuations |
-| M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
+| M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native menu/display interaction validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
-Local merge verification uses Linux/GCC 15.2, SDL3 3.4.2, and the dependency pins
-in `dependencies.json`. Native CTest passes 11 entries, including seven ImGui
-scenarios at each of three densities (21 scenario runs). The separate headless
-build passes five Catch2 cases, also passing with ASan/UBSan. These results cover
-the application shell only. The Emscripten 4.0.23 Release build passes all five
-portable Catch2 cases under Node and the Chromium smoke test with pinned
-Playwright 1.58.2 (startup, menus/dialogs, resizing, 2x density, Quit/Restart).
-The browser harness now fails explicitly if its local HTTP listener cannot bind.
-A release shell build/smoke run also passes; headless library-only configuration
-needs no dependencies. macOS/Windows compilation and native menu interaction
-remain unverified locally; CI definitions alone are not execution evidence.
+[CI run 43493400894](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894)
+at `a2592a0` passes all 11 jobs. Linux, macOS and Windows each pass 13 desktop
+CTests and seven headless CTests; each desktop also passes seven ImGui scenarios
+at three densities. The sanitizer job passes, and Emscripten 4.0.23 builds the
+shell/test targets and passes Node tests and Chromium smoke. Formatting,
+inventories, schemas and all 73 Python checks pass on each native platform.
+The [M0 completion review](m0-validation.md#m0-completion-review--2026-11-13-utc)
+records verified compiler/SDK identities, reports and the headless dependency
+boundary. These results cover infrastructure and the shell; native menu/display
+interaction and gameplay compatibility remain separate gates.
 
 ## M0 — Establish the project and its evidence boundary
 
@@ -112,6 +111,9 @@ remain unverified locally; CI definitions alone are not execution evidence.
 on native platforms and compiles a WASM test target. A headless build needs no
 SDL, ImGui, graphics clone, reconstruction checkout, or original game. All
 dependency and content gaps have named follow-up work.
+
+**Completed 2026-11-13 UTC:** the [completion review](m0-validation.md#m0-completion-review--2026-11-13-utc)
+maps these requirements to passing hosted reports and the existing inventories.
 
 ## M1 — Build the portable foundations
 
@@ -527,26 +529,25 @@ and does not replace, X02's operation-level coverage ledger.
 
 ## Immediate implementation backlog
 
-The next implementation changes should build on the integrated shell:
+M0 is complete. Build the next implementation changes on the integrated shell,
+maintaining the [registries/ledger](conformance/README.md) and
+[content inventory](content/README.md) as operations and inputs arrive:
 
-1. Run the pinned macOS/Windows CI jobs to close M0's remaining platform evidence
-   gate. Maintain the [registries/ledger](conformance/README.md) and
-   [content inventory](content/README.md) as operations and inputs arrive.
-2. Implement F01 sampling/arithmetic adapters and execute the existing three
+1. Implement F01 sampling/arithmetic adapters and execute the existing three
    X02 vectors with the version 3 loader/comparator.
-3. Implement F02 identities/state and W01 geometry using C++ records and
+2. Implement F02 identities/state and W01 geometry using C++ records and
    collections, with retained-state fixtures and no database dependency.
-4. Resolve layout data gaps and implement the independent graphics reader
+3. Resolve layout data gaps and implement the independent graphics reader
    against the [inspected package contract](content/asset-format.md); connect it
    to the existing SDL3/ImGui shell and finish native menu/platform verification.
-5. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
+4. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
    expose stored-record queries and the inspection/validation/diff CLI.
    Build optional SQLite snapshot export on those same records and queries.
-6. Establish the embedded session service, lifecycle and participant/controller
+5. Establish the embedded session service, lifecycle and participant/controller
    bindings, scoped queries, command descriptors and correlated results as real
    playable operations arrive. Connect graphical/headless clients and the console
    in M3; keep mode scheduling and authority behind the service boundary.
-7. Add the M4 Lua production-policy slice after those interfaces work, then
+6. Add the M4 Lua production-policy slice after those interfaces work, then
    close task persistence/hotseat and mixed-peer cases in M5/M6.
 
 For each change: cite the owning specification, implement the smallest coherent

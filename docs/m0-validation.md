@@ -1,10 +1,11 @@
 # M0 implementation and validation
 
-M0's repository implementation is complete. Its full platform exit gate remains
-open until all pinned native desktop/headless jobs execute successfully. Hosted
-runs now pass every job except the macOS desktop runtime input test, described
-below. See `native-platform-evidence` in the
-[coverage ledger](conformance/coverage.json).
+M0 is complete as of 2026-11-13 UTC. All 11 jobs in
+[run 43493400894](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894)
+passed at revision `a2592a000737d23c3fad89965fe5b4b36e772dea`. The review below closes
+`native-platform-evidence`, now removed from the open gaps in the
+[coverage ledger](conformance/coverage.json). This completes the infrastructure
+milestone; it does not claim gameplay or original-game compatibility.
 
 ## Delivered boundaries
 
@@ -17,14 +18,61 @@ The [registry and ledger](conformance/README.md) catalog 65 specification famili
 two pure F01 operation contracts, two F02 token-state contracts, three existing
 specification vectors and 23 required integration families. They distinguish
 specification, registration, implementation and execution. No game operation is
-claimed implemented or executed. The original specification and fixture files
-were not changed.
+claimed implemented or executed. Registry hashes track the current specification
+and fixture bytes, including subsequent provenance clarifications.
 
 The [content inventory](content/README.md) records the selected source artwork,
 verified release and payload hashes, stock-content gaps and original-access
 procedure. The [asset contract](content/asset-format.md) defines the observed pack
 index, original font observations, layout-data boundary and `OC2_ASSETS_DIR` behavior. No old-game
 code, runtime assets or original executable is included in this change.
+
+## M0 completion review — 2026-11-13 UTC
+
+The six M0 work items and its exit gate are satisfied:
+
+| Requirement | Reviewed evidence |
+| --- | --- |
+| Cleanroom workflow and reproducible target/toolchain skeleton | Repository specifications and cleanroom instructions; pinned CMake/compiler/dependency configuration; fresh hosted native and WASM builds pass |
+| Formatting and commit workflow | Pinned clang-format checks pass on all three native platforms; the 73 Python tests on each include staged-content/hook/partial-staging regressions |
+| Headless independence | All three hosted headless identities have `OC2_BUILD_GUI=OFF`; their five owned Catch2 cases and two metadata CTests pass without graphics/font acquisition. Earlier fresh local builds also pass with Python disabled and absent asset/font paths; library-only builds need no dependencies |
+| Operation/state registry and coverage ledger | Current metadata checks validate 65 specification families, two F01 operations, two F02 state keys, three specification vectors and G01–G23 integration requirements; gameplay execution remains explicitly unimplemented |
+| Runtime asset inventory and reader contract | Verified source selection, release/payload hashes, asset-directory validation and pack/layout contract in the content inventory; separately pinned TrueType sources; reader gaps assigned to M2 |
+| Stock content and original-game access plan | Rules/text/media inventories, approved distribution boundaries and external original-game comparison procedure; remaining content/access work assigned to M1–M7 |
+
+The downloaded build identities and CTest/ImGui XML reports agree with the job
+results. Every report has zero failures, errors, skips and disabled cases.
+All builds use CMake 3.31.10 with strict toolchain verification and dependency-lock
+SHA-256 `7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17`.
+
+| Platform | Verified compiler/SDK | Desktop CTests | Headless CTests |
+| --- | --- | --- | --- |
+| Ubuntu 24.04 | Clang 20.1.8 | [13/13](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14071675874) | [7/7](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14070742461) |
+| macOS 15, arm64 | AppleClang 17.0.0.17000013; Xcode 16.4; macOS SDK 15.5 | [13/13](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14071900559) | [7/7](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14069149742) |
+| Windows 2022 | Clang-CL 20.1.8; MSVC tools 14.44.35207; Windows SDK 10.0.26100.0 | [13/13](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14071805410) | [7/7](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14071111240) |
+
+Each desktop artifact includes seven passing ImGui scenarios at each of 1, 1.65
+and 2 density. The [ASan/UBSan artifact](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14071255634)
+records seven passing headless CTests. The [WASM artifact](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894/artifacts/14071955394)
+records the Emscripten 4.0.23 / Clang 22.0.0 build and three passing CTests
+(five Catch2 cases under Node plus two metadata checks); the web job also passes
+Chromium startup, dialogs, menu input, resizing, HiDPI, Quit and Restart.
+All three metadata jobs pass formatting, inventory/schema/gameplay-data checks
+and 73 Python tests. Full downloaded artifacts are retained locally under the
+ignored `build/m0-completion-43493400894/` directory; the links above identify the
+hosted reports, and this table retains the reviewed counts and toolchain identities.
+
+This review was performed on local revision `9d2b4f5`, which adds two documentation
+commits after the passing CI revision. Its build configuration, sources, tests,
+tools and dependency pins are unchanged from that run. Local inventory, schema,
+gameplay-data, formatting and all 73 Python checks pass against the updated
+specification/provenance metadata as well.
+
+The remaining gaps are M1–M7 work: gameplay/state/fixture execution, original
+file/peer observations, graphics/layout readers, complete playable content and
+audio, and native menu/display interaction. The automated desktop tests use
+SDL's dummy video/software renderer and do not close those M2 interaction gates.
+The earlier entries below preserve the validation history before M0 closed.
 
 ## Executed locally — 2026-11-13 UTC
 

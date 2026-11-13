@@ -342,13 +342,6 @@
       "closureEvidence": "Author bounded fixtures, obtain independent observations and run real parent/child integrations."
     },
     {
-      "id": "native-platform-evidence",
-      "milestone": "M0",
-      "domain": "Pinned native desktop/headless jobs on macOS, Linux and Windows.",
-      "knownPrefix": "Run 43491903539 at 09ab9a4 passed ten of eleven jobs. macOS desktop configured and built; 12 of 13 CTests passed. The remaining runtime test injected Control instead of Command for ImGui's macOS mode; see docs/m0-validation.md for the correction and local regression evidence.",
-      "closureEvidence": "Obtain a passing macOS desktop job after correcting the SDL test's physical shortcut modifier; retain build identity plus passing CTest reports before closing the M0 platform gate."
-    },
-    {
       "id": "runtime-font-platforms",
       "milestone": "M2",
       "domain": "DejaVu TrueType runtime text on all supported platforms and future custom dialogs.",
