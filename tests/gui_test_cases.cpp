@@ -4,8 +4,12 @@
 using namespace openciv;
 
 namespace {
-GuiFixture& fixture(ImGuiTestContext* ctx) { return *static_cast<GuiFixture*>(ctx->Test->UserData); }
-Shell& shell(ImGuiTestContext* ctx) { return fixture(ctx).shell; }
+GuiFixture& fixture(ImGuiTestContext* ctx) {
+    return *static_cast<GuiFixture*>(ctx->Test->UserData);
+}
+Shell& shell(ImGuiTestContext* ctx) {
+    return fixture(ctx).shell;
+}
 
 void prepare(ImGuiTest* test, GuiFixture& data) {
     test->UserData = &data;
@@ -22,7 +26,7 @@ void prepare(ImGuiTest* test, GuiFixture& data) {
         ctx->Yield(2);
     };
 }
-}
+} // namespace
 
 void register_gui_tests(ImGuiTestEngine* engine, GuiFixture& data) {
     auto* test = IM_REGISTER_TEST(engine, "shell", "about_dialog");

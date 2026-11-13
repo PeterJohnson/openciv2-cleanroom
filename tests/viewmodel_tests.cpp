@@ -26,7 +26,8 @@ TEST_CASE("A pending dialog blocks stale commands and preserves cancel", "[shell
     REQUIRE(shell.dialog());
     CHECK(shell.dialog()->kind == DialogKind::new_session);
     for (const auto& group : main_menu())
-        for (const auto& item : group.items) CHECK_FALSE(shell.enabled(item.command));
+        for (const auto& item : group.items)
+            CHECK_FALSE(shell.enabled(item.command));
     CHECK(shell.dialog()->default_button == 0);
     shell.resolve_dialog(DialogResult::cancel);
     CHECK_FALSE(shell.dialog());
@@ -76,7 +77,8 @@ TEST_CASE("Menu actions and shortcuts have unique identities", "[shell]") {
         for (const auto& item : group.items) {
             CHECK(ids.insert(item.command).second);
             CHECK(find_menu_item(item.command) == &item);
-            if (item.key) CHECK(shortcuts.insert(item.key).second);
+            if (item.key)
+                CHECK(shortcuts.insert(item.key).second);
         }
     }
     CHECK(find_menu_item(static_cast<Command>(0)) == nullptr);

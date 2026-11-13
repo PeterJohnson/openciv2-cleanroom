@@ -7,12 +7,14 @@ public:
     bool native() const override { return false; }
     void sync(const Shell&) override {}
 };
-}
+} // namespace
 
 std::unique_ptr<Menu> create_drawn_menu() {
     return std::make_unique<DrawnMenu>();
 }
 #if (!defined(_WIN32) && !defined(__APPLE__)) || defined(__EMSCRIPTEN__)
-std::unique_ptr<Menu> create_menu(SDL_Window*, CommandSink) { return create_drawn_menu(); }
+std::unique_ptr<Menu> create_menu(SDL_Window*, CommandSink) {
+    return create_drawn_menu();
+}
 #endif
 } // namespace openciv::platform

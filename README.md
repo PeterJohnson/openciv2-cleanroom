@@ -47,6 +47,12 @@ automation. Offline source overrides and platform prerequisites are described
 in the build guide. The [current status](docs/implementation-plan.md#current-implementation-status)
 distinguishes implemented infrastructure from remaining milestone gates.
 
+Before committing C++ or Objective-C changes, run `python3 tools/format.py`,
+review and stage the result. Enable the staged-format check once per clone with
+`git config --local core.hooksPath .githooks`. See
+[formatting setup](docs/BUILDING.md#formatting-and-commits) for the pinned tool,
+Windows commands and existing-hook integration. CI also checks formatting.
+
 Implementation code must be written from this repository's specifications, not
 copied or derived from OpenCiv2 or Civ2 decompilation/reconstruction source. The
 original game may be used for comparisons and compatibility checks. The designated

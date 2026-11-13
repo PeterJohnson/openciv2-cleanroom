@@ -24,8 +24,12 @@ public:
     SdlContext(const SdlContext&) = delete;
     SdlContext& operator=(const SdlContext&) = delete;
 };
-struct DeleteWindow { void operator()(SDL_Window* value) const { SDL_DestroyWindow(value); } };
-struct DeleteRenderer { void operator()(SDL_Renderer* value) const { SDL_DestroyRenderer(value); } };
+struct DeleteWindow {
+    void operator()(SDL_Window* value) const { SDL_DestroyWindow(value); }
+};
+struct DeleteRenderer {
+    void operator()(SDL_Renderer* value) const { SDL_DestroyRenderer(value); }
+};
 
 class Application {
 public:
@@ -38,11 +42,18 @@ public:
     SDL_AppResult iterate();
     [[nodiscard]] const Shell& shell() const { return shell_; }
     [[nodiscard]] SDL_Window* window() const { return window_.get(); }
-    [[nodiscard]] bool ui_captures_mouse() const { return shell_.dialog() || interface_->captures_mouse(); }
-    [[nodiscard]] bool ui_captures_keyboard() const { return shell_.dialog() || interface_->captures_keyboard(); }
+    [[nodiscard]] bool ui_captures_mouse() const {
+        return shell_.dialog() || interface_->captures_mouse();
+    }
+    [[nodiscard]] bool ui_captures_keyboard() const {
+        return shell_.dialog() || interface_->captures_keyboard();
+    }
 
 private:
-    struct QueuedEvent { SDL_Event event; std::string text; };
+    struct QueuedEvent {
+        SDL_Event event;
+        std::string text;
+    };
     void handle(QueuedEvent& queued);
     void sync_menu();
     SdlContext context_; // First constructed, last destroyed.

@@ -583,6 +583,13 @@ Use pinned FetchContent inputs or explicit compatible installed packages,
 with downloads opt-in and cached/offline operation supported. Never track a
 dependency's moving branch as a reproducible build input.
 
+Use the pinned clang-format version and root `.clang-format` for owned C/C++/
+Objective-C code. Format and review changes before staging; the repository hook
+checks staged contents and CI checks all owned sources. Preserve include order,
+and exclude generated/dependency files. Formatting targets are explicit and add
+no mandatory dependency or source mutation to ordinary builds. Setup and commands
+are in [the build guide](BUILDING.md#formatting-and-commits).
+
 Keep graphical, test-engine, original-comparison, and bridge dependencies opt-in.
 `OC2_BUILD_GUI=OFF` must configure and run Catch2/conformance tests without SDL,
 ImGui, graphics assets, display servers, or an original installation. Runtime

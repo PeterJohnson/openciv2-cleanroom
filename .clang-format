@@ -1,0 +1,18 @@
+# Use the clang-format version pinned in dependencies.json.
+BasedOnStyle: LLVM
+Standard: c++20
+IndentWidth: 4
+ContinuationIndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 100
+BreakBeforeBraces: Attach
+PointerAlignment: Left
+DerivePointerAlignment: false
+NamespaceIndentation: None
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+# SDL entry-point and platform headers have intentional include ordering.
+SortIncludes: Never
+IncludeBlocks: Preserve
+LineEnding: LF

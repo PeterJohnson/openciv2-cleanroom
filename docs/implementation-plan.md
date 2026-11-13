@@ -54,7 +54,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
-| M0 — partial | C++20/CMake targets, dependency archive/hash manifest, offline/download policy, desktop/headless/release/sanitizer/web presets, Catch2, ImGui automation, four-platform CI definitions | X02 registry/coverage ledger, content and asset-format inventory, full compiler/platform execution evidence |
+| M0 — partial | C++20/CMake targets, dependency archive/hash manifest, offline/download policy, desktop/headless/release/sanitizer/web presets, pinned clang-format policy/commands and staged commit hook, Catch2, ImGui automation, CI definitions for formatting and four-platform builds | X02 registry/coverage ledger, content and asset-format inventory, full compiler/platform execution evidence |
 | M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | C++ F01/F02/W01 state, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI with optional SQLite export, queries and semantic session continuations |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
@@ -78,6 +78,10 @@ remain unverified locally; CI definitions alone are not execution evidence.
   compatible CMake, compiler, SDL3, ImGui, Catch2 v3, test-engine, and emsdk
   versions; prove that they build together rather than choosing moving latest
   versions at every configure.
+- Keep the pinned clang-format policy, explicit format/check commands, staged
+  pre-commit check and CI enforcement active as sources grow. Review formatting
+  before staging and verify partial staging remains untouched. Normal builds
+  do not run formatters or require their development dependencies.
 - Make headless configuration independent of GUI dependencies and assets.
   Introduce the proposed `src/`, `include/`, `tests/`, `tools/`, and `cmake/`
   organization only as their first targets need them. Group game code by

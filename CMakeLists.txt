@@ -10,6 +10,7 @@ option(OC2_FETCH_SDL "Fetch pinned SDL instead of using an installed package" OF
 option(OC2_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(OC2_GUI_TESTS "Build Dear ImGui Test Engine GUI tests (desktop testing only)" OFF)
 option(OC2_FETCH_DEPENDENCIES "Allow downloading hash-pinned dependencies" OFF)
+include(cmake/Formatting.cmake)
 
 add_library(oc2_options INTERFACE)
 target_compile_features(oc2_options INTERFACE cxx_std_20)

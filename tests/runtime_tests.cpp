@@ -11,7 +11,8 @@ namespace {
 void fractional_modal_rendering() {
     // Fractional framebuffer density must not add AA geometry to the dimming
     // rectangle, which ImGui moves as a single six-index command.
-    const std::unique_ptr<ImGuiContext, decltype(&ImGui::DestroyContext)> context(ImGui::CreateContext(), ImGui::DestroyContext);
+    const std::unique_ptr<ImGuiContext, decltype(&ImGui::DestroyContext)> context(
+        ImGui::CreateContext(), ImGui::DestroyContext);
     auto& io = ImGui::GetIO();
     io.IniFilename = nullptr;
     io.DisplaySize = {960, 640};
@@ -26,21 +27,26 @@ void fractional_modal_rendering() {
         io.DisplayFramebufferScale = {density, density};
         for (int frame = 0; frame < 3; ++frame) {
             ImGui::NewFrame();
-            if (frame == 0) ImGui::OpenPopup("Fractional density modal");
-            if (ImGui::BeginPopupModal("Fractional density modal", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (frame == 0)
+                ImGui::OpenPopup("Fractional density modal");
+            if (ImGui::BeginPopupModal("Fractional density modal", nullptr,
+                                       ImGuiWindowFlags_AlwaysAutoResize)) {
                 ImGui::TextUnformatted("About OpenCiv2");
                 ImGui::EndPopup();
             }
             ImGui::Render();
-            if (frame > 0) REQUIRE(ImGui::GetDrawData()->TotalIdxCount > 0);
+            if (frame > 0)
+                REQUIRE(ImGui::GetDrawData()->TotalIdxCount > 0);
         }
     }
 }
 
 void frame(Application& app, int count = 1) {
-    for (int i = 0; i < count; ++i) REQUIRE(app.iterate() == SDL_APP_CONTINUE);
+    for (int i = 0; i < count; ++i)
+        REQUIRE(app.iterate() == SDL_APP_CONTINUE);
 }
-SDL_Event key_event(Application& app, SDL_Keycode code, Uint32 type, SDL_Keymod mod = SDL_KMOD_NONE) {
+SDL_Event key_event(Application& app, SDL_Keycode code, Uint32 type,
+                    SDL_Keymod mod = SDL_KMOD_NONE) {
     SDL_Event event{};
     event.type = type;
     event.key.windowID = SDL_GetWindowID(app.window());
@@ -85,10 +91,11 @@ void click(Application& app, float x, float y) {
 void command(Application& app, Command value) {
     app.post_command(value);
     SDL_Event event{};
-    while (SDL_PollEvent(&event)) app.post_event(event);
+    while (SDL_PollEvent(&event))
+        app.post_event(event);
     frame(app, 3);
 }
-}
+} // namespace
 
 TEST_CASE("Fractional density modal geometry remains valid", "[runtime]") {
     fractional_modal_rendering();
@@ -182,7 +189,8 @@ TEST_CASE("SDL input routing and backend lifecycle", "[runtime]") {
         frame(app);
         bool found_accent = false;
         for (const auto& event : ImGui::GetCurrentContext()->InputEventsTrail)
-            if (event.Type == ImGuiInputEventType_Text && event.Text.Char == 0xe9) found_accent = true;
+            if (event.Type == ImGuiInputEventType_Text && event.Text.Char == 0xe9)
+                found_accent = true;
         REQUIRE(found_accent);
         SDL_Event wheel{};
         wheel.type = SDL_EVENT_MOUSE_WHEEL;
@@ -192,7 +200,8 @@ TEST_CASE("SDL input routing and backend lifecycle", "[runtime]") {
         frame(app);
         bool found_wheel = false;
         for (const auto& event : ImGui::GetCurrentContext()->InputEventsTrail)
-            if (event.Type == ImGuiInputEventType_MouseWheel && event.MouseWheel.WheelY == 2) found_wheel = true;
+            if (event.Type == ImGuiInputEventType_MouseWheel && event.MouseWheel.WheelY == 2)
+                found_wheel = true;
         REQUIRE(found_wheel);
 
         SDL_Event close{};
@@ -212,7 +221,9 @@ TEST_CASE("SDL input routing and backend lifecycle", "[runtime]") {
     }
     REQUIRE(ImGui::GetCurrentContext() == nullptr);
     // Reinitialization verifies complete backend/texture/context teardown.
-    { Application app({.native_menus = false, .smoke_test = false, .screenshot = {}}); frame(app, 2); }
+    {
+        Application app({.native_menus = false, .smoke_test = false, .screenshot = {}});
+        frame(app, 2);
+    }
     REQUIRE(ImGui::GetCurrentContext() == nullptr);
-
 }

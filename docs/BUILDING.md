@@ -12,7 +12,8 @@ developer shell for Ninja, or the Visual Studio generator shown below.
 
 [dependencies.json](../dependencies.json) pins source archives and SHA-256 values
 for SDL3 3.4.2, Dear ImGui 1.93.0, Catch2 3.8.1, and the matching ImGui Test Engine
-revision. It also records the Emscripten and Playwright versions used by CI.
+revision. It also records the Emscripten, Playwright and clang-format versions
+used by CI.
 Source downloads are disabled unless `OC2_FETCH_DEPENDENCIES=ON` is explicit.
 A preset whose name ends in `-fetch`, plus `gui-tests` and `web`, opts into downloads.
 
@@ -54,6 +55,62 @@ when reporting results.
 With tests enabled, Catch2 is the only third-party dependency. With
 `BUILD_TESTING=OFF` as well, this builds just the portable view-model library
 and needs no third-party dependency. Future game libraries inherit this boundary.
+
+## Formatting and commits
+
+Use **clang-format 20.1.8**, pinned in `dependencies.json`, and Python 3.9+ for
+development formatting. [.clang-format](../.clang-format) defines four-space
+indentation, a 100-column limit, attached braces and preserved include order.
+The formatter covers owned C/C++/Objective-C sources and headers under `src/`,
+`include/`, `tests/` and `tools/`, including new untracked files. It excludes
+ignored files, other roots, generated builds and downloaded dependencies.
+Source and hook line endings are LF on every platform.
+
+An existing matching LLVM installation works. Otherwise, install the pinned
+[clang-format package](https://pypi.org/project/clang-format/20.1.8/) in a local
+virtual environment:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install clang-format==20.1.8
+git config --local core.hooksPath .githooks
+```
+
+On Windows, use `python -m venv .venv` and activate with
+`.venv\Scripts\Activate.ps1` in PowerShell; use `python` for the commands below.
+Hook setup is once per clone and is not automatic on checkout. If another
+`core.hooksPath` or custom pre-commit hook is already configured, integrate
+`python tools/format.py --staged` there instead of replacing it.
+
+Before committing:
+
+```sh
+python3 tools/format.py          # Format working-tree sources.
+python3 tools/format.py --check  # Read-only full check, also run by CI.
+git add <intended-files>
+python3 tools/format.py --staged # Read-only check of the proposed commit.
+git commit
+```
+
+The pre-commit hook runs the staged check automatically. It reads source blobs,
+style and the version pin from the index, so unstaged edits cannot hide a
+formatting error in the proposed commit. Changes to the style, manifest or
+formatting script check all indexed sources. The hook never rewrites files or
+stages changes; after formatting, review and restage the intended edits, taking
+care with partially staged files. Commits with no relevant changes need no
+formatter executable. Missing/wrong formatter versions otherwise fail clearly.
+
+The script tries `clang-format` and `clang-format-20` and requires the exact
+pinned version. Set `CLANG_FORMAT` or pass `--clang-format /path/to/clang-format`
+to select another installation. It performs no downloads.
+
+Configured builds with Python available also provide `format` and `format-check`
+targets, for example `cmake --build --preset desktop --target format-check`.
+Formatting is an explicit development step, not a source mutation during normal
+compilation. Ordinary builds require neither Python nor clang-format.
+CI checks formatting and the staged-file/hook regression tests on Linux, macOS
+and Windows; a local hook does not replace that check.
 
 ## Desktop
 
