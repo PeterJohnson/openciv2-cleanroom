@@ -83,10 +83,12 @@ The SDL backend always receives input. Future game input must check
 `Application::ui_captures_mouse()` / `ui_captures_keyboard()` before handling it,
 then convert only uncaptured world input to game coordinates. ImGui capture
 flags and the shell modal guard prevent input from reaching underlying gameplay.
-Ctrl shortcuts are explicitly registered through ImGui's shortcut routing;
-menu shortcut labels alone do not bind actions. AppKit retains ownership of
-Command shortcuts. Native command availability is checked independently of
-ImGui, including while a modal is open: ImGui cannot disable an OS menu itself.
+Primary-modifier shortcuts are explicitly registered through ImGui's shortcut
+routing; `ImGuiMod_Ctrl` maps to physical Command when `ConfigMacOSXBehaviors` is
+enabled, and physical Control otherwise. Menu shortcut labels alone do not bind
+actions. AppKit retains ownership of native Command shortcuts. Native command
+availability is checked independently of ImGui, including while a modal is open:
+ImGui cannot disable an OS menu itself.
 
 See the upstream [backends](https://github.com/ocornut/imgui/blob/v1.93.0/docs/BACKENDS.md)
 and [input guidance](https://github.com/ocornut/imgui/blob/v1.93.0/docs/FAQ.md).
@@ -117,8 +119,10 @@ to it. Failure captures resample the last completed framebuffer into window
 points and are diagnostic images, not pixel-perfect golden-image assertions.
 
 `oc2_runtime_tests` still checks SDL event delivery, focus loss, borrowed UTF-8
-ownership, native command routing and backend teardown. Browser tests cover
-the WASM/DOM boundary. Native AppKit/Win32 interactions require platform testing;
+ownership, native command routing and backend teardown. SDL shortcut injection
+exercises both macOS and non-macOS modifier mappings on every host, including
+rejection of the other modifier. Browser tests cover the WASM/DOM boundary.
+Native AppKit/Win32 interactions require platform testing;
 the engine drives the drawn menu implementation.
 
 ## Native menus

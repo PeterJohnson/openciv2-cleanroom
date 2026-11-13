@@ -140,8 +140,8 @@ void Interface::apply_style(float scale) {
 void Interface::shortcuts(Shell& shell) {
     if (shell.dialog())
         return;
-    // Native AppKit owns Command equivalents. MenuItem's shortcut text is only
-    // a label, so the other presenters register their Ctrl chords explicitly.
+    // Native AppKit owns Command equivalents. Other presenters register chords
+    // explicitly: ImGuiMod_Ctrl maps to Command when macOS behavior is enabled.
 #if defined(SDL_PLATFORM_MACOS)
     const bool bind_shortcuts = !native_menu_;
 #else

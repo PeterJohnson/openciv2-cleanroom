@@ -1,9 +1,9 @@
 # M0 implementation and validation
 
 M0's repository implementation is complete. Its full platform exit gate remains
-open until all pinned native desktop/headless jobs execute successfully. The first
-GitHub Actions run provides partial platform evidence and exposes three CI setup
-issues, described below. See `native-platform-evidence` in the
+open until all pinned native desktop/headless jobs execute successfully. Hosted
+runs now pass every job except the macOS desktop runtime input test, described
+below. See `native-platform-evidence` in the
 [coverage ledger](conformance/coverage.json).
 
 ## Delivered boundaries
@@ -152,3 +152,21 @@ setup above. This does not substitute for the hosted Ubuntu package-install step
 Passing hosted reports after these fixes are still required to close the platform
 gate. The successful Windows GUI tests exercise the dummy video driver; they do
 not establish native-display or native-menu interaction coverage.
+
+## macOS runtime input follow-up — 2026-11-13 UTC
+
+[Run 43491903539](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43491903539)
+tested revision `09ab9a4`. Ten of eleven jobs passed, confirming the checkout and
+Linux dependency fixes. macOS desktop also configured and built successfully;
+12 of its 13 CTests passed, including all three GUI density runs. The remaining
+runtime assertion injected physical Control+G, although ImGui's macOS behavior
+maps the application's primary shortcut to Command+G.
+
+The SDL input test now exercises both `ConfigMacOSXBehaviors` settings on every
+host and selects the corresponding physical modifier: `SDL_KMOD_GUI` for Command
+or `SDL_KMOD_CTRL` for Control. It also checks that the other modifier cannot
+trigger the action. Existing application shortcut behavior is unchanged.
+Enabling macOS behavior reproduced the hosted failure on Linux before the fix;
+after the fix the rebuilt runtime suite passes all three cases and 3,069
+assertions. Formatting and inventory checks pass. The hosted macOS rerun remains
+pending; this input-mode regression does not verify native AppKit interaction.

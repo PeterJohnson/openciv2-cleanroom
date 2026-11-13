@@ -345,8 +345,8 @@
       "id": "native-platform-evidence",
       "milestone": "M0",
       "domain": "Pinned native desktop/headless jobs on macOS, Linux and Windows.",
-      "knownPrefix": "Run 43489505500 at c0aa93e passed Linux/macOS headless. Windows builds and C++ tests passed, including dummy-driver runtime/GUI tests, but inventory failed after CRLF checkout conversion. Linux/macOS desktop configuration failed; see docs/m0-validation.md for the three setup fixes.",
-      "closureEvidence": "Rerun all pinned native jobs after the checkout, Linux dependency and macOS language-scope fixes; retain build identity plus passing CTest reports before closing the M0 platform gate."
+      "knownPrefix": "Run 43491903539 at 09ab9a4 passed ten of eleven jobs. macOS desktop configured and built; 12 of 13 CTests passed. The remaining runtime test injected Control instead of Command for ImGui's macOS mode; see docs/m0-validation.md for the correction and local regression evidence.",
+      "closureEvidence": "Obtain a passing macOS desktop job after correcting the SDL test's physical shortcut modifier; retain build identity plus passing CTest reports before closing the M0 platform gate."
     },
     {
       "id": "runtime-font-platforms",

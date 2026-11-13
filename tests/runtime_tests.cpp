@@ -1,5 +1,6 @@
 #include "application.hpp"
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include <imgui.h>
 #include <imgui_internal.h> // Observe the pinned library's processed input trail.
 #include <thread>
@@ -135,8 +136,15 @@ TEST_CASE("Stock TrueType fonts rasterize at multiple sizes and densities", "[ru
 }
 
 TEST_CASE("SDL input routing and backend lifecycle", "[runtime]") {
+    // Exercise both physical modifier mappings on every host. ImGui swaps
+    // Ctrl/Super when macOS behavior is enabled; SDL events use physical keys.
+    const bool macos_behaviors = GENERATE(false, true);
+    CAPTURE(macos_behaviors);
+    const SDL_Keymod shortcut_mod = macos_behaviors ? SDL_KMOD_GUI : SDL_KMOD_CTRL;
+    const SDL_Keymod other_mod = macos_behaviors ? SDL_KMOD_CTRL : SDL_KMOD_GUI;
     {
         Application app({.native_menus = false, .smoke_test = false, .screenshot = {}});
+        ImGui::GetIO().ConfigMacOSXBehaviors = macos_behaviors;
         frame(app, 3);
         REQUIRE(ImGui::GetCurrentContext() != nullptr);
         REQUIRE(ImGui::GetIO().IniFilename == nullptr);
@@ -177,7 +185,7 @@ TEST_CASE("SDL input routing and backend lifecycle", "[runtime]") {
         click(app, 40, 16); // Main menu behind a modal is blocked.
         REQUIRE(app.shell().dialog());
         REQUIRE(app.shell().dialog()->kind == DialogKind::new_session);
-        key(app, SDLK_G, SDL_KMOD_CTRL);
+        key(app, SDLK_G, shortcut_mod);
         REQUIRE(app.shell().grid());
         key(app, SDLK_ESCAPE);
         REQUIRE(!app.shell().dialog());
@@ -190,7 +198,9 @@ TEST_CASE("SDL input routing and backend lifecycle", "[runtime]") {
         REQUIRE(app.shell().dialog()->kind == DialogKind::new_session);
         key(app, SDLK_RETURN);
         REQUIRE(app.shell().screen() == Screen::session);
-        key(app, SDLK_G, SDL_KMOD_CTRL);
+        key(app, SDLK_G, other_mod);
+        REQUIRE(app.shell().grid());
+        key(app, SDLK_G, shortcut_mod);
         REQUIRE(!app.shell().grid());
         command(app, Command::toggle_grid);
         REQUIRE(app.shell().grid());
