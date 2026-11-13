@@ -30,6 +30,17 @@ if(EMSCRIPTEN)
   target_link_options(oc2_options INTERFACE -fexceptions -sALLOW_MEMORY_GROWTH=1 -sEXIT_RUNTIME=1)
 endif()
 
+# F01 portable arithmetic and versioned random contexts: standard library only.
+add_library(oc2_base src/base/arithmetic.cpp src/base/random.cpp)
+target_compile_features(oc2_base PUBLIC cxx_std_20)
+target_include_directories(oc2_base PUBLIC src)
+target_link_libraries(oc2_base PRIVATE oc2_options)
+if(MSVC)
+  target_compile_options(oc2_base PRIVATE /fp:strict)
+else()
+  target_compile_options(oc2_base PRIVATE -fno-fast-math -ffp-contract=off)
+endif()
+
 # Application presentation state, not game mechanics. No SDL or OS dependencies.
 add_library(oc2_viewmodel src/viewmodel/shell.cpp src/viewmodel/menu.cpp)
 target_compile_features(oc2_viewmodel PUBLIC cxx_std_20)
@@ -88,8 +99,11 @@ endif()
 
 if(BUILD_TESTING)
   include(cmake/Catch2.cmake)
-  add_executable(oc2_tests tests/viewmodel_tests.cpp)
-  target_link_libraries(oc2_tests PRIVATE oc2_viewmodel oc2_options Catch2::Catch2WithMain)
+  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp)
+  target_link_libraries(oc2_tests PRIVATE oc2_base oc2_viewmodel oc2_options Catch2::Catch2WithMain)
+  add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp)
+  target_link_libraries(oc2_conformance_adapter PRIVATE oc2_base oc2_options)
+  include(cmake/ConformanceIdentity.cmake)
   if(EMSCRIPTEN)
     # Activate emsdk first so its Node is on PATH (or provide an emulator).
     # A toolchain file alone, unlike emcmake, does not always select the runner.
@@ -123,3 +137,12 @@ endif()
 include(cmake/Metadata.cmake)
 # Record identities after targets, platform languages and dependencies are selected.
 include(cmake/Toolchain.cmake)
+if(BUILD_TESTING AND Python3_Interpreter_FOUND)
+  add_test(NAME conformance_f01
+    COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/run_conformance.py"
+      --root "${PROJECT_SOURCE_DIR}"
+      --report "${PROJECT_BINARY_DIR}/conformance-results.json"
+      --build-identity "${PROJECT_BINARY_DIR}/build-identity.txt"
+      --adapter ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:oc2_conformance_adapter>)
+  set_tests_properties(conformance_f01 PROPERTIES LABELS "conformance;headless" TIMEOUT 30)
+endif()

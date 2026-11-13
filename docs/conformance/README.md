@@ -1,8 +1,10 @@
 # Conformance inventory
 
-M0 provides checked metadata. It does **not** execute game algorithms. The
-[X02 version 3 fixtures](../algorithms/conformance/) remain unchanged and the
-actual loader, adapters and trace comparator are M1 work.
+M0 established the checked metadata. M1's first slice now executes the three
+unchanged [X02 version 3 fixtures](../algorithms/conformance/) through real C++
+F01 mappings on native and WASM. The [bounded runner](../m1-foundations.md) checks
+only those pure operations; stateful operations, providers/reentry and replay
+fixtures remain later M1 work. Metadata validation does not execute gameplay.
 
 ```sh
 python3 tools/check_conformance.py
@@ -14,6 +16,8 @@ Use `python` on Windows. Python 3.9+ and the standard library suffice for the
 metadata checks. The existing formatter tests additionally use pinned
 clang-format. With Python available, CMake exposes `inventory-check` and CTest
 metadata tests; normal builds and headless Catch2 tests do not require Python.
+With testing and Python enabled, CTest also runs `conformance_f01` and writes
+`conformance-results.json`. Its test-only adapter links `oc2_base`, never SDL.
 
 ## Versioned registries
 
@@ -23,12 +27,14 @@ metadata tests; normal builds and headless Catch2 tests do not require Python.
   separate registration status. This denominator counts documents, not behavior.
 - Two F01 pure operation contracts, with typed arguments/results, state closure,
   preconditions, callbacks, stop/event boundaries, dependency edges and explicit
-  empty independence claims. `implementation: null` means no adapter exists.
+  empty independence claims. Both have C++ implementations and executable
+  adapters. `implementation: null` still means no implementation exists.
 - Two F02 process token state keys, with type, lifetime, ordering and reference
   rules. These names register shared logical state, not C++ globals or save bytes.
   Pool records, retained workspaces and random contexts still need registrations.
 - Three fixture identities/revisions/hashes and their provenance. Each is a
-  specification vector, has `executionStatus: not-run`, and has no run report.
+  specification vector with a passing [native report](reports/f01-native.json)
+  and a separate [WASM report](reports/f01-wasm.json).
   The target executable hash in a vector is not proof of access to that image.
 
 [coverage.json](coverage.json) uses X02 §8's required row fields and dispositions.
@@ -58,13 +64,17 @@ Never convert one into another or report a percentage over different denominator
 3. Author fixtures with independent provenance and pin their exact bytes and
    owning spec hashes. Do not relabel implementation snapshots as original goldens.
 4. Set `implementation` to the actual repository entry file when it exists;
-   retain the operation ID independently of source layout. M1 must add callable
-   registration and full X02 fixture validation; this metadata validator does not
-   substitute for either.
+   retain the operation ID independently of source layout. Add its callable
+   adapter and fixture validation; the current runner deliberately supports only
+   the two registered F01 pure mappings.
 5. Only set execution status and `lastRun` after an actual run. Store its report
    with implementation revision, fixture ID/revision/hash, spec hashes, policy,
-   platform and bounded observations, following X02. Metadata checks currently
-   require referenced reports to exist; the M1 runner must validate their contents.
+   platform and bounded observations, following X02. Metadata checks validate
+   fixture/spec/source identities, comparison scope, actual trace/result and
+   input consumption in the referenced pure-F01 reports. Format version 2 also
+   checks the adapter's embedded compiled-source/build identity; the runner
+   rejects stale binaries before executing fixtures. Rebuild and rerun after source
+   changes; never edit an expected vector to make an implementation pass.
 6. Review spec/fixture changes before updating hashes. Bump `inventoryVersion`
    when changing the inventory denominator; schema changes bump `schemaVersion`.
    Run the checks above and the operation's Catch2/conformance tests.

@@ -26,6 +26,10 @@ class RegistryTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         shutil.copytree(conformance.ROOT / "docs", self.root / "docs")
         shutil.copyfile(conformance.ROOT / "dependencies.json", self.root / "dependencies.json")
+        shutil.copyfile(conformance.ROOT / "CMakeLists.txt", self.root / "CMakeLists.txt")
+        shutil.copytree(conformance.ROOT / "src", self.root / "src")
+        shutil.copytree(conformance.ROOT / "cmake", self.root / "cmake")
+        shutil.copytree(conformance.ROOT / "tools", self.root / "tools", ignore=shutil.ignore_patterns("__pycache__"))
 
     def edit(self, file, change):
         path = self.root / file
@@ -50,7 +54,7 @@ class RegistryTests(unittest.TestCase):
             ["init"],
             ["config", "core.autocrlf", "true"],
             ["config", "core.attributesFile", os.devnull],
-            ["add", "docs", "dependencies.json", ".gitattributes", "binary.dat"],
+            ["add", "docs", "dependencies.json", ".gitattributes", "binary.dat", "src", "tools", "cmake", "CMakeLists.txt"],
             ["checkout-index", "--all", f"--prefix={checkout.as_posix()}/"],
         ):
             result = subprocess.run(["git", *args], cwd=self.root, env=env, capture_output=True, text=True)
@@ -71,6 +75,10 @@ class RegistryTests(unittest.TestCase):
             conformance.validate(self.root)
 
     def test_false_execution_claim_is_rejected(self):
+        def remove_implementation(registry):
+            operation = registry["fixtures"][0]["operation"]
+            next(row for row in registry["operations"] if row["id"] == operation)["implementation"] = None
+        self.edit("docs/conformance/registry.json", remove_implementation)
         self.edit("docs/conformance/registry.json", lambda r: r["fixtures"][0].update(executionStatus="passed"))
         with self.assertRaisesRegex(ValueError, "unimplemented operation claimed executed"):
             conformance.validate(self.root)
@@ -80,9 +88,38 @@ class RegistryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unknown state closure"):
             conformance.validate(self.root)
 
+    def test_recorded_pass_must_match_the_unchanged_fixture(self):
+        self.edit("docs/conformance/reports/f01-native.json",
+                  lambda r: r["cases"][0]["actual"]["result"].update(value="999"))
+        with self.assertRaisesRegex(ValueError, "execution report does not match fixture"):
+            conformance.validate(self.root)
+
+    def test_implementation_change_invalidates_recorded_execution(self):
+        path = self.root / "src/base/arithmetic.cpp"
+        path.write_bytes(path.read_bytes() + b"\n// changed implementation\n")
+        with self.assertRaisesRegex(ValueError, "execution report implementation changed"):
+            conformance.validate(self.root)
+
     def test_cyclic_boundary_order_is_rejected(self):
         self.edit("docs/conformance/registry.json", lambda r: r["operations"][0]["dependencies"].append(["root.exit", "root.enter"]))
         with self.assertRaisesRegex(ValueError, "cyclic event"):
+            conformance.validate(self.root)
+
+    def test_report_cannot_relabel_an_old_adapter_with_current_source_hashes(self):
+        from run_conformance import ADAPTER_SOURCES
+        for source in ADAPTER_SOURCES:
+            with self.subTest(source=source):
+                self.edit("docs/conformance/reports/f01-native.json",
+                          lambda r: r["adapterIdentity"]["sources"].update({source: "0" * 64}))
+                with self.assertRaisesRegex(ValueError, "stale or incomplete adapter"):
+                    conformance.validate(self.root)
+                shutil.copyfile(conformance.ROOT / "docs/conformance/reports/f01-native.json",
+                                self.root / "docs/conformance/reports/f01-native.json")
+
+    def test_report_build_identity_must_come_from_the_adapter(self):
+        self.edit("docs/conformance/reports/f01-native.json",
+                  lambda r: r.update(buildIdentity="different build"))
+        with self.assertRaisesRegex(ValueError, "build identity mismatch"):
             conformance.validate(self.root)
 
     def test_unknown_gap_and_stale_asset_pin(self):

@@ -48,7 +48,10 @@ It has no game simulation, asset-pack or game-content loader, save inspection,
 command console or Lua runtime yet. JSON content formats and the classic text
 compatibility boundary are specified; a complete standalone content set remains
 part of the implementation plan. Catch2 covers the portable shell and SDL
-integration; ImGui Test Engine covers the drawn interface.
+integration; ImGui Test Engine covers the drawn interface. M0 is complete.
+The [initial M1 foundations](docs/m1-foundations.md) add portable F01 arithmetic,
+isolated random contexts and execution of the three pure conformance vectors;
+the rest of M1 remains in progress.
 
 To build with explicitly enabled pinned dependency downloads (CMake 3.24+,
 Ninja, and a C++20 compiler required):

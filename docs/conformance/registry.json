@@ -497,7 +497,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": null
+      "implementation": "src/base/arithmetic.cpp"
     },
     {
       "id": "F01.secondaryRangeFromCode",
@@ -537,7 +537,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": null
+      "implementation": "src/base/arithmetic.cpp"
     }
   ],
   "states": [
@@ -574,8 +574,8 @@
       "sha256": "078c418e131d2cf642709090e8157ac4fd22c3f9aefef58c90e26cea052e8431",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
-      "executionStatus": "not-run",
-      "runReport": null
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
     },
     {
       "id": "X02.F01.primary-modulo",
@@ -584,8 +584,8 @@
       "sha256": "03f62f1b2e68ca29c680e022f26d3357ed1c69e280b3fe346d225652eb7a053b",
       "operation": "F01.primaryModuloFromCode",
       "provenance": "specification-vector",
-      "executionStatus": "not-run",
-      "runReport": null
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
     },
     {
       "id": "X02.F01.wrapped-range",
@@ -594,8 +594,8 @@
       "sha256": "d999aa6511004c53e3d3e56a372ba0b4347183b863179dc5ab7cc64744c86079",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
-      "executionStatus": "not-run",
-      "runReport": null
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
     }
   ]
 }

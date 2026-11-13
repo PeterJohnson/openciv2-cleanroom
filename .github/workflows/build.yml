@@ -74,6 +74,7 @@ jobs:
           path: |
             build/ci/build-identity.txt
             build/ci/test-results.xml
+            build/ci/conformance-results.json
             build/ci/Testing/Temporary/LastTest.log
             build/ci/gui-results/
           if-no-files-found: ignore
@@ -93,6 +94,7 @@ jobs:
           path: |
             build/sanitize/build-identity.txt
             build/sanitize/test-results.xml
+            build/sanitize/conformance-results.json
             build/sanitize/Testing/Temporary/LastTest.log
 
   web:
@@ -126,4 +128,5 @@ jobs:
             build/web/THIRD_PARTY_NOTICES.txt
             build/web/build-identity.txt
             build/web/test-results.xml
+            build/web/conformance-results.json
             build/web/Testing/Temporary/LastTest.log

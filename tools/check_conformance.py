@@ -132,7 +132,31 @@ def validate(root=ROOT):
         else:
             require(item["executionStatus"] in {"passed", "failed"}, "unknown execution status")
             require(op["implementation"] is not None, "unimplemented operation claimed executed")
-            local_file(root, item["runReport"])
+            report = read_json(local_file(root, item["runReport"]))
+            require(report["format"] == "openciv2-conformance-run/2" and report["runnerScope"] == "pure-f01-v1",
+                    "unsupported execution report")
+            from run_conformance import SOURCES, compare, validate_adapter_identity
+            require(set(report["implementationSources"]) == set(SOURCES), "incomplete implementation identity")
+            for source, expected_hash in report["implementationSources"].items():
+                require(digest(local_file(root, source)) == expected_hash, "execution report implementation changed")
+            validate_adapter_identity(report["adapterIdentity"], report["implementationSources"])
+            require(report["buildIdentity"] == report["adapterIdentity"]["buildIdentity"],
+                    "execution report build identity mismatch")
+            cases = indexed(report["cases"], "report case")
+            require(item["id"] in cases, "fixture missing from execution report")
+            case = cases[item["id"]]
+            require((case["revision"], case["sha256"], case["operation"], case["evidenceKind"]) ==
+                    (item["revision"], item["sha256"], item["operation"], item["provenance"]), "execution report identity mismatch")
+            require(case["specifications"] == fixture["specifications"] and
+                    case["comparison"] == fixture["comparison"] and case["profile"] == fixture["profile"] and
+                    case["evidence"] == fixture["evidence"] and case["target"] == fixture["target"] and
+                    case["limits"] == fixture["limits"],
+                    "execution report contract mismatch")
+            require(case["status"] == item["executionStatus"], "execution report status mismatch")
+            if case["status"] == "passed":
+                require(compare(fixture, case["actual"]) is None and case["firstMismatch"] is None,
+                        "execution report does not match fixture")
+                require(case["consumed"] == {"providers": 0, "choices": 0, "events": 3}, "execution report consumption mismatch")
 
     gaps = indexed(ledger["gaps"], "gap")
     for gap in gaps.values():
@@ -164,7 +188,7 @@ def validate(root=ROOT):
                     "run claimed without executed cases")
     return (f"{len(specs)} specification families; {len(operations)} registered operations; "
             f"{len(states)} state keys; {len(fixtures)} inventoried vectors; "
-            f"{len(integrations)} integration families. Metadata integrity only; no gameplay executed.")
+            f"{len(integrations)} integration families. Metadata integrity only; no gameplay executed by this check.")
 
 
 def main():

@@ -26,11 +26,9 @@
         "empty-state exit snapshot",
         "enter -> return -> exit dependencies"
       ],
-      "implementationStatus": "not-implemented",
-      "lastRun": null,
-      "gaps": [
-        "x02-runner"
-      ]
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
     },
     {
       "id": "F01.secondaryRangeFromCode",
@@ -57,11 +55,9 @@
         "empty-state exit snapshot",
         "enter -> return -> exit dependencies"
       ],
-      "implementationStatus": "not-implemented",
-      "lastRun": null,
-      "gaps": [
-        "x02-runner"
-      ]
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
     }
   ],
   "integrationFamilies": [
@@ -328,11 +324,11 @@
       "closureEvidence": "Register each implemented operation and full shared state closure from owning specs; reconcile unresolved source evidence through specification updates only."
     },
     {
-      "id": "x02-runner",
+      "id": "x02-general-runner",
       "milestone": "M1",
-      "domain": "Three F01 specification vectors.",
-      "knownPrefix": "Metadata is validated; gameplay adapters and trace comparator do not exist.",
-      "closureEvidence": "Implement version 3 loader, adapters and comparator; attach reports with fixture/spec hashes and tested implementation revision."
+      "domain": "Stateful/composite X02 fixtures beyond the two pure F01 mappings.",
+      "knownPrefix": "A bounded host Python loader/comparator executes all three pure F01 fixtures through a C++ adapter on native and WASM. Nonempty state, providers/reentry, semantic choice tapes, implementation replay, blobs and projections are explicitly unsupported.",
+      "closureEvidence": "Implement registered stateful adapters, complete typed values/blobs, scripted providers and callbacks, semantic choices and replay contexts, safe-stop prefixes and justified independence comparisons; attach bounded execution reports."
     },
     {
       "id": "integration-fixtures",

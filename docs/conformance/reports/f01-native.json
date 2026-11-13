@@ -1,0 +1,479 @@
+{
+  "format": "openciv2-conformance-run/2",
+  "runnerScope": "pure-f01-v1",
+  "createdUtc": "2026-11-13T23:21:48.466293+00:00",
+  "implementationRevision": "ba31fa97bf2e333822a54419ec7f2061a02e71b0",
+  "uncommittedImplementationChanges": true,
+  "implementationSources": {
+    "CMakeLists.txt": "6d08e1d0266b7aae4a995548d9cf6408e48629f154a271739c4a7ce69e1f9259",
+    "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
+    "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
+    "cmake/ConformanceIdentity.cmake": "ef823bdf0d54985fda575c79e0b5dd05731613d6c425aea050635a844af1a419",
+    "src/base/arithmetic.hpp": "bbdc2cb5964373058189b3e3ec95a29a59f4091709e178036cfeaed8d8bef38f",
+    "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
+    "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
+    "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
+    "tools/conformance_adapter.cpp": "9d4ac78ba04f8642fc1b9376db2ac924f0334306e243d8907401a7b0a17f6c2a",
+    "tools/run_conformance.py": "b6869b9ee38a9822c1f0bed54dd1e15d8fececd5fdfcfd52a2371542e8bf1ffc",
+    "tools/check_conformance.py": "a05195cd7a1685228b3c60fefa032b54f89a58b3be1305790929ca363b0a5115"
+  },
+  "adapterIdentity": {
+    "format": "openciv2-conformance-adapter/1",
+    "sources": {
+      "CMakeLists.txt": "6d08e1d0266b7aae4a995548d9cf6408e48629f154a271739c4a7ce69e1f9259",
+      "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
+      "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
+      "cmake/ConformanceIdentity.cmake": "ef823bdf0d54985fda575c79e0b5dd05731613d6c425aea050635a844af1a419",
+      "src/base/arithmetic.hpp": "bbdc2cb5964373058189b3e3ec95a29a59f4091709e178036cfeaed8d8bef38f",
+      "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
+      "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
+      "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
+      "tools/conformance_adapter.cpp": "9d4ac78ba04f8642fc1b9376db2ac924f0334306e243d8907401a7b0a17f6c2a"
+    },
+    "buildIdentity": "status=configured-only\nplatform=linux\ncmake=3.31.10\ngenerator=Ninja\nsystem=Linux 7.0.0-43-generic\nprocessor=x86_64\nc=Clang 20.1.8\ncxx=Clang 20.1.8\ncxx_path=/usr/bin/clang++-20\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=/missing/fonts\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n"
+  },
+  "adapterArtifacts": {
+    "/home/peter/project/openciv2-cleanroom/build/m1-headless/oc2_conformance_adapter": "feb212642b5c391599b1d8b8e0281ea2fc45209063243ff622d6b1280a4a9ec2"
+  },
+  "host": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+  "buildIdentity": "status=configured-only\nplatform=linux\ncmake=3.31.10\ngenerator=Ninja\nsystem=Linux 7.0.0-43-generic\nprocessor=x86_64\nc=Clang 20.1.8\ncxx=Clang 20.1.8\ncxx_path=/usr/bin/clang++-20\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=/missing/fonts\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",
+  "cases": [
+    {
+      "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
+      "sha256": "078c418e131d2cf642709090e8157ac4fd22c3f9aefef58c90e26cea052e8431",
+      "id": "X02.F01.equal-range",
+      "revision": 11,
+      "operation": "F01.secondaryRangeFromCode",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Explicit sampling-law code, not a seed-to-sequence expectation or original-program recording.",
+          "Replaces a version 1 original-state example; historical validation is not promoted to new-policy runtime coverage.",
+          "Only the pure numeric mapping is covered; no sampler distribution, implementation replay, runner or game session is validated.",
+          "Contract references refreshed for required original-file and mixed-peer interoperability; numeric expectations unchanged.",
+          "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
+          "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
+          "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
+          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "5"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRangeFromCode",
+              "parent": null,
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "5"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "5"
+                },
+                "U": {
+                  "$type": "u32",
+                  "value": "1015568748"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "5"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
+      "sha256": "03f62f1b2e68ca29c680e022f26d3357ed1c69e280b3fe346d225652eb7a053b",
+      "id": "X02.F01.primary-modulo",
+      "revision": 10,
+      "operation": "F01.primaryModuloFromCode",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Explicit sampling-law code, not a seed-to-sequence expectation or original-program recording.",
+          "Replaces a version 1 original-state example; historical validation is not promoted to new-policy runtime coverage.",
+          "Only the pure numeric mapping is covered; no sampler distribution, implementation replay, runner or game session is validated.",
+          "Contract references refreshed for required original-file and mixed-peer interoperability; numeric expectations unchanged.",
+          "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
+          "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
+          "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
+          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "1"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModuloFromCode",
+              "parent": null,
+              "arguments": {
+                "code": {
+                  "$type": "i32",
+                  "value": "32767"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
+      "sha256": "d999aa6511004c53e3d3e56a372ba0b4347183b863179dc5ab7cc64744c86079",
+      "id": "X02.F01.wrapped-range",
+      "revision": 11,
+      "operation": "F01.secondaryRangeFromCode",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Explicit sampling-law code, not a seed-to-sequence expectation or original-program recording.",
+          "Replaces a version 1 original-state example; historical validation is not promoted to new-policy runtime coverage.",
+          "Only the pure numeric mapping is covered; no sampler distribution, implementation replay, runner or game session is validated.",
+          "Contract references refreshed for required original-file and mixed-peer interoperability; numeric expectations unchanged.",
+          "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
+          "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
+          "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
+          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "1639699275"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRangeFromCode",
+              "parent": null,
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "-2147483648"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "1"
+                },
+                "U": {
+                  "$type": "u32",
+                  "value": "1015568748"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "1639699275"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    }
+  ]
+}
