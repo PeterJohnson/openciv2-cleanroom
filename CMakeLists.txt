@@ -99,7 +99,7 @@ endif()
 
 if(BUILD_TESTING)
   include(cmake/Catch2.cmake)
-  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp)
+  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp)
   target_link_libraries(oc2_tests PRIVATE oc2_base oc2_viewmodel oc2_options Catch2::Catch2WithMain)
   add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp)
   target_link_libraries(oc2_conformance_adapter PRIVATE oc2_base oc2_options)

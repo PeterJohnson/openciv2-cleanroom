@@ -1,15 +1,15 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "pure-f01-v1",
-  "createdUtc": "2026-11-13T23:21:48.556049+00:00",
-  "implementationRevision": "ba31fa97bf2e333822a54419ec7f2061a02e71b0",
+  "createdUtc": "2026-11-13T23:35:24.966252+00:00",
+  "implementationRevision": "90e3185ac7fb5b407330e8edd13074bc0879741c",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "6d08e1d0266b7aae4a995548d9cf6408e48629f154a271739c4a7ce69e1f9259",
+    "CMakeLists.txt": "59df511f039c19f3af39e8050ba22f4442f023ae84d018ab8bfb10113f32793a",
     "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
     "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
     "cmake/ConformanceIdentity.cmake": "ef823bdf0d54985fda575c79e0b5dd05731613d6c425aea050635a844af1a419",
-    "src/base/arithmetic.hpp": "bbdc2cb5964373058189b3e3ec95a29a59f4091709e178036cfeaed8d8bef38f",
+    "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
     "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
     "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
     "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
@@ -20,11 +20,11 @@
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "6d08e1d0266b7aae4a995548d9cf6408e48629f154a271739c4a7ce69e1f9259",
+      "CMakeLists.txt": "59df511f039c19f3af39e8050ba22f4442f023ae84d018ab8bfb10113f32793a",
       "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
       "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
       "cmake/ConformanceIdentity.cmake": "ef823bdf0d54985fda575c79e0b5dd05731613d6c425aea050635a844af1a419",
-      "src/base/arithmetic.hpp": "bbdc2cb5964373058189b3e3ec95a29a59f4091709e178036cfeaed8d8bef38f",
+      "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
       "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
       "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
       "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
@@ -34,7 +34,7 @@
   },
   "adapterArtifacts": {
     "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.js": "292b39763868e2d2f7736bb33b9eb9bb137cd5ac3054f299baa9797856dc1ff8",
-    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.wasm": "a4bbc50b2d0e96dfbbf3d52e40e436a6e82074a908060b12771bfe064c47d423"
+    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.wasm": "1955850f2b7c9813a4b217b74cab4dadd5292087c69fd555e1b13ef2b3950f7c"
   },
   "host": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=/tmp/openciv2-emsdk/upstream/emscripten/em++\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Release\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",

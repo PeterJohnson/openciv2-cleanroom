@@ -1,6 +1,8 @@
 #pragma once
 
 #include <bit>
+#include <compare>
+#include <concepts>
 #include <cstdint>
 
 namespace openciv::base {
@@ -22,6 +24,65 @@ std::int32_t remainder32(std::int32_t a, std::int32_t b);
 std::int32_t clamp_ab(std::int32_t value, std::int32_t lo, std::int32_t hi);
 std::int32_t clamp_c(std::int32_t value, std::int32_t lo, std::int32_t hi);
 std::int32_t shift_signed(std::int32_t value, std::int32_t shift);
+
+// F01 §1: expressions stay in the signed 32-bit domain, including intermediates.
+// Conversions at API/codec boundaries are explicit; this is not a wire layout.
+class WrappingI32 {
+public:
+    constexpr WrappingI32() noexcept = default;
+    // Integer inputs reduce modulo 2^32, then take the signed view. No floating
+    // or boolean conversions: their interpretation belongs to the caller.
+    template <std::integral T>
+        requires(!std::same_as<T, bool>)
+    explicit constexpr WrappingI32(T value) noexcept
+        : value_(signed32(static_cast<std::uint32_t>(value))) {}
+
+    explicit constexpr operator std::int32_t() const noexcept { return value_; }
+    explicit constexpr operator std::uint32_t() const noexcept {
+        return static_cast<std::uint32_t>(value_);
+    }
+    constexpr auto operator<=>(const WrappingI32&) const noexcept = default;
+
+    constexpr WrappingI32 operator+() const noexcept { return *this; }
+    constexpr WrappingI32 operator-() const noexcept { return WrappingI32{subtract32(0, value_)}; }
+    friend constexpr WrappingI32 operator+(WrappingI32 a, WrappingI32 b) noexcept {
+        return WrappingI32{add32(a.value_, b.value_)};
+    }
+    friend constexpr WrappingI32 operator-(WrappingI32 a, WrappingI32 b) noexcept {
+        return WrappingI32{subtract32(a.value_, b.value_)};
+    }
+    friend constexpr WrappingI32 operator*(WrappingI32 a, WrappingI32 b) noexcept {
+        return WrappingI32{multiply32(a.value_, b.value_)};
+    }
+    friend WrappingI32 operator/(WrappingI32 a, WrappingI32 b) {
+        return WrappingI32{divide32(a.value_, b.value_)};
+    }
+    friend WrappingI32 operator%(WrappingI32 a, WrappingI32 b) {
+        return WrappingI32{remainder32(a.value_, b.value_)};
+    }
+    constexpr WrappingI32& operator+=(WrappingI32 other) noexcept { return *this = *this + other; }
+    constexpr WrappingI32& operator-=(WrappingI32 other) noexcept { return *this = *this - other; }
+    constexpr WrappingI32& operator*=(WrappingI32 other) noexcept { return *this = *this * other; }
+    WrappingI32& operator/=(WrappingI32 other) { return *this = *this / other; }
+    WrappingI32& operator%=(WrappingI32 other) { return *this = *this % other; }
+
+private:
+    std::int32_t value_ = 0;
+};
+
+// Preserve the distinct F01 rules; do not give them conventional shift/clamp syntax.
+inline WrappingI32 clamp_ab(WrappingI32 value, WrappingI32 lo, WrappingI32 hi) {
+    return WrappingI32{clamp_ab(static_cast<std::int32_t>(value), static_cast<std::int32_t>(lo),
+                                static_cast<std::int32_t>(hi))};
+}
+inline WrappingI32 clamp_c(WrappingI32 value, WrappingI32 lo, WrappingI32 hi) {
+    return WrappingI32{clamp_c(static_cast<std::int32_t>(value), static_cast<std::int32_t>(lo),
+                               static_cast<std::int32_t>(hi))};
+}
+inline WrappingI32 shift_signed(WrappingI32 value, WrappingI32 shift) {
+    return WrappingI32{
+        shift_signed(static_cast<std::int32_t>(value), static_cast<std::int32_t>(shift))};
+}
 
 // F01 §§3–4: pure mappings, not generators or ideal uniform integer ranges.
 std::int32_t primary_modulo_from_code(std::int32_t code, std::int32_t n);

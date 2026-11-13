@@ -10,6 +10,8 @@ source, legacy harness, original executable or asset checkout is a code input.
 - F01 §1: explicit wrapping i32 addition/subtraction/multiplication, truncating
   signed division/remainder with exceptional-input rejection, both clamp rules
   and signed variable shifts including the minimum signed shift count.
+  `WrappingI32` composes these helpers into typed expressions with explicit
+  native-integer conversions.
 - F01 §§3–4: primary-code modulo bias and the exact binary64 secondary unit/range
   mapping, including reversed, equal and accepted wrapped intervals. Separate
   rounding points and disabled contraction preserve the specified evaluation;
@@ -28,6 +30,35 @@ The two registered mapping adapters produce actual entry/return/exit traces.
 console. It receives only operation names and canonical decimal arguments; it
 never reads expected results. C++ implementations are identical under native
 and Emscripten builds.
+
+## Wrapping integer expressions
+
+`openciv::base::WrappingI32` in `base/arithmetic.hpp` owns a signed 32-bit value
+and defaults to zero. Explicit construction from an integer reduces modulo
+2^32 and takes the signed view, including for wider inputs. Floating-point and
+boolean construction are rejected. Explicit casts to `std::int32_t` and
+`std::uint32_t` expose the signed value or unsigned bit view respectively.
+
+```cpp
+using openciv::base::WrappingI32;
+const auto result = (WrappingI32{value} * WrappingI32{multiplier}
+                     + WrappingI32{adjustment}) / WrappingI32{divisor};
+const auto stored = static_cast<std::int32_t>(result);
+```
+
+Addition, subtraction, multiplication and unary negation wrap at each operation;
+comparisons are signed. Division and remainder truncate toward zero and retain
+the helpers' `std::domain_error` for zero divisors or `INT_MIN / -1` (including
+remainder). Compound assignments have the same semantics and leave their target
+unchanged on failure. Mixed native-integer arithmetic/comparisons require an
+explicit conversion; there is no implicit boolean conversion.
+
+The overloads `clamp_ab`, `clamp_c` and `shift_signed` take and return wrapped
+values, preserving reversed bounds and the signed count convention. No shift
+operators are provided. Existing raw-integer helpers and floating-point sampling
+remain available. Apply the type where an algorithm specifies i32 arithmetic;
+IDs, container sizes and narrower conversion boundaries keep their own contracts.
+Its object representation is not a file or wire encoding.
 
 ## X02 runner scope
 
@@ -100,11 +131,11 @@ a pending interaction or establish original-game interoperability.
 
 ## Local validation — 2026-11-13 UTC
 
-Linux Clang 20.1.8 / CMake 3.31.10 passes all 15 headless CTests: 12 Catch2 cases,
+Linux Clang 20.1.8 / CMake 3.31.10 passes all 18 headless CTests: 15 Catch2 cases,
 two metadata checks and execution of the three X02 vectors. A separate ASan/UBSan
-build passes the same 15 tests with leak detection enabled (outside the local
+build passes the same 18 tests with leak detection enabled (outside the local
 ptrace sandbox). Emscripten 4.0.23 / Clang 22.0.0 passes four CTests under Node:
-the 12 Catch2 cases, two host metadata checks and the three adapter vectors.
+the 15 Catch2 cases, two host metadata checks and the three adapter vectors.
 The Windows/macOS CI jobs are configured to run the new tests, but these M1
 changes have not yet run on those hosts.
 

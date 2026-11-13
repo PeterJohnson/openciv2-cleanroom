@@ -196,6 +196,13 @@ floating-point reassociation/fast-math where exact downstream results matter.
 Use the specification's reference evaluation order until an owner-backed equivalence
 argument and tests justify a change.
 
+Use `WrappingI32` for expressions whose specified intermediate domain is signed
+32-bit arithmetic. It delegates to the F01 helpers, preserves wrapping through
+operators and requires explicit native-integer conversions. Keep the distinct
+clamps and signed-count shifts as named operations; other numeric domains and
+file/wire encodings retain their own explicit boundaries. See the
+[implemented arithmetic interface](m1-foundations.md#wrapping-integer-expressions).
+
 ### Randomness ownership
 
 Presentation-only randomness **must be independent of gameplay randomness**.
