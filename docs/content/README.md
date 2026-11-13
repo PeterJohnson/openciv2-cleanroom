@@ -75,6 +75,16 @@ parsing, fallback, conversions and meaningful partial effects. Both paths feed
 shared gameplay models; JSON does not change AI/map generation or classic
 save/wire formats. Track user-import provenance after conversion as well.
 
+## Built-in gameplay data
+
+The [extraction assessment](built-in-gameplay-data.md) identifies specification-
+defined values that originally lived in the executable and could become semantic
+JSON customization points. It recommends calendar, spaceship, government,
+difficulty, combat and scoring data first, populated with the original values.
+This is a proposal; the current formats and loaders are not extended by it.
+Changed runtime values would be an explicit custom gameplay variant with different
+original-file/peer compatibility limits from the classic-default profile.
+
 ## Stock rules, text and other inputs
 
 | Input | Current inventory and distribution policy | Follow-up |
