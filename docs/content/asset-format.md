@@ -59,22 +59,62 @@ texture ownership in the frontend. The game and queries receive no SDL objects.
 Test the parser using small owned valid and malformed containers; validate the
 real package separately from graphics-independent tests.
 
-## Fonts
+## TrueType fonts and runtime rasterization
 
-`fonts.bin` begins with `C2FONTS2`; `fonts_aa.bin` begins with `C2FONTAA`. Their
-exact byte identities and sizes are pinned. The runtime notice identifies DejaVu
-Serif/Sans/Sans Mono substitutions and missing historical generation-version
-records. It is not a complete byte-format specification.
+The game uses **DejaVu 2.37 TrueType fonts**, acquired from the independent
+[upstream release](https://github.com/dejavu-fonts/dejavu-fonts/releases/tag/version_2_37)
+and pinned in `dependencies.json`. [fonts.json](fonts.json) records all twelve
+regular/bold/italic/bold-italic faces and their byte hashes, plus the license hash.
+The archive SHA-256 is
+`fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7`.
 
-**Open contract: `asset-font-schema`.** Field widths, glyph lookup/encoding,
-metrics, bitmap row stride/packing, antialias coverage, offsets and fallback rules
-have not been established from approved data documentation. The M0 inspector
-checks only the signature and manifest hash. Do not guess these fields, compile
-legacy font headers, or inspect old text/probe implementations. Obtain a data-only
-contract from the asset package, or arrange an explicitly licensed documented font
-input for the new reader. Pin new dependencies/notices before consuming it. The
-current shell continues to use its existing ImGui font, with no claim of classic
-font geometry or completed package-font support.
+| Requested classic face | Replacement family | Italic face name |
+| --- | --- | --- |
+| Times New Roman | DejaVu Serif | Italic |
+| Arial / System | DejaVu Sans | Oblique |
+| Courier | DejaVu Sans Mono | Oblique |
+
+These are the families identified by the asset repository's `THIRD-PARTY.txt`.
+Its historical cache-generation records do **not** identify exact source font
+versions or hashes. Version 2.37 is our reproducible content selection, not a claim
+that these exact bytes produced the historical caches. Noto fonts in the asset
+checkout belong to authoring/review and are a different font source.
+
+`cmake/Fonts.cmake` acquires the TTF archive only for GUI builds, under the existing
+explicit-download/offline-override policy. It checks each face and license hash,
+then embeds the unmodified TTF bytes in `oc2_font_data`. This is data packaging,
+not build-time rasterization. The twelve faces total 5,349,360 bytes before
+executable/linker or web transfer compression. No installed OS font, Wine, bitmap
+font parser, Python generator or graphics checkout is required. The complete
+upstream font notice is appended to the build's `THIRD_PARTY_NOTICES.txt`.
+
+The frontend registers these process-lifetime bytes with Dear ImGui 1.93.0's
+bundled `stb_truetype` rasterizer; ImGui does not own/free the embedded data.
+DejaVu Sans regular is the drawn UI default. Size/density-specific glyph atlases
+are generated on demand at runtime and uploaded through the SDL renderer backend.
+Widgets and custom ImGui draw lists use the same fonts, measurements and caches.
+Reuse glyphs across frames; DPI/zoom changes request the appropriate raster size,
+and renderer/context teardown destroys only the derived caches/textures. Native
+macOS/Windows menu bars retain platform typography.
+
+The asset release still contains `fonts.bin` (`C2FONTS2`) and `fonts_aa.bin`
+(`C2FONTAA`). They are opaque legacy package members, **excluded from the new
+engine's runtime selection and future distribution**. Package inspection checks
+their inventory hashes when validating the original eight-file release, but
+neither parses nor renders their contents. There is no bitmap-font-schema
+implementation task. The source-selection check does not require these caches.
+
+Only the pinned stock fonts are loaded today. Font-role selection in future game
+dialogs, supported text coverage, fallback, accessibility and shaping are separate
+M2/P04 work; having a glyph does not establish complex-script/bidirectional layout.
+Keep game decisions, classic UI admission inputs, file fields and network outcomes
+independent of the new raster metrics. Do not promise original pixel/metric parity.
+
+To inspect an extracted upstream TTF archive separately:
+
+```sh
+python3 tools/check_assets.py --fonts /path/to/dejavu-fonts-ttf-2.37
+```
 
 ## Layout and identity data
 

@@ -11,8 +11,8 @@ requires the Xcode command-line tools/AppKit; Windows needs a Visual Studio
 developer shell for Ninja, or the Visual Studio generator shown below.
 
 [dependencies.json](../dependencies.json) pins source archives and SHA-256 values
-for SDL3 3.4.2, Dear ImGui 1.93.0, Catch2 3.8.1, and the matching ImGui Test Engine
-revision. It also records the Emscripten, Playwright and clang-format versions
+for SDL3 3.4.2, Dear ImGui 1.93.0, Catch2 3.8.1, the matching ImGui Test Engine
+revision, and the DejaVu 2.37 TrueType data archive. It also records the Emscripten, Playwright and clang-format versions
 used by CI.
 Source downloads are disabled unless `OC2_FETCH_DEPENDENCIES=ON` is explicit.
 A preset whose name ends in `-fetch`, plus `gui-tests` and `web`, opts into downloads.
@@ -39,13 +39,18 @@ For an offline build, supply upstream source trees matching the pins:
 ```sh
 cmake --preset desktop \
   -DFETCHCONTENT_SOURCE_DIR_IMGUI=/path/to/imgui-1.93.0 \
-  -DFETCHCONTENT_SOURCE_DIR_CATCH2=/path/to/Catch2-3.8.1
+  -DFETCHCONTENT_SOURCE_DIR_CATCH2=/path/to/Catch2-3.8.1 \
+  -DFETCHCONTENT_SOURCE_DIR_DEJAVU=/path/to/dejavu-fonts-ttf-2.37
 ```
 
 Supply `FETCHCONTENT_SOURCE_DIR_SDL3` to build SDL from a local source tree, and
 `FETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE` with `OC2_GUI_TESTS=ON` for offline GUI
 tests. A populated build's dependency cache also works with downloads disabled.
-Source overrides are explicit trusted developer inputs: URL hashes verify
+GUI builds embed twelve hash-verified DejaVu TrueType faces, then rasterize
+glyphs at runtime with ImGui. The extracted font root contains `ttf/` and
+`LICENSE`; the build checks these bytes even for a local override. Fonts add no
+Python or graphics-pack dependency.
+Source overrides for code libraries are explicit trusted developer inputs: URL hashes verify
 fetched archives, not the contents of an override directory. Invalid explicit
 paths fail rather than falling back to a download. Installed Catch2 must match
 3.8.1; installed SDL3 may be a compatible newer version. Record such overrides
@@ -94,7 +99,8 @@ runtime package in GUI configurations. This enables `asset-check` and requires
 Python for that optional check. It does not yet load/copy/install graphics.
 Invalid explicit GUI paths fail; headless builds do not inspect the path. See the
 [asset contract](content/asset-format.md#cmake-and-runtime-integration) and
-[inventory](content/README.md) for exact scope, package pins and missing font data.
+[inventory](content/README.md) for exact scope, the graphics/font pins and
+remaining layout/text work. The legacy bitmap font caches are not consumed.
 No automatic sibling lookup, asset downloads or old-game tools run during builds.
 
 ## Formatting and commits

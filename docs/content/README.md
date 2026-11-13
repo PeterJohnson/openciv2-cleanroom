@@ -25,20 +25,33 @@ the publisher's build. No downloaded artwork is committed here.
 | Runtime file | Contract/use |
 | --- | --- |
 | `data/atlas-hd.pack` | C2ATLAS1 index, PNG payloads and optional indexed proxies; 2,105 entries, 249,792,878 bytes |
-| `data/fonts.bin` | C2FONTS2 bitmap cache; 10,738,010 bytes |
-| `data/fonts_aa.bin` | C2FONTAA bitmap cache; 36,266,976 bytes |
+| `data/fonts.bin` | Legacy C2FONTS2 cache; inventoried upstream, excluded from new-engine runtime/distribution |
+| `data/fonts_aa.bin` | Legacy C2FONTAA cache; inventoried upstream, excluded from new-engine runtime/distribution |
 | `data/cityview-rects.json` | 62 ordered `[x,y,width,height]` integer rectangles; zero rectangles remain significant |
 | `include/hd_layouts.h` | Generated layout tables; treat as versioned data, never include executable code from an untrusted package |
 | `data/ATLAS-PROVENANCE.md` | Replacement artwork provenance and limits |
 | `LICENSE`, `THIRD-PARTY.txt` | Asset and font notices to retain in distributions |
 
 The asset source's MIT license and runtime notice describe the replacement art
-and DejaVu bitmap fonts. The exact historical DejaVu/Wine versions were not
+and historical DejaVu bitmap fonts. `assets.json` schema 2 separates all upstream
+`packageFiles` from `selectedRuntimeFiles` and `ignoredRuntimeFiles`; only the six
+selected graphics/metadata/notice files are eligible for new-engine packaging. The exact historical DejaVu/Wine versions were not
 recorded. Noto fonts with OFL notices are authoring inputs, excluded from this
 runtime release. Review screenshots, original GIF/DLL/EXE resources, authoring
 masters, and original text are not approved runtime distribution inputs merely
 because they exist in an asset repository. The complete notice remains with the
 package; software dependency notices are separate.
+
+## Stock TrueType fonts
+
+The new UI uses the DejaVu Sans, Serif and Sans Mono families identified by the
+asset notice, rasterized at runtime. Their exact historical cache-source versions
+are unknown. We separately pin the upstream DejaVu **2.37** TTF archive, all twelve
+regular/bold/italic/bold-italic faces and their license in [fonts.json](fonts.json).
+The shell embeds the verified TTF data and uses ImGui's runtime rasterizer, with
+no graphics-pack dependency. See the [font contract](asset-format.md#truetype-fonts-and-runtime-rasterization).
+The build appends the full upstream font notice to its software notices. Font
+hashes are checked even for explicit local source overrides.
 
 ## Stock rules, text and other inputs
 
@@ -54,7 +67,7 @@ package; software dependency notices are separate.
 | Shell and metadata test data | Authored Catch2 cases and temporary synthetic metadata/pack containers in `tests/`. No original assets or full font payloads. | Extend as contracts arrive; synthetic container acceptance is not glyph/PNG decoding evidence. |
 | Original executable and installation resources | External comparison target only; absent from this checkout and release packages. | `original-access` below. |
 
-These gaps are tracked as `stock-content`, `asset-font-schema`, and
+These gaps are tracked as `stock-content`, `runtime-font-platforms`, and
 `asset-runtime-release` in the [coverage ledger](../conformance/coverage.json).
 They do not prevent M0's content-independent test/build skeleton.
 

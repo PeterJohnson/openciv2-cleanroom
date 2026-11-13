@@ -63,9 +63,9 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
-| M0 — implementation complete; platform gate pending | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan | Execute the pinned macOS/Windows jobs and retain reports; see [M0 evidence](m0-validation.md). Runtime reader/font and playable-content work is assigned to M1/M2/M5, not claimed complete. |
+| M0 — implementation complete; platform gate pending | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan | Execute the pinned macOS/Windows jobs and retain reports; see [M0 evidence](m0-validation.md). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts now have a separate pinned dependency. |
 | M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | C++ F01/F02/W01 state, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI with optional SQLite export, scoped queries, SessionRuntime/controller contracts and continuations |
-| M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
+| M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
 Local merge verification uses Linux/GCC 15.2, SDL3 3.4.2, and the dependency pins
@@ -198,6 +198,12 @@ Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
 - Create the SDL3 callback-based shell, SDL_Renderer drawing path, and ImGui
   integration. Render a representative map region, text, and a custom dialog
   using the asset package through the new CPU reader and texture cache.
+- Use the pinned DejaVu Sans/Serif/Mono TrueType faces and runtime glyph
+  rasterization already connected to the shell. Exclude the asset package's
+  historical bitmap font caches. Extend font roles/measurement to custom dialogs;
+  verify DPI/zoom, glyph fallback, size/cache lifetime, native/WASM rendering and
+  required text coverage. Preserve classic logical admission independently of
+  visual font metrics; do not infer full shaping from glyph availability.
 - Implement the single action/menu model and native AppKit/Win32 menu adapters;
   use ImGui main menus on Linux/web. Route native and ImGui selections to the
   same semantic commands, with P05 availability and execution rules distinct.
@@ -493,7 +499,7 @@ The next implementation changes should build on the integrated shell:
    X02 vectors with the version 3 loader/comparator.
 3. Implement F02 identities/state and W01 geometry using C++ records and
    collections, with retained-state fixtures and no database dependency.
-4. Resolve the font/layout data gaps and implement the independent asset reader
+4. Resolve layout data gaps and implement the independent graphics reader
    against the [inspected package contract](content/asset-format.md); connect it
    to the existing SDL3/ImGui shell and finish native menu/platform verification.
 5. Add F03/F06 codecs and early N05 framing/original-peer experiments, then

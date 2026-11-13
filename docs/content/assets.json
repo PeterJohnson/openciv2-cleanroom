@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "sourceRepository": "https://github.com/PeterJohnson/openciv2-assets",
   "sourceRevision": "c4161c1843e8e06a5cf864e1633b6f6221abb797",
   "runtimeRelease": {
@@ -75,14 +75,6 @@
       "size": 7830,
       "sha256": "facee4e3dbf3dabb16c21defa4c39e69267f7d594c69f80d4a526d42a26a6b8e"
     },
-    "data/native/fonts.bin": {
-      "size": 10738010,
-      "sha256": "6c36598b273b937eb53db224a9cfab82381bb46d43c72140682cff8abcb4bfeb"
-    },
-    "data/native/fonts_aa.bin": {
-      "size": 36266976,
-      "sha256": "fdd8df78d58a0ad29d2f31303ffc0c8699b8924595e188566c803f2b30ae7393"
-    },
     "assets/atlas-hd/city/panorama/layout.json": {
       "size": 6088,
       "sha256": "228a6d28d60a5ecf0415686a951f718f9b68f55379e2d79a6eba111ba6979862"
@@ -128,7 +120,13 @@
       "sha256": "276a61fd2a6cbe145c71514567023d14919c074e72b0560c0bf21973e71ea67f"
     }
   },
-  "runtimeFiles": [
+  "gaps": [
+    "runtime-font-platforms",
+    "asset-runtime-release",
+    "stock-content"
+  ],
+  "atlasEntries": 2105,
+  "packageFiles": [
     "LICENSE",
     "THIRD-PARTY.txt",
     "data/ATLAS-PROVENANCE.md",
@@ -138,10 +136,17 @@
     "data/fonts_aa.bin",
     "include/hd_layouts.h"
   ],
-  "gaps": [
-    "asset-font-schema",
-    "asset-runtime-release",
-    "stock-content"
+  "ignoredRuntimeFiles": [
+    "data/fonts.bin",
+    "data/fonts_aa.bin"
   ],
-  "atlasEntries": 2105
+  "selectedRuntimeFiles": [
+    "LICENSE",
+    "THIRD-PARTY.txt",
+    "data/ATLAS-PROVENANCE.md",
+    "data/atlas-hd.pack",
+    "data/cityview-rects.json",
+    "include/hd_layouts.h"
+  ],
+  "fontManifest": "docs/content/fonts.json"
 }

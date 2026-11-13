@@ -33,8 +33,8 @@ else()
   endif()
 endif()
 
-add_executable(oc2_ui_tests tests/gui_tests.cpp tests/gui_test_cases.cpp src/ui/interface.cpp)
-target_link_libraries(oc2_ui_tests PRIVATE oc2_viewmodel oc2_options oc2_imgui_testing)
+add_executable(oc2_ui_tests tests/gui_tests.cpp tests/gui_test_cases.cpp src/ui/interface.cpp src/ui/fonts.cpp)
+target_link_libraries(oc2_ui_tests PRIVATE oc2_viewmodel oc2_options oc2_imgui_testing oc2_font_data)
 configure_file(${engine_dir}/LICENSE.txt
   ${CMAKE_CURRENT_BINARY_DIR}/IMGUI_TEST_ENGINE_LICENSE.txt COPYONLY)
 if(WIN32)

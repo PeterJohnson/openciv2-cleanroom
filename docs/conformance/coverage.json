@@ -349,18 +349,18 @@
       "closureEvidence": "Run pinned CI jobs on macOS and Windows and retain build identity plus CTest reports before closing the M0 platform gate."
     },
     {
-      "id": "asset-font-schema",
+      "id": "runtime-font-platforms",
       "milestone": "M2",
-      "domain": "C2FONTS2 and C2FONTAA metrics/glyph encoding.",
-      "knownPrefix": "Magic, byte counts, hashes and provenance inventoried; detailed field encoding unavailable as data documentation.",
-      "closureEvidence": "Obtain a data-only font format contract from the asset package or replace caches with licensed, documented font input; do not inspect legacy reader/probe code."
+      "domain": "DejaVu TrueType runtime text on all supported platforms and future custom dialogs.",
+      "knownPrefix": "Pinned DejaVu 2.37 families replace the bitmap-cache reader; the shell uses ImGui runtime rasterization. Historical cache source versions were not recorded.",
+      "closureEvidence": "Verify native macOS/Windows rendering, custom-dialog font selection/measurement and supported text coverage at required DPI/zoom. Keep logical gameplay admission independent of raster metrics; no bitmap cache schema is needed."
     },
     {
       "id": "asset-runtime-release",
       "milestone": "M2",
       "domain": "Runtime graphics package, layouts and decoder.",
       "knownPrefix": "Published 2026.11.07.1 archive and per-file hashes verified; pack index checked. Runtime decoding is not implemented.",
-      "closureEvidence": "Implement independent PNG/font/layout readers and confirm semantic consumption of the pinned package; resolve asset-font-schema before accepting its glyph payloads."
+      "closureEvidence": "Implement independent PNG/layout readers and confirm semantic consumption of the selected graphics files. Exclude legacy bitmap fonts from new-engine packaging and use the separately pinned TrueType font dependency."
     },
     {
       "id": "stock-content",

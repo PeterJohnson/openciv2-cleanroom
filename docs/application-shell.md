@@ -174,8 +174,11 @@ The startup menu is intentionally small, not the full classic in-game menu.
 Dialog state is data; drawing and input live in `ui::Interface`. Add custom
 content and controls there while retaining modal-first routing. There is
 currently one active application dialog, with no application dialog stack or
-native child windows. Text uses ImGui's embedded ProggyForever vector font;
-additional font assets are needed for broader glyph coverage. UTF-8 input is
+native child windows. Drawn text now uses pinned DejaVu Sans TrueType data and
+ImGui's runtime rasterizer. DejaVu Serif/Mono and bold/italic faces are also
+registered; [font metadata](content/fonts.json) pins all twelve face hashes.
+Native menus retain OS typography. The bitmap fonts in the graphics release are
+not consumed; no exact historical font metric match is claimed. UTF-8 input is
 owned and forwarded, but no text-editing dialog is included yet.
 
 Dear ImGui does not provide screen-reader accessibility or full complex-script
@@ -183,7 +186,7 @@ shaping/bidirectional layout. Localization, specialized game skins and the full
 P04 control set remain future work. Keyboard navigation is not equivalent to
 accessibility support. See the upstream [limitations](https://github.com/ocornut/imgui/blob/v1.93.0/docs/README.md#the-pitch).
 
-Audio, asset loading, configuration persistence, ImGui file dialogs, browser
+Audio, graphics-pack loading, configuration persistence, ImGui file dialogs, browser
 persistent storage, save/load, networking and simulation are not implemented by
 this shell. Add them as owned services with explicit failure and asynchronous
 completion paths. Build/documentation tests here do not replace X02 behavioral

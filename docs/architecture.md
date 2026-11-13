@@ -579,13 +579,15 @@ available locally at `~/project/openciv2-assets`. Its inspected checkout was
 2026.11.07.1 runtime archive and pinned its URL/hash in `dependencies.json`.
 The [content inventory](content/README.md) separates source and release evidence;
 the [format contract](content/asset-format.md) records the observed pack/layout
-format and the remaining font-schema gap.
+format, stock TrueType selection and runtime rasterization boundary.
 
 The asset repository documents a runtime package containing `atlas-hd.pack`,
-bitmap fonts, layout data, generated layout constants, provenance, and notices.
-Consume this data through a newly written adapter. Document the pack/font/layout
-format before writing its reader; an undocumented field is a content-contract
-gap, not permission to consult the old renderer. Prefer data contracts and
+legacy bitmap fonts, layout data, generated layout constants, provenance, and
+notices. Select the graphics/layout/notice data for the new engine and exclude
+`fonts.bin`/`fonts_aa.bin` from runtime use and distribution. Consume graphics
+through a newly written adapter. Document its format before writing the reader;
+an undocumented field is a content-contract gap, not permission to consult the
+old renderer. Prefer data contracts and
 locally generated typed tables over incorporating another game's headers or
 resolver code. A generated constants header is eligible only as reviewed
 data-only asset output. See the asset repository's
@@ -600,6 +602,22 @@ checkout can use its standalone runtime pack builder; run no review/comparison p
 and require no `openciv2` checkout or original executable. CI/release builds
 consume immutable runtime packages with checked inventory and checksums. Pure
 game tests need only small owned fixtures and do not build the graphics pack.
+
+Use the DejaVu Serif, Sans and Sans Mono TrueType families identified in the
+asset repository's `THIRD-PARTY.txt`, with regular/bold/italic/bold-italic faces.
+The historical bitmap-generation font versions were not recorded; independently
+pin DejaVu 2.37 and each TTF/license hash rather than claim an exact reconstruction.
+The shell now embeds those verified font bytes and uses ImGui's runtime
+`stb_truetype` rasterizer. No bitmap cache decoder or Wine dependency is needed.
+The generated `oc2_font_data` target owns CPU font bytes separately from
+frontend-owned ImGui glyph caches/SDL textures;
+headless builds do not fetch/link fonts or rasterizers. Custom drawn dialogs use
+the same font measurements and atlases as widgets. Cache by face, size and DPI,
+and retain source bytes until all consuming contexts are destroyed. Native menus
+keep platform typography. New visual metrics must not change classic logical
+admission inputs, game state, file data or protocol behavior. Text coverage and
+complex-script shaping need their own tests before being claimed. See the
+[font contract](content/asset-format.md#truetype-fonts-and-runtime-rasterization).
 
 Expose semantic `AssetId`s and metadata for dimensions, anchors, sheets, palettes,
 and versions; GPU texture handles belong only to the frontend. Preserve P03/F03

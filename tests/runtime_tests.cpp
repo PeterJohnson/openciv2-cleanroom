@@ -4,6 +4,7 @@
 #include <imgui_internal.h> // Observe the pinned library's processed input trail.
 #include <thread>
 #include <memory>
+#include <string_view>
 
 using namespace openciv;
 
@@ -99,6 +100,38 @@ void command(Application& app, Command value) {
 
 TEST_CASE("Fractional density modal geometry remains valid", "[runtime]") {
     fractional_modal_rendering();
+}
+
+TEST_CASE("Stock TrueType fonts rasterize at multiple sizes and densities", "[runtime][fonts]") {
+    // Destroy and recreate the context: atlas shutdown must not free embedded TTF bytes.
+    for (int lifetime = 0; lifetime < 2; ++lifetime) {
+        Application app({.native_menus = false, .smoke_test = false, .screenshot = {}});
+        frame(app);
+        auto& io = ImGui::GetIO();
+        REQUIRE(io.FontDefault != nullptr);
+        REQUIRE(std::string_view(io.FontDefault->GetDebugName()) == "DejaVuSans");
+        REQUIRE(io.Fonts->Fonts.Size == 12);
+        for (auto* font : io.Fonts->Fonts) {
+            INFO(font->GetDebugName());
+            for (const float size : {16.0F, 24.0F}) {
+                for (const float density : {1.0F, 1.65F, 2.0F}) {
+                    auto* baked = font->GetFontBaked(size, density);
+                    REQUIRE(baked != nullptr);
+                    for (const ImWchar codepoint :
+                         {ImWchar('A'), ImWchar(0x00e9), ImWchar(0x03a9)}) {
+                        const auto* glyph = baked->FindGlyphNoFallback(codepoint);
+                        REQUIRE(glyph != nullptr);
+                        CHECK(glyph->AdvanceX > 0.0F);
+                        CHECK(glyph->X1 > glyph->X0);
+                        CHECK(glyph->Y1 > glyph->Y0);
+                        CHECK(glyph->U1 > glyph->U0);
+                        CHECK(glyph->V1 > glyph->V0);
+                    }
+                }
+            }
+        }
+        frame(app, 2); // SDL uploads the atlas changes created by these glyph requests.
+    }
 }
 
 TEST_CASE("SDL input routing and backend lifecycle", "[runtime]") {

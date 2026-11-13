@@ -23,7 +23,7 @@ were not changed.
 The [content inventory](content/README.md) records the selected source artwork,
 verified release and payload hashes, stock-content gaps and original-access
 procedure. The [asset contract](content/asset-format.md) defines the observed pack
-index, font limits, layout-data boundary and `OC2_ASSETS_DIR` behavior. No old-game
+index, original font observations, layout-data boundary and `OC2_ASSETS_DIR` behavior. No old-game
 code, runtime assets or original executable is included in this change.
 
 ## Executed locally — 2026-11-13 UTC
@@ -92,5 +92,26 @@ These sources inform configuration, not the pending platform test result.
 
 Close M0's platform gate by running native desktop/headless jobs on macOS and
 Windows, reviewing SDK/compiler identities and attaching passing reports. Keep
-font/layout reading, playable rules/text, audio and external original-game access
+graphics/layout reading, runtime font platform checks, playable rules/text, audio and external original-game access
 as named M1/M2/M5–M7 follow-ups; their absence is not hidden behind M0 test counts.
+
+## TrueType follow-up — 2026-11-13 UTC
+
+The subsequent font change replaces the proposed bitmap reader with pinned
+DejaVu 2.37 TrueType inputs and runtime ImGui rasterization. The initial M0 table
+above records the earlier package inspection; bitmap signatures are no longer
+validated as a rendering contract. The upstream eight-file package inventory is
+retained, but schema 2 excludes both bitmap caches from selected runtime content.
+
+The DejaVu archive and twelve face/license hashes were verified independently.
+Linux desktop CTests and all three ImGui density runs pass with the new fonts;
+the added runtime test exercises all twelve faces, two sizes, three densities,
+Latin/accented/Greek glyphs, SDL atlas updates and context destruction/recreation.
+The WASM shell builds and its Node/metadata CTests and Chromium smoke pass.
+All 23 Python checks pass; a deliberately corrupted local font override fails
+configuration before embedding. Headless tests pass with an intentionally missing
+font path and Python discovery disabled, confirming no font acquisition/linkage. The frontend uses 5,349,360 bytes of embedded
+TTF data before executable/transfer compression; it does not require a new runtime
+filesystem path or an original bitmap-cache parser. The architecture, M2 plan and
+content ledger now track remaining font platform/text work rather than an unknown
+bitmap format. macOS/Windows execution remains pending.

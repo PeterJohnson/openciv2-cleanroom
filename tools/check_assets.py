@@ -10,11 +10,12 @@ import sys
 
 from check_conformance import ROOT, read_json, require
 
-RUNTIME_FILES = {
+PACKAGE_FILES = {
     "data/atlas-hd.pack", "data/fonts.bin", "data/fonts_aa.bin",
     "data/ATLAS-PROVENANCE.md", "data/cityview-rects.json",
     "include/hd_layouts.h", "LICENSE", "THIRD-PARTY.txt",
 }
+LEGACY_FONT_FILES = {"data/fonts.bin", "data/fonts_aa.bin"}
 
 
 def data_file(root, name):
@@ -64,22 +65,42 @@ def check_source(root, inventory):
 
 def check_inventory(root=ROOT):
     inventory = read_json(root / "docs/content/assets.json")
-    require(inventory["schemaVersion"] == 1, "unknown asset inventory schema")
+    require(inventory["schemaVersion"] == 2, "unknown asset inventory schema")
     require(re.fullmatch(r"[0-9a-f]{40}", inventory["sourceRevision"]), "invalid source revision")
-    require(set(inventory["runtimeFiles"]) == RUNTIME_FILES, "runtime inventory file set mismatch")
+    require(set(inventory["packageFiles"]) == PACKAGE_FILES, "package inventory file set mismatch")
+    require(set(inventory["ignoredRuntimeFiles"]) == LEGACY_FONT_FILES, "legacy bitmap fonts must be excluded")
+    require(set(inventory["selectedRuntimeFiles"]) == PACKAGE_FILES - LEGACY_FONT_FILES, "runtime selection mismatch")
     selection = inventory["selection"]
     require(selection["files"] == sum(selection["extensions"].values()), "selection counts disagree")
     require(re.fullmatch(r"[0-9a-f]{64}", selection["inventorySha256"]), "invalid selection hash")
     release = inventory["runtimeRelease"]
     lock = read_json(root / "dependencies.json")
     require(lock["assets"] == {key: release[key] for key in ("version", "url", "sha256")}, "asset release pin mismatch")
-    require(set(release["files"]) == RUNTIME_FILES, "release file set mismatch")
+    require(set(release["files"]) == PACKAGE_FILES, "release file set mismatch")
     for info in [*inventory["inspectedFiles"].values(), *release["files"].values()]:
         require(type(info["size"]) is int and info["size"] >= 0, "invalid inventory size")
         require(re.fullmatch(r"[0-9a-f]{64}", info["sha256"]), "invalid inventory hash")
     gaps = {g["id"] for g in read_json(root / "docs/conformance/coverage.json")["gaps"]}
     require(set(inventory["gaps"]) <= gaps, "unknown content gap")
-    return "Asset inventory and release pin agree; no external files required."
+    fonts = read_json(data_file(root, inventory["fontManifest"]))
+    require(fonts["schemaVersion"] == 1 and fonts["version"] == lock["libraries"][fonts["dependency"]]["version"],
+            "font dependency pin mismatch")
+    expected_faces = {f"{family}.{style}" for family in ("sans", "serif", "mono")
+                      for style in ("regular", "bold", "italic", "bold-italic")}
+    require(len(fonts["faces"]) == len(expected_faces) and {f["id"] for f in fonts["faces"]} == expected_faces,
+            "font face inventory mismatch")
+    require(fonts["defaultFace"] == "sans.regular", "unknown default font")
+    for info in [*fonts["faces"], fonts["license"]]:
+        require(type(info["size"]) is int and 0 < info["size"] < 2147483647, "invalid font input size")
+        require(re.fullmatch(r"[0-9a-f]{64}", info["sha256"]), "invalid font input hash")
+    return "Asset and TrueType inventories agree with dependency pins; no external files required."
+
+
+def check_fonts(root, manifest):
+    for info in [*manifest["faces"], manifest["license"]]:
+        expected = {key: info[key] for key in ("size", "sha256")}
+        require(identity(data_file(root, info["file"])) == expected, f"font input differs from pin: {info['file']}")
+    return f"DejaVu {manifest['version']}: {len(manifest['faces'])} TrueType faces and license match their pins."
 
 
 def check_atlas(path):
@@ -117,28 +138,31 @@ def check_package(root):
     manifest = read_json(data_file(root, "package.json"))
     require(manifest["schema"] == 1 and manifest["kind"] == "openciv2-assets", "unknown package schema/kind")
     require(isinstance(manifest["version"], str) and manifest["version"], "missing package version")
-    require(set(manifest["files"]) == RUNTIME_FILES, "runtime manifest file set mismatch")
+    require(set(manifest["files"]) == PACKAGE_FILES, "runtime manifest file set mismatch")
     for name, expected in manifest["files"].items():
         require(type(expected["size"]) is int and expected["size"] >= 0, "invalid file size")
         require(re.fullmatch(r"[0-9a-f]{64}", expected["sha256"]) is not None, "invalid file hash")
         require(identity(data_file(root, name)) == expected, f"package file changed: {name}")
     count = check_atlas(data_file(root, "data/atlas-hd.pack"))
-    for name, magic in (("fonts.bin", b"C2FONTS2"), ("fonts_aa.bin", b"C2FONTAA")):
-        with data_file(root, "data/" + name).open("rb") as stream:
-            require(stream.read(8) == magic, f"unknown font signature: {name}")
     rects = read_json(data_file(root, "data/cityview-rects.json"))
     require(isinstance(rects, list) and len(rects) == 62, "unexpected city rectangle count")
     require(all(isinstance(r, list) and len(r) == 4 and all(type(n) is int and n >= 0 for n in r) for r in rects),
             "invalid city rectangles")
     return (f"Package {manifest['version']}: hashes and {count} atlas entries checked. "
-            "Font payload/layout semantics and PNG decoding remain M2; no release authenticity claim.")
+            "Legacy bitmap fonts are not consumed. Layout semantics and PNG decoding remain M2; no release authenticity claim.")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("directory", type=Path, nargs="?", help="asset source root or extracted runtime package; omit to check repository metadata")
+    parser.add_argument("--fonts", type=Path, help="inspect an extracted pinned DejaVu TrueType archive")
     args = parser.parse_args()
+    if args.fonts and args.directory:
+        parser.error("select either an asset directory or --fonts")
     try:
+        if args.fonts:
+            print(check_fonts(args.fonts.resolve(), read_json(ROOT / "docs/content/fonts.json")))
+            return 0
         if args.directory is None:
             print(check_inventory())
             return 0

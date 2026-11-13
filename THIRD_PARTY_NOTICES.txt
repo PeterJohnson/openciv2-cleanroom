@@ -85,3 +85,12 @@ Dear ImGui Test Engine, commit 176a41dd07985ccb65287a569047ab93f2c7f5d0
 https://github.com/ocornut/imgui_test_engine
 Its separate license is copied to IMGUI_TEST_ENGINE_LICENSE.txt.
 Neither test library is linked into the production application.
+
+Stock TrueType fonts: DejaVu 2.37
+https://github.com/dejavu-fonts/dejavu-fonts/releases/tag/version_2_37
+
+GUI builds embed unmodified DejaVu Sans, Serif and Sans Mono TTF faces.
+cmake/Fonts.cmake verifies their hashes and appends the full upstream LICENSE
+(Bitstream Vera/Arev notices) to the build's THIRD_PARTY_NOTICES.txt. Distribute
+that generated notice with the application. These are independent font inputs,
+not the historical bitmap caches in openciv2-assets.

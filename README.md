@@ -33,7 +33,8 @@ X01 and X02 define that convention and its conformance checks.
   and current limitations.
 
 The initial C++20/CMake/SDL3 shell provides native macOS/Windows menus, ImGui
-Linux/browser menus and dialogs, and a development view with illustrative tiles.
+Linux/browser menus and dialogs, and a development view with illustrative tiles. Drawn text uses pinned DejaVu
+TrueType fonts rasterized at runtime; headless builds need no font data.
 It has no game simulation, asset-pack loader, save inspection, command console
 or Lua runtime yet. Catch2 covers the portable shell and SDL integration; ImGui
 Test Engine covers the drawn interface.

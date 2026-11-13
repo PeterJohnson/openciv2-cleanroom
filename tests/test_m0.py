@@ -69,6 +69,20 @@ class RegistryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "asset release pin mismatch"):
             assets.check_inventory(self.root)
 
+    def test_bitmap_caches_cannot_reenter_runtime_selection(self):
+        self.edit("docs/content/assets.json", lambda r: r["selectedRuntimeFiles"].append("data/fonts.bin"))
+        with self.assertRaisesRegex(ValueError, "runtime selection mismatch"):
+            assets.check_inventory(self.root)
+
+    def test_font_source_version_and_face_identity(self):
+        self.edit("docs/content/fonts.json", lambda r: r.update(version="unknown"))
+        with self.assertRaisesRegex(ValueError, "font dependency pin mismatch"):
+            assets.check_inventory(self.root)
+        self.edit("docs/content/fonts.json", lambda r: r.update(version="2.37"))
+        self.edit("docs/content/fonts.json", lambda r: r["faces"][0].update(id="mono.regular"))
+        with self.assertRaisesRegex(ValueError, "font face inventory mismatch"):
+            assets.check_inventory(self.root)
+
     def test_duplicate_json_key_and_nonfinite_rejected(self):
         path = self.root / "data.json"
         for text in ('{"value":1,"value":2}', '{"value":NaN}'):
@@ -141,16 +155,17 @@ class AssetTests(unittest.TestCase):
                 assets.selection_identity(self.root)
 
     def test_corrupt_package_and_manifest_paths(self):
-        for name in assets.RUNTIME_FILES:
+        for name in assets.PACKAGE_FILES:
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b"test")
         shutil.copyfile(self.atlas(), self.root / "data/atlas-hd.pack")
-        (self.root / "data/fonts.bin").write_bytes(b"C2FONTS2")
-        (self.root / "data/fonts_aa.bin").write_bytes(b"C2FONTAA")
+        # These are still verified as opaque upstream payloads, never parsed as fonts.
+        (self.root / "data/fonts.bin").write_bytes(b"unused legacy data")
+        (self.root / "data/fonts_aa.bin").write_bytes(b"unused legacy data")
         write_json(self.root / "data/cityview-rects.json", [[0, 0, 0, 0]] * 62)
         manifest = {"schema": 1, "kind": "openciv2-assets", "version": "synthetic-test",
-                    "files": {name: assets.identity(self.root / name) for name in assets.RUNTIME_FILES}}
+                    "files": {name: assets.identity(self.root / name) for name in assets.PACKAGE_FILES}}
         write_json(self.root / "package.json", manifest)
         self.assertIn("no release authenticity claim", assets.check_package(self.root))
         (self.root / "LICENSE").write_bytes(b"changed")

@@ -1,4 +1,5 @@
 #include "ui/interface.hpp"
+#include "ui/fonts.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h> // Narrow F10 bridge; tested against our pinned release.
@@ -63,7 +64,7 @@ Interface::Interface(SDL_Window* window, SDL_Renderer* renderer, bool native_men
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.IniFilename = nullptr; // Layout is application-owned, including on WASM.
         io.LogFilename = nullptr;
-        io.Fonts->AddFontDefaultVector();
+        load_fonts(io);
         platform_ready_ = ImGui_ImplSDL3_InitForSDLRenderer(window_, renderer_);
         require(platform_ready_, "ImGui SDL3 initialization");
         renderer_ready_ = ImGui_ImplSDLRenderer3_Init(renderer_);

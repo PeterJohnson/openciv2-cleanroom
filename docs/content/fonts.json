@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "dependency": "DejaVu",
+  "version": "2.37",
+  "provenance": "DejaVu Serif/Sans/Sans Mono are the families identified in openciv2-assets THIRD-PARTY.txt. The historical cache input versions/hashes were not recorded; 2.37 is an explicit cleanroom content pin, not a recovered cache-source identity.",
+  "rasterizer": "Dear ImGui 1.93.0 bundled stb_truetype; runtime glyph atlases",
+  "defaultFace": "sans.regular",
+  "faces": [
+    {
+      "id": "sans.regular",
+      "name": "DejaVuSans",
+      "family": "sans",
+      "style": "regular",
+      "file": "ttf/DejaVuSans.ttf",
+      "size": 757076,
+      "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954"
+    },
+    {
+      "id": "sans.bold",
+      "name": "DejaVuSans-Bold",
+      "family": "sans",
+      "style": "bold",
+      "file": "ttf/DejaVuSans-Bold.ttf",
+      "size": 705684,
+      "sha256": "e6476c1b80502924294eed40894c5b18e06c181444ca953e5334262df9c27724"
+    },
+    {
+      "id": "sans.italic",
+      "name": "DejaVuSans-Oblique",
+      "family": "sans",
+      "style": "italic",
+      "file": "ttf/DejaVuSans-Oblique.ttf",
+      "size": 635416,
+      "sha256": "4af75fa16ee6d3ad43e1ecec41862c24954af26a55c6bb1ebb27bd486a50f5f4"
+    },
+    {
+      "id": "sans.bold-italic",
+      "name": "DejaVuSans-BoldOblique",
+      "family": "sans",
+      "style": "bold-italic",
+      "file": "ttf/DejaVuSans-BoldOblique.ttf",
+      "size": 643292,
+      "sha256": "eb436dca0c2594b73d8b603b892e374fdfd8d885d25ffb4f18df4c4c0b49e50f"
+    },
+    {
+      "id": "serif.regular",
+      "name": "DejaVuSerif",
+      "family": "serif",
+      "style": "regular",
+      "file": "ttf/DejaVuSerif.ttf",
+      "size": 380132,
+      "sha256": "42d1edeb7952f31b1f96d767ed7030b08a39e0c372b0071641518864e2bffb51"
+    },
+    {
+      "id": "serif.bold",
+      "name": "DejaVuSerif-Bold",
+      "family": "serif",
+      "style": "bold",
+      "file": "ttf/DejaVuSerif-Bold.ttf",
+      "size": 356088,
+      "sha256": "c47b5527bcdc8dcf9ea8c77054454c5a884beaca2f44851a2a823ee639cbf07f"
+    },
+    {
+      "id": "serif.italic",
+      "name": "DejaVuSerif-Italic",
+      "family": "serif",
+      "style": "italic",
+      "file": "ttf/DejaVuSerif-Italic.ttf",
+      "size": 345996,
+      "sha256": "2e39b1d50f90b933b00c7bb54a96afd3f86419b3d717c7cf202e36f2d4973e47"
+    },
+    {
+      "id": "serif.bold-italic",
+      "name": "DejaVuSerif-BoldItalic",
+      "family": "serif",
+      "style": "bold-italic",
+      "file": "ttf/DejaVuSerif-BoldItalic.ttf",
+      "size": 347460,
+      "sha256": "8d3dd3d31350309042ed226af82b34539bd773518e6107cb352712853ba80308"
+    },
+    {
+      "id": "mono.regular",
+      "name": "DejaVuSansMono",
+      "family": "mono",
+      "style": "regular",
+      "file": "ttf/DejaVuSansMono.ttf",
+      "size": 340712,
+      "sha256": "b4a6c3e4faab8773f4ff761d56451646409f29abedd68f05d38c2df667d3c582"
+    },
+    {
+      "id": "mono.bold",
+      "name": "DejaVuSansMono-Bold",
+      "family": "mono",
+      "style": "bold",
+      "file": "ttf/DejaVuSansMono-Bold.ttf",
+      "size": 331992,
+      "sha256": "bce60f1b4421acd9ea51ba6623d7024ecbe6817a953e3654df62a5e6bdf8f769"
+    },
+    {
+      "id": "mono.italic",
+      "name": "DejaVuSansMono-Oblique",
+      "family": "mono",
+      "style": "italic",
+      "file": "ttf/DejaVuSansMono-Oblique.ttf",
+      "size": 251932,
+      "sha256": "742097840c541870e8d6dc5c9b37bb1ceeea6c0dedd1d475faf903ef9df734b0"
+    },
+    {
+      "id": "mono.bold-italic",
+      "name": "DejaVuSansMono-BoldOblique",
+      "family": "mono",
+      "style": "bold-italic",
+      "file": "ttf/DejaVuSansMono-BoldOblique.ttf",
+      "size": 253580,
+      "sha256": "91713a71d550bba22c2a6b2bb2a9ad8f9a159e12e4e9f0a5b2677998ba21213e"
+    }
+  ],
+  "license": {
+    "file": "LICENSE",
+    "size": 8816,
+    "sha256": "7a083b136e64d064794c3419751e5c7dd10d2f64c108fe5ba161eae5e5958a93"
+  }
+}
