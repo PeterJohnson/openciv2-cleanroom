@@ -17,7 +17,8 @@ X01 and X02 define that convention and its conformance checks.
 - [Conformance (X02)](docs/algorithms/X02-whole-game-conformance.md): fixtures,
   comparison rules, integration cases and evidence gaps.
 - [Architecture](docs/architecture.md): cleanroom boundary, C++20/CMake libraries,
-  SDL3/ImGui presentation, platform menus, assets, persistence and networking.
+  embedded session service and player controllers, SDL3/ImGui presentation,
+  platform menus, assets, persistence and classic networking.
 - [Tools and automation](docs/architecture.md#5-inspection-tools-console-and-user-automation):
   planned save inspection CLI, in-game console and Lua player automation over
   shared portable queries and commands.

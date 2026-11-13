@@ -10,9 +10,11 @@ Build a C++20 game with CMake, SDL3, and Dear ImGui for macOS, Linux, Windows,
 and browser WebAssembly through Emscripten. The game implementation, including
 AI, persistence, session orchestration, and networking, runs without a graphical
 framework. The graphical application, save inspection tools, conformance runner,
-and user automation are clients of the same portable implementation. An in-game
-console and Lua scripts use player queries and semantic commands; they do not
-require implementing the core algorithms in Lua.
+and user automation are clients of the same portable implementation. Its logical
+client/server boundary is an embedded session service, with participant/controller
+bindings and mode-specific execution authority. An in-game console and Lua scripts
+use player queries and semantic commands; they do not require implementing the
+core algorithms in Lua.
 
 ## 1. Cleanroom and compatibility boundary
 
@@ -70,14 +72,12 @@ flowchart TD
     app[Graphical application] --> frontend[SDL3 / ImGui frontend]
     app --> platform[Native menus / storage / transport adapters]
     frontend --> views[Presentation models]
-    views --> session[Session and interaction coordinator]
-    views --> query[Read-only queries]
+    views --> ports[Participant and controller API]
+    ports --> session[Embedded SessionRuntime]
     frontend --> console[Portable console]
-    console --> session
-    console --> query
+    console --> ports
     console -. optional .-> automation[Lua automation]
-    automation --> session
-    automation --> query
+    automation --> ports
     cli[Save inspection CLI] --> formats[Rules / save / scenario codecs]
     cli --> query
     cli -. optional .-> export[SQLite snapshot exporter]
@@ -87,7 +87,7 @@ flowchart TD
     runner -. optional .-> automation
     runner -. optional .-> export
     session --> game[Game state / mechanics / AI / events]
-    session --> query
+    session --> query[Read-only queries]
     session --> formats
     session --> network[Classic protocol and network sessions]
     network --> formats
@@ -100,6 +100,11 @@ flowchart TD
     game --> base
     platform --> base
 ```
+
+The participant/controller API belongs to `oc2_session`; it is not another
+process or library. Classic AI policies remain engine operations in `oc2_game`,
+scheduled by the runtime. The diagram's network dependency does not require
+opening a transport for local play.
 
 Use a small number of libraries with internal subsystem directories; the 65
 specifications are ownership boundaries, not a requirement for 65 libraries.
@@ -118,10 +123,10 @@ first real operations arrive. Native menu sources currently compile into
 | `oc2_formats` | F03 parsing, F06 codecs, scenario/event parsing, classic text encoding; depends on `oc2_game`. No filesystem or GUI calls. |
 | `oc2_query` | Read-only projections of decoded records and live state, with explicit access contexts and stable ordering; depends on `oc2_game` and `oc2_formats`. No session loading, recalculation, command dispatch, or presentation types. |
 | `oc2_network` | N01–N03/N05 protocol state machines, encoders, synchronization and authority; depends on `oc2_game` and `oc2_formats`, injected transport/time. |
-| `oc2_session` | F04/F05 orchestration, N04, setup/load flows, pending interactions, command descriptors/results, query access and gameplay effects required by P01–P10; composes game/formats/network/query libraries. |
-| `oc2_viewmodel` | Observer-filtered map/dialog/report/menu models and frontend intent mapping; depends on portable session/query APIs. No SDL/ImGui types. |
-| `oc2_console` | Command parsing, help/completion and structured output over session/query APIs; no SDL/ImGui or required scripting runtime. |
-| `oc2_automation` | Optional Lua bindings, task scheduling and explicit script state over session/query APIs. Core libraries do not depend on Lua. |
+| `oc2_session` | Embedded `SessionRuntime`, participant/controller bindings, scoped client API, mode/authority adapters, F04/F05/N04 orchestration, setup/load flows, AI scheduling, pending interactions, command descriptors/results and P01–P10 gameplay effects; composes game/formats/network/query libraries. |
+| `oc2_viewmodel` | Observer-filtered map/dialog/report/menu models and frontend intent mapping through the session client API; uses query value types, never mutable world access. No SDL/ImGui types. |
+| `oc2_console` | Command parsing, help/completion and structured output through a participant's session binding; no SDL/ImGui or required scripting runtime. |
+| `oc2_automation` | Optional Lua controller bindings, task scheduling and explicit script state through the scoped session API. Core libraries do not depend on Lua. |
 | `oc2_content` | Runtime asset package, CPU image/font data, asset identities and lookup; depends on portable types and selected independent decoders. No GPU objects. |
 | `oc2_frontend` | SDL window/input/render/audio and ImGui dialogs, custom drawing, map, minimap and console panel; depends on view models, content and console. |
 | `oc2_io_native`, `oc2_io_web` | Storage, time and transport implementations. Native headless I/O must not link SDL; web glue stays out of portable libraries. |
@@ -173,9 +178,11 @@ census that a later operation is specified to read. Preserve live reads and
 scan-bound changes where required; a snapshot is an observation, not a general
 replacement for the algorithm's state access.
 
-One execution lane owns mutation for a session. The initial application runs it
-cooperatively on the main thread; tests drive it directly. Background work may
-read/decode immutable data or move bytes, but does not mutate game state. AI
+One execution lane owns mutation of each local runtime's session state; N01–N03
+determine which peer may execute an operation in a network game. The initial
+application runs the lane cooperatively on the main thread; tests drive it
+directly. Background work may read/decode immutable data or move bytes, but does
+not mutate game state. AI
 uses the same mechanics as human play with its own specified decision and
 authority paths. UI availability rules must not accidentally become AI rules.
 
@@ -202,16 +209,103 @@ classic import. Define and record a fresh-context import policy in that case.
 
 ## 4. Commands, interactions, and event delivery
 
+### Embedded session service
+
+Make `SessionRuntime` in `oc2_session` the service boundary for gameplay clients.
+It owns the local session's C++ world state, turn/mode continuation, command
+routing and pending interactions, and uses an explicit process context for F02
+state that outlives a game. Starting another game reuses that context where
+required; independent peers in one test process receive separate contexts.
+The frontend owns windows, input and presentation models, and communicates with
+the runtime using semantic C++ values through a scoped client API.
+
+Single-player and hotseat embed the service in the graphical process. Use direct
+calls and owned queues as appropriate; no loopback sockets, RPC serialization,
+extra world replica or worker thread is required for local controllers. The same
+runtime can be driven without SDL by tests and headless tools. This decision
+does not introduce a dedicated server executable or a new network protocol;
+separating processes later requires its own interaction and compatibility work.
+
+| Mode | Runtime and controller arrangement | Scheduling and authority owner |
+| --- | --- | --- |
+| Single-player | One runtime, a human participant's frontend/automation bindings, and local classic AI policies | F04/F05; engine schedules upkeep and AI phases |
+| Hotseat | One runtime and world, multiple participant contexts, one frontend attached to the permitted view at a time | N04 handoff/concealment with F04 children |
+| Classic network | One local runtime per peer, local controller bindings and remote connection mappings | N01–N03/N05 assign execution, result application, barriers and host transfer |
+| Headless | The same runtime with scripted decision providers and injected services; multiple isolated runtimes can represent peers | The selected mode's rules, driven by a deterministic test scheduler |
+
+Mode adapters implement their specified entry, continuation, resume and failure
+paths. They share mechanics and client-facing contracts but do not replace
+F04, N04 and N03's distinct loops with a generic round-robin `takeTurn()` loop.
+The runtime schedules global/civilization upkeep, scenario effects and AI work;
+controllers supply decisions only where their operation admits them.
+
+### Participants, controllers, and access
+
+Keep the following identities separate and map them explicitly:
+
+| Concept | Meaning |
+| --- | --- |
+| Civilization | F02's stable game slot and its world records; distinct from current actor/observer roles |
+| Participant | A session seat controlling a civilization under the mode's roster/claim rules; can be human or AI controlled |
+| Controller | A decision source or attached policy: frontend input, user automation, scripted test driver or classic AI policy; changing it does not replace the civilization |
+| Connection | An optional transport endpoint with N01/N05 identity and mapping; local humans and AIs need no network connection |
+
+The runtime issues a `PlayerContext`/binding with participant, observer scope,
+permitted command class and binding lifetime. Clients cannot gain authority by
+supplying another civilization ID. Multiple input sources for one participant,
+such as a console and an automation task, share that participant's admission
+rules and explicit command ordering. The effective human set, hotseat roster,
+turn actor and network executor retain their specification-defined state;
+do not derive them solely from a controller's C++ type. Assisting a human with
+Lua does not turn that civilization into a classic AI.
+
+The service API exposes command submission, correlated results, scoped read-only
+queries/events and interaction replies. `oc2_query` supplies projection logic
+and value types; live clients obtain records through their session binding, not
+by passing themselves unrestricted world state. Offline inspection uses its
+separate explicit access context. No mutable `GameState` escapes to a client.
+
+Bind requests and notifications to the session and controller lifetimes as well
+as the operation's target identities. On handoff, disconnect, controller
+replacement or session replacement, revoke stale input access and clear or
+isolate affected presentation/subscription data. Rebinding requires current
+authority checks. Previously admitted operations retain their specified
+continuations, effects and mandatory replies; revoking a controller is not a
+rollback or permission to abandon network obligations.
+
+Classic AI participates in this control model as an engine-scheduled policy,
+not as an external snapshot-only bot. A01 assessment mutates shared retained
+state; A02 advice/production selection can invoke recalculation, sales,
+irrigation and airlift operations. Preserve those live reads, side effects and
+the specified AI access/admission paths. Share action vocabulary and mechanics
+with human controllers where behavior agrees, but do not force AI through human
+menu availability or observer restrictions. Human advice may call an AI-owned
+operation without changing who controls the civilization. User scripts continue
+to use the ordinary player's capabilities.
+
+Session creation, setup/load and shutdown use explicit lifecycle operations with
+their F05/F06/mode admission rules. They do not require inventing a civilization
+binding before a game exists or granting a player unrestricted lifecycle access.
+
+### Command execution and interaction delivery
+
 Portable interfaces carry semantic data, for example `MoveUnit`, `ChangeProduction`,
 `OpenCity`, `ChooseTechnology`, and `ReplyToOffer`, with explicit actors and
 targets. Platform events, widget IDs, and mouse pixels never enter mechanics.
 Map hit testing converts pixels to W01 tile identities in the frontend.
 
-The session coordinator resolves a command's route, authority, and current
-execution checks, then invokes its owning operation. Menu availability and
-execution validation remain distinct P05 contracts. Network commands distinguish
+The runtime's mode/authority adapter resolves a command's route, authority, and
+current execution checks, then invokes its owning operation. Menu availability
+and execution validation remain distinct P05 contracts. Network commands distinguish
 requests that execute work from messages that apply already-resolved results.
 Internal AI and scenario callers retain their own admission paths.
+
+The client contract permits pending results and decisions even in local play.
+Immediate completion is allowed at a valid execution boundary; callers never
+assume submission means completion or poll mutable state to infer success.
+Network operation requests and received resolved results have separate internal
+dispatch paths: a result is not resubmitted as a new player command. Local
+bindings do not bypass actor, busy-state or execution checks.
 
 Long-lived operations use explicit continuation/state-machine records. They can
 request a decision, wait for I/O or a peer, publish an effect, or complete.
@@ -544,6 +638,14 @@ per-operation authority model, section encodings/checksums, message order,
 barriers, join/resume, and host transfer. A new host-authoritative or deterministic
 lockstep protocol would not satisfy X01.
 
+The session service provides a logical client/server API within each process;
+it is not a claim that the network host performs all simulation. Each local
+runtime executes only its assigned work and applies received state/results under
+the classic contract. Map participant/controller identities to original wire
+identities without adding mandatory fields. Handle role changes and host transfer
+inside the mode/authority adapter while keeping client bindings and pending
+interactions consistent with the new authority.
+
 Browsers cannot directly connect to arbitrary TCP sockets; WebSockets and proxy
 services are the relevant Emscripten mechanisms. See
 [Emscripten networking](https://emscripten.org/docs/porting/networking.html).
@@ -638,6 +740,14 @@ missing script metadata, event order and duplicate-command prevention on native
 and WASM. ImGui tests cover console focus, history, completion, interaction
 replies and hotseat concealment. Mixed-peer tests prove that automation uses the
 ordinary protocol and preserves authority through reconnect/host transfer.
+
+Test the session API with local and scripted controllers, with transport disabled
+for local modes. Cover admission versus completion, stale bindings after handoff
+or load, pending choices, revocation without losing required replies, and human
+flags remaining independent of automation. Exercise classic AI's retained-state
+effects and human advice callers. Fake-network tests use isolated process/session
+contexts per peer and prove designated execution versus result application,
+including role changes; they do not assume every peer runs the single-player loop.
 
 For SQLite export, compare logical rows with the source query records, including
 numeric boundaries, slot holes, retained counters and stored/loaded differences.

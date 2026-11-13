@@ -3,9 +3,10 @@
 Status: roadmap for the [architecture](architecture.md), with an initial SDL3
 application shell and build/test infrastructure integrated. The repository also
 contains 65 algorithm specifications and three portable conformance vectors.
-Gameplay, save inspection/SQLite export tools, the in-game console, Lua user
-automation and the X02 runner are not implemented. Milestones below describe
-delivery gates, not completed compatibility claims.
+The session service/controller model, gameplay, save inspection/SQLite export
+tools, the in-game console, Lua user automation and the X02 runner are not
+implemented. Milestones below describe delivery gates, not completed compatibility
+claims.
 
 Deliver vertical slices through the portable game and graphical frontend while
 growing the same conformance corpus. Establish file/wire formats and external
@@ -17,9 +18,9 @@ later mechanics. Keep all four platform builds active from the first shell.
 | Milestone | Result | Depends on |
 | --- | --- | --- |
 | M0 | Cleanroom workflow, content inventory, build/test skeleton | Existing specs |
-| M1 | Portable state, arithmetic, fixtures, rule/file foundations and save inspection | M0 |
+| M1 | Portable state, session service/controller contracts, arithmetic, fixtures, rule/file foundations and save inspection | M0 |
 | M2 | SDL/ImGui shell, native menus, asset adapter on four platforms | M0; M1 interfaces |
-| M3 | Interactive map, bounded city/unit turn slice and command console | M1 + M2 |
+| M3 | Embedded single-player session, interactive map, bounded city/unit turn slice and command console | M1 + M2 |
 | M4 | Complete single-player mechanics/classic AI; initial Lua player automation | M3 |
 | M5 | Scenarios, editors, complete semantic UI and hotseat | M4; incremental work after M3 |
 | M6 | Original-compatible native multiplayer and browser bridge | M1 protocol foundations + M4/M5 integration |
@@ -45,6 +46,14 @@ decoded-record/query foundation; extend it to loaded and selected live snapshots
 with M3. SQLite remains a derived analysis output, with no core dependency and
 no requirement to keep a second live state store synchronized.
 
+Make `oc2_session` the [embedded session service](architecture.md#embedded-session-service).
+M1 establishes lifecycle/client contracts and independent participant/controller
+identities. M3 connects the frontend and headless drivers to the same local
+runtime; M4 schedules classic AI policies within it. M5 adds hotseat bindings
+and concealment; M6 completes the classic network mode/authority adapter. Local
+play needs no transport or separate server process. Network mode preserves
+per-operation executor assignments rather than moving all simulation to the host.
+
 ## Current implementation status
 
 The shell was integrated from `codex/sdl3-core` through `c01bcef`, preserving the
@@ -55,7 +64,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
 | M0 — partial | C++20/CMake targets, dependency archive/hash manifest, offline/download policy, desktop/headless/release/sanitizer/web presets, pinned clang-format policy/commands and staged commit hook, Catch2, ImGui automation, CI definitions for formatting and four-platform builds | X02 registry/coverage ledger, content and asset-format inventory, full compiler/platform execution evidence |
-| M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | C++ F01/F02/W01 state, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI with optional SQLite export, queries and semantic session continuations |
+| M1 — not implemented | Portable shell test executable also runs as WASM; this is test infrastructure only | C++ F01/F02/W01 state, randomness/checkpoints, X02 fixture execution, rules/save/wire codecs, save inspection CLI with optional SQLite export, scoped queries, SessionRuntime/controller contracts and continuations |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native desktop validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
@@ -133,7 +142,8 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 - Introduce `oc2_query` with owned records, stable ordering and provenance for
   file inspection and live-state queries. Establish observer/authority contexts
   and prove queries neither mutate retained state nor consume gameplay RNG.
-  Add graphical view models as consumers without sharing rendering types.
+  Expose live queries to graphical and other clients through scoped session
+  bindings; share value types without exposing mutable world state.
 - Add optional `oc2_export_sqlite` and `oc2 export ... --sqlite ...` for the
   supported stored-record domain. Gate it with `OC2_ENABLE_SQLITE_EXPORT`,
   default OFF, and pin SQLite when adding the implementation. Export a
@@ -141,12 +151,23 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
   scope and coverage metadata. Preserve identities, slots, retained values and
   exact integers; label unknown values and distinguish computed fields. Make
   export failure leave source files/state intact and no completed output claim.
+- Introduce `SessionRuntime` with local world/session ownership and an injected
+  F02 process context. Define lifecycle operations separately from participant
+  bindings, and distinguish civilization, participant, controller and optional
+  connection identities. Controller changes must not implicitly change the
+  effective human set. Give bindings explicit session/lifetime/access scope.
 - Define command/effect/interaction records and cooperative continuation APIs.
   Prove a fake decision can resume an operation, a callback can change a live
   read, and cancellation can retain an already-published effect.
   Add descriptor schemas for semantic names, typed arguments, access classes
   and help, plus correlated submission/pending/interaction/completion results.
   Keep descriptor parsing separate from the owning execution checks.
+- Define mode/authority adapter contracts for local sequencing and N01–N03
+  routing, with separate request-execution and resolved-result application
+  paths. Use direct C++ calls/owned queues for local clients and injected
+  services for headless drivers. Prove pending decisions, stale-binding rejection
+  and revocation without losing committed effects or required replies; do not
+  serialize local calls through a socket or replace the specified turn loops.
 - Implement N05 incremental framing plus N02 envelope/state-image primitives
   against fake streams. Schedule independently authored original-peer discovery
   and handshake captures as soon as these boundaries are available.
@@ -165,6 +186,10 @@ With SQLite export enabled, its logical rows agree with the source query records
 including holes, numeric boundaries and stale retained summaries. Schema/source
 metadata and failure/cancellation tests pass. Disabling export removes SQLite
 from configuration and linkage without disabling text/JSON inspection.
+Session contract tests distinguish acceptance from completion and reject stale
+or unauthorized client contexts. Independent virtual peers have isolated process
+contexts, while starting a second game in one process retains the specified F02
+state. These are foundation tests, not completed mode conformance.
 
 ## M2 — Prove the graphical and platform boundaries
 
@@ -204,11 +229,18 @@ for the chosen domain; keep unsupported mechanics visibly unavailable.
 
 - Select and move a unit, respect movement/zone/visibility rules, activate orders,
   found a city, assign workers, choose production/research, and end a turn.
+- Compose an embedded single-player runtime with lifecycle control and a human
+  participant binding. Route frontend, console and scripted test inputs through
+  its client API, including scoped queries and interaction replies. The frontend
+  must not own or directly mutate game state. Run the same slice headlessly with
+  transport disabled; no separate server process or loopback connection is needed.
 - Render the world and minimap from observer-filtered models. Open a city dialog
   whose controls invoke the same tested economy/production operations used by
   the headless session.
 - Grow F04's explicit phases and F05 setup around these mechanics. Exercise
   retained state and resume gates, not just a fresh-process happy path.
+  The mode adapter owns phase progression; controllers supply admitted decisions
+  rather than driving upkeep or independently advancing turns.
 - Save and reload the slice through F06. Continue after reload and compare its
   specified transformations. Keep replay checkpoints separate from classic saves.
 - Add the portable console parser and an ImGui console panel with help, queries,
@@ -239,6 +271,9 @@ and GUI actions agree for the supported player operations, including rejection,
 pending decisions and partial effects. Queries leave state and RNG unchanged;
 fogged information and stale identities cannot escape through console results
 or completion. Loaded-state inspection is reproducible for declared inputs.
+Local gameplay and pending decisions work with transport disabled on native and
+WASM builds. Session replacement invalidates old bindings and queued client
+inputs without leaking an earlier game's view or duplicating a completed action.
 
 ## M4 — Complete single-player mechanics and AI
 
@@ -258,6 +293,11 @@ Implement in dependency groups, with real parent/child integration in each:
 4. Implement A01 assessment/orchestration and A02–A08 policies against those
    mechanics. Preserve score formulas, scan consequences, scratch retention,
    candidate retries and tie rules. Do not substitute a generic strategy AI.
+   Associate policies with participants but execute them as engine operations
+   at the specified mode/phase boundaries. Test mutating assessment/production
+   advice, including human callers; preserve AI-specific admission and knowledge
+   rules. A controller abstraction must not force snapshot-only decisions, human
+   menu checks, per-AI threads or network connections.
 5. Complete spaceships, scoring, victory, retirement, history and Hall of Fame;
    connect semantic reports and end-game choices.
 
@@ -284,6 +324,8 @@ contracts, not on the completion of every classic AI policy.
   an example production policy using an authored fixture: observe own-city
   production completion, query current choices, submit a normal choice, wait
   for its result. Do not replace A02 or change automated opponents' decisions.
+  Attach automation to the existing human participant context and verify that
+  it neither changes human-control flags nor gains classic AI capabilities.
 - Implement task start/pause/cancel and waiting at declared session boundaries,
   stable event ordering, bounded queues/output and task diagnostics. Bound
   instructions, memory and host calls, including infinite-loop and allocation
@@ -320,6 +362,10 @@ Owners: S01–S04, N04, P01–P10; F03/F06 and the actual mutation owners.
   new drawing read-only. Retain gameplay-relevant classic view inputs.
 - Implement N04 roster, passwords, handoff, per-player views, save/resume and
   concealment. Test cached map/dialog/report information across two handoffs.
+  Keep one runtime/world and switch the frontend's participant binding only at
+  the prescribed handoff points. Revoke outgoing input access before exposing
+  the incoming view; test queued input and replies tagged with an old binding.
+  Preserve N04's distinct active human set, roster, actor and resume transitions.
 - Extend concealment to console history, output/completion caches and script
   observations. Suspend outgoing-player tasks and detach their subscriptions;
   resume only under that player's restored authority with current target checks.
@@ -350,12 +396,21 @@ Owners: N01–N05, with F04/F06, simulation, scenario, and P05 interaction joins
 - Complete sequential and simultaneous turns, per-operation authority, state
   sections/diffs/checksums, locks, deferred inputs/popups, barriers and clocks.
   Apply received outcomes exactly once and never reroll them.
+  Implement these paths behind the session mode/authority adapter, preserving
+  N03's distinct host/client loops. Keep controller and transport identities
+  separate; map to classic fields without a mandatory protocol extension.
+  Prove requests execute only on the designated peer and resolved results do
+  not reenter player-command execution. The logical service boundary does not
+  imply that the host owns every simulation operation.
 - Complete save/resume, running join/reconnect, disconnect recovery, and host
   transfer while operations are pending. Test both migration directions and
   failure prefixes, including required replies after dialog failure/timeout.
 - Run multiple cleanroom peers under a deterministic fake transport, then live
   original/cleanroom mixed sessions in both host roles. Replay captured transcripts
   for regression; retain live runs as a distinct interoperability requirement.
+  Give each simulated peer its own runtime and process context; exercise binding
+  and pending-interaction changes during disconnect/reconnect and host transfer.
+  No peer independently runs F04's single-player loop as a multiplayer substitute.
 - Exercise local console/script commands with original peers in both host roles.
   Verify ordinary N02 authority, request/result routing and exactly-once effects
   with no new wire fields or peer runtime requirement. Test stale authority,
@@ -442,9 +497,10 @@ The next implementation changes should build on the integrated shell:
 5. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
    expose stored-record queries and the inspection/validation/diff CLI.
    Build optional SQLite snapshot export on those same records and queries.
-6. Establish command descriptors, observer-filtered queries and correlated
-   results as real playable operations arrive; connect the console in M3 and
-   compare it with the graphical and headless callers.
+6. Establish the embedded session service, lifecycle and participant/controller
+   bindings, scoped queries, command descriptors and correlated results as real
+   playable operations arrive. Connect graphical/headless clients and the console
+   in M3; keep mode scheduling and authority behind the service boundary.
 7. Add the M4 Lua production-policy slice after those interfaces work, then
    close task persistence/hotseat and mixed-peer cases in M5/M6.
 
