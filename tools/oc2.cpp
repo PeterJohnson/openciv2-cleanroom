@@ -23,6 +23,8 @@ constexpr auto usage =
     "       oc2 content validate-preferences CONTENT_MANIFEST [--parent MANIFEST]... [--locale "
     "LOCALE] "
     "[--require-classic] [--json]\n"
+    "       oc2 content validate-names CONTENT_MANIFEST [--parent MANIFEST]... [--locale LOCALE] "
+    "[--require-classic] [--json]\n"
     "       oc2 export FILE --sqlite NEW_DATABASE [--json] (optional build feature)\n"
     "Options: --format save|map (default: .mp means map; all others mean save)\n"
     "         --view stored (loaded/live views are not implemented)\n"

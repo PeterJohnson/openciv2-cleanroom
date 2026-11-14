@@ -10,6 +10,8 @@ int run_content_command(std::span<const std::string> arguments) {
         return run_content_resolve(arguments.subspan(1), ContentValidation::rules);
     if (!arguments.empty() && arguments[0] == "validate-preferences")
         return run_content_resolve(arguments.subspan(1), ContentValidation::city_preferences);
+    if (!arguments.empty() && arguments[0] == "validate-names")
+        return run_content_resolve(arguments.subspan(1), ContentValidation::city_names);
     if (arguments.size() < 2 || arguments[0] != "validate")
         throw std::invalid_argument(
             "Usage: oc2 content validate GAMEPLAY_MANIFEST [--require-classic] [--json]");

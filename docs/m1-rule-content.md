@@ -107,8 +107,11 @@ twelve F03 tables into the same definitions, with a complete paired native/class
 fixture, ordered partial updates and caller-controlled preservation. Its logical
 string allocations do not yet bind original string IDs or live saved leaders.
 
-Remaining M1 work includes city names, full comparison/component admission,
-C01 adapters and conversion receipts, broader equivalent native/classic inputs,
+The [city-name providers](m1-city-names.md) now select by live plural name and
+preserve C01's counter, fallback, retry and publication behavior on both paths.
+
+Remaining M1 work includes full comparison/component admission,
+conversion receipts, broader equivalent native/classic inputs,
 retained native installation and session reload policies, owning mechanics,
 session admission and original interoperability. The
 [M1 completion audit](m1-validation.md) remains open.

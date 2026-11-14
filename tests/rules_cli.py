@@ -96,6 +96,70 @@ class RulesCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, code, result.stdout + result.stderr)
         return json.loads(result.stdout)
 
+    def city_names(self):
+        return {"format": "openciv2-city-names/1",
+                "civilizations": [{"pluralName": row["pluralName"], "cityNames": ["First", "First"]}
+                                  for row in self.rules["tribes"]], "fallbackNames": None}
+
+    def test_city_names_validate_complete_lists_with_receipts_and_no_source_changes(self):
+        names = self.city_names()
+        receipt = write(self.root / "names.json", names)
+        self.manifest["files"]["cityNames"] = receipt
+        self.publish()
+        before = {p: p.read_bytes() for p in self.root.iterdir() if p.is_file()}
+        report = self.invoke(operation="validate-names")
+        self.assertEqual(report["format"], "openciv2-city-names-validation/1")
+        self.assertEqual(report["scope"], "rules-gameplay-and-city-names")
+        self.assertTrue(report["cityNames"]["startingListsComplete"])
+        self.assertFalse(report["cityNames"]["fallbackAvailable"])
+        self.assertEqual(report["cityNames"]["fallbackCount"], 0)
+        self.assertEqual(report["cityNames"]["civilizations"][0],
+                         {"pluralName": "Café 0", "nameCount": 2})
+        source = next(f for f in report["files"] if f["role"] == "cityNames")
+        self.assertEqual(source["sha256"], receipt["sha256"])
+        self.assertEqual(before, {p: p.read_bytes() for p in self.root.iterdir() if p.is_file()})
+
+    def test_city_names_reject_missing_lists_ambiguity_and_unestablished_comparisons(self):
+        for fault in ("missing", "ambiguous", "comparison", "terminator"):
+            with self.subTest(fault=fault):
+                names = self.city_names()
+                if fault == "missing":
+                    names["civilizations"].pop()
+                elif fault == "ambiguous":
+                    names["civilizations"][1]["pluralName"] = "CAFé 0"
+                elif fault == "comparison":
+                    names["civilizations"][1]["pluralName"] = "CafÉ 0"
+                else:
+                    names["fallbackNames"] = ["@stop now"]
+                self.manifest["files"]["cityNames"] = write(self.root / "names.json", names)
+                self.publish()
+                report = self.invoke(code=1, operation="validate-names")
+                self.assertEqual(report["code"],
+                                 "comparison-unavailable" if fault == "comparison" else "invalid-content")
+                self.assertNotIn("cityNames", report)
+
+    def test_overlay_city_names_keep_missing_lists_and_empty_fallback_without_base_merging(self):
+        self.manifest["files"]["cityNames"] = write(self.root / "names.json", self.city_names())
+        self.publish()
+        overlay = self.root.parent / "name-overlay"
+        overlay.mkdir()
+        names = {"format": "openciv2-city-names/1", "civilizations": [], "fallbackNames": []}
+        receipt = write(overlay / "names.json", names)
+        child = {"format": "openciv2-content-pack/1", "id": "authored.name-overlay", "revision": 1,
+                 "profile": "classic-mge-5.4.0f", "defaultLocale": "en",
+                 "files": {"cityNames": receipt},
+                 "base": {"id": self.manifest["id"], "revision": self.manifest["revision"],
+                          "sha256": hashlib.sha256(self.path.read_bytes()).hexdigest()},
+                 "provenance": {"authors": ["Contract tests"], "license": "MIT", "notes": []}}
+        path = overlay / "content.json"
+        write(path, child)
+        report = self.invoke(path, "--parent", self.path, operation="validate-names")
+        self.assertFalse(report["cityNames"]["startingListsComplete"])
+        self.assertTrue(report["cityNames"]["fallbackAvailable"])
+        self.assertEqual(report["cityNames"]["civilizations"], [])
+        source = next(f for f in report["files"] if f["role"] == "cityNames")
+        self.assertEqual(source["owner"]["id"], "authored.name-overlay")
+
     def test_preferences_preserve_order_and_report_declaring_source(self):
         preferences = {"format": "openciv2-city-preferences/1",
                        "humanCityDefensePriority": "unchanged",

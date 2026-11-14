@@ -17,6 +17,8 @@ gameplay government advance references against fixed identities and native rules
 The [classic text/rule readers and city-preference validator](m1-classic-text.md)
 add ordered rule ingestion, preservation policies, paired native/classic rule
 checks, and preference admission/application through both paths.
+The [city-name providers](m1-city-names.md) add native list validation and shared
+C01 cursor/fallback/publication behavior with the classic text path.
 
 ## JSON and operand admission
 

@@ -1,6 +1,7 @@
 #include "content_command.hpp"
 #include "formats/content_pack.hpp"
 #include "formats/city_preferences.hpp"
+#include "formats/city_names.hpp"
 #include "formats/rules.hpp"
 #include "platform/content_files.hpp"
 #include <iostream>
@@ -30,9 +31,11 @@ jt::Json identity(const content::PackIdentity& value) {
 int run_content_resolve(std::span<const std::string> arguments, ContentValidation validation) {
     const bool validate_rules = validation != ContentValidation::selection;
     const bool validate_preferences = validation == ContentValidation::city_preferences;
+    const bool validate_names = validation == ContentValidation::city_names;
     if (arguments.empty())
         throw std::invalid_argument(
-            "Usage: oc2 content resolve|validate-rules|validate-preferences CONTENT_MANIFEST "
+            "Usage: oc2 content resolve|validate-rules|validate-preferences|validate-names "
+            "CONTENT_MANIFEST "
             "[--parent "
             "MANIFEST]... [--locale LOCALE] [--require-classic] [--json]");
     std::vector<std::string> parents;
@@ -53,9 +56,10 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
             throw std::invalid_argument("Unknown, repeated or incomplete content selection option");
     }
     jt::Json report;
-    report["format"] = jt::Json(validate_preferences ? "openciv2-city-preferences-validation/1"
-                                : validate_rules     ? "openciv2-rules-validation/1"
-                                                     : std::string(content::pack_resolver_version));
+    report["format"] = jt::Json(validate_names         ? "openciv2-city-names-validation/1"
+                                : validate_preferences ? "openciv2-city-preferences-validation/1"
+                                : validate_rules       ? "openciv2-rules-validation/1"
+                                                 : std::string(content::pack_resolver_version));
     int result = 0;
     try {
         const auto selected = mount(arguments[0]);
@@ -71,7 +75,13 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
                                          ? content::load_city_preferences(
                                                *pack, openciv::formats::classic::ascii_text_case())
                                          : nullptr;
-            const auto rules = preferences ? preferences->rules : content::load_rules(*pack);
+            const auto names =
+                validate_names
+                    ? content::load_city_names(*pack, openciv::formats::classic::ascii_text_case())
+                    : nullptr;
+            const auto rules = preferences ? preferences->rules
+                               : names     ? names->rules
+                                           : content::load_rules(*pack);
             const auto& definitions = rules->definitions;
             using openciv::state::CosmicParameter;
             report["status"] = jt::Json("validated");
@@ -85,6 +95,22 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
                     report["cityPreferences"]["buildSlots"].getArray().emplace_back(slot);
                 report["cityPreferences"]["comparison"] =
                     jt::Json("ascii-with-exact-byte-equality");
+            }
+            if (names) {
+                report["scope"] = jt::Json("rules-gameplay-and-city-names");
+                auto& values = report["cityNames"];
+                values["comparison"] = jt::Json("ascii-with-exact-byte-equality");
+                values["startingListsComplete"] = jt::Json(names->starting_lists_complete);
+                values["fallbackAvailable"] = jt::Json(names->lists.fallback.has_value());
+                values["fallbackCount"] = jt::Json(
+                    names->lists.fallback ? static_cast<int>(names->lists.fallback->size()) : 0);
+                values["civilizations"].setArray();
+                for (const auto& list : names->lists.civilizations) {
+                    jt::Json row;
+                    row["pluralName"] = jt::Json(list.plural.utf8);
+                    row["nameCount"] = jt::Json(static_cast<int>(list.names.size()));
+                    values["civilizations"].getArray().push_back(std::move(row));
+                }
             }
             report["rules"]["enabledAdvances"] = jt::Json(definitions.enabled_advance_count);
             report["rules"]["roadMovementMultiplier"] =
@@ -167,7 +193,13 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
         }
         report["limitations"].setArray();
         report["limitations"].getArray().emplace_back(
-            validate_preferences
+            validate_names
+                ? "Unestablished non-ASCII comparisons reject. Starting-list coverage is required "
+                  "for base packs and reported for overlays. Full classic export representability, "
+                  "preferences, text/events, world/media bytes, session and original-peer "
+                  "admission "
+                  "are not validated."
+            : validate_preferences
                 ? "Unestablished non-ASCII name comparisons reject. Full classic export "
                   "representability, city names, text/events, compatibility metadata, world/media "
                   "bytes, session and original-peer admission are not validated."
@@ -177,9 +209,10 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
                 : "Rule/text/event bodies, cross-references, world/media bytes, session and "
                   "original-peer admission are not validated.");
         if (!as_json)
-            std::cout << (validate_preferences ? "Validated city preferences and rules for "
-                          : validate_rules     ? "Validated rule definitions for "
-                                               : "Resolved content pack ")
+            std::cout << (validate_names         ? "Validated city names and rules for "
+                          : validate_preferences ? "Validated city preferences and rules for "
+                          : validate_rules       ? "Validated rule definitions for "
+                                                 : "Resolved content pack ")
                       << pack->manifests.back().pack.id << " revision "
                       << pack->manifests.back().pack.revision << '\n'
                       << "Locale: " << pack->selected_locale

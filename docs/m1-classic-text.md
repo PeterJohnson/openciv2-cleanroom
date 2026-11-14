@@ -164,8 +164,12 @@ receipts and collision/comparison diagnostics. These are specification-derived
 and regression checks, not new original-game observations or independently
 reviewed X02 fixtures. F03 is not yet registered with X02.
 
-Original string-ID bindings, retained native rule installation, city-name
-providers, the complete comparison profile, remaining native component admission,
+The [city-name providers](m1-city-names.md) now implement C01's ordered default
+naming through both paths, with shared counter/publication behavior and a native
+validation command.
+
+Original string-ID bindings, retained native rule installation, the complete
+comparison profile, remaining native component admission,
 conversion tools/receipts, session wiring and owning production consumers remain
 required. The table readers are ready for those callers; they do not implement
 them implicitly.
