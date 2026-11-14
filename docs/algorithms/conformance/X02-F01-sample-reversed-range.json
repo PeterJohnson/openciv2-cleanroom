@@ -1,7 +1,7 @@
 {
   "format": "openciv2-conformance/3",
   "id": "X02.F01.sample-reversed-range",
-  "revision": 1,
+  "revision": 2,
   "target": {
     "game": "Civilization II Multiplayer Gold Edition",
     "version": "5.4.0f patch 3",
@@ -21,7 +21,7 @@
     {
       "id": "X02",
       "file": "../X02-whole-game-conformance.md",
-      "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+      "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
     }
   ],
   "boundary": {

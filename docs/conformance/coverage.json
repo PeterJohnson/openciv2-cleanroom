@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 4,
+  "inventoryVersion": 5,
   "rows": [
     {
       "id": "F01.primaryModuloFromCode",
@@ -410,6 +410,44 @@
       "gaps": [
         "x02-general-runner"
       ]
+    },
+    {
+      "id": "F02.cityCalculationEntry",
+      "owner": "F02",
+      "operation": "F02.cityCalculationEntry",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#9-cache-and-mutation-contracts",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F02-game-state-and-invariants.md",
+          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "function": "F02.cityCalculationEntry",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "Absent/cached/full city entry with complete three-field mood workspace and explicitly supplied C03 child.",
+      "caseIds": [
+        "X02.F02.workspace-absent",
+        "X02.F02.workspace-cached",
+        "X02.F02.workspace-cached-wrap",
+        "X02.F02.workspace-publication",
+        "X02.F02.workspace-failure-output",
+        "X02.F02.workspace-reentry",
+        "X02.F02.workspace-unresolved",
+        "X02.F02.workspace-unresolved-after-reentry"
+      ],
+      "comparisonSurfaces": [
+        "return and full workspace",
+        "selection publication",
+        "ordered provider effects and nested real entries",
+        "unresolved prefix and completed-provider count"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": [
+        "x02-general-runner"
+      ]
     }
   ],
   "integrationFamilies": [
@@ -678,8 +716,8 @@
     {
       "id": "x02-general-runner",
       "milestone": "M1",
-      "domain": "Composite and stateful X02 fixtures beyond the thirteen registered F01/F02/W01 foundation operations.",
-      "knownPrefix": "The bounded runner executes pure mappings, token/reservation and geometry primitives, all four semantic F01 sampling laws in each domain, and policy v2 origin/position replay. Generic logical values are validated. Blob loading, providers/reentry, composite histories, safe-stop prefixes and projections remain unsupported; independent fixture review is pending.",
+      "domain": "Composite and stateful X02 fixtures beyond the fourteen registered F01/F02/W01 foundation operations.",
+      "knownPrefix": "The bounded runner executes pure mappings, token/reservation and geometry primitives, all four semantic F01 laws in each domain, policy v2 origin/position replay, and shared-city-workspace dispatch with an explicitly supplied C03 child. Ordered outputs, failures, observations, synchronous real-entry reentry and unresolved-result prefixes execute on native/WASM. Generic logical values are validated. Blob loading, other providers/queues, composite random histories, invalid-access safe stops and projections remain unsupported; independent fixture review is pending.",
       "closureEvidence": "Implement remaining owner state adapters, blob installation/hash resolution, scripted providers/callbacks, composite choice/replay histories, safe-stop prefixes and justified independence comparisons; obtain independent fixture review and attach bounded execution reports."
     },
     {

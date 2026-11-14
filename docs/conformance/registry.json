@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 4,
-  "scope": "65 specification families; thirteen registered foundation operations and ten logical state keys. Not an exhaustive operation or original-source inventory.",
+  "inventoryVersion": 5,
+  "scope": "65 specification families; fourteen registered foundation operations, thirteen logical state keys and one explicitly supplied child provider. Not an exhaustive operation or original-source inventory.",
   "specifications": [
     {
       "id": "A01",
@@ -78,7 +78,7 @@
       "path": "docs/algorithms/C03-city-economy-and-corruption.md",
       "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4",
       "specificationStatus": "specified",
-      "registrationStatus": "not-registered"
+      "registrationStatus": "partial"
     },
     {
       "id": "C04",
@@ -454,7 +454,7 @@
     {
       "id": "X02",
       "path": "docs/algorithms/X02-whole-game-conformance.md",
-      "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a",
+      "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     }
@@ -1070,6 +1070,54 @@
       ],
       "independenceClaims": [],
       "implementation": "src/base/random.hpp"
+    },
+    {
+      "id": "F02.cityCalculationEntry",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#9-cache-and-mutation-contracts",
+      "arguments": {
+        "city": "city-slot-or-null",
+        "full": "bool"
+      },
+      "result": "i32",
+      "reads": [
+        "F02.workspaceCity",
+        "F02.happyCount",
+        "F02.unhappyCount"
+      ],
+      "writes": [
+        "F02.workspaceCity",
+        "F02.happyCount",
+        "F02.unhappyCount"
+      ],
+      "preconditions": "Optional city slot in 0..255; all i32 retained mood counters. Supplied-child subsystem boundary; no city record or full C03 pipeline is installed.",
+      "callbacks": [
+        "F02.cityCalculationEntry"
+      ],
+      "suppliedChildren": [
+        "C03.fullCityRecalculation"
+      ],
+      "acceptedFaults": [
+        "unavailable supplied result"
+      ],
+      "partialEffects": [
+        "Full selection precedes child entry; every completed provider output and nested call remains visible on stop."
+      ],
+      "aliasing": "One shared workspace for parent and all nested entries. The request keeps its selected city separately from live workspaceCity.",
+      "stopBoundaries": [
+        "normal return",
+        "unresolved supplied result",
+        "unexpected input",
+        "harness budget"
+      ],
+      "invocation": "root; nested call = parent/deliver/<escaped-action-id>",
+      "events": [],
+      "dependencies": [],
+      "independenceClaims": [],
+      "eventSchema": "shared-workspace-script-v1",
+      "eventIdentity": "Call enter/return: <call>/enter or /return. Provider: <call>/pipeline/request or /return. Actions: <call>/action/<escaped-id>. Escape ~ as ~0 and / as ~1. Final root/exit, or root/prefix then root/stop. See tools/conformance_script.py for typed payload validation.",
+      "eventOrder": "Synchronous call nesting and the complete listed provider/action order; no independent pairs. Prefix stops omit unfinished returns.",
+      "implementation": "src/state/records.cpp"
     }
   ],
   "states": [
@@ -1194,14 +1242,56 @@
       "initialValue": "Explicit fixture context; no implicit reseed or policy fallback. Omitted in controlled-choice mode.",
       "publication": "Snapshot only after actual sampling; adapter reconstructs and verifies the final engine against its declared origin and position. Harness trace is separate.",
       "implementation": "src/base/random.hpp"
+    },
+    {
+      "id": "F02.workspaceCity",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#9-cache-and-mutation-contracts",
+      "valueType": "city-slot-or-null",
+      "lifetime": "retained shared operation workspace",
+      "collectionOrder": "scalar",
+      "publication": "Selection before full pipeline; mood outputs when supplied child writes. Cached calls do not select or refresh.",
+      "crossReferences": [
+        "F02.happyCount",
+        "F02.unhappyCount"
+      ],
+      "implementation": "src/state/records.hpp"
+    },
+    {
+      "id": "F02.happyCount",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#9-cache-and-mutation-contracts",
+      "valueType": "i32",
+      "lifetime": "retained shared operation workspace",
+      "collectionOrder": "scalar",
+      "publication": "Selection before full pipeline; mood outputs when supplied child writes. Cached calls do not select or refresh.",
+      "crossReferences": [
+        "F02.workspaceCity",
+        "F02.unhappyCount"
+      ],
+      "implementation": "src/state/records.hpp"
+    },
+    {
+      "id": "F02.unhappyCount",
+      "owner": "F02",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#9-cache-and-mutation-contracts",
+      "valueType": "i32",
+      "lifetime": "retained shared operation workspace",
+      "collectionOrder": "scalar",
+      "publication": "Selection before full pipeline; mood outputs when supplied child writes. Cached calls do not select or refresh.",
+      "crossReferences": [
+        "F02.workspaceCity",
+        "F02.happyCount"
+      ],
+      "implementation": "src/state/records.hpp"
     }
   ],
   "fixtures": [
     {
       "id": "X02.F01.equal-range",
-      "revision": 11,
+      "revision": 12,
       "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
-      "sha256": "078c418e131d2cf642709090e8157ac4fd22c3f9aefef58c90e26cea052e8431",
+      "sha256": "882a99ff2d771e92d3778b873cd89fff85d2ca12c33f6a59594a412fdf1a9a46",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1209,9 +1299,9 @@
     },
     {
       "id": "X02.F01.primary-modulo",
-      "revision": 10,
+      "revision": 11,
       "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
-      "sha256": "03f62f1b2e68ca29c680e022f26d3357ed1c69e280b3fe346d225652eb7a053b",
+      "sha256": "80e68bf392ddcd24628d81488b1e9e0730d2d7591a9f8dd402608d0a8b05364b",
       "operation": "F01.primaryModuloFromCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1219,9 +1309,9 @@
     },
     {
       "id": "X02.F01.wrapped-range",
-      "revision": 11,
+      "revision": 12,
       "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
-      "sha256": "d999aa6511004c53e3d3e56a372ba0b4347183b863179dc5ab7cc64744c86079",
+      "sha256": "0afc34f318dc0379e414f04dda189e57041266953dd8b8f6df421f49cbd509bc",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1229,9 +1319,9 @@
     },
     {
       "id": "X02.F02.unit-token-initial",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F02-unit-token-initial.json",
-      "sha256": "4f036cc7e55124096867b6af7db72528271bf5abe2e18a0e2640134608e72015",
+      "sha256": "558ad78aea99ed10c04a96d719b3a427662fa816a45cf6abf545f8af8d66ebb2",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1239,9 +1329,9 @@
     },
     {
       "id": "X02.F02.unit-token-wrap",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F02-unit-token-wrap.json",
-      "sha256": "b2622acaaf0c03ad005a140f2aa96c2443afb5f91caeb1bf6c0eb35057a8be90",
+      "sha256": "9ef6353edfa2b711333e44273bf5ca57237932533bc2d5f6ed3f9dba5288722a",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1249,9 +1339,9 @@
     },
     {
       "id": "X02.F02.unit-token-zero",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F02-unit-token-zero.json",
-      "sha256": "42bfe3ff39c6c26bcd2f682c96522a9538ad15d92e7f9cec890b6cef7025e2e7",
+      "sha256": "38494ae5a1049c42e722fc0a04929e9c8786ec6bf01f2d67e73c41f276a84967",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1259,9 +1349,9 @@
     },
     {
       "id": "X02.F02.city-token-wrap",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F02-city-token-wrap.json",
-      "sha256": "d8da36841399b6aa82d6ab9d32d64200b44db6eb7bdc443baceb64b0885d25df",
+      "sha256": "89df513dd7715728046571453c31c3c983b457088c03b70b2d59a1e32d442178",
       "operation": "F02.assignCityToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1269,9 +1359,9 @@
     },
     {
       "id": "X02.F02.unit-reserve-hole",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-hole.json",
-      "sha256": "077bc62da65599cce471322f715e9e31ad40d415bcf575f9a20fa211b346203e",
+      "sha256": "f6d9ff9589562b71b1bd736c80ac6d310e1245620d091192f5fe566d78d9ee7f",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1279,9 +1369,9 @@
     },
     {
       "id": "X02.F02.unit-reserve-extend",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-extend.json",
-      "sha256": "5bc5d9f7b8a375d84a7c0ca54badd79ee2a716b641b7bba798e1bf30d2b9ae06",
+      "sha256": "ef0fdcec598bb7f0b944bcfb35285691cef5c5583c2b094c09dd8b9deb7f0e0e",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1289,9 +1379,9 @@
     },
     {
       "id": "X02.F02.unit-reserve-military-limit",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
-      "sha256": "cf03a2471556f783e6c1a2164e39df7e3cc0dcfe3063a76c80419a9284f21f40",
+      "sha256": "3f836ca4828a7f5dc4f142f742b47eaa4d4c68c4deb3cc460ca8e98954c1cb64",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1299,9 +1389,9 @@
     },
     {
       "id": "X02.W01.wrap-far-positive",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-wrap-far-positive.json",
-      "sha256": "6d511944d0ac397fa519ca7b923aa8186e800deea793db6aaf2364817f903024",
+      "sha256": "01baa25e0a49b78085df7004bd1081e0b389407883665f922d855f3277cc9320",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1309,9 +1399,9 @@
     },
     {
       "id": "X02.W01.wrap-far-negative",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-wrap-far-negative.json",
-      "sha256": "6321e06ff921717d19625a87bec3793df252538e25d17cb8a6a765a52e2a0f49",
+      "sha256": "453e3643e573f16c93abeda9b3490e9854e774b992d4e4646712812774c7c231",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1319,9 +1409,9 @@
     },
     {
       "id": "X02.W01.wrap-flat",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-wrap-flat.json",
-      "sha256": "f07a4b3a9558a82afd25276de0bdcfc6d1fddcb376ec2a47b41660bd475c397f",
+      "sha256": "5235770fde76a4605c116b5c90ef9dcfb169c9655fb477c4007fa30d28faf300",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1329,9 +1419,9 @@
     },
     {
       "id": "X02.W01.step-seam",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-step-seam.json",
-      "sha256": "128fed0853e41bee50e38120a53761b259e13d48f2058d4df03eca725c5af4f2",
+      "sha256": "b048a397ea6608ee8858ea578358b7ce2b34b344e191b61970f9b7ee5d632efa",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1339,9 +1429,9 @@
     },
     {
       "id": "X02.W01.step-off-map",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-step-off-map.json",
-      "sha256": "924d1ecfe964b4c47e3b5e2047453a841d6bf7324fc710eee95e7b7478b32905",
+      "sha256": "31c4a18e8f9196985c491bb6600a06f3445fdacad09114ee83d9c415f1af3ec6",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1349,9 +1439,9 @@
     },
     {
       "id": "X02.W01.step-minimum",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-step-minimum.json",
-      "sha256": "32c3410ac82c1ac739a6ded9ba067327e2173a4cc0773110bdefac3243e6a49e",
+      "sha256": "07c130c3570d5b62bedf2d07487a3005af6074d3f64ed6dee3f22e30cbcd0893",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1359,9 +1449,9 @@
     },
     {
       "id": "X02.W01.weighted-off-map",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-weighted-off-map.json",
-      "sha256": "fac835b479d56d929345837939c63735f0cf1a02b3c8e737d72c493120386b3b",
+      "sha256": "4f5d770c963aed67e354a58c5aabf171b216686415dfb63f355a0aaf86ccf7b8",
       "operation": "W01.weightedDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1369,9 +1459,9 @@
     },
     {
       "id": "X02.W01.lookup-alias",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-lookup-alias.json",
-      "sha256": "3995ea83d08a2afdb9dea946b85efcd67d46802e73a6b3b194161d4ec1fbe4d3",
+      "sha256": "083046df9dd9ef9c57e0523a9a5408e840afb802b27c30c81715d822427a10a1",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1379,9 +1469,9 @@
     },
     {
       "id": "X02.W01.lookup-canonical",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-lookup-canonical.json",
-      "sha256": "c1871b740cae29c7aa18f47be181e9c18285a48fe02103c8b2477693946dc970",
+      "sha256": "173a352d5e06c952cd14073f36305d0515a8d8418a1384fde8136ecf09034ea7",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1389,9 +1479,9 @@
     },
     {
       "id": "X02.W01.lookup-miss",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-W01-lookup-miss.json",
-      "sha256": "691528bc518ecc7e451b8aef51ce3c45228915cc0606f4aa22f6a80dd7404eac",
+      "sha256": "37d42355b3b3076b2750090a460c656a515ed8b904d8caa74c6f1766de51b5e3",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1399,9 +1489,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-code",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-code.json",
-      "sha256": "2b847a7d9066dd6bcfbfcd87afede66a449a91ea6be1b5dd29d9a387f0fb8c3c",
+      "sha256": "081a4c35022436cbcdbf7fc0243054b5d57c7c2101d6f7b4254c21d822680be4",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1409,9 +1499,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-modulo",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-modulo.json",
-      "sha256": "d8bff19efae6ff703ed732b5a62b6f234703438b9fe563ef5239b93b826ccf05",
+      "sha256": "1b86987eab7c4d340c008f2daad8efb7d7daab50b5243775dc339b3e564574f4",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1419,9 +1509,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-unit",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-unit.json",
-      "sha256": "fec1cd867c835c59bd92c86f8dd9dd082c4d3d12e0a074c3d4d0daa5a0e13486",
+      "sha256": "b49f78cb434ee37c03246ae41551bde3df56715027bd5b7f7d8c4cd40d245e68",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1429,9 +1519,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-range",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-range.json",
-      "sha256": "32d5453137a0eae37820f5495aecec64f69d92f2b5040614e7907374d2dc48c4",
+      "sha256": "16f249ad8c792254fa182be6698987d7c0947bcd77b93ca0774cb56cf942004d",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1439,9 +1529,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-code",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-code.json",
-      "sha256": "efa45783a4729b7b4d6fb2cc7432dda14f81a38b8fd642a4867e8b5d0345d78f",
+      "sha256": "797430120a470613498299cbcda23d7c3bee3ac93613c4731d25e8aa9233130a",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1449,9 +1539,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-modulo",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-modulo.json",
-      "sha256": "df6a084a50a05b3722f9886d2be9e8e3142f90e568a1a2ca73dc00d564fbd7f1",
+      "sha256": "a33ddf64e3e21ac38181f013a1b067c54ff771269c400a4ca6c6ff4f38d74b91",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1459,9 +1549,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-unit",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-unit.json",
-      "sha256": "c9f5ddb5ed31e8e75764abb4630beee15e90904df369e6d84e83f312204cc572",
+      "sha256": "9422cc2ac6c08c8bd1ef484a72ecd2905f8e453e9a95c9612f582275ff562492",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1469,9 +1559,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-range",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-range.json",
-      "sha256": "582f8875b614b1b226f8ec30838cd9a789730f8d0ea29aead143672d85140b0f",
+      "sha256": "a6b270d7542358ec0eda55c767a34185e2a6547909a7c3fb7ff97e9c9d0ebce4",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1479,9 +1569,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-code",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-code.json",
-      "sha256": "0614d5a85bbcae780e88f511e49b149170917a4c032725d5dd4c20985ef7aaaf",
+      "sha256": "6202dc27a2d9888c370d1230b6d616859cb558fe2bf27dd15f95c01cf834fff3",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1489,9 +1579,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-modulo",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-modulo.json",
-      "sha256": "f698b1aad054f52c88f42b504599e4ad5bb8624473a89d67a30d068e0e5ce8b7",
+      "sha256": "1d352994191cc72863183122d0ece872541fad326b681649bc3b62d641781a56",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1499,9 +1589,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-unit",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-unit.json",
-      "sha256": "d74b5b94455c3cc4e54210f28dfb85d4c872b4be9546b4d115ed984324ec8a8e",
+      "sha256": "ad977e748ac88bc7d3e9443da2a9c5409810dd10aa9607e01489557a725c95c8",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1509,9 +1599,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-range",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-range.json",
-      "sha256": "577b9aac18148fe7371e39d82aa42b040ef636bad2b0efc5b66336ad85d6a58e",
+      "sha256": "69c2c30c54036626342a91cba7ce58e22aa15b251b6b02f93390a7af75a168a6",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1519,9 +1609,9 @@
     },
     {
       "id": "X02.F01.sample-large-divisor",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-large-divisor.json",
-      "sha256": "ce9b2141ebd493328841264bf4edfa9b112350813707f93be0097bcdbafda76e",
+      "sha256": "753545862e58d73d3108e45889a5de7846e0ea0cb74109042701217eeb1cac52",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1529,9 +1619,9 @@
     },
     {
       "id": "X02.F01.sample-singleton",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-singleton.json",
-      "sha256": "424ce5064ef051a56df9b20317af12cc1fff84d71f026b07cef03b7c27e6bbcf",
+      "sha256": "1ca37e82c6bc388355be12ce92b3bd30fe4c1c34777c4527067d325814974e6b",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1539,9 +1629,9 @@
     },
     {
       "id": "X02.F01.sample-equal-range",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-equal-range.json",
-      "sha256": "313a4c9125228793aca7c80218aa46efc9c5a29c87c3fa17888ecd89b28dbc03",
+      "sha256": "9aea7da2792e8d8ff3a984fff07e8be087c1877756728beac70f850d415df336",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1549,9 +1639,9 @@
     },
     {
       "id": "X02.F01.sample-reversed-range",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-reversed-range.json",
-      "sha256": "82b36c3c6133efe6af12eee1dd5c82f115c6af7c092428de619e7414612dcf71",
+      "sha256": "1b8a7b33cca97ad81492f1d19144aa901970b2f7425ceab870ed45808952ed3f",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1559,9 +1649,9 @@
     },
     {
       "id": "X02.F01.sample-wrapped-range",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
-      "sha256": "e520badc85751331664e364af60b919be8a0f780f54b826537d60078e9803156",
+      "sha256": "04b1981e810eb5be989bb84e62aa16f4f3e03f9651e3bf4d82a6c77b364b7126",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1569,9 +1659,9 @@
     },
     {
       "id": "X02.F01.sample-rounded-endpoint",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
-      "sha256": "620c1f6d8d6cc0bf20f4adcea470028d122f7a0981623e33930e9ad2ae680bde",
+      "sha256": "d25548497ed8197f8de74e9a12ea3ba211737a7c5a4bf048aecc7b51badb47d6",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1579,9 +1669,9 @@
     },
     {
       "id": "X02.F01.sample-zero-unit",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-zero-unit.json",
-      "sha256": "09d50bf7d950dc890f41ceb03f8519b5d3961a807a95931fd5822536f88cf606",
+      "sha256": "7358b52d0663ee86b15d3d3e2d296aa90ac1400873fcb18945db9dbdd7af8eb8",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1589,9 +1679,9 @@
     },
     {
       "id": "X02.F01.sample-replay-gameplay",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
-      "sha256": "bd4f1f2917d15aaf7cc91c040f98db41f8b757bf993e26ac425e4707db837fea",
+      "sha256": "7964955bfff0581fa4d270263549c2703b49bdfed42367cb144bb99e9f2ca41b",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -1599,9 +1689,9 @@
     },
     {
       "id": "X02.F01.sample-replay-presentation-content",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
-      "sha256": "2de7e553e4d8732b6477d0713e75adc8ee5471261800b360b89db36c4c7662b3",
+      "sha256": "ffcabd995bcd974728e5464c7b25dc7397b932b9e8af81e3650d9501d772a2ce",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -1609,9 +1699,9 @@
     },
     {
       "id": "X02.F01.sample-replay-cosmetic",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
-      "sha256": "cb28117f5c4b9cbd031638aa164ba3b82aa0b3eae6570a701e2e4ee49394ad30",
+      "sha256": "3458939c39532f8b0200b659afa9441745c1c8c6c30e2c160e95f6587102e871",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -1619,9 +1709,9 @@
     },
     {
       "id": "X02.F01.sample-replay-modulo",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
-      "sha256": "5ccb765d574e9f9e8f6453779932b1aba65298fbdf5ba040b34f1a00633074e4",
+      "sha256": "b4ee5c13626e1108ce5a82f29ec15d6547ac74830db0b9ebf758c29a2ac38500",
       "operation": "F01.primaryModulo",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -1629,9 +1719,9 @@
     },
     {
       "id": "X02.F01.sample-replay-unit",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
-      "sha256": "962fd9430dbabd69f8712309802664d51b59949864dac7ad6becf4678da36a54",
+      "sha256": "0fff786ccae942850960551bdba8960c09e6ffe7fe8cd0470230fdc4ab52ae97",
       "operation": "F01.secondaryUnit",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -1639,9 +1729,9 @@
     },
     {
       "id": "X02.F01.sample-replay-singleton",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
-      "sha256": "4a349b297c04958fd6c411ac5236a9b1fc21817e8f7e120f2b7b0b9c8f12b2a2",
+      "sha256": "94e4c660cddd6c1c6f1f6599ffd844c5233c5d7914823e9cc670e9395dc42343",
       "operation": "F01.primaryModulo",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -1649,13 +1739,115 @@
     },
     {
       "id": "X02.F01.sample-replay-equal-range",
-      "revision": 1,
+      "revision": 2,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
-      "sha256": "dc14aa774d75a30de1e36725ac01e1d766e36d27698283dd5e4199c859c96e16",
+      "sha256": "1687a8d96cbc0447894f38891dbd39a3eebee54f3f4c3826571e8f40456def19",
       "operation": "F01.secondaryRange",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
       "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-absent",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-absent.json",
+      "sha256": "bff0f6e590187e0f7ffcd80bbb89686d74b281bd9c89f7373518a1e9fcd63275",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-cached",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-cached.json",
+      "sha256": "f3254a742b8e4698de0d50e13ee84ec8583ae01b29c5b9ed1ab6b6b20309a69c",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-cached-wrap",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-cached-wrap.json",
+      "sha256": "f627f04d7b7ba60a91bef13caadf5dd4fb982797f961baf41e05187822f9de46",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-publication",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-publication.json",
+      "sha256": "443fed4110f2ae82c5f14295333ca8e15c89d209149473eb3304098a77248907",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-failure-output",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-failure-output.json",
+      "sha256": "729fea6f15667d42c5405ae9e458682ef9307e32fe617b6f60849282a2c3f0eb",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-reentry",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-reentry.json",
+      "sha256": "748566ec4426239c2b9605dc0e0dab97f82984c92a5867c397181054129705da",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-unresolved",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved.json",
+      "sha256": "ff46dae8e3ff782f0766d9f734f08f3f20c648f650080ab1ec8c0a011afa7ec9",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F02.workspace-unresolved-after-reentry",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved-after-reentry.json",
+      "sha256": "82aebfd71eeb29ec80395feeed0fcaba09dd777005be0319b77cd70363cbe9ff",
+      "operation": "F02.cityCalculationEntry",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    }
+  ],
+  "providers": [
+    {
+      "id": "C03.fullCityRecalculation",
+      "owner": "C03",
+      "specificationAnchor": "docs/algorithms/C03-city-economy-and-corruption.md#full-city-recalculation",
+      "role": "supplied-child",
+      "arguments": {
+        "city": "city-slot-or-null"
+      },
+      "result": "i32",
+      "outputs": [
+        "F02.workspaceCity",
+        "F02.happyCount",
+        "F02.unhappyCount"
+      ],
+      "callbacks": [
+        "F02.cityCalculationEntry"
+      ],
+      "implementation": null,
+      "limitations": "Only the F02 entry boundary is exercised. Callback schedule is deliberately supplied, not an assertion about normal C03 gameplay."
     }
   ]
 }

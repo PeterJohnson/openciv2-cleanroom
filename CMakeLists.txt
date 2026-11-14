@@ -174,10 +174,13 @@ if(BUILD_TESTING)
     target_sources(oc2_tests PRIVATE tests/sqlite_export_tests.cpp)
     target_link_libraries(oc2_tests PRIVATE oc2_export_sqlite oc2_sqlite)
   endif()
-  add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp tools/conformance_random.cpp)
+  add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp tools/conformance_random.cpp tools/conformance_script.cpp)
   target_link_libraries(oc2_conformance_adapter PRIVATE oc2_game oc2_options)
   include(cmake/ConformanceIdentity.cmake)
   if(EMSCRIPTEN)
+    # The scripted adapter permits 64 synchronous child entries. Reserve enough
+    # stack to reach its diagnostic guard in unoptimized Emscripten builds.
+    target_link_options(oc2_conformance_adapter PRIVATE -sSTACK_SIZE=1048576)
     # Activate emsdk first so its Node is on PATH (or provide an emulator).
     # A toolchain file alone, unlike emcmake, does not always select the runner.
     if(NOT CMAKE_CROSSCOMPILING_EMULATOR)
@@ -236,4 +239,8 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
     COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tests/conformance_sampler.py"
       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:oc2_conformance_adapter>)
   set_tests_properties(conformance_sampler_rejections PROPERTIES LABELS "conformance;headless" TIMEOUT 30)
+  add_test(NAME conformance_script_rejections
+    COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tests/conformance_script_adapter.py"
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:oc2_conformance_adapter>)
+  set_tests_properties(conformance_script_rejections PROPERTIES LABELS "conformance;headless" TIMEOUT 30)
 endif()

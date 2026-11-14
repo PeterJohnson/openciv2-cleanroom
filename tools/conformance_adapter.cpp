@@ -3,6 +3,7 @@
 #include "base/arithmetic.hpp"
 #include "conformance_identity.hpp"
 #include "conformance_random.hpp"
+#include "conformance_script.hpp"
 #include "state/identities.hpp"
 #include "world/geometry.hpp"
 #include <array>
@@ -52,6 +53,9 @@ int main(int argc, char** argv) {
         if (argc < 2)
             throw std::invalid_argument("Expected a registered operation and decimal arguments");
         const std::string_view operation = argv[1];
+        if (openciv::conformance::run_script(operation,
+                                             {argv + 2, static_cast<std::size_t>(argc - 2)}))
+            return 0;
         if (openciv::conformance::run_random(operation,
                                              {argv + 2, static_cast<std::size_t>(argc - 2)}))
             return 0;

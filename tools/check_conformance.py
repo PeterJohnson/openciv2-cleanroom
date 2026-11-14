@@ -82,7 +82,9 @@ def validate(root=ROOT):
 
     operations = indexed(registry["operations"], "operation")
     states = indexed(registry["states"], "state")
-    for row in [*operations.values(), *states.values()]:
+    providers = indexed(registry.get("providers", []), "provider")
+    require(not (providers.keys() & operations.keys()), "supplied provider cannot also claim an implemented operation")
+    for row in [*operations.values(), *states.values(), *providers.values()]:
         require(row["owner"] in specs and row["id"].startswith(row["owner"] + "."), "invalid owner")
         require(row["specificationAnchor"].startswith(specs[row["owner"]]["path"] + "#"),
                 "anchor does not belong to owner")
@@ -95,6 +97,8 @@ def validate(root=ROOT):
         require(set(state["crossReferences"]) <= states.keys(), "unknown state cross reference")
     for op in operations.values():
         require(set(op["reads"] + op["writes"]) <= states.keys(), "unknown state closure")
+        require(set(op["suppliedChildren"]) <= providers.keys(), "unknown supplied child")
+        require(set(op["callbacks"]) <= operations.keys(), "unknown callback")
         for field in ("arguments", "result", "preconditions", "callbacks", "suppliedChildren",
                       "acceptedFaults", "partialEffects", "aliasing", "stopBoundaries",
                       "invocation", "events", "dependencies", "independenceClaims"):
@@ -107,6 +111,12 @@ def validate(root=ROOT):
             ready = {e for e in remaining if not any(b == e and a in remaining for a, b in edges)}
             require(ready, "cyclic event dependencies")
             remaining -= ready
+    for provider in providers.values():
+        require(provider["role"] == "supplied-child" and provider["implementation"] is None,
+                "supplied child must not claim a gameplay implementation")
+        require(set(provider["outputs"]) <= states.keys() and set(provider["callbacks"]) <= operations.keys(),
+                "unknown provider output/callback")
+        require(provider["arguments"] and provider["result"] and provider["limitations"], "incomplete provider contract")
 
     fixtures = indexed(registry["fixtures"], "fixture")
     actual_files = {p.relative_to(root).as_posix() for p in (root / "docs/algorithms/conformance").glob("*.json")}
@@ -120,8 +130,10 @@ def validate(root=ROOT):
         require(item["operation"] in operations, "unregistered fixture operation")
         op = operations[item["operation"]]
         require(fixture["boundary"]["operation"] == op["id"], "fixture operation mismatch")
-        require({k: v["$type"] for k, v in fixture["boundary"]["arguments"].items()} == op["arguments"],
-                "fixture argument contract mismatch")
+        arguments = fixture["boundary"]["arguments"]
+        require(arguments.keys() == op["arguments"].keys() and all(
+            v["$type"] in ({"u16", "null"} if op["arguments"][k] == "city-slot-or-null" else {op["arguments"][k]})
+            for k, v in arguments.items()), "fixture argument contract mismatch")
         for spec in fixture["specifications"]:
             require(spec["id"] in specs and spec["sha256"] == specs[spec["id"]]["sha256"], "fixture spec hash mismatch")
             require((path.parent / spec["file"]).resolve() == (root / specs[spec["id"]]["path"]).resolve(),

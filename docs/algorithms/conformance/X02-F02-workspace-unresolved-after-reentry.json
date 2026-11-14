@@ -1,0 +1,662 @@
+{
+  "format": "openciv2-conformance/3",
+  "id": "X02.F02.workspace-unresolved-after-reentry",
+  "revision": 1,
+  "target": {
+    "game": "Civilization II Multiplayer Gold Edition",
+    "version": "5.4.0f patch 3",
+    "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+  },
+  "specifications": [
+    {
+      "id": "F01",
+      "file": "../F01-determinism-and-arithmetic.md",
+      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+    },
+    {
+      "id": "F02",
+      "file": "../F02-game-state-and-invariants.md",
+      "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+    },
+    {
+      "id": "C03",
+      "file": "../C03-city-economy-and-corruption.md",
+      "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+    },
+    {
+      "id": "X01",
+      "file": "../X01-classic-compatibility-contract.md",
+      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+    },
+    {
+      "id": "X02",
+      "file": "../X02-whole-game-conformance.md",
+      "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+    }
+  ],
+  "boundary": {
+    "level": "subsystem",
+    "operation": "F02.cityCalculationEntry",
+    "start": "shared city workspace entry with supplied pipeline",
+    "stop": "normal return or diagnostic stop with complete workspace snapshot",
+    "arguments": {
+      "city": {
+        "$type": "u16",
+        "value": "3"
+      },
+      "full": {
+        "$type": "bool",
+        "value": true
+      }
+    },
+    "suppliedChildren": [
+      "C03.fullCityRecalculation"
+    ]
+  },
+  "profile": {
+    "domain": "accepted-off-nominal",
+    "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+    "restrictions": [],
+    "deviations": []
+  },
+  "entry": {
+    "state": {
+      "F02.workspaceCity": {
+        "$type": "u16",
+        "value": "4"
+      },
+      "F02.happyCount": {
+        "$type": "i32",
+        "value": "99"
+      },
+      "F02.unhappyCount": {
+        "$type": "i32",
+        "value": "7"
+      }
+    },
+    "retainedInputs": [],
+    "blobs": []
+  },
+  "randomness": {
+    "mode": "controlled-choices",
+    "policy": null,
+    "contexts": {},
+    "choices": []
+  },
+  "environment": {
+    "protocol": "scripted-v1",
+    "inputs": [
+      {
+        "id": "root/pipeline",
+        "request": "C03.fullCityRecalculation",
+        "arguments": {
+          "city": {
+            "$type": "u16",
+            "value": "3"
+          }
+        },
+        "actions": [
+          {
+            "id": "happy",
+            "kind": "output",
+            "target": {
+              "stateKey": "F02.happyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "5"
+            }
+          },
+          {
+            "id": "unhappy",
+            "kind": "output",
+            "target": {
+              "stateKey": "F02.unhappyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "2"
+            }
+          },
+          {
+            "id": "cached",
+            "kind": "deliver",
+            "handler": "F02.cityCalculationEntry",
+            "arguments": {
+              "city": {
+                "$type": "u16",
+                "value": "9"
+              },
+              "full": {
+                "$type": "bool",
+                "value": false
+              }
+            }
+          },
+          {
+            "id": "full",
+            "kind": "deliver",
+            "handler": "F02.cityCalculationEntry",
+            "arguments": {
+              "city": {
+                "$type": "u16",
+                "value": "0"
+              },
+              "full": {
+                "$type": "bool",
+                "value": true
+              }
+            }
+          },
+          {
+            "id": "later",
+            "kind": "output",
+            "target": {
+              "stateKey": "F02.unhappyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "5"
+            }
+          },
+          {
+            "id": "live",
+            "kind": "observe",
+            "label": "after nested call"
+          }
+        ],
+        "result": {
+          "$type": "unavailable",
+          "reason": "Pipeline return not supplied for this bounded observation"
+        }
+      },
+      {
+        "id": "root/deliver/full/pipeline",
+        "request": "C03.fullCityRecalculation",
+        "arguments": {
+          "city": {
+            "$type": "u16",
+            "value": "0"
+          }
+        },
+        "actions": [
+          {
+            "id": "selected",
+            "kind": "observe",
+            "label": "nested selection"
+          },
+          {
+            "id": "happy",
+            "kind": "output",
+            "target": {
+              "stateKey": "F02.happyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "20"
+            }
+          },
+          {
+            "id": "unhappy",
+            "kind": "output",
+            "target": {
+              "stateKey": "F02.unhappyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "4"
+            }
+          }
+        ],
+        "result": {
+          "$type": "i32",
+          "value": "16"
+        }
+      }
+    ],
+    "unexpected": "fail"
+  },
+  "expected": {
+    "outcome": "unresolved-input",
+    "result": {
+      "$type": "null"
+    },
+    "state": {
+      "F02.workspaceCity": {
+        "$type": "u16",
+        "value": "0"
+      },
+      "F02.happyCount": {
+        "$type": "i32",
+        "value": "20"
+      },
+      "F02.unhappyCount": {
+        "$type": "i32",
+        "value": "5"
+      }
+    },
+    "trace": [
+      {
+        "seq": 0,
+        "id": "root/enter",
+        "kind": "enter",
+        "call": "root",
+        "payload": {
+          "operation": "F02.cityCalculationEntry",
+          "parent": null,
+          "arguments": {
+            "city": {
+              "$type": "u16",
+              "value": "3"
+            },
+            "full": {
+              "$type": "bool",
+              "value": true
+            }
+          }
+        }
+      },
+      {
+        "seq": 1,
+        "id": "root/pipeline/request",
+        "kind": "provider",
+        "call": "root",
+        "payload": {
+          "stage": "request",
+          "id": "root/pipeline",
+          "operation": "C03.fullCityRecalculation",
+          "arguments": {
+            "city": {
+              "$type": "u16",
+              "value": "3"
+            }
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "id": "root/action/happy",
+        "kind": "effect",
+        "call": "root",
+        "payload": {
+          "name": "provider.output",
+          "values": {
+            "target": {
+              "$type": "text",
+              "value": "F02.happyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "5"
+            }
+          }
+        }
+      },
+      {
+        "seq": 3,
+        "id": "root/action/unhappy",
+        "kind": "effect",
+        "call": "root",
+        "payload": {
+          "name": "provider.output",
+          "values": {
+            "target": {
+              "$type": "text",
+              "value": "F02.unhappyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "2"
+            }
+          }
+        }
+      },
+      {
+        "seq": 4,
+        "id": "root/deliver/cached/enter",
+        "kind": "enter",
+        "call": "root/deliver/cached",
+        "payload": {
+          "operation": "F02.cityCalculationEntry",
+          "parent": "root",
+          "arguments": {
+            "city": {
+              "$type": "u16",
+              "value": "9"
+            },
+            "full": {
+              "$type": "bool",
+              "value": false
+            }
+          }
+        }
+      },
+      {
+        "seq": 5,
+        "id": "root/deliver/cached/return",
+        "kind": "return",
+        "call": "root/deliver/cached",
+        "payload": {
+          "result": {
+            "$type": "i32",
+            "value": "3"
+          }
+        }
+      },
+      {
+        "seq": 6,
+        "id": "root/deliver/full/enter",
+        "kind": "enter",
+        "call": "root/deliver/full",
+        "payload": {
+          "operation": "F02.cityCalculationEntry",
+          "parent": "root",
+          "arguments": {
+            "city": {
+              "$type": "u16",
+              "value": "0"
+            },
+            "full": {
+              "$type": "bool",
+              "value": true
+            }
+          }
+        }
+      },
+      {
+        "seq": 7,
+        "id": "root/deliver/full/pipeline/request",
+        "kind": "provider",
+        "call": "root/deliver/full",
+        "payload": {
+          "stage": "request",
+          "id": "root/deliver/full/pipeline",
+          "operation": "C03.fullCityRecalculation",
+          "arguments": {
+            "city": {
+              "$type": "u16",
+              "value": "0"
+            }
+          }
+        }
+      },
+      {
+        "seq": 8,
+        "id": "root/deliver/full/action/selected",
+        "kind": "snapshot",
+        "call": "root/deliver/full",
+        "payload": {
+          "label": "nested selection",
+          "state": {
+            "F02.workspaceCity": {
+              "$type": "u16",
+              "value": "0"
+            },
+            "F02.happyCount": {
+              "$type": "i32",
+              "value": "5"
+            },
+            "F02.unhappyCount": {
+              "$type": "i32",
+              "value": "2"
+            }
+          }
+        }
+      },
+      {
+        "seq": 9,
+        "id": "root/deliver/full/action/happy",
+        "kind": "effect",
+        "call": "root/deliver/full",
+        "payload": {
+          "name": "provider.output",
+          "values": {
+            "target": {
+              "$type": "text",
+              "value": "F02.happyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "20"
+            }
+          }
+        }
+      },
+      {
+        "seq": 10,
+        "id": "root/deliver/full/action/unhappy",
+        "kind": "effect",
+        "call": "root/deliver/full",
+        "payload": {
+          "name": "provider.output",
+          "values": {
+            "target": {
+              "$type": "text",
+              "value": "F02.unhappyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "4"
+            }
+          }
+        }
+      },
+      {
+        "seq": 11,
+        "id": "root/deliver/full/pipeline/return",
+        "kind": "provider",
+        "call": "root/deliver/full",
+        "payload": {
+          "stage": "return",
+          "id": "root/deliver/full/pipeline",
+          "result": {
+            "$type": "i32",
+            "value": "16"
+          }
+        }
+      },
+      {
+        "seq": 12,
+        "id": "root/deliver/full/return",
+        "kind": "return",
+        "call": "root/deliver/full",
+        "payload": {
+          "result": {
+            "$type": "i32",
+            "value": "16"
+          }
+        }
+      },
+      {
+        "seq": 13,
+        "id": "root/action/later",
+        "kind": "effect",
+        "call": "root",
+        "payload": {
+          "name": "provider.output",
+          "values": {
+            "target": {
+              "$type": "text",
+              "value": "F02.unhappyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "5"
+            }
+          }
+        }
+      },
+      {
+        "seq": 14,
+        "id": "root/action/live",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "after nested call",
+          "state": {
+            "F02.workspaceCity": {
+              "$type": "u16",
+              "value": "0"
+            },
+            "F02.happyCount": {
+              "$type": "i32",
+              "value": "20"
+            },
+            "F02.unhappyCount": {
+              "$type": "i32",
+              "value": "5"
+            }
+          }
+        }
+      },
+      {
+        "seq": 15,
+        "id": "root/prefix",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "stop-prefix",
+          "state": {
+            "F02.workspaceCity": {
+              "$type": "u16",
+              "value": "0"
+            },
+            "F02.happyCount": {
+              "$type": "i32",
+              "value": "20"
+            },
+            "F02.unhappyCount": {
+              "$type": "i32",
+              "value": "5"
+            }
+          }
+        }
+      },
+      {
+        "seq": 16,
+        "id": "root/stop",
+        "kind": "stop",
+        "call": "root",
+        "payload": {
+          "category": "unresolved-input",
+          "boundary": "root/pipeline/return",
+          "reason": "Pipeline return not supplied for this bounded observation",
+          "completedInputs": 1,
+          "snapshot": "root/prefix"
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "stateScope": "complete-boundary",
+    "traceKinds": [
+      "enter",
+      "provider",
+      "effect",
+      "return",
+      "snapshot",
+      "stop"
+    ],
+    "exclusions": [],
+    "normalizations": [],
+    "order": {
+      "before": [
+        [
+          "root/enter",
+          "root/pipeline/request"
+        ],
+        [
+          "root/pipeline/request",
+          "root/action/happy"
+        ],
+        [
+          "root/action/happy",
+          "root/action/unhappy"
+        ],
+        [
+          "root/action/unhappy",
+          "root/deliver/cached/enter"
+        ],
+        [
+          "root/deliver/cached/enter",
+          "root/deliver/cached/return"
+        ],
+        [
+          "root/deliver/cached/return",
+          "root/deliver/full/enter"
+        ],
+        [
+          "root/deliver/full/enter",
+          "root/deliver/full/pipeline/request"
+        ],
+        [
+          "root/deliver/full/pipeline/request",
+          "root/deliver/full/action/selected"
+        ],
+        [
+          "root/deliver/full/action/selected",
+          "root/deliver/full/action/happy"
+        ],
+        [
+          "root/deliver/full/action/happy",
+          "root/deliver/full/action/unhappy"
+        ],
+        [
+          "root/deliver/full/action/unhappy",
+          "root/deliver/full/pipeline/return"
+        ],
+        [
+          "root/deliver/full/pipeline/return",
+          "root/deliver/full/return"
+        ],
+        [
+          "root/deliver/full/return",
+          "root/action/later"
+        ],
+        [
+          "root/action/later",
+          "root/action/live"
+        ],
+        [
+          "root/action/live",
+          "root/prefix"
+        ],
+        [
+          "root/prefix",
+          "root/stop"
+        ]
+      ],
+      "independent": []
+    }
+  },
+  "evidence": {
+    "kind": "specification-vector",
+    "sources": [
+      {
+        "file": "../F02-game-state-and-invariants.md",
+        "section": "9-cache-and-mutation-contracts",
+        "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+      },
+      {
+        "file": "../C03-city-economy-and-corruption.md",
+        "section": "full-city-recalculation",
+        "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+      },
+      {
+        "file": "../X02-whole-game-conformance.md",
+        "section": "4-ordered-environment-inputs-and-reentry",
+        "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+      }
+    ],
+    "limitations": [
+      "One nested provider completed while the outer provider remains suspended. The prefix includes subsequent outer output.",
+      "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
+      "Authored from repository behavioral contracts; not an original-game capture or independent review."
+    ]
+  },
+  "limits": {
+    "events": 128,
+    "providerRequests": 16,
+    "hostMilliseconds": 5000
+  }
+}

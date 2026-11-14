@@ -7,7 +7,7 @@ the native `oc2` CLI; the Linux/WASM evidence below describes the earlier slices
 Implemented foundations include F01 numeric
 primitives and isolated random contexts in standard-library-only `oc2_base`,
 F02 entity records/pools and W01 map foundations in `oc2_game`, initial F06 codecs
-in `oc2_formats`, and a bounded developer runner for thirteen registered X02 operations. No reconstruction
+in `oc2_formats`, and a bounded developer runner for fourteen registered X02 operations. No reconstruction
 source, legacy harness, original executable or asset checkout is a code input.
 
 ## Implemented boundary
@@ -45,10 +45,11 @@ source, legacy harness, original executable or asset checkout is a code input.
   The [record/codec handoff](m1-windows-handoff.md) documents the implemented
   boundary, external original-map comparisons and remaining save/session work.
 
-The thirteen registered adapters produce actual entry/return/exit traces and
-conditional random events for the four semantic sampling operations.
+The fourteen registered adapters produce actual entry/return/exit traces,
+conditional random events for the four semantic sampling operations, and ordered
+provider/reentry/stop traces for F02's shared workspace entry with a supplied C03 child.
 `oc2_conformance_adapter` is a test executable, not a save-inspection CLI or game
-console. It receives only operation names and canonical decimal arguments; it
+console. It receives operation names and canonical typed input encodings; it
 never reads expected results. C++ implementations are identical under native
 and Emscripten builds.
 
@@ -185,14 +186,15 @@ The game library, ordinary builds and Catch2 tests have no Python dependency.
 The driver obtains actual operation results from C++; it separately validates
 supplied choice codes/results against F01 before execution.
 
-The `f01-f02-w01-random-v2` scope validates exact X02 v3 structure, target/specification
+The `f01-f02-w01-script-v3` scope validates exact X02 v3 structure, target/specification
 hashes and evidence anchors, registered argument types/preconditions and the exact
 scalar/ordered-array state closure, canonical integers, typed booleans, mandatory trace identities
 and dependencies. It compares typed results, absence and complete registered state,
 matches events by identity, and checks chronological dependency edges. Unknown fields, duplicate keys,
 stale pins, omitted edges and unconsumed declared inputs cannot produce a pass.
 Extensions at the fixture root are metadata only. The adapter subprocess obeys
-the fixture's host-time watchdog; insufficient event budgets fail before entry.
+the fixture's host-time watchdog. Leaf event budgets are checked before entry;
+the scripted boundary retains an actual prefix when an execution budget is reached.
 
 The four semantic F01 adapters execute keyed choice tapes and generated policy v2
 replay in all three ownership domains. They validate typed codes/results and
@@ -201,12 +203,21 @@ Replay compares the complete registered origin/position context, with exact poli
 file identity and a final-engine reconstruction check. See the
 [replay schema and its linear restoration cost](random-policy.md#portable-fixture-replay-contexts).
 
-Unregistered state types/blobs, supplied children, provider/reentry scripts,
+F02 shared-city-workspace dispatch supports ordered supplied-child output,
+observation, failure and synchronous delivery actions. Nested calls use the real
+F02 entry and one live workspace. Missing child results stop at consumption with
+retained effects and no invented returns. Eight authored specification vectors
+exercise these boundaries, including cached signed32 wrap and slot-zero selection.
+The C03 pipeline is explicitly supplied, not implemented. Its normal reentry
+schedule is not established by these cases. See the
+[script contract and harness limits](conformance/README.md).
+
+Unregistered state types/blobs, other supplied-child/provider boundaries, queues,
 legacy-reference fixtures, projections/normalizations,
-independence declarations and non-return outcomes are explicitly unsupported.
+independence declarations and invalid-access safe-stop outcomes remain unsupported.
 They are not silently discarded or treated as successful comparisons. General
 logical-value validation supports every scalar tag and nested records/arrays,
-but executing additional value closures, blob loading, stop-prefix capture and
+but executing additional value closures, blob loading, broader stop-prefix capture and
 the other features remain `x02-general-runner` work. F01 code arguments in the three original vectors are controlled inputs,
 not seeds or a test of PRNG quality.
 
@@ -222,7 +233,10 @@ implementation revision plus exact source hashes and dirty status, adapter
 binary hashes, build identity, actual traces, consumption, comparison scope,
 explicit randomness/policy inputs, limits and first mismatch. The original twenty
 fixture expectations remain unchanged; 26 new sampler cases include nineteen
-specification vectors and seven standard-engine policy regression vectors. Retained
+specification vectors and seven standard-engine policy regression vectors. Eight
+additional workspace vectors bring the total to 54. The X02 action/stop schema
+clarification advances existing fixture revisions and pins without changing their
+expected results. Retained
 [native](conformance/reports/f01-native.json) and
 [WASM](conformance/reports/f01-wasm.json) reports describe the tested working-tree
 sources by hash; their base commit is not a claim that uncommitted code was in

@@ -2,8 +2,9 @@
 """Execute bounded F01/F02/W01 foundation operations from X02 v3 through C++.
 
 Python is a developer-only host driver. It validates supplied sampling laws but
-gets actual operation results from C++; expected results never enter the adapter. Unsupported case features
-fail explicitly; this is not yet the general composite/provider/reentry runner.
+gets actual operation results from C++; expected results never enter the adapter.
+F02 city dispatch supports scripted supplied-child inputs and synchronous reentry.
+Other composite/provider boundaries fail explicitly until registered.
 """
 import argparse
 from datetime import datetime, timezone
@@ -17,6 +18,7 @@ import sys
 import check_conformance as inventory
 import conformance_random as randomness
 import conformance_values as logical
+import conformance_script as scripted
 
 ROOT = Path(__file__).resolve().parents[1]
 OPERATIONS = {
@@ -32,7 +34,8 @@ OPERATIONS = {
 }
 OPERATIONS.update({operation: {"domain": "text", **schema}
                    for operation, (_, schema) in randomness.SAMPLERS.items()})
-SCOPE = "f01-f02-w01-random-v2"
+OPERATIONS[scripted.OPERATION] = scripted.ARGUMENTS
+SCOPE = "f01-f02-w01-script-v3"
 TOKEN_STATE = {"F02.nextUnitToken": "u32", "F02.nextCityToken": "u32"}
 RESERVATION_STATE = {"F02.unitEnd": "u32", "F02.unitTokenScan": "u32[]",
                      "F02.militaryCounts": "i16[]", "F02.effectiveHumanSet": "u8"}
@@ -46,9 +49,12 @@ RESULTS = {op: ("unit-slot-or-null" if op == "F02.reserveUnitSlot" else
                 "tile-index-or-null" if op == "W01.tileIndex" else
                 "u32" if op.startswith("F02.") else "i32") for op in OPERATIONS}
 RESULTS["F01.secondaryUnit"] = "f64"
+RESULTS[scripted.OPERATION] = "i32"
+STATES[scripted.OPERATION] = scripted.STATES
 WRITES = {op: (["F02.nextUnitToken"] if op == "F02.assignUnitToken" else
                ["F02.nextCityToken"] if op == "F02.assignCityToken" else
                ["F02.unitEnd"] if op == "F02.reserveUnitSlot" else []) for op in OPERATIONS}
+WRITES[scripted.OPERATION] = list(scripted.STATES)
 TARGET = {"game": "Civilization II Multiplayer Gold Edition", "version": "5.4.0f patch 3",
           "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"}
 EVENTS = {"root.enter": "enter", "root.return": "return", "root.exit": "snapshot"}
@@ -61,9 +67,12 @@ ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake
                    "src/state/records.hpp", "src/state/records.cpp",
                    "src/world/geometry.hpp", "src/world/geometry.cpp",
                    "src/world/map.hpp", "src/world/map.cpp",
-                   "tools/conformance_adapter.cpp", "tools/conformance_random.hpp", "tools/conformance_random.cpp")
+                   "tools/conformance_adapter.cpp", "tools/conformance_io.hpp",
+                   "tools/conformance_random.hpp", "tools/conformance_random.cpp",
+                   "tools/conformance_script.hpp", "tools/conformance_script.cpp")
 RUNNER_SOURCES = ("tools/run_conformance.py", "tools/check_conformance.py",
-                  "tools/conformance_values.py", "tools/conformance_random.py", randomness.POLICY_FILE)
+                  "tools/conformance_values.py", "tools/conformance_random.py",
+                  "tools/conformance_script.py", randomness.POLICY_FILE)
 SOURCES = ADAPTER_SOURCES + RUNNER_SOURCES
 
 
@@ -110,6 +119,8 @@ def integer(value, kind):
 def state_values(state, operation, scan_length=None, case=None):
     """Exact registered closure; arrays preserve every supplied slot in order."""
     require(isinstance(state, dict), "state must be an object")
+    if operation == scripted.OPERATION:
+        return scripted.state_values(state)
     if operation in randomness.SAMPLERS:
         replay = case["randomness"]["mode"] == "implementation-replay"
         object_keys(state, randomness.STATE if replay else "", "random state closure")
@@ -173,6 +184,8 @@ def checked_file(root, directory, relative, digest):
 
 
 def selected_events(case):
+    if case["boundary"]["operation"] == scripted.OPERATION:
+        return {event["id"]: event["kind"] for event in case["expected"]["trace"]}
     events = dict(EVENTS)
     if randomness.sampling(case) and randomness.nonconstant(case["boundary"]["operation"], case["boundary"]["arguments"]):
         events["root.sample"] = "random"
@@ -270,8 +283,67 @@ def validate_randomness(case, root):
 
 
 def consumed_inputs(case):
+    if case["boundary"]["operation"] == scripted.OPERATION:
+        return scripted.consumed(case["expected"])
     return {"providers": 0, "choices": len(case["randomness"]["choices"]),
             "events": len(selected_events(case))}
+
+
+def validate_script_fixture(case, registry, root, pins, directory):
+    boundary = case["boundary"]
+    require(set(pins) == {"F01", "F02", "C03", "X01", "X02"}, "script contract pins incomplete")
+    require(boundary["level"] == "subsystem" and boundary["suppliedChildren"] == [scripted.PROVIDER] and
+            boundary["start"] == "shared city workspace entry with supplied pipeline" and
+            boundary["stop"] == "normal return or diagnostic stop with complete workspace snapshot", "script boundary mismatch")
+    operation = next((row for row in registry["operations"] if row["id"] == scripted.OPERATION), None)
+    require(operation and operation["owner"] == "F02" and operation["arguments"] == scripted.ARGUMENTS and
+            operation["reads"] == operation["writes"] == list(scripted.STATES) and operation["result"] == "i32" and
+            operation["suppliedChildren"] == [scripted.PROVIDER] and operation["callbacks"] == [scripted.OPERATION] and
+            operation.get("eventSchema") == "shared-workspace-script-v1", "script adapter/registry mismatch")
+    providers = {row["id"]: row for row in registry.get("providers", [])}
+    require(scripted.PROVIDER in providers and providers[scripted.PROVIDER]["role"] == "supplied-child" and
+            providers[scripted.PROVIDER]["outputs"] == list(scripted.STATES) and
+            providers[scripted.PROVIDER]["callbacks"] == [scripted.OPERATION] and
+            providers[scripted.PROVIDER]["arguments"] == {"city": "city-slot-or-null"} and
+            providers[scripted.PROVIDER]["result"] == "i32", "unregistered script provider")
+    state_registry = {row["id"]: row for row in registry["states"]}
+    require(all(key in state_registry and state_registry[key]["valueType"] == kind for key, kind in scripted.STATES.items()), "script state registry mismatch")
+    scripted.arguments(boundary["arguments"])
+    object_keys(case["profile"], "domain safety restrictions deviations", "profile")
+    require(case["profile"]["domain"] in ("nominal", "accepted-off-nominal", "restricted"), "unknown profile")
+    name(case["profile"]["safety"], "safety")
+    supported(case["profile"]["restrictions"] == case["profile"]["deviations"] == [], "script profile deviations unsupported")
+    object_keys(case["entry"], "state retainedInputs blobs", "entry")
+    supported(case["entry"]["retainedInputs"] == case["entry"]["blobs"] == [], "script retained-input/blob installation unsupported")
+    scripted.state_values(case["entry"]["state"])
+    validate_randomness(case, root)
+    scripted.environment(case["environment"])
+    events = scripted.validate_expected(case)
+    comparison = case["comparison"]
+    object_keys(comparison, "stateScope traceKinds order exclusions normalizations", "comparison")
+    require(comparison["stateScope"] == "complete-boundary" and comparison["exclusions"] == comparison["normalizations"] == [], "script requires complete unnormalized closure")
+    kinds = {event["kind"] for event in events.values()}
+    require(isinstance(comparison["traceKinds"], list) and len(comparison["traceKinds"]) == len(kinds) and
+            set(comparison["traceKinds"]) == kinds, "script trace kinds missing or duplicated")
+    # External script order and synchronous nesting form a required chain here;
+    # no independent private implementation events are registered.
+    chronology = list(events)
+    validate_order(comparison["order"], events, list(zip(chronology, chronology[1:])))
+    evidence = case["evidence"]
+    object_keys(evidence, "kind sources limitations", "evidence")
+    require(evidence["kind"] == "specification-vector" and isinstance(evidence["sources"], list) and evidence["sources"], "script evidence missing")
+    require(isinstance(evidence["limitations"], list) and evidence["limitations"], "supplied-child evidence limits required")
+    for limitation in evidence["limitations"]:
+        name(limitation, "evidence limitation")
+    specs = {row["id"]: row for row in registry["specifications"]}
+    for source in evidence["sources"]:
+        object_keys(source, "file section sha256", "evidence source")
+        resolved = checked_file(root, directory, source["file"], source["sha256"])
+        require(resolved in {(root / specs[key]["path"]).resolve() for key in pins}, "evidence outside pinned specifications")
+        inventory.anchor(root, f"{resolved.relative_to(root).as_posix()}#{source['section']}")
+    object_keys(case["limits"], "events providerRequests hostMilliseconds", "limits")
+    for key, value in case["limits"].items():
+        metadata_integer(value, key, positive=True)
 
 
 def load_fixture(path, root=ROOT):
@@ -301,6 +373,9 @@ def load_fixture(path, root=ROOT):
     name(boundary["operation"], "operation")
     supported(boundary["operation"] in OPERATIONS, "operation has no executable adapter")
     op_id = boundary["operation"]
+    if op_id == scripted.OPERATION:
+        validate_script_fixture(case, registry, root, pins, path.parent)
+        return case
     owner = op_id.split(".")[0]
     require(set(pins) == {"F01", "X01", "X02", owner}, "foundation contract pins incomplete")
     supported(boundary["level"] == "primitive" and boundary["suppliedChildren"] == [], "only leaf primitive boundaries supported")
@@ -400,6 +475,8 @@ def compare(case, actual):
     """X02 §6: typed equality, exact semantic IDs and required dependencies."""
     object_keys(actual, "outcome result state trace", "adapter output")
     operation = case["boundary"]["operation"]
+    if operation == scripted.OPERATION:
+        return scripted.compare(case, actual)
     result_value(actual["result"], operation)
     state_values(actual["state"], operation, entry_scan_length(case), case)
     events = trace_events(actual["trace"], operation, entry_scan_length(case), case)
@@ -432,15 +509,20 @@ def execute(path, command, root=ROOT):
         return {**report, "status": "unsupported-fixture", "error": str(error)}
     except (ValueError, KeyError, TypeError, OSError, RecursionError) as error:
         return {**report, "status": "invalid-fixture", "error": str(error)}
-    if case["limits"]["events"] < len(selected_events(case)):
+    is_script = case["boundary"]["operation"] == scripted.OPERATION
+    if case["limits"]["events"] < (2 if is_script else len(selected_events(case))):
         return {**report, "status": "budget-exhausted", "error": "required events exceed event limit"}
     operation = case["boundary"]["operation"]
-    args = [case["boundary"]["arguments"][key]["value"] for key in OPERATIONS[operation]]
+    if is_script:
+        slot, full = scripted.arguments(case["boundary"]["arguments"])
+        args = [str(slot), str(int(full))]
+    else:
+        args = [case["boundary"]["arguments"][key]["value"] for key in OPERATIONS[operation]]
     state = state_values(case["entry"]["state"], operation, entry_scan_length(case), case)
     # The adapter receives only actual inputs. State travels on stdin to avoid
     # platform command-line limits; field order belongs to this test protocol.
     words = []
-    for key in STATES[operation]:
+    for key in ([] if is_script else STATES[operation]):
         value = state[key]
         if isinstance(value, list):
             words.extend(str(item) for item in value)
@@ -450,6 +532,8 @@ def execute(path, command, root=ROOT):
             words.append(str(value))
     if randomness.sampling(case):
         words = randomness.input_words(case)
+    elif is_script:
+        words = scripted.input_words(case)
     try:
         process = subprocess.run([*command, operation, *args], capture_output=True, text=True,
                                  encoding="utf-8", input="\n".join(words) + ("\n" if words else ""),
@@ -459,8 +543,11 @@ def execute(path, command, root=ROOT):
         actual = json.loads(process.stdout, object_pairs_hook=inventory.unique_object,
                             parse_constant=reject_nonfinite)
         mismatch = compare(case, actual)
-        return {**report, "status": "failed" if mismatch else "passed", "firstMismatch": mismatch,
-                "actual": actual, "consumed": {**consumed_inputs(case), "events": len(actual["trace"])}}
+        status = "failed" if mismatch else "passed"
+        if actual["outcome"] in ("unexpected-input", "budget-exhausted", "unavailable-evidence"):
+            status = actual["outcome"]
+        consumed = scripted.consumed(actual) if is_script else {**consumed_inputs(case), "events": len(actual["trace"])}
+        return {**report, "status": status, "firstMismatch": mismatch, "actual": actual, "consumed": consumed}
     except subprocess.TimeoutExpired:
         return {**report, "status": "budget-exhausted", "error": "host watchdog expired"}
     except (OSError, ValueError, KeyError, TypeError) as error:
@@ -531,7 +618,8 @@ def main():
         print(f"{case.get('id', case['path'])}: {case['status']}")
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
-        args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+        with args.report.open("w", encoding="utf-8", newline="\n") as output:
+            output.write(json.dumps(report, indent=2) + "\n")
     return 0 if all(case["status"] == "passed" for case in report["cases"]) else 1
 
 

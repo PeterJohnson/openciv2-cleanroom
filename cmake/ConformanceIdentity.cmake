@@ -10,7 +10,9 @@ set(oc2_conformance_sources
   src/state/identities.hpp src/state/identities.cpp
   src/state/records.hpp src/state/records.cpp
   src/world/geometry.hpp src/world/geometry.cpp src/world/map.hpp src/world/map.cpp
-  tools/conformance_adapter.cpp tools/conformance_random.hpp tools/conformance_random.cpp)
+  tools/conformance_adapter.cpp tools/conformance_io.hpp
+  tools/conformance_random.hpp tools/conformance_random.cpp
+  tools/conformance_script.hpp tools/conformance_script.cpp)
 
 if(CMAKE_SCRIPT_MODE_FILE)
   # Invoked by the build, not by the reporting process. Only replace the header

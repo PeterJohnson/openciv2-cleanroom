@@ -352,6 +352,16 @@ successful no-op. Unused mandatory records also fail the case at normal exit.
 `actions` is an ordered list performed between accepting the request and
 returning its result:
 
+Each action object has a nonempty symbolic `id`, a `kind` equal to one of the
+action names below, and exactly that action's listed fields. IDs are unique
+within their input record and identify semantic occurrences, not array indices.
+An operation registration defines how the input/action IDs identify callbacks,
+observations and effects. An action cannot change its identity after a mismatch.
+`deliver.arguments` contains the handler's logical arguments; the handler name
+does not execute host code. A supplied-child provider is explicitly listed in
+`boundary.suppliedChildren` and registered as such; observing that substitute
+does not establish the child's gameplay implementation.
+
 | Action | Required fields and effect |
 | --- | --- |
 | `output` | `target`, `value`: write the declared output object or bounded byte range |
@@ -430,6 +440,16 @@ implementation details. Available event kinds are:
 | `effect` | Registered semantic effect name and named values: notice, mutation publication, command, file/network/media request, etc. |
 | `snapshot` | `label`, complete declared state or explicitly identified projection |
 | `stop` | `category`, `boundary`, `reason`, completed-input count and safe-prefix snapshot ID |
+
+The stop payload's exact fields are `category`, `boundary`, `reason`,
+`completedInputs` and `snapshot`. The first three are nonempty metadata strings;
+`completedInputs` is a metadata integer counting provider inputs whose return
+completed, and `snapshot` is the ID of the preceding safe-prefix snapshot event.
+An accepted request suspended in a callback or missing its result is not a
+completed input. The prefix snapshot contains the registered state at the stop,
+without running game cleanup. A runner may reserve diagnostic event capacity
+within its declared event limit; budget exhaustion remains an operational failure,
+never a successful ordinary return or a reason to synthesize game inputs.
 
 Each invocation's enter precedes its selected effects and child invocations;
 return follows them, and final snapshot follows normal return. A stopped call

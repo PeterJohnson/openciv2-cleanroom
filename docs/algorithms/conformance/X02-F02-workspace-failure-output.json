@@ -1,0 +1,399 @@
+{
+  "format": "openciv2-conformance/3",
+  "id": "X02.F02.workspace-failure-output",
+  "revision": 1,
+  "target": {
+    "game": "Civilization II Multiplayer Gold Edition",
+    "version": "5.4.0f patch 3",
+    "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+  },
+  "specifications": [
+    {
+      "id": "F01",
+      "file": "../F01-determinism-and-arithmetic.md",
+      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+    },
+    {
+      "id": "F02",
+      "file": "../F02-game-state-and-invariants.md",
+      "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+    },
+    {
+      "id": "C03",
+      "file": "../C03-city-economy-and-corruption.md",
+      "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+    },
+    {
+      "id": "X01",
+      "file": "../X01-classic-compatibility-contract.md",
+      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+    },
+    {
+      "id": "X02",
+      "file": "../X02-whole-game-conformance.md",
+      "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+    }
+  ],
+  "boundary": {
+    "level": "subsystem",
+    "operation": "F02.cityCalculationEntry",
+    "start": "shared city workspace entry with supplied pipeline",
+    "stop": "normal return or diagnostic stop with complete workspace snapshot",
+    "arguments": {
+      "city": {
+        "$type": "u16",
+        "value": "5"
+      },
+      "full": {
+        "$type": "bool",
+        "value": true
+      }
+    },
+    "suppliedChildren": [
+      "C03.fullCityRecalculation"
+    ]
+  },
+  "profile": {
+    "domain": "accepted-off-nominal",
+    "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+    "restrictions": [],
+    "deviations": []
+  },
+  "entry": {
+    "state": {
+      "F02.workspaceCity": {
+        "$type": "u16",
+        "value": "4"
+      },
+      "F02.happyCount": {
+        "$type": "i32",
+        "value": "5"
+      },
+      "F02.unhappyCount": {
+        "$type": "i32",
+        "value": "2"
+      }
+    },
+    "retainedInputs": [],
+    "blobs": []
+  },
+  "randomness": {
+    "mode": "controlled-choices",
+    "policy": null,
+    "contexts": {},
+    "choices": []
+  },
+  "environment": {
+    "protocol": "scripted-v1",
+    "inputs": [
+      {
+        "id": "root/pipeline",
+        "request": "C03.fullCityRecalculation",
+        "arguments": {
+          "city": {
+            "$type": "u16",
+            "value": "5"
+          }
+        },
+        "actions": [
+          {
+            "id": "failure",
+            "kind": "failure",
+            "code": "partial output reported"
+          },
+          {
+            "id": "after/failure~Δ",
+            "kind": "output",
+            "target": {
+              "stateKey": "F02.happyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "17"
+            }
+          },
+          {
+            "id": "clear-city",
+            "kind": "output",
+            "target": {
+              "stateKey": "F02.workspaceCity"
+            },
+            "value": {
+              "$type": "null"
+            }
+          },
+          {
+            "id": "retained",
+            "kind": "observe",
+            "label": "after failure and output"
+          }
+        ],
+        "result": {
+          "$type": "i32",
+          "value": "15"
+        }
+      }
+    ],
+    "unexpected": "fail"
+  },
+  "expected": {
+    "outcome": "return",
+    "result": {
+      "$type": "i32",
+      "value": "15"
+    },
+    "state": {
+      "F02.workspaceCity": {
+        "$type": "null"
+      },
+      "F02.happyCount": {
+        "$type": "i32",
+        "value": "17"
+      },
+      "F02.unhappyCount": {
+        "$type": "i32",
+        "value": "2"
+      }
+    },
+    "trace": [
+      {
+        "seq": 0,
+        "id": "root/enter",
+        "kind": "enter",
+        "call": "root",
+        "payload": {
+          "operation": "F02.cityCalculationEntry",
+          "parent": null,
+          "arguments": {
+            "city": {
+              "$type": "u16",
+              "value": "5"
+            },
+            "full": {
+              "$type": "bool",
+              "value": true
+            }
+          }
+        }
+      },
+      {
+        "seq": 1,
+        "id": "root/pipeline/request",
+        "kind": "provider",
+        "call": "root",
+        "payload": {
+          "stage": "request",
+          "id": "root/pipeline",
+          "operation": "C03.fullCityRecalculation",
+          "arguments": {
+            "city": {
+              "$type": "u16",
+              "value": "5"
+            }
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "id": "root/action/failure",
+        "kind": "effect",
+        "call": "root",
+        "payload": {
+          "name": "provider.failure",
+          "values": {
+            "code": {
+              "$type": "text",
+              "value": "partial output reported"
+            }
+          }
+        }
+      },
+      {
+        "seq": 3,
+        "id": "root/action/after~1failure~0Δ",
+        "kind": "effect",
+        "call": "root",
+        "payload": {
+          "name": "provider.output",
+          "values": {
+            "target": {
+              "$type": "text",
+              "value": "F02.happyCount"
+            },
+            "value": {
+              "$type": "i32",
+              "value": "17"
+            }
+          }
+        }
+      },
+      {
+        "seq": 4,
+        "id": "root/action/clear-city",
+        "kind": "effect",
+        "call": "root",
+        "payload": {
+          "name": "provider.output",
+          "values": {
+            "target": {
+              "$type": "text",
+              "value": "F02.workspaceCity"
+            },
+            "value": {
+              "$type": "null"
+            }
+          }
+        }
+      },
+      {
+        "seq": 5,
+        "id": "root/action/retained",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "after failure and output",
+          "state": {
+            "F02.workspaceCity": {
+              "$type": "null"
+            },
+            "F02.happyCount": {
+              "$type": "i32",
+              "value": "17"
+            },
+            "F02.unhappyCount": {
+              "$type": "i32",
+              "value": "2"
+            }
+          }
+        }
+      },
+      {
+        "seq": 6,
+        "id": "root/pipeline/return",
+        "kind": "provider",
+        "call": "root",
+        "payload": {
+          "stage": "return",
+          "id": "root/pipeline",
+          "result": {
+            "$type": "i32",
+            "value": "15"
+          }
+        }
+      },
+      {
+        "seq": 7,
+        "id": "root/return",
+        "kind": "return",
+        "call": "root",
+        "payload": {
+          "result": {
+            "$type": "i32",
+            "value": "15"
+          }
+        }
+      },
+      {
+        "seq": 8,
+        "id": "root/exit",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "exit",
+          "state": {
+            "F02.workspaceCity": {
+              "$type": "null"
+            },
+            "F02.happyCount": {
+              "$type": "i32",
+              "value": "17"
+            },
+            "F02.unhappyCount": {
+              "$type": "i32",
+              "value": "2"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "stateScope": "complete-boundary",
+    "traceKinds": [
+      "enter",
+      "provider",
+      "effect",
+      "snapshot",
+      "return"
+    ],
+    "exclusions": [],
+    "normalizations": [],
+    "order": {
+      "before": [
+        [
+          "root/enter",
+          "root/pipeline/request"
+        ],
+        [
+          "root/pipeline/request",
+          "root/action/failure"
+        ],
+        [
+          "root/action/failure",
+          "root/action/after~1failure~0Δ"
+        ],
+        [
+          "root/action/after~1failure~0Δ",
+          "root/action/clear-city"
+        ],
+        [
+          "root/action/clear-city",
+          "root/action/retained"
+        ],
+        [
+          "root/action/retained",
+          "root/pipeline/return"
+        ],
+        [
+          "root/pipeline/return",
+          "root/return"
+        ],
+        [
+          "root/return",
+          "root/exit"
+        ]
+      ],
+      "independent": []
+    }
+  },
+  "evidence": {
+    "kind": "specification-vector",
+    "sources": [
+      {
+        "file": "../F02-game-state-and-invariants.md",
+        "section": "9-cache-and-mutation-contracts",
+        "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+      },
+      {
+        "file": "../C03-city-economy-and-corruption.md",
+        "section": "full-city-recalculation",
+        "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+      },
+      {
+        "file": "../X02-whole-game-conformance.md",
+        "section": "4-ordered-environment-inputs-and-reentry",
+        "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+      }
+    ],
+    "limitations": [
+      "X02 failure is an event, not rollback or implicit cancellation; Unicode action identity and absence survive export.",
+      "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
+      "Authored from repository behavioral contracts; not an original-game capture or independent review."
+    ]
+  },
+  "limits": {
+    "events": 128,
+    "providerRequests": 16,
+    "hostMilliseconds": 5000
+  }
+}
