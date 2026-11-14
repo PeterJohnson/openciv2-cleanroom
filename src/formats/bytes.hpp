@@ -50,6 +50,7 @@ public:
         const auto low = u32();
         return low | (std::uint64_t{u32()} << 32);
     }
+    std::int32_t i32() { return std::bit_cast<std::int32_t>(u32()); }
 
 private:
     std::span<const Byte> input_;
@@ -76,5 +77,6 @@ public:
         u32(static_cast<std::uint32_t>(value));
         u32(static_cast<std::uint32_t>(value >> 32));
     }
+    void i32(std::int32_t value) { u32(static_cast<std::uint32_t>(value)); }
 };
 } // namespace openciv::formats

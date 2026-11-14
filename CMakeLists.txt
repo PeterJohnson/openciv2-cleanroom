@@ -48,7 +48,8 @@ target_include_directories(oc2_game PUBLIC src)
 target_link_libraries(oc2_game PUBLIC oc2_base PRIVATE oc2_options)
 
 # F06 explicit classic encodings and item-level adapters, independent of host I/O.
-add_library(oc2_formats src/formats/classic_records.cpp src/formats/classic_io.cpp)
+add_library(oc2_formats src/formats/classic_records.cpp src/formats/classic_io.cpp
+  src/formats/save_records.cpp src/formats/classic_save.cpp)
 target_include_directories(oc2_formats PUBLIC src)
 target_link_libraries(oc2_formats PUBLIC oc2_game PRIVATE oc2_options)
 
@@ -110,7 +111,7 @@ endif()
 
 if(BUILD_TESTING)
   include(cmake/Catch2.cmake)
-  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp tests/pool_tests.cpp tests/format_tests.cpp)
+  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp tests/pool_tests.cpp tests/format_tests.cpp tests/save_tests.cpp)
   target_link_libraries(oc2_tests PRIVATE oc2_formats oc2_viewmodel oc2_options Catch2::Catch2WithMain)
   add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp)
   target_link_libraries(oc2_conformance_adapter PRIVATE oc2_game oc2_options)
@@ -128,6 +129,8 @@ if(BUILD_TESTING)
     include(Catch)
     add_executable(oc2_map_roundtrip tools/map_roundtrip.cpp)
     target_link_libraries(oc2_map_roundtrip PRIVATE oc2_formats oc2_options)
+    add_executable(oc2_save_roundtrip tools/save_roundtrip.cpp)
+    target_link_libraries(oc2_save_roundtrip PRIVATE oc2_formats oc2_options)
     catch_discover_tests(oc2_tests DISCOVERY_MODE PRE_TEST PROPERTIES LABELS unit)
     if(OC2_BUILD_GUI)
       add_executable(oc2_runtime_tests tests/runtime_tests.cpp tests/runtime_main.cpp)

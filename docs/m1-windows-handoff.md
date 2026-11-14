@@ -4,6 +4,9 @@ M1 remains **in progress**. This is a stable stopping point for continuing the
 [full completion audit](m1-validation.md), not a milestone completion claim.
 The user requested pausing after this commit to resume on a Windows machine.
 
+The Windows continuation is recorded in [M1 stored-save records](m1-stored-saves.md).
+The remainder of this handoff preserves the earlier stopping-point evidence.
+
 ## Implemented record boundary
 
 `state/records.hpp` defines complete logical unit/city payloads and heap-backed

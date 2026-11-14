@@ -120,6 +120,11 @@ The [schema guide](content/schemas/README.md) describes document validation and
 its semantic limits. These packages are not needed for ordinary builds or the
 stdlib-only metadata checks above.
 
+The [M1 stored-save checks](m1-stored-saves.md) add native read-only
+`oc2_save_roundtrip INPUT.SAV` comparisons. They currently support stored version
+`0x2c`, including optional scenario, multiplayer and event blocks; they do not
+perform session loading or replace the planned inspection CLI.
+
 `OC2_ASSETS_DIR` can explicitly name the approved asset source root or an extracted
 runtime package in GUI configurations. This enables `asset-check` and requires
 Python for that optional check. It does not yet load/copy/install graphics.

@@ -1,6 +1,9 @@
 # M1 initial foundations
 
-M1 is underway, not complete. Implemented foundations include F01 numeric
+M1 is underway, not complete. The subsequent [stored-save slice](m1-stored-saves.md)
+adds civilization/global records and full current stored-file decoding, with
+Windows validation; the Linux/WASM evidence below describes the earlier slices.
+Implemented foundations include F01 numeric
 primitives and isolated random contexts in standard-library-only `oc2_base`,
 F02 entity records/pools and W01 map foundations in `oc2_game`, initial F06 codecs
 in `oc2_formats`, and a bounded developer runner for nine registered X02 operations. No reconstruction
