@@ -28,6 +28,12 @@ struct StackServices {
     // slots always use the pool, independently of its scan bound and lifetime.
     std::function<state::Unit*(std::int32_t)> extra_backing;
 };
+// Repair's placement children use sync=false. LocalStacks defaults to its local
+// bodies; StackOperations supplies the real independently gated operations.
+struct RepairPlacement {
+    std::function<void(std::int32_t)> detach;
+    std::function<void(std::int32_t, world::Position)> attach;
+};
 enum class StackStop { steps, validation_depth };
 class StackResourceStop : public std::runtime_error {
 public:
@@ -50,7 +56,7 @@ struct StackBudget {
 class LocalStacks {
 public:
     LocalStacks(state::UnitPool& units, world::MapStorage& map, state::UnitStackState& retained,
-                StackBudget& budget, StackServices services);
+                StackBudget& budget, StackServices services, RepairPlacement placement = {});
     std::int32_t raw_forward_count(std::int32_t slot);
     std::int32_t validate(std::int32_t slot);
     std::int32_t next(std::int32_t slot);
@@ -65,6 +71,9 @@ public:
     state::Unit& backed_unit(std::int32_t slot) { return record(slot); }
 
 private:
+    friend class StackOperations;
+    void detach_body(std::int32_t slot);
+    void attach_body(std::int32_t slot, world::Position position);
     state::Unit& record(std::int32_t slot);
     void step();
     std::int32_t end_of_chain(std::int32_t slot, bool backward);
@@ -74,6 +83,7 @@ private:
     state::UnitStackState& retained_;
     StackBudget& budget_;
     StackServices services_;
+    RepairPlacement placement_;
     std::size_t depth_ = 0;
 };
 } // namespace openciv::unit

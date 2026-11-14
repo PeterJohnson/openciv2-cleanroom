@@ -4,9 +4,10 @@
 namespace openciv::session {
 void cleanup_classic_loaded_units(state::GameState& world, const state::RuleDefinitions& rules,
                                   unit::StackBudget& budget, unit::StackServices services,
+                                  unit::StackOperationServices placement,
                                   unit::DeletionServices deletion_services) {
     world.multiplayer.network_host = true;
-    unit::LocalStacks stacks(world.entities.units, world.map, world.unit_stacks, budget, services);
+    unit::StackOperations stacks(world, budget, services, std::move(placement));
     unit::UnitDeletion deletion(world, rules, budget, std::move(services),
                                 std::move(deletion_services));
     for (std::size_t i = 0; i < world.entities.units.end(); ++i) {

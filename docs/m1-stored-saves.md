@@ -499,10 +499,11 @@ traversal, ordered repair, local placement and basic deletion. The extracted
 F06 cleanup stage establishes host, scans ascending through the live bound,
 clears free-slot links, validates live records and deletes negative-position
 units with notifications false. Counter changes, carrier wakeups and required
-V01 checks remain active. Five composition cases cover ordering, dynamic bounds
-and partial effects. The stage currently requires local/host authority to persist
-during stack repair; routed placement children, V01's cascade and the full
-accepted-file wrapper/application admission remain open.
+V01 checks remain active. Six composition cases cover ordering, dynamic bounds,
+partial effects and authority changes during repair. Placement children use the
+real U01 request/wait boundaries when callbacks select a nonhost and preserve
+received state. V01's cascade, owning transport bindings and the full accepted-file
+wrapper/application admission remain open.
 
 ## Windows evidence — 2026-11-13 Pacific
 

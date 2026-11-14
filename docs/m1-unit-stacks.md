@@ -1,8 +1,8 @@
 # Unit stack and deletion foundations for post-load cleanup
 
-`unit::LocalStacks` implements the U01 sections 2–4 traversal, ordered validation
-and local, unsynchronized detach/front-attachment paths needed by F06's eventual
-accepted-file load wrapper. It operates on the real unit pool and W01 map. The
+`unit::StackOperations` implements U01 sections 2–4 traversal, ordered validation,
+detach/front attachment, relocation and bottom ordering with section 9 authority
+and synchronization. It uses `LocalStacks`' real unit-pool and W01 map bodies. The
 runtime owns its suppression, animation and per-operation activity fields in
 `GameState::unit_stacks`; constructing or replacing a client session does not
 perform a classic lifecycle reset of these fields.
@@ -27,10 +27,32 @@ with full coordinates before signed-16 publication and changes the tile only whe
 no same-owner head exists. Detached positions use the signed owner byte. The activity
 markers clear on normal return only, and are boolean assignments rather than locks.
 
-The caller must establish local/host authority before using `LocalStacks`.
-These stack paths do not yet implement their own client requests, reply waits or
-synchronization tails. The separate basic-deletion operation below implements
-its authority boundary. Broader lifecycle/cargo operations remain open.
+## Routed placement and composite operations
+
+`StackOperations` supplies real detach/attach children to repairing traversal,
+including recursive repair during destination lookup. Each child rechecks the
+live mode and host flag independently. A returning diagnostic or received-message
+callback can change authority before the next child. The already selected local
+body continues after callbacks; it does not restart or discard received effects.
+Standalone `LocalStacks` retains its explicit local/host precondition.
+
+Detach, attach, relocate and move-to-bottom each own distinct activity/reply
+fields. Their client requests carry the full signed arguments in six fields,
+zeroing unused fields and omitting synchronization flags. The shared U01
+request/wait implementation also serves basic deletion without combining its
+state or request boundary. N02/N03 still own wire production, dispatch and
+state-difference application. Local activity clears only after the selected
+synchronization and flush sequence returns; a callback changing mode does not
+cancel the already selected flush.
+
+Relocation composes independently gated detach/attach with synchronization false,
+then its own synchronization tail. Relocate-in-place captures coordinates first.
+Move-to-bottom reads the successor before activity/authority entry, preserves its
+terminal early return, then uses the real head/next/detach/last operations. Whole-stack
+relocation captures each next member before relocation, has no combined request or
+activity gate, and runs its outer synchronization even for a negative entry.
+Front insertion reverses transferred members, including movement to their current
+position. Child requests remain separate when authority selects a nonhost.
 
 ## Basic deletion and the F06 cleanup scan
 
@@ -74,10 +96,12 @@ new slots are visited. Earlier effects survive a failed diagnostic or child.
 
 This is an extracted cleanup stage, not the accepted-file dialog: the parent must
 first complete core input, event replacement/execution, preference/audio/title
-effects and the home-directory return. The composition currently admits callbacks
-that preserve local/host authority during stack repair. Routed placement children
-inside validation remain open, as do the complete accepted-file wrapper, V01
-implementation and application admission.
+effects and the home-directory return. Its placement children now honor authority
+changes during stack repair through `StackOperations`. A composition case changes
+host status in the infinite-stack diagnostic and supplies distinct incoming
+placement effects/replies, verifying they survive without extra local placement.
+The complete accepted-file wrapper, V01 implementation and application admission
+remain open.
 
 ## Backing and execution boundaries
 
@@ -105,22 +129,29 @@ placement, signed owners, self-loop repair, and a complete 2,048-member chain
 reversal with both supplied and missing negative-terminal backing. Resource-stop
 cases check the retained links, coordinates and activity state.
 
-Windows MSVC passes all 368 default-off and 370 SQLite-enabled CTests. Pinned
-Emscripten 4.0.23 passes all six CTests, including 348 portable Catch2 cases
-(182,736 assertions). The stack cases contribute 16,562 assertions. The 54
+Windows MSVC passes all 383 default-off and 385 SQLite-enabled CTests. Pinned
+Emscripten 4.0.23 passes all six CTests, including 363 portable Catch2 cases
+(182,935 assertions). The stack cases contribute 16,562 assertions. The 54
 retained X02 native/WASM observations and consumed prefixes remain identical;
 their reports were refreshed for the changed build and shared record header.
 Formatting passes with pinned clang-format 20.1.8. The upstream Catch2 WASM
 `__COUNTER__` warnings remain.
 
-Fourteen additional deletion cases and five F06 composition cases cover the
+Fourteen additional deletion cases and five initial F06 composition cases cover the
 bookkeeping, captured/live distinction, zero/high homes, callback failures,
 reentrant activity, special backing, client wait/timeout/drain and ascending
 cleanup effects. The 19 cases pass 191 assertions on native Windows and WASM.
 
+Fourteen placement cases and one additional F06 case cover local ordering,
+activity through synchronization, independent replies and full argument payloads,
+authority changes between children and inside recursive repair, received-state
+retention, captured successors in client composites, interrupted children and
+timeout/drain behavior. These 15 cases add 199 native/WASM assertions. All 34
+deletion/placement/F06 cases pass together after sharing the request implementation.
+
 These are portable specification-derived Catch2 cases, not original executable
 observations or newly registered X02 fixtures. Full unit creation, remaining
-deletion/cargo/query/placement operations, owning V01/transport bindings, routed
-stack placement, complete F06 post-load composition and broader X02 adapter
+deletion/cargo/query/ship-ordering operations, owning V01/transport bindings,
+complete F06 post-load composition and broader X02 adapter
 coverage remain separate work under the
 [M1 completion audit](m1-validation.md).

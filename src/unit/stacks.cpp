@@ -28,11 +28,13 @@ StackResourceStop::StackResourceStop(StackStop reason)
 
 LocalStacks::LocalStacks(state::UnitPool& units, world::MapStorage& map,
                          state::UnitStackState& retained, StackBudget& budget,
-                         StackServices services)
+                         StackServices services, RepairPlacement placement)
     : units_(units), map_(map), retained_(retained), budget_(budget),
-      services_(std::move(services)) {
+      services_(std::move(services)), placement_(std::move(placement)) {
     if (!services_.report)
         throw std::invalid_argument("Unit stack validation requires a diagnostic service");
+    if (static_cast<bool>(placement_.detach) != static_cast<bool>(placement_.attach))
+        throw std::invalid_argument("Unit stack repair requires both placement children");
 }
 state::Unit& LocalStacks::record(std::int32_t slot) {
     if (slot >= 0 && static_cast<std::size_t>(slot) < units_.storage().size())
@@ -87,8 +89,13 @@ std::int32_t LocalStacks::validate(std::int32_t slot) {
                 break;
             step();
             const world::Position position{record(current).x, record(current).y};
-            detach(current);
-            attach_at_front(current, position);
+            if (placement_.detach) {
+                placement_.detach(current);
+                placement_.attach(current, position);
+            } else {
+                detach(current);
+                attach_at_front(current, position);
+            }
             current = saved_next;
             // U01 section 3: even a negative terminal is read here. Missing
             // backing stops after placement; it is not a repaired-success return.
@@ -176,6 +183,10 @@ std::int32_t LocalStacks::first_at(world::Position position) {
 void LocalStacks::detach(std::int32_t slot) {
     step();
     retained_.detach_active = true;
+    detach_body(slot);
+    retained_.detach_active = false;
+}
+void LocalStacks::detach_body(std::int32_t slot) {
     const bool previous = record(slot).previous.value >= 0;
     if (previous)
         record(record(slot).previous.value).next = record(slot).next;
@@ -188,11 +199,14 @@ void LocalStacks::detach(std::int32_t slot) {
         map_.mutate({world::TileField::features, position, 1, 0});
     const auto staging = short_value(-100 * (signed_owner(record(slot)) + 1));
     record(slot).x = record(slot).y = staging;
-    retained_.detach_active = false;
 }
 void LocalStacks::attach_at_front(std::int32_t slot, world::Position position) {
     step();
     retained_.attach_active = true;
+    attach_body(slot, position);
+    retained_.attach_active = false;
+}
+void LocalStacks::attach_body(std::int32_t slot, world::Position position) {
     const auto head = first_for_owner_at(signed_owner(record(slot)), position);
     record(slot).x = short_value(position.x);
     record(slot).y = short_value(position.y);
@@ -204,6 +218,5 @@ void LocalStacks::attach_at_front(std::int32_t slot, world::Position position) {
         map_.mutate({world::TileField::features, position, 1});
         map_.mutate({world::TileField::owner, position, signed_owner(record(slot))});
     }
-    retained_.attach_active = false;
 }
 } // namespace openciv::unit

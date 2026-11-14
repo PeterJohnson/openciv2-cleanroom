@@ -14,6 +14,7 @@ struct Fixture {
     std::function<void(unit::StackDiagnostic)> report_action;
     std::function<void()> check_action;
     unit::DeletionServices deletion;
+    unit::StackOperationServices placement;
     Fixture() {
         world.map.allocate(world::Geometry{8, 6});
         world.globals.multiplayer = 3;
@@ -44,16 +45,72 @@ struct Fixture {
     void cleanup() {
         session::cleanup_classic_loaded_units(world, process.rules->definitions, budget,
                                               {[&](unit::StackDiagnostic event) {
-                                                   CHECK(world.multiplayer.network_host);
+                                                   if (reports.empty())
+                                                       CHECK(world.multiplayer.network_host);
                                                    reports.push_back(event);
                                                    if (report_action)
                                                        report_action(event);
                                                },
                                                {}},
-                                              deletion);
+                                              placement, deletion);
     }
 };
 } // namespace
+
+TEST_CASE("F06 repair routes placement after a diagnostic changes host authority",
+          "[session][load][unit][placement]") {
+    Fixture f;
+    f.live(0, {2, 2});
+    f.unit(0).previous.value = f.unit(0).next.value = 0;
+    std::vector<unit::PlacementRequest> requests;
+    std::optional<unit::PlacementOperation> pending;
+    std::uint32_t tick = 0;
+    f.report_action = [&](unit::StackDiagnostic event) {
+        CHECK(event.problem == unit::StackProblem::infinite);
+        f.world.multiplayer.network_host = false;
+    };
+    f.placement.request = [&](unit::PlacementRequest request) {
+        requests.push_back(request);
+        pending = request.operation;
+    };
+    f.placement.ticks = [&] { return ++tick; };
+    f.placement.priority_messages = [] { return false; };
+    f.placement.normal_messages = [] { return false; };
+    f.placement.process_messages = [&](std::int32_t first, std::int32_t second) {
+        CHECK(first == 1);
+        CHECK(second == 1);
+        REQUIRE(pending);
+        // Explicit incoming state/replies, not a locally executed host helper.
+        // Distinct positions make any extra local placement observable.
+        if (*pending == unit::PlacementOperation::detach) {
+            CHECK_FALSE(f.world.unit_stacks.detach_active);
+            f.unit(0).x = -321;
+            f.unit(0).y = -322;
+            f.unit(0).previous.value = f.unit(0).next.value = -1;
+            f.world.unit_stacks.detach_reply = 17;
+            f.world.unit_stacks.detach_active = true;
+        } else {
+            CHECK(*pending == unit::PlacementOperation::attach);
+            CHECK_FALSE(f.world.unit_stacks.attach_active);
+            f.unit(0).x = f.unit(0).y = 4;
+            f.world.unit_stacks.attach_reply = 19;
+            f.world.unit_stacks.attach_active = true;
+        }
+        pending.reset();
+    };
+    f.cleanup();
+    CHECK(requests ==
+          std::vector<unit::PlacementRequest>{{unit::PlacementOperation::detach, {0}},
+                                              {unit::PlacementOperation::attach, {0, 2, 2}}});
+    CHECK(f.unit(0).x == 4);
+    CHECK(f.unit(0).y == 4);
+    CHECK(f.unit(0).token == state::UnitToken{1});
+    CHECK_FALSE(f.world.multiplayer.network_host);
+    CHECK(f.world.unit_stacks.detach_active);
+    CHECK(f.world.unit_stacks.attach_active);
+    CHECK(f.world.unit_totals[1] == 3);
+    CHECK(f.world.entities.units.end() == 1);
+}
 
 TEST_CASE("F06 post-load scan establishes host then repairs and deletes in slot order",
           "[session][load][unit]") {

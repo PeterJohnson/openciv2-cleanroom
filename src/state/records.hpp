@@ -142,6 +142,9 @@ struct UnitStackState {
     bool animation_active = false;
     bool detach_active = false;
     bool attach_active = false;
+    bool relocate_active = false;
+    bool bottom_active = false;
+    std::int32_t detach_reply = 0, attach_reply = 0, relocate_reply = 0, bottom_reply = 0;
 };
 // U01 sections 6, 9: deletion has its own activity and reply fields. The reply
 // becomes Pending (-2) at a client request, not at construction or every call.

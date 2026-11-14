@@ -19,24 +19,9 @@ state::Civilization& UnitDeletion::civilization(std::int32_t owner) {
 }
 void UnitDeletion::remote(std::int32_t slot) {
     auto& operation = world_.unit_deletion;
-    operation.active = false;
-    operation.reply = -2;
-    services_.request_delete(slot);
-    const auto start = services_.ticks(); // Required even after a synchronous reply.
-    while (operation.reply == -2) {
-        const auto now = services_.ticks();
-        if (base::signed32(now - start) >= 3600)
-            break;
-        services_.process_messages(1, 1);
-    }
-    if (operation.reply == -2) {
-        services_.log_timeout();
-        services_.show_timeout();
-        world_.turn_loop_active = false;
-    }
-    while (services_.priority_messages() || services_.normal_messages())
-        services_.process_messages(1, 0);
-    // No final clear: reentrant callbacks may have changed activity/reply.
+    request_unit_operation(
+        operation.active, operation.reply, world_.turn_loop_active,
+        [&] { services_.request_delete(slot); }, services_);
 }
 void UnitDeletion::erase(std::int32_t slot, bool notify) {
     if (slot < 0 || !state::occupied(stacks_.backed_unit(slot).token))
