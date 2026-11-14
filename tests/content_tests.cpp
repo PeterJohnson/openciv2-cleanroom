@@ -1,11 +1,12 @@
 // data-format.md §2; gameplay-format.md §§1–7. Authored contract expectations.
 #include "formats/gameplay.hpp"
 #include "base/hash.hpp"
-#include "gameplay_test_data.hpp"
+#include "builtin_gameplay_data.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <map>
 
 namespace {
+constexpr auto& gameplay_test_files = builtin_gameplay_files;
 using namespace openciv;
 using namespace formats::content;
 formats::Bytes bytes(std::string_view s) {

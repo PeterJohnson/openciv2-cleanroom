@@ -1,6 +1,7 @@
-// Native gameplay-format.md §§1–7 and the six version-1 component schemas.
+// Native gameplay-format.md sections 1-7 and the six version-1 component schemas.
 #include "gameplay.hpp"
 #include "base/hash.hpp"
+#include "content_reader.hpp"
 #include <limits>
 #include <numeric>
 #include <set>
@@ -9,119 +10,17 @@ namespace openciv::formats::content {
 namespace {
 constexpr auto maximum = std::numeric_limits<std::int32_t>::max();
 constexpr auto minimum = std::numeric_limits<std::int32_t>::min();
-bool lower(char c) {
-    return c >= 'a' && c <= 'z';
+using detail::Reader;
+state::Rational rational(Reader root) {
+    root.fields({"numerator", "denominator"});
+    auto n = root.at("numerator").integer(0), d = root.at("denominator").integer(1);
+    const auto factor = std::gcd(n, d);
+    n /= factor;
+    d /= factor;
+    root.value["numerator"] = jt::Json(n);
+    root.value["denominator"] = jt::Json(d);
+    return {n, d};
 }
-bool id_character(char c) {
-    return lower(c) || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.';
-}
-bool identifier(std::string_view text) {
-    return !text.empty() && lower(text.front()) &&
-           std::all_of(text.begin(), text.end(), id_character);
-}
-bool extension_key(std::string_view key) {
-    bool dot = false;
-    while (!key.empty()) {
-        const auto end = key.find('.');
-        const auto part = key.substr(0, end);
-        if (!identifier(part))
-            return false;
-        if (end == std::string_view::npos)
-            return dot;
-        dot = true;
-        key.remove_prefix(end + 1);
-    }
-    return false;
-}
-struct Reader {
-    jt::Json& value;
-    const jt::Json& numbers;
-    std::string path;
-    [[noreturn]] void error(std::string message) const {
-        throw Error("invalid-content", path, std::move(message));
-    }
-    void fields(std::span<const std::string_view> names, bool extensions = false) const {
-        if (!value.isObject())
-            error("expected object");
-        for (const auto name : names)
-            if (!value.contains(std::string(name)))
-                error("missing field " + std::string(name));
-        for (const auto& [key, child] : value.getObject()) {
-            if (std::find(names.begin(), names.end(), key) != names.end())
-                continue;
-            if (extensions && key == "extensions") {
-                if (!child.isObject())
-                    error("extensions must be an object");
-                for (const auto& [extension, metadata] : child.getObject()) {
-                    (void)metadata;
-                    if (!extension_key(extension))
-                        error("invalid metadata namespace " + extension);
-                }
-            } else
-                error("unknown field " + key);
-        }
-    }
-    void fields(std::initializer_list<std::string_view> names, bool extensions = false) const {
-        fields(std::span(names.begin(), names.size()), extensions);
-    }
-    Reader at(std::string_view key) const {
-        if (!value.isObject() || !value.contains(std::string(key)))
-            error("missing object field " + std::string(key));
-        return {value.getObject().at(std::string(key)), numbers.getObject().at(std::string(key)),
-                path + "/" + std::string(key)};
-    }
-    Reader element(std::size_t i) const {
-        return {value.getArray().at(i), numbers.getArray().at(i), path + "/" + std::to_string(i)};
-    }
-    std::string text(bool nonempty = true) const {
-        if (!value.isString() || (nonempty && value.getString().empty()))
-            error("expected Unicode text");
-        return value.getString();
-    }
-    std::string id() const {
-        auto result = text();
-        if (!identifier(result))
-            error("invalid semantic identity");
-        return result;
-    }
-    void constant(std::string_view expected) const {
-        if (text() != expected)
-            error("expected " + std::string(expected));
-    }
-    std::int32_t integer(std::int32_t low = minimum, std::int32_t high = maximum) const {
-        if (!value.isNumber() || !numbers.isString())
-            error("expected number");
-        const auto result = integer32(numbers.getString(), path);
-        if (result < low || result > high)
-            error("integer outside field domain");
-        value = jt::Json(result); // normalized tree and typed operands agree
-        return result;
-    }
-    std::string revision() const {
-        if (!value.isNumber() || !numbers.isString())
-            error("expected revision number");
-        auto result = integer_text(numbers.getString(), path);
-        if (result == "0" || result.front() == '-')
-            error("revision must be positive");
-        return result;
-    }
-    state::Rational rational() const {
-        fields({"numerator", "denominator"});
-        auto n = at("numerator").integer(0), d = at("denominator").integer(1);
-        const auto factor = std::gcd(n, d);
-        n /= factor;
-        d /= factor;
-        value["numerator"] = jt::Json(n);
-        value["denominator"] = jt::Json(d);
-        return {n, d};
-    }
-    void texts(bool nonempty) const {
-        if (!value.isArray())
-            error("expected text array");
-        for (std::size_t i = 0; i < value.getArray().size(); ++i)
-            element(i).text(nonempty);
-    }
-};
 void calendar(Reader root, state::CalendarValues& out) {
     root.fields({"format", "profiles", "retirement"}, true);
     auto profiles = root.at("profiles");
@@ -210,13 +109,13 @@ void combat(Reader root, state::CombatValues& out) {
                 true);
     auto bonuses = root.at("strengthBonuses");
     bonuses.fields({"veteran", "paradrop"});
-    out.veteran_bonus = bonuses.at("veteran").rational();
-    out.paradrop_bonus = bonuses.at("paradrop").rational();
+    out.veteran_bonus = rational(bonuses.at("veteran"));
+    out.paradrop_bonus = rational(bonuses.at("paradrop"));
     auto defense = root.at("defenseMultipliers");
     defense.fields({"fortification", "fortress", "cityWalls"});
     const auto factor = [&](std::string_view key) {
         auto field = defense.at(key);
-        const auto ratio = field.rational();
+        const auto ratio = rational(field);
         const auto doubled = 2 * static_cast<std::int64_t>(ratio.numerator);
         if (doubled % ratio.denominator || doubled / ratio.denominator < 1 ||
             doubled / ratio.denominator > maximum)
@@ -264,8 +163,8 @@ void scoring(Reader root, state::ScoringValues& out) {
                     conquest.at("turnReference").integer(0),
                     conquest.at("pointsPerRemainingTurn").integer(),
                     conquest.at("noRestartMinimumTurn").integer(0),
-                    conquest.at("largeMapMultiplier").rational(),
-                    conquest.at("smallMapMultiplier").rational()};
+                    rational(conquest.at("largeMapMultiplier")),
+                    rational(conquest.at("smallMapMultiplier"))};
     auto objective = root.at("objectiveValue");
     objective.fields({"city", "wonder"});
     out.objective_city = objective.at("city").integer(0);
@@ -289,38 +188,6 @@ std::string sha_text(std::string_view text) {
     return base::sha256({reinterpret_cast<const Byte*>(text.data()), text.size()});
 }
 } // namespace
-void validate_relative_path(std::string_view path) {
-    const auto bad = [&] {
-        throw Error("invalid-path", std::string(path),
-                    "expected a relative slash-separated mounted path");
-    };
-    if (path.empty() || path.front() == '/' || path.find('\\') != std::string_view::npos)
-        bad();
-    for (char c : path)
-        if (static_cast<unsigned char>(c) < 32 || c == 127)
-            bad();
-    const auto colon = path.find(':');
-    if (colon != std::string_view::npos) {
-        const auto scheme = path.substr(0, colon);
-        if (!scheme.empty() &&
-            ((scheme.front() >= 'A' && scheme.front() <= 'Z') || lower(scheme.front())) &&
-            std::all_of(scheme.begin(), scheme.end(), [](char c) {
-                return lower(c) || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '+' ||
-                       c == '-' || c == '.';
-            }))
-            bad();
-    }
-    while (!path.empty()) {
-        const auto slash = path.find('/');
-        const auto part = path.substr(0, slash);
-        if (part.empty() || part == "." || part == "..")
-            bad();
-        if (slash == std::string_view::npos)
-            return;
-        path.remove_prefix(slash + 1);
-    }
-    bad(); // trailing slash
-}
 std::shared_ptr<const GameplayBundle> load_gameplay(std::span<const Byte> manifest,
                                                     const Resolver& resolve, bool require_classic) {
     auto document = parse_json({reinterpret_cast<const char*>(manifest.data()), manifest.size()},

@@ -1,4 +1,5 @@
 #include "platform/native_files.hpp"
+#include "platform/content_files.hpp"
 #include "base/cancellation.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
@@ -25,6 +26,19 @@ public:
     std::filesystem::path path;
 };
 } // namespace
+TEST_CASE("Native content mount enforces nested directory and byte boundaries", "[io][content]") {
+    TemporaryDirectory directory;
+    std::filesystem::create_directory(directory.path / "bundle");
+    io::write_new_file(directory.path / "bundle" / "inside.json", formats::Bytes{1, 2, 3});
+    io::write_new_file(directory.path / "outside.json", formats::Bytes{4, 5, 6});
+    io::ContentDirectory mount(directory.path);
+    CHECK(mount.read("bundle/inside.json", 3, "bundle").bytes == formats::Bytes{1, 2, 3});
+    CHECK_THROWS(mount.read("outside.json", 3, "bundle"));
+    CHECK_THROWS(mount.read("bundle/inside.json", 2, "bundle"));
+    CHECK_THROWS(mount.read("bundle/inside.json", 0));
+    CHECK_THROWS(mount.read("bundle/inside.json", 3, "../escape"));
+    CHECK(mount.read("outside.json", 3).bytes == formats::Bytes{4, 5, 6});
+}
 TEST_CASE("Native publication never overwrites an existing or concurrent destination", "[io]") {
     TemporaryDirectory directory;
     const auto target = directory.path / "snapshot.sqlite";

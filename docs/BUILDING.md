@@ -71,6 +71,10 @@ vendored JSON dependency. `OC2_BUILD_TOOLS=OFF` omits the CLI and native I/O lib
 default ON; Emscripten defaults them OFF while retaining the portable query API.
 See [inspection commands and output](m1-inspection.md) for a tools-only build.
 See [SQLite export](m1-sqlite-export.md) for the optional dependency and schema.
+The seven owned builtin gameplay JSON files are embedded in `oc2_formats`, with
+ledger/manifest hashes checked at configure time. Native and WASM clients can
+select builtin revision 1 without a filesystem, checkout or Python runtime.
+See [content resolution commands](m1-content-runtime.md#pack-inheritance-and-mounted-inputs).
 
 ## Pinned CI toolchains and inventories
 

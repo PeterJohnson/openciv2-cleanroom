@@ -7,7 +7,9 @@ ContentDirectory::ContentDirectory(const std::filesystem::path& root)
     if (!std::filesystem::is_directory(root_))
         throw std::invalid_argument("Content mount must be a directory");
 }
-formats::content::Source ContentDirectory::read(std::string_view relative) {
+formats::content::Source ContentDirectory::read(std::string_view relative,
+                                                std::size_t maximum_bytes,
+                                                std::string_view required_directory) {
     namespace fs = std::filesystem;
     formats::content::validate_relative_path(relative);
 #ifdef _WIN32
@@ -16,12 +18,20 @@ formats::content::Source ContentDirectory::read(std::string_view relative) {
 #endif
     const auto path =
         fs::canonical(root_ / fs::path(std::u8string(relative.begin(), relative.end())));
-    auto parent = path.parent_path();
-    while (!fs::equivalent(parent, root_)) {
-        const auto next = parent.parent_path();
-        if (next == parent || next.empty())
-            throw std::invalid_argument("Content path leaves its mounted directory");
-        parent = next;
+    const auto contained = [&](const fs::path& root) {
+        auto parent = path.parent_path();
+        while (!fs::equivalent(parent, root)) {
+            const auto next = parent.parent_path();
+            if (next == parent || next.empty())
+                throw std::invalid_argument("Content path leaves its mounted directory");
+            parent = next;
+        }
+    };
+    contained(root_);
+    if (!required_directory.empty()) {
+        formats::content::validate_relative_path(required_directory);
+        contained(fs::canonical(
+            root_ / fs::path(std::u8string(required_directory.begin(), required_directory.end()))));
     }
     if (!fs::is_regular_file(path))
         throw std::invalid_argument("Content source must be a regular file");
@@ -40,8 +50,8 @@ formats::content::Source ContentDirectory::read(std::string_view relative) {
     while (file) {
         file.read(buffer.data(), static_cast<std::streamsize>(buffer.size()));
         const auto count = static_cast<std::size_t>(file.gcount());
-        if (bytes.size() + count > 16 * 1024 * 1024)
-            throw std::runtime_error("Content source exceeds 16 MiB");
+        if (count > maximum_bytes - bytes.size())
+            throw std::runtime_error("Content source exceeds configured byte limit");
         bytes.insert(bytes.end(), buffer.begin(),
                      buffer.begin() + static_cast<std::ptrdiff_t>(count));
     }

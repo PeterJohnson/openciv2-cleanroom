@@ -16,6 +16,8 @@ constexpr auto usage =
     "       oc2 validate FILE [--json]\n"
     "       oc2 diff BEFORE AFTER [--json]\n"
     "       oc2 content validate GAMEPLAY_MANIFEST [--require-classic] [--json]\n"
+    "       oc2 content resolve CONTENT_MANIFEST [--parent MANIFEST]... [--locale LOCALE] "
+    "[--require-classic] [--json]\n"
     "       oc2 export FILE --sqlite NEW_DATABASE [--json] (optional build feature)\n"
     "Options: --format save|map (default: .mp means map; all others mean save)\n"
     "         --view stored (loaded/live views are not implemented)\n"
