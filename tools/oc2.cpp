@@ -184,7 +184,7 @@ int run(const std::vector<std::string>& args) {
                     query::write_snapshot_text(std::cout, before);
             } else {
                 ExportSignals signals;
-                std::stop_source cancellation;
+                base::CancellationSource cancellation;
                 const auto progress = [&](std::size_t) {
                     if (interrupted)
                         cancellation.request_stop();

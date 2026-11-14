@@ -151,6 +151,16 @@ ClassicFiles::resolve(std::string_view directory, std::string_view name, bool mi
                 match = entry.path();
             }
         }
+#ifdef _WIN32
+        // Windows temp/home paths can contain DOS short names (RUNNER~1).
+        // Directory iteration returns the long name. After checking ambiguous
+        // textual aliases, allow names resolved directly by the native filesystem.
+        if (!match) {
+            const auto native_alias = selected / *i;
+            if (fs::exists(native_alias, error) && !error)
+                match = native_alias;
+        }
+#endif
         if (match)
             selected = *match;
         else if (missing_leaf && std::next(i) == relative.end())

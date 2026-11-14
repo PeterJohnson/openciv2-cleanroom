@@ -63,7 +63,7 @@ TEST_CASE("Native failed or cancelled staged writes publish no destination", "[i
     TemporaryDirectory directory;
     const auto target = directory.path / "snapshot.sqlite";
     const formats::Bytes bytes(200000, 0xff);
-    std::stop_source cancellation;
+    base::CancellationSource cancellation;
     CHECK_THROWS_AS(io::write_new_file(target, bytes, cancellation.get_token(),
                                        [&](std::size_t written) {
                                            CHECK_FALSE(std::filesystem::exists(target));

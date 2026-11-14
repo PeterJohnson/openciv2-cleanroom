@@ -17,7 +17,7 @@ TEST_CASE("SQLite export cancellation and failure discard analysis without chang
     const auto expected = analysis::sqlite_snapshot(snapshot);
     CHECK(expected.size() > 4096);
     CHECK(std::string(expected.begin(), expected.begin() + 15) == "SQLite format 3");
-    std::stop_source cancellation;
+    base::CancellationSource cancellation;
     std::size_t observed = 0;
     CHECK_THROWS_AS(analysis::sqlite_snapshot(snapshot, cancellation.get_token(),
                                               [&](std::size_t completed) {

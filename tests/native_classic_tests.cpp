@@ -10,6 +10,11 @@
 #include "classic_rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <chrono>
+#ifdef _WIN32
+#define NOMINMAX
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 using namespace openciv;
 using namespace openciv::formats;
@@ -57,6 +62,31 @@ StoredSave saved() {
     return s;
 }
 } // namespace
+#ifdef _WIN32
+TEST_CASE("Native classic files accept Windows short directory aliases", "[io][classic-files]") {
+    TemporaryDirectory dir;
+    dir.text("input.txt", "payload\n");
+    const auto required = GetShortPathNameW(dir.path.c_str(), nullptr, 0);
+    REQUIRE(required != 0);
+    std::wstring buffer(required, L'\0');
+    const auto length = GetShortPathNameW(dir.path.c_str(), buffer.data(), required);
+    REQUIRE(length != 0);
+    REQUIRE(length < required);
+    buffer.resize(length);
+    const fs::path short_path(buffer);
+    if (short_path == dir.path)
+        SKIP("DOS short directory names unavailable on this volume");
+    io::ClassicFiles files(short_path);
+    auto input = files.open_text(".", "input.txt");
+    REQUIRE(input.stream);
+    CHECK(input.stream->read().characters == "payload\n");
+    input.stream->close();
+    auto output = files.open_output("new.dat");
+    REQUIRE(output);
+    CHECK(output->close());
+    CHECK(fs::exists(dir.path / "new.dat"));
+}
+#endif
 TEST_CASE("Native F03 preferences replace reload and delete failed output through classic services",
           "[io][classic-files][preferences]") {
     TemporaryDirectory dir;
@@ -203,6 +233,7 @@ TEST_CASE("Native classic text keeps read windows bare carriage returns and expl
     dir.text("long.txt", std::string(253, 'x') + "\r\nY\rZ\n");
     io::ClassicFiles files(dir.path);
     auto opened = files.open_text(".", "long.txt");
+    REQUIRE(opened.stream);
     REQUIRE(opened.stream->read().characters == std::string(253, 'x') + "\n");
     REQUIRE(opened.stream->read().characters == "Y\rZ\n");
     REQUIRE(opened.stream->read().status == classic::TextReadStatus::end);

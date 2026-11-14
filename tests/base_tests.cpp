@@ -1,4 +1,5 @@
 #include "base/arithmetic.hpp"
+#include "base/cancellation.hpp"
 #include "base/random.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <array>
@@ -13,6 +14,25 @@ namespace {
 constexpr auto minimum = std::numeric_limits<std::int32_t>::min();
 constexpr auto maximum = std::numeric_limits<std::int32_t>::max();
 } // namespace
+
+TEST_CASE("Host cancellation tokens retain requests and isolate sources", "[base][cancellation]") {
+    CancellationToken retained;
+    CHECK_FALSE(retained.stop_requested());
+    CHECK_NOTHROW(check_stop(retained));
+    CancellationSource independent;
+    {
+        CancellationSource source;
+        retained = source.get_token();
+        auto copied_source = source;
+        CHECK_FALSE(retained.stop_requested());
+        CHECK(copied_source.request_stop());
+        CHECK_FALSE(source.request_stop());
+        CHECK(retained.stop_requested());
+        CHECK_FALSE(independent.get_token().stop_requested());
+    }
+    CHECK_THROWS_AS(check_stop(retained), Cancelled);
+    CHECK_NOTHROW(check_stop(independent.get_token()));
+}
 
 TEST_CASE("F01 arithmetic retains wrap, signed division and distinct clamp rules", "[base][F01]") {
     // F01 §1: boundary values and the documented reversed-bound examples.

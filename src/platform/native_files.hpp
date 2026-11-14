@@ -3,7 +3,7 @@
 #include "formats/bytes.hpp"
 #include <filesystem>
 #include <functional>
-#include <stop_token>
+#include "base/cancellation.hpp"
 
 namespace openciv::io {
 // Native client adapter. Portable formats/queries never open a path.
@@ -12,6 +12,6 @@ formats::Bytes read_file(const std::filesystem::path& path);
 // Stage in the destination directory, then atomically publish. Errors/cancellation
 // remove the staging file; callbacks run only before publication and may throw.
 void write_new_file(const std::filesystem::path& path, std::span<const formats::Byte> bytes,
-                    std::stop_token stop = {},
+                    base::CancellationToken stop = {},
                     const std::function<void(std::size_t)>& progress = {});
 } // namespace openciv::io
