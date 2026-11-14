@@ -15,6 +15,8 @@ developer shell for Ninja, or the Visual Studio generator shown below.
 for SDL3 3.4.2, Dear ImGui 1.93.0, Catch2 3.8.1, the matching ImGui Test Engine
 revision, and the DejaVu 2.37 TrueType data archive. It also records the Emscripten, Playwright and clang-format versions
 used by CI.
+The optional native analysis exporter pins SQLite 3.54.1; it is configured only
+with `OC2_ENABLE_SQLITE_EXPORT=ON`, which defaults OFF.
 Source downloads are disabled unless `OC2_FETCH_DEPENDENCIES=ON` is explicit.
 A preset whose name ends in `-fetch`, plus `gui-tests` and `web`, opts into downloads.
 
@@ -64,6 +66,7 @@ and view-model libraries plus the native `oc2` inspection CLI, with no third-par
 dependency. `OC2_BUILD_TOOLS=OFF` omits the CLI and native I/O library. Native tools
 default ON; Emscripten defaults them OFF while retaining the portable query API.
 See [inspection commands and output](m1-inspection.md) for a tools-only build.
+See [SQLite export](m1-sqlite-export.md) for the optional dependency and schema.
 
 ## Pinned CI toolchains and inventories
 

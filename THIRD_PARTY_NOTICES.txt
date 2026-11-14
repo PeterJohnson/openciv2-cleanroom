@@ -1,3 +1,10 @@
+SQLite 3.54.1 (optional native analysis exporter only)
+https://www.sqlite.org/copyright.html
+
+SQLite's deliverable source and documentation are dedicated to the public domain.
+The pinned amalgamation is unmodified. Extension loading is disabled at compile
+time. SQLite is not linked into the portable game, query library or GUI.
+
 Dear ImGui 1.93.0
 https://github.com/ocornut/imgui/tree/v1.93.0
 

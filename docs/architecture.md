@@ -474,9 +474,12 @@ native CLI itself is not a browser requirement.
 Add a native CLI export over the same decoded records and query projections:
 
 ```sh
-# Proposed interface; requires the optional exporter when implemented.
+# Implemented stored domain; requires OC2_ENABLE_SQLITE_EXPORT=ON.
 oc2 export game.sav --sqlite analysis.sqlite
 ```
+
+The implemented [schema, publication boundary and evidence](m1-sqlite-export.md)
+cover stored current saves and raw maps; loaded/live export remains future work.
 
 Default to stored-file data, with the same explicit opt-in for loaded-state
 interpretation as inspection. Later, the headless runner can export selected

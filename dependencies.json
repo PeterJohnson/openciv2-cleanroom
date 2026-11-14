@@ -1,6 +1,11 @@
 {
   "schemaVersion": 1,
   "libraries": {
+    "SQLite": {
+      "version": "3.54.1",
+      "url": "https://www.sqlite.org/2026/sqlite-amalgamation-3540100.zip",
+      "sha256": "0a9c8e34352dad46006aa82836d5383bff9dc6bc9ce5a60553c05aa30e6ad1f9"
+    },
     "SDL3": {
       "version": "3.4.2",
       "url": "https://codeload.github.com/libsdl-org/SDL/tar.gz/refs/tags/release-3.4.2",

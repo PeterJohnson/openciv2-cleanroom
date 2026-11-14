@@ -113,7 +113,6 @@ original program or establishes that it accepted an edited export.
 ## Remaining M1 work
 
 The [completion audit](m1-validation.md) still governs the milestone. Next are
-optional SQLite export over the implemented stored queries and inspection CLI,
 semantic content and classic text adapters, explicit process/session
 lifecycles and ordered loading, commands/continuations/authority, generalized
 X02 execution and choice replay, and N05/N02 foundations. Legacy stored-file

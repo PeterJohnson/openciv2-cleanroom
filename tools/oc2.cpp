@@ -1,5 +1,9 @@
 #include "platform/native_files.hpp"
 #include "query/output.hpp"
+#include "base/cancellation.hpp"
+#ifdef OC2_ENABLE_SQLITE_EXPORT
+#include "analysis/sqlite_export.hpp"
+#endif
 #include <cctype>
 #include <csignal>
 #include <iostream>
@@ -10,11 +14,34 @@ constexpr auto usage =
     "Usage: oc2 inspect FILE [--json] [--cities|--units|--tiles|--civilizations|--section NAME]\n"
     "       oc2 validate FILE [--json]\n"
     "       oc2 diff BEFORE AFTER [--json]\n"
+    "       oc2 export FILE --sqlite NEW_DATABASE [--json] (optional build feature)\n"
     "Options: --format save|map (default: .mp means map; all others mean save)\n"
     "         --view stored (loaded/live views are not implemented)\n"
     "Stored save support: version 0x2c. Inputs are read-only.\n"
     "Exit: 0 checks passed/equal; 1 semantic errors/different; 2 usage/I/O failure;\n"
-    "      3 unsupported version/view/comparison; 4 malformed input.\n";
+    "      3 unsupported feature/version/view/comparison; 4 malformed input; 130 cancelled.\n";
+#ifdef OC2_ENABLE_SQLITE_EXPORT
+volatile std::sig_atomic_t interrupted = 0;
+void interrupt_export(int) {
+    interrupted = 1;
+}
+class ExportSignals {
+public:
+    ExportSignals() {
+        interrupted = 0;
+        previous_int_ = std::signal(SIGINT, interrupt_export);
+        previous_term_ = std::signal(SIGTERM, interrupt_export);
+    }
+    ~ExportSignals() {
+        std::signal(SIGINT, previous_int_);
+        std::signal(SIGTERM, previous_term_);
+    }
+
+private:
+    using Handler = void (*)(int);
+    Handler previous_int_, previous_term_;
+};
+#endif
 query::FileKind file_kind(const std::filesystem::path& path,
                           const std::optional<query::FileKind>& selected) {
     if (selected)
@@ -44,11 +71,13 @@ int run(const std::vector<std::string>& args) {
             return args.empty() ? 2 : 0;
         }
         const auto& command = args[0];
-        if (command != "inspect" && command != "validate" && command != "diff")
+        if (command != "inspect" && command != "validate" && command != "diff" &&
+            command != "export")
             throw std::invalid_argument("Unknown command");
         bool json = false, positional_only = false;
         std::vector<std::filesystem::path> paths;
         std::optional<query::FileKind> format;
+        std::optional<std::filesystem::path> destination;
         query::OutputSelection selection;
         for (std::size_t i = 1; i < args.size(); ++i) {
             const auto& arg = args[i];
@@ -74,6 +103,13 @@ int run(const std::vector<std::string>& args) {
                     throw std::invalid_argument("Missing option value");
                 return args[i];
             };
+            if (arg == "--sqlite") {
+                if (command != "export" || destination)
+                    throw std::invalid_argument("--sqlite is valid once for export only");
+                const auto& value = next();
+                destination.emplace(std::u8string{value.begin(), value.end()});
+                continue;
+            }
             if (arg == "--view") {
                 if (next() != "stored") {
                     std::cerr << "Only stored inspection is implemented; loaded/live views require "
@@ -109,11 +145,47 @@ int run(const std::vector<std::string>& args) {
             throw std::invalid_argument("Incorrect number of input paths");
         if (command != "inspect" && !selection.sections.empty())
             throw std::invalid_argument("Section selection is available only for inspect");
+        if (command == "export" && !destination)
+            throw std::invalid_argument("Export requires --sqlite NEW_DATABASE");
+#ifndef OC2_ENABLE_SQLITE_EXPORT
+        if (command == "export") {
+            std::cerr << "SQLite export is unavailable; configure OC2_ENABLE_SQLITE_EXPORT=ON\n";
+            return 3;
+        }
+#endif
         const auto before =
             query::inspect_stored(io::read_file(paths[0]), file_kind(paths[0], format),
                                   query::FileAccess::offline_omniscient);
         auto result = status(before);
-        if (command == "diff") {
+        if (command == "export") {
+#ifdef OC2_ENABLE_SQLITE_EXPORT
+            if (!before.decoded()) {
+                if (json)
+                    query::write_snapshot_json(std::cout, before, {}, false);
+                else
+                    query::write_snapshot_text(std::cout, before);
+            } else {
+                ExportSignals signals;
+                std::stop_source cancellation;
+                const auto progress = [&](std::size_t) {
+                    if (interrupted)
+                        cancellation.request_stop();
+                };
+                const auto bytes =
+                    analysis::sqlite_snapshot(before, cancellation.get_token(), progress);
+                io::write_new_file(*destination, bytes, cancellation.get_token(), progress);
+                if (json)
+                    std::cout << "{\"schema\":\"openciv2-export-receipt/1\",\"complete\":true,"
+                                 "\"analysisSchema\":\"openciv2-analysis/1\",\"sourceSha256\":\""
+                              << before.source_hash() << "\",\"bytes\":\"" << bytes.size() << "\"}";
+                else
+                    std::cout << "Exported SQLite analysis (schema 1); " << bytes.size()
+                              << " bytes; source SHA-256 " << before.source_hash()
+                              << "\nValidation coverage remains incomplete; inspect database "
+                                 "diagnostics.";
+            }
+#endif
+        } else if (command == "diff") {
             const auto after =
                 query::inspect_stored(io::read_file(paths[1]), file_kind(paths[1], format),
                                       query::FileAccess::offline_omniscient);
@@ -137,6 +209,9 @@ int run(const std::vector<std::string>& args) {
         std::cout << '\n';
         flush_output();
         return result;
+    } catch (const base::Cancelled& error) {
+        std::cerr << error.what() << '\n';
+        return 130;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n' << usage;
         return 2;

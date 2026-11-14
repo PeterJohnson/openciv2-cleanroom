@@ -54,7 +54,7 @@ jobs:
           if [ "${{ matrix.mode }}" = desktop ]; then
             args+=(-DOC2_FETCH_SDL=ON -DOC2_GUI_TESTS=ON)
           else
-            args+=(-DOC2_BUILD_GUI=OFF)
+            args+=(-DOC2_BUILD_GUI=OFF -DOC2_ENABLE_SQLITE_EXPORT=ON)
           fi
           if [ "$RUNNER_OS" = Windows ]; then
             args+=(-G Ninja "-DCMAKE_C_COMPILER=$LLVM_PATH/bin/clang-cl.exe" "-DCMAKE_CXX_COMPILER=$LLVM_PATH/bin/clang-cl.exe")

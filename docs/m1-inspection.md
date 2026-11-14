@@ -3,6 +3,7 @@
 The native `oc2` CLI and portable `oc2_query` library implement offline inspection
 of version `0x2c` saves and classic raw maps. M1 remains in progress; this is a
 stored observation, not a loaded session or a gameplay compatibility claim.
+Optional [SQLite export](m1-sqlite-export.md) consumes the same owned snapshots.
 
 ## Build and use
 
@@ -110,7 +111,7 @@ Python's JSON/hash libraries, including Unicode paths, broken output pipes and s
 SHA-256 tests include published vectors and independent padding-boundary results.
 These checks run independently of graphics and gameplay content.
 
-On this Windows host, MSVC 19.51 passes 68 CTests (64 Catch2 cases, two metadata
+At the inspection slice's introduction, MSVC 19.51 passed 68 CTests (64 Catch2 cases, two metadata
 checks, CLI integration and the twenty-vector conformance runner). Pinned
 Emscripten 4.0.23 passes four CTests, including all 64 portable Catch2 cases.
 The Python regression suite runs 99 tests with two Windows symlink cases skipped.
