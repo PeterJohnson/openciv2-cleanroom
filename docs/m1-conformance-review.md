@@ -1,28 +1,26 @@
 # M1-03 conformance inventory and review
 
-Status: **open**. The fixed inventory and integration-family mapping are recorded;
-independent per-fixture review is pending. This document does not claim that the
-implementation's successful execution is independent expectation review.
+Status: **passed** at implementation candidate `2827676`, with the two reviewed
+fixture metadata corrections at revision 7. Independent expectation review and
+native/WASM execution are separate evidence below.
 
 ## Fixed review packet
 
 [m1-review-inventory.json](conformance/m1-review-inventory.json) records exactly
 the 57 fixture IDs and 15 operation IDs from baseline `b125df5`. Its paths and
-SHA-256 values were checked against the current registry and files at `d65e659`.
-Each fixture has pending fields for domain, expected values, provenance, excluded
-state and disposition. Reviewer identity and reviewed revision are deliberately
-unset. The reviewer must not be the author of the reviewed expectations. Record
-findings against these hashes and update the packet after any correction.
+SHA-256 values match the corrected registry and files. Every fixture records
+domain, expected values, provenance, excluded state and disposition. The
+[independent review](conformance/m1-independent-review.md) identifies the separate
+reviewer and reviewed revision, with original hashes and correction history.
 
-The repository search found no completed independent review of this fixed set.
-The user has been asked whether the earlier external review contains it. Until
-that evidence arrives or another independent review is available, M1-03 stays
-open. Do not treat this inventory as an approval or invent review dispositions.
+The user confirmed the earlier committed external review did not cover this gate
+and authorized a separate review agent. That review accepted all 57 fixtures
+after independently verifying two domain-label corrections. Numeric expectations,
+trace expectations and exclusions are unchanged.
 
-The native/WASM reports refreshed with the `597dec1` implementation inputs execute
-all 57 vectors. Observations and consumed prefixes match between platforms and
-the preceding reports. The `d65e659` CLI change leaves those adapter inputs
-unchanged. Final candidate reporting remains part of M1-06/M1-07.
+The native/WASM reports refreshed at `2827676` execute all 57 corrected vectors.
+All pass; observations and consumed prefixes match between platforms. Final
+platform-matrix reporting remains part of M1-06/M1-07.
 
 `F02.prepareNewGame` is the declared foundation projection, with its fixture
 exclusions retained; it is not a full playable game or arbitrary pending-world

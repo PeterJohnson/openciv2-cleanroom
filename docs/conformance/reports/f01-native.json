@@ -1,9 +1,9 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "foundation-session-v3",
-  "createdUtc": "2026-11-14T21:59:25.459855+00:00",
-  "implementationRevision": "1183c1fcc35ded981c2e7af958f98638aef5255a",
-  "uncommittedImplementationChanges": true,
+  "createdUtc": "2026-11-14T22:18:48.562195+00:00",
+  "implementationRevision": "2827676d4e50ea0eea09a355baca8a49d6ce81b3",
+  "uncommittedImplementationChanges": false,
   "implementationSources": {
     "CMakeLists.txt": "a6821bab250f8b570333e0ca84f19ac8dba9adbd09ad996bc2e6fb36a258443c",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
@@ -5006,9 +5006,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
-      "sha256": "b0a13a809dcb056a49067116b44f77299f7c7d553e4d8c6159de555bb057a885",
+      "sha256": "11b78129e91cbd576ea43675905a30b7fb887e0269bb6b9fb82aef36877c1946",
       "id": "X02.F01.sample-rounded-endpoint",
-      "revision": 6,
+      "revision": 7,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
@@ -5034,7 +5034,7 @@
         "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
       },
       "profile": {
-        "domain": "nominal",
+        "domain": "accepted-off-nominal",
         "safety": "exclude every out-of-bounds write; stop before an invalid destination",
         "restrictions": [],
         "deviations": []
@@ -5362,9 +5362,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
-      "sha256": "10cb55636e4db2f4e5af5bee5af44aeaa7fa3098df55496550b2b13f177a4973",
+      "sha256": "3a6b78a03cb37f27b7b9ea82182ea300b748e30b49e072e9d67f732100ebd340",
       "id": "X02.F01.sample-wrapped-range",
-      "revision": 6,
+      "revision": 7,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
@@ -5390,7 +5390,7 @@
         "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
       },
       "profile": {
-        "domain": "nominal",
+        "domain": "accepted-off-nominal",
         "safety": "exclude every out-of-bounds write; stop before an invalid destination",
         "restrictions": [],
         "deviations": []

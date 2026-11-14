@@ -1955,9 +1955,9 @@
     },
     {
       "id": "X02.F01.sample-wrapped-range",
-      "revision": 6,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
-      "sha256": "10cb55636e4db2f4e5af5bee5af44aeaa7fa3098df55496550b2b13f177a4973",
+      "sha256": "3a6b78a03cb37f27b7b9ea82182ea300b748e30b49e072e9d67f732100ebd340",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1965,9 +1965,9 @@
     },
     {
       "id": "X02.F01.sample-rounded-endpoint",
-      "revision": 6,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
-      "sha256": "b0a13a809dcb056a49067116b44f77299f7c7d553e4d8c6159de555bb057a885",
+      "sha256": "11b78129e91cbd576ea43675905a30b7fb887e0269bb6b9fb82aef36877c1946",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
