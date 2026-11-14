@@ -754,10 +754,10 @@
   "gaps": [
     {
       "id": "operation-inventory",
-      "milestone": "M1\u2013M7",
+      "milestone": "M3-M7",
       "domain": "Coverage beyond the 15 registered foundation operations at b125df5; full gameplay/shared-state closures join M3\u2013M7.",
       "knownPrefix": "65 owners cataloged and 15 operations registered; no exhaustive original-entry inventory claim.",
-      "closureEvidence": "M1-03 in docs/m1-closeout.md requires review of the fixed registry and an eight-family Catch2/CLI evidence map, not more per-helper adapters. Register later gameplay operations with their owning milestone; unresolved algorithms require spec updates or independent observations."
+      "closureEvidence": "The fixed M1-03 inventory and eight-family evidence mapping passed; see docs/m1-conformance-review.md. Register later gameplay operations with their owning milestone; unresolved algorithms require spec updates or independent observations."
     },
     {
       "id": "x02-general-runner",
@@ -798,14 +798,14 @@
       "id": "original-access",
       "milestone": "M3-M7",
       "domain": "M1-04 fixed current-save/raw-map acceptance procedure; broader version/mode/mixed-peer interoperability and W02 measurements in M3\u2013M7.",
-      "knownPrefix": "Historical evidence includes seven raw-map and 21 current-save codec reconstructions, original acceptance of stored/live exports, an original TCP ID greeting and UDP discovery, and a failed TCP ping. Current live-save behavior changed at b125df5, so older captures do not validate that exporter revision. M1-04 is now passed at 2827676: current 7-map/21-save byte-exact corpus, original acceptance of current live treasury edit and raw map, original turn/resave and current codec decode. See docs/m1-original-closeout.md.",
+      "knownPrefix": "Historical evidence includes seven raw-map and 21 current-save codec reconstructions, original acceptance of stored/live exports, an original TCP ID greeting and UDP discovery, and a failed TCP ping. Current live-save behavior changed at b125df5, so older captures do not validate that exporter revision. M1-04 is now passed at 56be096: current 7-map/21-save byte-exact corpus, original acceptance of current live treasury edit and raw map, original turn/resave and current codec decode. See docs/m1-original-closeout.md.",
       "closureEvidence": "The fixed M1-04 procedure is closed. Retain the failed ping honestly; broader version/mode interoperability joins M3-M7; full TCP sessions, mixed-peer codecs and reverse-role play are M6."
     },
     {
       "id": "fresh-game-projection-review",
       "milestone": "M3-M4",
       "domain": "Full gameplay integration beyond the three frozen foundation reset projections.",
-      "knownPrefix": "Three authored reset vectors cover their declared projection; broader tests cover cold/reused/cancelled/failed setup, mutable content, pending commands/output and identity/RNG guards. Projection exclusions are explicit. M1-03 independent review accepted all three projections with exclusions preserved; M1-05 final regression suites passed at 5f1908e.",
+      "knownPrefix": "Three authored reset vectors cover their declared projection; broader tests cover cold/reused/cancelled/failed setup, mutable content, pending commands/output and identity/RNG guards. Projection exclusions are explicit. M1-03 independent review accepted all three projections with exclusions preserved; M1-05 final regression suites passed at 56be096.",
       "closureEvidence": "Frozen projection review is closed. Preserve its scope; implement and verify W02/V01/balancing/AI gameplay children with M3/M4."
     }
   ]

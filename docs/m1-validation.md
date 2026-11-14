@@ -20,7 +20,7 @@ Those historical checks were specification-derived; they did not include new
 original-game or mixed-peer comparisons. The later M1-04 observation below adds
 only its explicit current-save/raw-map acceptance evidence.
 
-Status: **in progress**. The [finite closeout contract](m1-closeout.md) is the
+Status: **complete** at source revision `56be096`, 2026-11-14. The [finite closeout contract](m1-closeout.md) is the
 authoritative work list, frozen at `b125df5`. Its seven gates and explicit stopping
 rule govern M1 completion. This audit records evidence; historical slice documents
 and broad coverage gaps do not enlarge the goal. Owning specs still govern correctness.
@@ -31,23 +31,25 @@ and broad coverage gaps do not enlarge the goal. Owning specs still govern corre
 | --- | --- | --- |
 | M1-01: local checkpoint profile | Passed | `3b135a6`: [eight-group evidence](m1-checkpoint.md#eight-group-acceptance-evidence), seven session cases/241 assertions each on Windows and WASM; explicit owner codecs, state rejection and atomic admission |
 | M1-02: content conversions | Passed | `d65e659`, portable core `597dec1`: [three-row acceptance evidence](m1-content-conversion.md#m1-02-acceptance-evidence), paired semantics and native admission, receipts, rejection/output failure; 570 native CTests and seven WASM targets |
-| M1-03: fixed conformance review | Passed | `2827676` with two revision-7 domain corrections: [independent 57-fixture review and eight-family mapping](m1-conformance-review.md); all native/WASM observations and consumed prefixes match |
-| M1-04: original-file evidence | Passed | `2827676`: [current original-file evidence](m1-original-closeout.md), seven maps/21 saves byte-exact; original accepted live treasury edit and map, advanced/resaved one turn; current codec decoded resave |
-| M1-05: foundation regressions | Passed | `5f1908e`: [final local regression evidence](conformance/reports/m1-local-matrix-windows.json), 570 Windows SQLite-off/572 SQLite-on CTests and seven pinned WASM targets; 115 Python tests with two unavailable-symlink skips |
-| M1-06: build matrix | Open | `5f1908e`: [local matrix](conformance/reports/m1-local-matrix-windows.json) passes; Windows MSVC evidence is supplemental, not pinned-Clang acceptance. Hosted pinned Windows/Linux/macOS, sanitizer and tools-only results remain; push decision pending |
-| M1-07: completion audit | Open | Close M1-01–M1-06, reconcile evidence/deferred issues and record the final decision |
+| M1-03: fixed conformance review | Passed | Independent review at `2827676` plus verified revision-7 corrections; [57-fixture review and eight-family mapping](m1-conformance-review.md); final `56be096` native/WASM observations and consumed prefixes match |
+| M1-04: original-file evidence | Passed | `56be096`: [current original-file evidence](m1-original-closeout.md), seven maps/21 saves byte-exact; original accepted live treasury edit and map, advanced/resaved one turn; current codec decoded resave |
+| M1-05: foundation regressions | Passed | `56be096`: [final hosted regression matrix](m1-build-matrix.md), full applicable native/WASM/sanitizer suites including repair, isolation, cancellation and conversion checks |
+| M1-06: build matrix | Passed | `56be096`: [pinned hosted matrix](m1-build-matrix.md), all required Windows/Linux/macOS/SQLite/WASM/sanitizer/tools-only configurations and developer checks |
+| M1-07: completion audit | Passed | `56be096`: all six gates above verified, coverage ledger and slice status reconciled, deferred issues retained below; no remaining M1 blocker |
 
-No external blocker is asserted merely because a gate is open. Record the missing
-resource/reviewer/platform only after attempting the relevant work. A blocked gate
-does not count as passed. This scope update itself neither implements the open
-deliverables nor marks M1 complete.
+The initial hosted failures were fixed and the required configurations rerun.
+Evidence is bound to the tested source revision; subsequent audit/report-only
+edits do not change the implementation or build inputs.
 
 ## Deferred issues and current completion decision
 
-M1 is **not complete**. M1-01 through M1-05 have evidence; M1-06 still needs
-revision-bound pinned native and sanitizer results. M1-07 cannot pass until that
-matrix passes. The coverage ledger and implementation-plan row now reflect the
-completed review/conversion/file gates without widening their domains.
+M1 is **complete within the finite contract**. The checkpoint and conversion
+acceptance mappings were checked against the final suites; all independent-review
+fixture hashes match the current files; the original-file procedure was repeated
+after portability fixes; all required hosted artifacts pass and agree on X02
+observations and prefixes. The coverage ledger and implementation-plan row reflect
+these gates without widening their domains. No complete gameplay, arbitrary-world
+checkpoint, full loaded-state diagnostic or original-peer session is claimed.
 
 | Deferred issue | Owner and retained limitation |
 | --- | --- |

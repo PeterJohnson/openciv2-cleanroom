@@ -1,8 +1,8 @@
 # M1-04 current original-file evidence
 
-Status: **passed** for implementation candidate `2827676` on Windows, 2026-11-14.
-Only review/fixture metadata changed during these observations; the codecs and
-export driver remained unchanged. Binary hashes are retained in the reports.
+Status: **passed** for implementation candidate `56be096` on Windows, 2026-11-14.
+The fixed corpus and original UI procedure were repeated after the cancellation
+and Windows short-path portability fixes. Binary hashes are retained in the reports.
 
 The [corpus report](conformance/reports/m1-original-corpus-windows.json) rechecks
 the fixed seven maps and 21 current-format saves. Each input hash matches its

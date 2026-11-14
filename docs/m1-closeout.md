@@ -1,8 +1,10 @@
 # M1 finite closeout contract
 
-Status: closeout scope defined; implementation and final evidence are still open.
+Status: all seven gates passed at source `56be096`; see [final evidence](m1-validation.md).
+The baseline status column below retains the scope-setting historical state.
 Baseline: `b125df5` (2026-11-14). This document fixes the remaining M1 scope at
-that revision. It does not start an implementation run or declare M1 complete.
+that revision. The original scope definition alone was not completion evidence;
+the final audit linked above records the subsequent implementation and checks.
 
 ## Authority and stopping rule
 

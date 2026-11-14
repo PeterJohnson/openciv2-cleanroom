@@ -18,9 +18,9 @@ and authorized a separate review agent. That review accepted all 57 fixtures
 after independently verifying two domain-label corrections. Numeric expectations,
 trace expectations and exclusions are unchanged.
 
-The native/WASM reports refreshed at `2827676` execute all 57 corrected vectors.
-All pass; observations and consumed prefixes match between platforms. Final
-platform-matrix reporting remains part of M1-06/M1-07.
+The final hosted native/WASM reports at `56be096` execute all 57 corrected vectors.
+All pass; observations and consumed prefixes match across all six configurations
+in the [final build matrix](m1-build-matrix.md).
 
 `F02.prepareNewGame` is the declared foundation projection, with its fixture
 exclusions retained; it is not a full playable game or arbitrary pending-world
@@ -46,7 +46,6 @@ checks require the enabled configuration in the final M1-06 matrix.
 | N05 framing/envelopes | `tests/network_stream_tests.cpp`, the N05 composition case in `tests/network_message_tests.cpp`: little-endian headers, fragmented input, partial-send FIFO, routing/envelopes and bounded rejection; no full original-peer session claim |
 | N02 sections/checksums/compression | `tests/network_message_tests.cpp`, `tests/network_compression_tests.cpp`: section descriptors, checksum/mirror behavior, retained block order, byte/word thresholds and tails, bounded expansion and failure behavior; synthetic producers do not establish complete live-world section application |
 
-The current local regression evidence is 570 native CTests at `d65e659`, and
-seven WASM targets with 546 portable cases at the unchanged `597dec1` core.
-These establish execution for applicable configurations; they do not close
-independent review, original-file execution or the remaining platform matrix.
+The final regression evidence is recorded in the [hosted matrix](m1-build-matrix.md).
+Independent review and [original-file execution](m1-original-closeout.md) retain
+their separate provenance and bounded claims.

@@ -1,8 +1,8 @@
 {
   "format": "openciv2-m1-original-execution/1",
-  "createdUtc": "2026-11-14T22:19:18.754484+00:00",
-  "implementationRevision": "2827676d4e50ea0eea09a355baca8a49d6ce81b3",
-  "implementationChanges": "None; concurrent independent-review and fixture-domain metadata edits only",
+  "createdUtc": "2026-11-14T22:42:39.824312+00:00",
+  "implementationRevision": "56be096c474314ef1dc40b602ce2a5251f8b7923",
+  "implementationChanges": "None during observation; final portability fixes committed at 56be096",
   "target": {
     "path": "build\\original-text-runtime\\civ2.exe",
     "bytes": 2489344,
@@ -10,19 +10,19 @@
   },
   "drivers": [
     {
-      "path": "build\\headless-fetch\\oc2_live_save.exe",
+      "path": "build\\sqlite-export\\oc2_live_save.exe",
       "bytes": 2844160,
-      "sha256": "26bd8cfc01331e44b8d6204ea940ad971be2d12800dff51c50bac94a05a238cc"
+      "sha256": "3c9360c02fb9f10fa98f5d8efd5f1e6464e2ca6351dc192833e8f6708276e7e2"
     },
     {
-      "path": "build\\headless-fetch\\oc2_save_roundtrip.exe",
+      "path": "build\\sqlite-export\\oc2_save_roundtrip.exe",
       "bytes": 1399808,
-      "sha256": "fb6793017e047c17f8cbf88dc925fc3c495de181becfcde7b5ee11062a3fc80d"
+      "sha256": "2172b39d1cbc1dde8a7f7ac554c0463804365de99af985afea5bd8d4603e8730"
     },
     {
-      "path": "build\\headless-fetch\\oc2_map_roundtrip.exe",
+      "path": "build\\sqlite-export\\oc2_map_roundtrip.exe",
       "bytes": 408064,
-      "sha256": "c3eee4d0a5d52984fdd5d569c15747faea86b1b3b7dbda6fd488d19077b46851"
+      "sha256": "56bd5e02f123b89bf4f580107af894ba189a21b6c83511f9ca8c846e73e5de4f"
     }
   ],
   "liveExport": {
@@ -63,7 +63,7 @@
     },
     "output": {
       "bytes": 136379,
-      "path": "C:\\Projects\\openciv2-cleanroom\\build\\original-text-runtime\\m1_current_gold888.sav",
+      "path": "C:\\Projects\\openciv2-cleanroom\\build\\original-text-runtime\\m1_portable_gold888.sav",
       "sha256": "f552b5f396ab78114bd5dfddef9d3456080f549b31f7220d0d469663fb6adc67"
     },
     "outputWritten": true,
@@ -104,7 +104,7 @@
     ]
   },
   "originalObservation": {
-    "load": "Normal Load a Game accepted m1_current_gold888.sav; Abe Lincoln/Americans, Chieftain, 4000 BC",
+    "load": "Normal Load a Game accepted m1_portable_gold888.sav; Abe Lincoln/Americans, Chieftain, 4000 BC",
     "treasury": 888,
     "action": "Dismissed tutorial and skipped active settler with Space; original advanced one turn",
     "after": {
@@ -119,8 +119,8 @@
     "headlessSpriteCallbacks": 1,
     "input": {
       "bytes": 136555,
-      "path": "C:\\Projects\\openciv2-cleanroom\\build\\original-text-runtime\\m1_original_turn2.sav",
-      "sha256": "71d28f1edc8daa00b3f5101b1335f2bb6132cb4d13732b9faa6a3416b26064b3"
+      "path": "C:\\Projects\\openciv2-cleanroom\\build\\original-text-runtime\\m1_portable_turn2.sav",
+      "sha256": "7763af9d2272212daae6c246e8c3e3bf8a027852c3b4369f1d2809aa5e27091a"
     },
     "loadGameplayDraws": 255,
     "loaded": {
@@ -145,8 +145,8 @@
     },
     "output": {
       "bytes": 136555,
-      "path": "C:\\Projects\\openciv2-cleanroom\\build\\m1-original-2827676\\resave-live-export.sav",
-      "sha256": "79a2db46fc869b260f7a4a94eff5c230474aebf51237dd048a12db1c3a742c3b"
+      "path": "C:\\Projects\\openciv2-cleanroom\\build\\m1-original-56be096\\resave-live-export.sav",
+      "sha256": "24215cefd9f3c4880ab48cbae5df9bce12554d4162b5006ac010fe9dab77c47c"
     },
     "outputWritten": true,
     "saveRandomContextsUnchanged": true,
@@ -206,7 +206,7 @@
       "name": "EUROPE.MP",
       "sourceSha256": "8ef3dfa730535aa85292a96bb41a2b4ca4bf11c709afee6487e1cbe17ede5b98",
       "sourceUnchanged": true,
-      "output": "build\\m1-original-2827676\\EUROPE.MP",
+      "output": "build\\m1-original-56be096\\EUROPE.MP",
       "outputSha256": "8ef3dfa730535aa85292a96bb41a2b4ca4bf11c709afee6487e1cbe17ede5b98",
       "observed": {
         "width": 150,
@@ -221,29 +221,29 @@
   },
   "screenshots": [
     {
-      "path": "build\\m1-original-2827676\\original-gold888.png",
-      "bytes": 168539,
-      "sha256": "c1b9aef55a08f5643784aca187080cbb16be64685763c19598671590e4ab5d4c"
+      "path": "build\\m1-original-56be096\\gold888.png",
+      "bytes": 169118,
+      "sha256": "b5733331d97c3884b2bda2aec0195fb6206a0ea72d3d8ef023575c65308d3fd9"
     },
     {
-      "path": "build\\m1-original-2827676\\original-map-accepted.png",
-      "bytes": 175791,
-      "sha256": "ff7b9d477c596b19b88ed50c5dc1f9565ed4d6e8e876fde9cbc20ea0e67644e9"
+      "path": "build\\m1-original-56be096\\map-accepted.png",
+      "bytes": 175501,
+      "sha256": "becd81888d8821466c47a63fc73eba105f28edf1e0f556bb7211b54bf4d46222"
     },
     {
-      "path": "build\\m1-original-2827676\\original-map-selection.png",
-      "bytes": 133858,
-      "sha256": "0cba92c15837590085e3f8f82b50e70d344e091c87a81c34f70389fa0192ecfa"
+      "path": "build\\m1-original-56be096\\map-selection.png",
+      "bytes": 126630,
+      "sha256": "ca9b6c5f6b8e3743bde3ae9a9be90eb1ba1dc94262f05a13f4e90f054fd1d85d"
     },
     {
-      "path": "build\\m1-original-2827676\\original-resaved.png",
-      "bytes": 164518,
-      "sha256": "837e639b83c8eeea2dbc19d2846e1f6463adf84babd1bf8ceb457844a6cb32c0"
+      "path": "build\\m1-original-56be096\\resaved.png",
+      "bytes": 164650,
+      "sha256": "2ab3e7c670df0d422c631e1c56dbc91e867cb4086c77e2b66c610c0b43b36aea"
     },
     {
-      "path": "build\\m1-original-2827676\\original-turn2.png",
-      "bytes": 155543,
-      "sha256": "0c2c48e6ca39ed690a65688f85cf398924d63b36268bdfc6ab5ddb5128915991"
+      "path": "build\\m1-original-56be096\\turn2.png",
+      "bytes": 182607,
+      "sha256": "6c1364ed84ca909e8cacf4612db284d621b63160dbd5fddeec941515e209bf19"
     }
   ],
   "limitations": [

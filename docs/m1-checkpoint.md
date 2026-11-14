@@ -114,4 +114,5 @@ original-game observations or extra X02 operation registrations.
 
 M1-01 is complete for this profile. Arbitrary world/process state, actual gameplay
 continuations, remote queues, F05 wizard persistence and efficient arbitrary-engine
-persistence remain M3–M6 work. The final M1-06 matrix remains a separate gate.
+persistence remain M3–M6 work. The [final M1-06 matrix](m1-build-matrix.md) passed at `56be096`, including
+these checkpoint cases.
