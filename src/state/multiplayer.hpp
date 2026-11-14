@@ -27,6 +27,13 @@ struct PasswordFlags {
     std::array<bool, 8> pending{}, present{};
     bool operator==(const PasswordFlags&) const = default;
 };
+// N03 section 11, shared by option/timer votes. N02 reply dispatch owns updates
+// to pending/status; these are signed counts/results, not membership sets.
+struct OptionVoteState {
+    std::int32_t pending = 0, status = 0;
+    std::uint32_t popup_tick = 0;
+    bool operator==(const OptionVoteState&) const = default;
+};
 struct MultiplayerState {
     MultiplayerValues saved;
     PasswordFlags passwords;
@@ -38,6 +45,8 @@ struct MultiplayerState {
     std::uint8_t hotseat_participants = 0;
     std::int32_t network_turn_civ = 0;
     bool network_host = false; // Runtime authority; not a saved field.
+    std::int32_t player_count = 0, handoff = 0;
+    OptionVoteState vote{};
     bool operator==(const MultiplayerState&) const = default;
 };
 // F06 section 9: rotation spans all 256 bytes, including row and array seams.

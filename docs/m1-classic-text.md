@@ -306,16 +306,75 @@ The local input is `build/original-text-runtime/CIV2.DAT`; the output is
 checks original-file input/re-encoding through the new C++ path; it is not a new
 original-program execution or acceptance of edited preferences.
 
-Accepted setup/game/graphics/message/multiplayer option changes, application
-startup binding, native preference presentation and original reload of an edited
-preference file remain separate work.
+Accepted setup rules, application startup binding, native preference presentation
+and original reload of an edited preference file remain separate work. Accepted
+in-game changes now use the operations described below.
 
-Verification passes all 417 native CTests and 419 with SQLite enabled. Pinned
-WASM passes all six CTests, including 395 portable Catch2 cases and 185,072
-assertions. The 54 retained native/WASM X02 observations and consumed prefixes
-remain identical; F03 preference operations are not yet registered with X02.
-Pinned clang-format 20.1.8 passes. Logs are retained locally in ignored
+At the preference-persistence checkpoint, verification passed all 417 native
+CTests and 419 with SQLite enabled. Pinned WASM passed all six CTests, including
+395 portable Catch2 cases and 185,072 assertions. The 54 retained native/WASM
+X02 observations and consumed prefixes matched; F03 preference operations are
+not yet registered with X02. Pinned clang-format 20.1.8 passed.
+Logs are retained locally in ignored
 `build/preferences-{native,sqlite,wasm}-{build,ctest}.log`.
+
+## Accepted in-game configuration
+
+`session/configuration.hpp` applies F03 section 8's accepted game, graphics and
+message choices to live session state and persists them through the real
+two-item preference writer. Cancellation leaves both records alone. Game options
+clear their eleven controlled bits, apply sound/music choices and the specified
+music operations, then apply the remaining nine choices and save the full live
+word. Graphics options replace their six bits in order; a new herald enable still
+applies after an advisory
+resource warning. Message choices replace the entire disabled-message word,
+clearing unknown bits. Required child exceptions retain preceding effects;
+reported preference-save failures do not roll back accepted options.
+
+`rules/double_movement.hpp` implements the actual F03 table transformation.
+It visits all 62 unit types and changes land movement, preserving byte wrapping
+when doubling and dividing the signed current byte with truncation toward zero
+when removing doubling.
+It preserves air/sea types and existing units' spent movement. The retained
+applied flag changes before the table, and status redraw follows the complete
+table. Single-player mode and repeated requests leave the flag and table alone.
+
+The accepted multiplayer boundary composes F03 with N03 section 11. It saves
+the two chat choices before reading host authority or processing double options.
+A changed network proposal with more than one player prepares the shared text
+arguments, initializes the signed pending count, broadcasts, installs the shared
+vote callback and enters the supplied modal operation. Negative modal results,
+status -1 or any nonzero pending count reject and restore remembered double
+settings from the live values. Acceptance installs live values and runs the real
+movement transformation. The following network/player-count gate uses live state;
+its selected tail sends units, sends all three signed option words, broadcasts
+acceptance and displays the notice. Double options receive no second save.
+
+The shared vote callback polls first, then tests handoff, signed wrapping elapsed
+time, pending count and rejection status in order. Completion ends the supplied
+modal and captures a fresh tick. Runtime player count, handoff and vote scratch
+are separate from classic saved multiplayer records. Session publication precedes
+external children, so scoped observers can see the specified partial effects.
+
+Twenty-eight authored portable cases cover checkbox mappings, audio ordering,
+save failures, required-child stops, all 256 movement bytes, signed removal,
+authority changes during persistence, proposal rejection/acceptance, live callback
+mutations, raw simultaneous words, clock wrap and the 2400/2401 timeout boundary.
+The 3,881 assertions use specification-derived expectations and explicit child
+outcomes. They are not new original-game captures or actual network/modal/audio
+integration evidence. These operations are not yet registered with X02.
+
+Application command/widget binding, P10 audio implementations, N02 option wire
+dispatch and replies, P04 modal ownership and F05 setup remain required owning
+work. The retained vote callback requires the modal owner to keep its runtime
+alive while delivery remains possible.
+
+Verification passes all 445 native CTests and 447 with SQLite enabled. Pinned
+WASM passes all six CTests, including 423 portable Catch2 cases and 188,953
+assertions. The 54 retained native/WASM X02 observations and consumed prefixes
+remain identical. Pinned clang-format 20.1.8 passes for all 242 owned files and
+the eight staged C++ files. Logs are retained locally in ignored
+`build/configuration-{native,sqlite,wasm}-{build,ctest}.log`.
 
 ## Evidence and remaining work
 
