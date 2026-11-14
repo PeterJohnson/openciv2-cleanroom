@@ -446,8 +446,53 @@ The complete file integration checks input preservation and unchanged host cwd;
 its sprite/flush consumers are declared headless callbacks, not graphical loaders.
 These new services are built in the tools-enabled native configuration; the rule
 context remains portable and runs in WASM tests. Linux/macOS filesystem execution,
-browser storage, graphical startup/resources, post-load admission and original
-acceptance of exports through this path remain unverified or incomplete.
+browser storage, graphical startup/resources and post-load admission remain
+unverified or incomplete. The [live-save exchange](m1-original-live-save.md)
+records original acceptance of two core exports with these native bindings.
+
+## Save-menu caller and file-choice boundary
+
+`session/classic_save_menu.hpp` implements F06 section 11's portable Save-menu
+caller over the real core writer. The classic session-active latch is separate
+from the runtime's client lifetime. Inactive entry returns without timer, path
+or text effects. Active entry stops the supplied N03 countdown with notify=true,
+builds the private filter and sanitized ruler/year filename, applies the mode-2
+calendar suffix and scenario monthly naming, selects the shared filter, and
+invokes the supplied chooser. It restores the live home directory after either
+acceptance or cancellation. Mode-2 cancellation rebuilds and retries, including
+scenario export; accepted write failures do not retry.
+
+Ordinary success formats title, ruler, plural, year and difficulty into shared
+parameters at their live read boundaries. Scenario and e-mail success use their
+separate notices. Failed writes resolve error text after the core writer and
+close operation. Every normal active exit starts countdown, rather than using
+N03 resume. Required service exceptions stop at that boundary with prior effects
+retained; they are not translated into an ordinary cancelled dialog or a
+successful notification. The core writer retains its partial file behavior.
+
+`session/classic_file_choice.hpp` owns the shared mode filter, with scenario/raw
+map precedence, ordered alternatives, no implicit alternate e-mail entry, and
+live mode reads after label callbacks. An unknown mode retains the selected
+extension but establishes no next filter write position; an attempted subsequent
+append stops. The chooser request declares open/save, optional presentation owner,
+title/filter/default extension, flags `0x80e` plus `0x1000` when existence is
+required, filter index 1, and filename capacity 256. Only returned low byte 1
+accepts. Other values query extended error and retain filename writes. Dynamic
+filter/name storage avoids the excluded original buffer overwrites.
+
+P04's six numeric and eleven ordinary string parameters and shared line now
+belong to `ProcessContext`; client-session transitions do not reset them. The
+save wrapper requires explicit ruler/name, year-formatting, label, lowercase,
+calendar, directory, notice, timer and file services. Native widgets, N03 timer
+execution and the remaining P04 operations are not fabricated by these ports.
+
+Twelve independently authored portable cases exercise the service contract,
+complete core output, short/control/high-byte names, monthly calendar edges,
+mode changes, retry and cancellation, live success parameters, partial write
+errors and unresolved callback stops. These are specification-derived tests;
+the earlier original live-save report exercised the core driver, not this menu
+wrapper. Native chooser/application binding and accepted-file post-load admission
+remain open.
 
 ## Windows evidence — 2026-11-13 Pacific
 

@@ -1,4 +1,5 @@
 #include "session/classic_load.hpp"
+#include "session/classic_file_choice.hpp"
 #include "session/runtime.hpp"
 #include "formats/multiplayer_io.hpp"
 #include "formats/world_record_io.hpp"
@@ -6,16 +7,6 @@
 namespace openciv::session {
 namespace {
 using namespace formats;
-void select_extension(std::uint8_t mode, std::string& extension) {
-    if (mode == 0)
-        extension = ".SAV";
-    else if (mode == 1)
-        extension = ".HOT";
-    else if (mode == 2)
-        extension = ".EML";
-    else if (mode <= 6)
-        extension = ".NET";
-}
 CoreLoadStatus header(const ReadItem& read, const ReadEventByte& byte, std::uint16_t& version) {
     std::string text;
     bool terminated = false;
@@ -91,7 +82,7 @@ CoreLoadStatus load_classic_core(SessionRuntime& runtime, ClassicFileState& reta
     if (request.find('\0') != std::string::npos)
         throw std::invalid_argument("Core path must not contain NUL");
     const auto entry_mode = world.globals.multiplayer;
-    select_extension(entry_mode, retained.extension);
+    select_classic_extension(false, entry_mode, retained.extension);
     retained.opened_path = request;
     if (request.find('.') == std::string::npos)
         retained.opened_path += retained.extension;

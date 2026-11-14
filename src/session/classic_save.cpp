@@ -1,4 +1,5 @@
 #include "session/classic_save.hpp"
+#include "session/classic_file_choice.hpp"
 #include "session/runtime.hpp"
 #include "civilization/knowledge.hpp"
 #include "formats/multiplayer_io.hpp"
@@ -8,18 +9,6 @@
 namespace openciv::session {
 namespace {
 using namespace formats;
-void select_extension(bool scenario, std::uint8_t mode, std::string& extension) {
-    if (scenario)
-        extension = ".SCN";
-    else if (mode == 0)
-        extension = ".SAV";
-    else if (mode == 1)
-        extension = ".HOT";
-    else if (mode == 2)
-        extension = ".EML";
-    else if (mode <= 6)
-        extension = ".NET";
-}
 void prepare_scenario(bool scenario, state::GameState& world) {
     auto& globals = world.globals;
     if (!scenario) {
@@ -86,7 +75,7 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
             throw std::out_of_range("Hotseat cleanup has no supplied incoming human-mask backing");
     };
     try {
-        select_extension(scenario_export, globals.multiplayer, retained.extension);
+        select_classic_extension(scenario_export, globals.multiplayer, retained.extension);
         retained.opened_path = request;
         if (request.find('.') == std::string::npos)
             retained.opened_path += retained.extension;

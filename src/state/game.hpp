@@ -7,6 +7,7 @@
 #include "state/multiplayer.hpp"
 #include "state/rule_state.hpp"
 #include "state/scenario.hpp"
+#include "state/text_parameters.hpp"
 #include "world/map.hpp"
 #include <memory>
 
@@ -20,6 +21,7 @@ struct ProcessContext {
     // has distinct storage, retained across client-session lifetime changes.
     std::unique_ptr<RuleState> rules = std::make_unique<RuleState>();
     MultiplayerPreferences multiplayer_preferences;
+    TextParameters text_parameters;
     world::Tile fallback;
 };
 // Logical world and retained workspace ownership. File records are decoded

@@ -24,7 +24,8 @@ These are separate from participant/controller bindings. It uses
 an injected `ProcessContext` containing lifetime tokens, the shared fallback tile
 and a uniquely owned `RuleState` with rule definitions, a shared text pool, name
 bindings, P04 label/popup tables and live leaders/usage/name cursors, plus the four
-multiplayer menu preferences currently consumed by F06. That context must outlive
+multiplayer menu preferences currently consumed by F06 and P04's shared line,
+six numeric parameters and eleven ordinary string parameters. That context must outlive
 the runtime. The large rule tables live outside caller stacks, including on WASM.
 Independent virtual peers supply separate contexts. Further preferences and
 retained workspaces, complete content/profile installation and full classic initialization remain
