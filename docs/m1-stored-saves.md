@@ -513,6 +513,15 @@ and limitations. Eight inspection/driver CLI cases now include authored-file
 output, source preservation, existing-destination refusal and malformed-input
 cleanup. These checks do not implement the ordered load or live save operation.
 
+A subsequent [live-session Windows exchange](m1-original-live-save.md) uses
+`oc2_live_save HOME INPUT.SAV NEW_OUTPUT.SAV [--gold CIV VALUE]` with the real
+F03 wrapper and F06 core. The original accepted a live export with a declared
+treasury edit, saved it, advanced a turn and reopened a second C++ live export
+of its resave. This closes a bounded current single-player edit/resume case;
+post-load admission, graphical resources and broader file/mode coverage remain
+open. The driver requires native tools/tests and a new explicit `.sav` or `.SAV`
+destination; its headless inputs and four CLI cases are documented separately.
+
 ## Remaining M1 work
 
 The [completion audit](m1-validation.md) still governs the milestone. Next are

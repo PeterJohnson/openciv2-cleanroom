@@ -94,6 +94,8 @@ the original input both rejected reuse as output paths and remained unchanged.
 This checks F06's current `0x2c` stored encoding through actual original resume.
 The cleanroom engine did not perform the city action, ordered session loading
 or a gameplay edit. Legacy versions, scenario/event cases, multiplayer and
-exports from a live cleanroom session still require their own evidence.
+exports from a live cleanroom session require their own evidence. The later
+[live-save exchange](m1-original-live-save.md) supplies a bounded current
+single-player treasury-edit/resume check with the same world.
 Original payloads and screenshots remain under ignored `build/`; only this
 procedure and the metadata report are committed.

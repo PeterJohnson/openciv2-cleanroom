@@ -1,0 +1,581 @@
+{
+  "format": "openciv2-original-live-save-observation/1",
+  "createdUtc": "2026-11-14T10:23:52.306407+00:00",
+  "host": "Windows-11-10.0.26300-SP0",
+  "scope": "Independent original UI acceptance of two live F03/F06 exports, a direct treasury fixture edit, original save/turn/resave and cleanroom core reload; outside X02",
+  "target": {
+    "edition": "Civilization II Multiplayer Gold Edition 5.4.0f patch 3",
+    "executable": {
+      "path": "build/original-text-runtime/civ2.exe",
+      "bytes": 2489344,
+      "sha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+    },
+    "suppliedInstallation": "C:/Projects/civ2/Civ2",
+    "isolatedWorkingDirectory": "build/original-text-runtime"
+  },
+  "implementationRevision": "047b55b7d4f280f94b506bd040bf6bc61e64b034",
+  "uncommittedImplementationChanges": true,
+  "implementationSources": {
+    "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
+    "CMakeLists.txt": "0db9d2a4f4cd07eb814ed50e5dec2f865deda54c72ecd3fb722388e90ec0278d",
+    "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
+    "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
+    "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
+    "src/base/cancellation.hpp": "b90a245bdb47210f6e176fcc5b89a97ebfb550bab172c9ce502796105ce4b455",
+    "src/base/choices.cpp": "a189fde99e8ecb91a2ffa3de37afdd4da5e2708ba71f8dcb677f8155f1d6f942",
+    "src/base/choices.hpp": "cd0d68b86ca9f17257d724e676a19ef55dd181a278b0ec7d350964bf3a842ad9",
+    "src/base/hash.cpp": "5bb5938e58e1e096bf64a985ab828be012803cd79addb7290f8c99de9d83d8e3",
+    "src/base/hash.hpp": "a14f3cf544bb3d2bb8808fee38c760d4858e001bf9ed70498d903279a61d3c67",
+    "src/base/random.cpp": "d5bd1075f8a9b176021d4b51e84cabe297ea9aa45192240b232f80e6fa2a04c9",
+    "src/base/random.hpp": "e2d3858b58e12ec7e5d409d6b3d6ea51ebf4ffcf7dc39c1b7d395c654a412f87",
+    "src/base/session_ids.hpp": "99cd9404e7bcdcad2e4071873265626ab44add23418310ef69269f2929dc94bc",
+    "src/formats/builtin_gameplay.cpp": "1025fb31520c12df1c0842a9e1e0d0841032e5a6ca4f8513200e91afdcaa1d8b",
+    "src/formats/bytes.hpp": "8641893e1e2c0466d1440258e25f308444c4172590dfec29f62682551f251888",
+    "src/formats/city_names.cpp": "cf0c9c0c8ea4a686c1ee90134e4d7c9fd6313623c6fa107cd97dd9ca72e02769",
+    "src/formats/city_names.hpp": "cb9921166c19ac555cf61d8c29f7b7d3e183e2de98a636b612397d5803206ab3",
+    "src/formats/city_preferences.cpp": "adb83564723942dc44e9edf1d5552493d5613e0723e8ab621b37f98b53ea46f1",
+    "src/formats/city_preferences.hpp": "239b2ba6c4ef125bb9e2108d5e9819d3f90a2aa08e648771cd0960276391b6bc",
+    "src/formats/classic_io.cpp": "cd9e53cec3c72d4d0c26511c489ce0cf71145eed4ba25cc73fec680d01e7c195",
+    "src/formats/classic_io.hpp": "535a0f51cbbefddea087e7826083a0716ce1bf5db46ee838f5209d9e03ee11cb",
+    "src/formats/classic_labels.cpp": "6dd129fee8e98fb9f09ac401759360c6711fcb42c703e85e924611b105ead480",
+    "src/formats/classic_labels.hpp": "e007fe8dfd6852146a0af68d4375d712029fb80f3bf9f819ad703dcdbb93ad04",
+    "src/formats/classic_records.cpp": "e3f2e379a3b7ae00df0569c4e33c3a2248380d65ac7c345242a0f0b207662a3d",
+    "src/formats/classic_records.hpp": "59c43681d01f3466671246d00609642ef2549763df5e5f5209effc727f7d732d",
+    "src/formats/classic_rules.cpp": "2827cb670a4174b8773d3e6a99f7c6e2cbb14ab4694113b8e4565ce8c21423f0",
+    "src/formats/classic_rules.hpp": "c310f08408bc3ac140a902095583e35cb5574ab11b17c6d5769cca7fd8329d60",
+    "src/formats/classic_save.cpp": "1d1ab172c30ccb6a25de438f3391bad504c67fbfce9cabff82769d0146537d2e",
+    "src/formats/classic_save.hpp": "64d193254eacb509b77a6cba4614b380c1cc54cff06435ec02dbb4250b1daf79",
+    "src/formats/classic_text.cpp": "bd9ab754bba0dcc08fa8b11cb328a89d700e28ec711bea6a9304a7ec0ff592bd",
+    "src/formats/classic_text.hpp": "597026241d423c6acd48c812099a2c5f0cb38399bfdd79197ec6d68245e2cbe5",
+    "src/formats/classic_text_reader.cpp": "102c77a32bb1a03759e81726eade25ef7bb546b1bae5c4bc01f9fb38cdf410e5",
+    "src/formats/classic_text_reader.hpp": "e6bef4914e3fd0c7fe45d9834b27627556b0c6c930b1f06cafc4da2f275d1b3c",
+    "src/formats/content_json.cpp": "0b1a37392e40d7af4080453ea5b46a6be50c2bd94b894703306911212b3d1f77",
+    "src/formats/content_json.hpp": "5ee92179e1eb3e24716c46a2c98d2dd18d3b68b132d5a5df28d25bd87f6f60f2",
+    "src/formats/content_pack.cpp": "5575b05b14d016c4d92186a7c766ec864d20b717e7874ae30b3c72ebec85cb4d",
+    "src/formats/content_pack.hpp": "ce995c64d6bd031b624a8e4bb71776e937c8decd503aca2a0decb1b98802799a",
+    "src/formats/content_reader.cpp": "3f096886865b319edfee8f396a7755146536e9ebddf9de924de4049979531dd5",
+    "src/formats/content_reader.hpp": "46c643da3372dc90a038e9441a51d5588225d4b25b0eff31cb7de0f956384060",
+    "src/formats/content_source.cpp": "787644fdc1b2b9e9430e829c769c4d0911063449b8a3d1f5101f52cc8c4fb672",
+    "src/formats/content_source.hpp": "28028956303fe6e2dbfe5c5b7c67cb323c3b74da27b9c1ec598aa022c766b9f0",
+    "src/formats/event_io.cpp": "84b00bb056bee4968164d30fabc7990b258c8777ad24d482ea2635327647f604",
+    "src/formats/event_io.hpp": "d12c4ea77b955889b854ed8e605867ddf5ef43fec1230f66b095c51ae4924656",
+    "src/formats/gameplay.cpp": "bc0736fca525051bd3219907711587b801c7766362325a85cf8b26842f8b17b5",
+    "src/formats/gameplay.hpp": "63116ed9e1dac26346105422c8eea9bc28c03e83b71241de4a243fd50b7e0ac7",
+    "src/formats/leader_io.cpp": "880beccdf09f7a7de3db68c56fc753ce27a44a1aa596a0bcc31f84ab7f697aad",
+    "src/formats/leader_io.hpp": "a9775effa71c50e14d22dedb55b7353e4f1ad7b6b73faa6ff3d78c4cbd798c0d",
+    "src/formats/multiplayer_io.cpp": "18fcd7c15e881b4f97d0388ec34ad21f9d5a222816b1f6fe47c72a77bd29535e",
+    "src/formats/multiplayer_io.hpp": "c8b95fece9c5e88712eab7b2eeabbaa063d8e2394a9144abaab7d17a2a088418",
+    "src/formats/record_fields.hpp": "9d6aafe941342f5064654a14b06fc26f24fb22d329f18bc6699b5d8bda1a0a7d",
+    "src/formats/rules.cpp": "6aff6d7dda2af8e51b49bd3f296e288fe7f6366a514bfa556f7234dd8e0a6f91",
+    "src/formats/rules.hpp": "b772e7de886c2a12eb3ec7aec9b736853280469ca9fca3707ddc2d30c720d166",
+    "src/formats/rules_install.cpp": "97e3ce90c650196332e3605d1d9ff82f05e8da2716f1391709c960339c9b5c58",
+    "src/formats/rules_install.hpp": "a9a711303f8a0951cb6f1d9cfb5066de0f3b17e33bfd1c98e0e97fd3e91957ef",
+    "src/formats/save_aux_io.cpp": "0a49189bbfc8042036a635ecf9ad1bc103c0aef2c78fa4554fb91ddc88a611a0",
+    "src/formats/save_aux_io.hpp": "666ebc20ffb764cf66726a0acf31e187c6c2c73cc3c3c25d84f72a57d19cf14d",
+    "src/formats/save_records.cpp": "7b8da647e7ff3a1f1838d63e76ea2306119428c49db044ce00e884e78b924184",
+    "src/formats/save_records.hpp": "a139a1d183c459980ff8bbc77ccabc01be5804fbe7e166479678c05fc755706c",
+    "src/formats/world_record_io.cpp": "362659be49f37e431d2547a7d8dca1fe5966829d0c8e64861ec4ef5733ccfde6",
+    "src/formats/world_record_io.hpp": "91ff829048976b2f4322d1266db94f6f7343715fc15e982ef637712198a5e23f",
+    "src/network/compression.cpp": "88cd06fed072ddca25ab48c1dd2592deae77a50189e2f804c49575f15a592ed5",
+    "src/network/compression.hpp": "3e4ac115cf7005d897c1545c8dc112cb8efa1e65dc48a58c22e52d26a2751abe",
+    "src/network/messages.cpp": "cf90563962f3106db2c05566cce5f32b39858ef90e81cb2459b4fd4049899063",
+    "src/network/messages.hpp": "e016b3a45f6033d195b29998fa1b402a4943417501043cd620b9560f6ed8d4bc",
+    "src/network/sections.cpp": "b0f6729dd433de2f3c9ff714b5808ec127073949205aa165edccbe133fc9a65e",
+    "src/network/sections.hpp": "37f152d9e306fd7488459ca138fc3551e72ab148545dfc219d333dbff33d8664",
+    "src/network/stream.cpp": "951fb4a4559b0f426378b770ba4776ce4eb773899d24b53d8b57e26195fdcf98",
+    "src/network/stream.hpp": "b41c7d6bb664790831ee83723a1bc0e8f724c5912308d770e9e95f79d395e632",
+    "src/platform/atomic_file.cpp": "6db58157cbaabe506a6309cf7cc0ff0e677c8e3de2f6f1efa53b93285b3e2d26",
+    "src/platform/classic_files.cpp": "2e440dec2d2e1848b7c6aeab46a094e245170ee35ade05147614a86fc93016d9",
+    "src/platform/classic_files.hpp": "7aa1a3f26aad8e99be1b9d73d4ee1d5dafc7051ff88ad090e726726a229dee9a",
+    "src/platform/content_files.cpp": "6d5612b730bca2bf021c912879108b7e3a933a4073391ef6cdce59074a2f9bb2",
+    "src/platform/content_files.hpp": "45a8ea339f26eabc4613318bb754848f10f2f5998af136b38f3a083f12118f6d",
+    "src/platform/menu.hpp": "f4340b11a8013de884e84395aafe63adcdf2feb307abf11ff5e738ba4a1a6052",
+    "src/platform/menu_fallback.cpp": "9f0e44bbe87669920697d3a5ca35a5319015d227c768dc17a56da55a848c6a3c",
+    "src/platform/menu_windows.cpp": "00fa1ecdbf7cf37e54cfee9f303dc87cdacdc0e4bce1af730b4390c91a47b5fe",
+    "src/platform/native_files.cpp": "0d25a056019a7422d0f69d07ca5d237214806c822e6eaaa646ee9e7a04eaaf2b",
+    "src/platform/native_files.hpp": "b234f036321f0a91d5cf0edba325ee5695fd9c1f123224020f0d98178290e0fd",
+    "src/query/fields.hpp": "5868f211c944dbf7b998d987fdfc3a0dbe9dbe7981a674c9a288a1d2008da8ff",
+    "src/query/live.cpp": "9688762551e3fca8cc864f24cd6cba06d3182b626cf0652ca3de21a978be9b42",
+    "src/query/live.hpp": "d2cb26ceab88061b88acfedb2a10e73b64f39d9e32c162e1fb8de4eb0721f5b3",
+    "src/query/output.cpp": "273ba2a28769dcf7fb3e257a87352b6fde60dd19986302c67c4a4bf9c66a082c",
+    "src/query/output.hpp": "74ebfa6809e2abb9876458bc69b460c5817b85983296587e866af342a75dccdc",
+    "src/query/stored.cpp": "a61a0a461f2aa18655666b410d177765d2a3f248c127e35c291db38244fc99f8",
+    "src/query/stored.hpp": "1a169d16d194c1b0c7b4c1f81395de9219e435112cbbb6fce7b44473ee7afc8a",
+    "src/query/stored_validation.cpp": "e4cd8999cef165e735541827787193ad85ab8afa5602014c68ed20d47cea61a3",
+    "src/query/stored_validation.hpp": "7e128e1ca2185fc41cebfa0ce1af13d0b73851407a5930fc58ed54ad8aadf089",
+    "src/session/classic_load.cpp": "54d689b0dc1474f8fd8eb01c00313ce59e00478b98627ec35f05ac7be7368797",
+    "src/session/classic_load.hpp": "5396f41dae5152b9baf161c6a694b4e02a53ad52ee8728b892de19921be64fbb",
+    "src/session/classic_rules.cpp": "34280fc2cdc00d6429034fadcb5a6dcc1f769faafc82f07151daf582f4738ae3",
+    "src/session/classic_rules.hpp": "b1503599181c4667242df7b70017372b588826f5806f1a17c5ac4c591505408a",
+    "src/session/classic_save.cpp": "c83a172de20ef8f05d14d0f70aaf668260749f2bea6d71f8d2f36c0840763c3a",
+    "src/session/classic_save.hpp": "ffabfa9c214861eeffe4478dda5ea9f92bf3f912fcd32871f2c54bdcf067e26f",
+    "src/session/command_runtime.cpp": "0643233e500b71e938cd211cbcd45848ee679496a871dd3ec0f5acee43b81d88",
+    "src/session/commands.cpp": "e7f41d26b8db405eefee3228b92055b22004eb9bf96507beafa0a77e8c4a5124",
+    "src/session/commands.hpp": "1c66950942913e71e11786e3a209d172a8c1847768366e5dfb29d0cf679b4527",
+    "src/session/runtime.cpp": "7e9b1b1d93bb8e8c8452040cd439fd0eb6390aa24127bc3e038b9dbc9e7a5f72",
+    "src/session/runtime.hpp": "e4f715ed98eaa59c83f8c77998990cfb4e303bf7fc3cde7ec2aca227183d4ae7",
+    "src/session/runtime_internal.hpp": "1bd4f2250267ff1327bf13daf9ed02d319f5cf69a6da77e874bb923780868113",
+    "src/state/city_names.hpp": "174c19eaf2eacdcc9c59b511401222a35dc081860e3e526ee9d1ff0388f15c68",
+    "src/state/city_preferences.hpp": "0d6c1c1e7b57bb334cf5ea72a475a249e04b982e6908d1d76c46398ba0a6b2bc",
+    "src/state/civilization.cpp": "1fc65a2893cec7fbd9769a9780fa3e1d527a6980bacc7767eb495acadf1fdb8c",
+    "src/state/civilization.hpp": "dd171ace99e326e2fd053be90af557e8e0bd592844babc623b56219ff52113ef",
+    "src/state/events.cpp": "901b9c3f0d7d9748936d8bad356bb8c7064b7b936173d9d26bbbe2ee042045eb",
+    "src/state/events.hpp": "4c4b77e342c4ee734e2940625e6dfd0a5a299785f18e460192e8875df3e34a9d",
+    "src/state/game.hpp": "c4c23b4583813944423effcec84788dce8fe78b2f133a100aefb11dc9f30b3f4",
+    "src/state/gameplay.hpp": "4bfd9e61d6d31c0365773a36e73c8c7fe741678479a31d4726fe05e3dad69622",
+    "src/state/history.hpp": "d20af5a9afd933d970200caaa83c86912a47141c80020a5aa779c657cdffee44",
+    "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
+    "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
+    "src/state/labels.hpp": "ba4fde3e852681d45a216629a380c054877b37956628c977e278c9d6d528e00c",
+    "src/state/layout.hpp": "cbc0d3e9f604a0f8df717255e208dcc5966e98f8b16db38b4b3ab961e59aa236",
+    "src/state/multiplayer.cpp": "85b9a511117d03cc489a54f47ceba41d56eb97973bae85df9e7f05029b4be71c",
+    "src/state/multiplayer.hpp": "1f3692bf37115fc3ead3e64ce9b3ae71692b28d346fff059b3b6ed221a290013",
+    "src/state/records.cpp": "5d5ad05ab566387d57e9fa702c8ff499f0dbb8f52d9a4b0f75d24d79f18e485f",
+    "src/state/records.hpp": "daacdb2b85c9a9178db718a00c17be0fe86aa0931f420d0edf77828f876dad92",
+    "src/state/rule_state.hpp": "52f224b690645d60d6ce84437edc7dfde08ad089ba083ed7d8dea4d28d201afd",
+    "src/state/rules.hpp": "b3f3ec369fd8db843a5e9cd61a6123562fa3ba1cf63d5f822b54e36d07c61276",
+    "src/state/scenario.cpp": "93bace800d8e5f480cca33b5340511e81b6325d42a4e768064e53f4d00d243a5",
+    "src/state/scenario.hpp": "3162ec843c7123c726afa9e5f70b903748ee8b32a45b84f5e962efbc8a6e8af6",
+    "src/state/text_pool.cpp": "2f3386692ffc0d2c8af3794eda8731a73baaadeb2fde7bd35cdf30a4c3f3b2c2",
+    "src/state/text_pool.hpp": "f34421da5ae6b241ec67def1cef08fcdfdda73f9ab8dbe4c586a5023ec84cbc8",
+    "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
+    "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
+    "src/world/map.cpp": "4960ea3d79c37fd535104f19a8e9571adf9bfb82113d7ce47e52df4034b50a0e",
+    "src/world/map.hpp": "ffc83f2cb8de69fb981319bcf44443044395bf0df714ef055e9f13f2cdd01453",
+    "tests/inspection_cli.py": "1a9ce28383a9879fc496dc78228383e0162136e3910f33164bde64f95123f764",
+    "tests/live_save_cli.py": "df4d50d10195848e9fcea7fbfd63ffcf082aed9774a972302df75543338a36a8",
+    "tools/live_save.cpp": "09b0a59b110ab9222266123e9bb8a3ef46ae0b9e436c3ac987427e120337b2d7"
+  },
+  "driver": {
+    "path": "build/headless-fetch/oc2_live_save.exe",
+    "bytes": 2790912,
+    "sha256": "ba932d66bb19f46c5a618a04274c6c307b55b0462f523e7a8064f1ff31ea9625"
+  },
+  "driverIdentityScope": "Final driver produced turn3 export and verification/resaved777 exports. Initial gold777 UI input was generated before adding the explicit-extension guard; its initial binary hash was not retained. Final driver reproduces that entire input byte for byte.",
+  "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n",
+  "specifications": [
+    "F03 section 1 reload wrapper and section 2 text sources",
+    "F06 sections 5 and 6 ordered save/core load",
+    "F06 section 3 Civ record gold field",
+    "F06 section 12 bidirectional interoperability cases"
+  ],
+  "priorSetup": {
+    "path": "docs/conformance/reports/original-text-and-save-windows.json",
+    "bytes": 14127,
+    "sha256": "416a9374046753f5e8bf5e63cb0cbce93dfb837fbabdc74f618d8677b90609c8"
+  },
+  "runtimeTextInputs": [
+    {
+      "path": "build/original-text-runtime/RULES.TXT",
+      "bytes": 26905,
+      "sha256": "4efef8f5f78ae99f123454b374f71c21933405b977bcc23ffa278d54fb1a249e"
+    },
+    {
+      "path": "build/original-text-runtime/Labels.txt",
+      "bytes": 13279,
+      "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+    },
+    {
+      "path": "build/original-text-runtime/CITY.TXT",
+      "bytes": 6865,
+      "sha256": "4c3dbaed7eea25c66f44a22602b9ba92846e1742f8e389c993b1fa25d897a967"
+    }
+  ],
+  "callerInputs": {
+    "runtimeId": 75,
+    "gameplaySeed": 10,
+    "presentationSeed": 20,
+    "initialUnitToken": 100,
+    "initialCityToken": 200,
+    "screen": [
+      0,
+      0,
+      1280,
+      800
+    ],
+    "comparison": "ASCII",
+    "textSearch": "uncached",
+    "spriteAndFlush": "explicit count-only headless callbacks"
+  },
+  "originalActions": [
+    {
+      "action": "load live_cpp_gold777.sav",
+      "observed": "Warlord; Henry VIII of the ProbeÉ; 3980 B.C.; AsciiOnly; 10,000 people; 777 Gold"
+    },
+    {
+      "action": "save live_original_777.sav",
+      "observed": "Game saved notice at 3980 B.C."
+    },
+    {
+      "action": "Return at End of Turn",
+      "observed": "3960 B.C.; AsciiOnly; 10,000 people; 778 Gold"
+    },
+    {
+      "action": "save live_original_turn3.sav",
+      "observed": "Game saved notice at 3960 B.C."
+    },
+    {
+      "action": "load live_cpp_turn3.sav",
+      "observed": "Warlord; Henry VIII of the ProbeÉ; 3960 B.C.; AsciiOnly; 10,000 people; 778 Gold"
+    }
+  ],
+  "driverRuns": {
+    "initialEditedExport": {
+      "fixtureEdit": {
+        "after": 777,
+        "before": 1,
+        "civilization": 6,
+        "field": "gold"
+      },
+      "flushCallbacks": 8,
+      "format": "openciv2-live-save-driver/1",
+      "headlessSpriteCallbacks": 1,
+      "input": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/nameprobe_resumed.sav",
+        "sha256": "4283a1f73c22b3f8b7afd6129a00b331dc4a225233f0fb170fd4d6a10df6b4db"
+      },
+      "loadGameplayDraws": 255,
+      "loaded": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 2,
+        "unitSlots": 7,
+        "year": -3980
+      },
+      "output": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/live_cpp_gold777.sav",
+        "sha256": "c07c1f9b916ab9294646755eec5e9bf1ca3d09fd5d5f052465d28856afd38e1d"
+      },
+      "outputWritten": true,
+      "saveRandomContextsUnchanged": true,
+      "saved": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          777,
+          0
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 2,
+        "unitSlots": 7,
+        "year": -3980
+      },
+      "scope": "F03 wrapper and F06 core load/save; no post-load admission or gameplay",
+      "screen": "0,0,1280,800",
+      "sourceUnchanged": true,
+      "textSearch": "uncached native files; ASCII comparison",
+      "textSources": [
+        {
+          "path": "build/original-text-runtime/Labels.txt",
+          "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+        },
+        {
+          "path": "build/original-text-runtime/RULES.TXT",
+          "sha256": "4efef8f5f78ae99f123454b374f71c21933405b977bcc23ffa278d54fb1a249e"
+        }
+      ]
+    },
+    "finalDriverVerification": {
+      "fixtureEdit": {
+        "after": 777,
+        "before": 1,
+        "civilization": 6,
+        "field": "gold"
+      },
+      "flushCallbacks": 8,
+      "format": "openciv2-live-save-driver/1",
+      "headlessSpriteCallbacks": 1,
+      "input": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/nameprobe_resumed.sav",
+        "sha256": "4283a1f73c22b3f8b7afd6129a00b331dc4a225233f0fb170fd4d6a10df6b4db"
+      },
+      "loadGameplayDraws": 255,
+      "loaded": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 2,
+        "unitSlots": 7,
+        "year": -3980
+      },
+      "output": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/live_cpp_gold777_verified.sav",
+        "sha256": "c07c1f9b916ab9294646755eec5e9bf1ca3d09fd5d5f052465d28856afd38e1d"
+      },
+      "outputWritten": true,
+      "saveRandomContextsUnchanged": true,
+      "saved": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          777,
+          0
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 2,
+        "unitSlots": 7,
+        "year": -3980
+      },
+      "scope": "F03 wrapper and F06 core load/save; no post-load admission or gameplay",
+      "screen": "0,0,1280,800",
+      "sourceUnchanged": true,
+      "textSearch": "uncached native files; ASCII comparison",
+      "textSources": [
+        {
+          "path": "build/original-text-runtime/Labels.txt",
+          "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+        },
+        {
+          "path": "build/original-text-runtime/RULES.TXT",
+          "sha256": "4efef8f5f78ae99f123454b374f71c21933405b977bcc23ffa278d54fb1a249e"
+        }
+      ]
+    },
+    "originalResaveReload": {
+      "flushCallbacks": 8,
+      "format": "openciv2-live-save-driver/1",
+      "headlessSpriteCallbacks": 1,
+      "input": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/live_original_777.sav",
+        "sha256": "c8152c979b01fafa0652eb52669d051cf0d3b2d20a38d28be1d955ef7b74ea88"
+      },
+      "loadGameplayDraws": 255,
+      "loaded": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          777,
+          0
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 2,
+        "unitSlots": 7,
+        "year": -3980
+      },
+      "output": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/live_cpp_resaved777.sav",
+        "sha256": "c07c1f9b916ab9294646755eec5e9bf1ca3d09fd5d5f052465d28856afd38e1d"
+      },
+      "outputWritten": true,
+      "saveRandomContextsUnchanged": true,
+      "saved": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          777,
+          0
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 2,
+        "unitSlots": 7,
+        "year": -3980
+      },
+      "scope": "F03 wrapper and F06 core load/save; no post-load admission or gameplay",
+      "screen": "0,0,1280,800",
+      "sourceUnchanged": true,
+      "textSearch": "uncached native files; ASCII comparison",
+      "textSources": [
+        {
+          "path": "build/original-text-runtime/Labels.txt",
+          "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+        },
+        {
+          "path": "build/original-text-runtime/RULES.TXT",
+          "sha256": "4efef8f5f78ae99f123454b374f71c21933405b977bcc23ffa278d54fb1a249e"
+        }
+      ]
+    },
+    "originalTurn3ReloadAndExport": {
+      "flushCallbacks": 8,
+      "format": "openciv2-live-save-driver/1",
+      "headlessSpriteCallbacks": 1,
+      "input": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/live_original_turn3.sav",
+        "sha256": "9ea91cba648d87bb72ff92f362a2a762545906b2575d30999ac1a289c48f3911"
+      },
+      "loadGameplayDraws": 255,
+      "loaded": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          778,
+          1
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 3,
+        "unitSlots": 7,
+        "year": -3960
+      },
+      "output": {
+        "bytes": 136699,
+        "path": "build/original-text-runtime/live_cpp_turn3.sav",
+        "sha256": "3e72085735edd4a07754a385d13068ae306027d23e5daa7831170c577a462111"
+      },
+      "outputWritten": true,
+      "saveRandomContextsUnchanged": true,
+      "saved": {
+        "citySlots": 7,
+        "gameFlags": 4,
+        "gold": [
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          778,
+          1
+        ],
+        "localHuman": 6,
+        "mode": 0,
+        "playerCiv": 6,
+        "turn": 3,
+        "unitSlots": 7,
+        "year": -3960
+      },
+      "scope": "F03 wrapper and F06 core load/save; no post-load admission or gameplay",
+      "screen": "0,0,1280,800",
+      "sourceUnchanged": true,
+      "textSearch": "uncached native files; ASCII comparison",
+      "textSources": [
+        {
+          "path": "build/original-text-runtime/Labels.txt",
+          "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+        },
+        {
+          "path": "build/original-text-runtime/RULES.TXT",
+          "sha256": "4efef8f5f78ae99f123454b374f71c21933405b977bcc23ffa278d54fb1a249e"
+        }
+      ]
+    }
+  },
+  "checks": {
+    "firstOutputDiffersFromInput": true,
+    "secondOutputDiffersFromInput": true,
+    "initialEditedExportMatchesFinalDriver": true,
+    "originalResaveReexportMatchesFirstEditedExport": true,
+    "allDriverInputAndTextHashesStillMatch": true,
+    "originalAcceptedEditedLiveExport": true,
+    "originalSavedEditedWorld": true,
+    "originalAdvancedTurnAndSaved": true,
+    "originalAcceptedSecondLiveExport": true
+  },
+  "captures": [
+    {
+      "path": "build/original-live-capture/live-loaded.jpg",
+      "bytes": 93238,
+      "sha256": "8078d5ce0d9b94eb770ee908f66cb32a857669bce28df2ae5ba23076d7f85747"
+    },
+    {
+      "path": "build/original-live-capture/live-turn3-reloaded.jpg",
+      "bytes": 175086,
+      "sha256": "5cc5a420bce9227e3c8250de9b6444348b296e16fdf77fce07563af8afa4b6c6"
+    },
+    {
+      "path": "build/original-live-capture/live-turn3-world.jpg",
+      "bytes": 155359,
+      "sha256": "9ad473db6d918bf26d7153c8a221e22f77fa6154f01d61b8a3ea4a6e8e8868f1"
+    },
+    {
+      "path": "build/original-live-capture/live-world-gold777.jpg",
+      "bytes": 154624,
+      "sha256": "83d05a5f34b817f79c781b71061ff4f6f4252e32fbb1db68b79de6efc8179228"
+    },
+    {
+      "path": "build/original-live-capture/original-resaved777.jpg",
+      "bytes": 174426,
+      "sha256": "ead8a4ad9598b19834708faaf9303a3fa57457db1da782ade0e1525bff384afb"
+    },
+    {
+      "path": "build/original-live-capture/original-turn3-gold778.jpg",
+      "bytes": 155703,
+      "sha256": "df51e97ce3a42045d1eefd59c8a956018f9a8f0501f2996bd9768f1173bf69ba"
+    },
+    {
+      "path": "build/original-live-capture/original-turn3-saved.jpg",
+      "bytes": 174422,
+      "sha256": "894538e095339e4c3456af33a4d7e0f32720e73b52361907fec9e632e7a14c62"
+    }
+  ],
+  "limitations": [
+    "One current 0x2c mode-zero world and one direct gold edit.",
+    "Two AI cities have empty names from the earlier CITY setup; not a nominal stock-city-creation reference.",
+    "Original executes turn processing. Cleanroom driver performs no gameplay command or turn.",
+    "No post-load wrapper/admission, graphical resources, browser storage or complete application integration.",
+    "No legacy, scenario/event or multiplayer interoperability claim.",
+    "Original payloads and screenshots remain in ignored build files; metadata alone is committed.",
+    "No patching, injection, memory inspection or reconstruction source/harness."
+  ]
+}
