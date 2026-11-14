@@ -7,11 +7,13 @@ manifest identity and the effective-value fingerprint. No game/session state is
 installed while reading. A failure returns no partial bundle.
 
 This implements the bundle boundary in [gameplay-format.md](content/gameplay-format.md).
-It does not yet bind the owning mechanics, resolve advance references against
-selected rules, validate complete content semantics, or admit checkpoints and
-original peers. Those remain requirements in the [M1 audit](m1-validation.md).
+It does not yet bind the owning mechanics, validate complete content semantics,
+or admit checkpoints and original peers. Those remain requirements in the
+[M1 audit](m1-validation.md).
 The immutable result supplies the operands those bindings need; it is not proof
 that a custom bundle is playable or interoperable.
+The separate [rule decoder](m1-rule-content.md) now resolves the selected
+gameplay government advance references against fixed identities and native rules.
 
 ## JSON and operand admission
 
@@ -36,7 +38,8 @@ of object member order. Calendar continuity/endpoints, retirement ordering,
 spaceship group/mass/count constraints and exact doubled defense factors are
 checked. Rational operands are reduced once, masses become hundreds of tons once,
 and defense multipliers become exact doubled factors. Advance IDs remain named
-references pending the full rule resolver; they are not guessed from display names.
+references in the bundle; the separate rule decoder binds them without guessing
+from display names.
 
 The fingerprint uses the versioned compact ASCII envelope, sorted object keys,
 canonical integer tokens, reduced rationals and no root extensions. The wrapper

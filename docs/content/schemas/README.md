@@ -4,8 +4,10 @@ These [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12/json-sch
 documents describe the unreleased version 1 [content contract](../data-format.md).
 They validate document structure and expressible field constraints. Passing a
 schema does **not** establish a complete playable pack or classic compatibility.
-Runtime loading, reference resolution and semantic validation remain implementation
-work. The schemas and format specification evolve together until publication.
+The C++ loaders now admit gameplay bundles, pack selections and
+[typed native rules](../../m1-rule-content.md); remaining component semantics and
+session admission are implementation work. The schemas and format specification
+evolve together until publication.
 
 ## Schema inventory
 

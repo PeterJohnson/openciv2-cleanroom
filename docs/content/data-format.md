@@ -1,11 +1,13 @@
 # Standalone JSON content and classic text compatibility
 
-Status: version 1 **format specification**, not yet a released format. The C++
-semantic component loaders, classic converter and playable default content are implementation-plan work.
+Status: version 1 **format specification**, not yet a released format. Remaining
+semantic component loaders, classic converter and playable default content are
+implementation-plan work.
 The [C++ content loaders](../m1-content-runtime.md) implement the six built-in
 gameplay components, common JSON admission and pack inheritance/selection with
-hash-verified mounted inputs. Text-backed component bodies and cross-references
-still require semantic validation before session admission.
+hash-verified mounted inputs. The [native rule decoder](../m1-rule-content.md)
+admits complete typed rule definitions and their references; city names/preferences
+and other text-backed component bodies still require validation before session admission.
 [JSON Schemas and developer validation](schemas/README.md) check document structure;
 semantic pack validation remains open. The examples below are owned format
 examples, not a stock data set or evidence of gameplay compatibility.
@@ -688,6 +690,8 @@ invalid selected resources produce owner-appropriate diagnostics/fallbacks,
 not silent substitution of a different ruleset.
 
 `oc2 content resolve` inspects the selected pack chain, files and gameplay operands;
+`oc2 content validate-rules` additionally admits the selected native rule definitions
+and government advance bindings. Neither command installs a session;
 complete pack validation and explicit import/export of supported classic resources
 remain implementation work. Conversion reads user-selected input and writes
 only a separate requested destination. Retain source hashes, selected language,
