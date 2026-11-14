@@ -74,7 +74,8 @@ Local ignored logs are `build/new-game-{native,sqlite,wasm}-build.log`,
 `build/new-game-{native,sqlite,wasm}-test-build.log` and
 `build/new-game-{native,sqlite,wasm}-ctest.log`.
 
-The outer new-session boundary, menu/wizard cancellation state machine, world
-size/parameter flow, complete V01 creation, F05 placement/balancing/acceleration,
+The [world-size and parameter helpers](m1-world-setup.md) are now implemented
+separately. The outer new-session boundary, full menu/wizard cancellation state
+machine, complete V01 creation, F05 placement/balancing/acceleration,
 application composition and X02 registration remain separate required work.
 No new original-program observation is claimed by these tests.

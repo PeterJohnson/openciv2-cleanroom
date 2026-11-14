@@ -8,6 +8,7 @@
 #include "state/rule_state.hpp"
 #include "state/scenario.hpp"
 #include "state/text_parameters.hpp"
+#include "state/world_setup.hpp"
 #include "world/map.hpp"
 #include <memory>
 
@@ -44,6 +45,7 @@ struct GameState {
     // of civilization flags. Native palette records are not game-state inputs.
     std::array<std::uint32_t, 8> civilization_color_flags{};
     GlobalValues globals;
+    WorldSetup world_setup;
     std::array<Civilization, 8> civilizations{};
     std::array<CivilizationNames, 8> names{};
     MultiplayerState multiplayer;

@@ -184,9 +184,16 @@ outcome classifications. It accepts row width U and height H:
 
 Custom input uses decimal conversion, stores each result in the signed cyclic
 domain −32768…32767, **then** accepts only `20 <= U,H <= 250` and
-`1000 <= U*H <= 10000`. The first width/height prompts default to 50/80;
+`1000 <= U*H <= 10000`. Each width/height prompt starts at 50/80, including
+an invalid-input retry or reentry after cancellation;
 invalid values repeat the custom dialog, cancellation returns to the preset
 menu, and failure to load the custom dialog exits with failure.
+
+Accepting an ordinary preset remembers its choice in the map-size preference.
+Accepting Custom preserves that remembered preset. The size helper does not
+itself save the preference file. The independent Windows UI/file observation
+linked below confirms Custom preserving Large and Small being remembered by
+the subsequent parameter-completion save.
 
 On leaving the size helper, even on cancellation, add the Large classification
 if `U*H>5999` and Small if `U*H<3000`, using the currently stored dimensions.
@@ -197,13 +204,21 @@ and any other nonnegative ordinary preset result selects Normal.
 ### Customized parameters
 
 Ask in this order: land mass, land form, climate, temperature, age. An ordinary
-choice 0…2 becomes −1…1 and updates the corresponding preference. A negative
+choice 0…2 becomes −1…1 and stores that **normalized value**, not the row index,
+in the corresponding preference. The remembered −1/0/1 selects row 0/1/2 on
+the next entry. F06 stores these preferences in land mass, land form,
+temperature, climate, age order. A negative
 choice leaves the already-written `choice−1` value and returns failure.
 A Random response consumes one draw at that position and leaves that preference
 unchanged. Land form uses `0`, replaced by current land mass when `R()%3==0`;
 the other four use `R()%3−1`. Random climate therefore precedes temperature in
 this route, unlike the main menu's five-draw route. Save preferences only after
 all five succeed.
+
+An [independent Windows observation](../m1-original-setup-observations.md)
+records the repeated custom-size defaults, acceptance of 65586×80 and exact
+normalized CIV2.DAT values before/after ordinary and Random parameter choices.
+It does not observe private random outcomes or cancellation-time world state.
 
 ### Premade-map preparation
 

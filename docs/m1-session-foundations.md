@@ -155,3 +155,9 @@ The [F05 inner new-game initializer](m1-new-game.md) now performs the ordered
 section 5 partial resets and rate adjustments, with explicit V01 creation and
 F05 balancing children. It is separate from client admission and the outer
 invalidation/menu/setup flow; it does not establish complete starting positions.
+
+The [F05 world-size and parameter helpers](m1-world-setup.md) implement preset/
+custom size selection, partial cancellation effects, both parameter draw orders,
+normalized preferences and real preference persistence. Required interaction
+services and retained setup state remain separate from allocated map storage;
+the complete outer setup/map admission and player wizard are still pending.

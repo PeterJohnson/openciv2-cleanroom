@@ -1,0 +1,276 @@
+{
+  "format": "openciv2-original-setup-observation/1",
+  "createdUtc": "2026-11-14T13:11:09.834804+00:00",
+  "provenance": "Independent normal-UI execution of the supplied original executable and ordinary CIV2.DAT reads. No source, injection, process memory or historical harness input.",
+  "host": "Windows-11-10.0.26300-SP0",
+  "target": {
+    "edition": "Civilization II Multiplayer Gold Edition 5.4.0f patch 3",
+    "executable": {
+      "path": "build/original-setup-runtime/civ2.exe",
+      "bytes": 2489344,
+      "sha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+    },
+    "isolatedWorkingDirectory": "build/original-setup-runtime",
+    "copiedFrom": "build/original-text-runtime",
+    "suppliedInstallation": "C:/Projects/civ2/Civ2"
+  },
+  "runtimeData": {
+    "RULES.TXT": {
+      "path": "build/original-setup-runtime/RULES.TXT",
+      "bytes": 26905,
+      "sha256": "4efef8f5f78ae99f123454b374f71c21933405b977bcc23ffa278d54fb1a249e"
+    },
+    "GAME.TXT": {
+      "path": "build/original-setup-runtime/GAME.TXT",
+      "bytes": 108656,
+      "sha256": "431132fc67b9f7b917bba0dc6f1f36c546cb55b88d43854bc4e11fc3b74c0ced"
+    },
+    "LABELS.TXT": {
+      "path": "build/original-setup-runtime/LABELS.TXT",
+      "bytes": 13279,
+      "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+    },
+    "CITY.TXT": {
+      "path": "build/original-setup-runtime/CITY.TXT",
+      "bytes": 6865,
+      "sha256": "4c3dbaed7eea25c66f44a22602b9ba92846e1742f8e389c993b1fa25d897a967"
+    }
+  },
+  "preferences": [
+    {
+      "path": "build/original-setup-captures/preferences-before.dat",
+      "bytes": 516,
+      "sha256": "b1ceddf0d03ab2eb60be721e8eec4329f92b3da8576d4cf9d817a14b44970d34",
+      "map_size": 2,
+      "world_parameters_LFTCA": [
+        0,
+        0,
+        0,
+        -1,
+        1
+      ]
+    },
+    {
+      "path": "build/original-setup-captures/preferences-after-custom.dat",
+      "bytes": 516,
+      "sha256": "7187f7d49a14956eb5ff059bed682cfdd0e8f8da1ecfc0592408bc104f12fcf0",
+      "map_size": 2,
+      "world_parameters_LFTCA": [
+        1,
+        -1,
+        -1,
+        1,
+        0
+      ]
+    },
+    {
+      "path": "build/original-setup-captures/preferences-after-random.dat",
+      "bytes": 516,
+      "sha256": "e97be95f7ed941736a43ea9a5c27b5b8b6d1be23f32015f1074c31fb65569cd1",
+      "map_size": 0,
+      "world_parameters_LFTCA": [
+        1,
+        -1,
+        -1,
+        1,
+        0
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "id": "custom-defaults",
+      "input": "Customize World, Custom, Cancel, Custom",
+      "observed": "Both custom entries show 50 and 80; Cancel returns to preset menu with Large selected."
+    },
+    {
+      "id": "invalid-retry",
+      "input": "Submit width 19, height 80 using OK",
+      "observed": "Custom dialog reappears with 50 and 80, rather than retaining rejected field text."
+    },
+    {
+      "id": "signed-narrowing",
+      "input": "Submit width 65586, height 80 using OK",
+      "observed": "Accepted and advances to Land Mass. No generated map or save was produced to independently inspect dimensions."
+    },
+    {
+      "id": "parameter-order-defaults",
+      "input": "Accept Large, Archipelago, Wet, Cool, 4 billion",
+      "observed": "Dialogs are L,F,C,T,A; initial defaults Normal, Varied, Arid, Temperate, 5 billion correspond to stored LFTCA [0,0,0,-1,1]."
+    },
+    {
+      "id": "normalized-persistence",
+      "input": "Read CIV2.DAT immediately upon reaching Difficulty",
+      "observed": "Stored LFTCA [1,-1,-1,1,0], map_size 2. Cancel Difficulty, Customize again shows Large preset and these parameter selections."
+    },
+    {
+      "id": "random-preserves-preferences",
+      "input": "On second setup select Small, then Random at all five parameters; read file at Difficulty",
+      "observed": "Stored LFTCA remains [1,-1,-1,1,0]. Only changed byte versus prior snapshot is offset 22 (map_size low byte), 2 to 0."
+    }
+  ],
+  "limitations": [
+    "No actual random outcomes or random draw counts are observable in these captures. Those tests use specification expectations.",
+    "No private state, cancellation-time dimensions, partial negative parameter writes, second-game map aliasing or failed preference writes were measured.",
+    "The isolated runtime inherits earlier authored RULES.TXT/CITY.TXT name probes; their hashes are recorded. No new game was generated here.",
+    "Original payloads and screenshots remain local ignored evidence; only identities and observations are committed."
+  ],
+  "captures": [
+    {
+      "name": "01-main-menu",
+      "path": "build/original-setup-captures/01-main-menu.png",
+      "sha256": "124da7a422566f54f02c79ca6d6bb98d36e090a0161bb5ecddaeafc0638d2a51",
+      "width": 333,
+      "height": 344
+    },
+    {
+      "name": "02-size-large-default",
+      "path": "build/original-setup-captures/02-size-large-default.png",
+      "sha256": "d93da7a7ee42bb1ae5b4c7b3fea03e6252e13cc403955bb881362e71ee82cf16",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "03-custom-defaults",
+      "path": "build/original-setup-captures/03-custom-defaults.png",
+      "sha256": "de35388d0368a17e17a70c4ae7d7a13e228325b180b269e820edfd42b7f03c01",
+      "width": 506,
+      "height": 252
+    },
+    {
+      "name": "04-custom-invalid1950-retry",
+      "path": "build/original-setup-captures/04-custom-invalid1950-retry.png",
+      "sha256": "720501ee751abef2c22b2ed71bd943a8b11c3fe3755dbc105702356af45a773e",
+      "width": 506,
+      "height": 252,
+      "note": "Filename is historical/misleading: 1950 was edited but never submitted. This capture does not establish rejection or retry."
+    },
+    {
+      "name": "05-custom-cancel-preset",
+      "path": "build/original-setup-captures/05-custom-cancel-preset.png",
+      "sha256": "cac22f36aab6041dd36c6126f33de9a959ac1c32eb88506505c2f6faf6bb3340",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "06-custom-reentry-defaults",
+      "path": "build/original-setup-captures/06-custom-reentry-defaults.png",
+      "sha256": "72fbb0f3a73e244f1d69d18eb05c896896f8855bbbedf3b7551c27a04714ef16",
+      "width": 506,
+      "height": 252
+    },
+    {
+      "name": "07-custom-19x80-input",
+      "path": "build/original-setup-captures/07-custom-19x80-input.png",
+      "sha256": "8507e1d6acc64435298bf157610edcf582296693e83d2a571cf9ed35f54a5f56",
+      "width": 506,
+      "height": 252
+    },
+    {
+      "name": "08-custom-invalid-retry-defaults",
+      "path": "build/original-setup-captures/08-custom-invalid-retry-defaults.png",
+      "sha256": "154f7618c451dca0af695806cd09206aa2a20db8645420e0c653c177af9394ee",
+      "width": 506,
+      "height": 252
+    },
+    {
+      "name": "09-custom-65586x80-input",
+      "path": "build/original-setup-captures/09-custom-65586x80-input.png",
+      "sha256": "8cc14b75b3b633cfbe8f0b6fe152d54c3d2488277a5705ee2652fbdfac518088",
+      "width": 506,
+      "height": 252
+    },
+    {
+      "name": "10-land-mass-normal-default",
+      "path": "build/original-setup-captures/10-land-mass-normal-default.png",
+      "sha256": "4cb6636e533cadf8bcbc4c4c070294fa3723b94fa39429c09f68982585303d06",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "11-land-form",
+      "path": "build/original-setup-captures/11-land-form.png",
+      "sha256": "a16d5edd3ba7ac662c53fa47dfaad14df7139c963214b675d607d3cbe076e121",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "12-climate-arid-default",
+      "path": "build/original-setup-captures/12-climate-arid-default.png",
+      "sha256": "0603605d2b4bd441f9e8b269fb4ebd7bcef68ce139786a0f396ca82ee0e87088",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "13-temperature-temperate-default",
+      "path": "build/original-setup-captures/13-temperature-temperate-default.png",
+      "sha256": "3296fa622eecacf3b77c143957ed05667258b387ffb9f6c5cb0eb36630f73e68",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "14-age-five-billion-default",
+      "path": "build/original-setup-captures/14-age-five-billion-default.png",
+      "sha256": "f0686d40c5eb59934aff9794324efff4804d76c71be94b8c1d501e7b798b30de",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "15-parameter-completion-difficulty",
+      "path": "build/original-setup-captures/15-parameter-completion-difficulty.png",
+      "sha256": "c8d04771212962b1f331a718fb088a8f8cc00b1c3556b6e14e0e93e7c3b9bfb5",
+      "width": 506,
+      "height": 280
+    },
+    {
+      "name": "16-size-remembered-large",
+      "path": "build/original-setup-captures/16-size-remembered-large.png",
+      "sha256": "d93da7a7ee42bb1ae5b4c7b3fea03e6252e13cc403955bb881362e71ee82cf16",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "17-land-mass-remembered-large",
+      "path": "build/original-setup-captures/17-land-mass-remembered-large.png",
+      "sha256": "ba977ce3340970a1ea2be70e4e8f3b77c78fdbea5ec03388e20a5ff4d4ffd85f",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "18-land-form-remembered-archipelago",
+      "path": "build/original-setup-captures/18-land-form-remembered-archipelago.png",
+      "sha256": "400949f81c13508760332115c34312fd06436ccf4082a247a1134049de2e0840",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "19-climate-remembered-wet",
+      "path": "build/original-setup-captures/19-climate-remembered-wet.png",
+      "sha256": "756b993f0de683228028fbe01d935bb776d842ab8bc5106c75303e0db364d8b8",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "20-temperature-remembered-cool",
+      "path": "build/original-setup-captures/20-temperature-remembered-cool.png",
+      "sha256": "a0bafc86277858a152a879d1a0c1ee3286192756862ca52e51d6f460771937dc",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "21-age-remembered-four-billion",
+      "path": "build/original-setup-captures/21-age-remembered-four-billion.png",
+      "sha256": "08627e999fa8e905be67b923b4f2887606df8907ffbfa7de6b62dc23d1bfd69c",
+      "width": 506,
+      "height": 184
+    },
+    {
+      "name": "22-random-completion-difficulty",
+      "path": "build/original-setup-captures/22-random-completion-difficulty.png",
+      "sha256": "c8d04771212962b1f331a718fb088a8f8cc00b1c3556b6e14e0e93e7c3b9bfb5",
+      "width": 506,
+      "height": 280
+    }
+  ],
+  "finalState": "Canceled Difficulty, then main menu; confirmed the original window closed."
+}
