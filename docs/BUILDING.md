@@ -94,7 +94,7 @@ X02 algorithms or establish gameplay compatibility.
 
 With `BUILD_TESTING=ON` and Python available, CTest also runs `conformance_foundations`:
 the [M1 runner](m1-foundations.md) invokes the test-only C++ adapter for
-three pure F01 and seven stateful F02 fixtures and writes `conformance-results.json`.
+three F01, seven F02 and ten W01 fixtures and writes `conformance-results.json`.
 WASM runs the same adapter under Node. This is separate from metadata checks and has no GUI
 or asset dependency. Ordinary library builds and Catch2 tests still work with
 Python discovery disabled.

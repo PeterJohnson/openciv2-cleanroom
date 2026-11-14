@@ -1,0 +1,221 @@
+{
+  "format": "openciv2-conformance/3",
+  "id": "X02.W01.step-off-map",
+  "revision": 1,
+  "target": {
+    "game": "Civilization II Multiplayer Gold Edition",
+    "version": "5.4.0f patch 3",
+    "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+  },
+  "specifications": [
+    {
+      "id": "F01",
+      "file": "../F01-determinism-and-arithmetic.md",
+      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+    },
+    {
+      "id": "W01",
+      "file": "../W01-map-geometry-and-spatial-state.md",
+      "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+    },
+    {
+      "id": "X01",
+      "file": "../X01-classic-compatibility-contract.md",
+      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+    },
+    {
+      "id": "X02",
+      "file": "../X02-whole-game-conformance.md",
+      "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+    }
+  ],
+  "boundary": {
+    "level": "primitive",
+    "operation": "W01.stepDistance",
+    "start": "state primitive entry with complete registered inputs",
+    "stop": "normal return followed by exit snapshot",
+    "arguments": {
+      "x1": {
+        "$type": "i32",
+        "value": "0"
+      },
+      "y1": {
+        "$type": "i32",
+        "value": "0"
+      },
+      "x2": {
+        "$type": "i32",
+        "value": "250"
+      },
+      "y2": {
+        "$type": "i32",
+        "value": "0"
+      }
+    },
+    "suppliedChildren": []
+  },
+  "profile": {
+    "domain": "accepted-off-nominal",
+    "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+    "restrictions": [],
+    "deviations": []
+  },
+  "entry": {
+    "state": {
+      "W01.width": {
+        "$type": "i32",
+        "value": "100"
+      },
+      "W01.height": {
+        "$type": "i32",
+        "value": "80"
+      },
+      "W01.flat": {
+        "$type": "bool",
+        "value": false
+      }
+    },
+    "retainedInputs": [],
+    "blobs": []
+  },
+  "randomness": {
+    "mode": "controlled-choices",
+    "policy": null,
+    "contexts": {},
+    "choices": []
+  },
+  "environment": {
+    "protocol": "scripted-v1",
+    "inputs": [],
+    "unexpected": "fail"
+  },
+  "expected": {
+    "outcome": "return",
+    "result": {
+      "$type": "i32",
+      "value": "-75"
+    },
+    "state": {
+      "W01.width": {
+        "$type": "i32",
+        "value": "100"
+      },
+      "W01.height": {
+        "$type": "i32",
+        "value": "80"
+      },
+      "W01.flat": {
+        "$type": "bool",
+        "value": false
+      }
+    },
+    "trace": [
+      {
+        "seq": 0,
+        "id": "root.enter",
+        "kind": "enter",
+        "call": "root",
+        "payload": {
+          "operation": "W01.stepDistance",
+          "parent": null,
+          "arguments": {
+            "x1": {
+              "$type": "i32",
+              "value": "0"
+            },
+            "y1": {
+              "$type": "i32",
+              "value": "0"
+            },
+            "x2": {
+              "$type": "i32",
+              "value": "250"
+            },
+            "y2": {
+              "$type": "i32",
+              "value": "0"
+            }
+          }
+        }
+      },
+      {
+        "seq": 1,
+        "id": "root.return",
+        "kind": "return",
+        "call": "root",
+        "payload": {
+          "result": {
+            "$type": "i32",
+            "value": "-75"
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "id": "root.exit",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "exit",
+          "state": {
+            "W01.width": {
+              "$type": "i32",
+              "value": "100"
+            },
+            "W01.height": {
+              "$type": "i32",
+              "value": "80"
+            },
+            "W01.flat": {
+              "$type": "bool",
+              "value": false
+            }
+          }
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "stateScope": "complete-boundary",
+    "traceKinds": [
+      "enter",
+      "return",
+      "snapshot"
+    ],
+    "exclusions": [],
+    "normalizations": [],
+    "order": {
+      "before": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independent": []
+    }
+  },
+  "evidence": {
+    "kind": "specification-vector",
+    "sources": [
+      {
+        "file": "../W01-map-geometry-and-spatial-state.md",
+        "section": "9-worked-examples-and-conformance-cases",
+        "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+      }
+    ],
+    "limitations": [
+      "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+      "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+      "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+    ]
+  },
+  "limits": {
+    "events": 64,
+    "providerRequests": 16,
+    "hostMilliseconds": 1000
+  }
+}

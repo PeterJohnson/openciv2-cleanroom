@@ -1,44 +1,52 @@
 {
   "format": "openciv2-conformance-run/2",
-  "runnerScope": "f01-f02-state-v1",
-  "createdUtc": "2026-11-13T23:51:13.727462+00:00",
-  "implementationRevision": "92860dea07527a9709c169d9a417d62f2f2ed4eb",
+  "runnerScope": "f01-f02-w01-state-v1",
+  "createdUtc": "2026-11-14T00:12:04.858438+00:00",
+  "implementationRevision": "0f1e1bbfd2f72cbf1a4e04cbf5995fb8b2d85cce",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "5216d8826a1b716f249b67c599af8643fd58bc8f531fc33ee2f21be8b3324f0f",
+    "CMakeLists.txt": "21198f36dd91a6497e25cf76af01356dde0b860735ba6b2624fe56730daa55ea",
     "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
     "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
-    "cmake/ConformanceIdentity.cmake": "c804c2a9e9a312bc89801985da99d1ee09a976200e53e674bd1b7377454e9933",
+    "cmake/ConformanceIdentity.cmake": "15cfec4d0c1679dca45a3e9c073f843e9b7dd53776df7434c5adb5c460d18bcd",
     "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
     "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
     "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
     "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
     "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
     "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
-    "tools/conformance_adapter.cpp": "422bdc3b26640ee4ff9fafdee0ab34d9ee3637375e8b43e1af29c582e352ec27",
-    "tools/run_conformance.py": "52ab8807819bf15fa2d5685e8b6ce8403cdd5c35366e6ed7a78e19189f333a10",
+    "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
+    "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
+    "src/world/map.hpp": "3b007b6c6d57acc43fc6c0e7cd26641efe8d31050a01781b9020f5444729fb37",
+    "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
+    "tools/conformance_adapter.cpp": "ec1e429d223330da7d883ba94c81722425ddea5932a5e38afaa2eea2b231a80f",
+    "tools/run_conformance.py": "13919f7b131e821b4ba5e1f2b7d5ce1ef22d3254666b8ec1dc5de27885d443d3",
     "tools/check_conformance.py": "42ea581723a21263eef078e294ced9b74876c0d396b738dbc7d0b62a2e0c589e"
   },
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "5216d8826a1b716f249b67c599af8643fd58bc8f531fc33ee2f21be8b3324f0f",
+      "CMakeLists.txt": "21198f36dd91a6497e25cf76af01356dde0b860735ba6b2624fe56730daa55ea",
       "dependencies.json": "7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17",
       "cmake/Toolchain.cmake": "57b13ffd50180d4fd7912bb39898644c137fe5c44e4d8c44cc9818db71dd1df3",
-      "cmake/ConformanceIdentity.cmake": "c804c2a9e9a312bc89801985da99d1ee09a976200e53e674bd1b7377454e9933",
+      "cmake/ConformanceIdentity.cmake": "15cfec4d0c1679dca45a3e9c073f843e9b7dd53776df7434c5adb5c460d18bcd",
       "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
       "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
       "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
       "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
       "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
       "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
-      "tools/conformance_adapter.cpp": "422bdc3b26640ee4ff9fafdee0ab34d9ee3637375e8b43e1af29c582e352ec27"
+      "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
+      "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
+      "src/world/map.hpp": "3b007b6c6d57acc43fc6c0e7cd26641efe8d31050a01781b9020f5444729fb37",
+      "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
+      "tools/conformance_adapter.cpp": "ec1e429d223330da7d883ba94c81722425ddea5932a5e38afaa2eea2b231a80f"
     },
     "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=/tmp/openciv2-emsdk/upstream/emscripten/em++\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Release\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n"
   },
   "adapterArtifacts": {
-    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.js": "4a1c4062798aa1257e17cf24933fc91e6d2eb426ff29b1b42ee780a4fa84bcbe",
-    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.wasm": "82bc0653c4f79ba03ffbc7f46d966639675c974462aa94dcd7a2ed8c0d0331e4"
+    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.js": "8c9ed7a9f41c9acbc4176c8c060fb6d6a38a258d03a73e5f735d8d99524b507f",
+    "/home/peter/project/openciv2-cleanroom/build/m0-web-headless/oc2_conformance_adapter.wasm": "7a3703bfbec2130f21a5d241cdb655409d10f06624ce742a4cfa48da2050caa4"
   },
   "host": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=/tmp/openciv2-emsdk/upstream/emscripten/em++\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Release\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",
@@ -1844,6 +1852,1690 @@
                 "F02.nextCityToken": {
                   "$type": "u32",
                   "value": "9"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-lookup-alias.json",
+      "sha256": "3995ea83d08a2afdb9dea946b85efcd67d46802e73a6b3b194161d4ec1fbe4d3",
+      "id": "X02.W01.lookup-alias",
+      "revision": 1,
+      "operation": "W01.tileIndex",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u32",
+          "value": "254"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.tileIndex",
+              "parent": null,
+              "arguments": {
+                "x": {
+                  "$type": "i32",
+                  "value": "8"
+                },
+                "y": {
+                  "$type": "i32",
+                  "value": "5"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u32",
+                "value": "254"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-lookup-canonical.json",
+      "sha256": "c1871b740cae29c7aa18f47be181e9c18285a48fe02103c8b2477693946dc970",
+      "id": "X02.W01.lookup-canonical",
+      "revision": 1,
+      "operation": "W01.tileIndex",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "u32",
+          "value": "254"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.tileIndex",
+              "parent": null,
+              "arguments": {
+                "x": {
+                  "$type": "i32",
+                  "value": "9"
+                },
+                "y": {
+                  "$type": "i32",
+                  "value": "5"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "u32",
+                "value": "254"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-lookup-miss.json",
+      "sha256": "691528bc518ecc7e451b8aef51ce3c45228915cc0606f4aa22f6a80dd7404eac",
+      "id": "X02.W01.lookup-miss",
+      "revision": 1,
+      "operation": "W01.tileIndex",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "null"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.tileIndex",
+              "parent": null,
+              "arguments": {
+                "x": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "y": {
+                  "$type": "i32",
+                  "value": "5"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "null"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-step-minimum.json",
+      "sha256": "32c3410ac82c1ac739a6ded9ba067327e2173a4cc0773110bdefac3243e6a49e",
+      "id": "X02.W01.step-minimum",
+      "revision": 1,
+      "operation": "W01.stepDistance",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "coordinates-and-arithmetic",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-1073741824"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          },
+          "W01.flat": {
+            "$type": "bool",
+            "value": false
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.stepDistance",
+              "parent": null,
+              "arguments": {
+                "x1": {
+                  "$type": "i32",
+                  "value": "-2147483648"
+                },
+                "y1": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "x2": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "y2": {
+                  "$type": "i32",
+                  "value": "0"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-1073741824"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                },
+                "W01.flat": {
+                  "$type": "bool",
+                  "value": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-step-off-map.json",
+      "sha256": "924d1ecfe964b4c47e3b5e2047453a841d6bf7324fc710eee95e7b7478b32905",
+      "id": "X02.W01.step-off-map",
+      "revision": 1,
+      "operation": "W01.stepDistance",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-75"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          },
+          "W01.flat": {
+            "$type": "bool",
+            "value": false
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.stepDistance",
+              "parent": null,
+              "arguments": {
+                "x1": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "y1": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "x2": {
+                  "$type": "i32",
+                  "value": "250"
+                },
+                "y2": {
+                  "$type": "i32",
+                  "value": "0"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-75"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                },
+                "W01.flat": {
+                  "$type": "bool",
+                  "value": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-step-seam.json",
+      "sha256": "128fed0853e41bee50e38120a53761b259e13d48f2058d4df03eca725c5af4f2",
+      "id": "X02.W01.step-seam",
+      "revision": 1,
+      "operation": "W01.stepDistance",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "2"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          },
+          "W01.flat": {
+            "$type": "bool",
+            "value": false
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.stepDistance",
+              "parent": null,
+              "arguments": {
+                "x1": {
+                  "$type": "i32",
+                  "value": "98"
+                },
+                "y1": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "x2": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "y2": {
+                  "$type": "i32",
+                  "value": "2"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "2"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                },
+                "W01.flat": {
+                  "$type": "bool",
+                  "value": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-weighted-off-map.json",
+      "sha256": "fac835b479d56d929345837939c63735f0cf1a02b3c8e737d72c493120386b3b",
+      "id": "X02.W01.weighted-off-map",
+      "revision": 1,
+      "operation": "W01.weightedDistance",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "112"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          },
+          "W01.flat": {
+            "$type": "bool",
+            "value": false
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.weightedDistance",
+              "parent": null,
+              "arguments": {
+                "x1": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "y1": {
+                  "$type": "i32",
+                  "value": "0"
+                },
+                "x2": {
+                  "$type": "i32",
+                  "value": "250"
+                },
+                "y2": {
+                  "$type": "i32",
+                  "value": "0"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "112"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                },
+                "W01.flat": {
+                  "$type": "bool",
+                  "value": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-wrap-far-negative.json",
+      "sha256": "6321e06ff921717d19625a87bec3793df252538e25d17cb8a6a765a52e2a0f49",
+      "id": "X02.W01.wrap-far-negative",
+      "revision": 1,
+      "operation": "W01.wrapX",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-101"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          },
+          "W01.flat": {
+            "$type": "bool",
+            "value": false
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.wrapX",
+              "parent": null,
+              "arguments": {
+                "x": {
+                  "$type": "i32",
+                  "value": "-201"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-101"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                },
+                "W01.flat": {
+                  "$type": "bool",
+                  "value": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-wrap-far-positive.json",
+      "sha256": "6d511944d0ac397fa519ca7b923aa8186e800deea793db6aaf2364817f903024",
+      "id": "X02.W01.wrap-far-positive",
+      "revision": 1,
+      "operation": "W01.wrapX",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "101"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          },
+          "W01.flat": {
+            "$type": "bool",
+            "value": false
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.wrapX",
+              "parent": null,
+              "arguments": {
+                "x": {
+                  "$type": "i32",
+                  "value": "201"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "101"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                },
+                "W01.flat": {
+                  "$type": "bool",
+                  "value": false
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-W01-wrap-flat.json",
+      "sha256": "f07a4b3a9558a82afd25276de0bdcfc6d1fddcb376ec2a47b41660bd475c397f",
+      "id": "X02.W01.wrap-flat",
+      "revision": 1,
+      "operation": "W01.wrapX",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "W01",
+          "file": "../W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "accepted-off-nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../W01-map-geometry-and-spatial-state.md",
+            "section": "9-worked-examples-and-conformance-cases",
+            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          }
+        ],
+        "limitations": [
+          "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
+          "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 64,
+        "providerRequests": 16,
+        "hostMilliseconds": 1000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "201"
+        },
+        "state": {
+          "W01.width": {
+            "$type": "i32",
+            "value": "100"
+          },
+          "W01.height": {
+            "$type": "i32",
+            "value": "80"
+          },
+          "W01.flat": {
+            "$type": "bool",
+            "value": true
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "W01.wrapX",
+              "parent": null,
+              "arguments": {
+                "x": {
+                  "$type": "i32",
+                  "value": "201"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "201"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "W01.width": {
+                  "$type": "i32",
+                  "value": "100"
+                },
+                "W01.height": {
+                  "$type": "i32",
+                  "value": "80"
+                },
+                "W01.flat": {
+                  "$type": "bool",
+                  "value": true
                 }
               }
             }

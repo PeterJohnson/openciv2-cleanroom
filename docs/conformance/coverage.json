@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 2,
+  "inventoryVersion": 3,
   "rows": [
     {
       "id": "F01.primaryModuloFromCode",
@@ -140,6 +140,124 @@
       ],
       "comparisonSurfaces": [
         "typed return",
+        "complete registered state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
+    },
+    {
+      "id": "W01.wrapX",
+      "owner": "W01",
+      "operation": "W01.wrapX",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#2-coordinates-lookup-and-lifecycle",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "function": "W01.wrapX",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "caseIds": [
+        "X02.W01.wrap-far-positive",
+        "X02.W01.wrap-far-negative",
+        "X02.W01.wrap-flat"
+      ],
+      "comparisonSurfaces": [
+        "typed return and explicit absence",
+        "complete registered state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
+    },
+    {
+      "id": "W01.stepDistance",
+      "owner": "W01",
+      "operation": "W01.stepDistance",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#4-distances-directions-and-geometric-selection",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "function": "W01.stepDistance",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "caseIds": [
+        "X02.W01.step-seam",
+        "X02.W01.step-off-map",
+        "X02.W01.step-minimum"
+      ],
+      "comparisonSurfaces": [
+        "typed return and explicit absence",
+        "complete registered state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
+    },
+    {
+      "id": "W01.weightedDistance",
+      "owner": "W01",
+      "operation": "W01.weightedDistance",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#4-distances-directions-and-geometric-selection",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "function": "W01.weightedDistance",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "caseIds": [
+        "X02.W01.weighted-off-map"
+      ],
+      "comparisonSurfaces": [
+        "typed return and explicit absence",
+        "complete registered state exit snapshot",
+        "enter -> return -> exit dependencies"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": []
+    },
+    {
+      "id": "W01.tileIndex",
+      "owner": "W01",
+      "operation": "W01.tileIndex",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#2-coordinates-lookup-and-lifecycle",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
+          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "function": "W01.tileIndex",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "caseIds": [
+        "X02.W01.lookup-alias",
+        "X02.W01.lookup-canonical",
+        "X02.W01.lookup-miss"
+      ],
+      "comparisonSurfaces": [
+        "typed return and explicit absence",
         "complete registered state exit snapshot",
         "enter -> return -> exit dependencies"
       ],

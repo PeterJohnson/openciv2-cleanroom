@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 2,
+  "inventoryVersion": 3,
   "scope": "Repository specification inventory; two pure F01 operations and two process token state keys. Not an exhaustive operation or original-source-entry inventory.",
   "specifications": [
     {
@@ -407,7 +407,7 @@
       "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
       "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
       "specificationStatus": "specified",
-      "registrationStatus": "not-registered"
+      "registrationStatus": "partial"
     },
     {
       "id": "W02",
@@ -665,6 +665,180 @@
       ],
       "independenceClaims": [],
       "implementation": "src/state/identities.cpp"
+    },
+    {
+      "id": "W01.wrapX",
+      "owner": "W01",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#2-coordinates-lookup-and-lifecycle",
+      "arguments": {
+        "x": "i32"
+      },
+      "result": "i32",
+      "reads": [
+        "W01.width",
+        "W01.height",
+        "W01.flat"
+      ],
+      "writes": [],
+      "preconditions": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Immutable scalar inputs. No map or fallback reads, callbacks, concurrent mutation, random draws or clock samples.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": "src/world/geometry.cpp"
+    },
+    {
+      "id": "W01.stepDistance",
+      "owner": "W01",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#4-distances-directions-and-geometric-selection",
+      "arguments": {
+        "x1": "i32",
+        "y1": "i32",
+        "x2": "i32",
+        "y2": "i32"
+      },
+      "result": "i32",
+      "reads": [
+        "W01.width",
+        "W01.height",
+        "W01.flat"
+      ],
+      "writes": [],
+      "preconditions": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Immutable scalar inputs. No map or fallback reads, callbacks, concurrent mutation, random draws or clock samples.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": "src/world/geometry.cpp"
+    },
+    {
+      "id": "W01.weightedDistance",
+      "owner": "W01",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#4-distances-directions-and-geometric-selection",
+      "arguments": {
+        "x1": "i32",
+        "y1": "i32",
+        "x2": "i32",
+        "y2": "i32"
+      },
+      "result": "i32",
+      "reads": [
+        "W01.width",
+        "W01.height",
+        "W01.flat"
+      ],
+      "writes": [],
+      "preconditions": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Immutable scalar inputs. No map or fallback reads, callbacks, concurrent mutation, random draws or clock samples.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": "src/world/geometry.cpp"
+    },
+    {
+      "id": "W01.tileIndex",
+      "owner": "W01",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#2-coordinates-lookup-and-lifecycle",
+      "arguments": {
+        "x": "i32",
+        "y": "i32"
+      },
+      "result": "tile-index-or-null",
+      "reads": [
+        "W01.width",
+        "W01.height"
+      ],
+      "writes": [],
+      "preconditions": "Dimensions are admitted before entry: positive even width <=32767; positive height <=32767; (width/2)*height <32768. Full i32 coordinate domain. Current topology is a typed boolean when required. tileIndex returns a u32 row index or typed null for a rectangular miss; no tile backing is read.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Immutable scalar inputs. No map or fallback reads, callbacks, concurrent mutation, random draws or clock samples.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independenceClaims": [],
+      "implementation": "src/world/geometry.cpp"
     }
   ],
   "states": [
@@ -741,6 +915,42 @@
       "initialValue": null,
       "publication": "Effective human set at entry, separate from controller assignments or the persistent roster. Reservation preserves it.",
       "implementation": "src/state/identities.hpp"
+    },
+    {
+      "id": "W01.width",
+      "owner": "W01",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#2-coordinates-lookup-and-lifecycle",
+      "valueType": "i32",
+      "lifetime": "world",
+      "collectionOrder": "scalar",
+      "crossReferences": [],
+      "initialValue": null,
+      "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
+      "implementation": "src/world/geometry.hpp"
+    },
+    {
+      "id": "W01.height",
+      "owner": "W01",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#2-coordinates-lookup-and-lifecycle",
+      "valueType": "i32",
+      "lifetime": "world",
+      "collectionOrder": "scalar",
+      "crossReferences": [],
+      "initialValue": null,
+      "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
+      "implementation": "src/world/geometry.hpp"
+    },
+    {
+      "id": "W01.flat",
+      "owner": "W01",
+      "specificationAnchor": "docs/algorithms/W01-map-geometry-and-spatial-state.md#2-coordinates-lookup-and-lifecycle",
+      "valueType": "bool",
+      "lifetime": "current world rule",
+      "collectionOrder": "scalar",
+      "crossReferences": [],
+      "initialValue": null,
+      "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
+      "implementation": "src/world/geometry.hpp"
     }
   ],
   "fixtures": [
@@ -840,6 +1050,106 @@
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
       "sha256": "cf03a2471556f783e6c1a2164e39df7e3cc0dcfe3063a76c80419a9284f21f40",
       "operation": "F02.reserveUnitSlot",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.wrap-far-positive",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-wrap-far-positive.json",
+      "sha256": "6d511944d0ac397fa519ca7b923aa8186e800deea793db6aaf2364817f903024",
+      "operation": "W01.wrapX",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.wrap-far-negative",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-wrap-far-negative.json",
+      "sha256": "6321e06ff921717d19625a87bec3793df252538e25d17cb8a6a765a52e2a0f49",
+      "operation": "W01.wrapX",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.wrap-flat",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-wrap-flat.json",
+      "sha256": "f07a4b3a9558a82afd25276de0bdcfc6d1fddcb376ec2a47b41660bd475c397f",
+      "operation": "W01.wrapX",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.step-seam",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-step-seam.json",
+      "sha256": "128fed0853e41bee50e38120a53761b259e13d48f2058d4df03eca725c5af4f2",
+      "operation": "W01.stepDistance",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.step-off-map",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-step-off-map.json",
+      "sha256": "924d1ecfe964b4c47e3b5e2047453a841d6bf7324fc710eee95e7b7478b32905",
+      "operation": "W01.stepDistance",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.step-minimum",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-step-minimum.json",
+      "sha256": "32c3410ac82c1ac739a6ded9ba067327e2173a4cc0773110bdefac3243e6a49e",
+      "operation": "W01.stepDistance",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.weighted-off-map",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-weighted-off-map.json",
+      "sha256": "fac835b479d56d929345837939c63735f0cf1a02b3c8e737d72c493120386b3b",
+      "operation": "W01.weightedDistance",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.lookup-alias",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-lookup-alias.json",
+      "sha256": "3995ea83d08a2afdb9dea946b85efcd67d46802e73a6b3b194161d4ec1fbe4d3",
+      "operation": "W01.tileIndex",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.lookup-canonical",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-lookup-canonical.json",
+      "sha256": "c1871b740cae29c7aa18f47be181e9c18285a48fe02103c8b2477693946dc970",
+      "operation": "W01.tileIndex",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.W01.lookup-miss",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-W01-lookup-miss.json",
+      "sha256": "691528bc518ecc7e451b8aef51ce3c45228915cc0606f4aa22f6a80dd7404eac",
+      "operation": "W01.tileIndex",
       "provenance": "specification-vector",
       "executionStatus": "passed",
       "runReport": "docs/conformance/reports/f01-native.json"

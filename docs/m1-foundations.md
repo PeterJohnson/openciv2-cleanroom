@@ -2,8 +2,8 @@
 
 M1 is underway, not complete. Implemented foundations include F01 numeric
 primitives and isolated random contexts in standard-library-only `oc2_base`,
-F02 token assignment and unit reservation in `oc2_game`, and a bounded developer
-runner for five registered X02 operations. No reconstruction
+F02 token assignment/unit reservation and W01 map foundations in `oc2_game`, and a
+bounded developer runner for nine registered X02 operations. No reconstruction
 source, legacy harness, original executable or asset checkout is a code input.
 
 ## Implemented boundary
@@ -28,8 +28,12 @@ source, legacy harness, original executable or asset checkout is a code input.
 - F02 §§2–3: separate slot/token identity types, process-owned unit/city token
   sequences and the unit-slot reservation prefix, including first-hole reuse,
   retained military counts and effective-human extension limits.
+- W01 §§1–6,8: doubled-coordinate geometry, ordered neighborhood inputs,
+  contiguous logical tiles, remembered/coarse layers, retained map state,
+  allocation/release, spatial queries, coordinate features and primitive tile
+  mutations with ordered synchronization effects.
 
-The five registered adapters produce actual entry/return/exit traces.
+The nine registered adapters produce actual entry/return/exit traces.
 `oc2_conformance_adapter` is a test executable, not a save-inspection CLI or game
 console. It receives only operation names and canonical decimal arguments; it
 never reads expected results. C++ implementations are identical under native
@@ -100,6 +104,60 @@ effective-human bits, negative retained counts, invalid views and a caller-drive
 scan reset retaining records and token positions. These are leaf-operation tests,
 not full U01 creation, C01 city reservation, deletion or F06 token-remapping tests.
 
+## W01 geometry and map boundary
+
+`world/geometry.hpp` provides rectangular lookup, canonical row-order coordinates,
+single-correction horizontal/coarse wrapping, step and weighted distances,
+sign-based direction selection, half-open spans/rectangles and ordered neighbors.
+It accepts positive even signed-16 widths, positive signed-16 heights and an area
+below 32768. This is the declared backing domain, not a claim about F05/F06
+acceptance of new-game or malformed file dimensions. Scalar query coordinates
+retain the full i32 domain and Appendix A's wrapping reductions.
+
+Lookup deliberately aliases noncanonical parity without changing the coordinates
+used by other predicates. Topology is supplied from the current rule on each
+geometry call, independently of a stored file header. Neighborhood tables are
+explicit mutable inputs; order, duplicates, altered offsets and center positions
+are retained. None of these operations accepts a random context or clock service.
+
+`world/map.hpp` owns contiguous C++ tile records, remembered-improvement layers
+1..7, four coarse grids and separately retained region summaries/seed/header
+topology. Codecs must encode logical fields explicitly. Civilization-0 memory
+and the shared mutable fallback are supplied separately; allocation/release
+preserves them. Fresh tiles are Ocean **owned by civilization 0**, not Unowned.
+Coarse cells remain explicitly uninitialized until a producer writes them;
+reading one throws rather than inventing a zero value. Direct memory/coarse
+access checks the computed linear index against actual backing, without adding
+a rectangular-coordinate check, fallback or implicit wrap.
+
+Allocation publishes dimensions, tiles, memory layers and coarse grids in order,
+setting the allocated flag last. A failure service can interrupt each allocation;
+preceding publications survive. Replacement retains old backing until the map
+owner is destroyed, because allocation does not free a preceding map. Normal
+setup/load callers should release before replacement. Release follows W01's
+coarse-3-to-0, tiles, memory-1-to-7 order and clears the flag last; it does nothing
+when the flag is clear, including after a failed initial allocation. Accesses
+after partial replacement reject unavailable backing before indexing it.
+
+Spatial reads preserve stored owner, region, feature and revelation semantics.
+Resource/hut/shield predicates use the supplied coordinates and saved seed;
+negative intermediate pattern coordinates use floor division. Primitive edits
+retain unrelated fields and derived state. Synchronization is a typed semantic
+effect after mutation: client batching takes precedence over immediate sending,
+host batching does not take the client path, and unchanged fields emit nothing.
+Coordinates and operands remain unreduced in effects except for normalized owner.
+A publisher failure retains the completed mutation. N02 wire encoding and
+session authority remain separate future integrations.
+
+Eleven Catch2 cases exercise these contracts, retained state, allocator failure,
+fallback/parity aliasing, unsupported backing, sync routes and callback failures.
+Ten new X02 vectors cover wrap, step/weighted distance and nullable tile indices,
+with the dimensions/current topology included in the registered state closure.
+The expectations come from W01 §§2,4,9 and Appendix A, not implementation output
+or original-game captures. Region labeling/border rebuilding, the treaty-based
+foreign-radius query, bulk field adapters and complete W03 memory policy remain
+unimplemented; this slice does not claim all of W01 or its gameplay consumers.
+
 ## X02 runner scope
 
 `tools/run_conformance.py` is a Python-standard-library developer host driver;
@@ -107,9 +165,9 @@ it invokes the adapter directly or through Node and compares its JSON output.
 The game library, ordinary builds and Catch2 tests have no Python dependency.
 The driver does not implement the tested arithmetic in Python.
 
-The `f01-f02-state-v1` scope validates exact X02 v3 structure, target/specification
+The `f01-f02-w01-state-v1` scope validates exact X02 v3 structure, target/specification
 hashes and evidence anchors, registered argument types/preconditions and the exact
-scalar/ordered-array state closure, canonical integers, mandatory trace identities
+scalar/ordered-array state closure, canonical integers, typed booleans, mandatory trace identities
 and dependencies. It compares typed results, absence and complete registered state,
 matches events by identity, and checks chronological dependency edges. Unknown fields, duplicate keys,
 stale pins, omitted edges and unconsumed declared inputs cannot produce a pass.
@@ -128,7 +186,8 @@ Stateful adapter inputs use canonical numeric fields on stdin in the registered
 protocol order. This avoids command-line size limits and carries no expected
 result or snapshot. Typed fixture validation precedes execution; the C++ adapter
 also rejects missing, out-of-range and trailing state input. The original three
-F01 fixtures and their expectations are unchanged.
+F01 and seven F02 fixtures and their expectations are unchanged. Boolean inputs
+use exact JSON true/false in fixtures and 0/1 only in the internal adapter protocol.
 
 Reports retain raw fixture hashes/revisions, target/spec/evidence identities,
 implementation revision plus exact source hashes and dirty status, adapter
@@ -170,28 +229,30 @@ CTest writes a fresh report in its build directory; CI uploads it with the test
 evidence. Updating the retained reports is an explicit reviewed step after an
 implementation change, not automatic regeneration of expected results.
 
-Full F02 records/pools/process lifecycle, W01 spatial state, content codecs,
+Full F02 records/pools/process lifecycle, map integration with setup/load, content codecs,
 scoped queries, save inspection/SQLite export, session/continuation contracts and networking
 remain M1 work. These primitives alone cannot play a turn, load a save, restore
-a pending interaction or establish original-game interoperability.
+a pending interaction or establish original-game interoperability. The
+[M1 completion audit](m1-validation.md) preserves the entire outstanding exit gate.
 
 ## Local validation — 2026-11-13 UTC
 
-Linux Clang 20.1.8 / CMake 3.31.10 passes all 23 headless CTests: 20 Catch2 cases,
-two metadata checks and execution of the ten X02 vectors. A separate ASan/UBSan
-build passes the same 23 tests with leak detection enabled (outside the local
+Linux Clang 20.1.8 / CMake 3.31.10 passes all 34 headless CTests: 31 Catch2 cases,
+two metadata checks and execution of the twenty X02 vectors. A separate ASan/UBSan
+build passes the same 34 tests with leak detection enabled (outside the local
 ptrace sandbox). Emscripten 4.0.23 / Clang 22.0.0 passes four CTests under Node:
-the 20 Catch2 cases, two host metadata checks and the ten adapter vectors.
+the 31 Catch2 cases, two host metadata checks and the twenty adapter vectors.
 The Windows/macOS CI jobs are configured to run the new tests, but these M1
 changes have not yet run on those hosts.
 
-A fresh library-only build also passes with GUI, tests, Python discovery and
+The library-only build also passes with GUI, tests, Python discovery and
 dependency fetching disabled and an intentionally missing asset directory.
 
-All 96 Python tests and pinned clang-format checks pass. Negative cases include
+All 99 Python tests and pinned clang-format checks pass. Negative cases include
 forged/stale execution evidence, bad integer encodings, duplicate JSON keys,
 unsupported state/providers/normalization, missing dependencies, reordered or
 duplicated events, mismatched results, adapter failure, stale or missing embedded
 build identities, source changes during execution, incomplete/ill-typed state,
-changed slot order, absence versus slot zero, and watchdog exhaustion.
+changed slot order, absence versus slot/tile zero, invalid geometry dimensions,
+untyped boolean values and watchdog exhaustion.
 The unchanged WASM Catch2 macros still emit their upstream `__COUNTER__` warnings.

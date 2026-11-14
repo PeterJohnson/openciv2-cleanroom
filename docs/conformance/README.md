@@ -1,9 +1,9 @@
 # Conformance inventory
 
-M0 established the checked metadata. M1 now executes three unchanged F01 and
-seven new F02 [X02 version 3 fixtures](../algorithms/conformance/) through real C++
+M0 established the checked metadata. M1 now executes three F01, seven F02 and
+ten W01 [X02 version 3 fixtures](../algorithms/conformance/) through real C++
 operations on native and WASM. The [bounded runner](../m1-foundations.md) checks
-pure mappings and stateful token/reservation leaves; composite operations,
+pure mappings, stateful token/reservation leaves and scalar geometry; composite operations,
 providers/reentry and replay remain later M1 work. Metadata validation does not
 execute gameplay.
 
@@ -23,26 +23,27 @@ writes `conformance-results.json`. Its test-only adapter links `oc2_game` and
 
 ## Versioned registries
 
-[registry.json](registry.json) schema 1, inventory 2 contains:
+[registry.json](registry.json) schema 1, inventory 3 contains:
 
 - All 65 specification families, exact file hashes, specification status and
   separate registration status. This denominator counts documents, not behavior.
-- Two F01 pure and three F02 stateful operation contracts, with typed
+- Two F01, three F02 and four W01 operation contracts, with typed
   arguments/results, state closure, preconditions, callbacks, stop/event boundaries,
   dependency edges and explicit
   empty independence claims. All have C++ implementations and executable
   adapters. `implementation: null` still means no implementation exists.
 - Six F02 keys: two process token counters, the unit scan bound and its fixed
   entry token view, eight recorded military counts, and the effective-human mask.
-  Their type, lifetime, ordering and reference rules are registered. Full pool
+  Three W01 keys cover dimensions and the current flat-world rule. Their type,
+  lifetime, ordering and reference rules are registered. Full pool
   records, retained workspaces and random contexts still need registrations.
-- Ten fixture identities/revisions/hashes and their provenance. Each is a
+- Twenty fixture identities/revisions/hashes and their provenance. Each is a
   specification vector with a passing [native report](reports/f01-native.json)
   and a separate [WASM report](reports/f01-wasm.json).
   The target executable hash in a vector is not proof of access to that image.
 
 [coverage.json](coverage.json) uses X02 §8's required row fields and dispositions.
-Rows own the five registered operation contracts. `evidenceEntries` identify the
+Rows own the nine registered operation contracts. `evidenceEntries` identify the
 local specification path/hash and operation; no original function-address or
 source-fragment inventory is claimed. Do not follow the specs' reconstruction
 source links to fill these fields or extract/translate their harnesses into tests.
@@ -70,7 +71,7 @@ Never convert one into another or report a percentage over different denominator
 4. Set `implementation` to the actual repository entry file when it exists;
    retain the operation ID independently of source layout. Add its callable
    adapter and fixture validation; the current runner deliberately supports only
-   the registered F01/F02 leaf primitives and their bounded state closure.
+   the registered F01/F02/W01 leaf primitives and their bounded state closure.
 5. Only set execution status and `lastRun` after an actual run. Store its report
    with implementation revision, fixture ID/revision/hash, spec hashes, policy,
    platform and bounded observations, following X02. Metadata checks validate

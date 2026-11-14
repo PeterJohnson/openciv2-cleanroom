@@ -1,8 +1,9 @@
-// Test-only X02 adapter for registered F01/F02 foundation operations. No fixture
+// Test-only X02 adapter for registered F01/F02/W01 foundation operations. No fixture
 // expectations enter this process. Python owns fixture validation and comparison.
 #include "base/arithmetic.hpp"
 #include "conformance_identity.hpp"
 #include "state/identities.hpp"
+#include "world/geometry.hpp"
 #include <array>
 #include <charconv>
 #include <functional>
@@ -123,10 +124,57 @@ int main(int argc, char** argv) {
                                   [](auto count) { return scalar("i16", count); }) +
                        ",\"F02.effectiveHumanSet\":" + scalar("u8", humans) + "}";
             };
+        } else if ((operation == "W01.wrapX" && argc == 3) ||
+                   (operation == "W01.tileIndex" && argc == 4) ||
+                   ((operation == "W01.stepDistance" || operation == "W01.weightedDistance") &&
+                    argc == 6)) {
+            const auto width = input_number<std::int32_t>();
+            const auto height = input_number<std::int32_t>();
+            const openciv::world::Geometry geometry{width, height};
+            const auto flat_code = operation == "W01.tileIndex" ? 0 : input_number<std::uint8_t>();
+            if (flat_code > 1)
+                throw std::invalid_argument("Flat-world boolean must be 0 or 1");
+            const bool flat = flat_code != 0;
+            if (operation == "W01.wrapX") {
+                const auto x = number<std::int32_t>(argv[2]);
+                arguments = "{\"x\":" + scalar("i32", x) + "}";
+                invoke = [geometry, flat, x] { return scalar("i32", geometry.wrap_x(x, flat)); };
+            } else if (operation == "W01.tileIndex") {
+                const openciv::world::Position position{number<std::int32_t>(argv[2]),
+                                                        number<std::int32_t>(argv[3])};
+                arguments = "{\"x\":" + scalar("i32", position.x) +
+                            ",\"y\":" + scalar("i32", position.y) + "}";
+                invoke = [geometry, position] {
+                    const auto index = geometry.tile_index(position);
+                    return index ? scalar("u32", *index) : "{\"$type\":\"null\"}";
+                };
+            } else {
+                const openciv::world::Position first{number<std::int32_t>(argv[2]),
+                                                     number<std::int32_t>(argv[3])};
+                const openciv::world::Position second{number<std::int32_t>(argv[4]),
+                                                      number<std::int32_t>(argv[5])};
+                arguments = "{\"x1\":" + scalar("i32", first.x) +
+                            ",\"y1\":" + scalar("i32", first.y) +
+                            ",\"x2\":" + scalar("i32", second.x) +
+                            ",\"y2\":" + scalar("i32", second.y) + "}";
+                invoke = [geometry, flat, first, second, operation] {
+                    return scalar("i32", operation == "W01.stepDistance"
+                                             ? geometry.step_distance(first, second, flat)
+                                             : geometry.weighted_distance(first, second, flat));
+                };
+            }
+            snapshot = [width, height, flat, operation] {
+                std::string state = "{\"W01.width\":" + scalar("i32", width) +
+                                    ",\"W01.height\":" + scalar("i32", height);
+                if (operation != "W01.tileIndex")
+                    state += std::string{",\"W01.flat\":{\"$type\":\"bool\",\"value\":"} +
+                             (flat ? "true}" : "false}");
+                return state + "}";
+            };
         } else {
             throw std::invalid_argument("Unknown operation or wrong argument count");
         }
-        if (operation.starts_with("F02.")) {
+        if (operation.starts_with("F02.") || operation.starts_with("W01.")) {
             std::string extra;
             if (std::cin >> extra)
                 throw std::invalid_argument("Unexpected trailing state input");

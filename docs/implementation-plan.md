@@ -2,11 +2,12 @@
 
 Status: roadmap for the [architecture](architecture.md), with an initial SDL3
 application shell and build/test infrastructure integrated. The repository also
-contains 65 algorithm specifications and three portable conformance vectors.
+contains 65 algorithm specifications and twenty portable conformance vectors.
 The session service/controller model, gameplay, save inspection/SQLite export
-tools, the in-game console and Lua user automation are not implemented. The first
-M1 slice adds F01 arithmetic/random contexts and a bounded X02 pure-mapping runner;
-the general stateful runner remains outstanding. Milestones describe delivery gates, not completed compatibility
+tools, the in-game console and Lua user automation are not implemented. M1 slices
+add F01 arithmetic/random contexts, F02 identity primitives, W01 map foundations
+and a bounded X02 runner; the general runner remains outstanding.
+Milestones describe delivery gates, not completed compatibility
 claims.
 
 Deliver vertical slices through the portable game and graphical frontend while
@@ -65,7 +66,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
 | M0 — complete | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan; all 11 hosted CI jobs pass | None for M0; see the [completion review and retained reports](m0-validation.md#m0-completion-review--2026-11-13-utc). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts have a separate pinned dependency. |
-| M1 — started | Portable `oc2_base` F01 arithmetic/`WrappingI32`, sampling, ticks and isolated random contexts; `oc2_game` F02 process tokens and unit-slot reservation; three pure F01 and seven stateful F02 X02 fixtures execute through C++ adapters on native/WASM | Remaining F02 records/pools/lifecycle and W01 state; generalized X02 types/providers/choice injection/replay; runtime content and rules/save/wire codecs; save inspection/SQLite export; scoped queries; SessionRuntime/controller contracts and continuations |
+| M1 — started | Portable `oc2_base` F01 arithmetic/`WrappingI32`, sampling, ticks and isolated random contexts; `oc2_game` F02 identities/reservation and W01 geometry/map storage/tile primitives; twenty F01/F02/W01 X02 fixtures pass on native/WASM | Remaining F02 records/pools/lifecycle and setup/load integration; generalized X02 types/providers/choice injection/replay; runtime content and rules/save/wire codecs; save inspection/SQLite export; scoped queries; SessionRuntime/controller contracts and continuations; see the [completion audit](m1-validation.md). |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native menu/display interaction validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
@@ -122,7 +123,7 @@ Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 
 The [initial foundation slices](m1-foundations.md) and [random policy](random-policy.md)
 are implemented. The requirements below remain the complete milestone scope;
-passing F01/F02 leaf vectors does not close M1 or its integration gates.
+passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
 
 - Implement arithmetic and logical types, F02 pools/lifetimes and retained state,
   W01 topology/coordinates, and explicit process/new-game/load boundaries.

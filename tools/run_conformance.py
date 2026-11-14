@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Execute bounded F01/F02 foundation operations from X02 v3 through C++.
+"""Execute bounded F01/F02/W01 foundation operations from X02 v3 through C++.
 
 Python is a developer-only host driver. It never calculates the operation result
 and never sends expectations to the implementation. Unsupported case features
@@ -23,14 +23,23 @@ OPERATIONS = {
     "F02.assignUnitToken": {},
     "F02.assignCityToken": {},
     "F02.reserveUnitSlot": {"owner": "u8"},
+    "W01.wrapX": {"x": "i32"},
+    "W01.stepDistance": {"x1": "i32", "y1": "i32", "x2": "i32", "y2": "i32"},
+    "W01.weightedDistance": {"x1": "i32", "y1": "i32", "x2": "i32", "y2": "i32"},
+    "W01.tileIndex": {"x": "i32", "y": "i32"},
 }
-SCOPE = "f01-f02-state-v1"
+SCOPE = "f01-f02-w01-state-v1"
 TOKEN_STATE = {"F02.nextUnitToken": "u32", "F02.nextCityToken": "u32"}
 RESERVATION_STATE = {"F02.unitEnd": "u32", "F02.unitTokenScan": "u32[]",
                      "F02.militaryCounts": "i16[]", "F02.effectiveHumanSet": "u8"}
+MAP_DIMENSIONS = {"W01.width": "i32", "W01.height": "i32"}
+GEOMETRY_STATE = {**MAP_DIMENSIONS, "W01.flat": "bool"}
 STATES = {op: (TOKEN_STATE if op in ("F02.assignUnitToken", "F02.assignCityToken") else
-               RESERVATION_STATE if op == "F02.reserveUnitSlot" else {}) for op in OPERATIONS}
+               RESERVATION_STATE if op == "F02.reserveUnitSlot" else
+               MAP_DIMENSIONS if op == "W01.tileIndex" else
+               GEOMETRY_STATE if op.startswith("W01.") else {}) for op in OPERATIONS}
 RESULTS = {op: ("unit-slot-or-null" if op == "F02.reserveUnitSlot" else
+                "tile-index-or-null" if op == "W01.tileIndex" else
                 "u32" if op.startswith("F02.") else "i32") for op in OPERATIONS}
 WRITES = {op: (["F02.nextUnitToken"] if op == "F02.assignUnitToken" else
                ["F02.nextCityToken"] if op == "F02.assignCityToken" else
@@ -42,6 +51,8 @@ ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake
                    "cmake/ConformanceIdentity.cmake", "src/base/arithmetic.hpp",
                    "src/base/arithmetic.cpp", "src/base/random.hpp", "src/base/random.cpp",
                    "src/state/identities.hpp", "src/state/identities.cpp",
+                   "src/world/geometry.hpp", "src/world/geometry.cpp",
+                   "src/world/map.hpp", "src/world/map.cpp",
                    "tools/conformance_adapter.cpp")
 RUNNER_SOURCES = ("tools/run_conformance.py", "tools/check_conformance.py")
 SOURCES = ADAPTER_SOURCES + RUNNER_SOURCES
@@ -111,20 +122,29 @@ def state_values(state, operation, scan_length=None):
             require(len(values) <= 2048 and (expected_length is None or len(values) == expected_length),
                     "state array length does not match registered view")
             result[key] = [integer(value, kind[:-2]) for value in values]
+        elif kind == "bool":
+            object_keys(state[key], "$type value", "typed boolean")
+            require(state[key]["$type"] == "bool" and type(state[key]["value"]) is bool,
+                    "boolean type mismatch")
+            result[key] = state[key]["value"]
         else:
             result[key] = integer(state[key], kind)
     if operation == "F02.reserveUnitSlot":
         require(result["F02.unitEnd"] <= 2048, "unit scan bound exceeds capacity")
+    if operation.startswith("W01."):
+        width, height = result["W01.width"], result["W01.height"]
+        require(0 < width <= 32767 and width % 2 == 0 and 0 < height <= 32767
+                and width // 2 * height < 32768, "unsupported map dimensions/backing")
     return result
 
 
 def result_value(value, operation):
     kind = RESULTS[operation]
-    if kind == "unit-slot-or-null":
+    if kind in ("unit-slot-or-null", "tile-index-or-null"):
         if value == {"$type": "null"}:
             return None
-        result = integer(value, "u16")
-        require(result < 2048, "unit slot exceeds capacity")
+        result = integer(value, "u16" if kind == "unit-slot-or-null" else "u32")
+        require(result < (2048 if kind == "unit-slot-or-null" else 32768), "slot/index exceeds capacity")
         return result
     return integer(value, kind)
 
@@ -348,6 +368,8 @@ def execute(path, command, root=ROOT):
         value = state[key]
         if isinstance(value, list):
             words.extend(str(item) for item in value)
+        elif type(value) is bool:
+            words.append("1" if value else "0")
         else:
             words.append(str(value))
     try:

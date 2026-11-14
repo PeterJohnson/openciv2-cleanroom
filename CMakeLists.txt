@@ -42,7 +42,7 @@ else()
 endif()
 
 # F02 state primitives: no presentation, database, network or asset dependency.
-add_library(oc2_game src/state/identities.cpp)
+add_library(oc2_game src/state/identities.cpp src/world/geometry.cpp src/world/map.cpp)
 target_compile_features(oc2_game PUBLIC cxx_std_20)
 target_include_directories(oc2_game PUBLIC src)
 target_link_libraries(oc2_game PUBLIC oc2_base PRIVATE oc2_options)
@@ -105,7 +105,7 @@ endif()
 
 if(BUILD_TESTING)
   include(cmake/Catch2.cmake)
-  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp)
+  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp)
   target_link_libraries(oc2_tests PRIVATE oc2_game oc2_viewmodel oc2_options Catch2::Catch2WithMain)
   add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp)
   target_link_libraries(oc2_conformance_adapter PRIVATE oc2_game oc2_options)

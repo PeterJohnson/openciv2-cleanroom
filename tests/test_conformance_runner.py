@@ -199,6 +199,56 @@ class ConformanceRunnerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "state closure mismatch"):
             runner.load_fixture(self.path, self.root)
 
+    def use_geometry_case(self, suffix):
+        self.path = self.root / f"docs/algorithms/conformance/X02-W01-{suffix}.json"
+        self.case = runner.load_fixture(self.path, self.root)
+
+    def test_geometry_boolean_is_typed_and_dimensions_are_admitted_before_execution(self):
+        self.use_geometry_case("wrap-flat")
+        changes = [lambda c: c["entry"]["state"].pop("W01.flat")]
+        for value in (0, 1, "true", "1", None):
+            changes.append(lambda c, v=value: c["entry"]["state"]["W01.flat"].update(value=v))
+        for key, value in (("W01.width", "0"), ("W01.width", "99"),
+                           ("W01.width", "32768"), ("W01.height", "0"),
+                           ("W01.height", "656"), ("W01.height", "-1")):
+            changes.append(lambda c, k=key, v=value: c["entry"]["state"][k].update(value=v))
+        for change in changes:
+            case = deepcopy(self.case)
+            change(case)
+            self.path.write_text(json.dumps(case), encoding="utf-8")
+            with self.subTest(case=case["entry"]), patch.object(runner.subprocess, "run") as invoke:
+                self.assertEqual(runner.execute(self.path, ["adapter"], self.root)["status"], "invalid-fixture")
+                invoke.assert_not_called()
+
+    def test_geometry_adapter_receives_boolean_codes_and_original_coordinates(self):
+        for suffix, args, stdin in (
+                ("wrap-flat", ["W01.wrapX", "201"], "100\n80\n1\n"),
+                ("step-off-map", ["W01.stepDistance", "0", "0", "250", "0"], "100\n80\n0\n"),
+                ("lookup-alias", ["W01.tileIndex", "8", "5"], "100\n80\n")):
+            self.use_geometry_case(suffix)
+            process = subprocess.CompletedProcess([], 0, json.dumps(self.case["expected"]), "")
+            with self.subTest(suffix=suffix), patch.object(runner.subprocess, "run", return_value=process) as invoke:
+                self.assertEqual(runner.execute(self.path, ["adapter"], self.root)["status"], "passed")
+                self.assertEqual(invoke.call_args.args[0], ["adapter", *args])
+                self.assertEqual(invoke.call_args.kwargs["input"], stdin)
+
+    def test_geometry_state_and_tile_absence_are_compared_without_coercion(self):
+        self.use_geometry_case("wrap-flat")
+        actual = deepcopy(self.case["expected"])
+        actual["state"]["W01.flat"]["value"] = False
+        self.assertEqual(runner.compare(self.case, actual)["surface"], "state")
+        actual["state"]["W01.flat"]["value"] = 1
+        with self.assertRaisesRegex(ValueError, "boolean type mismatch"):
+            runner.compare(self.case, actual)
+        self.use_geometry_case("lookup-miss")
+        actual = deepcopy(self.case["expected"])
+        actual["result"] = {"$type": "u32", "value": "0"}
+        self.assertEqual(runner.compare(self.case, actual)["surface"], "result")
+        for result in ({"$type": "null", "value": "0"}, {"$type": "i32", "value": "-1"},
+                       {"$type": "u32", "value": "32768"}):
+            with self.subTest(result=result), self.assertRaises(ValueError):
+                self.load(lambda c: c["expected"].update(result=result))
+
     def test_parser_rejects_duplicate_keys_nonfinite_and_trailing_data(self):
         for data in ('{"format":"a","format":"b"}', '{"x":NaN}', '{} garbage'):
             with self.subTest(data=data):
