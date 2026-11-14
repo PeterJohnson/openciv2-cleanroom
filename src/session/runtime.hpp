@@ -3,17 +3,19 @@
 #include "base/random.hpp"
 #include "base/session_ids.hpp"
 #include "query/live.hpp"
+#include "session/commands.hpp"
 #include "state/game.hpp"
 #include <memory>
 
 namespace openciv::session {
+using base::CommandId;
 using base::ConnectionId;
 using base::ControllerId;
+using base::InteractionId;
 using base::ParticipantId;
 using base::RuntimeId;
 using base::SessionId;
 enum class ControllerKind { frontend, automation, scripted, engine_policy };
-enum class AccessClass { player, developer };
 enum class AccessFailure { session_ended, revoked };
 class AccessError : public std::runtime_error {
 public:
@@ -56,6 +58,12 @@ public:
     ClientIdentity identity() const;
     query::LiveRecords<query::OwnUnit> own_units() const;
     query::LiveRecords<query::OwnCity> own_cities() const;
+    std::vector<CommandDescriptor> commands() const;
+    CommandUpdate submit(CommandRequest request) const;
+    std::vector<CommandUpdate> updates() const;
+    std::optional<CommandUpdate> result(CommandId command) const;
+    InputReceipt reply(InteractionId interaction, std::int32_t choice) const;
+    InputReceipt cancel(CommandId command) const;
 
 private:
     friend class SessionRuntime;
@@ -94,6 +102,23 @@ public:
     PlayerClient bind(ParticipantId participant, ControllerKind kind,
                       AccessClass access = AccessClass::player);
     void revoke(ControllerId controller);
+
+    // Register trusted owning operations while inactive. No built-in fake game
+    // commands are installed. Local work is an owned FIFO driven at explicit
+    // engine boundaries; one call resumes at most one continuation.
+    void register_command(CommandDefinition definition);
+    bool advance_one();
+    bool continue_command(CommandId command);
+    InputReceipt
+    cancel_command(CommandId command); // Owning lifecycle/mode input, no client lease required.
+    std::size_t expire_interactions(std::uint64_t now);
+    bool has_pending_commands() const noexcept;
+    CommandUpdate receive_request(ConnectionId source, ParticipantId participant,
+                                  CommandCorrelation correlation, CommandRequest request);
+    InputReceipt receive_result(ConnectionId source, const RoutedReply& reply);
+    // Taking an outbox transfers responsibility to the mode/transport adapter.
+    std::vector<RoutedRequest> take_requests();
+    std::vector<RoutedReply> take_replies();
 
     // Engine-only ownership ports. Call publish after each specified publication
     // and before exposing a query boundary; no automatic recomputation occurs.

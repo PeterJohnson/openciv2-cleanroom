@@ -71,7 +71,7 @@ target_include_directories(oc2_query PUBLIC src)
 target_link_libraries(oc2_query PUBLIC oc2_formats PRIVATE oc2_options)
 
 # Local runtime ownership and scoped clients; no GUI or transport is required.
-add_library(oc2_session src/session/runtime.cpp)
+add_library(oc2_session src/session/runtime.cpp src/session/commands.cpp src/session/command_runtime.cpp)
 target_include_directories(oc2_session PUBLIC src)
 target_link_libraries(oc2_session PUBLIC oc2_query PRIVATE oc2_options)
 
@@ -163,6 +163,7 @@ if(BUILD_TESTING)
   target_sources(oc2_tests PRIVATE tests/network_stream_tests.cpp tests/network_message_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/network_compression_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/session_tests.cpp)
+  target_sources(oc2_tests PRIVATE tests/command_tests.cpp)
   target_link_libraries(oc2_tests PRIVATE oc2_session oc2_network oc2_viewmodel oc2_options Catch2::Catch2WithMain)
   if(OC2_BUILD_TOOLS)
     target_sources(oc2_tests PRIVATE tests/native_io_tests.cpp)

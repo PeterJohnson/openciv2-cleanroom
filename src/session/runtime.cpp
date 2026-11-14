@@ -1,28 +1,8 @@
 #include "session/runtime.hpp"
+#include "session/runtime_internal.hpp"
 #include <limits>
-#include <map>
 
 namespace openciv::session {
-namespace detail {
-struct Lease {
-    ClientIdentity identity;
-    bool active = true;
-};
-struct RuntimeState {
-    RuntimeState(state::ProcessContext& supplied, RuntimeId identity)
-        : process(supplied), world(supplied), identity(identity) {}
-    state::ProcessContext& process;
-    state::GameState world;
-    RuntimeId identity;
-    bool active = false;
-    SessionId session{0};
-    std::uint64_t next_session = 1, next_participant = 1, next_controller = 1, revision = 0;
-    std::map<ParticipantId, Participant> participants;
-    std::map<ControllerId, std::shared_ptr<Lease>> leases;
-    std::optional<base::GameplayRandom> gameplay;
-    std::optional<base::PresentationRandom> presentation;
-};
-} // namespace detail
 namespace {
 std::uint64_t assign(std::uint64_t& next) {
     if (next == std::numeric_limits<std::uint64_t>::max())
@@ -89,6 +69,7 @@ SessionRuntime::SessionRuntime(state::ProcessContext& process, RuntimeId identit
 }
 SessionRuntime::~SessionRuntime() = default;
 SessionId SessionRuntime::begin_client_session(Seeds seeds) {
+    detail::require_quiescent(*state_);
     // Prepare contexts before revoking old access. A failed preparation has not
     // started a new lifetime; world setup/load effects are a separate operation.
     base::GameplayRandom gameplay(seeds.gameplay, "session");
@@ -103,10 +84,14 @@ SessionId SessionRuntime::begin_client_session(Seeds seeds) {
     return session;
 }
 void SessionRuntime::end_client_session() {
+    detail::require_quiescent(*state_);
     for (auto& [id, lease] : state_->leases)
         lease->active = false;
     state_->leases.clear();
     state_->participants.clear();
+    state_->commands.clear();
+    state_->ready.clear();
+    state_->received.clear();
     state_->active = false;
 }
 bool SessionRuntime::active() const noexcept {
@@ -160,6 +145,7 @@ PlayerClient SessionRuntime::bind(ParticipantId participant, ControllerKind kind
     const auto controller = ControllerId{assign(state_->next_controller)};
     auto lease = std::make_shared<detail::Lease>(detail::Lease{
         {state_->identity, state_->session, participant, controller, observer, kind, access}});
+    detail::restore_pending_updates(*state_, *lease);
     state_->leases.emplace(controller, lease);
     return PlayerClient{state_, lease};
 }

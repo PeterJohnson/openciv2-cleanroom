@@ -8,5 +8,7 @@ enum class RuntimeId : std::uint64_t {};
 enum class SessionId : std::uint64_t {};
 enum class ParticipantId : std::uint64_t {};
 enum class ControllerId : std::uint64_t {};
+enum class CommandId : std::uint64_t {};
+enum class InteractionId : std::uint64_t {};
 enum class ConnectionId : std::uint16_t {};
 } // namespace openciv::base

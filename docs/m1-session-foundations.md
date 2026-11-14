@@ -1,7 +1,8 @@
 # M1 session ownership and client bindings
 
-Status: local world/process ownership, scoped client lifetimes and own-entity
-queries are implemented. This is part of the [M1 completion audit](m1-validation.md),
+Status: local world/process ownership, scoped client lifetimes, own-entity queries
+and [command/continuation foundations](m1-command-contract.md) are implemented.
+This is part of the [M1 completion audit](m1-validation.md),
 not a playable session or a completed setup/load, turn-loop or authority adapter.
 The contract comes from [architecture §§3–5](architecture.md#3-state-and-deterministic-execution)
 and [F02 §§2–3](algorithms/F02-game-state-and-invariants.md).
@@ -21,6 +22,7 @@ Independent virtual peers supply separate contexts. Rules/preferences, further
 retained workspaces and full classic initialization remain owning-spec work.
 Construction defaults are not claimed as original setup behavior.
 
+After admitted work finishes and required outboxes are transferred,
 `begin_client_session` replaces the client lifetime, revokes all old bindings,
 clears participant mappings and initializes independent gameplay and presentation
 contexts from explicit seeds. Their policy context name is `session`; cosmetic
@@ -54,8 +56,9 @@ changes the world's effective human-player set.
 Revocation invalidates only that controller. Participant reassignment/removal
 revokes all its bindings. Disconnect revokes all bindings mapped to that endpoint
 and clears the connection mappings while retaining the seats and world effects.
-The mode's disconnect continuation and required protocol replies are not yet
-implemented. Runtime destruction, session end and replacement invalidate all
+Admitted continuations and required semantic replies survive that revocation;
+the mode's full disconnect procedure and wire integration remain open.
+Runtime destruction, session end and replacement invalidate all
 old clients. A new binding is a trusted owner action; the later mode/authority
 adapter must establish its current admission before issuing it.
 
@@ -90,16 +93,15 @@ independence from human flags, retained process values and isolated virtual peer
 They exercise the separate F02 entity-reset helper and independent presentation
 consumers, without claiming a completed F05 setup or original mode transcript.
 
-Windows MSVC passes 101 default-off and 103 SQLite-enabled CTests. The pinned
-Emscripten 4.0.23 build passes four CTests, including 95 portable Catch2 cases
+Windows MSVC passes 111 default-off and 113 SQLite-enabled CTests. The pinned
+Emscripten 4.0.23 build passes four CTests, including 105 portable Catch2 cases
 and the existing twenty X02 vectors. The tools-only configuration also builds
 the session library without GUI, tests, dependency fetching, Python discovery
 or assets. Retained native/WASM reports were refreshed for build/source identity;
 X02 execution coverage is still F01/F02/W01, not these session cases.
 
-Next session work is the command descriptor/admission contract, owned command
-ordering, explicit effects/continuations and correlated pending results; decision
-replies, cancellation, callbacks and revocation must preserve committed effects
-and required replies. Mode-specific authority and request/result application,
+The [command contract](m1-command-contract.md) now implements descriptors,
+admission, owned ordering, effects/continuations, decisions and correlated results,
+including separate fake-peer execution/result paths. Mode-specific integration,
 complete lifecycle/setup/load, controlled-choice and pending-checkpoint replay,
 and broader live queries remain required by M1.
