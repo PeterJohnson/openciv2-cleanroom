@@ -208,6 +208,15 @@ std::unique_ptr<session::CoreOutput> ClassicFiles::open_output(std::string_view 
         write, write, [file](Byte value) { return std::fputc(value, file->get()) != EOF; },
         [file] { return file->close(); }});
 }
+bool ClassicFiles::remove_file(std::string_view requested) const {
+    const auto path = resolve({}, requested);
+    if (!path)
+        return false;
+    std::error_code error;
+    if (!std::filesystem::is_regular_file(*path, error) || error)
+        return false;
+    return std::filesystem::remove(*path, error) && !error;
+}
 formats::classic::OpenedText ClassicFiles::open_text(std::string_view directory,
                                                      std::string_view name) const {
     const auto path = resolve(directory, name);

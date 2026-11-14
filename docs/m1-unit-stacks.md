@@ -131,9 +131,9 @@ placement, signed owners, self-loop repair, and a complete 2,048-member chain
 reversal with both supplied and missing negative-terminal backing. Resource-stop
 cases check the retained links, coordinates and activity state.
 
-Windows MSVC passes all 401 default-off and 403 SQLite-enabled CTests. Pinned
-Emscripten 4.0.23 passes all six CTests, including 381 portable Catch2 cases
-(183,359 assertions). The stack cases contribute 16,562 assertions. The 54
+Windows MSVC passes all 417 default-off and 419 SQLite-enabled CTests. Pinned
+Emscripten 4.0.23 passes all six CTests, including 395 portable Catch2 cases
+(185,072 assertions). The stack cases contribute 16,562 assertions. The 54
 retained X02 native/WASM observations and consumed prefixes remain identical;
 their reports were refreshed for the changed build and shared record header.
 Formatting passes with pinned clang-format 20.1.8. The upstream Catch2 WASM

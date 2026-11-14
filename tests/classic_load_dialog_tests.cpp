@@ -3,6 +3,8 @@
 // captures. S02 parsing/execution and presentation are supplied child effects.
 #include "session/classic_load_dialog.hpp"
 #include "session/runtime.hpp"
+#include "session/classic_preferences.hpp"
+#include "formats/preference_io.hpp"
 #include "formats/classic_save.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <algorithm>
@@ -42,7 +44,7 @@ struct Fixture {
     Fixture() {
         runtime.begin_client_session({10, 20});
         process.tokens = {100, 200};
-        process.preference_game_options = 0x10018;
+        process.ordinary_preferences.game_options = 0x10018;
         process.rules->text.initialize();
         const auto label = static_cast<std::int16_t>(process.rules->text.store("Default"));
         for (auto& leader : process.rules->leaders) {
@@ -375,7 +377,7 @@ TEST_CASE("F06 sound and event callbacks precede live music gates and home resto
     for (const bool enable : {false, true}) {
         Fixture f;
         f.bytes = formats::encode_stored_save(saved(true));
-        f.process.preference_game_options = enable ? 0U : 8U;
+        f.process.ordinary_preferences.game_options = enable ? 0U : 8U;
         f.services.configure_sound = [&](bool enabled) {
             CHECK_FALSE(enabled);
             f.runtime.world().globals.game_options = enable ? 8U : 0U;
@@ -480,7 +482,7 @@ TEST_CASE("F06 missing owning child stops at its invocation with earlier effects
     CHECK_THROWS_AS(f.load(), std::bad_function_call);
     CHECK(f.closes == 1);
     CHECK(f.after_close() == std::vector<std::string>{"flush", "sound:on"});
-    CHECK(f.runtime.world().globals.game_options == f.process.preference_game_options);
+    CHECK(f.runtime.world().globals.game_options == f.process.ordinary_preferences.game_options);
     CHECK_FALSE(f.runtime.world().multiplayer.network_host);
     CHECK(f.dialog.chosen_path == "prior-path");
     CHECK(f.dialog.loaded_file_kind == 19);
@@ -515,7 +517,7 @@ TEST_CASE("F06 post-core flush changes are consumed by event and preference oper
     f.services.input.flush = [&] {
         if (f.closes == 1) {
             f.runtime.world().globals.game_flags |= 0x80U;
-            f.process.preference_game_options = 8;
+            f.process.ordinary_preferences.game_options = 8;
             f.files.text.extension = "FRE";
         }
         f.trace.push_back("flush");
@@ -559,4 +561,26 @@ TEST_CASE("F06 failed load notice exception retains the uncleared file classific
     CHECK(f.dialog.loaded_file_kind == 19);
     CHECK(f.dialog.chosen_path == "prior-path");
     CHECK(f.opens == 1);
+}
+
+TEST_CASE("F03 loaded preference word reaches F06 accepted-file option replacement",
+          "[session][load-dialog][preferences]") {
+    Fixture f;
+    state::OrdinaryPreferences remembered;
+    remembered.game_options = 0x8120; // Includes saved cheat and grid; sound/music off.
+    auto bytes = formats::encode_ordinary_preferences(remembered);
+    const auto multiplayer = formats::encode_multiplayer_preferences({});
+    bytes.insert(bytes.end(), multiplayer.begin(), multiplayer.end());
+    formats::MemoryItems input(bytes);
+    PreferenceFileServices services;
+    services.open_input = [&](std::string_view path) {
+        CHECK(path == "CIV2.DAT");
+        return std::make_unique<CoreInput>(
+            CoreInput{[&](std::size_t size) { return input.read(size); }, {}, [] { return true; }});
+    };
+    load_classic_preferences(f.process, {1000, true}, services);
+    CHECK(f.load() == CoreLoadStatus::success);
+    CHECK(f.runtime.world().globals.game_options == 0x8120);
+    CHECK(f.after_close() ==
+          std::vector<std::string>{"flush", "sound:off", "music", "title", "cd:C:\\home"});
 }

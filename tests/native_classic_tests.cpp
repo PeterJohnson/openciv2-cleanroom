@@ -2,6 +2,8 @@
 #include "platform/classic_files.hpp"
 #include "platform/native_files.hpp"
 #include "session/classic_rules.hpp"
+#include "session/classic_preferences.hpp"
+#include "formats/preference_io.hpp"
 #include "session/runtime.hpp"
 #include "formats/classic_save.hpp"
 #include "classic_rule_fixture.hpp"
@@ -54,6 +56,46 @@ StoredSave saved() {
     return s;
 }
 } // namespace
+TEST_CASE("Native F03 preferences replace reload and delete failed output through classic services",
+          "[io][classic-files][preferences]") {
+    TemporaryDirectory dir;
+    io::ClassicFiles files(dir.path);
+    state::ProcessContext process;
+    PreferenceFileServices services{[&](std::string_view path) { return files.open_input(path); },
+                                    [&](std::string_view path) { return files.open_output(path); },
+                                    [&](std::string_view path) { return files.remove_file(path); }};
+    load_classic_preferences(process, {1000, true}, services);
+    CHECK(process.ordinary_preferences.game_options == 0x3f3258U);
+    process.ordinary_preferences.text.bytes.fill(0xff);
+    process.multiplayer_preferences.game_name.bytes.fill(0xfe);
+    io::write_new_file(dir.path / "cIv2.dAt", Bytes(999, 0xaa));
+    REQUIRE(save_classic_preferences(process, services) == PreferenceSaveStatus::success);
+    const auto bytes = io::read_file(dir.path / "cIv2.dAt");
+    REQUIRE(bytes.size() == 516);
+    const auto ordinary = process.ordinary_preferences;
+    const auto multiplayer = process.multiplayer_preferences;
+    process.ordinary_preferences = {};
+    process.multiplayer_preferences = {};
+    load_classic_preferences(process, {1, false}, services);
+    CHECK(process.ordinary_preferences == ordinary);
+    CHECK(process.multiplayer_preferences == multiplayer);
+    CHECK_FALSE(files.remove_file("missing"));
+    CHECK_FALSE(files.remove_file("."));
+    CHECK(fs::is_directory(dir.path));
+    services.open_output = [&](std::string_view path) {
+        auto output = files.open_output(path);
+        REQUIRE(output);
+        const auto write = output->item;
+        output->item = [write](std::span<const Byte> value) {
+            CHECK(write(value.first(1)));
+            return false;
+        };
+        return output;
+    };
+    CHECK(save_classic_preferences(process, services) == PreferenceSaveStatus::output);
+    CHECK_FALSE(fs::exists(dir.path / "cIv2.dAt"));
+    CHECK(fs::is_directory(dir.path));
+}
 TEST_CASE("Native classic input preserves short prefixes binary controls and independent cursors",
           "[io][classic-files]") {
     TemporaryDirectory dir;

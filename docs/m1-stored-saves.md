@@ -532,7 +532,7 @@ publishes loaded=true. Allocation failure stops at its reached compaction prefix
 If the loaded flag remains false, the old/partial list is reset. Persisted events
 bypass replacement, preserving Consumed flags and wildcard bindings.
 
-`ProcessContext::preference_game_options` now holds the ordinary remembered word
+`ProcessContext::ordinary_preferences.game_options` now holds the ordinary remembered word
 separately from live world options. The caller applies it after event loading,
 then configures sound. The live Music and events-loaded gates select ScenarioLoaded
 execution; this is independent of the scenario flag. Music synchronization follows
@@ -549,18 +549,20 @@ precedes external boundaries, including unit diagnostics, destruction checks and
 request/wait services. Clients can observe the already deleted unit at the V01
 boundary, without receiving direct mutable world access.
 
-Eighteen independently authored cases exercise real core input and cleanup,
+The initial eighteen independently authored cases exercise real core input and cleanup,
 ALT quantization edges/order/no-draw paths, retained selected paths, ordinary and
 scenario events, live callback changes, compaction failure prefixes, cancellation,
 all four core error statuses, required-child stops and client observation during
 deletion. Expectations derive from the specifications. They are not original-game
 captures or evidence that the supplied S02 parser/executor, audio, title or V01
-children are implemented. Those bindings, ordinary preference loading/defaults,
+children are implemented. Those bindings, accepted configuration changes,
 native enumeration/chooser integration, application admission and broader original
-resume/edit comparisons remain open.
+resume/edit comparisons remain open. Ordinary preference defaults and persistence
+now have their own [F03 implementation](m1-classic-text.md#process-preferences-and-civ2dat),
+with a further composition case feeding the loaded word into this caller.
 
-Windows verification of this increment passes 401 default-off CTests and 403
-with SQLite enabled. Pinned Emscripten passes all six CTests, including 381
+Windows verification at `2d22a52` passed 401 default-off CTests and 403
+with SQLite enabled. Pinned Emscripten passed all six CTests, including 381
 portable Catch2 cases with 183,359 assertions. The 18 accepted-file cases account
 for 424 assertions on both native and WASM. All 54 X02 fixtures retain identical
 native/WASM actual results and consumed prefixes; their refreshed metadata does

@@ -245,6 +245,78 @@ for malformed JSON. No files or live state are changed. This command does not
 certify full classic export representability: complete row lengths and section
 marker collisions still belong to the conversion boundary.
 
+## Process preferences and CIV2.DAT
+
+F03 section 8 preference initialization and persistence now operate on complete
+ordinary and multiplayer records in `ProcessContext`. They are distinct from
+live world options and saved multiplayer state. Existing core-load consumers use
+the same multiplayer fields; the accepted-file load caller reads
+`ordinary_preferences.game_options`. Client-session transitions retain both
+records, and preference input alone changes no world options or random context.
+
+Ordinary defaults use the supplied startup screen width and renderer animation
+availability, including the width-greater-than-999 boundary and herald gate.
+They assign the documented settings while retaining the preference text's tail.
+Multiplayer defaults preserve the tails of emptied strings and three legacy
+24-byte settings, write only `60` and its terminator into the custom timer,
+and clear the remembered settings table. The logical startup inputs do not
+emulate the original native memory API or prescribe renderer allocations.
+
+`formats/preference_io.hpp` implements every field of F06's 72-byte ordinary
+item and 444-byte multiplayer item. Successful reads retain arbitrary scalar
+bits and unterminated fixed strings. A failed item overlays its transferred
+prefix over post-callback live state before the F03 fallback runs. The first
+failure does not rewind or skip the multiplayer attempt; bytes in unassigned
+tails can survive defaults. Trailing file bytes are ignored.
+
+`session/classic_preferences.hpp` opens `CIV2.DAT` through explicit services.
+Opening failure defaults both records. Saving uses binary replacement, writes
+ordinary then live multiplayer preferences, stops at the first failed write,
+closes and deletes the partial output. Opening failure does not delete. Close
+and delete return failures are ignored; required service exceptions stop with
+prior effects retained. `io::ClassicFiles::remove_file` supplies the native
+nonrecursive file deletion, using the same case-resolution policy as input and
+output and rejecting directories.
+
+Thirteen new portable cases cover field offsets, defaults, every transferred
+prefix, invalid item-service results, live reads, cursor continuation, ignored
+tails, failure/delete ordering and process lifetime. Another portable composition
+case passes real F03-loaded options through the F06 accepted-file caller. A native
+case exercises actual replacement, reload and failed-output deletion; three CLI
+cases check complete/trailing input, truncated rejection, source preservation and
+no-overwrite output. These are specification-derived inputs and expectations.
+
+The native comparison driver uses actual F03 preference input and re-encodes both
+records. It requires at least 516 input bytes so defaults cannot be mistaken for
+a successful original-file round trip. Its optional output is a separate new
+516-byte file; ignored trailing input is reported separately:
+
+```powershell
+build/headless-fetch/oc2_preference_roundtrip.exe path/to/CIV2.DAT path/to/new-copy.dat
+```
+
+On 2026-11-14 UTC, the driver read the existing 516-byte `CIV2.DAT` from the
+isolated original-game runtime used in the
+[original live-save exchange](m1-original-live-save.md). Both items reproduced
+byte for byte. Input SHA-256 before and after input, and the separate output's
+SHA-256, were all
+`318a571574588fce7fda32feed0c84bd70b76988abe80867f041c92c92a5411a`.
+The local input is `build/original-text-runtime/CIV2.DAT`; the output is
+`build/original-preferences-roundtrip-2d22a52.dat`. Neither is committed. This
+checks original-file input/re-encoding through the new C++ path; it is not a new
+original-program execution or acceptance of edited preferences.
+
+Accepted setup/game/graphics/message/multiplayer option changes, application
+startup binding, native preference presentation and original reload of an edited
+preference file remain separate work.
+
+Verification passes all 417 native CTests and 419 with SQLite enabled. Pinned
+WASM passes all six CTests, including 395 portable Catch2 cases and 185,072
+assertions. The 54 retained native/WASM X02 observations and consumed prefixes
+remain identical; F03 preference operations are not yet registered with X02.
+Pinned clang-format 20.1.8 passes. Logs are retained locally in ignored
+`build/preferences-{native,sqlite,wasm}-{build,ctest}.log`.
+
 ## Evidence and remaining work
 
 Fifteen authored portable reader cases, seventeen classic rule cases and six

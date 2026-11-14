@@ -15,6 +15,7 @@ public:
     bool exists(std::string_view directory, std::string_view name) const;
     std::unique_ptr<session::CoreInput> open_input(std::string_view path) const;
     std::unique_ptr<session::CoreOutput> open_output(std::string_view path) const;
+    bool remove_file(std::string_view path) const;
     formats::classic::OpenedText open_text(std::string_view directory, std::string_view name) const;
     const std::filesystem::path& working() const noexcept { return working_; }
 

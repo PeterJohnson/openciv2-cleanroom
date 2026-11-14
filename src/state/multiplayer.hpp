@@ -2,6 +2,7 @@
 
 #include "base/random.hpp"
 #include "state/civilization.hpp"
+#include "state/preferences.hpp"
 
 namespace openciv::state {
 // F02 session/world ownership and F06 section 4 persistent multiplayer fields.
@@ -38,13 +39,6 @@ struct MultiplayerState {
     std::int32_t network_turn_civ = 0;
     bool network_host = false; // Runtime authority; not a saved field.
     bool operator==(const MultiplayerState&) const = default;
-};
-// Implemented process-retained preference subset. Saved simultaneous is a
-// different field; changing this menu preference does not change that record.
-struct MultiplayerPreferences {
-    std::int16_t kill_on_retirement = 0, show_human_starts = 0, chat_from_start = 0;
-    std::int16_t simultaneous = 0;
-    bool operator==(const MultiplayerPreferences&) const = default;
 };
 // F06 section 9: rotation spans all 256 bytes, including row and array seams.
 void encode_passwords(std::array<std::uint8_t, 256>& bytes) noexcept;

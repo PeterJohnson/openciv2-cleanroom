@@ -135,7 +135,7 @@ load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
         }
         if (!events.loaded)
             events.collection.reset();
-        world.globals.game_options = runtime.process().preference_game_options;
+        world.globals.game_options = runtime.process().ordinary_preferences.game_options;
         publish(runtime);
         services.configure_sound((world.globals.game_options & 0x10U) != 0);
         if ((world.globals.game_options & 0x8U) && events.loaded) {
