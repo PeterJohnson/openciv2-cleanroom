@@ -52,14 +52,14 @@ query::LiveRecords<query::OwnUnit> PlayerClient::own_units() const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     return query::project_own_units(
-        state->world.entities,
+        state->world->entities,
         {state->identity, state->session, state->revision, lease->identity.observer});
 }
 query::LiveRecords<query::OwnCity> PlayerClient::own_cities() const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     return query::project_own_cities(
-        state->world.entities,
+        state->world->entities,
         {state->identity, state->session, state->revision, lease->identity.observer});
 }
 SessionRuntime::SessionRuntime(state::ProcessContext& process, RuntimeId identity) {
@@ -93,6 +93,26 @@ void SessionRuntime::end_client_session() {
     state_->ready.clear();
     state_->received.clear();
     state_->active = false;
+}
+void SessionRuntime::prepare_new_game() {
+    detail::require_quiescent(*state_);
+    // Allocate before revoking access. RuleState keeps its address so content
+    // adapters can bind it once; none of its old contents are new-game inputs.
+    auto world = std::make_unique<state::GameState>(state_->process);
+    auto rules = std::make_unique<state::RuleState>();
+    rules->text.initialize();
+    for (auto& civilization : world->civilizations) {
+        civilization.goals.fill({0, 0, -1, 0});
+        civilization.standing_goals.fill({0, 0, -1, 0});
+    }
+    end_client_session();
+    state_->requests.clear();
+    state_->replies.clear();
+    state_->world = std::move(world);
+    *state_->process.rules = std::move(*rules);
+    state_->process.text_parameters = {};
+    state_->process.fallback = {};
+    state_->revision = 0;
 }
 bool SessionRuntime::active() const noexcept {
     return state_->active;
@@ -159,10 +179,10 @@ void SessionRuntime::revoke(ControllerId controller) {
     state_->leases.erase(found);
 }
 state::GameState& SessionRuntime::world() noexcept {
-    return state_->world;
+    return *state_->world;
 }
 const state::GameState& SessionRuntime::world() const noexcept {
-    return state_->world;
+    return *state_->world;
 }
 state::ProcessContext& SessionRuntime::process() noexcept {
     return state_->process;

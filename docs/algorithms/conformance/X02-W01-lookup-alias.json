@@ -1,7 +1,7 @@
 {
   "format": "openciv2-conformance/3",
   "id": "X02.W01.lookup-alias",
-  "revision": 2,
+  "revision": 3,
   "target": {
     "game": "Civilization II Multiplayer Gold Edition",
     "version": "5.4.0f patch 3",
@@ -11,22 +11,22 @@
     {
       "id": "F01",
       "file": "../F01-determinism-and-arithmetic.md",
-      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+      "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
     },
     {
       "id": "W01",
       "file": "../W01-map-geometry-and-spatial-state.md",
-      "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+      "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
     },
     {
       "id": "X01",
       "file": "../X01-classic-compatibility-contract.md",
-      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+      "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
     },
     {
       "id": "X02",
       "file": "../X02-whole-game-conformance.md",
-      "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+      "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
     }
   ],
   "boundary": {
@@ -176,13 +176,14 @@
       {
         "file": "../W01-map-geometry-and-spatial-state.md",
         "section": "9-worked-examples-and-conformance-cases",
-        "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+        "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
       }
     ],
     "limitations": [
       "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
       "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-      "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+      "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+      "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
     ]
   },
   "limits": {

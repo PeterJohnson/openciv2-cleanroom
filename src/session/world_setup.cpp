@@ -175,7 +175,9 @@ bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
 bool select_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,
                              std::string_view call, bool customize, bool world_selected,
                              const WorldParameterServices& services) {
-    if (customize && world_selected)
+    if (!world_selected)
+        return false;
+    if (customize)
         return customize_world_parameters(runtime, random, call, services);
     randomize_world_parameters(runtime, random, call);
     return world_selected;

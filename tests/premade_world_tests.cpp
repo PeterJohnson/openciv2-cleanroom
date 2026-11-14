@@ -458,21 +458,24 @@ TEST_CASE("F05 malformed item and allocation reentry stop safely with closed inp
     CHECK(f.runtime.world().world_setup.width == 4);
 }
 
-TEST_CASE("F05 premade result still uses the automatic parameter branch after success or failure",
+TEST_CASE("F05 premade parameters are sampled only after successful loading",
           "[premade-world][session]") {
     for (const bool fail : {false, true}) {
         Fixture f;
         f.open_failure = fail;
         const auto source = f.load();
+        const auto before = f.runtime.world().world_setup.parameters;
         std::vector<base::Choice> choices;
         for (const auto site : {"land-mass", "land-form", "temperature", "climate", "age"})
             choices.push_back(base::make_choice({std::string("F05.world.") + site, "premade", 0},
                                                 base::PrimaryModulo{3}, std::int32_t{2}));
+        if (fail)
+            choices.clear();
         base::GameplayRandom random{base::ControlledChoices{choices}, "setup"};
         CHECK(select_world_parameters(f.runtime, random, "premade", false, source.has_value(),
                                       {}) == !fail);
         random.require_choices_consumed();
         CHECK(f.runtime.world().world_setup.parameters ==
-              std::array<std::int32_t, 5>{1, 0, 1, 1, 1});
+              (fail ? before : std::array<std::int32_t, 5>{1, 0, 1, 1, 1}));
     }
 }

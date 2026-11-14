@@ -1,11 +1,11 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "f01-f02-w01-script-v3",
-  "createdUtc": "2026-11-14T14:34:01.097448+00:00",
-  "implementationRevision": "3fe353f567cc972157505c9dc57db0a5923ed4b2",
+  "createdUtc": "2026-11-14T15:48:06.762399+00:00",
+  "implementationRevision": "2f6fc6114fe027d1eac9deca8c36759041632e00",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "9ea4eaa27b9adc444d7fe9a1aaf9aea4156aa4dde3f8bdbac61d53b320f25f88",
+    "CMakeLists.txt": "5057c7b21d499b4c736859fdc02ad7f63622a162bd318c0c0a650a53df8e503c",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
     "cmake/ConformanceIdentity.cmake": "aa5f127fab52305d936f24b50657fc76618e0b36263377095f1419e80d2b96d2",
@@ -41,7 +41,7 @@
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "9ea4eaa27b9adc444d7fe9a1aaf9aea4156aa4dde3f8bdbac61d53b320f25f88",
+      "CMakeLists.txt": "5057c7b21d499b4c736859fdc02ad7f63622a162bd318c0c0a650a53df8e503c",
       "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
       "cmake/ConformanceIdentity.cmake": "aa5f127fab52305d936f24b50657fc76618e0b36263377095f1419e80d2b96d2",
@@ -72,33 +72,33 @@
   },
   "adapterArtifacts": {
     "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.js": "c35274b9609fd29a7eec1a03d04e68a796461383ca1234dcf9c4fd1ab549e3af",
-    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "8bc93b13c24bd3fc7d34f4e5bd1206d457f6a5d9ba403605afe9b46a2ff967ca"
+    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "2653373061ae5b776fbcdc778b30d223a06772fea5963d1046e8ab62e5ba3cf0"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=C:/Projects/openciv2-cleanroom/build/toolchains/emsdk/upstream/emscripten/em++.bat\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=OFF\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=C:/Projects/openciv2-cleanroom/build/headless-fetch/_deps/catch2-src\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",
   "cases": [
     {
       "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
-      "sha256": "882a99ff2d771e92d3778b873cd89fff85d2ca12c33f6a59594a412fdf1a9a46",
+      "sha256": "ea8d20529a3ac9be42bb22a189d56003d8c0669def2313dc187dba175735d2e7",
       "id": "X02.F01.equal-range",
-      "revision": 12,
+      "revision": 13,
       "operation": "F01.secondaryRangeFromCode",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -118,7 +118,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
@@ -129,7 +129,8 @@
           "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
           "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
           "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
-          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
+          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -232,26 +233,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
-      "sha256": "80e68bf392ddcd24628d81488b1e9e0730d2d7591a9f8dd402608d0a8b05364b",
+      "sha256": "5f2ad9bc6bc8c23454b6b13cd06504d1e34c752ec77a2578620e803452d0fa4a",
       "id": "X02.F01.primary-modulo",
-      "revision": 11,
+      "revision": 12,
       "operation": "F01.primaryModuloFromCode",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -271,7 +272,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
@@ -282,7 +283,8 @@
           "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
           "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
           "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
-          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
+          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -381,26 +383,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-code.json",
-      "sha256": "6202dc27a2d9888c370d1230b6d616859cb558fe2bf27dd15f95c01cf834fff3",
+      "sha256": "347f0e8bdac08f435e4ad82aedfbafbb5f7ce13944e46f3baa73657cf84d1c32",
       "id": "X02.F01.sample-cosmetic-code",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryCode",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -420,11 +422,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -561,26 +564,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-modulo.json",
-      "sha256": "1d352994191cc72863183122d0ece872541fad326b681649bc3b62d641781a56",
+      "sha256": "3275d7e3ecfabc5f02076c94f2f6f476f99939728fae8bce2d12d9b9b6bf6adb",
       "id": "X02.F01.sample-cosmetic-modulo",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryModulo",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -600,11 +603,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -755,26 +759,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-range.json",
-      "sha256": "69c2c30c54036626342a91cba7ce58e22aa15b251b6b02f93390a7af75a168a6",
+      "sha256": "e09fe26f35e6223aa08aa2521c2f9bd1acbb71b1ee4f0c36d948e59f80156d52",
       "id": "X02.F01.sample-cosmetic-range",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -794,11 +798,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -961,26 +966,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-unit.json",
-      "sha256": "ad977e748ac88bc7d3e9443da2a9c5409810dd10aa9607e01489557a725c95c8",
+      "sha256": "04a06db18fd936c00651fe123813e28c74e60127b94062719a851de21ee16b23",
       "id": "X02.F01.sample-cosmetic-unit",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryUnit",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -1000,11 +1005,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -1141,26 +1147,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-equal-range.json",
-      "sha256": "9aea7da2792e8d8ff3a984fff07e8be087c1877756728beac70f850d415df336",
+      "sha256": "3e7db02384d576e7f0290509e832e50e66ddbfd474d4f682e53c986a79a42637",
       "id": "X02.F01.sample-equal-range",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -1180,11 +1186,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -1287,26 +1294,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-code.json",
-      "sha256": "081a4c35022436cbcdbf7fc0243054b5d57c7c2101d6f7b4254c21d822680be4",
+      "sha256": "0862766d9c0733f9ecf751b94d85bb35804c88a2f688681a8d2226c5b9543a91",
       "id": "X02.F01.sample-gameplay-code",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryCode",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -1326,11 +1333,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -1467,26 +1475,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-modulo.json",
-      "sha256": "1b86987eab7c4d340c008f2daad8efb7d7daab50b5243775dc339b3e564574f4",
+      "sha256": "3d9ee65f6cb7bec0d64e92e66bc44fc02fbb682e3e847d8c1301a1624a7c7e66",
       "id": "X02.F01.sample-gameplay-modulo",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryModulo",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -1506,11 +1514,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -1661,26 +1670,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-range.json",
-      "sha256": "16f249ad8c792254fa182be6698987d7c0947bcd77b93ca0774cb56cf942004d",
+      "sha256": "276b54272ee5ae33c6db458adb2faccfde058207b8afde4082e5cf616c13415f",
       "id": "X02.F01.sample-gameplay-range",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -1700,11 +1709,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -1867,26 +1877,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-unit.json",
-      "sha256": "b49f78cb434ee37c03246ae41551bde3df56715027bd5b7f7d8c4cd40d245e68",
+      "sha256": "8ecde4bfefcb0c629cd250106d24a07b2ec2cccee056fac3e0701c6a6dbea089",
       "id": "X02.F01.sample-gameplay-unit",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryUnit",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -1906,11 +1916,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -2047,26 +2058,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-large-divisor.json",
-      "sha256": "753545862e58d73d3108e45889a5de7846e0ea0cb74109042701217eeb1cac52",
+      "sha256": "adccbbfd9711b30a51ddec30a384e366008991d9e0fbd1a999aca064a72a7026",
       "id": "X02.F01.sample-large-divisor",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryModulo",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -2086,11 +2097,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -2241,26 +2253,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-code.json",
-      "sha256": "797430120a470613498299cbcda23d7c3bee3ac93613c4731d25e8aa9233130a",
+      "sha256": "f5c3764744d8e8541424ab1c3cdf2d6fd58329819ab3fcf5aca68111134a0df2",
       "id": "X02.F01.sample-presentation-content-code",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryCode",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -2280,11 +2292,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -2421,26 +2434,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-modulo.json",
-      "sha256": "a33ddf64e3e21ac38181f013a1b067c54ff771269c400a4ca6c6ff4f38d74b91",
+      "sha256": "3e6aa0f8ce2745cd37fe03264fe2dd86eab64ba885db2ca00e532650e4f0e2f4",
       "id": "X02.F01.sample-presentation-content-modulo",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryModulo",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -2460,11 +2473,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -2615,26 +2629,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-range.json",
-      "sha256": "a6b270d7542358ec0eda55c767a34185e2a6547909a7c3fb7ff97e9c9d0ebce4",
+      "sha256": "024605dcfc34e2ef43725c69c6676f245c75a5fb043842cd91e01f6258d6783f",
       "id": "X02.F01.sample-presentation-content-range",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -2654,11 +2668,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -2821,26 +2836,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-unit.json",
-      "sha256": "9422cc2ac6c08c8bd1ef484a72ecd2905f8e453e9a95c9612f582275ff562492",
+      "sha256": "a1cebb41eeb49ef610947ac3812faf1096c6bd82549b2c8e7b1a123e13f03314",
       "id": "X02.F01.sample-presentation-content-unit",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryUnit",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -2860,11 +2875,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -3001,26 +3017,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
-      "sha256": "3458939c39532f8b0200b659afa9441745c1c8c6c30e2c160e95f6587102e871",
+      "sha256": "5bc4450c3767942b087f08d51abedd804b26d0c28508ae70504c8d7493e7e7a7",
       "id": "X02.F01.sample-replay-cosmetic",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryCode",
       "evidenceKind": "implementation-regression",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -3040,7 +3056,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           },
           {
             "file": "../../random-policy.md",
@@ -3050,7 +3066,8 @@
         ],
         "limitations": [
           "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -3239,26 +3256,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
-      "sha256": "1687a8d96cbc0447894f38891dbd39a3eebee54f3f4c3826571e8f40456def19",
+      "sha256": "b2d1575298a213984c3acaf9e1b92fe04214013a7c09c339b79244069d32aab8",
       "id": "X02.F01.sample-replay-equal-range",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "implementation-regression",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -3278,7 +3295,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           },
           {
             "file": "../../random-policy.md",
@@ -3288,7 +3305,8 @@
         ],
         "limitations": [
           "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -3456,26 +3474,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
-      "sha256": "7964955bfff0581fa4d270263549c2703b49bdfed42367cb144bb99e9f2ca41b",
+      "sha256": "5632914e8570938341e17c4264e41f208e8082561a37512f5c60aed8754b6255",
       "id": "X02.F01.sample-replay-gameplay",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryCode",
       "evidenceKind": "implementation-regression",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -3495,7 +3513,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           },
           {
             "file": "../../random-policy.md",
@@ -3505,7 +3523,8 @@
         ],
         "limitations": [
           "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -3694,26 +3713,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
-      "sha256": "b4ee5c13626e1108ce5a82f29ec15d6547ac74830db0b9ebf758c29a2ac38500",
+      "sha256": "eed7c30a3ceec3cfa189586a2e2f694d0b1245103855e87253306d3f57429b38",
       "id": "X02.F01.sample-replay-modulo",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryModulo",
       "evidenceKind": "implementation-regression",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -3733,7 +3752,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           },
           {
             "file": "../../random-policy.md",
@@ -3743,7 +3762,8 @@
         ],
         "limitations": [
           "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -3941,26 +3961,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
-      "sha256": "ffcabd995bcd974728e5464c7b25dc7397b932b9e8af81e3650d9501d772a2ce",
+      "sha256": "60857a8b676cc9c3c50a422da0278ec3168aff148c6ee758a1b9656486f8b7ad",
       "id": "X02.F01.sample-replay-presentation-content",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryCode",
       "evidenceKind": "implementation-regression",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -3980,7 +4000,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           },
           {
             "file": "../../random-policy.md",
@@ -3990,7 +4010,8 @@
         ],
         "limitations": [
           "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -4179,26 +4200,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
-      "sha256": "94e4c660cddd6c1c6f1f6599ffd844c5233c5d7914823e9cc670e9395dc42343",
+      "sha256": "c35ee4a1154f576aafaafbb56e5e994db0aba9a1534f81fa145b53eb30b0d395",
       "id": "X02.F01.sample-replay-singleton",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryModulo",
       "evidenceKind": "implementation-regression",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -4218,7 +4239,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           },
           {
             "file": "../../random-policy.md",
@@ -4228,7 +4249,8 @@
         ],
         "limitations": [
           "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -4392,26 +4414,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
-      "sha256": "0fff786ccae942850960551bdba8960c09e6ffe7fe8cd0470230fdc4ab52ae97",
+      "sha256": "8b7ffd518566607f3fa3f7ae66cee6679cecaee1133a09be2fe53d125e671594",
       "id": "X02.F01.sample-replay-unit",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryUnit",
       "evidenceKind": "implementation-regression",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -4431,7 +4453,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           },
           {
             "file": "../../random-policy.md",
@@ -4441,7 +4463,8 @@
         ],
         "limitations": [
           "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -4630,26 +4653,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-reversed-range.json",
-      "sha256": "1b8a7b33cca97ad81492f1d19144aa901970b2f7425ceab870ed45808952ed3f",
+      "sha256": "bc6ecaa7be03c510e614d783ea1e41450733ea57f1854701fef5bdd2b19c5ef7",
       "id": "X02.F01.sample-reversed-range",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -4669,11 +4692,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -4836,26 +4860,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
-      "sha256": "d25548497ed8197f8de74e9a12ea3ba211737a7c5a4bf048aecc7b51badb47d6",
+      "sha256": "1e39a717cf9157da0711c023cdcca48cd51349fb0fd1a80146d31be00aa149b9",
       "id": "X02.F01.sample-rounded-endpoint",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -4875,11 +4899,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -5042,26 +5067,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-singleton.json",
-      "sha256": "1ca37e82c6bc388355be12ce92b3bd30fe4c1c34777c4527067d325814974e6b",
+      "sha256": "d2769bc3ebeae2cfdc070a0db47a3fbea01f2d6b46d8d2698542dec4a3e1752a",
       "id": "X02.F01.sample-singleton",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.primaryModulo",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -5081,11 +5106,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "3-primary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -5184,26 +5210,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
-      "sha256": "04b1981e810eb5be989bb84e62aa16f4f3e03f9651e3bf4d82a6c77b364b7126",
+      "sha256": "247103bb44bb06d3233a55fb9db21daff7c14707cd1c3e5b88ef09f1e8947de8",
       "id": "X02.F01.sample-wrapped-range",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryRange",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -5223,11 +5249,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -5390,26 +5417,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-zero-unit.json",
-      "sha256": "7358b52d0663ee86b15d3d3e2d296aa90ac1400873fcb18945db9dbdd7af8eb8",
+      "sha256": "a9167f9b4b8b727ba12ec8ddf04fc9aaa8b59f569458a407ecd12d039422cb68",
       "id": "X02.F01.sample-zero-unit",
-      "revision": 2,
+      "revision": 3,
       "operation": "F01.secondaryUnit",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -5429,11 +5456,12 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
-          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -5570,26 +5598,26 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
-      "sha256": "0afc34f318dc0379e414f04dda189e57041266953dd8b8f6df421f49cbd509bc",
+      "sha256": "da0e2b5258763aa2a763239a1e4876d2f77c79c2efe6c364a6595bdf28d7d9b4",
       "id": "X02.F01.wrapped-range",
-      "revision": 12,
+      "revision": 13,
       "operation": "F01.secondaryRangeFromCode",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -5609,7 +5637,7 @@
           {
             "file": "../F01-determinism-and-arithmetic.md",
             "section": "4-secondary-sampling-law",
-            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+            "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
           }
         ],
         "limitations": [
@@ -5620,7 +5648,8 @@
           "Contract references refreshed for semantic presentation, safe input rejection and TCP/IP transport scope; numeric expectations unchanged.",
           "Specification pins refreshed after moving optional presentation procedures into reference appendices; compatibility policy and numeric expectations unchanged.",
           "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
-          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
+          "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -5723,31 +5752,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-city-token-wrap.json",
-      "sha256": "89df513dd7715728046571453c31c3c983b457088c03b70b2d59a1e32d442178",
+      "sha256": "c10ce1739978c5cb394cc94e22f6a5577992fa93fc66ed7e4142db51d50b80da",
       "id": "X02.F02.city-token-wrap",
-      "revision": 2,
+      "revision": 3,
       "operation": "F02.assignCityToken",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -5767,13 +5796,14 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "3-slots-lifetime-tokens-and-absence",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           }
         ],
         "limitations": [
           "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
-          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -5881,31 +5911,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-extend.json",
-      "sha256": "ef0fdcec598bb7f0b944bcfb35285691cef5c5583c2b094c09dd8b9deb7f0e0e",
+      "sha256": "a4264c4d1be7cd0c66ee4478104fc99b3c0c4897bfda5566e9249efc8d816f1e",
       "id": "X02.F02.unit-reserve-extend",
-      "revision": 2,
+      "revision": 3,
       "operation": "F02.reserveUnitSlot",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -5925,14 +5955,15 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "3-slots-lifetime-tokens-and-absence",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           }
         ],
         "limitations": [
           "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
-          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
+          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -6141,31 +6172,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-hole.json",
-      "sha256": "f6d9ff9589562b71b1bd736c80ac6d310e1245620d091192f5fe566d78d9ee7f",
+      "sha256": "694ce39c835fad5a5215dbe9db3c13da0dc2a28542bf1fd31b5b57b96183577a",
       "id": "X02.F02.unit-reserve-hole",
-      "revision": 2,
+      "revision": 3,
       "operation": "F02.reserveUnitSlot",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -6185,14 +6216,15 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "3-slots-lifetime-tokens-and-absence",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           }
         ],
         "limitations": [
           "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
-          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
+          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -6409,31 +6441,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
-      "sha256": "3f836ca4828a7f5dc4f142f742b47eaa4d4c68c4deb3cc460ca8e98954c1cb64",
+      "sha256": "917dcf31a04f1d94407d090e215276a7faa18411b3886420496be4ef9e086c09",
       "id": "X02.F02.unit-reserve-military-limit",
-      "revision": 2,
+      "revision": 3,
       "operation": "F02.reserveUnitSlot",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -6453,14 +6485,15 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "3-slots-lifetime-tokens-and-absence",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           }
         ],
         "limitations": [
           "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
-          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
+          "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -6667,31 +6700,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-unit-token-initial.json",
-      "sha256": "558ad78aea99ed10c04a96d719b3a427662fa816a45cf6abf545f8af8d66ebb2",
+      "sha256": "aed68ee1e94a0814f2266bfaae7ce9b2eccbf2aef6995c0977c36d9c3bfe6c5a",
       "id": "X02.F02.unit-token-initial",
-      "revision": 2,
+      "revision": 3,
       "operation": "F02.assignUnitToken",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -6711,13 +6744,14 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "3-slots-lifetime-tokens-and-absence",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           }
         ],
         "limitations": [
           "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
-          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -6825,31 +6859,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-unit-token-wrap.json",
-      "sha256": "9ef6353edfa2b711333e44273bf5ca57237932533bc2d5f6ed3f9dba5288722a",
+      "sha256": "b391326c79bacb75dd569be46b475d1eade4688563955ede8c6cd3ac9c434244",
       "id": "X02.F02.unit-token-wrap",
-      "revision": 2,
+      "revision": 3,
       "operation": "F02.assignUnitToken",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -6869,13 +6903,14 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "3-slots-lifetime-tokens-and-absence",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           }
         ],
         "limitations": [
           "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
-          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -6983,31 +7018,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-unit-token-zero.json",
-      "sha256": "38494ae5a1049c42e722fc0a04929e9c8786ec6bf01f2d67e73c41f276a84967",
+      "sha256": "b73060bfd47c3843574a952a5db00436e364810b04be0c50b3b0543b2e23fe9b",
       "id": "X02.F02.unit-token-zero",
-      "revision": 2,
+      "revision": 3,
       "operation": "F02.assignUnitToken",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -7027,13 +7062,14 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "3-slots-lifetime-tokens-and-absence",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           }
         ],
         "limitations": [
           "Authored from the repository F02 contract; not a recording of the original program or an implementation-generated golden.",
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
-          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
+          "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -7141,36 +7177,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-absent.json",
-      "sha256": "bff0f6e590187e0f7ffcd80bbb89686d74b281bd9c89f7373518a1e9fcd63275",
+      "sha256": "fabefdb86e92ee4f8d7ea2441f7e89f7e9177c969f717b75b1477f52bee2adfa",
       "id": "X02.F02.workspace-absent",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -7190,23 +7226,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "Absent city bypasses selection and the full pipeline.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -7330,36 +7367,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-cached-wrap.json",
-      "sha256": "f627f04d7b7ba60a91bef13caadf5dd4fb982797f961baf41e05187822f9de46",
+      "sha256": "356a604180864573bdeb118dca1b2247dc47b553c12f79f19ad8e6a6071487fd",
       "id": "X02.F02.workspace-cached-wrap",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -7379,23 +7416,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "F01 signed32 subtraction wraps; slot zero is present and the retained city may be absent.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -7518,36 +7556,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-cached.json",
-      "sha256": "f3254a742b8e4698de0d50e13ee84ec8583ae01b29c5b9ed1ab6b6b20309a69c",
+      "sha256": "9b5e81bce104df1ce00128b5bf36334b672576e564bd2049f786616e15117c88",
       "id": "X02.F02.workspace-cached",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -7567,23 +7605,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "Cached values belong to retained city 4 even when the requested city is 9.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -7708,36 +7747,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-failure-output.json",
-      "sha256": "729fea6f15667d42c5405ae9e458682ef9307e32fe617b6f60849282a2c3f0eb",
+      "sha256": "55242602ec36c9124cdbf7338f49f25f5770e22f339ebe303c526656a4fdecee",
       "id": "X02.F02.workspace-failure-output",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -7757,23 +7796,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "X02 failure is an event, not rollback or implicit cancellation; Unicode action identity and absence survive export.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -8027,36 +8067,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-publication.json",
-      "sha256": "443fed4110f2ae82c5f14295333ca8e15c89d209149473eb3304098a77248907",
+      "sha256": "d27749397dacc7c6ce502b6b795e9448ee19f093c27ecc58b8b7950fd5c77d33",
       "id": "X02.F02.workspace-publication",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -8076,23 +8116,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "Full selection is visible before the first child action; only explicitly written outputs change.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -8308,36 +8349,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-reentry.json",
-      "sha256": "748566ec4426239c2b9605dc0e0dab97f82984c92a5867c397181054129705da",
+      "sha256": "3d5dbc8d6eb650f1412d5bef6717b7d74583ffa856a8fad480cad38889c67053",
       "id": "X02.F02.workspace-reentry",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -8357,23 +8398,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "The outer request captures city 3; nested full selection leaves live city 0. A cached nested call uses outer outputs.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -8827,36 +8869,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved-after-reentry.json",
-      "sha256": "82aebfd71eeb29ec80395feeed0fcaba09dd777005be0319b77cd70363cbe9ff",
+      "sha256": "d6ac626c57dca64857965a8bf5ada797f4cf4efbd1d2e86dfb0141a4ce7f2485",
       "id": "X02.F02.workspace-unresolved-after-reentry",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -8876,23 +8918,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "One nested provider completed while the outer provider remains suspended. The prefix includes subsequent outer output.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -9329,36 +9372,36 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved.json",
-      "sha256": "ff46dae8e3ff782f0766d9f734f08f3f20c648f650080ab1ec8c0a011afa7ec9",
+      "sha256": "e1e88467dcb347dc6aba15ec362f20b0e616d0997c3b1be46ab7216d358b661e",
       "id": "X02.F02.workspace-unresolved",
-      "revision": 1,
+      "revision": 2,
       "operation": "F02.cityCalculationEntry",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "F02",
           "file": "../F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
         },
         {
           "id": "C03",
           "file": "../C03-city-economy-and-corruption.md",
-          "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+          "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -9378,23 +9421,24 @@
           {
             "file": "../F02-game-state-and-invariants.md",
             "section": "9-cache-and-mutation-contracts",
-            "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3"
+            "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e"
           },
           {
             "file": "../C03-city-economy-and-corruption.md",
             "section": "full-city-recalculation",
-            "sha256": "9681447bcf433bcf3b4e7e5b10f55ab5feaa4d6c9aa344160ad9f0be32147fc4"
+            "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490"
           },
           {
             "file": "../X02-whole-game-conformance.md",
             "section": "4-ordered-environment-inputs-and-reentry",
-            "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+            "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
           }
         ],
         "limitations": [
           "Missing result halts at consumption after retaining selection and output. No successful return or cleanup is fabricated.",
           "The C03 pipeline and callback schedule are supplied inputs. This does not implement C03 or establish where the normal pipeline reenters.",
-          "Authored from repository behavioral contracts; not an original-game capture or independent review."
+          "Authored from repository behavioral contracts; not an original-game capture or independent review.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -9565,31 +9609,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-lookup-alias.json",
-      "sha256": "083046df9dd9ef9c57e0523a9a5408e840afb802b27c30c81715d822427a10a1",
+      "sha256": "1faa0835af64300e3b6d56663080c73ed7eca49dcb15d99a93aab83f64ed7ca5",
       "id": "X02.W01.lookup-alias",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.tileIndex",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -9609,13 +9653,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -9732,31 +9777,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-lookup-canonical.json",
-      "sha256": "173a352d5e06c952cd14073f36305d0515a8d8418a1384fde8136ecf09034ea7",
+      "sha256": "852fadc6f755618fbbbcbbfa17a90efb10118093e8e1523e0eb265142a853c24",
       "id": "X02.W01.lookup-canonical",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.tileIndex",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -9776,13 +9821,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -9899,31 +9945,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-lookup-miss.json",
-      "sha256": "37d42355b3b3076b2750090a460c656a515ed8b904d8caa74c6f1766de51b5e3",
+      "sha256": "04bdcb88156011420c8d8accfcf6757b3d7890a250cd39c2a8a7dc66ec097a9a",
       "id": "X02.W01.lookup-miss",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.tileIndex",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -9943,13 +9989,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -10064,31 +10111,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-step-minimum.json",
-      "sha256": "07c130c3570d5b62bedf2d07487a3005af6074d3f64ed6dee3f22e30cbcd0893",
+      "sha256": "f6e9c6747b765c0bb648c4cc04c348e919dddb222d322c49df3b88dfee3a2d04",
       "id": "X02.W01.step-minimum",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.stepDistance",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -10108,13 +10155,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "coordinates-and-arithmetic",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -10247,31 +10295,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-step-off-map.json",
-      "sha256": "31c4a18e8f9196985c491bb6600a06f3445fdacad09114ee83d9c415f1af3ec6",
+      "sha256": "3c8e3250c62902b3770f23d36efc5ca0aaebfebef5aad2e63fdadc2810cd0be5",
       "id": "X02.W01.step-off-map",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.stepDistance",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -10291,13 +10339,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -10430,31 +10479,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-step-seam.json",
-      "sha256": "b048a397ea6608ee8858ea578358b7ce2b34b344e191b61970f9b7ee5d632efa",
+      "sha256": "41889b949cdc8c6caaa3972bd9ef1bb151243a5e56a53345746e11992c227b44",
       "id": "X02.W01.step-seam",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.stepDistance",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -10474,13 +10523,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -10613,31 +10663,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-weighted-off-map.json",
-      "sha256": "4f5d770c963aed67e354a58c5aabf171b216686415dfb63f355a0aaf86ccf7b8",
+      "sha256": "3e97e399c5d5d5354555753fc103fa2f95bc719605577bc167f604332bf4abfa",
       "id": "X02.W01.weighted-off-map",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.weightedDistance",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -10657,13 +10707,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -10796,31 +10847,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-wrap-far-negative.json",
-      "sha256": "453e3643e573f16c93abeda9b3490e9854e774b992d4e4646712812774c7c231",
+      "sha256": "c4f9ec9407f4292cab2d6bd6d8dcc2cebcda0feef0543df1b188ee779cafb045",
       "id": "X02.W01.wrap-far-negative",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.wrapX",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -10840,13 +10891,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -10967,31 +11019,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-wrap-far-positive.json",
-      "sha256": "01baa25e0a49b78085df7004bd1081e0b389407883665f922d855f3277cc9320",
+      "sha256": "31a546d421ebf9553ef23a3b75e56901e5f8ada085af6744f1bb66be2f02afb4",
       "id": "X02.W01.wrap-far-positive",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.wrapX",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -11011,13 +11063,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {
@@ -11138,31 +11191,31 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-W01-wrap-flat.json",
-      "sha256": "5235770fde76a4605c116b5c90ef9dcfb169c9655fb477c4007fa30d28faf300",
+      "sha256": "8a2e6011448b6e7b69b4173ff0c9f91496c138e5793dc8e0c0e5a8cc2a7c2780",
       "id": "X02.W01.wrap-flat",
-      "revision": 2,
+      "revision": 3,
       "operation": "W01.wrapX",
       "evidenceKind": "specification-vector",
       "specifications": [
         {
           "id": "F01",
           "file": "../F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
         },
         {
           "id": "W01",
           "file": "../W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
         },
         {
           "id": "X01",
           "file": "../X01-classic-compatibility-contract.md",
-          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+          "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
         },
         {
           "id": "X02",
           "file": "../X02-whole-game-conformance.md",
-          "sha256": "7e9ed7623cca1ce2dddbbf4ab57dc1f5ca85cea4b1bcdab2357358fa6623f12d"
+          "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
         }
       ],
       "target": {
@@ -11182,13 +11235,14 @@
           {
             "file": "../W01-map-geometry-and-spatial-state.md",
             "section": "9-worked-examples-and-conformance-cases",
-            "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c"
+            "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd"
           }
         ],
         "limitations": [
           "Authored from the repository W01 contract; not an original-program capture or an implementation-generated golden.",
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
-          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
+          "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology.",
+          "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
         ]
       },
       "randomness": {

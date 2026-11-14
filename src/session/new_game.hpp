@@ -11,7 +11,9 @@ struct NewGameServices {
     std::function<void()> balance_starts;
 };
 // F05 section 5: the complete inner new-game initialization parent, after W02.
-// This is not the outer new-session invalidation, setup wizard, accelerated
+// Requires prepare_new_game before this attempt's content/map/wizard. Retained
+// inputs below belong only to that attempt, never a previous game.
+// This is not the outer new-session isolation, setup wizard, accelerated
 // start or a load operation. Required children are not fabricated here.
 // The owner supplies its declared gameplay context and a unique semantic call
 // identity; this operation neither seeds RNGs nor creates/revokes client leases.

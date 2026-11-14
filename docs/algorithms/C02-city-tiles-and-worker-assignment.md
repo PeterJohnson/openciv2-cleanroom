@@ -1,5 +1,13 @@
 # C02: City tiles and worker assignment
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 apply. Widths and written sequences define reference evaluation, not mandatory

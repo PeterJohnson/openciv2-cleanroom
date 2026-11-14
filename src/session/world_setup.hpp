@@ -41,9 +41,8 @@ void randomize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
 // persistence failure does not turn an accepted parameter sequence into cancel.
 bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,
                                 std::string_view call, const WorldParameterServices& services);
-// F05 section 2's post-size/map dispatch. A failed world selection still takes
-// the five-draw route, including Customize World; an inner parameter cancel
-// does not. The result gates the later player wizard, which is not called here.
+// F05 section 2's post-size/map dispatch. Failed selection returns without
+// discarded parameter choices. The result gates the later player wizard.
 bool select_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,
                              std::string_view call, bool customize, bool world_selected,
                              const WorldParameterServices& services);

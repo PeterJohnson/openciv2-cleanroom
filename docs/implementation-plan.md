@@ -72,7 +72,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
 | M0 — complete | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan; all 11 hosted CI jobs pass | None for M0; see the [completion review and retained reports](m0-validation.md#m0-completion-review--2026-11-13-utc). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts have a separate pinned dependency. |
-| M1 — started | Portable F01/F02/W01 foundations; stored-save/raw-map codecs; stored inspection and optional SQLite export; initial session/controller ownership, scoped queries and command continuations; N05/N02 primitives; six gameplay component loaders, pack/overlay resolution and typed native rules; 54 X02 fixtures; Windows original-file and bounded peer comparisons | Complete lifecycle/setup/ordered-load integration; generalized X02 adapters/providers/replay and independent review; full content/rules/text loading and consumer bindings; broader live queries; session checkpoint and mode/wire integration; see the [completion audit](m1-validation.md). |
+| M1 — started | Portable F01/F02/W01 foundations; stored-save/raw-map codecs; stored inspection and optional SQLite export; initial session/controller ownership, scoped queries and command continuations; N05/N02 primitives; six gameplay component loaders, pack/overlay resolution and typed native rules; 54 X02 fixtures; Windows original-file and bounded peer comparisons | Complete fresh-game lifecycle and supported load boundaries; defer full setup children to M3/M4; generalized X02 adapters/providers/replay and independent review; full content/rules/text loading and consumer bindings; broader live queries; session checkpoint and mode/wire integration; see the [completion audit](m1-validation.md). |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native menu/display interaction validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
@@ -148,8 +148,8 @@ passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
 - Implement the X02 v3 loader, operation adapters, scripted external services,
   comparator, and bounded run reports. Execute the three existing F01 fixtures;
   add independently reviewed cases for state and geometry.
-- Bind the [six built-in gameplay components](content/gameplay-format.md) to their
-  owning mechanics. Default JSON, schemas, source pins, normalization, offline
+- Load and validate the [six built-in gameplay components](content/gameplay-format.md)
+  through portable typed interfaces; bind each to its owning mechanic in M3/M4. Default JSON, schemas, source pins, normalization, offline
   validation and portable C++ bundle loading exist; consumer bindings,
   checkpoint/profile admission and original-peer gates still need implementation. Keep original
   defaults, AI heuristics and map generation unchanged.
@@ -225,8 +225,35 @@ metadata and failure/cancellation tests pass. Disabling export removes SQLite
 from configuration and linkage without disabling text/JSON inspection.
 Session contract tests distinguish acceptance from completion and reject stale
 or unauthorized client contexts. Independent virtual peers have isolated process
-contexts, while starting a second game in one process retains the specified F02
-state. These are foundation tests, not completed mode conformance.
+contexts. Starting a second game isolates all simulation state and mutable
+content, preserving only the explicit X01 preference/configuration/identity
+allowlist. These are foundation tests, not completed mode conformance.
+
+### M1 scope after the compatibility review
+
+M1 proves foundation mechanisms and the supported content/file boundaries. Its
+new-game requirement is an isolated, callable session boundary, fresh mutable
+content and cold-versus-reused-runtime checks, with old client rejection and safe
+handling of unfinished commands/required network output. No AI goal refresh or
+turn-policy implementation is a prerequisite for opening a menu or clearing a game.
+The implemented F05 composition may use explicitly supplied W02/V01/acceleration
+children in foundation tests; these do not count as implemented gameplay.
+
+Complete playable creation/balancing, turn flow, owning mechanics, application
+dialogs, AI policies and their consumer bindings belong to M3/M4 (mode-specific
+joins to M5/M6). Preserve useful existing foundation and setup work, but do not
+recursively implement every child merely to finish an M1 parent. M1 X02 adapters
+cover admitted foundation operations; whole-game adapter/provider coverage is a
+later conformance obligation. Content loading/validation is M1; full mechanic
+consumption is delivered with those mechanics. Unknown original stack values,
+incidental native call order and artificial query callbacks are not exit gates.
+
+The review adds an explicit acceptance test: after prior gameplay, cancelled
+setup or failed load, equal chosen content/preferences/setup inputs and controlled
+choices produce the same new-game gameplay state as a fresh process. Only identity
+generations may differ. Retain original file codec checks separately; imported
+save/scenario state is not prior-game leakage. Track unimplemented safe repairs
+under their owning milestone; do not call a diagnostic stop completed gameplay.
 
 ## M2 — Prove the graphical and platform boundaries
 
@@ -545,24 +572,19 @@ M0 is complete. Build the next implementation changes on the integrated shell,
 maintaining the [registries/ledger](conformance/README.md) and
 [content inventory](content/README.md) as operations and inputs arrive:
 
-1. Extend the bounded F01/F02 X02 runner to composite registrations, scripted
-   providers, semantic choice injection and implementation replay, retaining the
-   ten passing foundation vectors and random-context isolation tests.
-2. Extend F02 identities/reservation into full records, pools and lifecycle;
-   implement W01 geometry using C++ records and collections, with retained-state
-   fixtures and no database dependency.
-3. Resolve layout data gaps and implement the independent graphics reader
-   against the [inspected package contract](content/asset-format.md); connect it
-   to the existing SDL3/ImGui shell and finish native menu/platform verification.
-4. Add F03/F06 codecs and early N05 framing/original-peer experiments, then
-   expose stored-record queries and the inspection/validation/diff CLI.
-   Build optional SQLite snapshot export on those same records and queries.
-5. Establish the embedded session service, lifecycle and participant/controller
-   bindings, scoped queries, command descriptors and correlated results as real
-   playable operations arrive. Connect graphical/headless clients and the console
-   in M3; keep mode scheduling and authority behind the service boundary.
-6. Add the M4 Lua production-policy slice after those interfaces work, then
-   close task persistence/hotseat and mixed-peer cases in M5/M6.
+1. Close the remaining M1 foundation inventory and X02 registrations/replay for
+   admitted operations; retain the implemented codecs, content loaders, queries,
+   session contracts and bounded original file/peer evidence.
+2. Maintain fresh-game isolation across content/setup/load failure integration.
+   Register the cold/reused-runtime check and keep pending-command/transport
+   obligations explicit. Do not add AI work to menu reset.
+3. Finish the M2 graphics/platform boundary and application content installation.
+4. Deliver the M3 authored-map playable slice through the shared session API:
+   movement, founding a city, production/research, end turn, save and resume.
+5. Complete W02/V01/setup balancing, AI and remaining gameplay in M4; replace
+   supplied children with real mechanics and validate their observable joins.
+6. Add the M4 Lua production-policy slice, then hotseat/scenario and mixed-peer
+   integration in M5/M6. Whole-game conformance closes at M7.
 
 For each change: cite the owning specification, implement the smallest coherent
 operation, test its meaningful boundary and failures, update its coverage row,

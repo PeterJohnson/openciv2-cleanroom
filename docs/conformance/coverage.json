@@ -11,7 +11,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
           "function": "F01.primaryModuloFromCode",
           "originalAddress": null
         }
@@ -39,7 +39,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
           "function": "F01.secondaryRangeFromCode",
           "originalAddress": null
         }
@@ -68,7 +68,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
           "function": "F02.assignUnitToken",
           "originalAddress": null
         }
@@ -98,7 +98,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
           "function": "F02.assignCityToken",
           "originalAddress": null
         }
@@ -126,7 +126,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
           "function": "F02.reserveUnitSlot",
           "originalAddress": null
         }
@@ -156,7 +156,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
           "function": "W01.wrapX",
           "originalAddress": null
         }
@@ -186,7 +186,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
           "function": "W01.stepDistance",
           "originalAddress": null
         }
@@ -216,7 +216,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
           "function": "W01.weightedDistance",
           "originalAddress": null
         }
@@ -244,7 +244,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "4c058a38dc173597ea9cd21777ee2c818ea290e0625c62b434c7fba09e0f739c",
+          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
           "function": "W01.tileIndex",
           "originalAddress": null
         }
@@ -274,7 +274,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
           "function": "F01.primaryCode",
           "originalAddress": null
         }
@@ -310,7 +310,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
           "function": "F01.primaryModulo",
           "originalAddress": null
         }
@@ -347,7 +347,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
           "function": "F01.secondaryUnit",
           "originalAddress": null
         }
@@ -382,7 +382,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
           "function": "F01.secondaryRange",
           "originalAddress": null
         }
@@ -420,7 +420,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "3772c0ae1fcfd64f0cae3a90bfa31af2523cc052ef021d6c5ef8deec0c2cd5c3",
+          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
           "function": "F02.cityCalculationEntry",
           "originalAddress": null
         }
@@ -455,7 +455,7 @@
       "id": "G01",
       "specificationAnchor": "docs/algorithms/X02-whole-game-conformance.md#9-integration-scenario-backlog",
       "scenario": "F05 new/random/custom/premade setup \u2192 W02/W01/U03 \u2192 V01 starts; repeat a second game in the same process",
-      "comparisonSurfaces": "Every generation checkpoint, setup versus generator-entry decisions, start search/compensation, retained name/token state; all size presets, odd height, both topologies and retained maps",
+      "comparisonSurfaces": "Gameplay-significant generation checkpoints, setup decisions, start search/compensation, fresh-game isolation with identity generations distinguished; presets, both topologies and selected premade maps",
       "caseIds": [],
       "lastRun": null,
       "gaps": [
@@ -716,9 +716,9 @@
     {
       "id": "x02-general-runner",
       "milestone": "M1",
-      "domain": "Composite and stateful X02 fixtures beyond the fourteen registered F01/F02/W01 foundation operations.",
+      "domain": "Composite/replay support and independent review for admitted M1 foundation operations; whole-game providers join with their owning mechanics in M3-M6.",
       "knownPrefix": "The bounded runner executes pure mappings, token/reservation and geometry primitives, all four semantic F01 laws in each domain, policy v2 origin/position replay, and shared-city-workspace dispatch with an explicitly supplied C03 child. Ordered outputs, failures, observations, synchronous real-entry reentry and unresolved-result prefixes execute on native/WASM. Generic logical values are validated. Blob loading, other providers/queues, composite random histories, invalid-access safe stops and projections remain unsupported; independent fixture review is pending.",
-      "closureEvidence": "Implement remaining owner state adapters, blob installation/hash resolution, scripted providers/callbacks, composite choice/replay histories, safe-stop prefixes and justified independence comparisons; obtain independent fixture review and attach bounded execution reports."
+      "closureEvidence": "Register and independently review admitted foundation adapters, meaningful external callbacks, replay/choice histories and safe admission. Add a bounded fresh-game isolation adapter. Do not require fake mutation inside pure queries; full gameplay adapters are later milestone work."
     },
     {
       "id": "integration-fixtures",

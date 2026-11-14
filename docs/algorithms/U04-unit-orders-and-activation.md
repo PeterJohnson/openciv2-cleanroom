@@ -1,5 +1,13 @@
 # U04: Unit orders and activation
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 apply. Widths and written sequences define reference evaluation, not mandatory
@@ -65,8 +73,9 @@ mutations, denials and child calls are the outcome.
 6. Spy-on-mission is absent.
 
 Waiting, Automated, Fortifying, terrain work and Goto are not direct exclusions.
-The movement-left query occurs before the spy flag test and retains any child
-side effects.
+Movement-left is a read-only U02 query on valid stable state, with no event pump
+or reentry. Its reference position before the spy flag test does not by itself
+impose observable callback order; preserve eligibility and actual input failures.
 
 `awakeWithMoves(u)` is less restrictive: require a nonnegative slot below the
 live bound, live identity, x coordinate nonnegative, full order not Sleep and

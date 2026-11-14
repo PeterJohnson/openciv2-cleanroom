@@ -1,5 +1,13 @@
 # Game state and invariants
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **ID:** F02. **Target:** Civilization II Multiplayer Gold
 Edition **5.4.0f, patch 3**, under the [X01 contract](X01-classic-compatibility-contract.md).
 
@@ -101,16 +109,17 @@ not arbitrary pauses between otherwise unobservable stores.
 
 | Layer | Required logical state | Lifetime rule |
 | --- | --- | --- |
-| Process | Next unit and city lifetime tokens; loaded rule/leader tables and their mutable usage/name cursors; preferences and external service state. | A new game resets only what its setup procedure writes. Process launch, starting a game and loading a game are distinct boundaries. |
+| Process | Next unit and city lifetime tokens; loaded rule/leader tables and their mutable usage/name cursors; preferences and external service state. | Preferences, immutable content caches and identity generators can persist. Reset mutable gameplay/name/text/fallback state for every new-game attempt; load and controller changes are separate boundaries. |
 | Session | Single-player, hotseat or network mode; local and authoritative participants; current input/view civilization; selected and moving unit; resume/turn-loop state; queued commands, modal state and operation-busy indicators. | May change without changing the world. A save does not necessarily capture or restore all of it. |
 | World | Calendar and turn; civilization records; city and unit slot pools; map and remembered layers; rules/options, wonders, research history, scenario/event state and historical records. | Mutated by game operations, setup, loading, editors and synchronization. |
 | Derived state retained between calls | Civilization censuses and strategic summaries, city economic totals, region/connectivity information, demand lists and their dirty flags. | Rebuilt or incrementally updated at particular boundaries; “derivable” does not mean always current. |
 | Operation workspace | Current city calculation, path-search context and grids, diplomacy evaluation, combat/movement state, generation scratch and presentation selections. | Shared by successive calls in the original. Preserve any value read before the next explicit overwrite. |
 
 A cleanroom implementation may split these layers differently. It must preserve
-their observable retention and sharing. For example, a second classic game can
-retain a human tribe's city-name cursor. The new-game reset clears the unit and
-city scan bounds but does not reset their lifetime-token generators. It also
+their observable retention and sharing within a game. A new-game attempt clears
+human and AI city-name cursors, all pool payloads and derived/workspace state;
+old simulation values cannot reach the new world. Identity generators may persist
+to reject stale references. It also
 initially sets the selected unit slot to 0, even though the unit scan bound is 0;
 selection validity must be tested when the selection is used.
 Records outside the current scan bound can retain earlier data; they are not
@@ -133,7 +142,7 @@ state, not evidence that the local record has already changed.
 Random contexts have implementation-defined lifetimes under F01. Document their
 creation, continuation and reset boundaries separately from classic game globals;
 a process-global pair is not required. Original save formats do not supply that
-new replay policy. This freedom does not reset retained non-RNG game state.
+new replay policy. Within-game non-RNG retention is independent of this policy; new-game isolation resets simulation state explicitly.
 
 ## 3. Slots, lifetime tokens and absence
 

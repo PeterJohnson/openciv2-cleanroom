@@ -27,9 +27,10 @@ struct Work {
 };
 struct RuntimeState {
     RuntimeState(state::ProcessContext& supplied, RuntimeId identity)
-        : process(supplied), world(supplied), identity(identity) {}
+        : process(supplied), world(std::make_unique<state::GameState>(supplied)),
+          identity(identity) {}
     state::ProcessContext& process;
-    state::GameState world;
+    std::unique_ptr<state::GameState> world;
     RuntimeId identity;
     bool active = false, advancing = false;
     SessionId session{0};

@@ -79,6 +79,16 @@ file/wire encodings or scenario override obligations. Complete distributable
 content and runtime readers remain separate from format examples and conformance
 claims; X02 includes paired native/classic content cases.
 
+## Fresh games and safety corrections
+
+Every owner applies [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs).
+Within-game state retention is required where it affects gameplay; leakage from
+a previous game is an excluded bug. New-game tests compare fresh and previously
+used processes with the same explicit inputs. Historical native call/store order,
+arbitrary stack inputs and artificial callback schedules are not baseline gates.
+Document each safe correction and keep unresolved algorithm details as finite
+owner gaps. Implement from these specifications and independent observations.
+
 ## Numeric specification convention
 
 All 65 specifications follow [F01's behavioral-equivalence rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges).

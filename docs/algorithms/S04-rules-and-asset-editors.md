@@ -1,5 +1,13 @@
 # S04 — Rules and asset editors
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 Target: classic
 Civilization II Multiplayer Gold Edition **5.4.0f, patch 3**. This document owns
 rule-editor staging, controls, publication, name propagation and text replacement;

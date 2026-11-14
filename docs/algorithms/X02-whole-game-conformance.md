@@ -1,5 +1,13 @@
 # X02: Whole-game conformance
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 Target: classic Civilization II Multiplayer Gold Edition
 **5.4.0f, patch 3**, under [X01](X01-classic-compatibility-contract.md).
 
@@ -18,6 +26,13 @@ An implementation can use different storage and still produce this format.
 also permits equivalent internal evaluation. Compare required semantic events
 and their dependencies, not incidental helper/store order. A reference sequence
 remains the default where independence has not been established.
+
+Required new-game fixtures compare fresh and previously used runtimes with equal
+explicit inputs and controlled logical choices, including cancelled setup and
+failed-load histories. Normalize only identity generations that cannot influence
+gameplay. Previous simulation bytes and arbitrary original stack inputs are not
+baseline observations. Separate documented repair expectations from original
+captures; preserve within-game/file/protocol tests and real callback dependencies.
 
 ## 1. Claims and test boundaries
 
@@ -843,7 +858,7 @@ parent's publication behavior. Keep those checks within the relevant family.
 
 | ID | Scenario and required joins | Decisive comparisons |
 | --- | --- | --- |
-| G01 | F05 new/random/custom/premade setup → W02/W01/U03 → V01 starts; repeat a second game in the same process | Every generation checkpoint, setup versus generator-entry decisions, start search/compensation, retained name/token state; all size presets, odd height, both topologies and retained maps |
+| G01 | F05 new/random/custom/premade setup → W02/W01/U03 → V01 starts; repeat a second game in the same process | Gameplay-significant generation checkpoints, setup decisions, start search/compensation, fresh-game isolation with identity generations distinguished; all size presets, odd height, both topologies and retained maps |
 | G02 | F03 rules/options plus consuming mechanics and P03 assets | Default/custom tables, nominal section/reference/default behavior and asset overrides; declared malformed-input rejection with safe cleanup; accepted prefix/wrap and partial effects only within supported domains |
 | G03 | F06 save/load through S01/P05 and resume F04/N03/N04 | Bidirectional original-file interchange, exact versioned bytes, partial I/O, legacy conversion, event strings/passwords, renewed identities, mode adaptation, caches and resumed phase; classic loading without new RNG metadata |
 | G04 | One complete human and AI civilization turn under F04, including all city passes, diplomacy/census and movement | Old/new-year order, ascending/descending scans, both city recalculations, deleted-city exits, event hooks, notices, autosave and controlled decisions/same-policy replay |
@@ -966,7 +981,7 @@ owning documents; close it only with evidence at the claimed boundary.
 | --- | --- | --- |
 | W02 original-target reconciliation | The contract pins an earlier implementation and a stable, nonmutating-callback domain | Original phase captures/full-map outputs under aligned semantic choices and other matching inputs; original seeds alone are insufficient; resolve differences without silently changing its pin |
 | Native whole turns and sessions | Owner documents contain finite source checks and supplied-child cases | Independent complete F04/N03/N04 runs with real city/unit/AI/events/UI joins, retained process state and implementation decision/context traces |
-| Original retained reads | Conditional inputs or bounded stops, with deliberate repairs separately identified | Producer/backing recovery or bounded original observations; do not generalize one stale value into a default |
+| Original bug reads | Documented safe repairs; supplied-byte/stop traces are optional diagnostics | State the trigger, chosen repair, downstream differences and remaining owner gaps; never require arbitrary stack input |
 | OOB corruption | Excluded bug under X01, including nominal assets | Safe-policy tests for valid prefix, rejected/omitted write and documented continuation; corrupt output is never an acceptance oracle |
 | Save/network bytes and providers | F06/N02/N05 specify contracts; bounded checks do not cover every I/O/session path | Exact independently captured payloads, failures, partial publication and multi-peer ordering |
 | Original-file interoperability | Bidirectional compatibility is required; format specifications alone do not demonstrate it | Load/play/save cycles in both engines, classic scenario/editor exports and raw maps, with absent/stale optional RNG metadata handled under F06 |

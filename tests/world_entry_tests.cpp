@@ -268,7 +268,7 @@ TEST_CASE("F05 custom world has distinct parameter and player acceptance prefere
                                    "parameter:4"});
 }
 
-TEST_CASE("F05 failed size and premade selection still consume five parameters without a wizard",
+TEST_CASE("F05 failed size and premade selection return without discarded parameter choices",
           "[world-entry][session]") {
     for (const auto kind :
          {NewWorldChoice::random, NewWorldChoice::customize, NewWorldChoice::premade}) {
@@ -283,31 +283,30 @@ TEST_CASE("F05 failed size and premade selection still consume five parameters w
         };
         f.runtime.world().world_setup.width = 50;
         f.runtime.world().world_setup.height = 80;
-        base::GameplayRandom random{choices(true, false, false), "entry-test"};
+        base::GameplayRandom random{choices(false, false, false), "entry-test"};
         CHECK_FALSE(f.run(random, kind));
         random.require_choices_consumed();
         CHECK(f.trace == std::vector<std::string>{"rules", kind == NewWorldChoice::premade
                                                                ? "cancel-map"
                                                                : "cancel-size"});
         CHECK(f.saved.empty());
-        CHECK(f.runtime.world().world_setup.parameters ==
-              std::array<std::int32_t, 5>{-1, 0, 1, -1, 0});
-        CHECK(f.runtime.world().world_setup.width == (kind == NewWorldChoice::premade ? 50 : 100));
+        CHECK(f.runtime.world().world_setup.parameters == std::array<std::int32_t, 5>{});
+        CHECK(f.runtime.world().world_setup.width == 0);
     }
 }
 
-TEST_CASE("F05 returned premade read failure closes reports and takes the random parameter path",
+TEST_CASE("F05 returned premade read failure closes and reports without parameter draws",
           "[world-entry][session]") {
     Fixture f;
     f.map_input.resize(20);
     f.runtime.world().map.pattern_seed = 73;
-    base::GameplayRandom random{choices(true, false, false), "entry-test"};
+    base::GameplayRandom random{choices(false, false, false), "entry-test"};
     CHECK_FALSE(f.run(random, NewWorldChoice::premade));
     random.require_choices_consumed();
     CHECK(f.trace ==
           std::vector<std::string>{"rules", "choose-map", "open-map", "close-map", "map-failure"});
     CHECK(f.runtime.world().map.stored_topology == 0);
-    CHECK(f.runtime.world().map.pattern_seed == 73);
+    CHECK(f.runtime.world().map.pattern_seed == 0);
     CHECK(f.saved.empty());
 }
 
@@ -442,7 +441,7 @@ TEST_CASE("F05 retained negative acceleration reaches its required child after i
     CHECK(f.introduced == "advances 1, advances 95, advances 99, ");
 }
 
-TEST_CASE("F05 required child failures publish their committed prefixes to active clients",
+TEST_CASE("F05 child failures retain current-attempt effects and revoke previous clients",
           "[world-entry][session]") {
     for (const auto stop : {"generate-world", "create:3", "balance", "introduce"}) {
         Fixture f;
@@ -453,12 +452,10 @@ TEST_CASE("F05 required child failures publish their committed prefixes to activ
         f.runtime.world().entities.units.set_end(1);
         const auto client = f.runtime.bind(f.runtime.add_participant(state::CivilizationSlot{1}),
                                            ControllerKind::frontend);
-        const auto gameplay = f.runtime.gameplay_random().checkpoint();
-        const auto presentation = f.runtime.presentation_random().checkpoint();
         f.observe = [&](auto stage) {
             if (stage == stop) {
                 f.runtime.world().entities.units.set_end(1);
-                unit.x = 123;
+                f.runtime.world().entities.units.storage()[0].x = 123;
                 throw std::runtime_error("authored child failure");
             }
         };
@@ -467,15 +464,15 @@ TEST_CASE("F05 required child failures publish their committed prefixes to activ
         CHECK_THROWS_AS(f.run(random), std::runtime_error);
         random.require_choices_consumed();
         CHECK(f.trace.back() == stop);
-        REQUIRE(client.own_units().records.size() == 1);
-        CHECK(client.own_units().records[0].x == 123);
-        CHECK(f.runtime.active());
-        CHECK(f.runtime.gameplay_random().checkpoint() == gameplay);
-        CHECK(f.runtime.presentation_random().checkpoint() == presentation);
+        CHECK_THROWS_AS(client.own_units(), AccessError);
+        CHECK(f.runtime.world().entities.units.storage()[0].x == 123);
+        CHECK_FALSE(f.runtime.active());
+        CHECK_THROWS_AS(f.runtime.gameplay_random(), AccessError);
+        CHECK_THROWS_AS(f.runtime.presentation_random(), AccessError);
     }
 }
 
-TEST_CASE("F05 second entry uses distinct choice identities and retains process name cursors",
+TEST_CASE("F05 second entry uses distinct choice identities and fresh name cursors",
           "[world-entry][session]") {
     Fixture f;
     auto tape = choices();
@@ -486,8 +483,105 @@ TEST_CASE("F05 second entry uses distinct choice identities and retains process 
     f.process.rules->leaders[0].city_name_index = 12;
     REQUIRE(f.run(random, NewWorldChoice::random, "second"));
     random.require_choices_consumed();
-    CHECK(f.process.rules->leaders[0].city_name_index == 12);
+    CHECK(f.process.rules->leaders[0].city_name_index == 0);
     CHECK(f.saved.size() == 2);
+}
+
+TEST_CASE("F05 fresh and reused processes produce the same new world from identical inputs",
+          "[world-entry][session][isolation]") {
+    Fixture fresh, reused;
+    SECTION("previous completed game") {
+        base::GameplayRandom previous{choices(), "entry-test"};
+        REQUIRE(reused.run(previous));
+    }
+    SECTION("cancelled setup") {
+        const auto choose = reused.services.size.preset;
+        reused.services.size.preset = [](auto) -> WorldSizeChoice { return -1; };
+        base::GameplayRandom cancelled{choices(false, false, false), "entry-test"};
+        CHECK_FALSE(reused.run(cancelled));
+        reused.services.size.preset = choose;
+    }
+    SECTION("failed premade load") {
+        const auto input = reused.map_input;
+        reused.map_input.resize(20);
+        base::GameplayRandom failed{choices(false, false, false), "entry-test"};
+        CHECK_FALSE(reused.run(failed, NewWorldChoice::premade));
+        reused.map_input = input;
+    }
+    // Poison both live and out-of-scan backing, including state historically
+    // classified as process-retained. Only explicit preferences/content survive.
+    auto& old = reused.runtime.world();
+    old.globals.peace_turns = 87;
+    old.globals.saved_current_civ = 6;
+    old.civilizations[1].future_techs = 19;
+    old.civilizations[1].goals.fill({8, 8, 3, 90});
+    old.civilizations[1].standing_goals.fill({4, 4, 2, 70});
+    old.entities.units.storage()[2047].damage = 9;
+    old.entities.cities.storage()[255].shield_box = 999;
+    old.multiplayer.saved.resume_event = 12;
+    old.multiplayer.saved.encoded_passwords.fill(0x7f);
+    old.eliminations.portraits.fill(29);
+    old.pending_leader_overrides.fill(7);
+    old.map.pattern_seed = 123;
+    reused.process.fallback.region = 17;
+    reused.process.rules->leaders[0].city_name_index = 12;
+    reused.process.rules->double_movement_applied = true;
+    reused.process.text_parameters.line = "previous game";
+    reused.files.loaded_filename = "OLD.SAV";
+    reused.files.scenario_directory = "old scenario";
+    reused.files.game_stem = "OLD";
+    reused.files.text = {"old scenario", "old scenario", "home"};
+    fresh.files.text = {"home", "home", "home"};
+    // Persisted user preferences are explicit inputs, equal on both paths.
+    reused.process.ordinary_preferences = fresh.process.ordinary_preferences;
+    reused.process.multiplayer_preferences = fresh.process.multiplayer_preferences;
+    reused.process.tokens.next_unit = 500;
+    reused.process.tokens.next_city = 90;
+    const auto tokens = reused.process.tokens;
+    base::GameplayRandom first{choices(), "entry-test"}, second{choices(), "entry-test"};
+    REQUIRE(fresh.run(first));
+    REQUIRE(reused.run(second));
+    first.require_choices_consumed();
+    second.require_choices_consumed();
+    const auto& a = fresh.runtime.world();
+    const auto& b = reused.runtime.world();
+    CHECK(a.globals == b.globals);
+    CHECK(a.civilizations == b.civilizations);
+    CHECK(a.world_setup == b.world_setup);
+    CHECK(a.eliminations == b.eliminations);
+    CHECK(a.power_history == b.power_history);
+    CHECK(a.multiplayer.saved == b.multiplayer.saved);
+    CHECK(a.pending_leader_overrides == b.pending_leader_overrides);
+    CHECK(std::equal(a.entities.units.storage().begin(), a.entities.units.storage().end(),
+                     b.entities.units.storage().begin()));
+    CHECK(std::equal(a.entities.cities.storage().begin(), a.entities.cities.storage().end(),
+                     b.entities.cities.storage().begin()));
+    CHECK(std::equal(a.map.tiles().begin(), a.map.tiles().end(), b.map.tiles().begin()));
+    CHECK(a.map.pattern_seed == b.map.pattern_seed);
+    CHECK(reused.process.fallback == fresh.process.fallback);
+    CHECK(reused.process.rules->definitions == fresh.process.rules->definitions);
+    CHECK(reused.process.rules->leaders == fresh.process.rules->leaders);
+    CHECK_FALSE(reused.process.rules->double_movement_applied);
+    CHECK(reused.process.text_parameters.line == fresh.process.text_parameters.line);
+    CHECK(reused.files.loaded_filename.empty());
+    CHECK(reused.files.scenario_directory.empty());
+    CHECK(reused.files.game_stem == fresh.files.game_stem);
+    CHECK(reused.files.text.working == "home");
+    CHECK(reused.files.text.search == "home");
+    CHECK(reused.process.tokens == tokens);
+    CHECK(reused.introduced == fresh.introduced);
+}
+
+TEST_CASE("F05 preparation keeps an explicitly supplied runtime random context valid",
+          "[world-entry][session][isolation]") {
+    Fixture f;
+    f.runtime.begin_client_session({17, 29});
+    auto& random = f.runtime.gameplay_random();
+    const auto before = random.checkpoint();
+    REQUIRE(f.run(random));
+    CHECK_FALSE(f.runtime.active());
+    CHECK(random.checkpoint() != before);
+    CHECK(f.runtime.world().globals.turn == 0);
 }
 
 TEST_CASE("F05 introduction selects highest twelve eligible known advances then reverses display",

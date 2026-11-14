@@ -58,6 +58,71 @@ those observations follow the specified precision and rounding. Original pixel,
 font-metric and decoded sample equality are optional reference tests, not
 acceptance conditions for a redesigned interface.
 
+### Fresh-game isolation and supported bug repairs
+
+The required product reproduces classic user gameplay, with the declared RNG
+policy and documented bug repairs. Original function boundaries, private memory
+layout and incidental evaluation order are not product requirements. This policy
+overrides conflicting imperative prose, worked cases and historical evidence in
+every specification. Required file/wire/data definitions remain inputs.
+
+**Fresh-game isolation:** with identical chosen content (including an explicitly
+selected map/scenario), setup inputs, saved user preferences and controlled logical
+random choices, a new game has equivalent gameplay state whether started in a fresh
+process or after any earlier game, cancelled setup or failed load. Compare logical
+identities; session generations and lifetime tokens may differ for stale-reference
+protection. Prior-game simulation state is not an input.
+
+Start each new-game attempt at a named session operation before content loading,
+map preparation and the setup wizard. Replace world records and workspaces;
+initialize empty AI goals, pools, counters, knowledge, histories, event/turn state,
+map fallback, mutable rule/name cursors, text substitutions and load scratch.
+Load chosen content into fresh mutable rule/text state. Preserve only explicit
+application configuration, user preferences, immutable content caches and identity
+generators. Revoke old clients/continuations; finish or cancel admitted work and
+drain required network effects before crossing the boundary. No menu-rendering,
+AI refresh/redirection, or discarded RNG call is needed to clear an old game.
+
+Accepted setup edits/preferences can persist during an attempt as specified;
+the next attempt starts with fresh simulation state. New-world preparation retains
+only the map, rules and choices produced by that attempt. Loading/resuming a saved
+game, importing selected scenario state, replacing a controller, and creating or
+reviving a civilization *inside* a game are different operations. Preserve their
+defined retained state; do not turn every allocation or load into a new game.
+
+**Bug repairs:** demonstrated uninitialized stack/local reads, out-of-bounds
+reads/writes, dangling accesses and nonterminating invalid operations are not
+compatibility obligations. Use a narrow, documented deterministic initializer,
+range check, no-result/skip, safe rejection or bounded termination as appropriate.
+Preserve valid preceding effects and unrelated gameplay. Defined scalar wrap,
+signed interpretation, deterministic ties and intentional within-game retained
+state are not automatically bugs. A missing specification is not proof of a bug.
+
+Each repair records its trigger, replacement behavior, downstream differences and
+validation limits in its owner. A repair can change outcomes downstream of the bug;
+record that difference rather than requiring equality to arbitrary original bytes.
+Never demand original stack contents as production input. Original supplied-byte
+and missing-input-stop cases may remain diagnostic evidence, not baseline gates.
+If a safe continuation is not specified, record a finite owning-specification gap
+and bounded rejection; do not silently invent an algorithm or claim that nominal
+gameplay is complete. Implementations use this contract, not external source code.
+
+The following repairs are already specified by this profile:
+
+| Owner / trigger | Required safe behavior |
+| --- | --- |
+| F02/F05, a new-game attempt | Fresh state and fresh mutable content; no previous goals, damage, future technologies, peace counters, name cursors or resume markers. |
+| C07, commodity road accumulator without an initializer | Start the accumulator at zero, then apply the specified tile increments and scoring. This deliberately changes stack-dependent demand outcomes. |
+| C07, full routes with no selected replacement | Keep existing routes; do not replace through an unset slot. Preserve valid preceding delivery effects. |
+| A02, rivalry lookup for non-wonder production | Rivalry contribution is zero outside the 28 wonder entries; do not read adjacent locals. |
+| C05/P06, undefined famine redraw coordinates | Redraw the affected city/view and perform the following window update; no original coordinate input is required. |
+| F05/P04, cancelled portrait selection with no result | Keep the current portrait. |
+| C08, invalid remote notification recipient | Suppress the undeliverable notice and continue valid work; do not access another record as backing. |
+
+All other confirmed bug sites use the same policy and must state their chosen
+repair before claiming implementation. Historical repair IDs are provenance, not
+instructions to import a reconstruction's complete behavior.
+
 ### Behaviorally significant ordering
 
 Written sequences, scan directions and ordered pseudocode define **reference
@@ -368,8 +433,9 @@ If an implementation explicitly supports an off-nominal domain, preserve its
 recovered interpretation, defined errors, scalar wrap and relevant partial
 mutations, subject to the presentation and excluded-write policies. Original
 malformed-input traces remain reference evidence for that optional domain.
-Unknown/stale reads in required nominal gameplay still need established inputs
-or the owner's bounded stop; this policy does not replace them with zero.
+Missing legitimate inputs still need an owning contract. Confirmed original
+uninitialized/invalid-memory reads use the bug-repair policy above; historical
+stack inputs and diagnostic stops are not required nominal-gameplay behavior.
 
 Input validation does not change arithmetic for accepted executions, including
 wrap reached during normal play or with nominal custom rules. High-bit encoded
@@ -400,14 +466,14 @@ accepted exception to original equivalence, not a compatibility shortfall.
 
 This exclusion does not remove defined in-bounds overflow, modular arithmetic,
 signed narrowing, partial updates, deliberate shared/sentinel storage, or the
-separately stated contracts for stale/out-of-bounds reads. A wrapped value can be
+safe-repair contracts for confirmed stale/out-of-bounds reads. A wrapped value can be
 required even when using it later as an array index would trigger an excluded
 write. Supplying extra backing for research does not expand a logical array's
 valid index domain.
 
 | Input or mode | Disposition |
 | --- | --- |
-| Single player; new, custom and premade worlds | In scope, including setup and a second game in the same process. New-game setup does not imply every process global resets. |
+| Single player; new, custom and premade worlds | In scope, including setup and a second game in the same process. New-game simulation is isolated from all prior games; only the explicit persistence allowlist survives. |
 | Saved games, scenarios and classic editors | Bidirectional interoperability with the original is required for F03/F06/S01–S04 formats and domains, including load-time mode adaptation. |
 | Hotseat | In scope. It is a local multiplayer mode, with its own concealment, active-player and handoff behavior; do not treat it as a network game. |
 | Network and Internet | Mixed original-peer TCP/IP sessions are required, with either implementation hosting, including UDP discovery. N01–N05 retain application and transport semantics for this path. |
@@ -496,9 +562,9 @@ owner's contract states the applicable behavior and unresolved inputs.
 | B27 | Disband with no active unit returns, replacing a possible stale-coordinate city-disband prompt in cheat mode. | U04, S03, P05. |
 | B29–B31 | Council speech clearing, famine redraw location and production-waste drawing use initialized values instead of stale locals. | [P09 retained chapter input](P09-council-and-throne-room.md#bugs-and-reconstruction-policies); [C05 famine input boundary](C05-city-growth-and-support.md#famine-consequences-and-redraw-input)/P06; P06, respectively. |
 | B8 and memory-error ledger | Event string lifetimes, buffer bounds, file/packet validation and similar repairs are always on. Equivalent successful output does not establish equivalent corrupt-input or failure behavior. | S02/S03, F06, N02/N05, and the relevant presentation/file owner. |
-| C07 route replacement / BF-026 | When all route scores are at least9999 and the new threshold passes, the original uses an unset replacement slot. Require supplied input or a bounded stop; invalid slot writes are excluded bugs. Reconstruction no-replacement behavior is a separate repair. | [C07 route insertion](C07-trade-and-commodities.md#insertion-and-replacement). |
+| C07 route replacement / BF-026 | When all route scores are at least9999 and the new threshold passes, the original uses an unset replacement slot. Keep the existing routes when no replacement was selected; supplied-slot diagnostics remain historical evidence. | [C07 route insertion](C07-trade-and-commodities.md#insertion-and-replacement). |
 | C09 capture notices | Original jumps skip remote ally/general notice sends after the local popup; the recorded independent reconstruction instead uses separate network tests. The original also ignores a received Palace reply when selecting its local escape decision. | [C09 original evidence](C09-city-capture-and-revolt.md#appendix-a--source-and-representation-evidence). |
-| C08 Leonardo notification / BF-194 | The original remote notice reads a recipient through the mapped player slot without a range guard. Missing input requires supplied backing or a bounded stop; suppressing an undeliverable notice and continuing is a separately declared repair. Invalid notification/record writes remain excluded bugs. | [C08](C08-buildings-and-wonders.md#missing-input-and-excluded-write-boundaries). |
+| C08 Leonardo notification / BF-194 | The original remote notice reads a recipient through the mapped player slot without a range guard. Suppress an undeliverable notice and continue valid work under the supported repair policy. Invalid notification/record writes remain excluded bugs. | [C08](C08-buildings-and-wonders.md#missing-input-and-excluded-write-boundaries). |
 | C06 invalid production writes | Failed AI diplomat creation can attempt a Veteran write through a negative unit result; a malformed window selection can overrun per-type build counters. These are excluded writes, distinct from spent stock and scalar wrap. | [C06](C06-city-production-and-purchasing.md#appendix-a--representation-messages-and-original-bugs). |
 | C04 mood-counter widths | The primary decompilation uses byte accesses where original instructions use whole signed32 mood counters; only history/city snapshots narrow to bytes. C04 resolves this against the original executable and corrects C03/F02. | [C04](C04-city-happiness-and-disorder.md#appendix-b-sources-corrected-evidence-and-checks), C03, F02. |
 | F01 range arithmetic | Original endpoint subtraction wraps at 32 bits. The hand-written C++ expression does not make signed-overflow semantics portable for extreme endpoints. | F01; any consumer accepting those endpoints. |
@@ -510,9 +576,9 @@ replacement. It must say which. Do not require arbitrary memory corruption as a
 portable implementation technique or claim a replacement is exact original
 behavior. A snapshot of valid game records need not contain those extra inputs.
 
-Deterministic gameplay quirks with recovered inputs remain part of the target. For
-example, a second game in the same classic process can retain the human tribe's
-city-name position (B2). “Start a new game” is not permission to reset all state.
+Defined gameplay quirks within a game remain part of the target unless a named
+repair applies. Historical second-game city-name retention (B2) is excluded:
+every new-game attempt resets simulation state under the fresh-game contract.
 
 ## 4. Platform boundary
 

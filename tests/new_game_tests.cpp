@@ -92,6 +92,7 @@ TEST_CASE("F05 inner reset clears specified fields and preserves retained civili
     for (std::size_t i = 0; i < leaders.size(); ++i) {
         auto expected = leaders[i];
         expected.times_used = 0;
+        expected.city_name_index = 0;
         CHECK(f.process.rules->leaders[i] == expected);
     }
     CHECK(world.globals.turn == 0);
@@ -185,7 +186,7 @@ TEST_CASE(
     CHECK(world.turn_loop_active);
     CHECK(world.multiplayer == multiplayer);
     for (std::size_t i = 0; i < leaders.size(); ++i)
-        CHECK(f.process.rules->leaders[i].city_name_index == leaders[i].city_name_index);
+        CHECK(f.process.rules->leaders[i].city_name_index == 0);
 }
 
 TEST_CASE("F05 all civilization attempts precede balancing and final live human adjustments",
@@ -411,7 +412,7 @@ TEST_CASE("F05 initialization publishes across children without revoking clients
     CHECK(f.random.checkpoint().controlled->records.size() == 1);
 }
 
-TEST_CASE("F05 second game retains child-written state and uses a distinct history decision",
+TEST_CASE("F05 inner helper preserves current-attempt child state but resets naming cursors",
           "[new-game][session]") {
     Fixture f({history(), history("start/two", 51)});
     f.run();
@@ -422,7 +423,7 @@ TEST_CASE("F05 second game retains child-written state and uses a distinct histo
     f.run("start/two");
     CHECK(f.runtime.world().globals.turn == 0);
     CHECK(f.runtime.world().globals.next_history_turn == 1);
-    CHECK(f.process.rules->leaders[3].city_name_index == 12);
+    CHECK(f.process.rules->leaders[3].city_name_index == 0);
     CHECK(f.runtime.world().civilizations[3].future_techs == 19);
     CHECK(f.runtime.world().globals.peace_turns == 87);
     f.random.require_choices_consumed();

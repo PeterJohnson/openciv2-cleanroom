@@ -1,5 +1,13 @@
 # A02 — AI city production
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 Target: classic Civilization II Multiplayer Gold Edition
 **5.4.0f, patch 3**. This specification owns the production chooser used by AI
 cities, human advice and human automatic production. It describes the ordered
@@ -37,6 +45,10 @@ AI scores, candidate sets, deterministic ties and stateful decisions are unchang
 Pure candidate work may be reordered only with identical decisions and required
 scratch/publication effects. Mutating surveys, retained cursors, live bounds,
 child calls and sampled-value reuse prevent assuming an entire chooser is pure.
+
+For the required profile, a rivalry lookup outside the 28 wonder entries returns
+zero. The original adjacent-local mappings and supplied-byte cases are diagnostic
+evidence only; they do not define AI inputs. Other valid scoring/ties are unchanged.
 
 ## 1. Boundary, domains and notation
 
@@ -700,6 +712,10 @@ comparisons, even if a subsequent invalid index is safely rejected. A zero
 divisor, missing input, invalid source read or rejected write retains prior
 valid sales, irrigation, transfers, output initialization and child effects.
 No transactional rollback is implied.
+
+The following original representation/provenance sections retain diagnostic
+supplied-byte and stop cases. X01's repaired profile controls implementation and
+required tests, including fresh-game isolation and the named C07/A02/C05 repairs.
 
 ## Appendix A. Original representation, read boundaries and excluded bugs
 

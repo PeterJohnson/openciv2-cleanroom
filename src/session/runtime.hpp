@@ -89,6 +89,14 @@ public:
     // steps explicitly, then issues new participants and controller bindings.
     SessionId begin_client_session(Seeds seeds);
     void end_client_session();
+    // X01 fresh-game isolation / F05 section 2. Before loading chosen content or
+    // running setup, replace all world/workspace state and mutable rule/text
+    // state. Requires completed/cancelled commands and drained transport outboxes;
+    // revoke old clients and clear their queues. Preferences,
+    // identity generators and explicitly supplied random contexts survive.
+    // Invalidates engine references into the previous world and rule contents.
+    // Load/resume and within-game civilization creation do not call this.
+    void prepare_new_game();
     bool active() const noexcept;
     ParticipantId add_participant(state::CivilizationSlot civilization,
                                   std::optional<ConnectionId> connection = {});

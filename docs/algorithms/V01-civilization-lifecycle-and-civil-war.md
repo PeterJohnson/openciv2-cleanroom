@@ -1,5 +1,13 @@
 # V01 — Civilization lifecycle and civil war
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 Target: classic Civilization II Multiplayer Gold Edition
 **5.4.0f, patch 3**. This specifies shared civilization reset/creation, leader
 assignment, restart admission, last-city destruction, retirement/forced removal,
@@ -130,6 +138,11 @@ civilizations remain. A remote result is returned as received.
 The admission rule alone does not guarantee successful unit allocation. Nor
 does clearing alive in a caller ensure that create sets it again: an inactive
 slot exits in step 6. Civil war deliberately uses this reset-only behavior.
+
+The partial reset below is shared with within-game revival/creation. F05 new-game
+callers first establish fresh F02 state, so its retained fields and goal refresh
+cannot import values from a previous game. Do not weaken revival semantics by
+using fresh-game replacement during ordinary play.
 
 ## 3. Ordered partial reset and catch-up advances
 

@@ -109,7 +109,7 @@ CommandUpdate submit(RuntimeState& state, CommandActor actor, CommandRequest req
         return rejected(id, *error);
     Admission admission;
     try {
-        admission = definition.admit(actor, request, state.world);
+        admission = definition.admit(actor, request, *state.world);
     } catch (...) {
         return rejected(id, "admission_exception");
     }
@@ -323,7 +323,7 @@ bool SessionRuntime::advance_one() {
                 throw std::logic_error("Missing continuation");
         }
         OperationContext context{
-            state_->world,
+            *state_->world,
             state_->process,
             *state_->gameplay,
             *state_->presentation,

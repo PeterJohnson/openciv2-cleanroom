@@ -1,5 +1,13 @@
 # A01 — AI strategy and assessment
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 Target: classic Civilization II Multiplayer Gold Edition
 **5.4.0f, patch 3**. This specification owns shared goal storage/refresh, power
 ranking and its coordination effects, civilization assessment and regional policy,
@@ -92,6 +100,13 @@ narrower input domain. Invalid table writes and adjacent-field corruption are
 excluded under [X01](X01-classic-compatibility-contract.md#out-of-bounds-writes-are-excluded-bugs).
 Reads outside recovered inputs remain backing/stop boundaries; do not invent
 zero values or infer that a mapped destination makes an invalid write legitimate.
+
+Goal retention, expiry and immediate redirection apply within a game. F05 starts
+both goal lists empty without invoking these helpers. Awake-with-moves and
+movement-left are read-only on valid, stable state on this path; they do not pump
+events, mutate scan bounds/ownership or reenter goal insertion. Keep actual
+eligibility, redirection-before-capacity and tie consequences, not artificial
+mutation schedules supplied by test lambdas. Invalid inputs use X01 admission.
 
 ## 2. Shared goals and small queries
 

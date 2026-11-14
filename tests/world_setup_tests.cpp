@@ -299,15 +299,15 @@ TEST_CASE("F05 custom cancellation retains the written negative value and earlie
         }
 }
 
-TEST_CASE("F05 failed size or map still randomizes even on the Customize route",
+TEST_CASE("F05 failed size or map leaves parameter state and randomness untouched",
           "[world-setup][session]") {
     for (const bool custom : {false, true}) {
         Fixture f;
-        auto random = f.controlled();
+        auto random = f.no_choices();
+        const auto before = f.runtime.world().world_setup.parameters;
         CHECK_FALSE(select_world_parameters(f.runtime, random, "world/one", custom, false, {}));
         random.require_choices_consumed();
-        CHECK(f.runtime.world().world_setup.parameters ==
-              std::array<std::int32_t, 5>{1, 1, 0, 1, -1});
+        CHECK(f.runtime.world().world_setup.parameters == before);
         CHECK(f.trace.empty());
     }
     Fixture f;

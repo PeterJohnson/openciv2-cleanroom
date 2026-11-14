@@ -7,8 +7,8 @@
 namespace openciv::session {
 enum class NewWorldChoice { random, premade, customize };
 struct WorldEntryServices {
-    // Required F03 operations; the content owner supplies the ordinary rule
-    // context and its name/leader preservation policy. No implicit bundle.
+    // Required F03 operation: populate fresh rules/text state from the chosen
+    // ordinary content, including labels needed by setup. No prior-game names.
     std::function<void()> load_ordinary_rules;
     std::function<void(LoadedRuleTable)> reload_table;
     WorldSizeServices size;
@@ -35,12 +35,14 @@ struct WorldEntryServices {
 std::string starting_advance_list(const state::GameState& world, const state::RuleState& rules,
                                   std::int32_t civilization);
 // F05 section 2, after a new-world menu choice and before application admission.
-// Composes actual size/map, parameter, player, preference and initialization
-// operations. False returns to the menu with reached effects retained. Size/map
-// failure still consumes five parameter draws; parameter failure does not.
+// First prepares an isolated new game, revoking old clients and discarding all
+// previous world/rule/file scratch. Composes size/map, parameter, player and initialization
+// operations. False returns with current-attempt effects retained. A failed
+// size/map selection does not consume discarded parameter draws.
 // Required child exceptions publish and escape without rollback. The caller
 // supplies a unique call identity; child paths append /parameters, /players and
-// /initialize. This does not reset outer-session fields or admit client leases.
+// /initialize. Every retry starts fresh; within-attempt accepted effects remain
+// until the next attempt. Successful setup does not itself admit client leases.
 bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::GameplayRandom& random,
                      std::string_view call, NewWorldChoice choice,
                      const state::CalendarValues& calendar, const WorldEntryServices& services);

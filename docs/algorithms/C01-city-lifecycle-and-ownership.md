@@ -1,5 +1,13 @@
 # C01: City lifecycle and ownership
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 apply. Widths and written sequences define reference evaluation, not mandatory
@@ -235,8 +243,8 @@ each in-bounds tile:
    set HydroPossible. No recomputation removes flags set by an earlier visit.
 
 Call `refreshCityArea(city)` below, then [C07 commodity refresh](C07-trade-and-commodities.md#commodity-refresh-gate-and-terrain-survey).
-C07 declares the original counter's supplied-input/bounded-stop contract; the
-reconstructions' zero default is not recovered original state. After that child,
+C07 initializes the road accumulator to zero under the supported safety repair;
+no original stack input is needed. This is an intentional correction. After that child,
 clear science, tax, net trade, total food, total shields, happy and unhappy
 outputs. These clears occur after the child and can overwrite its changes.
 
@@ -579,6 +587,10 @@ window/name callbacks, Apollo and knowledge timing, repeated wrapped radius
 visits, stale unused fields, scalar wrap, custom rules and safe rejection before
 invalid writes. Named child integration remains separate from testing a supplied
 child result.
+
+The following original representation/provenance sections retain diagnostic
+supplied-byte and stop cases. X01's repaired profile controls implementation and
+required tests, including fresh-game isolation and the named C07/A02/C05 repairs.
 
 ## Appendix A. Original representation and excluded bugs
 

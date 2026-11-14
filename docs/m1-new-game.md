@@ -1,5 +1,12 @@
 # F05 inner new-game initialization
 
+`SessionRuntime::prepare_new_game` now precedes this inner helper. It replaces
+the world, clears mutable rule/text/fallback state and revokes old clients after
+admitted commands are complete/cancelled and required outboxes drained. F05 entry
+also clears loaded-file scratch. The inner helper preserves only current-attempt
+map/setup data; it must not be used as a standalone boundary between games.
+The fresh-game equivalence tests supersede earlier second-game retention claims.
+
 Status: the section 5 initialization parent is implemented in
 `session/new_game.hpp`, with required civilization-creation and start-balancing
 children. This is not a complete setup wizard, generated world or playable
@@ -13,7 +20,7 @@ specified partial resets on existing world/process records:
 1. Reset scenario parameters through the existing S01 operation; clear destroyed
    civilization history's count, turns, killer slots and name starts, preserving
    portraits and name tails; clear the eight civilization color-record flag sets.
-2. Clear all tribe usage counts, retaining city-name cursors and name references.
+2. Clear all tribe usage counts and naming cursors; keep names selected during this attempt.
 3. Initialize turn/year/first-launch state, copy remembered options with cheat
    mode cleared, apply difficulty-specific tutorial/advice choices, copy message
    options and reset the specified transient, movement, scan, selector, pollution
@@ -49,8 +56,9 @@ when the final rate assignment consumes it, retaining earlier valid effects.
 
 Movement mode and civilization color-record flag sets are retained logical world
 state. They do not add bytes to classic records or require native palette handles.
-The map, knowledge layers, process fallback, record payloads, unrelated multiplayer
-continuations and standing process preferences are not wholesale cleared.
+This inner helper retains current-attempt map/setup data. The preceding fresh
+boundary has already discarded previous knowledge, fallback, record payloads and
+multiplayer continuations. User preferences remain explicit process inputs.
 
 ## Evidence and remaining work
 

@@ -64,6 +64,31 @@ sampling laws, AI heuristics, map-generation rules, arithmetic, deterministic
 ties, or rerolling a result received from another peer. Classic file/wire formats
 must work without new RNG metadata.
 
+### Fresh-game boundary and bug repairs
+
+X01's fresh-game isolation and documented safety repairs override historical
+retention and call-order descriptions. Starting a new game is an explicit session
+operation before chosen content is loaded, not a menu-rendering callback. Replace
+the world, derived/workspace state, mutable rules/text/naming state and file scratch;
+preserve only user preferences, application configuration, immutable content caches
+and identity generators. Complete/cancel admitted operations and drain required
+network output, revoke old clients and discard their queues before replacement.
+Load/resume and within-game civilization creation retain their distinct contracts.
+
+`SessionRuntime::prepare_new_game` establishes the implemented boundary;
+`enter_new_world` invokes it before rules and setup and resets classic file scratch.
+The rule object keeps its address for adapters but its contents are fresh. The
+caller supplies the chosen RNG context explicitly; no hidden draw/reseed occurs.
+Cold-start and previously used runtimes must produce equivalent gameplay with the
+same inputs. Do not require old AI-goal refresh, old free-slot damage or old naming
+cursors to initialize a game. References into replaced state are invalidated.
+
+Within a game retain state that affects later decisions, ties, files or messages.
+Pure queries have no invented callback/mutation contract. Confirmed invalid-memory
+or uninitialized-local behavior uses a documented narrow repair; diagnostic
+original-stack cases are not production inputs. Missing behavior remains an owner
+gap until resolved from the contract or independent original-game observations.
+
 ## 2. Dependency structure
 
 Arrows below mean “uses.” Platform implementations fulfill interfaces declared
@@ -169,8 +194,8 @@ govern gameplay mutations, iteration or publication boundaries.
 
 Separate process-retained state, session state, world state, retained
 derived/scratch state, and presentation-local state according to
-[F02](algorithms/F02-game-state-and-invariants.md). A new game, a load, and a
-process restart have different reset behavior.
+[F02](algorithms/F02-game-state-and-invariants.md). A new game resets simulation and mutable content state; loading imports explicit
+saved state. Preferences and identity generators have separate process lifetimes.
 
 Use typed civilization, unit, city, rule, and connection identities. Preserve
 slot allocation, holes, scan bounds, lifetime tokens, list order, sentinels, and

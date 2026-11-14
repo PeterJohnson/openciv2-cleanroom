@@ -36,10 +36,10 @@ parameter. After all five succeed, the existing F03 writer
 saves both CIV2.DAT items, with its actual partial-write cleanup. Returned file
 failure does not retroactively cancel accepted choices.
 
-The post-selection dispatcher preserves F05's unusual failure path: a failed
-size/map selection still consumes all five automatic choices, even for Customize
-World, then returns failure. Cancellation within customized parameters returns
-failure directly. It does not enter the automatic alternative.
+A failed size/map selection returns without discarded parameter draws. These
+samples and abandoned scratch have no gameplay consumer after fresh-game isolation.
+Cancellation within customized parameters also returns without the automatic
+alternative. Accepted preference edits retain their documented effects.
 
 ## Ownership and boundaries
 

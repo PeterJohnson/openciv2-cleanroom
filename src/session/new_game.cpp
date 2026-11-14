@@ -23,8 +23,10 @@ void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
         for (auto& name : world.eliminations.names)
             name.bytes[0] = 0;
         world.civilization_color_flags.fill(0);
-        for (auto& leader : process.rules->leaders)
+        for (auto& leader : process.rules->leaders) {
             leader.times_used = 0;
+            leader.city_name_index = 0;
+        }
 
         globals.turn = 0;
         globals.year = -4000;

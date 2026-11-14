@@ -37,6 +37,16 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
     if (choice != NewWorldChoice::random && choice != NewWorldChoice::premade &&
         choice != NewWorldChoice::customize)
         throw std::invalid_argument("Unknown new-world menu choice");
+    runtime.prepare_new_game();
+    // Preserve application directory/screen configuration, not loaded-game
+    // descriptors, hints, leader scratch, cursor, layout or scenario paths.
+    auto fresh_files = ClassicFileState{};
+    fresh_files.text = files.text;
+    fresh_files.text.working = fresh_files.text.search = fresh_files.text.home;
+    fresh_files.current_screen = files.current_screen;
+    fresh_files.default_game_stem = files.default_game_stem;
+    fresh_files.game_stem = fresh_files.default_game_stem;
+    files = std::move(fresh_files);
     auto invoke = [&]<typename F, typename... Args>(const F& service, Args&&... args) {
         publish(runtime);
         return service(std::forward<Args>(args)...);

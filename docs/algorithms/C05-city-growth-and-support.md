@@ -1,5 +1,13 @@
 # C05 — City growth and support
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 apply. Widths and written sequences define reference evaluation, not mandatory
@@ -499,7 +507,7 @@ state as well as the selected result.
 | Size8, food90, Granary, missing Aqueduct | End size8/food50 and eligible halt notice. Aqueduct tutorial wins even if that facility is being built and general growth-halt messages are disabled. |
 | Size127, food1280, growth facilities and Granary | End size-128/food-635. This is scalar wrap, not required corrupting memory. |
 | Negative food, first matching Settler foreign-owned | Select that unit before any later owner1 settler. Owner1 human permits deletion; city size unchanged. Supplied famine coordinates determine the final redraw. |
-| Negative food, AI city unknown to all humans, matching Settler | Retain unit and population, reset food0. Still needs supplied redraw input or the bounded stop. |
+| Negative food, AI city unknown to all humans, matching Settler | Retain unit and population, reset food0. Safely redraw the affected city/view; no original scratch-coordinate input is required. |
 | Negative food, outgoing routes to selected partner at indices0 and2, other partner at1 | Remove2 then0, preserve the other route, no size/unit loss. Incoming food-route workspace is not recomputed. |
 | Negative food, no Settler/routes, size1 | Delete city and check captured owner for elimination; return1 before stock reset and final famine redraw. Full F04 parent returns its removed-city sentinel. |
 | Republic, owner1 units at (10,6)/(14,6), foreign homed unit at (18,6), Shields1 | Remove foreign farthest first, then owner1 farthest after restart; keep the nearest owner1 unit. Final support1. |
@@ -515,6 +523,10 @@ continuations, gang-up equality and the retirement shield-credit boundary.
 For unavailable read backing, assert the last valid mutation and stop, not a
 fabricated result. Invalid output writes are excluded-bug tests, never required
 corruption outcomes.
+
+The following original representation/provenance sections retain diagnostic
+supplied-byte and stop cases. X01's repaired profile controls implementation and
+required tests, including fresh-game isolation and the named C07/A02/C05 repairs.
 
 ## Appendix A — Original representation and evidence
 

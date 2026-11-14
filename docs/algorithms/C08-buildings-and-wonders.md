@@ -1,5 +1,13 @@
 # C08 — Buildings and wonders
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 apply. Widths and written sequences define reference evaluation, not mandatory
@@ -302,13 +310,12 @@ does not rescale damage or remaining movement, nor repair type/role/region count
 
 ### Missing input and excluded-write boundaries
 
-A remote human with no valid mapped player slot reaches an original recipient
-**read**, not a documented skip. If that read cannot be supplied, stop after the
-notification mark and text arguments, before assignment of the replacement.
-A declared adapter may supply the actual recipient value, or separately declare
-a repair that suppresses an undeliverable notice and continues. The primary and
-independent reconstructions implement that repair; it is not evidence that the
-original skips the read. Appendix A records the decisive original instructions.
+A remote human with no valid mapped player slot cannot receive the notice.
+The required repaired profile suppresses that undeliverable notice and continues
+valid replacement work, retaining the notification mark/text effects. Never read
+another record as recipient backing. This is a deliberate correction; supplied
+recipient reads and diagnostic stops describe the original bug only. Appendix A
+retains its historical evidence.
 
 Nominal notification entries cover types 0…61. The original local allocation
 has two extra uninitialized bytes; their existence does not initialize those

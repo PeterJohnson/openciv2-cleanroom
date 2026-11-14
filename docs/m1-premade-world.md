@@ -40,8 +40,8 @@ all X and Y values to -1. The prompt does not validate coordinates or Y values.
 Finally, the current stored topology controls the Flat World rule and returned
 premade source. Other rule bits, game-status classifications/outcomes, preferences,
 world parameters and gameplay randomness are retained. A later wizard may change
-the rule. Parent dispatch still takes all five automatic parameter choices after
-a failed map selection, as required by F05 section 2.
+the rule. Parent dispatch samples parameters only after successful selection;
+failed map selection returns without discarded RNG draws under F05/X01.
 
 ## Publication and verification
 

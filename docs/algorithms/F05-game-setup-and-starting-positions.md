@@ -1,5 +1,13 @@
 # Game setup and starting positions
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **ID:** F05.
 **Target:** Civilization II Multiplayer Gold Edition **5.4.0f, patch 3**, under
 [X01](X01-classic-compatibility-contract.md).
@@ -49,8 +57,9 @@ generation are unchanged; new artwork does not authorize different world rules.
 Inputs are the current process state, preferences, loaded rules and leader
 records, ordered dialog responses, controlled choices or implementation random
 contexts, clock samples, and
-optional map-file contents. A second game in the same process is not equivalent
-to launching a fresh process. Use [F02](F02-game-state-and-invariants.md) for
+optional map-file contents. Previous gameplay is excluded: a second game must
+be equivalent to a fresh-process game with the same selected inputs and logical
+random choices, apart from stale-reference identity generations. Use [F02](F02-game-state-and-invariants.md) for
 identity, live slot bounds and retained state, and
 [F03](F03-rules-and-configuration.md) for parsing, rule references, preference
 loading and option meanings.
@@ -106,18 +115,21 @@ produced by W02, without recomputing them from current terrain.
 
 ## 2. From the main menu to a new world
 
-At the outer application's new-session boundary, activate the loop; clear
-loaded-file descriptors, casualty counters/log cursors, passwords and events;
-reset map locks; mark every unit slot free and its stack links Absent, and every
-city slot free. Set both live scan bounds to zero. Other fields of those slots,
-including unit damage and lifetime-token generators, are retained.
+Before each new-game attempt, execute the X01 fresh-game boundary in the
+session owner. Replace all world records, pools (including free-slot payloads),
+map/knowledge/workspaces, events, passwords, locks, histories, AI goals and turn
+continuations. Reset mutable rule/text/name state and all starting hints and
+file-load scratch. Preserve application directories/screen configuration, saved
+preferences, immutable content caches and identity generators only. Finish or
+cancel pending operations and required network effects first, then revoke old
+clients. Load the chosen ordinary content into fresh rule/text state.
 
-At entry to the single-player main menu, restore the home/scenario directory,
-load preferences, copy game options, and select single-player mode. Before each
-menu choice, reload preferences, restore the ordinary rule/text paths, clear
-all 21 starting hints, reset events, refresh then clear standing AI goals for
-slots 0…7, and clear the pending game-over reason. After a choice, clear the
-events-loaded flag and network session state.
+The main menu presents choices; it does not refresh old AI goals or redirect old
+units. The historical menu refresh/standing-clear sequence is not a new-game
+dependency. No A01/U04 implementation is needed to establish empty initial goals.
+Load/resume is a distinct path with explicit imported state and F06 semantics.
+Cancelled or failed setup may leave documented edits within that attempt; the
+next new-game attempt always crosses this fresh boundary again.
 
 For Random World, Premade World or Customize World:
 
@@ -157,17 +169,18 @@ climate = R()%3 - 1
 age = R()%3 - 1
 ```
 
-If size/map selection fails, the caller changes its menu-choice local to a
-failure marker, still takes this five-draw path, then skips the wizard. A
-failure *inside* Customize World's parameter dialog does not subsequently
-enter the random-parameter alternative. Retrying the menu keeps these effects.
+If size/map selection fails, return without parameter choices or the wizard.
+The original five discarded choices and overwritten setup scratch are optional
+reference behavior under X01/F01; a new attempt starts fresh. Failure inside
+Customize World's parameter dialog also returns without the random alternative.
+Keep accepted preference edits, not abandoned simulation state.
 
 After successful setup, the application creates the normal map/status/city/
 pedia windows, begins the session, marks setup complete and calls F04. In
 single player, session-begin sets the session-active state; it does not perform
 upkeep, grant contact or share starting visibility. The ordinary entry has no
-resume marker. The new-game initializer does not universally reset continuation
-fields supplied by an earlier, interrupted load path.
+resume marker. The fresh-game boundary discards continuation fields from every earlier load
+attempt; only an explicit load/resume may install such state.
 
 ## 3. World size, parameters and premade maps
 
@@ -238,8 +251,8 @@ After F06's map read succeeds:
 
 The wizard can subsequently replace that rule. This path does not call the
 size dialog, does not classify area as Small/Large and does not generally
-clear the game-status flags; retained classifications and outcome flags are
-therefore relevant on a second game. W02 later assigns regions/connectivity/
+clear game-status flags itself. The fresh-game boundary has already removed
+prior classifications/outcome flags; only current-attempt flags may be retained. W02 later assigns regions/connectivity/
 fertility, clears improvements again, and performs its topology-specific
 finalization. It does not select civilizations or use the start hints itself.
 
@@ -362,8 +375,8 @@ in the outer boundary, or in a child operation remain unchanged.
    zero calendar increment/start/limit/objective civilization and four zero
    victory thresholds. Clear destroyed-civilization history's count, turns,
    killer slots and name starts. Clear civilization color-record flags.
-2. Clear all 21 tribes' usage counts. **Retain their city-name cursors** here;
-   AI tribe selection resets its chosen cursor later.
+2. Clear all 21 tribes' usage counts and city-name cursors, for human and AI
+   tribes alike. Selected content and accepted custom names belong to this attempt.
 3. Set turn 0, year −4000 and first-launch turn Absent. Copy preference game
    options with Cheat Mode off. Chieftain forces Tutorial and Instant Advice
    on; other difficulties force Tutorial off while retaining Instant Advice.
@@ -389,11 +402,11 @@ in the outer boundary, or in a child operation remain unchanged.
    Otherwise assign science 6/tax 4 to each human slot 1…7. On Chieftain,
    also set each such human treasury to 50.
 
-These are ordered partial resets, not zero-initialization of the game records.
-For example, peace-counter, power ranks, future-technology counters, arbitrary
-civilization flags and human tribe name cursors are not universally reset here.
-The outer boundary invalidates records but preserves their other contents;
-unit/city creation must still follow F02 and U01/C01's reuse rules. Starting
+These inner steps run on the fresh state established by section 2. They preserve
+the current attempt's generated/imported map, rules and accepted choices; they
+are not a substitute for the fresh boundary. Previous peace counters, power
+ranks, future technologies, civilization flags, goals and free-slot damage have
+already been discarded. Within-game unit/city reuse still follows U01/C01. Starting
 technology allocation precedes the human-rate/Chieftain-gold adjustments.
 
 ## 6. Civilization creation at turn zero
@@ -691,7 +704,7 @@ rebuild all map fertility or starting scores.
 
 | Boundary | Direct primary draws |
 | --- | --- |
-| Main-menu random parameters | Five, including premade worlds and the specified cancellation route. |
+| Accepted random/premade world parameters | Five after successful size/map selection. Cancelled selection has no parameter draws. |
 | Custom parameters | One for each Random choice in dialog order; none for ordinary choices. |
 | Random opponents/activity | One each when selected. |
 | Opponent slot allocation | One per trial, including collisions. |
@@ -721,7 +734,7 @@ The remaining document owners are:
 | Unit/city creation and deletion | U01/C01, with F02 identity and retained-state rules. Calls can fail or consume random draws. |
 | Advance grant/completion and AI valuation | V03/A08. Preserve each call's source/mode, count, turn-zero suppression of prompts and draw trace. |
 | Reveal/remember and contact | [W03](W03-visibility-and-exploration.md); creation invokes surroundings, while the extra radius loops only publish exploration and improved tiles have explicit memory updates. |
-| AI goal refresh/reset | A01; refresh can read retained summaries before reset. |
+| Initial AI goals | Empty, directly initialized by F02/F05. A01 refresh is only a within-game operation. |
 | Road direction and path workspace | U03; exact classic direction choices remain a child obligation. |
 | Full string/dialog/portrait/introduction behavior | P03/P04/P10; setup owns the accepted values, order and retry transitions here. |
 | Scenario/load/network setup | S01/F06/N01/N04; do not apply this new-world reset to restored state. |
@@ -788,7 +801,7 @@ all listed draws are consecutive in a real full-game run.
 | AI search rejects 2000 times; trial 2001 is ocean | It returns that candidate without the rejection predicates; without a hint the caller removes the AI. |
 | Same AI with an in-bounds interior hint | Search still consumes its draws; hint replaces the final candidate and resets attempts to zero before admission. |
 | Human has a valid hint but no random candidate can ever pass | Search does not reach the hint override. |
-| Second game, retained human tribe name cursor 12 | General reset preserves 12; AI selection resets only the AI tribes' cursors. |
+| Second game after human tribe name cursor 12 | Fresh setup starts every tribe cursor at zero; prior city names do not alter the new game. |
 | Advanced candidate has minimum distance 2, last qualifying unit distance 8 | The distance gate passes, because it tests 8. If the last distance is 3, it fails regardless of the minimum's source. |
 | Advanced candidate with no distance writer yet | Outcome is unspecified without supplied incoming local backing; a reconstruction default of 5 is not an original observation. |
 | Select acceleration, cancel its submenu, then choose Standard Rules | The negative local remains; do not silently replace it with No Acceleration. |

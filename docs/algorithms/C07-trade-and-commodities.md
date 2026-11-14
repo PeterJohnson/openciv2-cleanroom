@@ -1,5 +1,13 @@
 # C07 — Trade and commodities
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 apply. Widths and written sequences define reference evaluation, not mandatory
@@ -85,14 +93,12 @@ those logical destinations.
 
 ### Original inputs not initialized locally
 
-The commodity routine does **not** initialize its road counter. Name its incoming
-signed32 value `roadBase`, separately from the number of road tiles encountered.
-It can affect ordinary, otherwise nominal games. A supplied-input implementation
-must use the actual input, not assume it is a count or normalize it to zero.
-Without that input, stop at the first increment of the counter; if no road tile
-was visited, stop at the later Copper-demand read. Keep earlier dirty-flag,
-score and query effects. A declared zero-initialization repair is a different
-policy, used by both reconstructions; it is not recovered original input.
+The original commodity routine leaves its road counter uninitialized. The
+required safe profile initializes `roadBase=0` on each refresh, then retains the
+specified road increments, arithmetic and demand scoring. This is a deliberate
+bug repair, not a claim about original stack contents. It can change downstream
+demand, trade and AI choices. Supplied nonzero bases and unknown-input stops below
+are optional historical diagnostics, not production inputs or conformance gates.
 
 Route replacement has another missing-local boundary when no existing route
 scores below 9999. Its exact read point and safe handling are given below. An
@@ -361,12 +367,11 @@ bonus, source-city base trade, commodity demand, special food score or new-route
 connection adjustment is included in this replacement comparison. C03's recurring
 route formula is not substituted.
 
-If no slot was assigned and the final threshold passes, the original reads an
-uninitialized replacement index. Require an explicitly supplied index or stop
-there, after the destination read. A supplied valid index permits the ordinary
-write/refresh continuation; an out-of-range one must not corrupt other fields.
-Both reconstructions instead return without replacement in this case (BF-026).
-That is a declared repair, not evidence of the original's missing value.
+If no replacement slot was assigned, keep the existing routes and return without
+replacement. This deliberately repairs the original uninitialized-index read and
+possible invalid write. Preserve preceding valid delivery effects; no supplied
+stack index is a production input. Original supplied-index executions remain
+optional diagnostic evidence only.
 
 ## Entering a city with a caravan
 
@@ -603,10 +608,10 @@ proof that either initial word occurs in every original invocation.
 
 | Case | Required result |
 | --- | --- |
-| Dirty clear, reveal off, turn1/city0, unknown roadBase | Return unchanged; do not demand an input that this path never reads. |
-| Active refresh, roadBase5, two Road tiles and one Irrigation-only tile | Q=7. Irrigation alone is not counted. River/resource weights are independent. |
-| Active refresh, unknown roadBase, first Road encountered | Stop before that counter increment, retaining prior dirty clear, score initialization and terrain/resource/river operations for that tile. |
-| Active refresh, no Road, unknown roadBase | Reach supply scoring and the earlier demand rows; stop before Copper's first Q read. Do not publish new ranked lists. |
+| Dirty clear, reveal off, turn1/city0 | Return unchanged; no original accumulator input is required. |
+| Active refresh, two Road tiles and one Irrigation-only tile | Start at zero and obtain Q=2. Irrigation alone is not counted. River/resource weights are independent. |
+| Active refresh, first Road encountered | Increment the initialized accumulator from zero; continue ordinary scoring. |
+| Active refresh, no Road | Q=0; complete scoring and ranked-list publication without an original stack input. |
 | Terrain identity outside the eleven counts | Exclude the invalid count write. Do not let it corrupt the initialized supply-order array. |
 | Equal score keys with identity order0,1,2 | Stable sort preserves ascending identity order; reverse selection prefers2, then1, then0. |
 | Route or live Trade unit carrying Hides0 | Negation leaves the matching supply entry0. Do not substitute a separate blocked bit that changes later eligibility. |

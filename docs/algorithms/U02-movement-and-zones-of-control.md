@@ -1,5 +1,13 @@
 # U02: Movement and zones of control
 
+**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
+and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
+override conflicting procedures and examples below. Retention applies within a
+game or to explicit imported inputs, not across new games. Confirmed original-bug
+stack/backing/stop cases are optional diagnostics; use documented safe repairs.
+Only real effects and callbacks impose ordering; test adapters cannot invent them.
+Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+
 **Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
 and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 apply. Widths and written sequences define reference evaluation, not mandatory
@@ -122,10 +130,13 @@ with normal combat enabled.
 `left(u)` calls allowance, subtracts unsigned movement spent using signed32
 arithmetic and returns zero if the result is less than 1. `exhaust(u)` calls
 allowance and stores that result modulo 256 as spent movement. Exhaustion is
-not an increment and need not preserve a previous larger spent value. Neither
-allowance nor exhaustion is necessarily a pure query when their callees mutate
-state. U01 creation deliberately evaluates allowance using retained slot damage
-before clearing that damage.
+not an increment and need not preserve a previous larger spent value. On valid,
+stable state, allowance/left and their knowledge/wonder queries are read-only;
+they do not dispatch callbacks or allow arbitrary mutation of rules/records.
+The normal-combat guard prevents remainingHP's damage-clear path here. Exhaustion
+is a mutation through its explicit spent-movement store. Within-game U01 reuse
+evaluates allowance using retained slot damage before clearing it; F05's fresh
+pool contains no damage from previous games.
 
 ## Spatial control queries
 

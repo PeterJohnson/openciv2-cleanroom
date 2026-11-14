@@ -283,6 +283,7 @@ TEST_CASE("Local submissions own their inputs and run in explicit FIFO order",
     CHECK(runtime.world().civilizations[1].gold == 0);
     CHECK(observed.empty());
     CHECK_THROWS_AS(runtime.end_client_session(), std::logic_error);
+    CHECK_THROWS_AS(runtime.prepare_new_game(), std::logic_error);
     CHECK(runtime.advance_one());
     CHECK(first.result(id(a))->status == CommandStatus::completed);
     CHECK(first.result(id(b))->status == CommandStatus::pending);
@@ -534,6 +535,7 @@ TEST_CASE("Disconnect cannot discard a pending command or its required peer repl
     CHECK(host.world().civilizations[1].gold == -5);
     CHECK_FALSE(host.has_pending_commands());
     CHECK_THROWS_AS(host.end_client_session(), std::logic_error);
+    CHECK_THROWS_AS(host.prepare_new_game(), std::logic_error);
     const auto replies = host.take_replies();
     REQUIRE(replies.size() == 1);
     CHECK(replies[0].destination == ConnectionId{9});
