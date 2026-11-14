@@ -20,6 +20,8 @@ constexpr auto usage =
     "[--require-classic] [--json]\n"
     "       oc2 content validate-rules CONTENT_MANIFEST [--parent MANIFEST]... [--locale LOCALE] "
     "[--require-classic] [--json]\n"
+    "       oc2 content convert-preferences CITYPREF_SOURCE CONTENT_MANIFEST NEW_OUTPUT [--parent "
+    "MANIFEST]...\n"
     "       oc2 content validate-preferences CONTENT_MANIFEST [--parent MANIFEST]... [--locale "
     "LOCALE] "
     "[--require-classic] [--json]\n"

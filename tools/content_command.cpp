@@ -4,6 +4,8 @@
 
 int run_content_command(std::span<const std::string> arguments) {
     namespace content = openciv::formats::content;
+    if (!arguments.empty() && arguments[0] == "convert-preferences")
+        return run_content_convert_preferences(arguments.subspan(1));
     if (!arguments.empty() && arguments[0] == "resolve")
         return run_content_resolve(arguments.subspan(1));
     if (!arguments.empty() && arguments[0] == "validate-rules")

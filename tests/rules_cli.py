@@ -101,6 +101,68 @@ class RulesCliTests(unittest.TestCase):
                 "civilizations": [{"pluralName": row["pluralName"], "cityNames": ["First", "First"]}
                                   for row in self.rules["tribes"]], "fallbackNames": None}
 
+    def convert_preferences(self, source, output, code=0):
+        result = subprocess.run([str(DRIVER), "content", "convert-preferences",
+                                 str(source), str(self.path), str(output)],
+                                capture_output=True, text=True, encoding="utf-8", timeout=10)
+        self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+        return json.loads(result.stdout)
+
+    def test_convert_preferences_publishes_valid_component_and_receipts(self):
+        for slot, row in enumerate(self.rules["improvements"]):
+            row["name"] = f"Improvement {slot}"
+        self.rules["improvements"][1]["name"] = "Café"
+        self.publish()
+        source = self.root / "CITYPREF.TXT"
+        source.write_bytes("@NODEFEND\r\n@AUTOBUILD\r\nCafé\r\nImprovement 2\r\nCafé\r\n".encode("cp1252"))
+        before = {p: p.read_bytes() for p in self.root.iterdir() if p.is_file()}
+        output = self.root / "converted.json"
+        receipt = self.convert_preferences(source, output)
+        self.assertEqual(receipt["status"], "converted")
+        self.assertEqual(receipt["source"]["sha256"], hashlib.sha256(source.read_bytes()).hexdigest())
+        self.assertEqual(receipt["output"]["sha256"], hashlib.sha256(output.read_bytes()).hexdigest())
+        self.assertEqual(receipt["conversion"], "classic-city-preferences/1")
+        self.assertEqual({r["role"] for r in receipt["dependencies"]}, {"rules", "compatibility"})
+        self.assertEqual(receipt["unsupportedFields"], [])
+        self.assertEqual(receipt["lossyFields"], [])
+        self.assertEqual(before, {p: p.read_bytes() for p in before})
+        component = json.loads(output.read_bytes())
+        self.assertEqual(component["buildPreferences"],
+                         ["improvements.authored.1", "improvements.authored.2", "improvements.authored.1"])
+        self.assertEqual(component["humanCityDefensePriority"], "deprioritize")
+        self.manifest["files"]["cityPreferences"] = {
+            "path": output.name, "sha256": receipt["output"]["sha256"]}
+        self.publish()
+        self.invoke(operation="validate-preferences")
+
+    def test_convert_preferences_refuses_overwrite_alias_and_output_failure(self):
+        self.publish()
+        source = self.root / "CITYPREF.TXT"
+        source.write_bytes(b"@NODEFEND\n")
+        output = self.root / "existing.json"
+        output.write_bytes(b"keep me")
+        for destination in (source, output, self.root / "missing" / "new.json"):
+            with self.subTest(destination=destination):
+                report = self.convert_preferences(source, destination, code=2)
+                self.assertEqual(report["status"], "rejected")
+        self.assertEqual(source.read_bytes(), b"@NODEFEND\n")
+        self.assertEqual(output.read_bytes(), b"keep me")
+        self.assertFalse((self.root / "missing").exists())
+
+    def test_convert_preferences_rejects_bad_source_and_selected_identity(self):
+        self.publish()
+        source = self.root / "CITYPREF.TXT"
+        output = self.root / "new.json"
+        source.write_bytes(b"@AUTOBUILD\nunknown improvement\n")
+        self.assertEqual(self.convert_preferences(source, output, code=1)["code"],
+                         "unresolved-classic-reference")
+        self.assertFalse(output.exists())
+        self.rules["improvements"][1]["id"] = "unmapped.identity"
+        self.publish()
+        source.write_bytes(b"@NODEFEND\n")
+        self.assertEqual(self.convert_preferences(source, output, code=1)["status"], "rejected")
+        self.assertFalse(output.exists())
+
     def test_city_names_validate_complete_lists_with_receipts_and_no_source_changes(self):
         names = self.city_names()
         receipt = write(self.root / "names.json", names)
