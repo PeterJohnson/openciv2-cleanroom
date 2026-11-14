@@ -94,6 +94,7 @@ public:
     EventCollection(const EventCollection&) = delete;
     EventCollection& operator=(const EventCollection&) = delete;
     std::size_t size() const noexcept { return entries_.size(); }
+    bool pristine() const noexcept { return entries_.empty() && next_identity_ == 1; }
     std::shared_ptr<Event> at(std::size_t index) const { return entries_.at(index); }
     bool contains(const std::shared_ptr<Event>& event) const noexcept;
     std::shared_ptr<Event> find(EventId identity) const noexcept;

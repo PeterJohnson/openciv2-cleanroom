@@ -135,6 +135,17 @@ public:
     virtual ~Continuation() = default;
     virtual OperationStep resume(OperationContext& context, OperationInput input) = 0;
 };
+using CheckpointBytes = std::vector<std::uint8_t>;
+// Trusted owner codec for semantic continuation locals, never captured closures.
+// Decode prepares a new continuation without executing its command prefix.
+struct ContinuationCodec {
+    std::string id;
+    unsigned version = 1;
+    std::function<CheckpointBytes(const Continuation&)> encode;
+    std::function<std::unique_ptr<Continuation>(std::span<const std::uint8_t>,
+                                                const CommandRequest&, const CommandUpdate&)>
+        decode;
+};
 enum class CommandRoute { execute, await_peer };
 struct Admission {
     std::optional<std::string> rejection;
@@ -152,6 +163,7 @@ struct CommandDefinition {
     std::function<std::unique_ptr<Continuation>(const CommandRequest&)> execute;
     std::function<std::unique_ptr<Continuation>(const CommandRequest&, const CommandValues&)>
         apply_result;
+    std::optional<ContinuationCodec> checkpoint;
 };
 // Semantic adapter ports, not classic packets or a new wire protocol. Local
 // execution never passes through them. The mode adapter owns wire translation,

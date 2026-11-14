@@ -44,6 +44,16 @@ struct Participant {
 struct Seeds {
     std::uint64_t gameplay = 0, presentation_content = 0;
 };
+// M1-01 owner-supplied state projection. The codec must reject state outside its
+// declared closure. Decode changes only the supplied fresh world/process values;
+// it must not access services, clients, or the world's shared fallback tile.
+// Selected immutable content is supplied by the owner and bound separately by hash.
+struct CheckpointProfile {
+    std::string id;
+    std::function<CheckpointBytes(const state::GameState&, const state::ProcessContext&)> encode;
+    std::function<void(std::span<const std::uint8_t>, state::GameState&, state::ProcessContext&)>
+        decode;
+};
 namespace detail {
 struct RuntimeState;
 struct Lease;
@@ -136,6 +146,13 @@ public:
     void publish();
     base::GameplayRandom& gameplay_random();
     base::PresentationRandom& presentation_random();
+    // Local foundation boundary: one civilization-1 participant, zero commands
+    // or one awaiting interaction, no peer work/queued inputs. No leases persist.
+    // Owner codecs validate their state closure; all decoding precedes replacement.
+    CheckpointBytes checkpoint(const CheckpointProfile& profile,
+                               std::string_view content_hash) const;
+    void restore_checkpoint(std::span<const std::uint8_t> bytes, const CheckpointProfile& profile,
+                            std::string_view content_hash);
 
 private:
     std::shared_ptr<detail::RuntimeState> state_;
