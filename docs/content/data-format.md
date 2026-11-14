@@ -1,7 +1,9 @@
 # Standalone JSON content and classic text compatibility
 
 Status: version 1 **format specification**, not yet a released format. The C++
-loaders, converter and playable default content are implementation-plan work.
+full-pack loaders, classic converter and playable default content are implementation-plan work.
+The [C++ gameplay-bundle loader](../m1-content-runtime.md) implements the six
+built-in components and common JSON admission; it does not yet load these text-backed components.
 [JSON Schemas and developer validation](schemas/README.md) check document structure;
 semantic pack validation remains open. The examples below are owned format
 examples, not a stock data set or evidence of gameplay compatibility.

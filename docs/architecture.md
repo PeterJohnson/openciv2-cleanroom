@@ -114,7 +114,7 @@ specifications are ownership boundaries, not a requirement for 65 libraries.
 Proposed CMake targets:
 
 Currently implemented: `oc2_base`, F02/W01 primitives in `oc2_game`, stored codecs
-in `oc2_formats`, stored/live projections in `oc2_query`, bounded N05/N02 primitives
+and gameplay content loaders in `oc2_formats`, stored/live projections in `oc2_query`, bounded N05/N02 primitives
 in `oc2_network`, initial ownership/client bindings in `oc2_session`, optional
 `oc2_export_sqlite`, `oc2_io_native`, `oc2_viewmodel`, `oc2_frontend`, `oc2_options`,
 ImGui dependency targets, and application/tool/test executables. The

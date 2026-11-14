@@ -2,12 +2,14 @@
 
 Status: roadmap for the [architecture](architecture.md), with an initial SDL3
 application shell and build/test infrastructure integrated. The repository also
-contains 65 algorithm specifications and twenty portable conformance vectors.
-The session service/controller model, gameplay,
-the in-game console and Lua user automation are not implemented. M1 slices
-add F01 arithmetic/random contexts, F02 entity/civilization/global records, W01 map foundations, F06 record/map and current stored-save codecs
-and a bounded X02 runner, plus offline stored inspection/validation/diff and optional SQLite export;
-the general runner remains outstanding.
+contains 65 algorithm specifications and 54 portable conformance fixtures.
+M1 slices add F01 arithmetic/random contexts, F02 entity/civilization/global records,
+W01 map foundations, F06 stored-save/map codecs, N05/N02 transport primitives and a
+bounded X02 runner. Initial session/controller ownership, scoped queries, commands
+and continuations are implemented, alongside stored inspection and optional SQLite
+export. The six gameplay components now load into immutable typed operands through
+pinned jart/json.cpp. Complete lifecycle/content integration, the general runner,
+playable gameplay, the in-game console and Lua automation remain outstanding.
 Milestones describe delivery gates, not completed compatibility
 claims.
 
@@ -67,7 +69,7 @@ imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
 | Milestone | Implemented subset | Remaining before the exit gate |
 | --- | --- | --- |
 | M0 — complete | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan; all 11 hosted CI jobs pass | None for M0; see the [completion review and retained reports](m0-validation.md#m0-completion-review--2026-11-13-utc). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts have a separate pinned dependency. |
-| M1 — started | Portable `oc2_base` F01 arithmetic/`WrappingI32`, sampling, ticks and isolated random contexts; F02 entity/civilization/global records and W01 map primitives; `oc2_formats` current stored-save/raw-map codecs and ordered item helpers; owned stored queries, native inspection/validation/diff and optional SQLite export; twenty F01/F02/W01 X02 fixtures; Windows original-file comparisons | Complete lifecycle/setup/ordered-load integration; generalized X02 types/providers/choice injection/replay; runtime content and rules/wire codecs; live scoped queries; SessionRuntime/controller contracts and continuations; see the [completion audit](m1-validation.md). |
+| M1 — started | Portable F01/F02/W01 foundations; stored-save/raw-map codecs; stored inspection and optional SQLite export; initial session/controller ownership, scoped queries and command continuations; N05/N02 primitives; six gameplay component loaders; 54 X02 fixtures; Windows original-file and bounded peer comparisons | Complete lifecycle/setup/ordered-load integration; generalized X02 adapters/providers/replay and independent review; full content/rules/text loading and consumer bindings; broader live queries; session checkpoint and mode/wire integration; see the [completion audit](m1-validation.md). |
 | M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native menu/display interaction validation |
 | M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
 
@@ -144,9 +146,9 @@ passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
   comparator, and bounded run reports. Execute the three existing F01 fixtures;
   add independently reviewed cases for state and geometry.
 - Bind the [six built-in gameplay components](content/gameplay-format.md) to their
-  owning mechanics. Default JSON, schemas, source pins, normalization and offline
-  bundle validation exist; runtime loading, consumer bindings, checkpoint/profile
-  admission and original-peer gates still need implementation. Keep original
+  owning mechanics. Default JSON, schemas, source pins, normalization, offline
+  validation and portable C++ bundle loading exist; consumer bindings,
+  checkpoint/profile admission and original-peer gates still need implementation. Keep original
   defaults, AI heuristics and map generation unchanged.
 - Implement the [native JSON content contract](content/data-format.md), using the
   existing [schemas and structural checks](content/schemas/README.md) as the file

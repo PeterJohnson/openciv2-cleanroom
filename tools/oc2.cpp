@@ -1,4 +1,5 @@
 #include "platform/native_files.hpp"
+#include "content_command.hpp"
 #include "query/output.hpp"
 #include "base/cancellation.hpp"
 #ifdef OC2_ENABLE_SQLITE_EXPORT
@@ -14,6 +15,7 @@ constexpr auto usage =
     "Usage: oc2 inspect FILE [--json] [--cities|--units|--tiles|--civilizations|--section NAME]\n"
     "       oc2 validate FILE [--json]\n"
     "       oc2 diff BEFORE AFTER [--json]\n"
+    "       oc2 content validate GAMEPLAY_MANIFEST [--require-classic] [--json]\n"
     "       oc2 export FILE --sqlite NEW_DATABASE [--json] (optional build feature)\n"
     "Options: --format save|map (default: .mp means map; all others mean save)\n"
     "         --view stored (loaded/live views are not implemented)\n"
@@ -71,6 +73,8 @@ int run(const std::vector<std::string>& args) {
             return args.empty() ? 2 : 0;
         }
         const auto& command = args[0];
+        if (command == "content")
+            return run_content_command(std::span(args).subspan(1));
         if (command != "inspect" && command != "validate" && command != "diff" &&
             command != "export")
             throw std::invalid_argument("Unknown command");

@@ -1,8 +1,9 @@
 # Built-in gameplay JSON components
 
 Status: unreleased version 1 data formats. Complete first-wave classic defaults,
-JSON Schemas, provenance checks and an offline developer loader are implemented.
-C++ gameplay consumers, runtime profile selection, full rule-reference resolution
+JSON Schemas, provenance checks, an offline developer loader and a
+[portable C++ bundle loader](../m1-content-runtime.md) are implemented.
+C++ gameplay consumers, session profile selection, full rule-reference resolution
 and multiplayer/save integration remain implementation-plan work. This does not
 provide the missing text-backed stock rules or a playable pack.
 
@@ -243,7 +244,7 @@ numerator/denominator pairs by their greatest common divisor (zero becomes 0/1).
 Preserve array order. Manifest ID/revision/mode, descriptor paths/hashes and
 provenance are outside this effective-value digest. Hash the resulting bytes
 with SHA-256. The developer loader returns the same normalized operands it hashes;
-a future runtime must use them, not unnormalized fractions from the original file.
+the C++ loader also returns normalized typed operands rather than unnormalized fractions from the original file.
 
 Byte hashes still independently protect every selected file. Whitespace, object
 member order, equivalent integer tokens, metadata and equal rational spellings
@@ -278,7 +279,7 @@ original captures. CI runs these beside the existing content checks.
 
 ## 8. Runtime and compatibility work still required
 
-A future session must resolve one immutable gameplay bundle for both native and
+A session must select one immutable gameplay bundle for both native and
 classic text paths and bind each field to the consumers above. Other built-in
 rules remain fixed by their specifications; these six files are not an exhaustive
 externalization of the executable's data. Keep AI heuristics and map generation

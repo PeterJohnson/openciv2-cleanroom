@@ -60,10 +60,14 @@ paths fail rather than falling back to a download. Installed Catch2 must match
 when reporting results.
 
 `OC2_BUILD_GUI=OFF` configures without SDL, ImGui, the asset clone, or a display.
-With tests enabled, Catch2 is the only third-party dependency. With
+The portable formats target uses the vendored, hash-pinned `jart/json.cpp` and its
+bundled double-conversion. No download or package-manager setup is needed for
+those sources; CMake checks them against `dependencies.json`. Base/game mechanics
+remain independent of the JSON library. With tests enabled, Catch2 is the only
+additional headless dependency. With
 `BUILD_TESTING=OFF` as well, this builds the portable base, game, formats, query
-and view-model libraries plus the native `oc2` inspection CLI, with no third-party
-dependency. `OC2_BUILD_TOOLS=OFF` omits the CLI and native I/O library. Native tools
+and view-model libraries plus the native `oc2` inspection CLI, using only the
+vendored JSON dependency. `OC2_BUILD_TOOLS=OFF` omits the CLI and native I/O library. Native tools
 default ON; Emscripten defaults them OFF while retaining the portable query API.
 See [inspection commands and output](m1-inspection.md) for a tools-only build.
 See [SQLite export](m1-sqlite-export.md) for the optional dependency and schema.
