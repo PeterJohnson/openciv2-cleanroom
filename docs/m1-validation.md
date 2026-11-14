@@ -33,8 +33,8 @@ and broad coverage gaps do not enlarge the goal. Owning specs still govern corre
 | M1-02: content conversions | Passed | `d65e659`, portable core `597dec1`: [three-row acceptance evidence](m1-content-conversion.md#m1-02-acceptance-evidence), paired semantics and native admission, receipts, rejection/output failure; 570 native CTests and seven WASM targets |
 | M1-03: fixed conformance review | Passed | `2827676` with two revision-7 domain corrections: [independent 57-fixture review and eight-family mapping](m1-conformance-review.md); all native/WASM observations and consumed prefixes match |
 | M1-04: original-file evidence | Passed | `2827676`: [current original-file evidence](m1-original-closeout.md), seven maps/21 saves byte-exact; original accepted live treasury edit and map, advanced/resaved one turn; current codec decoded resave |
-| M1-05: foundation regressions | Open | Implemented at `b125df5`: 546 native CTests and seven WASM targets; final verification remains after closeout implementation changes |
-| M1-06: build matrix | Open | Local Windows/WASM results exist; collect the finite final native/SQLite/WASM/sanitizer/tools-only matrix |
+| M1-05: foundation regressions | Passed | `5f1908e`: [final local regression evidence](conformance/reports/m1-local-matrix-windows.json), 570 Windows SQLite-off/572 SQLite-on CTests and seven pinned WASM targets; 115 Python tests with two unavailable-symlink skips |
+| M1-06: build matrix | Open | `5f1908e`: [local matrix](conformance/reports/m1-local-matrix-windows.json) passes; Windows MSVC evidence is supplemental, not pinned-Clang acceptance. Hosted pinned Windows/Linux/macOS, sanitizer and tools-only results remain; push decision pending |
 | M1-07: completion audit | Open | Close M1-01–M1-06, reconcile evidence/deferred issues and record the final decision |
 
 No external blocker is asserted merely because a gate is open. Record the missing

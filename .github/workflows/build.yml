@@ -36,6 +36,9 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-15, windows-2022]
         mode: [desktop, headless]
+        include:
+          - os: windows-2022
+            mode: headless-sqlite-off
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -54,7 +57,12 @@ jobs:
           if [ "${{ matrix.mode }}" = desktop ]; then
             args+=(-DOC2_FETCH_SDL=ON -DOC2_GUI_TESTS=ON)
           else
-            args+=(-DOC2_BUILD_GUI=OFF -DOC2_ENABLE_SQLITE_EXPORT=ON)
+            args+=(-DOC2_BUILD_GUI=OFF)
+            if [ "${{ matrix.mode }}" = headless-sqlite-off ]; then
+              args+=(-DOC2_ENABLE_SQLITE_EXPORT=OFF)
+            else
+              args+=(-DOC2_ENABLE_SQLITE_EXPORT=ON)
+            fi
           fi
           if [ "$RUNNER_OS" = Windows ]; then
             args+=(-G Ninja "-DCMAKE_C_COMPILER=$LLVM_PATH/bin/clang-cl.exe" "-DCMAKE_CXX_COMPILER=$LLVM_PATH/bin/clang-cl.exe")
@@ -66,6 +74,13 @@ jobs:
           cmake -S . -B build/ci "${args[@]}"
       - run: cmake --build build/ci --config Debug --parallel 4
       - run: ctest --test-dir build/ci -C Debug --output-on-failure --output-junit test-results.xml
+      - name: Tools-only build without Python discovery or runtime assets
+        if: runner.os == 'Linux' && matrix.mode == 'headless'
+        run: |
+          cmake -S . -B build/tools-only -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DOC2_VERIFY_TOOLCHAIN=ON -DOC2_BUILD_GUI=OFF -DBUILD_TESTING=OFF -DOC2_BUILD_TOOLS=ON -DOC2_ENABLE_SQLITE_EXPORT=OFF -DOC2_FETCH_DEPENDENCIES=OFF -DCMAKE_DISABLE_FIND_PACKAGE_Python3=ON
+          cmake --build build/tools-only --parallel 4
+          python tests/inspection_cli.py build/tools-only/oc2 build/ci/oc2_save_roundtrip
+          python tests/content_cli.py build/tools-only/oc2
       - name: Build identities and test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -77,6 +92,7 @@ jobs:
             build/ci/conformance-results.json
             build/ci/Testing/Temporary/LastTest.log
             build/ci/gui-results/
+            build/tools-only/build-identity.txt
           if-no-files-found: ignore
 
   sanitizers:
