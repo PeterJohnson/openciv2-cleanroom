@@ -2,6 +2,7 @@
 
 #include "formats/classic_records.hpp"
 #include "state/civilization.hpp"
+#include "state/multiplayer.hpp"
 
 namespace openciv::formats {
 // F06 §§3–4 fixed encodings. These stored values have no native window, password
@@ -44,21 +45,7 @@ struct EliminationHistory {
     std::array<state::FixedText<24>, 12> names;
     bool operator==(const EliminationHistory&) const = default;
 };
-struct MultiplayerRecord {
-    std::array<std::int16_t, 8> center_x{}, center_y{}, introduced{};
-    std::int32_t turn_time_limit = 0;
-    std::array<Byte, 256> encoded_passwords{};
-    std::int16_t open_game = 0, kill_on_retirement = 0, show_human_starts = 0;
-    std::int16_t chat_from_start = 0, simultaneous = 0;
-    std::int32_t cheat_turn_time = 0;
-    std::array<Byte, 290> retained_142{};
-    std::array<std::array<Byte, 32>, 8> emails{}, player_setup{};
-    Byte resume_civ = 0, retained_465 = 0;
-    std::int16_t resume_event = 0, autoplay_active = 0, autoplay_turns = 0;
-    std::int16_t double_production = 0, double_movement = 0, claimed_humans = 0;
-    std::array<Byte, 34> retained_472{};
-    bool operator==(const MultiplayerRecord&) const = default;
-};
+using MultiplayerRecord = state::MultiplayerValues;
 // Serialized presence words are retained bits, never pointers/IDs/offsets.
 // Strings live separately in StoredEvent; this record alone executes nothing.
 struct EventRecord {

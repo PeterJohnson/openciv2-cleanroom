@@ -15,13 +15,16 @@ uses C++ calls without a transport, GUI, Lua, SQLite or runtime assets.
 clients only a `PlayerClient`. All calls run on one cooperative mutation lane.
 
 The runtime owns `state::GameState`: the existing stable entity pools, global,
-civilization and name records, retained mood workspace and map storage. It uses
+civilization and name records, retained mood workspace and map storage. It also
+owns saved multiplayer values, runtime local-human/resume selectors and password
+flags, separately from participant/controller bindings. It uses
 an injected `ProcessContext` containing lifetime tokens, the shared fallback tile
 and a uniquely owned `RuleState` with rule definitions, a shared text pool, name
-bindings, P04 label/popup tables and live leaders/usage/name cursors. That context must outlive the runtime.
-The large rule tables live outside caller stacks, including on WASM. Independent
-virtual peers supply separate contexts. Preferences, further retained workspaces,
-complete content/profile installation and full classic initialization remain
+bindings, P04 label/popup tables and live leaders/usage/name cursors, plus the four
+multiplayer menu preferences currently consumed by F06. That context must outlive
+the runtime. The large rule tables live outside caller stacks, including on WASM.
+Independent virtual peers supply separate contexts. Further preferences and
+retained workspaces, complete content/profile installation and full classic initialization remain
 owning-spec work. The native rule installer now applies its admitted definitions
 to the retained rule state; it does not itself admit or replace a session.
 Construction defaults are not claimed as original setup behavior.
@@ -40,6 +43,9 @@ owning operation changes them. Ending a client session similarly revokes access
 without clearing those values. Existing F02 entity-reset helpers can be called
 at their specified boundaries without resetting process tokens or name cursors;
 their integration into the complete ordered setup/load paths remains open.
+The [multiplayer load stages](m1-stored-saves.md#passwords-and-multiplayer-loadsave-stages)
+now operate on this world/process state and the session's gameplay random context;
+their isolated ownership test does not claim complete file loading or lobby admission.
 
 The composition root supplies a stable nonzero `RuntimeId`, unique among
 runtimes whose observations will be compared. `SessionId`, `ParticipantId` and

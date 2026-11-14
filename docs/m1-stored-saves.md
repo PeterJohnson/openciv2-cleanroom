@@ -146,8 +146,56 @@ label-magnitude comparison; it does not execute the original again or run the
 remaining ordered load stages. The report retains the earlier LABELS-provenance
 limitation and pins the comparison executable and input bytes.
 
-Full path/rule reload orchestration, remaining stream blocks, passwords,
-events, rule-reload/layout completion, mode adaptation and live-session
+## Passwords and multiplayer load/save stages
+
+`state/multiplayer.hpp` owns the logical saved multiplayer values, separate
+runtime local-human/resume selectors and the two password flags per civilization.
+`GameState` retains these values; `ProcessContext` retains the four menu preference
+fields currently consumed by F06. Construction and client-session replacement
+do not execute F03 preference defaults or reset this state. The existing
+`formats::MultiplayerRecord` is an alias for the shared logical saved values;
+its exact 1172-byte codec and stored inspection contract are unchanged.
+
+F06 §9 encoding rotates the complete 256-byte password array, including row and
+array seams. Refresh derives both flags from each decoded row's first byte and
+re-encodes without changing the encoded bytes or drawing randomness. Reset
+consumes 255 primary codes, stores their low bytes, retains incoming byte 255,
+then clears row starts/flags and encodes. An unresolved choice retains the
+sampled prefix before those later effects. This serialized session state uses
+`GameplayRandom`; presentation/cosmetic contexts are inaccessible to the operation.
+The owner supplies a distinct semantic reset call identity. The decision site
+is `F06.password-reset.byte`, with call suffix `/row/<civ>/byte/<column>` and
+attempt zero. Controlled choices and generated traces use the same identities.
+This binds the existing policy; it does not add RNG data to classic saves.
+
+`formats::read_multiplayer_items` implements F06 §6 stages 11–12. It first
+sign-extends the saved-current selector into runtime local human. Old versions
+or mode zero reset passwords and only the specified defaults, retaining all
+other multiplayer payload. Current multiplayer input clears the saved block,
+then publishes its transferred prefix. Failure retains that prefix and skips
+resume fallback and flag refresh. A successful read uses the saved resume byte,
+then turn civ, then the first alive civ in 1…7 as specified, with no draws.
+Menu simultaneous and saved simultaneous remain separate fields.
+
+`write_multiplayer_item` implements F06 §5 stage 8: substitute the supplied
+network-turn low byte into saved resume, write one complete block, and restore
+the prior resume byte only on success. A failed or throwing service leaves the
+temporary substitution and any callback effects. `state::adapt_loaded_mode`
+is the completion phase, callable only after successful load and file close.
+Equal modes do nothing; entry mode zero retains the loaded mode, while a nonzero
+entry replaces it. Human-mask fallback, doubling and menu preference changes
+follow F06; variable resume-bit shifts use F01's modulo-32 count rule.
+
+Thirteen authored native/WASM cases check all password bit positions, controlled
+and generated reset/replay, missing-choice prefixes, every partial multiplayer
+item, retained defaults, callbacks, successful/failed writes, mode adaptation
+and process/world ownership through `SessionRuntime`. These are specification
+and regression evidence, not original password captures or full mixed-peer
+sessions. The owning loader must still sequence these callable stages with
+all surrounding input, cleanup, rule and event operations.
+
+Full path/rule reload orchestration, remaining stream blocks,
+events, rule-reload/layout completion and live-session
 admission remain open. No loaded-world claim follows from these isolated stages.
 
 ## Windows evidence — 2026-11-13 Pacific
