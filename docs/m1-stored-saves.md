@@ -248,9 +248,56 @@ These are specification/regression evidence, not original event captures or X02
 fixtures. Event parsing, trigger/action execution, editor integration and complete
 F06 orchestration remain separate work.
 
-Full path/rule reload orchestration, remaining stream blocks,
-rule-reload/layout completion and live-session
-admission remain open. No loaded-world claim follows from these isolated stages.
+## Ordered map summaries, history, layout and scenario parameters
+
+`formats/save_aux_io.hpp` supplies the remaining fixed auxiliary stream stages
+from F06 §6 stages 7, 9–10 and the final layout decision in stage 19. These
+helpers operate on supplied live state and retained transfer scratch; the parent
+still sequences the complete file operation and its rule/lifecycle boundaries.
+
+- Map summaries read coarse grids 0 and 1 as separate items, flush, then read
+  the 64-region table as one item. A short grid read establishes only the
+  transferred cells; other cells retain their values or explicit unknown state.
+  Grids 2 and 3 remain untouched. Region input retains untransferred fields after
+  callbacks. Replacing/releasing captured map backing during its read stops
+  safely before publishing to invalid storage. Output rejects an unknown cell
+  at that grid's boundary, preserving earlier writes.
+- Power history is one 1,200-byte item. The layout has separate packed transfer
+  scratch and live working coordinates. A failed layout read retains its packed
+  prefix without unpacking; successful input sign-extends all coordinates and
+  publishes the file's valid marker before the flush. Each of the forty map-view
+  fields is then read individually. None of these operations creates windows.
+- Saving writes power history first, then copies the live current screen into
+  the saved screen, reduces coordinates modulo 65,536, packs and writes layout,
+  then writes each view field. Preparation effects survive later write failure.
+  The final load decision separately replaces layout-valid based on matching
+  screen dimensions and captured scenario status, allowing different origins.
+- Scenario input uses captured scenario status or the live Scenario flag.
+  Ordinary input calls S01's field-specific reset: flags/name-first-byte zero,
+  technology paradigm 10 and the eight other numeric fields zero. The name tail,
+  world flags and events remain intact. Elimination history always follows;
+  all twelve rows survive regardless of its count. Output uses explicit scenario
+  export or the live Scenario flag, then writes elimination history.
+
+`GameState` now retains power/elimination history, scenario parameters, logical
+layout and map views across client-session replacement. Existing stored codecs
+alias the shared map-view/scenario/elimination types without changing bytes.
+Fourteen authored native/WASM cases cover every failed fixed-block prefix,
+individual view fields, live callbacks, packing boundaries, scenario gates,
+unknown backing and runtime ownership without RNG changes.
+
+The native comparison driver additionally reads/writes these isolated stages
+against original bytes and compares their fields with the stored decoder.
+All 21 admitted original `0x2c` saves match exactly and remain unchanged; the
+[auxiliary comparison report](conformance/reports/original-save-aux-windows.json)
+pins the inputs, implementation and driver. Those files are all ordinary mode-zero
+saves; scenario evidence here is authored tests. Three legacy files remain outside
+the driver's complete stored-view domain. This is original-data interoperability
+evidence, not original execution, observed failure traces or a full session load.
+
+Full path/header/rule-load orchestration, save-as-scenario preparation,
+rule-reload completion and live-session admission remain open. No loaded-world
+claim follows from these isolated stages.
 
 ## Windows evidence — 2026-11-13 Pacific
 
@@ -291,7 +338,8 @@ The native comparison driver can be run with:
 ```
 
 It reads the input, decodes/re-encodes it in C++, compares every byte and prints
-structural metadata. With no output argument it writes no file. The optional
+structural metadata. It also compares the isolated auxiliary load/write stages
+above, reporting `orderedAuxiliaryEqual`. With no output argument it writes no file. The optional
 output uses the native atomic publication adapter and refuses an existing
 destination, including the input itself. It reports `outputWritten`; malformed
 input produces no export. The driver requires native tools and tests enabled;

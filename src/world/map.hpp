@@ -102,6 +102,11 @@ public:
     std::uint8_t remembered(unsigned civilization, Position position) const;
     std::uint8_t coarse(unsigned grid, Position position) const;
     void set_coarse(unsigned grid, Position position, std::uint8_t value);
+    // Direct F06 transfer backing; absent cells have not been produced. The
+    // revision detects replacement/release across an external service call.
+    std::span<std::optional<std::uint8_t>> coarse_grid(unsigned grid);
+    std::span<const std::optional<std::uint8_t>> coarse_grid(unsigned grid) const;
+    std::uint64_t storage_revision() const noexcept { return storage_revision_; }
 
     std::optional<std::uint8_t> owner(Position position) const;
     std::optional<std::uint8_t> city_owner(Position position) const;
@@ -139,6 +144,7 @@ private:
     Tile& fallback_;
     std::optional<Geometry> geometry_;
     bool allocated_ = false;
+    std::uint64_t storage_revision_ = 0;
     Buffer<Tile> tiles_;
     std::array<Buffer<std::uint8_t>, 8> remembered_;
     std::array<Buffer<std::optional<std::uint8_t>>, 4> coarse_;

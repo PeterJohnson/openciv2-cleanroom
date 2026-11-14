@@ -2,8 +2,11 @@
 
 #include "state/civilization.hpp"
 #include "state/events.hpp"
+#include "state/history.hpp"
+#include "state/layout.hpp"
 #include "state/multiplayer.hpp"
 #include "state/rule_state.hpp"
+#include "state/scenario.hpp"
 #include "world/map.hpp"
 #include <memory>
 
@@ -30,6 +33,11 @@ struct GameState {
     std::array<CivilizationNames, 8> names{};
     MultiplayerState multiplayer;
     EventState events;
+    PowerHistory power_history{};
+    EliminationHistory eliminations;
+    ScenarioParameters scenario;
+    Layout layout;
+    std::array<MapView, 8> views;
     CityMoodWorkspace mood;
     world::MapStorage map;
 };

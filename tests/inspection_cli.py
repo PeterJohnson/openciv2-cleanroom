@@ -60,6 +60,7 @@ class InspectionCli(unittest.TestCase):
         report = json.loads(run(self.source, output).stdout)
         self.assertTrue(report['outputWritten'])
         self.assertTrue(report['byteEqual'])
+        self.assertTrue(report['orderedAuxiliaryEqual'])
         self.assertEqual(output.read_bytes(), self.initial)
         for destination in (self.source, output):
             self.assertIn('already exists', run(self.source, destination, status=1).stderr)

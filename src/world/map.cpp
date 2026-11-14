@@ -31,6 +31,7 @@ Pattern pattern_at(Position p, std::uint16_t seed) {
 } // namespace
 
 void MapStorage::allocate(Geometry shape, const AllocationCheck& check) {
+    ++storage_revision_;
     geometry_ = shape;
     if (check)
         check({StorageKind::tiles, 0, shape.area()});
@@ -52,6 +53,7 @@ void MapStorage::allocate(Geometry shape, const AllocationCheck& check) {
 void MapStorage::release(const ReleaseObserver& observer) {
     if (!allocated_)
         return;
+    ++storage_revision_;
     for (unsigned i = 4; i > 0; --i) {
         auto& grid = coarse_[i - 1];
         if (grid) {
@@ -154,6 +156,16 @@ std::uint8_t MapStorage::coarse(unsigned grid, Position p) const {
 void MapStorage::set_coarse(unsigned grid, Position p, std::uint8_t value) {
     const auto index = coarse_index(grid, p);
     (*coarse_[grid])[index] = value;
+}
+std::span<std::optional<std::uint8_t>> MapStorage::coarse_grid(unsigned grid) {
+    if (grid >= coarse_.size() || !coarse_[grid])
+        throw std::out_of_range("Coarse grid is unavailable");
+    return *coarse_[grid];
+}
+std::span<const std::optional<std::uint8_t>> MapStorage::coarse_grid(unsigned grid) const {
+    if (grid >= coarse_.size() || !coarse_[grid])
+        throw std::out_of_range("Coarse grid is unavailable");
+    return *coarse_[grid];
 }
 std::optional<std::uint8_t> MapStorage::owner(Position p) const {
     return geometry().in_bounds(p) ? tile(p).owner : std::nullopt;

@@ -3,7 +3,10 @@
 #include "formats/classic_records.hpp"
 #include "state/civilization.hpp"
 #include "state/events.hpp"
+#include "state/history.hpp"
+#include "state/layout.hpp"
 #include "state/multiplayer.hpp"
+#include "state/scenario.hpp"
 
 namespace openciv::formats {
 // F06 §§3–4 fixed encodings. These stored values have no native window, password
@@ -27,25 +30,9 @@ struct SavedLayout {
     std::array<SavedRectangle, 13> rectangles;
     bool operator==(const SavedLayout&) const = default;
 };
-struct SavedMapView {
-    std::int16_t open = 0, track_moves = 0, x = 0, y = 0, zoom = 0;
-    bool operator==(const SavedMapView&) const = default;
-};
-struct ScenarioParameters {
-    std::uint16_t flags = 0;
-    state::FixedText<80> name;
-    std::int16_t technology_paradigm = 0, year_increment = 0, start_year = 0;
-    std::int16_t maximum_turns = 0, objective_civ = 0;
-    std::array<std::int16_t, 4> victory_thresholds{};
-    bool operator==(const ScenarioParameters&) const = default;
-};
-struct EliminationHistory {
-    std::int16_t count = 0;
-    std::array<std::int16_t, 12> turns{};
-    std::array<Byte, 12> killers{}, portraits{};
-    std::array<state::FixedText<24>, 12> names;
-    bool operator==(const EliminationHistory&) const = default;
-};
+using SavedMapView = state::MapView;
+using ScenarioParameters = state::ScenarioParameters;
+using EliminationHistory = state::EliminationHistory;
 using MultiplayerRecord = state::MultiplayerValues;
 // Serialized presence words are retained bits, never pointers/IDs/offsets.
 // Strings live separately in StoredEvent; this record alone executes nothing.
