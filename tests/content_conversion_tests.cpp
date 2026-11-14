@@ -1,8 +1,11 @@
 // M1-02/F03 section 8: authored classic input, native admission and retained effects.
 #include "rule_fixture.hpp"
+#include "classic_rule_fixture.hpp"
 #include "formats/content_conversion.hpp"
 #include "formats/city_preferences.hpp"
 #include "formats/city_names.hpp"
+#include "formats/rules_install.hpp"
+#include "formats/classic_rules.hpp"
 #include "rules/city_preferences.hpp"
 #include "base/hash.hpp"
 #include <catch2/catch_test_macros.hpp>
@@ -38,6 +41,143 @@ state::CityPreferences classic_result(const content::Source& input,
     return out;
 }
 } // namespace
+TEST_CASE("RULES conversion emits complete validated components with explicit slot identities",
+          "[content][conversion]") {
+    std::string text;
+    for (const auto& section : classic_rule_fixture::complete_sections())
+        text += section;
+    auto input = source(text);
+    input.identity = "authored/RULES.TXT";
+    const auto converted = content::convert_rules(input, classic::ascii_text_case());
+    content::ResolvedPack pack;
+    pack.gameplay.bundle = content::builtin_gameplay();
+    pack.components["rules"] = {nullptr, content::parse_json(converted.rules, "converted")};
+    pack.compatibility =
+        content::ResolvedDocument{nullptr, content::parse_json(converted.compatibility, "mapping")};
+    const auto loaded = content::load_rules(pack);
+    const auto authored = rule_fixture::Input{}.load();
+    auto expected = authored->definitions;
+    const auto identities = [](auto& to, const auto& from) {
+        for (std::size_t i = 0; i < to.size(); ++i) {
+            if constexpr (requires { to[i].identity.id; })
+                to[i].identity.id = from[i].identity.id;
+            else
+                to[i].id = from[i].id;
+        }
+    };
+    const auto& actual = loaded->definitions;
+    identities(expected.advances, actual.advances);
+    identities(expected.improvements, actual.improvements);
+    identities(expected.units, actual.units);
+    identities(expected.terrain, actual.terrain);
+    identities(expected.governments, actual.governments);
+    identities(expected.tribes, actual.tribes);
+    identities(expected.commodities, actual.commodities);
+    identities(expected.orders, actual.orders);
+    identities(expected.difficulties, actual.difficulties);
+    identities(expected.diplomatic_attitudes, actual.diplomatic_attitudes);
+    CHECK(actual == expected);
+    CHECK(loaded->definitions.cosmic == authored->definitions.cosmic);
+    CHECK(loaded->definitions.units[0].movement == 6);
+    CHECK(loaded->movement_points[0] == 2);
+    CHECK(loaded->definitions.units[0].hit_points == 30);
+    CHECK(loaded->definitions.tribes[0].plural == authored->definitions.tribes[0].plural);
+    CHECK(loaded->definitions.advances[0].identity.id == "classic.advances.0");
+    CHECK(loaded->definitions.orders[0].identity.id == "classic.orders.0");
+    CHECK(converted.receipt["conversion"].getString() == "classic-rules/1");
+    CHECK(converted.receipt["source"]["sha256"].getString() == base::sha256(input.bytes));
+}
+
+TEST_CASE("RULES conversion preserves reload operands and retained names",
+          "[content][conversion]") {
+    auto sections = classic_rule_fixture::complete_sections();
+    sections[1] = "@CIVILIZE\nDisabled,3,1,no,nil,0,3\nDependent,257,1,AFl,nil,0,3\n; stop\n";
+    sections[2] =
+        "@IMPROVE\nCaf\xe9,266,257,AFl\n" + classic_rule_fixture::repeat("Building,10,1,nil", 66);
+    sections[4] = "@UNITS\nWrapped,no,0,259,0,1,1,3,1,10,0,0,nil,1000000000000001\n; stop\n";
+    sections[7] = "@LEADERS\n" +
+                  classic_rule_fixture::repeat(
+                      "Leader,Leader,1,1,0,Plural,Example,0,0,0,1,First,Lady,1,Last,Last Lady", 21);
+    std::string text;
+    for (const auto& s : sections)
+        text += s;
+    const auto converted = content::convert_rules(source(text), classic::ascii_text_case());
+    content::ResolvedPack pack;
+    pack.gameplay.bundle = content::builtin_gameplay();
+    pack.components["rules"] = {nullptr, content::parse_json(converted.rules, "converted")};
+    pack.compatibility =
+        content::ResolvedDocument{nullptr, content::parse_json(converted.compatibility, "mapping")};
+    const auto loaded = content::load_rules(pack);
+    CHECK(loaded->definitions.improvements[0].identity.name.classic == std::string("Caf\xe9"));
+    CHECK(loaded->definitions.improvements[0].cost_rows == 10);
+    CHECK(loaded->definitions.units[0].abilities == 0x8001);
+    CHECK(loaded->definitions.units[1].identity.name.classic == "Unit 2");
+    CHECK(loaded->movement_points[0] == 259);
+    REQUIRE(loaded->title_overrides[0].size() == 2);
+    CHECK(loaded->title_overrides[0][0].titles.male.classic == "First");
+    auto original = std::make_unique<state::RuleState>(),
+         native = std::make_unique<state::RuleState>();
+    for (auto* target : {original.get(), native.get()}) {
+        target->text.initialize();
+        target->definitions = loaded->definitions;
+        target->definitions.units[0].identity.name = {"Kept unit", "Kept unit"};
+        target->definitions.improvements[0].identity.name = {"Kept building", "Kept building"};
+        target->definitions.advances[1].identity.name = {"Kept advance", "Kept advance"};
+    }
+    classic::TextWorkspace workspace;
+    classic::TextDirectories directories;
+    classic::TextReader reader(workspace, directories,
+                               {[&](auto, auto) -> classic::OpenedText {
+                                    return {"authored",
+                                            std::make_unique<classic::MemoryTextStream>(text)};
+                                },
+                                {}},
+                               classic::ascii_text_case());
+    classic::RuleLoader classic_loader(reader, *original, classic::ascii_text_case());
+    content::RuleInstaller native_loader(loaded, *native);
+    REQUIRE(reader.open("RULES", "CIVILIZE"));
+    classic_loader.advances(true);
+    native_loader.advances(true);
+    CHECK(native->definitions == original->definitions);
+    for (auto* target : {original.get(), native.get()}) {
+        target->definitions.advances[0].enabled = true;
+        target->definitions.cosmic.values[0] = 5;
+        target->definitions.governments[2].titles.male = {"Current", "Current"};
+    }
+    REQUIRE(reader.open("RULES", "IMPROVE"));
+    classic_loader.improvements(true);
+    native_loader.improvements(true);
+    REQUIRE(reader.open("RULES", "UNITS"));
+    classic_loader.units(true);
+    native_loader.units(true);
+    REQUIRE(reader.open("RULES", "LEADERS"));
+    classic_loader.leaders(true);
+    native_loader.leaders(true);
+    CHECK(native->definitions == original->definitions);
+    CHECK(native->definitions.units[0].movement == 15);
+    CHECK(native->definitions.units[0].hit_points == 30);
+    CHECK(native->definitions.improvements[0].prerequisite ==
+          static_cast<state::AdvanceReference>(0));
+    CHECK(native->definitions.tribes[0].titles[2].male.classic == "Current");
+}
+
+TEST_CASE("RULES conversion rejects unsupported codes and malformed references",
+          "[content][conversion]") {
+    for (const auto* row :
+         {"Unit,no,3,2,0,1,1,3,1,10,0,0,nil,0", "Unit,no,0,2,0,1,1,26,1,10,0,0,nil,0",
+          "Unit,unknown,0,2,0,1,1,3,1,10,0,0,nil,0"}) {
+        auto sections = classic_rule_fixture::complete_sections();
+        sections[4] = "@UNITS\n" + std::string(row) + "\n; stop\n";
+        std::string text;
+        for (const auto& s : sections)
+            text += s;
+        CHECK_THROWS_AS(content::convert_rules(source(text), classic::ascii_text_case()),
+                        content::Error);
+    }
+    CHECK_THROWS_AS(content::convert_rules(source("@COSMIC\n"), classic::ascii_text_case()),
+                    content::Error);
+}
+
 TEST_CASE("CITY conversion preserves classic name sequences across every cursor",
           "[content][conversion]") {
     rule_fixture::Input fixture;

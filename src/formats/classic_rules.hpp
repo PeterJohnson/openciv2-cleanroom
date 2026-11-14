@@ -1,6 +1,7 @@
 #pragma once
 #include "classic_text_reader.hpp"
 #include "state/rule_state.hpp"
+#include <vector>
 
 namespace openciv::formats::classic {
 enum class RuleLoadFault { reference, missing_section, invalid_title_index };
@@ -18,6 +19,19 @@ struct RuleLoadServices {
     // Diagnostic/cleanup hook. Returning never resumes the offending parser.
     std::function<void(const RuleLoadError&)> fatal;
 };
+// Semantic inputs required to install converted rules against retained state.
+// A final rule snapshot has already lost prerequisite fixup inputs, movement
+// scaling operands and overridden/default title distinctions.
+struct RuleConversionOperands {
+    struct TitleOverride {
+        std::uint8_t government = 0;
+        state::TitlePair titles;
+    };
+    std::array<std::array<state::AdvanceReference, 2>, 100> advance_prerequisites{};
+    std::array<state::AdvanceReference, 67> improvement_prerequisites{};
+    std::array<std::int32_t, 62> movement_points{};
+    std::array<std::vector<TitleOverride>, 21> title_overrides;
+};
 state::AdvanceReference advance_reference(std::string_view token) noexcept;
 state::TerrainResult terrain_result(std::string_view token, const TextCase& comparison);
 
@@ -27,7 +41,7 @@ state::TerrainResult terrain_result(std::string_view token, const TextCase& comp
 class RuleLoader {
 public:
     RuleLoader(TextReader& reader, state::RuleState& retained, TextCase comparison,
-               RuleLoadServices services = {});
+               RuleLoadServices services = {}, RuleConversionOperands* conversion = nullptr);
     void load(std::string_view filename, bool replace_leader_data);
     // Section readers start immediately after an already selected header.
     void cosmic();
@@ -63,5 +77,8 @@ private:
     state::RuleState& retained_;
     TextCase comparison_;
     RuleLoadServices services_;
+    // Optional owned-value capture, never a callback/reentry boundary. Only a
+    // successful full load with replace_leader_data=true yields complete operands.
+    RuleConversionOperands* conversion_;
 };
 } // namespace openciv::formats::classic

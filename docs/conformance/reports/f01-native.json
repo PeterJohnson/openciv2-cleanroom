@@ -1,11 +1,11 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "foundation-session-v3",
-  "createdUtc": "2026-11-14T21:37:50.960040+00:00",
-  "implementationRevision": "df98d2e561563668806e582de9414cf806ce8f4b",
+  "createdUtc": "2026-11-14T21:59:25.459855+00:00",
+  "implementationRevision": "1183c1fcc35ded981c2e7af958f98638aef5255a",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "df7d90b029c6ff2e7899b5c3f327bbf5ac8d1030d4ccc810e93beacc90c61e93",
+    "CMakeLists.txt": "a6821bab250f8b570333e0ca84f19ac8dba9adbd09ad996bc2e6fb36a258443c",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
     "cmake/ConformanceIdentity.cmake": "1136c7b0ddaebf235616416ff72bc569f8e72bf23632bf65ccb6c67894e2d95f",
@@ -79,7 +79,7 @@
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "df7d90b029c6ff2e7899b5c3f327bbf5ac8d1030d4ccc810e93beacc90c61e93",
+      "CMakeLists.txt": "a6821bab250f8b570333e0ca84f19ac8dba9adbd09ad996bc2e6fb36a258443c",
       "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
       "cmake/ConformanceIdentity.cmake": "1136c7b0ddaebf235616416ff72bc569f8e72bf23632bf65ccb6c67894e2d95f",
@@ -146,7 +146,7 @@
     "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n"
   },
   "adapterArtifacts": {
-    "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_conformance_adapter.exe": "c6f528ea3311b1011b334dfb64f20c04d5f38e420bcceeab1a15c6a265a4a770"
+    "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_conformance_adapter.exe": "8133292fce4989fe049b46b47f8090def9575dd90b075845efeb56fd02a71be1"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n",

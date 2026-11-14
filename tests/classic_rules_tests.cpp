@@ -67,6 +67,64 @@ void reference_error(Action action, int code, std::size_t row, int position,
 }
 } // namespace
 
+TEST_CASE("F03 conversion captures installation operands before lossy normalization",
+          "[classic][rules][conversion]") {
+    auto sections = complete_sections();
+    sections[1] = "@CIVILIZE\nDisabled,3,1,no,nil,0,3\nDependent,3,1,AFl,nil,0,3\n; stop\n";
+    sections[2] = "@IMPROVE\nBuilding,10,1,AFl\n" + repeat("Building,10,1,nil", 66);
+    sections[4] = "@UNITS\nWrapped,no,0,259,0,1,1,3,1,10,0,0,nil,0\n; stop\n";
+    sections[7] =
+        "@LEADERS\n" +
+        repeat("Leader,Leader,1,1,0,Plural,Example,0,0,0,1,First,First Lady,1,Last,Last Lady", 21);
+    std::string bytes;
+    for (const auto& section : sections)
+        bytes += section;
+    Fixture captured(bytes), baseline(bytes);
+    RuleConversionOperands operands;
+    RuleLoader loader(captured.reader, captured.retained, ascii_text_case(), {}, &operands);
+    loader.load("RULES", true);
+    baseline.loader().load("RULES", true);
+    CHECK(captured.retained.definitions == baseline.retained.definitions);
+    CHECK(captured.retained.names == baseline.retained.names);
+    CHECK(captured.retained.leaders == baseline.retained.leaders);
+    CHECK(operands.advance_prerequisites[1][0] == static_cast<state::AdvanceReference>(0));
+    CHECK(captured.values->advances[1].prerequisites[0] == state::AdvanceReference::never);
+    CHECK(operands.improvement_prerequisites[0] == static_cast<state::AdvanceReference>(0));
+    CHECK(captured.values->improvements[0].prerequisite == state::AdvanceReference::never);
+    CHECK(operands.movement_points[0] == 259);
+    CHECK(captured.values->units[0].movement == 9);
+    CHECK(captured.values->units[0].hit_points == 30);
+    CHECK(operands.movement_points[1] == 0);
+    CHECK(operands.advance_prerequisites[2][0] == state::AdvanceReference::never);
+    REQUIRE(operands.title_overrides[0].size() == 2);
+    CHECK(operands.title_overrides[0][0].government == 1);
+    CHECK(operands.title_overrides[0][0].titles.male.classic == "First");
+    CHECK(operands.title_overrides[0][1].government == 1);
+    CHECK(operands.title_overrides[0][1].titles.male.classic == "Last");
+    CHECK(captured.values->tribes[0].titles[1].male.classic == "Last");
+    CHECK(captured.values->tribes[0].titles[2] == captured.values->governments[2].titles);
+    captured.bytes.clear();
+    for (const auto& section : complete_sections())
+        captured.bytes += section;
+    loader.load("RULES", true);
+    CHECK(operands.movement_points[0] == 2);
+    CHECK(operands.advance_prerequisites[1][0] == state::AdvanceReference::none);
+    CHECK(operands.improvement_prerequisites[0] == state::AdvanceReference::none);
+    for (const auto& titles : operands.title_overrides)
+        CHECK(titles.empty());
+}
+
+TEST_CASE("F03 conversion refuses an incomplete retained-leader projection before loading",
+          "[classic][rules][conversion]") {
+    Fixture f("@COSMIC\n");
+    RuleConversionOperands operands;
+    const auto before = f.retained.definitions;
+    RuleLoader loader(f.reader, f.retained, ascii_text_case(), {}, &operands);
+    CHECK_THROWS_AS(loader.load("RULES", false), std::invalid_argument);
+    CHECK(f.opens.empty());
+    CHECK(f.retained.definitions == before);
+}
+
 TEST_CASE("F03 complete classic tables match independently authored native definitions",
           "[classic][rules]") {
     const auto native = rule_fixture::Input{}.load();

@@ -1,7 +1,8 @@
 # M1 classic content conversion
 
 M1-02 requires three component conversions. CITYPREF and CITY are implemented here;
-RULES remains open. These outputs are not complete playable packs. The owning
+RULES has a conversion core; its CLI publication and failure checks remain open.
+These outputs are not complete playable packs. The owning
 contracts are F03 section 8, C01 default naming, the native component schemas and the finite
 [M1-02 acceptance matrix](m1-closeout.md#m1-02-content-and-conversion-matrix).
 
@@ -93,3 +94,40 @@ seven cases with 84,298 assertions; the rules/content CLI suite has fourteen tes
 Logs are `build/city-conversion-{native,wasm}-{build,ctest}.log`. The 57-vector
 conformance execution and metadata checks pass on both platforms; their adapter
 implementation/build inputs are unchanged from the retained CITYPREF reports.
+
+## RULES conversion core (publication still open)
+
+`formats::content::convert_rules` accepts an explicit source and comparison
+profile. It reads all twelve F03 tables through the existing classic loader and
+emits separate `openciv2-rules/1` and `openciv2-classic-compatibility/1` bytes.
+Stable IDs use `classic.<lowercase collection>.<zero-based row>`; the mapping
+records the actual external slot, including ORDERS slots 1–12. Names never define
+identity. Short advance/unit tables materialize their classic defaults.
+
+The parser optionally captures the installation operands a final snapshot loses:
+pre-fixup prerequisites, unscaled movement and ordered title overrides. The
+converter retains these, emits final HP once, preserves the defined ability bits
+and records bit 15 in compatibility metadata. Other normalized scalar values
+are idempotent native inputs. Unsupported numeric enum codes, HP results outside
+the native domain and malformed classic references reject. Classic loading
+without capture keeps its existing domain and behavior.
+
+Before returning bytes, the core runs the native validator and installer and
+requires equality of all resolved rule definitions with the classic result.
+The receipt identifies conversion `classic-rules/1`, source and both output
+hashes/formats, profile, builtin gameplay hash used for validation and explicit
+unsupported/lossy arrays. This is component conversion, not a playable pack.
+
+Portable tests compare all twelve tables with the independent authored native
+fixture, and pair retained-name reloads against the classic loader after changing
+the live road multiplier, advance availability and government titles. They cover
+raw movement wrapping, once-only HP normalization, short-table defaults, reversible
+text, ordered duplicate title overrides, retained ability bits and rejection.
+The CLI's new-destination publication, source preservation and output-failure
+evidence are still required before M1-02 can pass.
+
+Core validation passes five focused RULES/capture cases with 77 assertions on
+Windows and WASM, all 570 native CTests, and seven WASM targets (546 portable
+cases, 290,558 assertions). The 57 conformance observations and consumed prefixes
+remain identical across platforms and prior reports. Local logs are
+`build/rule-conversion-{native,wasm}-{build,ctest,vectors}.log`.

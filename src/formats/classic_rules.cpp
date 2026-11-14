@@ -60,9 +60,9 @@ TerrainResult terrain_result(std::string_view token, const TextCase& comparison)
                                 : static_cast<TerrainResult>(found - codes.begin());
 }
 RuleLoader::RuleLoader(TextReader& reader, RuleState& retained, TextCase comparison,
-                       RuleLoadServices services)
+                       RuleLoadServices services, RuleConversionOperands* conversion)
     : reader_(reader), rules_(retained.definitions), retained_(retained),
-      comparison_(std::move(comparison)), services_(std::move(services)) {
+      comparison_(std::move(comparison)), services_(std::move(services)), conversion_(conversion) {
     if (!comparison_.equal)
         throw std::invalid_argument("Rule loading requires a comparison service");
     if (!retained_.text.size())
@@ -108,6 +108,8 @@ void RuleLoader::fail(RuleLoadFault fault, std::string_view section, std::size_t
     throw error;
 }
 void RuleLoader::load(std::string_view filename, bool replace_leader_data) {
+    if (conversion_ && !replace_leader_data)
+        throw std::invalid_argument("Complete conversion operands require replacement leader data");
     // Own the request across file callbacks and retained-state changes.
     const std::string owned_filename(filename);
     section(owned_filename, "COSMIC");
@@ -144,6 +146,9 @@ void RuleLoader::cosmic() {
     }
 }
 void RuleLoader::advances(bool keep_names) {
+    if (conversion_)
+        for (auto& pair : conversion_->advance_prerequisites)
+            pair.fill(AdvanceReference::never);
     rules_.enabled_advance_count = 0;
     for (auto& row : rules_.advances) {
         row.prerequisites.fill(AdvanceReference::never);
@@ -167,6 +172,8 @@ void RuleLoader::advances(bool keep_names) {
         row.epoch = static_cast<AdvanceEpoch>(rules::code8(reader_.next_integer()));
         row.category = static_cast<AdvanceCategory>(rules::code8(reader_.next_integer()));
         row.enabled = row.prerequisites[0] != AdvanceReference::never;
+        if (conversion_)
+            conversion_->advance_prerequisites[i] = row.prerequisites;
     }
     for (; i < rules_.advances.size(); ++i) {
         auto& row = rules_.advances[i];
@@ -197,6 +204,8 @@ void RuleLoader::improvements(bool keep_names) {
         row.prerequisite = advance_reference(reader_.next_token());
         if (row.prerequisite == AdvanceReference::invalid)
             fail(RuleLoadFault::reference, "IMPROVE", i, 0, -5);
+        if (conversion_)
+            conversion_->improvement_prerequisites[i] = row.prerequisite;
         row.prerequisite = rules::follow_disabled(row.prerequisite, rules_.advances);
     }
 }
@@ -210,6 +219,8 @@ void RuleLoader::wonder_expiry() {
     }
 }
 void RuleLoader::units(bool keep_names) {
+    if (conversion_)
+        conversion_->movement_points.fill(0);
     retained_.double_movement_applied = false;
     for (auto& row : rules_.units)
         row.prerequisite = AdvanceReference::never;
@@ -222,8 +233,11 @@ void RuleLoader::units(bool keep_names) {
         name_into(row.identity.name, retained_.names.units[i], true, keep_names);
         row.obsolete_by = advance_reference(reader_.next_token());
         row.domain = static_cast<RuleDomain>(rules::code8(reader_.next_integer()));
+        const auto movement_points = reader_.next_integer();
+        if (conversion_)
+            conversion_->movement_points[i] = movement_points;
         row.movement = rules::normalize_movement(
-            reader_.next_integer(), rules_.cosmic[CosmicParameter::road_movement_multiplier]);
+            movement_points, rules_.cosmic[CosmicParameter::road_movement_multiplier]);
         row.range = rules::code8(reader_.next_integer());
         row.attack = rules::code8(reader_.next_integer());
         row.defense = rules::code8(reader_.next_integer());
@@ -289,7 +303,11 @@ void RuleLoader::governments() {
     }
 }
 void RuleLoader::leaders(bool replace) {
+    if (conversion_ && !replace)
+        throw std::invalid_argument("Conversion title operands require replacement leader data");
     for (std::size_t i = 0; i < rules_.tribes.size(); ++i) {
+        if (conversion_)
+            conversion_->title_overrides[i].clear();
         reader_.next_line();
         auto& row = rules_.tribes[i];
         auto& live = retained_.leaders[i];
@@ -327,6 +345,9 @@ void RuleLoader::leaders(bool replace) {
             const auto g = static_cast<std::size_t>(government);
             leader_name(row.titles[g].male, live.titles[g][0], false, replace);
             leader_name(row.titles[g].female, live.titles[g][1], false, replace);
+            if (conversion_)
+                conversion_->title_overrides[i].push_back(
+                    {static_cast<std::uint8_t>(g), row.titles[g]});
         }
     }
 }
