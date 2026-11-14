@@ -89,4 +89,8 @@ struct GlobalValues {
     std::array<std::uint8_t, 8> power_rank{}, civ_by_rank{};
     bool operator==(const GlobalValues&) const = default;
 };
+// F06 section 6 stage 17, after names restore and before rule reloads.
+// Rebuilds only active/in-production counts, modulo 256; retained losses and
+// strategic summaries survive. Unsupported type access stops after prior effects.
+void rebuild_loaded_unit_census(std::span<Civilization, 8> civilizations, const EntityPools& pools);
 } // namespace openciv::state

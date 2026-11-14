@@ -2,8 +2,8 @@
 
 M1 remains in progress. This slice adds the complete **stored-file view for
 version `0x2c`** and its lossless re-encoding. It does not implement F06's ordered
-session load, live save operation or resumed gameplay. Separate ordered leader
-I/O and name-restoration operations are now implemented below.
+session load, live save operation or resumed gameplay. Separate ordered
+persistent-record, leader and census operations are implemented below.
 
 ## Record and file boundary
 
@@ -61,6 +61,47 @@ Malformed input throws `DecodeError` with a file-wide byte offset and leaves
 input and live state unchanged. Successful structural decoding is not semantic
 validation; rules and cross-record consistency still need their own checks.
 
+## Ordered persistent records and load census
+
+`formats/world_record_io.hpp` implements F06 §6 stages 5–6 and §7 over supplied
+live global/name/civilization records, after the parent's header and rule setup.
+It accepts the core reader's `0x26`, `0x27`, `0x28` and `0x2c` versions. This
+does not expand the complete stored-file decoder's `0x2c` admission boundary.
+
+Current records arrive as three items: globals, eight name records, then eight
+civilization records. Legacy records use the specified four global fragments,
+name-array item and nine items per civilization, including the required discarded
+byte. The old path first clears the specified technology and census arrays;
+omitted tails remain zero, while the unrepresented civilization byte at `0x65`
+retains its incoming value. Each item publishes its transferred prefix, including
+a full transfer reported as failed. Untouched bytes retain live values after the
+item service returns. No later item is attempted after failure.
+
+Enemy count is recomputed modulo 256 immediately after successful global input,
+before names. Scenario capture, cheat/reveal/history changes and clearing the
+saved-as-scenario flag occur only after all civilization input succeeds. A failed
+read preserves the caller's prior scenario output. `write_persistent_items`
+emits the three current blocks using values observed at their individual write
+boundaries; the parent still owns scenario-export preparation and other blocks.
+
+`state::rebuild_loaded_unit_census` implements the later F06 §6 stage 17. For
+each civilization, it clears active and in-production counts, then scans live
+unit slots and nonnegative city production. Counts wrap modulo 256. Free slots,
+records beyond the scan bound and owners outside 0…7 contribute nothing. Losses
+and other retained summaries survive. A live matching-owner type outside the
+62-counter backing stops before that increment, retaining prior effects.
+
+Eleven authored native/WASM cases cover all supported record versions, every
+partial global prefix, partial array records, failure at each legacy item,
+preclear/retained tails, live callbacks, scenario flag combinations, census wrap
+and safe stops. An integration case reads persistent records and entities into
+`GameState`, renews tokens through the existing entity reader, and verifies that
+stored counts survive until the explicit census phase. In particular, renewal
+to token zero affects the later count. These are specification/regression tests,
+not original execution or X02 fixtures. The parent must still establish pool
+scan backing and sequence the intervening map, leader, multiplayer and event
+stages; these APIs do not admit a running session.
+
 ## Ordered leader and name operations
 
 `formats/leader_io.hpp` supplies F06 §6 stage 8 and the name phases of §§5–6.
@@ -105,8 +146,8 @@ label-magnitude comparison; it does not execute the original again or run the
 remaining ordered load stages. The report retains the earlier LABELS-provenance
 limitation and pins the comparison executable and input bytes.
 
-Full path/rule reload orchestration, earlier/later stream blocks, passwords,
-events, census/reload/layout completion, mode adaptation and live-session
+Full path/rule reload orchestration, remaining stream blocks, passwords,
+events, rule-reload/layout completion, mode adaptation and live-session
 admission remain open. No loaded-world claim follows from these isolated stages.
 
 ## Windows evidence — 2026-11-13 Pacific
