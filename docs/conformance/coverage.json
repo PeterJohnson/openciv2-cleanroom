@@ -761,10 +761,10 @@
     },
     {
       "id": "x02-general-runner",
-      "milestone": "M1",
-      "domain": "M1-03 independent review and execution of the enumerated 15 operations and 57 baseline fixture IDs; whole-game providers join M3\u2013M7.",
-      "knownPrefix": "All 57 vectors execute on native/WASM, including three F02.prepareNewGame projections with declared exclusions. Generic logical values, sampling laws/policy replay, identity/reservation, geometry and supplied-child city dispatch are implemented. Independent fixture review remains open. Blob/provider/queue/general composite support is not claimed.",
-      "closureEvidence": "Complete M1-03 only: record per-fixture independent review, resolve findings in that surface, map eight existing integration families, and compare final native/WASM observations. M1-01 checkpoint tests and M1-02 conversion tests may remain Catch2/CLI evidence. Broader runner/provider work is deferred to M3\u2013M7."
+      "milestone": "M3-M7",
+      "domain": "Broader blob/provider/queue/composite support beyond the fixed M1 foundation surface.",
+      "knownPrefix": "M1-03 passed: separate review of all 57 fixtures, two domain-label corrections independently verified, eight-family integration mapping, and matching native/WASM observations and consumed prefixes. See docs/m1-conformance-review.md and revision 5f1908e. Fresh-game exclusions and supplied C03 children remain explicit.",
+      "closureEvidence": "Register and verify broader runner/provider support with its owning M3-M7 gameplay work; the fixed M1-03 surface is closed."
     },
     {
       "id": "integration-fixtures",
@@ -789,24 +789,24 @@
     },
     {
       "id": "stock-content",
-      "milestone": "M1\u2013M5",
+      "milestone": "M2-M5",
       "domain": "M1-02 bounded rules/city-name/city-preference conversion; complete native catalogs, events, media and playable defaults in M2\u2013M5.",
-      "knownPrefix": "The manifest resolver, six gameplay components, native/classic rules, city preferences and city-name providers have typed implementations and paired authored tests. P04 label/popup readers are implemented. Complete playable catalogs, full comparison profiles, reverse/resource converters and mechanic consumers remain open.",
-      "closureEvidence": "For M1, implement only M1-02 in docs/m1-closeout.md: three classic-to-native component conversions, paired semantic checks, explicit unsupported-domain diagnostics and receipts. Complete other component semantics, full comparison profiles, default locale packs, events/media, standalone play and reverse classic exports with M2\u2013M5; peer integration is M6."
+      "knownPrefix": "The manifest resolver, six gameplay components, native/classic rules, city preferences and city-name providers have typed implementations and paired authored tests. P04 label/popup readers are implemented. Complete playable catalogs, full comparison profiles, reverse/resource converters and mechanic consumers remain open. M1-02 passed at d65e659: RULES, CITY and CITYPREF conversion with paired comparisons, explicit domain diagnostics and publication receipts; see docs/m1-content-conversion.md.",
+      "closureEvidence": "Complete other component semantics, full comparison profiles, default locale packs, events/media, standalone play and reverse classic exports with M2-M5; peer integration is M6. The three M1-02 conversion rows are closed."
     },
     {
       "id": "original-access",
-      "milestone": "M1\u2013M7",
+      "milestone": "M3-M7",
       "domain": "M1-04 fixed current-save/raw-map acceptance procedure; broader version/mode/mixed-peer interoperability and W02 measurements in M3\u2013M7.",
-      "knownPrefix": "Historical evidence includes seven raw-map and 21 current-save codec reconstructions, original acceptance of stored/live exports, an original TCP ID greeting and UDP discovery, and a failed TCP ping. Current live-save behavior changed at b125df5, so older captures do not validate that exporter revision.",
-      "closureEvidence": "M1-04 names the only required final-candidate original checks and artifact hashes. Missing files/executable/UI access is an external blocker, not permission to expand implementation. Retain the failed ping honestly; full TCP sessions, mixed-peer codecs and reverse-role play are M6."
+      "knownPrefix": "Historical evidence includes seven raw-map and 21 current-save codec reconstructions, original acceptance of stored/live exports, an original TCP ID greeting and UDP discovery, and a failed TCP ping. Current live-save behavior changed at b125df5, so older captures do not validate that exporter revision. M1-04 is now passed at 2827676: current 7-map/21-save byte-exact corpus, original acceptance of current live treasury edit and raw map, original turn/resave and current codec decode. See docs/m1-original-closeout.md.",
+      "closureEvidence": "The fixed M1-04 procedure is closed. Retain the failed ping honestly; broader version/mode interoperability joins M3-M7; full TCP sessions, mixed-peer codecs and reverse-role play are M6."
     },
     {
       "id": "fresh-game-projection-review",
-      "milestone": "M1",
-      "domain": "M1-03 review of three frozen reset projections and M1-05 regression of the existing broader isolation cases.",
-      "knownPrefix": "Three authored reset vectors cover their declared projection; broader tests cover cold/reused/cancelled/failed setup, mutable content, pending commands/output and identity/RNG guards. Projection exclusions are explicit.",
-      "closureEvidence": "Review these fixture expectations independently and preserve the existing integration checks. Do not broaden the projection or implement W02/V01/balancing/AI children to close M1. Full gameplay integration belongs to M3/M4."
+      "milestone": "M3-M4",
+      "domain": "Full gameplay integration beyond the three frozen foundation reset projections.",
+      "knownPrefix": "Three authored reset vectors cover their declared projection; broader tests cover cold/reused/cancelled/failed setup, mutable content, pending commands/output and identity/RNG guards. Projection exclusions are explicit. M1-03 independent review accepted all three projections with exclusions preserved; M1-05 final regression suites passed at 5f1908e.",
+      "closureEvidence": "Frozen projection review is closed. Preserve its scope; implement and verify W02/V01/balancing/AI gameplay children with M3/M4."
     }
   ]
 }

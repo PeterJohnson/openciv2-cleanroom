@@ -16,9 +16,9 @@ cases) and all seven WASM CTest targets (522 portable Catch2 cases), including
 checks honest save finalization, coherent export snapshots, bounded compression
 and stack repair, passive diagnostics, semantic file choices and owned notices.
 Specifications F03/F06/N02/P04/U01 and the M1 exit gate describe these contracts.
-These are specification-derived checks; no new original-game file or mixed-peer
-comparison was performed, and foundation vectors do not establish those repairs'
-interoperability.
+Those historical checks were specification-derived; they did not include new
+original-game or mixed-peer comparisons. The later M1-04 observation below adds
+only its explicit current-save/raw-map acceptance evidence.
 
 Status: **in progress**. The [finite closeout contract](m1-closeout.md) is the
 authoritative work list, frozen at `b125df5`. Its seven gates and explicit stopping
@@ -41,6 +41,24 @@ No external blocker is asserted merely because a gate is open. Record the missin
 resource/reviewer/platform only after attempting the relevant work. A blocked gate
 does not count as passed. This scope update itself neither implements the open
 deliverables nor marks M1 complete.
+
+## Deferred issues and current completion decision
+
+M1 is **not complete**. M1-01 through M1-05 have evidence; M1-06 still needs
+revision-bound pinned native and sanitizer results. M1-07 cannot pass until that
+matrix passes. The coverage ledger and implementation-plan row now reflect the
+completed review/conversion/file gates without widening their domains.
+
+| Deferred issue | Owner and retained limitation |
+| --- | --- |
+| Unknown `view_civ` sentinel interpretation | M3-M5 inspection/loaded-state users; retain the diagnostic and raw stored value until the domain is specified |
+| Non-ASCII comparison coverage | M3 content consumers; reversible Windows-1252 bytes do not establish a complete case/locale comparison table |
+| F05 application reload-policy arguments | M3/M4 application/setup integration; foundation callbacks do not prove the application's eventual policy choices |
+| Broader loaded-state diagnostics | M3-M5 loaded queries and mode admission; stored inspection and bounded repairs do not imply complete live-state validation |
+| Incomplete original-peer execution | M6; retain ID/discovery observations and the failed TCP ping, with no full-session or reverse-role play claim |
+
+No deferred item is silently treated as an M1 pass. Their exclusion follows the
+finite closeout contract; they retain their owning behavioral requirements.
 
 ## Baseline evidence and later work
 
