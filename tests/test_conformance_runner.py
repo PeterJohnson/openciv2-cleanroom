@@ -126,6 +126,96 @@ class ConformanceRunnerTests(unittest.TestCase):
         self.path = self.root / f"docs/algorithms/conformance/X02-F02-{suffix}.json"
         self.case = runner.load_fixture(self.path, self.root)
 
+    def use_sampler(self, suffix):
+        self.path = self.root / f"docs/algorithms/conformance/X02-F01-sample-{suffix}.json"
+        self.case = runner.load_fixture(self.path, self.root)
+
+    def test_controlled_choice_records_are_typed_unique_and_law_checked(self):
+        self.use_sampler("gameplay-modulo")
+        changes = [
+            lambda c: c["randomness"]["choices"].append(deepcopy(c["randomness"]["choices"][0])),
+            lambda c: c["randomness"]["choices"][0].update(attempt=True),
+            lambda c: c["randomness"]["choices"][0].update(attempt=-1),
+            lambda c: c["randomness"]["choices"][0].update(call=""),
+            lambda c: c["randomness"]["choices"][0].update(law="unknown"),
+            lambda c: c["randomness"]["choices"][0]["code"].update(value="32768"),
+            lambda c: c["randomness"]["choices"][0]["code"].update({"$type": "u32"}),
+            lambda c: c["randomness"]["choices"][0]["result"].update(value="2"),
+            lambda c: c["randomness"].update(contexts={"invented": {}}),
+            lambda c: c["randomness"].update(policy={"id": "invented"}),
+        ]
+        for change in changes:
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                self.load(change)
+        self.use_sampler("zero-unit")
+        with self.assertRaisesRegex(ValueError, "mapping"):
+            self.load(lambda c: c["randomness"]["choices"][0]["result"].update(bits="8000000000000000"))
+
+    def test_replay_requires_exact_policy_domain_and_complete_matching_position(self):
+        self.use_sampler("replay-gameplay")
+        context = "gameplay/fixture"
+        changes = [
+            lambda c: c["randomness"]["policy"].update(version="1"),
+            lambda c: c["randomness"]["policy"].update(sha256="0" * 64),
+            lambda c: c["randomness"]["contexts"][context].pop("draws"),
+            lambda c: c["randomness"]["contexts"][context]["seed"].update(value="18446744073709551616"),
+            lambda c: c["randomness"]["contexts"][context]["draws"].update(value="-1"),
+            lambda c: c["randomness"]["contexts"][context]["domain"].update(value="cosmetic"),
+            lambda c: c["randomness"]["contexts"][context]["name"].update(value="other"),
+            lambda c: c["randomness"]["contexts"].update(extra={}),
+            lambda c: c["entry"]["state"]["F01.randomContexts"][context]["draws"].update(value="0"),
+            lambda c: c["randomness"].update(choices=[{}]),
+        ]
+        for change in changes:
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                self.load(change)
+
+    def test_sampler_event_identity_dependencies_context_and_law_are_required(self):
+        self.use_sampler("replay-unit")
+        changes = [
+            lambda c: c["expected"]["trace"][1].update(call="other"),
+            lambda c: c["expected"]["trace"][1]["payload"].update(site="other"),
+            lambda c: c["expected"]["trace"][1]["payload"].update(attempt=1),
+            lambda c: c["expected"]["trace"][1]["payload"]["context"].update(value="gameplay/fixture"),
+            lambda c: c["expected"]["trace"][1]["payload"]["result"].update(bits="3ff0000000000000"),
+            lambda c: c["comparison"]["order"].update(before=[["root.enter", "root.return"], ["root.return", "root.exit"]]),
+            lambda c: c["comparison"].update(traceKinds=["enter", "return", "snapshot"]),
+        ]
+        for change in changes:
+            with self.subTest(change=change), self.assertRaises(ValueError):
+                self.load(change)
+        self.use_sampler("singleton")
+        self.assertEqual(len(runner.selected_events(self.case)), 3)
+        self.assertEqual(runner.consumed_inputs(self.case)["choices"], 0)
+
+    def test_sampler_expected_values_never_enter_the_adapter(self):
+        self.use_sampler("gameplay-modulo")
+        actual = deepcopy(self.case["expected"])
+        def wrong_expectation(c):
+            c["expected"]["trace"][1]["payload"]["code"]["value"] = "32765"
+            c["expected"]["trace"][1]["payload"]["result"]["value"] = "2"
+            c["expected"]["trace"][2]["payload"]["result"]["value"] = "2"
+            c["expected"]["result"]["value"] = "2"
+        self.load(wrong_expectation)
+        with patch.object(runner.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, json.dumps(actual), "")) as invoke:
+            report = runner.execute(self.path, ["adapter"], self.root)
+        self.assertEqual(report["status"], "failed")
+        words = invoke.call_args.kwargs["input"].split()
+        self.assertEqual(words[-1], "32767")
+        self.assertNotIn("32765", words)
+        self.assertEqual(report["consumed"], {"providers": 0, "choices": 1, "events": 4})
+        self.assertEqual(report["randomness"], self.case["randomness"])
+
+    def test_sample_budget_and_replay_watchdog_fail_without_a_success_claim(self):
+        self.use_sampler("gameplay-code")
+        self.load(lambda c: c["limits"].update(events=3))
+        with patch.object(runner.subprocess, "run") as invoke:
+            self.assertEqual(runner.execute(self.path, ["adapter"], self.root)["status"], "budget-exhausted")
+            invoke.assert_not_called()
+        self.use_sampler("replay-gameplay")
+        with patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired(["adapter"], 5)):
+            self.assertEqual(runner.execute(self.path, ["adapter"], self.root)["status"], "budget-exhausted")
+
     def test_state_closure_and_array_domains_are_required_before_execution(self):
         self.use_state_case("unit-reserve-hole")
         changes = [

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Execute bounded F01/F02/W01 foundation operations from X02 v3 through C++.
 
-Python is a developer-only host driver. It never calculates the operation result
-and never sends expectations to the implementation. Unsupported case features
+Python is a developer-only host driver. It validates supplied sampling laws but
+gets actual operation results from C++; expected results never enter the adapter. Unsupported case features
 fail explicitly; this is not yet the general composite/provider/reentry runner.
 """
 import argparse
@@ -15,6 +15,8 @@ import subprocess
 import sys
 
 import check_conformance as inventory
+import conformance_random as randomness
+import conformance_values as logical
 
 ROOT = Path(__file__).resolve().parents[1]
 OPERATIONS = {
@@ -28,7 +30,9 @@ OPERATIONS = {
     "W01.weightedDistance": {"x1": "i32", "y1": "i32", "x2": "i32", "y2": "i32"},
     "W01.tileIndex": {"x": "i32", "y": "i32"},
 }
-SCOPE = "f01-f02-w01-state-v1"
+OPERATIONS.update({operation: {"domain": "text", **schema}
+                   for operation, (_, schema) in randomness.SAMPLERS.items()})
+SCOPE = "f01-f02-w01-random-v2"
 TOKEN_STATE = {"F02.nextUnitToken": "u32", "F02.nextCityToken": "u32"}
 RESERVATION_STATE = {"F02.unitEnd": "u32", "F02.unitTokenScan": "u32[]",
                      "F02.militaryCounts": "i16[]", "F02.effectiveHumanSet": "u8"}
@@ -41,6 +45,7 @@ STATES = {op: (TOKEN_STATE if op in ("F02.assignUnitToken", "F02.assignCityToken
 RESULTS = {op: ("unit-slot-or-null" if op == "F02.reserveUnitSlot" else
                 "tile-index-or-null" if op == "W01.tileIndex" else
                 "u32" if op.startswith("F02.") else "i32") for op in OPERATIONS}
+RESULTS["F01.secondaryUnit"] = "f64"
 WRITES = {op: (["F02.nextUnitToken"] if op == "F02.assignUnitToken" else
                ["F02.nextCityToken"] if op == "F02.assignCityToken" else
                ["F02.unitEnd"] if op == "F02.reserveUnitSlot" else []) for op in OPERATIONS}
@@ -56,8 +61,9 @@ ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake
                    "src/state/records.hpp", "src/state/records.cpp",
                    "src/world/geometry.hpp", "src/world/geometry.cpp",
                    "src/world/map.hpp", "src/world/map.cpp",
-                   "tools/conformance_adapter.cpp")
-RUNNER_SOURCES = ("tools/run_conformance.py", "tools/check_conformance.py")
+                   "tools/conformance_adapter.cpp", "tools/conformance_random.hpp", "tools/conformance_random.cpp")
+RUNNER_SOURCES = ("tools/run_conformance.py", "tools/check_conformance.py",
+                  "tools/conformance_values.py", "tools/conformance_random.py", randomness.POLICY_FILE)
 SOURCES = ADAPTER_SOURCES + RUNNER_SOURCES
 
 
@@ -98,21 +104,19 @@ def metadata_integer(value, label, positive=False):
 
 
 def integer(value, kind):
-    object_keys(value, "$type value", "typed integer")
-    require(value["$type"] == kind and isinstance(value["value"], str), "integer type mismatch")
-    text = value["value"]
-    require(re.fullmatch(r"0|-?[1-9][0-9]*", text) is not None, "noncanonical integer")
-    require(len(text) <= 11, "integer out of range")
-    number = int(text)
-    low, high = {"i16": (-32768, 32767), "i32": (-2147483648, 2147483647),
-                 "u8": (0, 255), "u16": (0, 65535), "u32": (0, 4294967295)}[kind]
-    require(low <= number <= high, "integer out of range")
-    return number
+    return logical.integer(value, kind)
 
 
-def state_values(state, operation, scan_length=None):
+def state_values(state, operation, scan_length=None, case=None):
     """Exact registered closure; arrays preserve every supplied slot in order."""
     require(isinstance(state, dict), "state must be an object")
+    if operation in randomness.SAMPLERS:
+        replay = case["randomness"]["mode"] == "implementation-replay"
+        object_keys(state, randomness.STATE if replay else "", "random state closure")
+        if replay:
+            domain = logical.scalar(case["boundary"]["arguments"]["domain"], "text")
+            randomness.context_values(state[randomness.STATE], domain)
+        return state
     fields = STATES[operation]
     supported(set(state) <= set(fields), "state outside supported operation closure")
     require(set(state) == set(fields), "missing registered state input")
@@ -149,7 +153,7 @@ def result_value(value, operation):
         result = integer(value, "u16" if kind == "unit-slot-or-null" else "u32")
         require(result < (2048 if kind == "unit-slot-or-null" else 32768), "slot/index exceeds capacity")
         return result
-    return integer(value, kind)
+    return logical.scalar(value, kind)
 
 
 def entry_scan_length(case):
@@ -168,16 +172,24 @@ def checked_file(root, directory, relative, digest):
     return path
 
 
-def trace_events(trace, operation, scan_length):
+def selected_events(case):
+    events = dict(EVENTS)
+    if randomness.sampling(case) and randomness.nonconstant(case["boundary"]["operation"], case["boundary"]["arguments"]):
+        events["root.sample"] = "random"
+    return events
+
+
+def trace_events(trace, operation, scan_length, case):
     require(isinstance(trace, list), "trace must be an array")
     by_id = {}
+    selected = selected_events(case)
     for seq, event in enumerate(trace):
         object_keys(event, "seq id kind call payload", "trace event")
         metadata_integer(event["seq"], "seq")
         require(event["seq"] == seq, "nonconsecutive trace sequence")
-        require(isinstance(event["id"], str) and event["id"] in EVENTS, "unknown event identity")
+        require(isinstance(event["id"], str) and event["id"] in selected, "unknown event identity")
         require(event["id"] not in by_id, "duplicate event identity")
-        require(event["kind"] == EVENTS[event["id"]] and event["call"] == "root", "event kind/call mismatch")
+        require(event["kind"] == selected[event["id"]] and event["call"] == "root", "event kind/call mismatch")
         payload = event["payload"]
         if event["kind"] == "enter":
             object_keys(payload, "operation parent arguments", "enter payload")
@@ -185,16 +197,28 @@ def trace_events(trace, operation, scan_length):
             arguments = OPERATIONS[payload["operation"]]
             object_keys(payload["arguments"], " ".join(arguments), "enter arguments")
             for key, kind in arguments.items():
-                integer(payload["arguments"][key], kind)
+                logical.scalar(payload["arguments"][key], kind)
+        elif event["kind"] == "random":
+            replay = case["randomness"]["mode"] == "implementation-replay"
+            object_keys(payload, "site attempt law arguments code result" + (" context" if replay else ""), "random payload")
+            require(payload["site"] == operation and type(payload["attempt"]) is int and payload["attempt"] == 0,
+                    "random event identity mismatch")
+            law, schema = randomness.SAMPLERS[operation]
+            require(payload["law"] == law, "random event law mismatch")
+            require(payload["result"] == randomness.mapped(law, payload["arguments"], payload["code"]),
+                    "random trace violates sampling law")
+            if replay:
+                domain = logical.scalar(case["boundary"]["arguments"]["domain"], "text")
+                require(logical.scalar(payload["context"], "text") == randomness.context_key(domain), "random event context mismatch")
         elif event["kind"] == "return":
             object_keys(payload, "result", "return payload")
             result_value(payload["result"], operation)
         else:
             object_keys(payload, "label state", "snapshot payload")
             require(payload["label"] == "exit", "invalid exit snapshot")
-            state_values(payload["state"], operation, scan_length)
+            state_values(payload["state"], operation, scan_length, case)
         by_id[event["id"]] = event
-    require(set(by_id) == set(EVENTS), "missing selected event")
+    require(set(by_id) == set(selected), "missing selected event")
     return by_id
 
 
@@ -221,6 +245,33 @@ def validate_order(order, events, registered):
     for a in events:
         for b in events:
             require(a == b or (a, b) in closure or (b, a) in closure, "unexplained incomparable events")
+
+
+def validate_randomness(case, root):
+    value = case["randomness"]
+    object_keys(value, "mode policy contexts choices", "randomness")
+    if not randomness.sampling(case):
+        supported(value == {"mode": "controlled-choices", "policy": None, "contexts": {}, "choices": []},
+                  "this operation has no random input closure")
+        return
+    domain = logical.scalar(case["boundary"]["arguments"]["domain"], "text")
+    require(domain in randomness.DOMAINS, "unknown random domain")
+    if value["mode"] == "controlled-choices":
+        require(value["policy"] is None and value["contexts"] == {}, "controlled choices cannot install generator state")
+        randomness.choices(value["choices"])
+        require(len(value["choices"]) <= 100000, "choice count exceeds adapter input bound")
+    else:
+        supported(value["mode"] == "implementation-replay", "unsupported random mode")
+        require(value["policy"] == {"id": randomness.POLICY, "version": "2",
+                                    "sha256": inventory.digest(root / randomness.POLICY_FILE)}, "random policy identity mismatch")
+        require(value["choices"] == [], "implementation replay cannot inject choices")
+        randomness.context_values(value["contexts"], domain)
+        require(case["entry"]["state"] == {randomness.STATE: value["contexts"]}, "entry/random context disagreement")
+
+
+def consumed_inputs(case):
+    return {"providers": 0, "choices": len(case["randomness"]["choices"]),
+            "events": len(selected_events(case))}
 
 
 def load_fixture(path, root=ROOT):
@@ -253,7 +304,8 @@ def load_fixture(path, root=ROOT):
     owner = op_id.split(".")[0]
     require(set(pins) == {"F01", "X01", "X02", owner}, "foundation contract pins incomplete")
     supported(boundary["level"] == "primitive" and boundary["suppliedChildren"] == [], "only leaf primitive boundaries supported")
-    start = ("pure mapping entry with explicit code argument" if owner == "F01" else
+    start = ("semantic sampler entry with explicit random inputs" if randomness.sampling(case) else
+             "pure mapping entry with explicit code argument" if owner == "F01" else
              "state primitive entry with complete registered inputs")
     require(boundary["start"] == start and
             boundary["stop"] == "normal return followed by exit snapshot", "unsupported start/stop boundary")
@@ -261,19 +313,30 @@ def load_fixture(path, root=ROOT):
     operation = next((row for row in registry["operations"] if row["id"] == boundary["operation"]), None)
     require(operation is not None and operation["owner"] == owner and
             operation["arguments"] == arguments and operation["result"] == RESULTS[op_id], "adapter/registry contract mismatch")
-    require(operation["reads"] == list(STATES[op_id]) and operation["writes"] == WRITES[op_id],
+    registered_states = ({randomness.STATE: "random-contexts-v2"} if randomness.sampling(case) else STATES[op_id])
+    require(operation["reads"] == list(registered_states) and
+            operation["writes"] == ([randomness.STATE] if randomness.sampling(case) else WRITES[op_id]),
             "adapter/registry state closure mismatch")
     state_registry = {row["id"]: row for row in registry["states"]}
     require(all(key in state_registry and state_registry[key]["valueType"] == kind
-                for key, kind in STATES[op_id].items()), "adapter/registry state type mismatch")
+                for key, kind in registered_states.items()), "adapter/registry state type mismatch")
+    possible_events = set(EVENTS) | ({"root.sample"} if randomness.sampling(case) else set())
+    require(isinstance(operation["dependencies"], list) and all(
+        isinstance(edge, list) and len(edge) == 2 and all(isinstance(key, str) and key in possible_events for key in edge)
+        for edge in operation["dependencies"]), "unknown registered dependency")
     require(all(operation[key] == [] for key in ("callbacks", "suppliedChildren", "acceptedFaults", "partialEffects", "independenceClaims"))
-            and operation["invocation"] == "root" and len(operation["events"]) == 3 and
-            set(operation["events"]) == set(EVENTS) and
+            and operation["invocation"] == "root" and len(operation["events"]) == len(possible_events) and
+            set(operation["events"]) == possible_events and
             operation["stopBoundaries"] == ["normal return followed by exit snapshot"], "adapter cannot satisfy registry closure")
+    if randomness.sampling(case):
+        require(operation.get("conditionalEvents") == {"root.sample": "nonconstant decision"} and
+                operation.get("randomStateModes") == ["implementation-replay"], "sampler conditional closure mismatch")
     object_keys(boundary["arguments"], " ".join(arguments), "arguments")
-    values = {key: integer(boundary["arguments"][key], kind) for key, kind in arguments.items()}
+    values = {key: logical.scalar(boundary["arguments"][key], kind) for key, kind in arguments.items()}
     if boundary["operation"] == "F01.primaryModuloFromCode":
         require(0 <= values["code"] <= 32767 and values["n"] > 0, "primary mapping precondition")
+    if op_id == "F01.primaryModulo":
+        require(values["n"] > 0, "primary divisor must be positive")
     if op_id == "F02.reserveUnitSlot":
         require(values["owner"] < 8, "civilization owner outside 0..7")
     profile = case["profile"]
@@ -283,31 +346,37 @@ def load_fixture(path, root=ROOT):
     supported(profile["restrictions"] == profile["deviations"] == [], "restricted/deviating comparisons not implemented")
     object_keys(case["entry"], "state retainedInputs blobs", "entry")
     supported(case["entry"]["retainedInputs"] == case["entry"]["blobs"] == [], "retained-input/blob installation not implemented")
-    state_values(case["entry"]["state"], op_id)
+    validate_randomness(case, root)
+    state_values(case["entry"]["state"], op_id, case=case)
     scan_length = entry_scan_length(case)
-    state_values(case["entry"]["state"], op_id, scan_length)
-    object_keys(case["randomness"], "mode policy contexts choices", "randomness")
-    supported(case["randomness"] == {"mode": "controlled-choices", "policy": None, "contexts": {}, "choices": []}, "only operations without random consumption supported; no RNG fallback")
+    state_values(case["entry"]["state"], op_id, scan_length, case)
     object_keys(case["environment"], "protocol inputs unexpected", "environment")
     supported(case["environment"] == {"protocol": "scripted-v1", "inputs": [], "unexpected": "fail"}, "providers/reentry not implemented")
     expected = case["expected"]
     object_keys(expected, "outcome result state trace", "expected")
     supported(expected["outcome"] == "return", "only normal returns supported")
-    state_values(expected["state"], op_id, scan_length)
+    state_values(expected["state"], op_id, scan_length, case)
     result_value(expected["result"], op_id)
-    events = trace_events(expected["trace"], op_id, scan_length)
+    events = trace_events(expected["trace"], op_id, scan_length, case)
     require(events["root.enter"]["payload"] == {"operation": boundary["operation"], "parent": None, "arguments": boundary["arguments"]}, "entry trace does not match boundary")
     require(events["root.return"]["payload"]["result"] == expected["result"], "return trace/result disagreement")
     require(events["root.exit"]["payload"]["state"] == expected["state"], "exit trace/state disagreement")
+    if "root.sample" in events:
+        sample = events["root.sample"]["payload"]
+        require(sample["arguments"] == {key: boundary["arguments"][key] for key in randomness.SAMPLERS[op_id][1]},
+                "sample arguments disagree with operation boundary")
+        require(sample["result"] == expected["result"], "sample/return disagreement")
     comparison = case["comparison"]
     object_keys(comparison, "stateScope traceKinds order exclusions normalizations", "comparison")
     supported(comparison["stateScope"] == "complete-boundary" and comparison["exclusions"] == comparison["normalizations"] == [], "projected/normalized comparisons not implemented")
-    require(isinstance(comparison["traceKinds"], list) and len(comparison["traceKinds"]) == 3 and
-            all(isinstance(kind, str) for kind in comparison["traceKinds"]) and set(comparison["traceKinds"]) == set(EVENTS.values()), "mandatory trace kinds missing or duplicated")
-    validate_order(comparison["order"], events, operation["dependencies"])
+    required_kinds = set(selected_events(case).values())
+    require(isinstance(comparison["traceKinds"], list) and len(comparison["traceKinds"]) == len(required_kinds) and
+            all(isinstance(kind, str) for kind in comparison["traceKinds"]) and set(comparison["traceKinds"]) == required_kinds, "mandatory trace kinds missing or duplicated")
+    validate_order(comparison["order"], events,
+                   [edge for edge in operation["dependencies"] if all(key in events for key in edge)])
     evidence = case["evidence"]
     object_keys(evidence, "kind sources limitations", "evidence")
-    supported(evidence["kind"] == "specification-vector", "only specification-vector provenance supported")
+    supported(evidence["kind"] in ("specification-vector", "implementation-regression"), "unsupported fixture provenance")
     require(isinstance(evidence["sources"], list) and evidence["sources"], "missing evidence sources")
     require(isinstance(evidence["limitations"], list), "limitations must be an array")
     for limitation in evidence["limitations"]:
@@ -315,7 +384,10 @@ def load_fixture(path, root=ROOT):
     for source in evidence["sources"]:
         object_keys(source, "file section sha256", "evidence source")
         resolved = checked_file(root, path.parent, source["file"], source["sha256"])
-        require(resolved in {(root / specs[key]["path"]).resolve() for key in pins}, "evidence outside pinned specifications")
+        allowed_sources = {(root / specs[key]["path"]).resolve() for key in pins}
+        if evidence["kind"] == "implementation-regression" and randomness.sampling(case):
+            allowed_sources.add((root / randomness.POLICY_FILE).resolve())
+        require(resolved in allowed_sources, "evidence outside pinned contracts")
         name(source["section"], "source section")
         inventory.anchor(root, f"{resolved.relative_to(root).as_posix()}#{source['section']}")
     object_keys(case["limits"], "events providerRequests hostMilliseconds", "limits")
@@ -329,8 +401,8 @@ def compare(case, actual):
     object_keys(actual, "outcome result state trace", "adapter output")
     operation = case["boundary"]["operation"]
     result_value(actual["result"], operation)
-    state_values(actual["state"], operation, entry_scan_length(case))
-    events = trace_events(actual["trace"], operation, entry_scan_length(case))
+    state_values(actual["state"], operation, entry_scan_length(case), case)
+    events = trace_events(actual["trace"], operation, entry_scan_length(case), case)
     for key in ("outcome", "result", "state"):
         if actual[key] != case["expected"][key]:
             return {"surface": key, "expected": case["expected"][key], "actual": actual[key]}
@@ -354,16 +426,17 @@ def execute(path, command, root=ROOT):
         report.update(id=case["id"], revision=case["revision"], operation=case["boundary"]["operation"],
                       evidenceKind=case["evidence"]["kind"], specifications=case["specifications"],
                       target=case["target"], profile=case["profile"], evidence=case["evidence"],
+                      randomness=case["randomness"],
                       comparison=case["comparison"], limits=case["limits"])
     except UnsupportedFixture as error:
         return {**report, "status": "unsupported-fixture", "error": str(error)}
     except (ValueError, KeyError, TypeError, OSError, RecursionError) as error:
         return {**report, "status": "invalid-fixture", "error": str(error)}
-    if case["limits"]["events"] < 3:
-        return {**report, "status": "budget-exhausted", "error": "three required events exceed event limit"}
+    if case["limits"]["events"] < len(selected_events(case)):
+        return {**report, "status": "budget-exhausted", "error": "required events exceed event limit"}
     operation = case["boundary"]["operation"]
     args = [case["boundary"]["arguments"][key]["value"] for key in OPERATIONS[operation]]
-    state = state_values(case["entry"]["state"], operation, entry_scan_length(case))
+    state = state_values(case["entry"]["state"], operation, entry_scan_length(case), case)
     # The adapter receives only actual inputs. State travels on stdin to avoid
     # platform command-line limits; field order belongs to this test protocol.
     words = []
@@ -375,6 +448,8 @@ def execute(path, command, root=ROOT):
             words.append("1" if value else "0")
         else:
             words.append(str(value))
+    if randomness.sampling(case):
+        words = randomness.input_words(case)
     try:
         process = subprocess.run([*command, operation, *args], capture_output=True, text=True,
                                  encoding="utf-8", input="\n".join(words) + ("\n" if words else ""),
@@ -385,7 +460,7 @@ def execute(path, command, root=ROOT):
                             parse_constant=reject_nonfinite)
         mismatch = compare(case, actual)
         return {**report, "status": "failed" if mismatch else "passed", "firstMismatch": mismatch,
-                "actual": actual, "consumed": {"providers": 0, "choices": 0, "events": len(actual["trace"])}}
+                "actual": actual, "consumed": {**consumed_inputs(case), "events": len(actual["trace"])}}
     except subprocess.TimeoutExpired:
         return {**report, "status": "budget-exhausted", "error": "host watchdog expired"}
     except (OSError, ValueError, KeyError, TypeError) as error:

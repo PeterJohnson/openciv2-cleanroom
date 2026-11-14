@@ -133,7 +133,7 @@ def validate(root=ROOT):
             require(item["executionStatus"] in {"passed", "failed"}, "unknown execution status")
             require(op["implementation"] is not None, "unimplemented operation claimed executed")
             report = read_json(local_file(root, item["runReport"]))
-            from run_conformance import SCOPE, SOURCES, compare, load_fixture, validate_adapter_identity
+            from run_conformance import SCOPE, SOURCES, compare, load_fixture, validate_adapter_identity, consumed_inputs
             require(report["format"] == "openciv2-conformance-run/2" and report["runnerScope"] == SCOPE,
                     "unsupported execution report")
             require(set(report["implementationSources"]) == set(SOURCES), "incomplete implementation identity")
@@ -150,6 +150,7 @@ def validate(root=ROOT):
             require(case["specifications"] == fixture["specifications"] and
                     case["comparison"] == fixture["comparison"] and case["profile"] == fixture["profile"] and
                     case["evidence"] == fixture["evidence"] and case["target"] == fixture["target"] and
+                    case["randomness"] == fixture["randomness"] and
                     case["limits"] == fixture["limits"],
                     "execution report contract mismatch")
             require(case["status"] == item["executionStatus"], "execution report status mismatch")
@@ -157,7 +158,7 @@ def validate(root=ROOT):
                 load_fixture(path, root)  # Enforce the registered state/typed-value closure too.
                 require(compare(fixture, case["actual"]) is None and case["firstMismatch"] is None,
                         "execution report does not match fixture")
-                require(case["consumed"] == {"providers": 0, "choices": 0, "events": 3}, "execution report consumption mismatch")
+                require(case["consumed"] == consumed_inputs(fixture), "execution report consumption mismatch")
 
     gaps = indexed(ledger["gaps"], "gap")
     for gap in gaps.values():

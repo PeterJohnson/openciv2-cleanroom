@@ -7,7 +7,7 @@ the native `oc2` CLI; the Linux/WASM evidence below describes the earlier slices
 Implemented foundations include F01 numeric
 primitives and isolated random contexts in standard-library-only `oc2_base`,
 F02 entity records/pools and W01 map foundations in `oc2_game`, initial F06 codecs
-in `oc2_formats`, and a bounded developer runner for nine registered X02 operations. No reconstruction
+in `oc2_formats`, and a bounded developer runner for thirteen registered X02 operations. No reconstruction
 source, legacy harness, original executable or asset checkout is a code input.
 
 ## Implemented boundary
@@ -45,7 +45,8 @@ source, legacy harness, original executable or asset checkout is a code input.
   The [record/codec handoff](m1-windows-handoff.md) documents the implemented
   boundary, external original-map comparisons and remaining save/session work.
 
-The nine registered adapters produce actual entry/return/exit traces.
+The thirteen registered adapters produce actual entry/return/exit traces and
+conditional random events for the four semantic sampling operations.
 `oc2_conformance_adapter` is a test executable, not a save-inspection CLI or game
 console. It receives only operation names and canonical decimal arguments; it
 never reads expected results. C++ implementations are identical under native
@@ -181,9 +182,10 @@ unimplemented; this slice does not claim all of W01 or its gameplay consumers.
 `tools/run_conformance.py` is a Python-standard-library developer host driver;
 it invokes the adapter directly or through Node and compares its JSON output.
 The game library, ordinary builds and Catch2 tests have no Python dependency.
-The driver does not implement the tested arithmetic in Python.
+The driver obtains actual operation results from C++; it separately validates
+supplied choice codes/results against F01 before execution.
 
-The `f01-f02-w01-state-v1` scope validates exact X02 v3 structure, target/specification
+The `f01-f02-w01-random-v2` scope validates exact X02 v3 structure, target/specification
 hashes and evidence anchors, registered argument types/preconditions and the exact
 scalar/ordered-array state closure, canonical integers, typed booleans, mandatory trace identities
 and dependencies. It compares typed results, absence and complete registered state,
@@ -192,12 +194,20 @@ stale pins, omitted edges and unconsumed declared inputs cannot produce a pass.
 Extensions at the fixture root are metadata only. The adapter subprocess obeys
 the fixture's host-time watchdog; insufficient event budgets fail before entry.
 
+The four semantic F01 adapters execute keyed choice tapes and generated policy v2
+replay in all three ownership domains. They validate typed codes/results and
+record actual sampling events. Constants omit the event and consume no code.
+Replay compares the complete registered origin/position context, with exact policy
+file identity and a final-engine reconstruction check. See the
+[replay schema and its linear restoration cost](random-policy.md#portable-fixture-replay-contexts).
+
 Unregistered state types/blobs, supplied children, provider/reentry scripts,
-semantic choice tapes, implementation-replay and legacy fixtures, projections/normalizations,
+legacy-reference fixtures, projections/normalizations,
 independence declarations and non-return outcomes are explicitly unsupported.
 They are not silently discarded or treated as successful comparisons. General
-typed values, stop-prefix capture and those features remain `x02-general-runner`
-work. F01 code arguments in the three existing vectors are controlled inputs,
+logical-value validation supports every scalar tag and nested records/arrays,
+but executing additional value closures, blob loading, stop-prefix capture and
+the other features remain `x02-general-runner` work. F01 code arguments in the three original vectors are controlled inputs,
 not seeds or a test of PRNG quality.
 
 Stateful adapter inputs use canonical numeric fields on stdin in the registered
@@ -210,7 +220,9 @@ use exact JSON true/false in fixtures and 0/1 only in the internal adapter proto
 Reports retain raw fixture hashes/revisions, target/spec/evidence identities,
 implementation revision plus exact source hashes and dirty status, adapter
 binary hashes, build identity, actual traces, consumption, comparison scope,
-limits and first mismatch. The fixture expectations remain unchanged. Retained
+explicit randomness/policy inputs, limits and first mismatch. The original twenty
+fixture expectations remain unchanged; 26 new sampler cases include nineteen
+specification vectors and seven standard-engine policy regression vectors. Retained
 [native](conformance/reports/f01-native.json) and
 [WASM](conformance/reports/f01-wasm.json) reports describe the tested working-tree
 sources by hash; their base commit is not a claim that uncommitted code was in

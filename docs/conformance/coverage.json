@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 3,
+  "inventoryVersion": 4,
   "rows": [
     {
       "id": "F01.primaryModuloFromCode",
@@ -264,6 +264,152 @@
       "implementationStatus": "implemented",
       "lastRun": "docs/conformance/reports/f01-native.json",
       "gaps": []
+    },
+    {
+      "id": "F01.primaryCode",
+      "owner": "F01",
+      "operation": "F01.primaryCode",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#3-primary-sampling-law",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "function": "F01.primaryCode",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "caseIds": [
+        "X02.F01.sample-gameplay-code",
+        "X02.F01.sample-presentation-content-code",
+        "X02.F01.sample-cosmetic-code",
+        "X02.F01.sample-replay-gameplay",
+        "X02.F01.sample-replay-presentation-content",
+        "X02.F01.sample-replay-cosmetic"
+      ],
+      "comparisonSurfaces": [
+        "typed return",
+        "semantic sample identity/law/arguments/code/result",
+        "conditional event dependencies",
+        "complete registered replay context at exit"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": [
+        "x02-general-runner"
+      ]
+    },
+    {
+      "id": "F01.primaryModulo",
+      "owner": "F01",
+      "operation": "F01.primaryModulo",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#3-primary-sampling-law",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "function": "F01.primaryModulo",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "caseIds": [
+        "X02.F01.sample-gameplay-modulo",
+        "X02.F01.sample-presentation-content-modulo",
+        "X02.F01.sample-cosmetic-modulo",
+        "X02.F01.sample-large-divisor",
+        "X02.F01.sample-singleton",
+        "X02.F01.sample-replay-modulo",
+        "X02.F01.sample-replay-singleton"
+      ],
+      "comparisonSurfaces": [
+        "typed return",
+        "semantic sample identity/law/arguments/code/result",
+        "conditional event dependencies",
+        "complete registered replay context at exit"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": [
+        "x02-general-runner"
+      ]
+    },
+    {
+      "id": "F01.secondaryUnit",
+      "owner": "F01",
+      "operation": "F01.secondaryUnit",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#4-secondary-sampling-law",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "function": "F01.secondaryUnit",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "caseIds": [
+        "X02.F01.sample-gameplay-unit",
+        "X02.F01.sample-presentation-content-unit",
+        "X02.F01.sample-cosmetic-unit",
+        "X02.F01.sample-zero-unit",
+        "X02.F01.sample-replay-unit"
+      ],
+      "comparisonSurfaces": [
+        "typed return",
+        "semantic sample identity/law/arguments/code/result",
+        "conditional event dependencies",
+        "complete registered replay context at exit"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": [
+        "x02-general-runner"
+      ]
+    },
+    {
+      "id": "F01.secondaryRange",
+      "owner": "F01",
+      "operation": "F01.secondaryRange",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#4-secondary-sampling-law",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification",
+          "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0",
+          "function": "F01.secondaryRange",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "caseIds": [
+        "X02.F01.sample-gameplay-range",
+        "X02.F01.sample-presentation-content-range",
+        "X02.F01.sample-cosmetic-range",
+        "X02.F01.sample-equal-range",
+        "X02.F01.sample-reversed-range",
+        "X02.F01.sample-wrapped-range",
+        "X02.F01.sample-rounded-endpoint",
+        "X02.F01.sample-replay-equal-range"
+      ],
+      "comparisonSurfaces": [
+        "typed return",
+        "semantic sample identity/law/arguments/code/result",
+        "conditional event dependencies",
+        "complete registered replay context at exit"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": [
+        "x02-general-runner"
+      ]
     }
   ],
   "integrationFamilies": [
@@ -532,9 +678,9 @@
     {
       "id": "x02-general-runner",
       "milestone": "M1",
-      "domain": "Composite and stateful X02 fixtures beyond registered F01/F02 leaf operations.",
-      "knownPrefix": "The bounded Python runner executes F01 pure mappings and F02 token/reservation primitives through real C++ adapters. It validates scalar/ordered-array state closure and typed absence. Providers/reentry, semantic choices, implementation replay, blobs and projections remain explicitly unsupported.",
-      "closureEvidence": "Implement registered stateful adapters, complete typed values/blobs, scripted providers and callbacks, semantic choices and replay contexts, safe-stop prefixes and justified independence comparisons; attach bounded execution reports."
+      "domain": "Composite and stateful X02 fixtures beyond the thirteen registered F01/F02/W01 foundation operations.",
+      "knownPrefix": "The bounded runner executes pure mappings, token/reservation and geometry primitives, all four semantic F01 sampling laws in each domain, and policy v2 origin/position replay. Generic logical values are validated. Blob loading, providers/reentry, composite histories, safe-stop prefixes and projections remain unsupported; independent fixture review is pending.",
+      "closureEvidence": "Implement remaining owner state adapters, blob installation/hash resolution, scripted providers/callbacks, composite choice/replay histories, safe-stop prefixes and justified independence comparisons; obtain independent fixture review and attach bounded execution reports."
     },
     {
       "id": "integration-fixtures",
@@ -568,7 +714,7 @@
       "id": "original-access",
       "milestone": "M1\u2013M7",
       "domain": "Original file and mixed-peer interoperability; W02 target measurements.",
-      "knownPrefix": "User supplied an original installation at /home/peter/project/civ2/Civ2. Its civ2.exe matches the X02 target hash. Seven original raw maps decode/re-encode byte-exactly; see docs/conformance/reports/original-maps-native.json. Original execution and peer captures remain pending; no Wine/Xvfb is on PATH.",
+      "knownPrefix": "A verified original installation is available on Windows. Seven raw maps and 21 current saves reproduce through stored codecs. Independently authored original-host TCP ID and UDP discovery observations are recorded in docs/conformance/reports/original-peer-windows.json; the subsequent TCP ping timeout is preserved separately. Full file-resume and both-role peer sessions remain open.",
       "closureEvidence": "Use the verified original installation and external comparison protocol in docs/content/README.md; record original execution, bidirectional file acceptance and peer captures separately from C++ codec round trips."
     }
   ]

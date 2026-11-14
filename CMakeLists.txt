@@ -174,7 +174,7 @@ if(BUILD_TESTING)
     target_sources(oc2_tests PRIVATE tests/sqlite_export_tests.cpp)
     target_link_libraries(oc2_tests PRIVATE oc2_export_sqlite oc2_sqlite)
   endif()
-  add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp)
+  add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp tools/conformance_random.cpp)
   target_link_libraries(oc2_conformance_adapter PRIVATE oc2_game oc2_options)
   include(cmake/ConformanceIdentity.cmake)
   if(EMSCRIPTEN)
@@ -232,4 +232,8 @@ if(BUILD_TESTING AND Python3_Interpreter_FOUND)
       --build-identity "${PROJECT_BINARY_DIR}/build-identity.txt"
       --adapter ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:oc2_conformance_adapter>)
   set_tests_properties(conformance_foundations PROPERTIES LABELS "conformance;headless" TIMEOUT 30)
+  add_test(NAME conformance_sampler_rejections
+    COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tests/conformance_sampler.py"
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:oc2_conformance_adapter>)
+  set_tests_properties(conformance_sampler_rejections PROPERTIES LABELS "conformance;headless" TIMEOUT 30)
 endif()

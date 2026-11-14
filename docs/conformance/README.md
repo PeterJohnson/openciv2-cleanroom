@@ -1,10 +1,10 @@
 # Conformance inventory
 
-M0 established the checked metadata. M1 now executes three F01, seven F02 and
+M0 established the checked metadata. M1 now executes twenty-nine F01, seven F02 and
 ten W01 [X02 version 3 fixtures](../algorithms/conformance/) through real C++
 operations on native and WASM. The [bounded runner](../m1-foundations.md) checks
-pure mappings, stateful token/reservation leaves and scalar geometry; composite operations,
-providers/reentry and replay remain later M1 work. Metadata validation does not
+pure mappings, keyed sampling and policy replay, stateful token/reservation leaves
+and scalar geometry. Composite operations and providers/reentry remain later M1 work. Metadata validation does not
 execute gameplay.
 
 ```sh
@@ -19,15 +19,16 @@ clang-format. With Python available, CMake exposes `inventory-check` and CTest
 metadata tests; normal builds and headless Catch2 tests do not require Python.
 With testing and Python enabled, CTest also runs `conformance_foundations` and
 writes `conformance-results.json`. Its test-only adapter links `oc2_game` and
-`oc2_base`, never SDL.
+`oc2_base`, never SDL. `conformance_sampler_rejections` additionally executes
+negative input and watchdog checks against the compiled native/WASM adapter.
 
 ## Versioned registries
 
-[registry.json](registry.json) schema 1, inventory 3 contains:
+[registry.json](registry.json) schema 1, inventory 4 contains:
 
 - All 65 specification families, exact file hashes, specification status and
   separate registration status. This denominator counts documents, not behavior.
-- Two F01, three F02 and four W01 operation contracts, with typed
+- Six F01, three F02 and four W01 operation contracts, with typed
   arguments/results, state closure, preconditions, callbacks, stop/event boundaries,
   dependency edges and explicit
   empty independence claims. All have C++ implementations and executable
@@ -36,14 +37,18 @@ writes `conformance-results.json`. Its test-only adapter links `oc2_game` and
   entry token view, eight recorded military counts, and the effective-human mask.
   Three W01 keys cover dimensions and the current flat-world rule. Their type,
   lifetime, ordering and reference rules are registered. Full pool
-  records, retained workspaces and random contexts still need registrations.
-- Twenty fixture identities/revisions/hashes and their provenance. Each is a
-  specification vector with a passing [native report](reports/f01-native.json)
+  records and retained workspaces still need registrations. `F01.randomContexts`
+  registers a complete reachable generator through policy v2 origin/position;
+  it is omitted in controlled-choice mode. Sampling events are conditional on
+  a nonconstant decision; their registered dependency edges apply when present.
+- Forty-six fixture identities/revisions/hashes and their provenance: 39
+  specification vectors and seven explicitly labeled implementation-policy
+  regression vectors, with a passing [native report](reports/f01-native.json)
   and a separate [WASM report](reports/f01-wasm.json).
   The target executable hash in a vector is not proof of access to that image.
 
 [coverage.json](coverage.json) uses X02 §8's required row fields and dispositions.
-Rows own the nine registered operation contracts. `evidenceEntries` identify the
+Rows own the thirteen registered operation contracts. `evidenceEntries` identify the
 local specification path/hash and operation; no original function-address or
 source-fragment inventory is claimed. Do not follow the specs' reconstruction
 source links to fill these fields or extract/translate their harnesses into tests.
@@ -57,6 +62,20 @@ comparisons and no executed cases. Each gap has a bounded domain, known prefix,
 closure evidence and delivery milestone. A family description, registration,
 implementation, supplied vector and successful execution are separate facts.
 Never convert one into another or report a percentage over different denominators.
+
+The sampler cases cover all four F01 laws in each ownership domain, constants,
+reversed and wrapped ranges, endpoints, modulo bias, and replay at a known stream
+position. Replay uses the standard engine vector documented in the
+[random policy](../random-policy.md#portable-fixture-replay-contexts), not outputs
+captured from this adapter. This does not supply independent fixture review or
+an original-program observation. Context reconstruction is linear in the recorded
+position and bounded by the host watchdog; it is not a general session-save codec.
+
+The logical-value validator recognizes every X02 scalar tag, nested records and
+ordered arrays, including exact f64 bits and bounded blob references. Only the
+registered operation closures execute. Blob loading/hash resolution, scripted
+providers/reentry, safe-stop prefixes, projections and independence comparisons
+remain unsupported; accepting a tag does not imply those execution capabilities.
 
 ## Updating an operation
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "inventoryVersion": 3,
-  "scope": "Repository specification inventory; two pure F01 operations and two process token state keys. Not an exhaustive operation or original-source-entry inventory.",
+  "inventoryVersion": 4,
+  "scope": "65 specification families; thirteen registered foundation operations and ten logical state keys. Not an exhaustive operation or original-source inventory.",
   "specifications": [
     {
       "id": "A01",
@@ -839,6 +839,237 @@
       ],
       "independenceClaims": [],
       "implementation": "src/world/geometry.cpp"
+    },
+    {
+      "id": "F01.primaryCode",
+      "owner": "F01",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#3-primary-sampling-law",
+      "arguments": {
+        "domain": "text"
+      },
+      "result": "i32",
+      "reads": [
+        "F01.randomContexts"
+      ],
+      "writes": [
+        "F01.randomContexts"
+      ],
+      "preconditions": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Owned random context and tape; no mutable external aliases or providers.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.sample",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ],
+        [
+          "root.enter",
+          "root.sample"
+        ],
+        [
+          "root.sample",
+          "root.return"
+        ]
+      ],
+      "conditionalEvents": {
+        "root.sample": "nonconstant decision"
+      },
+      "randomStateModes": [
+        "implementation-replay"
+      ],
+      "independenceClaims": [],
+      "implementation": "src/base/random.hpp"
+    },
+    {
+      "id": "F01.primaryModulo",
+      "owner": "F01",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#3-primary-sampling-law",
+      "arguments": {
+        "domain": "text",
+        "n": "i32"
+      },
+      "result": "i32",
+      "reads": [
+        "F01.randomContexts"
+      ],
+      "writes": [
+        "F01.randomContexts"
+      ],
+      "preconditions": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Owned random context and tape; no mutable external aliases or providers.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.sample",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ],
+        [
+          "root.enter",
+          "root.sample"
+        ],
+        [
+          "root.sample",
+          "root.return"
+        ]
+      ],
+      "conditionalEvents": {
+        "root.sample": "nonconstant decision"
+      },
+      "randomStateModes": [
+        "implementation-replay"
+      ],
+      "independenceClaims": [],
+      "implementation": "src/base/random.hpp"
+    },
+    {
+      "id": "F01.secondaryUnit",
+      "owner": "F01",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#4-secondary-sampling-law",
+      "arguments": {
+        "domain": "text"
+      },
+      "result": "f64",
+      "reads": [
+        "F01.randomContexts"
+      ],
+      "writes": [
+        "F01.randomContexts"
+      ],
+      "preconditions": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Owned random context and tape; no mutable external aliases or providers.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.sample",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ],
+        [
+          "root.enter",
+          "root.sample"
+        ],
+        [
+          "root.sample",
+          "root.return"
+        ]
+      ],
+      "conditionalEvents": {
+        "root.sample": "nonconstant decision"
+      },
+      "randomStateModes": [
+        "implementation-replay"
+      ],
+      "independenceClaims": [],
+      "implementation": "src/base/random.hpp"
+    },
+    {
+      "id": "F01.secondaryRange",
+      "owner": "F01",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#4-secondary-sampling-law",
+      "arguments": {
+        "domain": "text",
+        "lo": "i32",
+        "hi": "i32"
+      },
+      "result": "i32",
+      "reads": [
+        "F01.randomContexts"
+      ],
+      "writes": [
+        "F01.randomContexts"
+      ],
+      "preconditions": "All three declared ownership domains; F01 code/divisor/range laws. Controlled input or complete policy v2 origin/position state.",
+      "callbacks": [],
+      "suppliedChildren": [],
+      "acceptedFaults": [],
+      "partialEffects": [],
+      "aliasing": "Owned random context and tape; no mutable external aliases or providers.",
+      "stopBoundaries": [
+        "normal return followed by exit snapshot"
+      ],
+      "invocation": "root",
+      "events": [
+        "root.enter",
+        "root.sample",
+        "root.return",
+        "root.exit"
+      ],
+      "dependencies": [
+        [
+          "root.enter",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ],
+        [
+          "root.enter",
+          "root.sample"
+        ],
+        [
+          "root.sample",
+          "root.return"
+        ]
+      ],
+      "conditionalEvents": {
+        "root.sample": "nonconstant decision"
+      },
+      "randomStateModes": [
+        "implementation-replay"
+      ],
+      "independenceClaims": [],
+      "implementation": "src/base/random.hpp"
     }
   ],
   "states": [
@@ -951,6 +1182,18 @@
       "initialValue": null,
       "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
       "implementation": "src/world/geometry.hpp"
+    },
+    {
+      "id": "F01.randomContexts",
+      "owner": "F01",
+      "specificationAnchor": "docs/algorithms/F01-determinism-and-arithmetic.md#6-deterministic-execution-and-replay-inputs",
+      "valueType": "random-contexts-v2",
+      "lifetime": "session-owned generator; fixture selects one gameplay, presentation-content or cosmetic context",
+      "collectionOrder": "Map by domain/fixture identity; each record has typed domain/name/seed/draws. Origin plus stream position reconstructs complete generator state.",
+      "crossReferences": [],
+      "initialValue": "Explicit fixture context; no implicit reseed or policy fallback. Omitted in controlled-choice mode.",
+      "publication": "Snapshot only after actual sampling; adapter reconstructs and verifies the final engine against its declared origin and position. Harness trace is separate.",
+      "implementation": "src/base/random.hpp"
     }
   ],
   "fixtures": [
@@ -1151,6 +1394,266 @@
       "sha256": "691528bc518ecc7e451b8aef51ce3c45228915cc0606f4aa22f6a80dd7404eac",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-gameplay-code",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-code.json",
+      "sha256": "2b847a7d9066dd6bcfbfcd87afede66a449a91ea6be1b5dd29d9a387f0fb8c3c",
+      "operation": "F01.primaryCode",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-gameplay-modulo",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-modulo.json",
+      "sha256": "d8bff19efae6ff703ed732b5a62b6f234703438b9fe563ef5239b93b826ccf05",
+      "operation": "F01.primaryModulo",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-gameplay-unit",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-unit.json",
+      "sha256": "fec1cd867c835c59bd92c86f8dd9dd082c4d3d12e0a074c3d4d0daa5a0e13486",
+      "operation": "F01.secondaryUnit",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-gameplay-range",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-range.json",
+      "sha256": "32d5453137a0eae37820f5495aecec64f69d92f2b5040614e7907374d2dc48c4",
+      "operation": "F01.secondaryRange",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-presentation-content-code",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-code.json",
+      "sha256": "efa45783a4729b7b4d6fb2cc7432dda14f81a38b8fd642a4867e8b5d0345d78f",
+      "operation": "F01.primaryCode",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-presentation-content-modulo",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-modulo.json",
+      "sha256": "df6a084a50a05b3722f9886d2be9e8e3142f90e568a1a2ca73dc00d564fbd7f1",
+      "operation": "F01.primaryModulo",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-presentation-content-unit",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-unit.json",
+      "sha256": "c9f5ddb5ed31e8e75764abb4630beee15e90904df369e6d84e83f312204cc572",
+      "operation": "F01.secondaryUnit",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-presentation-content-range",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-range.json",
+      "sha256": "582f8875b614b1b226f8ec30838cd9a789730f8d0ea29aead143672d85140b0f",
+      "operation": "F01.secondaryRange",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-cosmetic-code",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-code.json",
+      "sha256": "0614d5a85bbcae780e88f511e49b149170917a4c032725d5dd4c20985ef7aaaf",
+      "operation": "F01.primaryCode",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-cosmetic-modulo",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-modulo.json",
+      "sha256": "f698b1aad054f52c88f42b504599e4ad5bb8624473a89d67a30d068e0e5ce8b7",
+      "operation": "F01.primaryModulo",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-cosmetic-unit",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-unit.json",
+      "sha256": "d74b5b94455c3cc4e54210f28dfb85d4c872b4be9546b4d115ed984324ec8a8e",
+      "operation": "F01.secondaryUnit",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-cosmetic-range",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-range.json",
+      "sha256": "577b9aac18148fe7371e39d82aa42b040ef636bad2b0efc5b66336ad85d6a58e",
+      "operation": "F01.secondaryRange",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-large-divisor",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-large-divisor.json",
+      "sha256": "ce9b2141ebd493328841264bf4edfa9b112350813707f93be0097bcdbafda76e",
+      "operation": "F01.primaryModulo",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-singleton",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-singleton.json",
+      "sha256": "424ce5064ef051a56df9b20317af12cc1fff84d71f026b07cef03b7c27e6bbcf",
+      "operation": "F01.primaryModulo",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-equal-range",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-equal-range.json",
+      "sha256": "313a4c9125228793aca7c80218aa46efc9c5a29c87c3fa17888ecd89b28dbc03",
+      "operation": "F01.secondaryRange",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-reversed-range",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-reversed-range.json",
+      "sha256": "82b36c3c6133efe6af12eee1dd5c82f115c6af7c092428de619e7414612dcf71",
+      "operation": "F01.secondaryRange",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-wrapped-range",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
+      "sha256": "e520badc85751331664e364af60b919be8a0f780f54b826537d60078e9803156",
+      "operation": "F01.secondaryRange",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-rounded-endpoint",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
+      "sha256": "620c1f6d8d6cc0bf20f4adcea470028d122f7a0981623e33930e9ad2ae680bde",
+      "operation": "F01.secondaryRange",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-zero-unit",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-zero-unit.json",
+      "sha256": "09d50bf7d950dc890f41ceb03f8519b5d3961a807a95931fd5822536f88cf606",
+      "operation": "F01.secondaryUnit",
+      "provenance": "specification-vector",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-replay-gameplay",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
+      "sha256": "bd4f1f2917d15aaf7cc91c040f98db41f8b757bf993e26ac425e4707db837fea",
+      "operation": "F01.primaryCode",
+      "provenance": "implementation-regression",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-replay-presentation-content",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
+      "sha256": "2de7e553e4d8732b6477d0713e75adc8ee5471261800b360b89db36c4c7662b3",
+      "operation": "F01.primaryCode",
+      "provenance": "implementation-regression",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-replay-cosmetic",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
+      "sha256": "cb28117f5c4b9cbd031638aa164ba3b82aa0b3eae6570a701e2e4ee49394ad30",
+      "operation": "F01.primaryCode",
+      "provenance": "implementation-regression",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-replay-modulo",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
+      "sha256": "5ccb765d574e9f9e8f6453779932b1aba65298fbdf5ba040b34f1a00633074e4",
+      "operation": "F01.primaryModulo",
+      "provenance": "implementation-regression",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-replay-unit",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
+      "sha256": "962fd9430dbabd69f8712309802664d51b59949864dac7ad6becf4678da36a54",
+      "operation": "F01.secondaryUnit",
+      "provenance": "implementation-regression",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-replay-singleton",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
+      "sha256": "4a349b297c04958fd6c411ac5236a9b1fc21817e8f7e120f2b7b0b9c8f12b2a2",
+      "operation": "F01.primaryModulo",
+      "provenance": "implementation-regression",
+      "executionStatus": "passed",
+      "runReport": "docs/conformance/reports/f01-native.json"
+    },
+    {
+      "id": "X02.F01.sample-replay-equal-range",
+      "revision": 1,
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
+      "sha256": "dc14aa774d75a30de1e36725ac01e1d766e36d27698283dd5e4199c859c96e16",
+      "operation": "F01.secondaryRange",
+      "provenance": "implementation-regression",
       "executionStatus": "passed",
       "runReport": "docs/conformance/reports/f01-native.json"
     }

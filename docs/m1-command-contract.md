@@ -131,9 +131,9 @@ live sampling arguments after a reply, presentation-consumer invariance, and a
 missing choice after a committed effect. These fake operations establish the
 foundation contract, not any particular classic gameplay selection rule.
 
-The full builds pass 120 default-off and 122 SQLite-enabled Windows CTests and
-all four WASM CTests (114 portable Catch2 cases plus metadata and twenty existing
-X02 vectors). The tools-only build remains independent of GUI, assets, Python
+The full builds pass 121 default-off and 123 SQLite-enabled Windows CTests and
+all five WASM CTests (114 portable Catch2 cases plus metadata, 46 X02 vectors
+and compiled-adapter rejection checks). The tools-only build remains independent of GUI, assets, Python
 discovery and dependency downloads. Retained native/WASM reports were refreshed
 for build identity; these command scenarios are not yet registered X02 fixtures
 and are not original-program observations.

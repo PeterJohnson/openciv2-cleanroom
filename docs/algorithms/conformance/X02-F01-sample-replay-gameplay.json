@@ -1,0 +1,272 @@
+{
+  "format": "openciv2-conformance/3",
+  "id": "X02.F01.sample-replay-gameplay",
+  "revision": 1,
+  "target": {
+    "game": "Civilization II Multiplayer Gold Edition",
+    "version": "5.4.0f patch 3",
+    "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+  },
+  "specifications": [
+    {
+      "id": "F01",
+      "file": "../F01-determinism-and-arithmetic.md",
+      "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+    },
+    {
+      "id": "X01",
+      "file": "../X01-classic-compatibility-contract.md",
+      "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+    },
+    {
+      "id": "X02",
+      "file": "../X02-whole-game-conformance.md",
+      "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+    }
+  ],
+  "boundary": {
+    "level": "primitive",
+    "operation": "F01.primaryCode",
+    "start": "semantic sampler entry with explicit random inputs",
+    "stop": "normal return followed by exit snapshot",
+    "arguments": {
+      "domain": {
+        "$type": "text",
+        "value": "gameplay"
+      }
+    },
+    "suppliedChildren": []
+  },
+  "profile": {
+    "domain": "nominal",
+    "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+    "restrictions": [],
+    "deviations": []
+  },
+  "entry": {
+    "state": {
+      "F01.randomContexts": {
+        "gameplay/fixture": {
+          "domain": {
+            "$type": "text",
+            "value": "gameplay"
+          },
+          "name": {
+            "$type": "text",
+            "value": "fixture"
+          },
+          "seed": {
+            "$type": "u64",
+            "value": "5176252099463242121"
+          },
+          "draws": {
+            "$type": "u64",
+            "value": "9999"
+          }
+        }
+      }
+    },
+    "retainedInputs": [],
+    "blobs": []
+  },
+  "randomness": {
+    "mode": "implementation-replay",
+    "policy": {
+      "id": "oc2-mt19937-64",
+      "version": "2",
+      "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+    },
+    "contexts": {
+      "gameplay/fixture": {
+        "domain": {
+          "$type": "text",
+          "value": "gameplay"
+        },
+        "name": {
+          "$type": "text",
+          "value": "fixture"
+        },
+        "seed": {
+          "$type": "u64",
+          "value": "5176252099463242121"
+        },
+        "draws": {
+          "$type": "u64",
+          "value": "9999"
+        }
+      }
+    },
+    "choices": []
+  },
+  "environment": {
+    "protocol": "scripted-v1",
+    "inputs": [],
+    "unexpected": "fail"
+  },
+  "expected": {
+    "outcome": "return",
+    "result": {
+      "$type": "i32",
+      "value": "17730"
+    },
+    "state": {
+      "F01.randomContexts": {
+        "gameplay/fixture": {
+          "domain": {
+            "$type": "text",
+            "value": "gameplay"
+          },
+          "name": {
+            "$type": "text",
+            "value": "fixture"
+          },
+          "seed": {
+            "$type": "u64",
+            "value": "5176252099463242121"
+          },
+          "draws": {
+            "$type": "u64",
+            "value": "10000"
+          }
+        }
+      }
+    },
+    "trace": [
+      {
+        "seq": 0,
+        "id": "root.enter",
+        "kind": "enter",
+        "call": "root",
+        "payload": {
+          "operation": "F01.primaryCode",
+          "parent": null,
+          "arguments": {
+            "domain": {
+              "$type": "text",
+              "value": "gameplay"
+            }
+          }
+        }
+      },
+      {
+        "seq": 1,
+        "id": "root.sample",
+        "kind": "random",
+        "call": "root",
+        "payload": {
+          "site": "F01.primaryCode",
+          "attempt": 0,
+          "law": "primary-code",
+          "arguments": {},
+          "code": {
+            "$type": "i32",
+            "value": "17730"
+          },
+          "result": {
+            "$type": "i32",
+            "value": "17730"
+          },
+          "context": {
+            "$type": "text",
+            "value": "gameplay/fixture"
+          }
+        }
+      },
+      {
+        "seq": 2,
+        "id": "root.return",
+        "kind": "return",
+        "call": "root",
+        "payload": {
+          "result": {
+            "$type": "i32",
+            "value": "17730"
+          }
+        }
+      },
+      {
+        "seq": 3,
+        "id": "root.exit",
+        "kind": "snapshot",
+        "call": "root",
+        "payload": {
+          "label": "exit",
+          "state": {
+            "F01.randomContexts": {
+              "gameplay/fixture": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "name": {
+                  "$type": "text",
+                  "value": "fixture"
+                },
+                "seed": {
+                  "$type": "u64",
+                  "value": "5176252099463242121"
+                },
+                "draws": {
+                  "$type": "u64",
+                  "value": "10000"
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "comparison": {
+    "stateScope": "complete-boundary",
+    "traceKinds": [
+      "enter",
+      "random",
+      "return",
+      "snapshot"
+    ],
+    "exclusions": [],
+    "normalizations": [],
+    "order": {
+      "before": [
+        [
+          "root.enter",
+          "root.sample"
+        ],
+        [
+          "root.sample",
+          "root.return"
+        ],
+        [
+          "root.return",
+          "root.exit"
+        ]
+      ],
+      "independent": []
+    }
+  },
+  "evidence": {
+    "kind": "implementation-regression",
+    "sources": [
+      {
+        "file": "../F01-determinism-and-arithmetic.md",
+        "section": "3-primary-sampling-law",
+        "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+      },
+      {
+        "file": "../../random-policy.md",
+        "section": "portable-fixture-replay-contexts",
+        "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+      }
+    ],
+    "limitations": [
+      "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+      "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+    ]
+  },
+  "limits": {
+    "events": 16,
+    "providerRequests": 1,
+    "hostMilliseconds": 5000
+  }
+}

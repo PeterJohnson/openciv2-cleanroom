@@ -112,11 +112,43 @@ Restoring a random context while its existing continuation is suspended is teste
 serializing/reconstructing that continuation, world/process state, client inputs,
 effects and routing queues remains separate pending-session checkpoint work.
 
-These are C++ semantic records, not a new X02 JSON codec. A fixture adapter must
-also validate event IDs, global fixture key uniqueness, typed JSON and ordered
-provider/state dependencies. The current X02 runner still supports only pure F01
-mappings and the registered F02/W01 leaves. Choice-input JSON execution, provider
-callbacks and implementation-replay fixtures remain subsequent work.
+These C++ semantic records are independent of X02 JSON. The sampler fixture
+adapter validates event IDs, fixture key uniqueness, typed choices and the
+registered sampling boundary. Broader provider/state dependencies remain the
+responsibility of their owning operation adapters.
+
+## Portable fixture replay contexts
+
+The X02 sampler adapters register `F01.randomContexts` for implementation replay.
+Their single executing context is named `fixture` in the explicitly selected
+domain. Its map key is `<domain>/fixture`; its value has typed `domain`/`name`
+text and unsigned u64 `seed`/`draws`. Seed is the original seed material before
+domain/name derivation; draws is the complete stream position, not a per-fixture
+count. Together they reconstruct the entire policy v2 generator through its
+single-integer initialization and exactly `draws` advances. A seed alone cannot
+install a replay fixture. Entry state must equal the explicit random contexts;
+exit state retains the origin and records the final position.
+
+This is a portable logical representation of a reachable generated context,
+independent of standard-library object layout or stream serialization. The
+adapter verifies that reconstructing its emitted origin/position equals the
+actual final engine before publishing the snapshot. Reconstruction is linear in
+the position; the fixture's host watchdog bounds this work. This representation
+is not an efficient general persistence codec, a controlled-tape checkpoint, or
+a suspended-session checkpoint. Arbitrary hand-edited generator states and
+preexisting harness traces are outside this registered replay boundary.
+
+Policy identity is `{id: "oc2-mt19937-64", version: "2", sha256: <this file hash>}`.
+Controlled fixtures omit generator state. Both modes record actual semantic
+codes/results; only replay events identify the policy-local context. Constant
+decisions record neither a random event nor an advance. The adapter receives
+inputs only; the fixture's expected operation result/state/trace never enter it.
+
+Replay regression vectors use the standard `mt19937_64` default seed 5489 and
+[10,000th output](https://eel.is/c++draft/rand.predef) 9981545732273789042,
+with seed material chosen to undo the declared domain/name xor. Their expected
+codes are projections of that independent standard vector and their results
+follow F01. They establish this implementation policy, not an original trajectory.
 
 Catch2 tests controlled mappings in all three domains, invalid input/prefix
 preservation, bounded generated traces, restore across engine state blocks, and

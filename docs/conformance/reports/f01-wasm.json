@@ -1,14 +1,14 @@
 {
   "format": "openciv2-conformance-run/2",
-  "runnerScope": "f01-f02-w01-state-v1",
-  "createdUtc": "2026-11-14T03:29:43.108858+00:00",
-  "implementationRevision": "654a20a571f8f84b30142bf22341c4e5d492553e",
+  "runnerScope": "f01-f02-w01-random-v2",
+  "createdUtc": "2026-11-14T03:52:16.681711+00:00",
+  "implementationRevision": "ed12b8584ed7dd69b44965bdf47fe6d1e83604f3",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "8fd8d4dd40b2e63686924915f853ea8b4352b8261caa1859812c4ac01dcff770",
+    "CMakeLists.txt": "68a59913ce174099170432046c4142bc6b4bb564933e50c3eba4d5e6bc4b36a8",
     "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
-    "cmake/ConformanceIdentity.cmake": "8652d95edee7fa0b12fda3fa36437aee2d71c230793bd36fe3cf3472379353b3",
+    "cmake/ConformanceIdentity.cmake": "4ec2f3c780cdc91fec1da5131d8fa0281b875718006e08b5a1406a763526859e",
     "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
     "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
     "src/base/random.hpp": "e2d3858b58e12ec7e5d409d6b3d6ea51ebf4ffcf7dc39c1b7d395c654a412f87",
@@ -25,17 +25,22 @@
     "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
     "src/world/map.hpp": "cb5953124f3b0264088702cd1a6a5c7297b31fb16c90a1943467465ad52279ce",
     "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
-    "tools/conformance_adapter.cpp": "ec1e429d223330da7d883ba94c81722425ddea5932a5e38afaa2eea2b231a80f",
-    "tools/run_conformance.py": "819de6e24fb830bc69aab0ee7781bf158dd99ce2679be80a8a8944a47b24d2c3",
-    "tools/check_conformance.py": "42ea581723a21263eef078e294ced9b74876c0d396b738dbc7d0b62a2e0c589e"
+    "tools/conformance_adapter.cpp": "673c05da44c14b06da240741674241be9230a3393e9bfd854970e6c9e73da2ff",
+    "tools/conformance_random.hpp": "0b2926c46446626e5322e7a488ab2b8e68336b2cd26977fb175843b2e30b35f6",
+    "tools/conformance_random.cpp": "8238e70eb538c05a01dc3bbc45067b8b07ed92a63c08eb97e56bca2e05c1485f",
+    "tools/run_conformance.py": "56caf4a7dd355a1d710835e4a9d9c6932fd0a88d83acf22e060667a381ace8e7",
+    "tools/check_conformance.py": "a1fa49ae0d117cc083f93185709e4c71f1265f487759cc9cf12704d51259a92c",
+    "tools/conformance_values.py": "0faace52bd4cc1357631b4ff46df1514fab812995a350879fb9d16be6334c4f4",
+    "tools/conformance_random.py": "ba06369a8e36663982aadad07f8fc115b0239a08f667dd93b85e19b86aa18c53",
+    "docs/random-policy.md": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
   },
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "8fd8d4dd40b2e63686924915f853ea8b4352b8261caa1859812c4ac01dcff770",
+      "CMakeLists.txt": "68a59913ce174099170432046c4142bc6b4bb564933e50c3eba4d5e6bc4b36a8",
       "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
-      "cmake/ConformanceIdentity.cmake": "8652d95edee7fa0b12fda3fa36437aee2d71c230793bd36fe3cf3472379353b3",
+      "cmake/ConformanceIdentity.cmake": "4ec2f3c780cdc91fec1da5131d8fa0281b875718006e08b5a1406a763526859e",
       "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
       "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
       "src/base/random.hpp": "e2d3858b58e12ec7e5d409d6b3d6ea51ebf4ffcf7dc39c1b7d395c654a412f87",
@@ -52,13 +57,15 @@
       "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
       "src/world/map.hpp": "cb5953124f3b0264088702cd1a6a5c7297b31fb16c90a1943467465ad52279ce",
       "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
-      "tools/conformance_adapter.cpp": "ec1e429d223330da7d883ba94c81722425ddea5932a5e38afaa2eea2b231a80f"
+      "tools/conformance_adapter.cpp": "673c05da44c14b06da240741674241be9230a3393e9bfd854970e6c9e73da2ff",
+      "tools/conformance_random.hpp": "0b2926c46446626e5322e7a488ab2b8e68336b2cd26977fb175843b2e30b35f6",
+      "tools/conformance_random.cpp": "8238e70eb538c05a01dc3bbc45067b8b07ed92a63c08eb97e56bca2e05c1485f"
     },
     "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=C:/Projects/openciv2-cleanroom/build/toolchains/emsdk/upstream/emscripten/em++.bat\ndependency_lock_sha256=c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=OFF\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=C:/Projects/openciv2-cleanroom/build/headless-fetch/_deps/catch2-src\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n"
   },
   "adapterArtifacts": {
-    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.js": "1d17ebc25d6b753b050af2781e749d9c7792a4bc1cc584ad133b08eb9de5b889",
-    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "9eee0e35421f7ec4687dc1df0b59abca7a622eda27b327af35768e38f2741278"
+    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.js": "3fceac2716a45dd599bcd7e952dadf5f6291692262adbc54e87f0e48a914e40d",
+    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "6a96174f70d487743fbdb4c308153d2928101399f0100d6cf19f0ef96894a499"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=C:/Projects/openciv2-cleanroom/build/toolchains/emsdk/upstream/emscripten/em++.bat\ndependency_lock_sha256=c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=OFF\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=C:/Projects/openciv2-cleanroom/build/headless-fetch/_deps/catch2-src\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",
@@ -117,6 +124,12 @@
           "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
           "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -265,6 +278,12 @@
           "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -354,6 +373,5195 @@
       }
     },
     {
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-code.json",
+      "sha256": "0614d5a85bbcae780e88f511e49b149170917a4c032725d5dd4c20985ef7aaaf",
+      "id": "X02.F01.sample-cosmetic-code",
+      "revision": 1,
+      "operation": "F01.primaryCode",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.primaryCode",
+            "call": "root",
+            "attempt": 0,
+            "law": "primary-code",
+            "arguments": {},
+            "code": {
+              "$type": "i32",
+              "value": "32767"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "32767"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "32767"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryCode",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "cosmetic"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryCode",
+              "attempt": 0,
+              "law": "primary-code",
+              "arguments": {},
+              "code": {
+                "$type": "i32",
+                "value": "32767"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-modulo.json",
+      "sha256": "f698b1aad054f52c88f42b504599e4ad5bb8624473a89d67a30d068e0e5ce8b7",
+      "id": "X02.F01.sample-cosmetic-modulo",
+      "revision": 1,
+      "operation": "F01.primaryModulo",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.primaryModulo",
+            "call": "root",
+            "attempt": 0,
+            "law": "primary-modulo",
+            "arguments": {
+              "n": {
+                "$type": "i32",
+                "value": "3"
+              }
+            },
+            "code": {
+              "$type": "i32",
+              "value": "32767"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "1"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "1"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModulo",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "cosmetic"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryModulo",
+              "attempt": 0,
+              "law": "primary-modulo",
+              "arguments": {
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              },
+              "code": {
+                "$type": "i32",
+                "value": "32767"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-range.json",
+      "sha256": "577b9aac18148fe7371e39d82aa42b040ef636bad2b0efc5b66336ad85d6a58e",
+      "id": "X02.F01.sample-cosmetic-range",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryRange",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-range",
+            "arguments": {
+              "lo": {
+                "$type": "i32",
+                "value": "-4"
+              },
+              "hi": {
+                "$type": "i32",
+                "value": "7"
+              }
+            },
+            "code": {
+              "$type": "u32",
+              "value": "1015568748"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "-2"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-2"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "cosmetic"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "-4"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "7"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryRange",
+              "attempt": 0,
+              "law": "secondary-range",
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "-4"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "7"
+                }
+              },
+              "code": {
+                "$type": "u32",
+                "value": "1015568748"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "-2"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-2"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-unit.json",
+      "sha256": "d74b5b94455c3cc4e54210f28dfb85d4c872b4be9546b4d115ed984324ec8a8e",
+      "id": "X02.F01.sample-cosmetic-unit",
+      "revision": 1,
+      "operation": "F01.secondaryUnit",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryUnit",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-unit",
+            "arguments": {},
+            "code": {
+              "$type": "u32",
+              "value": "4294967295"
+            },
+            "result": {
+              "$type": "f64",
+              "bits": "3ff0000000000000"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "f64",
+          "bits": "3ff0000000000000"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryUnit",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "cosmetic"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryUnit",
+              "attempt": 0,
+              "law": "secondary-unit",
+              "arguments": {},
+              "code": {
+                "$type": "u32",
+                "value": "4294967295"
+              },
+              "result": {
+                "$type": "f64",
+                "bits": "3ff0000000000000"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "f64",
+                "bits": "3ff0000000000000"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-equal-range.json",
+      "sha256": "313a4c9125228793aca7c80218aa46efc9c5a29c87c3fa17888ecd89b28dbc03",
+      "id": "X02.F01.sample-equal-range",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "5"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "presentation-content"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "5"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "5"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "5"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-code.json",
+      "sha256": "2b847a7d9066dd6bcfbfcd87afede66a449a91ea6be1b5dd29d9a387f0fb8c3c",
+      "id": "X02.F01.sample-gameplay-code",
+      "revision": 1,
+      "operation": "F01.primaryCode",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.primaryCode",
+            "call": "root",
+            "attempt": 0,
+            "law": "primary-code",
+            "arguments": {},
+            "code": {
+              "$type": "i32",
+              "value": "32767"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "32767"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "32767"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryCode",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryCode",
+              "attempt": 0,
+              "law": "primary-code",
+              "arguments": {},
+              "code": {
+                "$type": "i32",
+                "value": "32767"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-modulo.json",
+      "sha256": "d8bff19efae6ff703ed732b5a62b6f234703438b9fe563ef5239b93b826ccf05",
+      "id": "X02.F01.sample-gameplay-modulo",
+      "revision": 1,
+      "operation": "F01.primaryModulo",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.primaryModulo",
+            "call": "root",
+            "attempt": 0,
+            "law": "primary-modulo",
+            "arguments": {
+              "n": {
+                "$type": "i32",
+                "value": "3"
+              }
+            },
+            "code": {
+              "$type": "i32",
+              "value": "32767"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "1"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "1"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModulo",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryModulo",
+              "attempt": 0,
+              "law": "primary-modulo",
+              "arguments": {
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              },
+              "code": {
+                "$type": "i32",
+                "value": "32767"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-range.json",
+      "sha256": "32d5453137a0eae37820f5495aecec64f69d92f2b5040614e7907374d2dc48c4",
+      "id": "X02.F01.sample-gameplay-range",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryRange",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-range",
+            "arguments": {
+              "lo": {
+                "$type": "i32",
+                "value": "-4"
+              },
+              "hi": {
+                "$type": "i32",
+                "value": "7"
+              }
+            },
+            "code": {
+              "$type": "u32",
+              "value": "1015568748"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "-2"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-2"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "-4"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "7"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryRange",
+              "attempt": 0,
+              "law": "secondary-range",
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "-4"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "7"
+                }
+              },
+              "code": {
+                "$type": "u32",
+                "value": "1015568748"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "-2"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-2"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-unit.json",
+      "sha256": "fec1cd867c835c59bd92c86f8dd9dd082c4d3d12e0a074c3d4d0daa5a0e13486",
+      "id": "X02.F01.sample-gameplay-unit",
+      "revision": 1,
+      "operation": "F01.secondaryUnit",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryUnit",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-unit",
+            "arguments": {},
+            "code": {
+              "$type": "u32",
+              "value": "4294967295"
+            },
+            "result": {
+              "$type": "f64",
+              "bits": "3ff0000000000000"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "f64",
+          "bits": "3ff0000000000000"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryUnit",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryUnit",
+              "attempt": 0,
+              "law": "secondary-unit",
+              "arguments": {},
+              "code": {
+                "$type": "u32",
+                "value": "4294967295"
+              },
+              "result": {
+                "$type": "f64",
+                "bits": "3ff0000000000000"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "f64",
+                "bits": "3ff0000000000000"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-large-divisor.json",
+      "sha256": "ce9b2141ebd493328841264bf4edfa9b112350813707f93be0097bcdbafda76e",
+      "id": "X02.F01.sample-large-divisor",
+      "revision": 1,
+      "operation": "F01.primaryModulo",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.primaryModulo",
+            "call": "root",
+            "attempt": 0,
+            "law": "primary-modulo",
+            "arguments": {
+              "n": {
+                "$type": "i32",
+                "value": "40000"
+              }
+            },
+            "code": {
+              "$type": "i32",
+              "value": "32767"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "32767"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "32767"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModulo",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "40000"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryModulo",
+              "attempt": 0,
+              "law": "primary-modulo",
+              "arguments": {
+                "n": {
+                  "$type": "i32",
+                  "value": "40000"
+                }
+              },
+              "code": {
+                "$type": "i32",
+                "value": "32767"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-code.json",
+      "sha256": "efa45783a4729b7b4d6fb2cc7432dda14f81a38b8fd642a4867e8b5d0345d78f",
+      "id": "X02.F01.sample-presentation-content-code",
+      "revision": 1,
+      "operation": "F01.primaryCode",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.primaryCode",
+            "call": "root",
+            "attempt": 0,
+            "law": "primary-code",
+            "arguments": {},
+            "code": {
+              "$type": "i32",
+              "value": "32767"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "32767"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "32767"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryCode",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "presentation-content"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryCode",
+              "attempt": 0,
+              "law": "primary-code",
+              "arguments": {},
+              "code": {
+                "$type": "i32",
+                "value": "32767"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "32767"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-modulo.json",
+      "sha256": "df6a084a50a05b3722f9886d2be9e8e3142f90e568a1a2ca73dc00d564fbd7f1",
+      "id": "X02.F01.sample-presentation-content-modulo",
+      "revision": 1,
+      "operation": "F01.primaryModulo",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.primaryModulo",
+            "call": "root",
+            "attempt": 0,
+            "law": "primary-modulo",
+            "arguments": {
+              "n": {
+                "$type": "i32",
+                "value": "3"
+              }
+            },
+            "code": {
+              "$type": "i32",
+              "value": "32767"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "1"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "1"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModulo",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "presentation-content"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryModulo",
+              "attempt": 0,
+              "law": "primary-modulo",
+              "arguments": {
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              },
+              "code": {
+                "$type": "i32",
+                "value": "32767"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-range.json",
+      "sha256": "582f8875b614b1b226f8ec30838cd9a789730f8d0ea29aead143672d85140b0f",
+      "id": "X02.F01.sample-presentation-content-range",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryRange",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-range",
+            "arguments": {
+              "lo": {
+                "$type": "i32",
+                "value": "-4"
+              },
+              "hi": {
+                "$type": "i32",
+                "value": "7"
+              }
+            },
+            "code": {
+              "$type": "u32",
+              "value": "1015568748"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "-2"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-2"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "presentation-content"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "-4"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "7"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryRange",
+              "attempt": 0,
+              "law": "secondary-range",
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "-4"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "7"
+                }
+              },
+              "code": {
+                "$type": "u32",
+                "value": "1015568748"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "-2"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-2"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-unit.json",
+      "sha256": "c9f5ddb5ed31e8e75764abb4630beee15e90904df369e6d84e83f312204cc572",
+      "id": "X02.F01.sample-presentation-content-unit",
+      "revision": 1,
+      "operation": "F01.secondaryUnit",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryUnit",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-unit",
+            "arguments": {},
+            "code": {
+              "$type": "u32",
+              "value": "4294967295"
+            },
+            "result": {
+              "$type": "f64",
+              "bits": "3ff0000000000000"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "f64",
+          "bits": "3ff0000000000000"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryUnit",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "presentation-content"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryUnit",
+              "attempt": 0,
+              "law": "secondary-unit",
+              "arguments": {},
+              "code": {
+                "$type": "u32",
+                "value": "4294967295"
+              },
+              "result": {
+                "$type": "f64",
+                "bits": "3ff0000000000000"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "f64",
+                "bits": "3ff0000000000000"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
+      "sha256": "cb28117f5c4b9cbd031638aa164ba3b82aa0b3eae6570a701e2e4ee49394ad30",
+      "id": "X02.F01.sample-replay-cosmetic",
+      "revision": 1,
+      "operation": "F01.primaryCode",
+      "evidenceKind": "implementation-regression",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "implementation-regression",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          },
+          {
+            "file": "../../random-policy.md",
+            "section": "portable-fixture-replay-contexts",
+            "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+        ]
+      },
+      "randomness": {
+        "mode": "implementation-replay",
+        "policy": {
+          "id": "oc2-mt19937-64",
+          "version": "2",
+          "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+        },
+        "contexts": {
+          "cosmetic/fixture": {
+            "domain": {
+              "$type": "text",
+              "value": "cosmetic"
+            },
+            "name": {
+              "$type": "text",
+              "value": "fixture"
+            },
+            "seed": {
+              "$type": "u64",
+              "value": "7362052584048856462"
+            },
+            "draws": {
+              "$type": "u64",
+              "value": "9999"
+            }
+          }
+        },
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "17730"
+        },
+        "state": {
+          "F01.randomContexts": {
+            "cosmetic/fixture": {
+              "domain": {
+                "$type": "text",
+                "value": "cosmetic"
+              },
+              "name": {
+                "$type": "text",
+                "value": "fixture"
+              },
+              "seed": {
+                "$type": "u64",
+                "value": "7362052584048856462"
+              },
+              "draws": {
+                "$type": "u64",
+                "value": "10000"
+              }
+            }
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryCode",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "cosmetic"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryCode",
+              "attempt": 0,
+              "law": "primary-code",
+              "arguments": {},
+              "code": {
+                "$type": "i32",
+                "value": "17730"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "17730"
+              },
+              "context": {
+                "$type": "text",
+                "value": "cosmetic/fixture"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "17730"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F01.randomContexts": {
+                  "cosmetic/fixture": {
+                    "domain": {
+                      "$type": "text",
+                      "value": "cosmetic"
+                    },
+                    "name": {
+                      "$type": "text",
+                      "value": "fixture"
+                    },
+                    "seed": {
+                      "$type": "u64",
+                      "value": "7362052584048856462"
+                    },
+                    "draws": {
+                      "$type": "u64",
+                      "value": "10000"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
+      "sha256": "dc14aa774d75a30de1e36725ac01e1d766e36d27698283dd5e4199c859c96e16",
+      "id": "X02.F01.sample-replay-equal-range",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "implementation-regression",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "implementation-regression",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          },
+          {
+            "file": "../../random-policy.md",
+            "section": "portable-fixture-replay-contexts",
+            "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+        ]
+      },
+      "randomness": {
+        "mode": "implementation-replay",
+        "policy": {
+          "id": "oc2-mt19937-64",
+          "version": "2",
+          "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+        },
+        "contexts": {
+          "cosmetic/fixture": {
+            "domain": {
+              "$type": "text",
+              "value": "cosmetic"
+            },
+            "name": {
+              "$type": "text",
+              "value": "fixture"
+            },
+            "seed": {
+              "$type": "u64",
+              "value": "7362052584048856462"
+            },
+            "draws": {
+              "$type": "u64",
+              "value": "9999"
+            }
+          }
+        },
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-7"
+        },
+        "state": {
+          "F01.randomContexts": {
+            "cosmetic/fixture": {
+              "domain": {
+                "$type": "text",
+                "value": "cosmetic"
+              },
+              "name": {
+                "$type": "text",
+                "value": "fixture"
+              },
+              "seed": {
+                "$type": "u64",
+                "value": "7362052584048856462"
+              },
+              "draws": {
+                "$type": "u64",
+                "value": "9999"
+              }
+            }
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "cosmetic"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "-7"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "-7"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-7"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F01.randomContexts": {
+                  "cosmetic/fixture": {
+                    "domain": {
+                      "$type": "text",
+                      "value": "cosmetic"
+                    },
+                    "name": {
+                      "$type": "text",
+                      "value": "fixture"
+                    },
+                    "seed": {
+                      "$type": "u64",
+                      "value": "7362052584048856462"
+                    },
+                    "draws": {
+                      "$type": "u64",
+                      "value": "9999"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
+      "sha256": "bd4f1f2917d15aaf7cc91c040f98db41f8b757bf993e26ac425e4707db837fea",
+      "id": "X02.F01.sample-replay-gameplay",
+      "revision": 1,
+      "operation": "F01.primaryCode",
+      "evidenceKind": "implementation-regression",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "implementation-regression",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          },
+          {
+            "file": "../../random-policy.md",
+            "section": "portable-fixture-replay-contexts",
+            "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+        ]
+      },
+      "randomness": {
+        "mode": "implementation-replay",
+        "policy": {
+          "id": "oc2-mt19937-64",
+          "version": "2",
+          "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+        },
+        "contexts": {
+          "gameplay/fixture": {
+            "domain": {
+              "$type": "text",
+              "value": "gameplay"
+            },
+            "name": {
+              "$type": "text",
+              "value": "fixture"
+            },
+            "seed": {
+              "$type": "u64",
+              "value": "5176252099463242121"
+            },
+            "draws": {
+              "$type": "u64",
+              "value": "9999"
+            }
+          }
+        },
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "17730"
+        },
+        "state": {
+          "F01.randomContexts": {
+            "gameplay/fixture": {
+              "domain": {
+                "$type": "text",
+                "value": "gameplay"
+              },
+              "name": {
+                "$type": "text",
+                "value": "fixture"
+              },
+              "seed": {
+                "$type": "u64",
+                "value": "5176252099463242121"
+              },
+              "draws": {
+                "$type": "u64",
+                "value": "10000"
+              }
+            }
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryCode",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryCode",
+              "attempt": 0,
+              "law": "primary-code",
+              "arguments": {},
+              "code": {
+                "$type": "i32",
+                "value": "17730"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "17730"
+              },
+              "context": {
+                "$type": "text",
+                "value": "gameplay/fixture"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "17730"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F01.randomContexts": {
+                  "gameplay/fixture": {
+                    "domain": {
+                      "$type": "text",
+                      "value": "gameplay"
+                    },
+                    "name": {
+                      "$type": "text",
+                      "value": "fixture"
+                    },
+                    "seed": {
+                      "$type": "u64",
+                      "value": "5176252099463242121"
+                    },
+                    "draws": {
+                      "$type": "u64",
+                      "value": "10000"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
+      "sha256": "5ccb765d574e9f9e8f6453779932b1aba65298fbdf5ba040b34f1a00633074e4",
+      "id": "X02.F01.sample-replay-modulo",
+      "revision": 1,
+      "operation": "F01.primaryModulo",
+      "evidenceKind": "implementation-regression",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "implementation-regression",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          },
+          {
+            "file": "../../random-policy.md",
+            "section": "portable-fixture-replay-contexts",
+            "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+        ]
+      },
+      "randomness": {
+        "mode": "implementation-replay",
+        "policy": {
+          "id": "oc2-mt19937-64",
+          "version": "2",
+          "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+        },
+        "contexts": {
+          "gameplay/fixture": {
+            "domain": {
+              "$type": "text",
+              "value": "gameplay"
+            },
+            "name": {
+              "$type": "text",
+              "value": "fixture"
+            },
+            "seed": {
+              "$type": "u64",
+              "value": "5176252099463242121"
+            },
+            "draws": {
+              "$type": "u64",
+              "value": "9999"
+            }
+          }
+        },
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "0"
+        },
+        "state": {
+          "F01.randomContexts": {
+            "gameplay/fixture": {
+              "domain": {
+                "$type": "text",
+                "value": "gameplay"
+              },
+              "name": {
+                "$type": "text",
+                "value": "fixture"
+              },
+              "seed": {
+                "$type": "u64",
+                "value": "5176252099463242121"
+              },
+              "draws": {
+                "$type": "u64",
+                "value": "10000"
+              }
+            }
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModulo",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryModulo",
+              "attempt": 0,
+              "law": "primary-modulo",
+              "arguments": {
+                "n": {
+                  "$type": "i32",
+                  "value": "3"
+                }
+              },
+              "code": {
+                "$type": "i32",
+                "value": "17730"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "0"
+              },
+              "context": {
+                "$type": "text",
+                "value": "gameplay/fixture"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "0"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F01.randomContexts": {
+                  "gameplay/fixture": {
+                    "domain": {
+                      "$type": "text",
+                      "value": "gameplay"
+                    },
+                    "name": {
+                      "$type": "text",
+                      "value": "fixture"
+                    },
+                    "seed": {
+                      "$type": "u64",
+                      "value": "5176252099463242121"
+                    },
+                    "draws": {
+                      "$type": "u64",
+                      "value": "10000"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
+      "sha256": "2de7e553e4d8732b6477d0713e75adc8ee5471261800b360b89db36c4c7662b3",
+      "id": "X02.F01.sample-replay-presentation-content",
+      "revision": 1,
+      "operation": "F01.primaryCode",
+      "evidenceKind": "implementation-regression",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "implementation-regression",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          },
+          {
+            "file": "../../random-policy.md",
+            "section": "portable-fixture-replay-contexts",
+            "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+        ]
+      },
+      "randomness": {
+        "mode": "implementation-replay",
+        "policy": {
+          "id": "oc2-mt19937-64",
+          "version": "2",
+          "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+        },
+        "contexts": {
+          "presentation-content/fixture": {
+            "domain": {
+              "$type": "text",
+              "value": "presentation-content"
+            },
+            "name": {
+              "$type": "text",
+              "value": "fixture"
+            },
+            "seed": {
+              "$type": "u64",
+              "value": "12634631446410528557"
+            },
+            "draws": {
+              "$type": "u64",
+              "value": "9999"
+            }
+          }
+        },
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "17730"
+        },
+        "state": {
+          "F01.randomContexts": {
+            "presentation-content/fixture": {
+              "domain": {
+                "$type": "text",
+                "value": "presentation-content"
+              },
+              "name": {
+                "$type": "text",
+                "value": "fixture"
+              },
+              "seed": {
+                "$type": "u64",
+                "value": "12634631446410528557"
+              },
+              "draws": {
+                "$type": "u64",
+                "value": "10000"
+              }
+            }
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryCode",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "presentation-content"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.primaryCode",
+              "attempt": 0,
+              "law": "primary-code",
+              "arguments": {},
+              "code": {
+                "$type": "i32",
+                "value": "17730"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "17730"
+              },
+              "context": {
+                "$type": "text",
+                "value": "presentation-content/fixture"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "17730"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F01.randomContexts": {
+                  "presentation-content/fixture": {
+                    "domain": {
+                      "$type": "text",
+                      "value": "presentation-content"
+                    },
+                    "name": {
+                      "$type": "text",
+                      "value": "fixture"
+                    },
+                    "seed": {
+                      "$type": "u64",
+                      "value": "12634631446410528557"
+                    },
+                    "draws": {
+                      "$type": "u64",
+                      "value": "10000"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
+      "sha256": "4a349b297c04958fd6c411ac5236a9b1fc21817e8f7e120f2b7b0b9c8f12b2a2",
+      "id": "X02.F01.sample-replay-singleton",
+      "revision": 1,
+      "operation": "F01.primaryModulo",
+      "evidenceKind": "implementation-regression",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "implementation-regression",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          },
+          {
+            "file": "../../random-policy.md",
+            "section": "portable-fixture-replay-contexts",
+            "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+        ]
+      },
+      "randomness": {
+        "mode": "implementation-replay",
+        "policy": {
+          "id": "oc2-mt19937-64",
+          "version": "2",
+          "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+        },
+        "contexts": {
+          "gameplay/fixture": {
+            "domain": {
+              "$type": "text",
+              "value": "gameplay"
+            },
+            "name": {
+              "$type": "text",
+              "value": "fixture"
+            },
+            "seed": {
+              "$type": "u64",
+              "value": "5176252099463242121"
+            },
+            "draws": {
+              "$type": "u64",
+              "value": "9999"
+            }
+          }
+        },
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "0"
+        },
+        "state": {
+          "F01.randomContexts": {
+            "gameplay/fixture": {
+              "domain": {
+                "$type": "text",
+                "value": "gameplay"
+              },
+              "name": {
+                "$type": "text",
+                "value": "fixture"
+              },
+              "seed": {
+                "$type": "u64",
+                "value": "5176252099463242121"
+              },
+              "draws": {
+                "$type": "u64",
+                "value": "9999"
+              }
+            }
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModulo",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "1"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "0"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F01.randomContexts": {
+                  "gameplay/fixture": {
+                    "domain": {
+                      "$type": "text",
+                      "value": "gameplay"
+                    },
+                    "name": {
+                      "$type": "text",
+                      "value": "fixture"
+                    },
+                    "seed": {
+                      "$type": "u64",
+                      "value": "5176252099463242121"
+                    },
+                    "draws": {
+                      "$type": "u64",
+                      "value": "9999"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
+      "sha256": "962fd9430dbabd69f8712309802664d51b59949864dac7ad6becf4678da36a54",
+      "id": "X02.F01.sample-replay-unit",
+      "revision": 1,
+      "operation": "F01.secondaryUnit",
+      "evidenceKind": "implementation-regression",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "implementation-regression",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          },
+          {
+            "file": "../../random-policy.md",
+            "section": "portable-fixture-replay-contexts",
+            "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
+          "Expected code projects the standard mt19937_64 10,000th output 9981545732273789042; it is not a same-seed original-game oracle."
+        ]
+      },
+      "randomness": {
+        "mode": "implementation-replay",
+        "policy": {
+          "id": "oc2-mt19937-64",
+          "version": "2",
+          "sha256": "e925462159c3f6f48bb5bbfa250da35f1f23261ff6d4daa3fc0edc73e28715cb"
+        },
+        "contexts": {
+          "presentation-content/fixture": {
+            "domain": {
+              "$type": "text",
+              "value": "presentation-content"
+            },
+            "name": {
+              "$type": "text",
+              "value": "fixture"
+            },
+            "seed": {
+              "$type": "u64",
+              "value": "12634631446410528557"
+            },
+            "draws": {
+              "$type": "u64",
+              "value": "9999"
+            }
+          }
+        },
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "f64",
+          "bits": "3fe150b25eb150b2"
+        },
+        "state": {
+          "F01.randomContexts": {
+            "presentation-content/fixture": {
+              "domain": {
+                "$type": "text",
+                "value": "presentation-content"
+              },
+              "name": {
+                "$type": "text",
+                "value": "fixture"
+              },
+              "seed": {
+                "$type": "u64",
+                "value": "12634631446410528557"
+              },
+              "draws": {
+                "$type": "u64",
+                "value": "10000"
+              }
+            }
+          }
+        },
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryUnit",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "presentation-content"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryUnit",
+              "attempt": 0,
+              "law": "secondary-unit",
+              "arguments": {},
+              "code": {
+                "$type": "u32",
+                "value": "2324009717"
+              },
+              "result": {
+                "$type": "f64",
+                "bits": "3fe150b25eb150b2"
+              },
+              "context": {
+                "$type": "text",
+                "value": "presentation-content/fixture"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "f64",
+                "bits": "3fe150b25eb150b2"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {
+                "F01.randomContexts": {
+                  "presentation-content/fixture": {
+                    "domain": {
+                      "$type": "text",
+                      "value": "presentation-content"
+                    },
+                    "name": {
+                      "$type": "text",
+                      "value": "fixture"
+                    },
+                    "seed": {
+                      "$type": "u64",
+                      "value": "12634631446410528557"
+                    },
+                    "draws": {
+                      "$type": "u64",
+                      "value": "10000"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-reversed-range.json",
+      "sha256": "82b36c3c6133efe6af12eee1dd5c82f115c6af7c092428de619e7414612dcf71",
+      "id": "X02.F01.sample-reversed-range",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryRange",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-range",
+            "arguments": {
+              "lo": {
+                "$type": "i32",
+                "value": "7"
+              },
+              "hi": {
+                "$type": "i32",
+                "value": "-4"
+              }
+            },
+            "code": {
+              "$type": "u32",
+              "value": "0"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "-4"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "-4"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "7"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "-4"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryRange",
+              "attempt": 0,
+              "law": "secondary-range",
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "7"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "-4"
+                }
+              },
+              "code": {
+                "$type": "u32",
+                "value": "0"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "-4"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "-4"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
+      "sha256": "620c1f6d8d6cc0bf20f4adcea470028d122f7a0981623e33930e9ad2ae680bde",
+      "id": "X02.F01.sample-rounded-endpoint",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryRange",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-range",
+            "arguments": {
+              "lo": {
+                "$type": "i32",
+                "value": "-2147483648"
+              },
+              "hi": {
+                "$type": "i32",
+                "value": "0"
+              }
+            },
+            "code": {
+              "$type": "u32",
+              "value": "4294967295"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "1"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "1"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "-2147483648"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "0"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryRange",
+              "attempt": 0,
+              "law": "secondary-range",
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "-2147483648"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "0"
+                }
+              },
+              "code": {
+                "$type": "u32",
+                "value": "4294967295"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "1"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-singleton.json",
+      "sha256": "424ce5064ef051a56df9b20317af12cc1fff84d71f026b07cef03b7c27e6bbcf",
+      "id": "X02.F01.sample-singleton",
+      "revision": 1,
+      "operation": "F01.primaryModulo",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "3-primary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "0"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.primaryModulo",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "n": {
+                  "$type": "i32",
+                  "value": "1"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "0"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 0,
+        "events": 3
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
+      "sha256": "e520badc85751331664e364af60b919be8a0f780f54b826537d60078e9803156",
+      "id": "X02.F01.sample-wrapped-range",
+      "revision": 1,
+      "operation": "F01.secondaryRange",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryRange",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-range",
+            "arguments": {
+              "lo": {
+                "$type": "i32",
+                "value": "-2147483648"
+              },
+              "hi": {
+                "$type": "i32",
+                "value": "1"
+              }
+            },
+            "code": {
+              "$type": "u32",
+              "value": "1015568748"
+            },
+            "result": {
+              "$type": "i32",
+              "value": "1639699275"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "i32",
+          "value": "1639699275"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryRange",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "gameplay"
+                },
+                "lo": {
+                  "$type": "i32",
+                  "value": "-2147483648"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "1"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryRange",
+              "attempt": 0,
+              "law": "secondary-range",
+              "arguments": {
+                "lo": {
+                  "$type": "i32",
+                  "value": "-2147483648"
+                },
+                "hi": {
+                  "$type": "i32",
+                  "value": "1"
+                }
+              },
+              "code": {
+                "$type": "u32",
+                "value": "1015568748"
+              },
+              "result": {
+                "$type": "i32",
+                "value": "1639699275"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "i32",
+                "value": "1639699275"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
+      "path": "docs/algorithms/conformance/X02-F01-sample-zero-unit.json",
+      "sha256": "09d50bf7d950dc890f41ceb03f8519b5d3961a807a95931fd5822536f88cf606",
+      "id": "X02.F01.sample-zero-unit",
+      "revision": 1,
+      "operation": "F01.secondaryUnit",
+      "evidenceKind": "specification-vector",
+      "specifications": [
+        {
+          "id": "F01",
+          "file": "../F01-determinism-and-arithmetic.md",
+          "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+        },
+        {
+          "id": "X01",
+          "file": "../X01-classic-compatibility-contract.md",
+          "sha256": "1205f7c6af1f02b97c3b1f48649fd93e940af2f63641feec8059bf32c4c26ad4"
+        },
+        {
+          "id": "X02",
+          "file": "../X02-whole-game-conformance.md",
+          "sha256": "8499a59b883d8b405c9afbe507dbdba6d891850bed59452382cf75915f58e74a"
+        }
+      ],
+      "target": {
+        "game": "Civilization II Multiplayer Gold Edition",
+        "version": "5.4.0f patch 3",
+        "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+      },
+      "profile": {
+        "domain": "nominal",
+        "safety": "exclude every out-of-bounds write; stop before an invalid destination",
+        "restrictions": [],
+        "deviations": []
+      },
+      "evidence": {
+        "kind": "specification-vector",
+        "sources": [
+          {
+            "file": "../F01-determinism-and-arithmetic.md",
+            "section": "4-secondary-sampling-law",
+            "sha256": "d2d9c55a91b6b635df364ae7b926ffacea49e2491b12f2aaf08a74bec6d7f8d0"
+          }
+        ],
+        "limitations": [
+          "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending."
+        ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": [
+          {
+            "id": "input.sample",
+            "site": "F01.secondaryUnit",
+            "call": "root",
+            "attempt": 0,
+            "law": "secondary-unit",
+            "arguments": {},
+            "code": {
+              "$type": "u32",
+              "value": "0"
+            },
+            "result": {
+              "$type": "f64",
+              "bits": "0000000000000000"
+            }
+          }
+        ]
+      },
+      "comparison": {
+        "stateScope": "complete-boundary",
+        "traceKinds": [
+          "enter",
+          "random",
+          "return",
+          "snapshot"
+        ],
+        "exclusions": [],
+        "normalizations": [],
+        "order": {
+          "before": [
+            [
+              "root.enter",
+              "root.sample"
+            ],
+            [
+              "root.sample",
+              "root.return"
+            ],
+            [
+              "root.return",
+              "root.exit"
+            ]
+          ],
+          "independent": []
+        }
+      },
+      "limits": {
+        "events": 16,
+        "providerRequests": 1,
+        "hostMilliseconds": 5000
+      },
+      "status": "passed",
+      "firstMismatch": null,
+      "actual": {
+        "outcome": "return",
+        "result": {
+          "$type": "f64",
+          "bits": "0000000000000000"
+        },
+        "state": {},
+        "trace": [
+          {
+            "seq": 0,
+            "id": "root.enter",
+            "kind": "enter",
+            "call": "root",
+            "payload": {
+              "operation": "F01.secondaryUnit",
+              "parent": null,
+              "arguments": {
+                "domain": {
+                  "$type": "text",
+                  "value": "cosmetic"
+                }
+              }
+            }
+          },
+          {
+            "seq": 1,
+            "id": "root.sample",
+            "kind": "random",
+            "call": "root",
+            "payload": {
+              "site": "F01.secondaryUnit",
+              "attempt": 0,
+              "law": "secondary-unit",
+              "arguments": {},
+              "code": {
+                "$type": "u32",
+                "value": "0"
+              },
+              "result": {
+                "$type": "f64",
+                "bits": "0000000000000000"
+              }
+            }
+          },
+          {
+            "seq": 2,
+            "id": "root.return",
+            "kind": "return",
+            "call": "root",
+            "payload": {
+              "result": {
+                "$type": "f64",
+                "bits": "0000000000000000"
+              }
+            }
+          },
+          {
+            "seq": 3,
+            "id": "root.exit",
+            "kind": "snapshot",
+            "call": "root",
+            "payload": {
+              "label": "exit",
+              "state": {}
+            }
+          }
+        ]
+      },
+      "consumed": {
+        "providers": 0,
+        "choices": 1,
+        "events": 4
+      }
+    },
+    {
       "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
       "sha256": "d999aa6511004c53e3d3e56a372ba0b4347183b863179dc5ab7cc64744c86079",
       "id": "X02.F01.wrapped-range",
@@ -407,6 +5615,12 @@
           "Version 3 adds stable semantic event IDs and explicit dependencies; numeric expectations and required event order are unchanged. This migration is not gameplay execution evidence.",
           "Specification pins refreshed for standalone JSON content and classic text adapters; numeric expectations unchanged and no content loader or gameplay execution is claimed."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -554,6 +5768,12 @@
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -707,6 +5927,12 @@
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
           "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -961,6 +6187,12 @@
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation.",
           "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -1224,6 +6456,12 @@
           "The compact scan windows deliberately retain military summaries larger than their live occupancy. Coherent threshold-scale pools are separately exercised by the F02 Catch2 cases; no census repair is performed."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -1475,6 +6713,12 @@
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -1626,6 +6870,12 @@
           "Leaf token assignment or unit reservation only. No unit creation, deletion, load-time token remapping, city reservation or session lifecycle is exercised.",
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -1779,6 +7029,12 @@
           "The unit token scan is the complete entry read window. Its length stays fixed at exit even if the scan bound extends; newly covered record payload is not read or initialized by this operation."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -1930,6 +7186,12 @@
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -2092,6 +7354,12 @@
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -2253,6 +7521,12 @@
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -2411,6 +7685,12 @@
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -2589,6 +7869,12 @@
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -2765,6 +8051,12 @@
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",
@@ -2943,6 +8235,12 @@
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -3120,6 +8418,12 @@
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -3285,6 +8589,12 @@
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
       },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
+      },
       "comparison": {
         "stateScope": "complete-boundary",
         "traceKinds": [
@@ -3449,6 +8759,12 @@
           "Scalar geometry with admitted dimensions only. Tile index absence denotes fallback selection, not a read or write of fallback contents. No map allocation, tile mutation, region rebuild or file loading is executed.",
           "The dimensions are validated at adapter admission. Current flat-world state is supplied only to wrapping and distance operations, independently of stored file topology."
         ]
+      },
+      "randomness": {
+        "mode": "controlled-choices",
+        "policy": null,
+        "contexts": {},
+        "choices": []
       },
       "comparison": {
         "stateScope": "complete-boundary",

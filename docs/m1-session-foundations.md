@@ -93,9 +93,9 @@ independence from human flags, retained process values and isolated virtual peer
 They exercise the separate F02 entity-reset helper and independent presentation
 consumers, without claiming a completed F05 setup or original mode transcript.
 
-Windows MSVC passes 120 default-off and 122 SQLite-enabled CTests. The pinned
-Emscripten 4.0.23 build passes four CTests, including 114 portable Catch2 cases
-and the existing twenty X02 vectors. The tools-only configuration also builds
+Windows MSVC passes 121 default-off and 123 SQLite-enabled CTests. The pinned
+Emscripten 4.0.23 build passes five CTests, including 114 portable Catch2 cases,
+46 X02 vectors and compiled-adapter rejection checks. The tools-only configuration also builds
 the session library without GUI, tests, dependency fetching, Python discovery
 or assets. Retained native/WASM reports were refreshed for build/source identity;
 X02 execution coverage is still F01/F02/W01, not these session cases.
