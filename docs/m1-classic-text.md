@@ -153,7 +153,7 @@ The process overloads of city preferences and C01 naming use current pool bindin
 
 The live leader records pass through the existing 48-byte F06 codec without a
 second representation. Full application startup, GAME-cache construction, S04
-editing, retained native rule installation, F06 sign-marker processing and complete
+editing, F06 sign-marker processing and complete
 session reload orchestration remain open. Supplying an initialized pool alone
 does not claim original startup ordinal equality; the preceding labels and
 allocation sequence must also match.
@@ -193,8 +193,9 @@ missing-section stop is not a claim about an original invalid-access result.
 Stored names currently require reversible Windows-1252 presentation decoding.
 Undefined bytes fail before storing that name, preserving earlier updates;
 other language encodings and the broader comparison profile remain open. There
-is no filesystem discovery, session reload orchestration, native installation
-policy or classic export command hidden in this API.
+is no filesystem discovery, session reload orchestration or classic export command
+hidden in this API. The separate [native rule installer](m1-rule-content.md#retained-rule-installation)
+now applies admitted semantic input to the same retained state and pool.
 
 ## City-production preferences
 
@@ -241,7 +242,7 @@ marker collisions still belong to the conversion boundary.
 
 ## Evidence and remaining work
 
-Fifteen authored portable reader cases, sixteen classic rule cases and six
+Fifteen authored portable reader cases, seventeen classic rule cases and six
 preference cases cover the above contracts. The rule cases include a complete
 independently authored native/classic equivalence check with out-of-order
 sections, explicit fallback/reuse, normalization, reference failures, name/leader
@@ -265,8 +266,8 @@ The [city-name providers](m1-city-names.md) now implement C01's ordered default
 naming through both paths, with shared counter/publication behavior and a native
 validation command.
 
-Full application startup/GAME-cache construction, retained native rule
-installation, the complete comparison profile, remaining native component admission,
+Full application startup/GAME-cache construction, complete content installation,
+the complete comparison profile, remaining native component admission,
 conversion tools/receipts, session wiring and owning production consumers remain
 required. The table readers are ready for those callers; they do not implement
 them implicitly.

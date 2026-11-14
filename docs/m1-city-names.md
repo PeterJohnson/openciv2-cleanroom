@@ -84,7 +84,7 @@ certify complete playable content. Full serialized row lengths and section-marke
 collisions still need the classic export boundary; individual text admission is
 not a full export certificate.
 
-Ten portable authored cases compare native/classic names, counters and retained
+Eleven portable authored cases compare native/classic names, counters and retained
 bytes, including retries, wrap, truncation, duplicate proposals, missing lists,
 live tribe changes and failure prefixes. Three additional CLI cases verify mounted
 source receipts, unchanged files, rejection and overlay replacement. These are
@@ -96,6 +96,9 @@ and live leaders. F03 loading publishes the signed-16 leader bindings consumed
 by C01, including absolute-label aliasing after narrowing; a dedicated test runs
 that path through a real classic provider and the existing leader record codec.
 The explicit resolver overload remains available for supplied backing/services.
-Application startup/GAME-cache construction, F06 sign-marker processing, native rule installation,
+The native rule installer also supplies these live bindings; an all-native test
+loads rules/names, selects names through the pool, and preserves the advancing
+cursor across both leader-preserving and leader-replacing rule reloads.
+Application startup/GAME-cache construction, F06 sign-marker processing,
 session/city-creation integration, conversion receipts and broader original-game
 comparisons remain required.

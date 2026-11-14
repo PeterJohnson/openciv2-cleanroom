@@ -4,9 +4,11 @@
 #include "formats/city_names.hpp"
 #include "formats/city_preferences.hpp"
 #include "formats/save_records.hpp"
+#include "formats/rules_install.hpp"
 #include "rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <algorithm>
+#include <tuple>
 #include <map>
 
 using namespace openciv;
@@ -586,4 +588,100 @@ TEST_CASE("Process preference lookup resolves retained pool bindings instead of 
     REQUIRE(preferences.count == 1);
     REQUIRE(preferences.build_order[0] == 1);
     REQUIRE(f.values->improvements[1].identity.name.classic == "Cached input");
+}
+TEST_CASE("Native and classic installation agree at allocation boundaries with live dependencies",
+          "[classic][rules][rules-install]") {
+    rule_fixture::Input input;
+    input.rules["advances"][0]["prerequisites"][0] =
+        rule_fixture::json(R"({"advance":"advances.authored.1"})");
+    input.rules["advances"][1]["prerequisites"][0] = rule_fixture::json(R"({"special":"never"})");
+    input.rules["improvements"][0]["prerequisite"] =
+        rule_fixture::json(R"({"advance":"advances.authored.1"})");
+    input.rules["tribes"][0]["governmentTitles"] = rule_fixture::json(
+        R"([{"government":"governments.authored.1","male":"First","female":"FirstFemale"},
+            {"government":"governments.authored.1","male":"Last","female":"LastFemale"},
+            {"government":"governments.authored.6","male":"","female":""}])");
+    const auto source = input.load();
+    REQUIRE(source->advance_prerequisites[0][0] == static_cast<state::AdvanceReference>(1));
+    REQUIRE(source->definitions.advances[0].prerequisites[0] == state::AdvanceReference::never);
+    REQUIRE(source->improvement_prerequisites[0] == static_cast<state::AdvanceReference>(1));
+    REQUIRE(source->definitions.improvements[0].prerequisite == state::AdvanceReference::never);
+    auto sections = complete_sections();
+    auto replace_once = [](std::string& bytes, std::string_view before, std::string_view after) {
+        const auto at = bytes.find(before);
+        REQUIRE(at != std::string::npos);
+        bytes.replace(at, before.size(), after);
+    };
+    replace_once(sections[1], "advances 0,3,1,nil,nil", "advances 0,3,1,Alp,nil");
+    replace_once(sections[1], "advances 1,3,1,nil,nil", "advances 1,3,1,no,nil");
+    replace_once(sections[2], "improvements 0,10,1,nil", "improvements 0,10,1,Alp");
+    replace_once(sections[7], "tribes 0,Example,0,0,0\n",
+                 "tribes 0,Example,0,0,0,1,First,FirstFemale,1,Last,LastFemale,6,,\n");
+    std::string bytes;
+    for (const auto& section : sections)
+        bytes += section;
+    using Observation =
+        std::tuple<std::string, std::size_t, std::size_t, state::AdvanceRule, std::uint16_t,
+                   state::ImprovementRule, state::UnitRule, state::Leader, state::TitlePair, bool>;
+    for (const bool replace : {false, true}) {
+        for (const bool fail : {false, true}) {
+            Fixture f(bytes);
+            *f.values = source->definitions; // Same identity namespace and initial values.
+            f.retained.double_movement_applied = true;
+            f.retained.names.orders[0] = 923;
+            f.retained.leaders[0].names = {-53, -54};
+            f.retained.leaders[0].leader_name = -54;
+            f.retained.leaders[0].times_used = 78;
+            f.retained.leaders[0].city_name_index = 79;
+            f.values->terrain[11].work = state::BaseTerrainWork{};
+            f.values->terrain[11].work->irrigation.work_turns = 87;
+            auto native = std::make_unique<state::RuleState>(f.retained);
+            std::vector<Observation> classic_trace, native_trace;
+            auto observe = [&](state::RuleState& live, std::vector<Observation>& trace) {
+                return [&live, &trace, fail](std::string_view text, std::size_t minimum) {
+                    auto& values = live.definitions;
+                    trace.emplace_back(text, minimum, live.text.size(), values.advances[0],
+                                       values.enabled_advance_count, values.improvements[0],
+                                       values.units[0], live.leaders[0],
+                                       values.governments[2].titles, live.double_movement_applied);
+                    if (text == "improvements 0") {
+                        values.advances[1].enabled = true;
+                        values.advances[1].prerequisites.fill(state::AdvanceReference::none);
+                    }
+                    if (text == "units 0")
+                        values.cosmic.values[0] = 7;
+                    if (text == "First") {
+                        values.governments[2].titles.male = {"Changed", "Changed"};
+                        live.names.government_titles[2][0] = live.names.government_titles[0][0];
+                    }
+                    if (fail && text == "LastFemale")
+                        throw std::bad_alloc();
+                };
+            };
+            f.hooks.allocate = observe(f.retained, classic_trace);
+            formats::content::RuleInstaller install(source, *native,
+                                                    observe(*native, native_trace));
+            if (fail) {
+                REQUIRE_THROWS_AS(f.loader().load("RULES", replace), std::bad_alloc);
+                REQUIRE_THROWS_AS(install.load(replace), std::bad_alloc);
+            } else {
+                f.loader().load("RULES", replace);
+                install.load(replace);
+            }
+            REQUIRE(native_trace == classic_trace);
+            REQUIRE(native->definitions == f.retained.definitions);
+            REQUIRE(native->names == f.retained.names);
+            REQUIRE(native->leaders == f.retained.leaders);
+            REQUIRE(native->text.size() == f.retained.text.size());
+            for (state::TextId id = 0; id < native->text.size(); ++id)
+                REQUIRE(native->text.allocation(id) == f.retained.text.allocation(id));
+            REQUIRE(native->definitions.units[0].movement == 14);
+            REQUIRE(native->definitions.units[0].hit_points == 30);
+            REQUIRE(native->definitions.improvements[0].prerequisite ==
+                    static_cast<state::AdvanceReference>(1));
+            REQUIRE(native->definitions.terrain[11].work->irrigation.work_turns == 87);
+            REQUIRE(native->leaders[0].times_used == 78);
+            REQUIRE(native->leaders[0].city_name_index == 79);
+        }
+    }
 }

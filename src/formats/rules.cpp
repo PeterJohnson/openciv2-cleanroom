@@ -230,6 +230,7 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
             prerequisites.error("expected two prerequisites");
         for (std::size_t j = 0; j < 2; ++j)
             target.prerequisites[j] = advance(prerequisites.element(j), maps[0]);
+        out->advance_prerequisites[i] = target.prerequisites;
         target.enabled = target.prerequisites[0] != AdvanceReference::never;
         target.epoch = static_cast<AdvanceEpoch>(
             named(r.at("epoch"), {"ancient", "renaissance", "industrial", "modern"}));
@@ -240,10 +241,11 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
     for (std::size_t i = 0; i < values.improvements.size(); ++i) {
         auto r = row(1, i);
         r.fields({"id", "name", "costRows", "upkeep", "prerequisite"});
+        out->improvement_prerequisites[i] = advance(r.at("prerequisite"), maps[0]);
         values.improvements[i] = {
             name(r), rules::code8(r.at("costRows").integer()),
             rules::code8(r.at("upkeep").integer()),
-            rules::follow_disabled(advance(r.at("prerequisite"), maps[0]), values.advances)};
+            rules::follow_disabled(out->improvement_prerequisites[i], values.advances)};
     }
     auto wonders = root.at("wonderObsolescence");
     if (wonders.array_size() != 28)
@@ -271,9 +273,9 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
         target.role = static_cast<RuleRole>(
             named(r.at("role"), {"attack", "defend", "naval-superiority", "air-superiority",
                                  "sea-transport", "settle", "diplomacy", "trade"}));
-        target.movement =
-            rules::normalize_movement(r.at("movementPoints").integer(),
-                                      values.cosmic[CosmicParameter::road_movement_multiplier]);
+        out->movement_points[i] = r.at("movementPoints").integer();
+        target.movement = rules::normalize_movement(
+            out->movement_points[i], values.cosmic[CosmicParameter::road_movement_multiplier]);
         target.range = rules::code8(r.at("range").integer());
         target.attack = rules::code8(r.at("attack").integer());
         target.defense = rules::code8(r.at("defense").integer());
@@ -378,6 +380,9 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
                 title.error("Anarchy titles cannot be overridden");
             target.titles[static_cast<std::size_t>(government)] = {text(title.at("male"), false),
                                                                    text(title.at("female"), false)};
+            out->title_overrides[i].push_back(
+                {static_cast<std::uint8_t>(government),
+                 target.titles[static_cast<std::size_t>(government)]});
         }
     }
     const auto simple_names = [&](auto& output, std::size_t kind, bool padded, bool token) {

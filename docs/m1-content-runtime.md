@@ -19,6 +19,9 @@ add ordered rule ingestion, preservation policies, paired native/classic rule
 checks, and preference admission/application through both paths.
 The [city-name providers](m1-city-names.md) add native list validation and shared
 C01 cursor/fallback/publication behavior with the classic text path.
+The [native rule installer](m1-rule-content.md#retained-rule-installation) now
+applies admitted definitions and ordered operands to shared rule/label/leader
+state. Complete content and gameplay-profile installation remains separate.
 
 ## JSON and operand admission
 

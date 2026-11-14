@@ -21,7 +21,9 @@ and a uniquely owned `RuleState` with rule definitions, a shared text pool, name
 bindings, P04 label/popup tables and live leaders/usage/name cursors. That context must outlive the runtime.
 The large rule tables live outside caller stacks, including on WASM. Independent
 virtual peers supply separate contexts. Preferences, further retained workspaces,
-native rule installation and full classic initialization remain owning-spec work.
+complete content/profile installation and full classic initialization remain
+owning-spec work. The native rule installer now applies its admitted definitions
+to the retained rule state; it does not itself admit or replace a session.
 Construction defaults are not claimed as original setup behavior.
 
 After admitted work finishes and required outboxes are transferred,

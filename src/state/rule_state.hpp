@@ -17,6 +17,7 @@ struct RuleNameBindings {
     std::array<TextId, 13> orders{}; // External slot zero is retained.
     std::array<TextId, 6> difficulties{};
     std::array<TextId, 9> attitudes{};
+    bool operator==(const RuleNameBindings&) const = default;
 };
 // Process-retained F02/F03 state. Definitions contain decoded content values;
 // live name consumers resolve these bindings (leader labels additionally carry

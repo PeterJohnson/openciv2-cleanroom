@@ -1,6 +1,7 @@
 // C01 default naming and data-format.md section 5 / Appendix B.
 // Authored provider inputs and expected outcomes, not original-game captures.
 #include "formats/city_names.hpp"
+#include "formats/rules_install.hpp"
 #include "rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <map>
@@ -92,6 +93,32 @@ void rejected(const Input& input, std::string_view code = "invalid-content") {
     }
 }
 } // namespace
+
+TEST_CASE("Native installed leaders supply C01 names while rule reload retains the live cursor",
+          "[city][names][content][rules-install]") {
+    const auto admitted = Input{}.load();
+    auto rules = std::make_unique<state::RuleState>();
+    rules->text.initialize();
+    content::RuleInstaller install(admitted->rules, *rules);
+    install.load(true);
+    World world;
+    const auto provider = content::city_name_provider(admitted, classic::ascii_text_case());
+    REQUIRE(city::default_name(world.city, world.civilizations, *rules, provider));
+    REQUIRE(world.name() == "First");
+    REQUIRE(rules->leaders[0].city_name_index == 1);
+    const auto plural = rules->leaders[0].plural;
+    install.load(false);
+    REQUIRE(rules->leaders[0].plural == plural);
+    REQUIRE(rules->leaders[0].city_name_index == 1);
+    REQUIRE(city::default_name(world.city, world.civilizations, *rules, provider));
+    REQUIRE(world.name() == "Second");
+    install.load(true);
+    REQUIRE(rules->leaders[0].plural != plural);
+    REQUIRE(rules->leaders[0].city_name_index == 2);
+    REQUIRE(city::default_name(world.city, world.civilizations, *rules, provider));
+    REQUIRE(world.name() == "Fallback One");
+    REQUIRE(rules->leaders[0].city_name_index == 3);
+}
 
 TEST_CASE("C01 native and classic providers preserve ordered names residual fallback and wrap",
           "[city][names][content][classic]") {

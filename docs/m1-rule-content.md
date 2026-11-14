@@ -11,13 +11,14 @@ the [shared admission wrapper](m1-content-runtime.md#json-and-operand-admission)
 The implementation follows [data-format.md sections 2/4 and appendices A/B](content/data-format.md)
 and [F03 sections 3–7](algorithms/F03-rules-and-configuration.md). It is one
 semantic admission stage, not complete pack validation, a classic text parser,
-an installed ruleset or an implemented gameplay consumer. Source receipts retain
+or session admission. The separate installer described below applies admitted
+rules to retained process state. Source receipts retain
 the selected rules and compatibility descriptor's declaring packs and exact
 hashes, including inherited selections.
 
 The separate [classic text reader and preference adapters](m1-classic-text.md)
 now supply F03's byte grammar, section services and native/classic city-production
-preferences. Complete classic rule ingestion remains open.
+preferences and all twelve classic rule-table readers.
 
 ## Identity and normalization
 
@@ -48,6 +49,40 @@ versus ordinary empty-string distinction, and ordered tribe-title overrides keep
 the last value for each government. Special terrain definitions carry no work
 update; applying them must retain the old work fields. No reload policy, retained
 leader state or city-name cursor is reset by decoding.
+
+## Retained rule installation
+
+`formats::content::RuleInstaller` owns an immutable `load_rules` result and applies
+it directly to `RuleState`, without virtual files or classic token serialization.
+Its full load follows F03's twelve-table order and explicit leader-replacement
+policy. The individual advance, improvement and unit methods also support
+`keep_names`. Native identity IDs are installed independently of display-name
+preservation. The shared pool must already be initialized by its owning setup.
+
+The decoder now retains advance/improvement prerequisites before fixup, whole
+movement points, and every ordered title override. The installer uses those
+operands at the owning boundary: advance enablement precedes fixup, improvement
+fixup reads the current advance table, and movement uses the current cosmic road
+multiplier. Already normalized HP, costs and scalar codes are not scaled again.
+This matters when an allocation callback changes live state between rows.
+
+Name allocation and binding publication use the same append-only pool as classic
+loading. Leader IDs narrow to signed 16 bits. Repeated title overrides allocate
+in order even when overwritten or when leader data is being preserved; ordinary
+empty overrides return label zero. Government default titles come from the live
+government table. Preservation captures/restores each affected name binding and
+decoded value across its allocation callback. Usage and city-name counters remain.
+All 62 native unit rows are explicit and update interface bindings when replacing
+names; the classic shortened-table tail distinction remains in that adapter.
+Special terrain rows retain existing work values, and order-name slot zero stays.
+
+Rule admission still completes before any installation starts. An allocation
+failure during an invoked installation retains the reached publication prefix;
+it does not make the classic path transactional. The installer retains ownership
+of its input across callbacks and does not reparse or renormalize JSON there.
+It does not admit a complete pack/session, install the gameplay bundle, choose a
+reload command, rebuild labels/sprites, recalculate cities or reset the world.
+Those setup/reload operations and their profile/source receipts remain caller work.
 
 ## Encoding and remaining comparison gap
 
@@ -102,6 +137,14 @@ check readonly behavior, inheritance, receipts and rejection. These are
 specification-derived and integration checks, not original-game observations or
 independent fixture review. No F03 operation is yet registered with X02.
 
+Eight additional native/WASM cases exercise retained rule installation, including
+six dedicated installer cases, a paired classic/native allocation trace with both
+leader policies and a mid-override failure, and an all-native C01 naming/reload
+flow. The paired trace changes live references, movement scaling and government
+titles, then compares publication prefixes, complete definitions, numeric bindings,
+leader records and allocated bytes. It is authored regression/specification
+evidence, not an independent original-program observation.
+
 The [classic rule loader](m1-classic-text.md#classic-rule-tables) now reads all
 twelve F03 tables into the same definitions, with a complete paired native/classic
 fixture, ordered partial updates and caller-controlled preservation. Its shared
@@ -113,6 +156,7 @@ preserve C01's counter, fallback, retry and publication behavior on both paths.
 
 Remaining M1 work includes full comparison/component admission,
 conversion receipts, broader equivalent native/classic inputs,
-application startup/GAME-cache construction, retained native installation and session reload policies, owning mechanics,
+application startup/GAME-cache construction, full content installation and session
+reload policies, owning mechanics,
 session admission and original interoperability. The
 [M1 completion audit](m1-validation.md) remains open.
