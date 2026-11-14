@@ -32,6 +32,10 @@ struct MultiplayerState {
     // F06 sign-extends saved_current into local_human; the saved resume byte
     // widens unsigned. N01/N04 keep these distinct from the turn/player fields.
     std::int32_t local_human = 0, resume_civ = 0;
+    // F02/F06: hotseat roster and network turn selector are distinct from the
+    // currently effective human mask and serialized turn/resume fields.
+    std::uint8_t hotseat_participants = 0;
+    std::int32_t network_turn_civ = 0;
     bool operator==(const MultiplayerState&) const = default;
 };
 // Implemented process-retained preference subset. Saved simultaneous is a

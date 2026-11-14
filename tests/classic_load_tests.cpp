@@ -1,6 +1,7 @@
 // Independently authored F06 core ordering cases. Most tests supply explicit
-// F03 child effects; the final integration case runs the real classic rule parsers.
+// F03 child effects; one integration case runs the real classic rule parsers.
 #include "session/classic_load.hpp"
+#include "session/classic_save.hpp"
 #include "session/runtime.hpp"
 #include "formats/classic_save.hpp"
 #include "formats/classic_rules.hpp"
@@ -536,4 +537,54 @@ TEST_CASE("F06 core publishes loaded scan bounds before names and after a failed
         REQUIRE(f.runtime.world().entities.cities.end() == 1);
         REQUIRE(f.process.tokens == state::ProcessTokens{100, 200});
     }
+}
+TEST_CASE("F06 loaded world edits save and reload through ordered core services",
+          "[session][core-load][core-save]") {
+    // F03 effects are supplied by Fixture, as in the other ordering cases.
+    Fixture f;
+    REQUIRE(f.load() == CoreLoadStatus::success);
+    auto& world = f.runtime.world();
+    world.globals.turn = 72;
+    world.entities.units.at(state::UnitSlot{0}).damage = 11;
+    world.entities.cities.at(state::CitySlot{0}).food_box = 123;
+    world.map.tiles()[0].features = 0x10;
+    world.power_history[1][2] = 87;
+    const auto gameplay = f.runtime.gameplay_random().checkpoint();
+    Bytes output;
+    std::size_t closed = 0;
+    const auto write = [&](std::span<const Byte> bytes) {
+        output.insert(output.end(), bytes.begin(), bytes.end());
+        return true;
+    };
+    CoreSaveServices saving;
+    saving.open = [&](std::string_view path) {
+        REQUIRE(path == "C:\\home\\edited.SAV");
+        return std::make_unique<CoreOutput>(CoreOutput{write, write,
+                                                       [&](Byte byte) {
+                                                           output.push_back(byte);
+                                                           return true;
+                                                       },
+                                                       [&] {
+                                                           ++closed;
+                                                           return true;
+                                                       }});
+    };
+    REQUIRE(save_classic_core(f.runtime, f.files, "C:\\home\\edited", false, saving) ==
+            CoreSaveStatus::success);
+    REQUIRE(closed == 1);
+    REQUIRE(f.runtime.gameplay_random().checkpoint() == gameplay);
+    REQUIRE(decode_stored_save(output).units[0].token == state::UnitToken{100});
+    f.bytes = std::move(output);
+    f.position = 0;
+    f.items.clear();
+    REQUIRE(f.load("C:\\home\\edited") == CoreLoadStatus::success);
+    REQUIRE(f.position == f.bytes.size());
+    REQUIRE(world.globals.turn == 72);
+    REQUIRE(world.entities.units.at(state::UnitSlot{0}).damage == 11);
+    REQUIRE(world.entities.cities.at(state::CitySlot{0}).food_box == 123);
+    REQUIRE(world.entities.units.at(state::UnitSlot{0}).token == state::UnitToken{101});
+    REQUIRE(world.entities.cities.at(state::CitySlot{0}).token == state::CityToken{201});
+    REQUIRE(world.map.tiles()[0].features == 0x10);
+    REQUIRE(world.power_history[1][2] == 87);
+    REQUIRE(f.runtime.gameplay_random().checkpoint().draws == 510);
 }

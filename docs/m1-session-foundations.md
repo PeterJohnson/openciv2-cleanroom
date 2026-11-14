@@ -16,8 +16,9 @@ clients only a `PlayerClient`. All calls run on one cooperative mutation lane.
 
 The runtime owns `state::GameState`: the existing stable entity pools, global,
 civilization and name records, retained mood workspace and map storage. It also
-owns saved multiplayer values, runtime local-human/resume selectors and password
-flags, plus the ordered event collection and its separate loaded indicator,
+owns saved multiplayer values, runtime local-human/resume/network-turn selectors,
+the hotseat participant mask and password flags, plus the ordered event collection
+and its separate loaded indicator,
 power/elimination history, scenario parameters, logical layout and map views.
 These are separate from participant/controller bindings. It uses
 an injected `ProcessContext` containing lifetime tokens, the shared fallback tile
@@ -61,6 +62,12 @@ client identities unchanged, publishes query revisions at service boundaries and
 uses the already initialized gameplay context for the classic password-reset law.
 The post-load wrapper, production resource adapters and mode admission remain
 separate; this core entry does not make a playable session available.
+The [composed live writer](m1-stored-saves.md#composed-live-save) uses that same
+world with required output services, keeps client lifetimes and random contexts,
+and preserves the specified save-preparation effects on partial failure. Its
+hotseat roster and network-turn selector are distinct from the effective human
+mask and serialized turn/resume fields. Construction defaults do not initialize
+those mode-specific values; the application admission layer must supply them.
 
 The composition root supplies a stable nonzero `RuntimeId`, unique among
 runtimes whose observations will be compared. `SessionId`, `ParticipantId` and

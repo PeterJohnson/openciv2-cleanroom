@@ -2,9 +2,9 @@
 
 M1 remains in progress. The complete **stored-file view for version `0x2c`**
 supports lossless re-encoding without load transformations. The separate ordered
-core loader now composes the stream/name/census stages below over `SessionRuntime`
-with required external file/path/F03 bindings. Application file/rule adapters,
-post-load admission, the live save operation and resumed gameplay remain open.
+core loader and live writer now compose the stream/name/census and save-preparation
+stages below over `SessionRuntime` with required external service bindings.
+Application file/rule adapters, post-load admission and resumed gameplay remain open.
 
 ## Record and file boundary
 
@@ -40,7 +40,7 @@ The encoder checks vector lengths, conditional block presence and event
 marker/string agreement before returning any output. It preserves an admitted
 nonstandard header separator and existing presence words. This API re-encodes a
 stored view; F06 §5's save-as-scenario flag/event transformations belong to the
-future live save operation.
+separate live save operation below.
 
 ## Declared admission limits
 
@@ -342,9 +342,63 @@ and stop before using map storage invalidated by a callback.
 This is authored integration evidence, not an original-game core-load comparison
 or an X02 registration. The 21 original-save auxiliary comparisons still pass but
 do not run this orchestrator. Concrete native/web file and F03 resource-context
-bindings, full reload-wrapper callbacks, post-load actions/admission, live saving
+bindings, full reload-wrapper callbacks, post-load actions/admission, application saving
 and original resumed-state comparisons remain required M1 work. Inspection's
 stored view has not been relabeled as loaded-state analysis.
+
+## Composed live save
+
+`session/classic_save.hpp` implements F06 §5 over the same runtime and retained
+file context. It swaps the entry hotseat human mask, selects the extension and
+opens binary replacement through a required output service. Header characters
+are separate unchecked writes; saved-current civilization is narrowed from the
+local-human selector before the checked version item. Each later block observes
+live state at its own boundary. There is no whole-world snapshot, census or region
+rebuild, lifetime renewal or direct random draw.
+
+Scenario export rebuilds advance known-by masks and first discoverers through
+V03 §2's knowledge query, clears the four specified civilization flags and
+prepares names before writing world records. The knowledge leaf handles negative
+sentinels before civilization access, excludes barbarian knowledge and always
+returns false for Future Technology, even with its raw membership bit set.
+Ordinary active-scenario saves prepare names without rebuilding knowledge.
+Events are emitted only when loaded and not exporting a scenario.
+
+Layout preparation follows the successful power-history item and remains after
+later failure. The multiplayer resume byte is temporarily replaced from the
+distinct network-turn selector and restored only after its item succeeds.
+Common cleanup uses the live mode, restores the hotseat mask when applicable,
+then closes once. A callback entering hotseat from another entry mode requires
+explicit incoming cleanup-mask backing; absent backing closes the output and
+stops safely. Close failure does not change the original success status, so this
+core result alone is not a durable browser-save acknowledgement.
+
+Required output failures leave partial bytes and earlier world effects intact.
+Unbacked names or map data stop safely rather than inventing ordinary save-error
+results. The supported runtime domain requires matching global and pool scan
+bounds; this is checked before persistent output and again before entity output.
+A mismatch stops at that boundary without silently repairing either value.
+Production output providers must implement truncating binary replacement and
+preserve partial files. The inspection export's atomic no-overwrite provider has
+a different contract and is not used here.
+
+Thirteen new native/WASM cases cover the knowledge leaf and save composition:
+the complete ordered stream, every required fixed-item failure (including active
+scenario, hotseat and event blocks), header-character failures, signed narrowing,
+scenario discovery/flag/name effects, extension selection, live mode transitions,
+callback changes to later blocks, event text/terminator failures, backing stops,
+empty entity ranges, unchanged client/RNG/token ownership and load-edit-save-reload.
+The latter uses declared F03 child effects; the separate core-load integration
+case exercises the real F03 parsers. These are independently authored contract
+tests, not X02 registrations or original-game acceptance of live exports.
+
+The full Windows run passes 308 default-off and 310 SQLite-enabled CTests;
+WebAssembly passes six CTests including 296 portable cases (165,640 assertions).
+All 54 existing X02 observations and consumed prefixes match across native/WASM.
+The 21 original-save auxiliary comparisons and original label checks still pass,
+but their retained scope excludes this live writer. Production native/web file
+adapters, application save/admission integration and original edited-export/resume
+checks remain open.
 
 ## Windows evidence — 2026-11-13 Pacific
 
