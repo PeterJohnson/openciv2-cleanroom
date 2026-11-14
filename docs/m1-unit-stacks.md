@@ -94,13 +94,15 @@ notifications false when either coordinate is negative. It preserves positive
 out-of-map records. A destruction-check callback may extend the bound and those
 new slots are visited. Earlier effects survive a failed diagnostic or child.
 
-This is an extracted cleanup stage, not the accepted-file dialog: the parent must
-first complete core input, event replacement/execution, preference/audio/title
-effects and the home-directory return. Its placement children now honor authority
+This extracted cleanup stage is now called by the
+[accepted-file dialog](m1-stored-saves.md#accepted-file-load-caller) after core input,
+event replacement/execution, preference/audio/title effects and home-directory
+return. Required owning children and application admission remain separate work.
+Its placement children now honor authority
 changes during stack repair through `StackOperations`. A composition case changes
 host status in the infinite-stack diagnostic and supplies distinct incoming
 placement effects/replies, verifying they survive without extra local placement.
-The complete accepted-file wrapper, V01 implementation and application admission
+The owning S02/P10/V01 implementations, native bindings and application admission
 remain open.
 
 ## Backing and execution boundaries
@@ -129,9 +131,9 @@ placement, signed owners, self-loop repair, and a complete 2,048-member chain
 reversal with both supplied and missing negative-terminal backing. Resource-stop
 cases check the retained links, coordinates and activity state.
 
-Windows MSVC passes all 383 default-off and 385 SQLite-enabled CTests. Pinned
-Emscripten 4.0.23 passes all six CTests, including 363 portable Catch2 cases
-(182,935 assertions). The stack cases contribute 16,562 assertions. The 54
+Windows MSVC passes all 401 default-off and 403 SQLite-enabled CTests. Pinned
+Emscripten 4.0.23 passes all six CTests, including 381 portable Catch2 cases
+(183,359 assertions). The stack cases contribute 16,562 assertions. The 54
 retained X02 native/WASM observations and consumed prefixes remain identical;
 their reports were refreshed for the changed build and shared record header.
 Formatting passes with pinned clang-format 20.1.8. The upstream Catch2 WASM

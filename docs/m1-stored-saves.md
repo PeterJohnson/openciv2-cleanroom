@@ -491,8 +491,8 @@ complete core output, short/control/high-byte names, monthly calendar edges,
 mode changes, retry and cancellation, live success parameters, partial write
 errors and unresolved callback stops. These are specification-derived tests;
 the earlier original live-save report exercised the core driver, not this menu
-wrapper. Native chooser/application binding and accepted-file post-load admission
-remain open.
+wrapper. Native chooser/application binding and application load admission remain
+open; the accepted-file caller is described below.
 
 The [U01 stack and deletion foundations](m1-unit-stacks.md) now provide real
 traversal, ordered repair, local placement and basic deletion. The extracted
@@ -502,8 +502,72 @@ units with notifications false. Counter changes, carrier wakeups and required
 V01 checks remain active. Six composition cases cover ordering, dynamic bounds,
 partial effects and authority changes during repair. Placement children use the
 real U01 request/wait boundaries when callbacks select a nonhost and preserve
-received state. V01's cascade, owning transport bindings and the full accepted-file
-wrapper/application admission remain open.
+received state. V01's cascade, owning transport bindings and application admission
+remain open.
+
+## Accepted-file load caller
+
+`session/classic_load_dialog.hpp` composes F06 section 11's accepted-file flow
+with the real core loader, S02 event compaction and U01 cleanup. Its input is an
+accepted path or cancellation from the separate chooser boundary. Cancellation
+restores the live home directory without reading a file. Acceptance closes map
+windows 1 through 7 before variant selection or core input.
+
+The uppercased path's `.SCN` substring selects the ALT branch, including when the
+substring occurs in a directory or before another suffix. Enumeration preserves
+service order. An empty result consumes no draw; a nonempty result consumes one
+primary-code choice at `F06.scenario-alternative`, keyed by the supplied operation
+call identity. The specified scaled mapping includes the original file as choice
+zero. A nonzero choice uses a consistent second enumeration. The adapter rejects
+inconsistent enumerations, selected names that are not unqualified filenames,
+and more than 65,535 alternatives with a safe stop, retaining earlier effects and
+any consumed choice. That declared resource bound keeps the arithmetic product in
+the nonnegative signed-32 domain. It does not invent a fallback file or redraw.
+
+After successful core input and its close/mode adaptation, the caller flushes.
+Only unloaded scenario events probe `EVENTS.<language extension>` in the loaded
+file's directory. An existing resource resets the event list before the required
+S02 parser child. Successful parsing invokes real two-pass compaction and then
+publishes loaded=true. Allocation failure stops at its reached compaction prefix.
+If the loaded flag remains false, the old/partial list is reset. Persisted events
+bypass replacement, preserving Consumed flags and wildcard bindings.
+
+`ProcessContext::preference_game_options` now holds the ordinary remembered word
+separately from live world options. The caller applies it after event loading,
+then configures sound. The live Music and events-loaded gates select ScenarioLoaded
+execution; this is independent of the scenario flag. Music synchronization follows
+and still runs with Music disabled, allowing P10's stop/request behavior. Optional
+title presentation precedes restoring the live home directory. Real U01 cleanup
+then establishes host, repairs stacks and deletes negative-position units without
+notifications. The final selected path is retained only after that completes.
+
+Core failures invoke a result-specific notice before clearing the opaque loaded
+file classification. Cancellation and thrown service/resource stops are distinct
+from these returned core errors. Required child exceptions preserve completed
+effects; there is no implicit home-directory or world rollback. Query publication
+precedes external boundaries, including unit diagnostics, destruction checks and
+request/wait services. Clients can observe the already deleted unit at the V01
+boundary, without receiving direct mutable world access.
+
+Eighteen independently authored cases exercise real core input and cleanup,
+ALT quantization edges/order/no-draw paths, retained selected paths, ordinary and
+scenario events, live callback changes, compaction failure prefixes, cancellation,
+all four core error statuses, required-child stops and client observation during
+deletion. Expectations derive from the specifications. They are not original-game
+captures or evidence that the supplied S02 parser/executor, audio, title or V01
+children are implemented. Those bindings, ordinary preference loading/defaults,
+native enumeration/chooser integration, application admission and broader original
+resume/edit comparisons remain open.
+
+Windows verification of this increment passes 401 default-off CTests and 403
+with SQLite enabled. Pinned Emscripten passes all six CTests, including 381
+portable Catch2 cases with 183,359 assertions. The 18 accepted-file cases account
+for 424 assertions on both native and WASM. All 54 X02 fixtures retain identical
+native/WASM actual results and consumed prefixes; their refreshed metadata does
+not add load-dialog fixture coverage. Pinned clang-format 20.1.8 passes. The
+unchanged upstream Catch2 `__COUNTER__` and existing command-initializer warnings
+remain in the WASM build. Logs are retained locally in ignored
+`build/load-dialog-{native,sqlite,wasm}-{build,ctest}.log`.
 
 ## Windows evidence — 2026-11-13 Pacific
 

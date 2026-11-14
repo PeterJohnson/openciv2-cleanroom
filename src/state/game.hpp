@@ -21,6 +21,9 @@ struct ProcessContext {
     // has distinct storage, retained across client-session lifetime changes.
     std::unique_ptr<RuleState> rules = std::make_unique<RuleState>();
     MultiplayerPreferences multiplayer_preferences;
+    // F03 ordinary remembered options, distinct from the current world's word.
+    // Configuration admission/defaulting is an owning operation, not construction.
+    std::uint32_t preference_game_options = 0;
     TextParameters text_parameters;
     world::Tile fallback;
 };
