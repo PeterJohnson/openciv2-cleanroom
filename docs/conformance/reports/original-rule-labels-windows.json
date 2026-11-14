@@ -1,6 +1,6 @@
 {
   "format": "openciv2-original-rule-label-consistency/1",
-  "createdUtc": "2026-11-14T09:15:22.810946+00:00",
+  "createdUtc": "2026-11-14T09:36:52.775242+00:00",
   "scope": "retained-original-save-and-text-consistency; no new original execution",
   "inputs": {
     "labels": {
@@ -26,8 +26,8 @@
   },
   "decoder": {
     "path": "build/headless-fetch/oc2.exe",
-    "bytes": 3110400,
-    "sha256": "557664158a39e6f4d1124a4a275e37fa7a6a314503c8f926d25b6143c7d1fa5c"
+    "bytes": 3121152,
+    "sha256": "ab80af10b30acd5f937d92ce13615a553d6090520cfcb677dbab8df41c258d33"
   },
   "tribe": 12,
   "declaredLabels": 888,
@@ -295,7 +295,7 @@
   },
   "implementationDriver": {
     "path": "build/headless-fetch/oc2_rule_labels.exe",
-    "bytes": 1866240,
-    "sha256": "909996c505a80c7ebc324c049123c5d63b5a962ea0315abb61c1f4e62ae762f1"
+    "bytes": 1872896,
+    "sha256": "2057165b2d7479005020c0b2a380fc74c0c69408bdb97927451d0d4ea124233f"
   }
 }

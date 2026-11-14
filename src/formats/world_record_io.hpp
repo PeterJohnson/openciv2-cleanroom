@@ -10,11 +10,14 @@ namespace openciv::formats {
 // preclears and earlier effects survive failure. Enemy count changes only
 // after the entire game block succeeds, before reading name overrides.
 // The scenario output changes only after all persistent items succeed.
-// Does not allocate a map, change pool scan bounds, renew IDs or admit a session.
+// The optional publication binding runs after each global fragment, including a
+// failed prefix, so an owner can mirror scan bounds before later service calls.
+// Does not itself allocate a map, renew IDs or admit a session.
 bool read_persistent_items(const ReadItem& read, std::uint16_t version,
                            state::GlobalValues& globals,
                            std::span<state::CivilizationNames, 8> names,
-                           std::span<state::Civilization, 8> civilizations, bool& scenario);
+                           std::span<state::Civilization, 8> civilizations, bool& scenario,
+                           const std::function<void()>& globals_published = {});
 // F06 section 5 block order: current globals, names, civilizations as three
 // separate items. Parent owns save preparation, version and later blocks.
 bool write_persistent_items(const WriteItem& write, const state::GlobalValues& globals,

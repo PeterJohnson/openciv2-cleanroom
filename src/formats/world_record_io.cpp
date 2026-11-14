@@ -66,16 +66,24 @@ bool read_old_civilization(const ReadItem& read, state::Civilization& civ) {
 bool read_persistent_items(const ReadItem& read, std::uint16_t version,
                            state::GlobalValues& globals,
                            std::span<state::CivilizationNames, 8> names,
-                           std::span<state::Civilization, 8> civilizations, bool& scenario) {
+                           std::span<state::Civilization, 8> civilizations, bool& scenario,
+                           const std::function<void()>& globals_published) {
     if (game_version_status(version) != VersionStatus::supported)
         throw std::invalid_argument("Unsupported core game record version");
+    const auto global_part = [&](std::size_t offset, std::size_t length) {
+        const bool complete =
+            read_part(read, globals, offset, length, encode_globals, decode_globals);
+        if (globals_published)
+            globals_published();
+        return complete;
+    };
     if (version < 0x28) {
         clear_legacy(globals, civilizations);
         for (const auto [offset, length] :
              {std::pair{0x000U, 0x36U}, {0x036U, 0x5dU}, {0x09aU, 0x5dU}, {0x0feU, 0x4cU}})
-            if (!read_part(read, globals, offset, length, encode_globals, decode_globals))
+            if (!global_part(offset, length))
                 return false;
-    } else if (!read_part(read, globals, 0, global_record_size, encode_globals, decode_globals)) {
+    } else if (!global_part(0, global_record_size)) {
         return false;
     }
     globals.num_enemies =

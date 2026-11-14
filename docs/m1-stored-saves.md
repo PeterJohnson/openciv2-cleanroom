@@ -1,9 +1,10 @@
 # M1 stored-save records
 
-M1 remains in progress. This slice adds the complete **stored-file view for
-version `0x2c`** and its lossless re-encoding. It does not implement F06's ordered
-session load, live save operation or resumed gameplay. Separate ordered
-persistent-record, leader and census operations are implemented below.
+M1 remains in progress. The complete **stored-file view for version `0x2c`**
+supports lossless re-encoding without load transformations. The separate ordered
+core loader now composes the stream/name/census stages below over `SessionRuntime`
+with required external file/path/F03 bindings. Application file/rule adapters,
+post-load admission, the live save operation and resumed gameplay remain open.
 
 ## Record and file boundary
 
@@ -75,7 +76,9 @@ byte. The old path first clears the specified technology and census arrays;
 omitted tails remain zero, while the unrepresented civilization byte at `0x65`
 retains its incoming value. Each item publishes its transferred prefix, including
 a full transfer reported as failed. Untouched bytes retain live values after the
-item service returns. No later item is attempted after failure.
+item service returns. No later item is attempted after failure. An optional
+publication binding mirrors global scan bounds into the runtime pools after each
+global fragment, including a failed prefix, before any following service call.
 
 Enemy count is recomputed modulo 256 immediately after successful global input,
 before names. Scenario capture, cheat/reveal/history changes and clearing the
@@ -98,8 +101,8 @@ and safe stops. An integration case reads persistent records and entities into
 `GameState`, renews tokens through the existing entity reader, and verifies that
 stored counts survive until the explicit census phase. In particular, renewal
 to token zero affects the later count. These are specification/regression tests,
-not original execution or X02 fixtures. The parent must still establish pool
-scan backing and sequence the intervening map, leader, multiplayer and event
+not original execution or X02 fixtures. The composed core parent now binds scan
+publication and sequences the intervening map, leader, multiplayer and event
 stages; these APIs do not admit a running session.
 
 ## Ordered leader and name operations
@@ -295,9 +298,53 @@ saves; scenario evidence here is authored tests. Three legacy files remain outsi
 the driver's complete stored-view domain. This is original-data interoperability
 evidence, not original execution, observed failure traces or a full session load.
 
-Full path/header/rule-load orchestration, save-as-scenario preparation,
-rule-reload completion and live-session admission remain open. No loaded-world
-claim follows from these isolated stages.
+## Composed core load
+
+`session/classic_load.hpp` implements F06 §6's core orchestration over an existing
+`SessionRuntime` and caller-retained `ClassicFileState`. It selects the entry-mode
+extension, uses the any-period rule, opens input, reads the character header and
+version gate, selects the requested path's scenario/GAME context, updates the
+remembered basename/subdirectory and invokes full rule loading. It then runs the
+record, map, entity, leader, history/layout, multiplayer and event stages in order,
+restores names, rebuilds the census, invalidates the city-cache identity, requests
+the three final rule reloads, decides layout validity, closes input and adapts mode.
+
+File, directory, probe, comparison, flush and owning F03 operations are required
+service bindings. A normal F03 callback return means that operation completed;
+an absent binding rejects before file effects. Resource hooks remain optional.
+The composition root retains path/cursor/packed-layout/leader scratch across calls,
+supplies current screen state and initializes the runtime's random contexts before
+classic import. No RNG metadata is required from or added to the classic file.
+The core entry requires settled commands and leaves participant/client identities
+alone; it is not the post-load wrapper or a connection/admission procedure.
+
+Early input, unsupported and newer-version results are distinct. Required later
+item failure returns data status with earlier effects retained; input is closed
+exactly once, and close failure is ignored. Exceptions from rule services or safe
+backing checks close input without rolling back state. An unterminated 79-byte
+header still consumes its extra separator read before stopping; a missing final
+backslash stops after the initial flush. Neither case invents an ordinary original
+error result. Paths use supplied case comparison, not the host's locale or native
+path parser. Same-runtime query revisions publish at service and completion
+boundaries; the core loader does not grant new client authority.
+
+Fourteen authored native/WASM cases cover complete `0x26`, `0x27`, `0x28` and
+`0x2c` flows, every required item failure, header/version/path gates, retained
+directories, scan publication before names, post-close mode adaptation,
+scenario/event/name/census ordering,
+rule failures, random ownership and query access through an unchanged client.
+One case invokes the actual F03 full-table and name-preserving final parsers.
+The other ordering cases declare supplied F03 child effects; they do not establish
+the production rule/resource wrapper's behavior. Composition also fixes older
+map/entity helpers to preserve untouched post-callback fields on partial input
+and stop before using map storage invalidated by a callback.
+
+This is authored integration evidence, not an original-game core-load comparison
+or an X02 registration. The 21 original-save auxiliary comparisons still pass but
+do not run this orchestrator. Concrete native/web file and F03 resource-context
+bindings, full reload-wrapper callbacks, post-load actions/admission, live saving
+and original resumed-state comparisons remain required M1 work. Inspection's
+stored view has not been relabeled as loaded-state analysis.
 
 ## Windows evidence — 2026-11-13 Pacific
 

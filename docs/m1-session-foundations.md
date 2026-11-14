@@ -44,7 +44,7 @@ load transformations. World, map and process values remain installed until their
 owning operation changes them. Ending a client session similarly revokes access
 without clearing those values. Existing F02 entity-reset helpers can be called
 at their specified boundaries without resetting process tokens or name cursors;
-their integration into the complete ordered setup/load paths remains open.
+F05 setup and application load/admission integration remain open.
 The [multiplayer load stages](m1-stored-saves.md#passwords-and-multiplayer-loadsave-stages)
 now operate on this world/process state and the session's gameplay random context;
 their isolated ownership test does not claim complete file loading or lobby admission.
@@ -55,6 +55,12 @@ The [auxiliary stream stages](m1-stored-saves.md#ordered-map-summaries-history-l
 likewise update retained records without replacing client lifetimes or creating
 native windows. Packed layout-transfer scratch is supplied separately by the
 file-operation owner; it is not a second authoritative world model.
+The [composed core loader](m1-stored-saves.md#composed-core-load) now invokes these
+stages over this runtime with required file/path/F03 service bindings. It keeps
+client identities unchanged, publishes query revisions at service boundaries and
+uses the already initialized gameplay context for the classic password-reset law.
+The post-load wrapper, production resource adapters and mode admission remain
+separate; this core entry does not make a playable session available.
 
 The composition root supplies a stable nonzero `RuntimeId`, unique among
 runtimes whose observations will be compared. `SessionId`, `ParticipantId` and

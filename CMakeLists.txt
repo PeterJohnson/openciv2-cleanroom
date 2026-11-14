@@ -93,6 +93,7 @@ target_link_libraries(oc2_query PUBLIC oc2_formats PRIVATE oc2_options)
 
 # Local runtime ownership and scoped clients; no GUI or transport is required.
 add_library(oc2_session src/session/runtime.cpp src/session/commands.cpp src/session/command_runtime.cpp)
+target_sources(oc2_session PRIVATE src/session/classic_load.cpp)
 target_include_directories(oc2_session PUBLIC src)
 target_link_libraries(oc2_session PUBLIC oc2_query PRIVATE oc2_options)
 
@@ -198,6 +199,7 @@ if(BUILD_TESTING)
   target_sources(oc2_tests PRIVATE tests/multiplayer_io_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/event_io_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/save_aux_io_tests.cpp)
+  target_sources(oc2_tests PRIVATE tests/classic_load_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/city_names_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/text_pool_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/city_preferences_tests.cpp)

@@ -2,11 +2,14 @@
 
 namespace openciv::formats {
 namespace {
-bool transfer(const ReadItem& read, std::span<Byte> destination) {
-    const auto result = read(destination.size());
-    if (result.prefix.size() > destination.size() ||
-        (result.complete && result.prefix.size() != destination.size()))
+ReadResult item(const ReadItem& read, std::size_t length) {
+    auto result = read(length);
+    if (result.prefix.size() > length || (result.complete && result.prefix.size() != length))
         throw std::invalid_argument("Item service returned an inconsistent transferred prefix");
+    return result;
+}
+bool transfer(const ReadItem& read, std::span<Byte> destination) {
+    const auto result = item(read, destination.size());
     std::copy(result.prefix.begin(), result.prefix.end(), destination.begin());
     return result.complete;
 }
@@ -27,10 +30,11 @@ bool read_records(const ReadItem& read, Range records, std::size_t size, Encode 
                   Decode decode) {
     if (records.empty())
         return true; // F06 zero-size entity blocks are skipped.
+    const auto incoming = item(read, records.size() * size);
     auto bytes = encode_records(records, encode);
-    const bool complete = transfer(read, bytes);
+    std::copy(incoming.prefix.begin(), incoming.prefix.end(), bytes.begin());
     publish_records(bytes, records, size, decode);
-    return complete;
+    return incoming.complete;
 }
 Bytes encode_starts(const std::array<std::int16_t, 21>& values) {
     ByteWriter writer;
@@ -100,10 +104,11 @@ bool read_map_items(const ReadItem& read, MapStream kind, world::MapStorage& map
         admitted_geometry(header); // Malformed dimensions may reject before publication.
     if (kind == MapStream::raw) {
         for (auto* values : {&starts.x, &starts.y}) {
+            const auto incoming = item(read, 42);
             auto bytes = encode_starts(*values);
-            const bool complete = transfer(read, bytes);
+            std::copy(incoming.prefix.begin(), incoming.prefix.end(), bytes.begin());
             decode_starts(bytes, *values);
-            if (!complete)
+            if (!incoming.complete)
                 return false;
         }
     } else {
@@ -113,12 +118,19 @@ bool read_map_items(const ReadItem& read, MapStream kind, world::MapStorage& map
     map.stored_topology = header.topology;
     map.pattern_seed = header.seed;
     map.allocate(shape, allocation);
+    const ReadItem backed = [&](std::size_t length) {
+        const auto revision = map.storage_revision();
+        auto incoming = read(length);
+        if (map.storage_revision() != revision)
+            throw std::out_of_range("Map input callback invalidated the selected backing");
+        return incoming;
+    };
     if (kind == MapStream::embedded) {
         for (unsigned civ = 1; civ < 8; ++civ)
-            if (!transfer(read, map.remembered_layer(civ)))
+            if (!transfer(backed, map.remembered_layer(civ)))
                 return false;
     }
-    return read_records(read, map.tiles(), tile_record_size, encode_tile, decode_tile);
+    return read_records(backed, map.tiles(), tile_record_size, encode_tile, decode_tile);
 }
 bool write_map_items(const WriteItem& write, MapStream kind, const world::MapStorage& map,
                      const StartingPositions& starts) {
@@ -147,10 +159,11 @@ bool read_entity_items(const ReadItem& read, std::uint16_t version, state::Entit
     if (version < 0x2a) {
         const std::size_t length = version < 0x29 ? 26 : 30;
         for (auto& unit : pools.units.scanned()) {
+            const auto incoming = item(read, length);
             auto bytes = encode_unit(unit);
-            const bool complete = transfer(read, std::span{bytes}.first(length));
+            std::copy(incoming.prefix.begin(), incoming.prefix.end(), bytes.begin());
             unit = decode_unit(bytes);
-            if (!complete)
+            if (!incoming.complete)
                 return false;
         }
     } else if (!read_records(read, pools.units.scanned(), unit_record_size, encode_unit,
@@ -159,10 +172,11 @@ bool read_entity_items(const ReadItem& read, std::uint16_t version, state::Entit
     }
     if (version < 0x29) {
         for (auto& city : pools.cities.scanned()) {
+            const auto incoming = item(read, 84);
             auto bytes = encode_city(city);
-            const bool complete = transfer(read, std::span{bytes}.first(84));
+            std::copy(incoming.prefix.begin(), incoming.prefix.end(), bytes.begin());
             city = decode_city(bytes);
-            if (!complete)
+            if (!incoming.complete)
                 return false;
         }
     } else if (!read_records(read, pools.cities.scanned(), city_record_size, encode_city,

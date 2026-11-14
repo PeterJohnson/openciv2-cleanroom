@@ -1,6 +1,6 @@
 {
   "format": "openciv2-original-save-auxiliary-comparison/1",
-  "createdUtc": "2026-11-14T09:15:23.642309+00:00",
+  "createdUtc": "2026-11-14T09:36:53.435235+00:00",
   "scope": "Isolated ordered coarse/region, power/layout/views and scenario/elimination I/O compared with original bytes and stored records; no complete session load, callback/failure trace or new original execution",
   "provenance": {
     "manifest": "docs/conformance/reports/original-saves-windows.json",
@@ -8,10 +8,10 @@
     "installation": "C:\\Projects\\civ2\\Civ2"
   },
   "host": "Windows-11-10.0.26300-SP0",
-  "implementationRevision": "6b04aeb884124e097f90e44c5f4d47b270e07574",
+  "implementationRevision": "57af994d1fd3d25b696a0ba82afe8e0b0bf8d763",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "cec20f2ba7586fd653b7e15c47575f53b2fbb147f448ec90ab1751452f368df8",
+    "CMakeLists.txt": "a424be6caa46f102b40d3d00a66143e5421d1b542bf7562022ea5f6f7f431b9d",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
     "tools/save_roundtrip.cpp": "6b1214688a7113f0877f3426dba7f5108040ae365c221bae13932c4aa0ce7730",
     "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
@@ -27,7 +27,7 @@
     "src/state/scenario.cpp": "93bace800d8e5f480cca33b5340511e81b6325d42a4e768064e53f4d00d243a5",
     "src/formats/bytes.hpp": "8641893e1e2c0466d1440258e25f308444c4172590dfec29f62682551f251888",
     "src/formats/classic_io.hpp": "535a0f51cbbefddea087e7826083a0716ce1bf5db46ee838f5209d9e03ee11cb",
-    "src/formats/classic_io.cpp": "46234f09f644e8fb4eebc5f4173ad1218b69406f15542706ada43e32db44ec09",
+    "src/formats/classic_io.cpp": "cd9e53cec3c72d4d0c26511c489ce0cf71145eed4ba25cc73fec680d01e7c195",
     "src/formats/classic_records.hpp": "59c43681d01f3466671246d00609642ef2549763df5e5f5209effc727f7d732d",
     "src/formats/classic_records.cpp": "e3f2e379a3b7ae00df0569c4e33c3a2248380d65ac7c345242a0f0b207662a3d",
     "src/formats/classic_save.hpp": "64d193254eacb509b77a6cba4614b380c1cc54cff06435ec02dbb4250b1daf79",
@@ -40,7 +40,7 @@
   },
   "driver": {
     "path": "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_save_roundtrip.exe",
-    "sha256": "81004160896d116bb8a0e004058684af33e555ece2fa2dae2a08b536d85abae2"
+    "sha256": "e1d5014fe94274ba9b977fcd806c7b4830c0e36ed2c658f1d0f409e55393eb81"
   },
   "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n",
   "limitations": [
