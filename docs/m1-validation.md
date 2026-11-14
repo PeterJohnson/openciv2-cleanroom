@@ -29,7 +29,7 @@ and broad coverage gaps do not enlarge the goal. Owning specs still govern corre
 
 | Gate | Status | Evidence or remaining deliverable |
 | --- | --- | --- |
-| M1-01: local checkpoint profile | Open | RNG checkpoints exist; implement the declared idle/suspended-command serialization profile and its eight scenario groups |
+| M1-01: local checkpoint profile | Open | [Bounded RNG component codec](m1-checkpoint.md) added; implement session/profile admission and owner continuation codecs, then pass all eight scenario groups |
 | M1-02: content conversions | Open | Existing readers/validators are baseline evidence; add only RULES, CITY and CITYPREF classic-to-native conversions and receipts |
 | M1-03: fixed conformance review | Open | Baseline has 15 operations/57 vectors; complete independent review, eight-family evidence mapping and final reports |
 | M1-04: original-file evidence | Open | Existing captures are historical; perform only the contract's current-export map/save checks and fixed stored-file corpus |

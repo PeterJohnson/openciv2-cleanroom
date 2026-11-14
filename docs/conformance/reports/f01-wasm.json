@@ -1,11 +1,11 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "foundation-session-v3",
-  "createdUtc": "2026-11-14T20:25:07.256096+00:00",
-  "implementationRevision": "c31b36e2f785af6c2f5c0bbfde259a09f15c8a0c",
-  "uncommittedImplementationChanges": false,
+  "createdUtc": "2026-11-14T21:08:58.833018+00:00",
+  "implementationRevision": "5636f88d0838de6a4467292b92e9b77460498a18",
+  "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "3138bf8ab187641a73cd8169f9de78da280ba577a872e2be5327bae134ac0446",
+    "CMakeLists.txt": "d622f9c7e59b3cda79f4d453e09befe840ceb33f288d4294eb17650de5879496",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
     "cmake/ConformanceIdentity.cmake": "1136c7b0ddaebf235616416ff72bc569f8e72bf23632bf65ccb6c67894e2d95f",
@@ -13,8 +13,8 @@
     "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
     "src/base/random.hpp": "4a28fdf7845fbe330aa90efa2b665102ba6e8b91649d77b1a3abb8e2df1d8f76",
     "src/base/random.cpp": "eaa680068f6f6943e78fce8c6791e1ceb95db8cb61bb44cd1bc61c4a0cceeece",
-    "src/base/random_source.hpp": "161c359a4ce5b310ddd5854ac538e87a2a416d527b6ecb02c851da5967804f6b",
-    "src/base/random_source.cpp": "cf213a54438f7d232b53f7e75641ab103794711d128260901c8abcb647f3fb4a",
+    "src/base/random_source.hpp": "820933057352115eceff3d2ddfe17b9357a8ef01fc25e05d061fbe2b30cf9fee",
+    "src/base/random_source.cpp": "fe7ec6d2058cdff39265b862ec2c3a6958b540e9dc3b88ab395fdc6d0af30880",
     "src/base/choices.hpp": "cd0d68b86ca9f17257d724e676a19ef55dd181a278b0ec7d350964bf3a842ad9",
     "src/base/choices.cpp": "a189fde99e8ecb91a2ffa3de37afdd4da5e2708ba71f8dcb677f8155f1d6f942",
     "src/base/hash.hpp": "a14f3cf544bb3d2bb8808fee38c760d4858e001bf9ed70498d903279a61d3c67",
@@ -74,12 +74,12 @@
     "tools/conformance_random.py": "ba06369a8e36663982aadad07f8fc115b0239a08f667dd93b85e19b86aa18c53",
     "tools/conformance_script.py": "9e6b0d1cfb45190f3f3216f28dd8bf855738ea88c5714362ca758c853866bcdf",
     "tools/conformance_session.py": "70d1eb2f354e0c3746a0ad5d9119ef9aaab61e642a1179659dcee525cea15d84",
-    "docs/random-policy.md": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+    "docs/random-policy.md": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
   },
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "3138bf8ab187641a73cd8169f9de78da280ba577a872e2be5327bae134ac0446",
+      "CMakeLists.txt": "d622f9c7e59b3cda79f4d453e09befe840ceb33f288d4294eb17650de5879496",
       "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
       "cmake/ConformanceIdentity.cmake": "1136c7b0ddaebf235616416ff72bc569f8e72bf23632bf65ccb6c67894e2d95f",
@@ -87,8 +87,8 @@
       "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
       "src/base/random.hpp": "4a28fdf7845fbe330aa90efa2b665102ba6e8b91649d77b1a3abb8e2df1d8f76",
       "src/base/random.cpp": "eaa680068f6f6943e78fce8c6791e1ceb95db8cb61bb44cd1bc61c4a0cceeece",
-      "src/base/random_source.hpp": "161c359a4ce5b310ddd5854ac538e87a2a416d527b6ecb02c851da5967804f6b",
-      "src/base/random_source.cpp": "cf213a54438f7d232b53f7e75641ab103794711d128260901c8abcb647f3fb4a",
+      "src/base/random_source.hpp": "820933057352115eceff3d2ddfe17b9357a8ef01fc25e05d061fbe2b30cf9fee",
+      "src/base/random_source.cpp": "fe7ec6d2058cdff39265b862ec2c3a6958b540e9dc3b88ab395fdc6d0af30880",
       "src/base/choices.hpp": "cd0d68b86ca9f17257d724e676a19ef55dd181a278b0ec7d350964bf3a842ad9",
       "src/base/choices.cpp": "a189fde99e8ecb91a2ffa3de37afdd4da5e2708ba71f8dcb677f8155f1d6f942",
       "src/base/hash.hpp": "a14f3cf544bb3d2bb8808fee38c760d4858e001bf9ed70498d903279a61d3c67",
@@ -147,7 +147,7 @@
   },
   "adapterArtifacts": {
     "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.js": "47567f51a80b8f09c74cddebb27fd4f62b67f6fa76aa0c9c0f0d0548d198f770",
-    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "74720dab5b5299e78bfa7aa023ea448f0f8403ef22c71f72f3c9d57f190bbd5e"
+    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "5e0316938d9ea347324ecfe54100299967aceed620f095f937c24677cc679657"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=C:/Projects/openciv2-cleanroom/build/toolchains/emsdk/upstream/emscripten/em++.bat\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=OFF\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=C:/Projects/openciv2-cleanroom/build/headless-fetch/_deps/catch2-src\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",
@@ -3140,9 +3140,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
-      "sha256": "025f89c7148ccf60fba4c614dc2cd482fae4955cb4197da2757833754e598f57",
+      "sha256": "c47c2397fe73f15c5b5033357f5289422bff4350922581a8f0cf116e13cbbcfa",
       "id": "X02.F01.sample-replay-cosmetic",
-      "revision": 7,
+      "revision": 8,
       "operation": "F01.primaryCode",
       "evidenceKind": "implementation-regression",
       "specifications": [
@@ -3184,7 +3184,7 @@
           {
             "file": "../../random-policy.md",
             "section": "portable-fixture-replay-contexts",
-            "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+            "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
           }
         ],
         "limitations": [
@@ -3201,7 +3201,7 @@
         "policy": {
           "id": "oc2-mt19937-64",
           "version": "2",
-          "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+          "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
         },
         "contexts": {
           "cosmetic/fixture": {
@@ -3382,9 +3382,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
-      "sha256": "523c6feeadcef9b3c139d13aa69308a7510a5a17ee5e0a1c90c34a0a712915ed",
+      "sha256": "c286ed0b24559228ca7bc9bff8d59154ffa32ebf0a243189ed9c7268d1dacfa4",
       "id": "X02.F01.sample-replay-equal-range",
-      "revision": 7,
+      "revision": 8,
       "operation": "F01.secondaryRange",
       "evidenceKind": "implementation-regression",
       "specifications": [
@@ -3426,7 +3426,7 @@
           {
             "file": "../../random-policy.md",
             "section": "portable-fixture-replay-contexts",
-            "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+            "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
           }
         ],
         "limitations": [
@@ -3443,7 +3443,7 @@
         "policy": {
           "id": "oc2-mt19937-64",
           "version": "2",
-          "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+          "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
         },
         "contexts": {
           "cosmetic/fixture": {
@@ -3603,9 +3603,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
-      "sha256": "57be427bb7b5deb23cd4bce103f1a2db750ea28a49a63cb10fbbd72eccf49696",
+      "sha256": "d50bc0a760e26a409f746cb9efbcd5f46d285333814281362226336f8dbe3bd7",
       "id": "X02.F01.sample-replay-gameplay",
-      "revision": 7,
+      "revision": 8,
       "operation": "F01.primaryCode",
       "evidenceKind": "implementation-regression",
       "specifications": [
@@ -3647,7 +3647,7 @@
           {
             "file": "../../random-policy.md",
             "section": "portable-fixture-replay-contexts",
-            "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+            "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
           }
         ],
         "limitations": [
@@ -3664,7 +3664,7 @@
         "policy": {
           "id": "oc2-mt19937-64",
           "version": "2",
-          "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+          "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
         },
         "contexts": {
           "gameplay/fixture": {
@@ -3845,9 +3845,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
-      "sha256": "dc5394f49fa026ca1d057aec37410861145ba8b6e5000b1b620a8318443e141f",
+      "sha256": "602d22fbe04d371d56b64be9f3b0b7b6fafca541daa22e194d44b4004c7b0c4a",
       "id": "X02.F01.sample-replay-modulo",
-      "revision": 7,
+      "revision": 8,
       "operation": "F01.primaryModulo",
       "evidenceKind": "implementation-regression",
       "specifications": [
@@ -3889,7 +3889,7 @@
           {
             "file": "../../random-policy.md",
             "section": "portable-fixture-replay-contexts",
-            "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+            "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
           }
         ],
         "limitations": [
@@ -3906,7 +3906,7 @@
         "policy": {
           "id": "oc2-mt19937-64",
           "version": "2",
-          "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+          "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
         },
         "contexts": {
           "gameplay/fixture": {
@@ -4096,9 +4096,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
-      "sha256": "11fd980b2159a38897d5c150cfdb536c3a79f9400e0f975de3f917439af86a98",
+      "sha256": "bed93810385bd253379b0e666f6d43f3fd5cee8821f40d673e4b9dcb2a2b816f",
       "id": "X02.F01.sample-replay-presentation-content",
-      "revision": 7,
+      "revision": 8,
       "operation": "F01.primaryCode",
       "evidenceKind": "implementation-regression",
       "specifications": [
@@ -4140,7 +4140,7 @@
           {
             "file": "../../random-policy.md",
             "section": "portable-fixture-replay-contexts",
-            "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+            "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
           }
         ],
         "limitations": [
@@ -4157,7 +4157,7 @@
         "policy": {
           "id": "oc2-mt19937-64",
           "version": "2",
-          "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+          "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
         },
         "contexts": {
           "presentation-content/fixture": {
@@ -4338,9 +4338,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
-      "sha256": "09fa4d4d66e8dd8959a4485ff0c573c9e5cb7072dcd8cb0cf32681e7b9ae2dcc",
+      "sha256": "5c1e97023922fa241daf60c9169527df20f1d59004a157b5b160c93929245dc8",
       "id": "X02.F01.sample-replay-singleton",
-      "revision": 7,
+      "revision": 8,
       "operation": "F01.primaryModulo",
       "evidenceKind": "implementation-regression",
       "specifications": [
@@ -4382,7 +4382,7 @@
           {
             "file": "../../random-policy.md",
             "section": "portable-fixture-replay-contexts",
-            "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+            "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
           }
         ],
         "limitations": [
@@ -4399,7 +4399,7 @@
         "policy": {
           "id": "oc2-mt19937-64",
           "version": "2",
-          "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+          "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
         },
         "contexts": {
           "gameplay/fixture": {
@@ -4555,9 +4555,9 @@
     },
     {
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
-      "sha256": "eb697016b7db17301b3e32983b9e6571a3f9d6bb96078a7b161160f89accf2f9",
+      "sha256": "6c98c3fc4ec8c0b33f890104ef7ddebc07a428c0584c00c24e865d358e465950",
       "id": "X02.F01.sample-replay-unit",
-      "revision": 7,
+      "revision": 8,
       "operation": "F01.secondaryUnit",
       "evidenceKind": "implementation-regression",
       "specifications": [
@@ -4599,7 +4599,7 @@
           {
             "file": "../../random-policy.md",
             "section": "portable-fixture-replay-contexts",
-            "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+            "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
           }
         ],
         "limitations": [
@@ -4616,7 +4616,7 @@
         "policy": {
           "id": "oc2-mt19937-64",
           "version": "2",
-          "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+          "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
         },
         "contexts": {
           "presentation-content/fixture": {

@@ -1,7 +1,7 @@
 {
   "format": "openciv2-conformance/3",
   "id": "X02.F01.sample-replay-presentation-content",
-  "revision": 7,
+  "revision": 8,
   "target": {
     "game": "Civilization II Multiplayer Gold Edition",
     "version": "5.4.0f patch 3",
@@ -74,7 +74,7 @@
     "policy": {
       "id": "oc2-mt19937-64",
       "version": "2",
-      "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+      "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
     },
     "contexts": {
       "presentation-content/fixture": {
@@ -256,7 +256,7 @@
       {
         "file": "../../random-policy.md",
         "section": "portable-fixture-replay-contexts",
-        "sha256": "d8fe6cf4926787ca60a6eb3efbf51b5103acef511f8ad93b64b92e618b95c221"
+        "sha256": "490b2b5480b76a7a2e40946c9ec633b9c9c17b769271bbec876d5e7a7f576087"
       }
     ],
     "limitations": [

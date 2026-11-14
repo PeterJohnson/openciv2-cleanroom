@@ -65,15 +65,16 @@ production source). Copying a checkpoint or context never shares mutable source
 state. Restore checks version/domain/name/source identity before changing the
 destination. The original seed is
 unnecessary for continuation. The draw counter may reach 2^64−1; another draw
-then fails before mutation. Checkpoints are logical C++ values at present, not a
-new file format or full session/pending-interaction checkpoint. Never persist the
-engine's object bytes; a future codec must define its portable representation.
+then fails before mutation. The [M1 RNG component codec](m1-checkpoint.md#random-component)
+persists these values using a bounded seed/position replay representation plus
+controlled records. It is not a full session/pending-interaction checkpoint.
+Never persist the engine's object bytes.
 Game operations must retain their own arguments, resolved choices and
 continuations separately.
 
 Checkpoints now also own optional controlled input and a bounded semantic trace,
 as described below. This extends the logical in-memory record, without changing
-the version 2 generator sequence or defining a persistent checkpoint format.
+the version 2 generator sequence. The separate component codec versions its format.
 Restore prepares and validates all records and lookup state before replacement.
 It checks unique keys, mapping results, trace budgets and consumed records against
 their tape; a controlled checkpoint must have zero generated draws. A generated

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 namespace openciv::base {
@@ -20,4 +21,13 @@ public:
 };
 // Production policy: use the standard library engine, with no local generator.
 std::unique_ptr<RandomSource> make_mt19937_source(std::uint64_t seed);
+// M1-01 bounded replay representation. Seed is the engine's already-derived
+// seed, not the context owner's input. Unknown/injected sources are unsupported.
+struct SeededRandomState {
+    std::uint64_t seed, draws;
+    bool operator==(const SeededRandomState&) const = default;
+};
+std::optional<SeededRandomState> seeded_random_state(const RandomSource& source) noexcept;
+std::unique_ptr<RandomSource> restore_seeded_random(SeededRandomState state,
+                                                    std::uint64_t replay_limit);
 } // namespace openciv::base
