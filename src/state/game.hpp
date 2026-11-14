@@ -37,6 +37,12 @@ struct GameState {
     std::array<std::int32_t, 8> unit_totals{};
     // Classic F04/N03 loop activity is distinct from SessionRuntime clients.
     bool turn_loop_active = false;
+    // F05 section 5 / U04: logical View=0, Move units=1; retain other values
+    // until an owning operation writes them. Not a serialized game field.
+    std::int32_t movement_mode = 0;
+    // F05 clears the eight presentation color-record flag sets independently
+    // of civilization flags. Native palette records are not game-state inputs.
+    std::array<std::uint32_t, 8> civilization_color_flags{};
     GlobalValues globals;
     std::array<Civilization, 8> civilizations{};
     std::array<CivilizationNames, 8> names{};

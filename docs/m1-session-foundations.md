@@ -150,3 +150,8 @@ admission, owned ordering, effects/continuations, decisions and correlated resul
 including separate fake-peer execution/result paths. Mode-specific integration,
 complete lifecycle/setup/load, whole pending-session checkpoint replay,
 and broader live queries remain required by M1.
+
+The [F05 inner new-game initializer](m1-new-game.md) now performs the ordered
+section 5 partial resets and rate adjustments, with explicit V01 creation and
+F05 balancing children. It is separate from client admission and the outer
+invalidation/menu/setup flow; it does not establish complete starting positions.

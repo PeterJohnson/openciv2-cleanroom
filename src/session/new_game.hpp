@@ -1,0 +1,22 @@
+#pragma once
+
+#include "session/runtime.hpp"
+
+namespace openciv::session {
+struct NewGameServices {
+    // V01 shared creation, with the live turn set to zero by the parent. Invoke
+    // for slots 0..7, including absent slots; returned failures are ignored.
+    std::function<std::int32_t(std::int32_t)> create_civilization;
+    // F05 section 8, after all creation attempts and the at-start mask copy.
+    std::function<void()> balance_starts;
+};
+// F05 section 5: the complete inner new-game initialization parent, after W02.
+// This is not the outer new-session invalidation, setup wizard, accelerated
+// start or a load operation. Required children are not fabricated here.
+// The owner supplies its declared gameplay context and a unique semantic call
+// identity; this operation neither seeds RNGs nor creates/revokes client leases.
+// All preceding effects survive a child exception or unavailable choice. An
+// unsupported playerCiv stops at the single-human rate assignment, not earlier.
+void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
+                         std::string_view call, const NewGameServices& services);
+} // namespace openciv::session
