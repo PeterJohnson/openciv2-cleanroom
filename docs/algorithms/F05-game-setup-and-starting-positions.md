@@ -300,6 +300,13 @@ machine with an atomic form submission and claim identical cancellation behavior
 - Save advanced rule preferences. For a premade source, retain the preference's
   previous topology choice while replacing its other rule choices; the active
   game uses the new checkbox state.
+- Accepted Rules, Gender and Tribe choices replace their corresponding ordinary
+  preferences. Standard Rules retains the saved advanced-rule bits and saved
+  acceleration choice. Advanced initializes Accelerated Startup from whether
+  that saved choice is nonzero; its year dialog initially selects that choice.
+  Accepting a year replaces the saved choice, while canceling leaves it intact.
+  Clearing Accelerated Startup sets both the local acceleration and its saved
+  choice to zero without displaying the year dialog.
 - For acceleration's year labels, set first-launch turn Absent and use F04's
   calendar at turns 0, 21 and 41, displaying magnitudes. This happens before
   the new-game scenario reset, so incoming calendar state is observable.
@@ -317,7 +324,9 @@ The ordinary Name dialog edits just that name. Custom Tribe additionally copies
 and marks the tribe's plural name, adjective and seven titles for the selected
 gender. It can revisit name edits, open a seven-title editor, or invoke portrait
 selection. Accepting the title editor copies all seven entries; cancellation
-leaves them unchanged. Nominal name/title edits allow at most 23 bytes plus
+leaves them unchanged. Opening Titles retains the current three name edits;
+returning from that child resumes the name dialog with those edits. Nominal
+name/title edits allow at most 23 bytes plus
 termination. The selected city style is a civilization override; it does not
 rewrite every tribe's style. P03/P04 own the portrait and dialog interactions.
 
@@ -338,6 +347,11 @@ selected tribe becomes that slot's pending override; Random leaves any earlier
 pending override unchanged. Canceling later can leave earlier overrides set.
 The ordinary initialized override is Absent. Slots are selected before tribes;
 this is not a uniform draw from all possible sets of leaders.
+
+Independent [Windows UI and preference-file observations](../m1-original-player-setup-observations.md)
+confirm advanced-modal cancellation, remembered selection/acceleration choices,
+name retention across Titles, and discarded canceled title edits. These limited
+observations do not replace the remaining state and sampling contracts above.
 
 ## 5. New-game reset and initialization order
 

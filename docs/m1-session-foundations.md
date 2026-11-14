@@ -160,7 +160,7 @@ The [F05 world-size and parameter helpers](m1-world-setup.md) implement preset/
 custom size selection, partial cancellation effects, both parameter draw orders,
 normalized preferences and real preference persistence. Required interaction
 services and retained setup state remain separate from allocated map storage;
-the complete outer setup/map admission and player wizard are still pending.
+the complete outer setup/map admission remains pending.
 
 The [premade-world path](m1-premade-world.md) now joins accepted binary input,
 F06 partial map publication, retained setup dimensions and F05 normalization/
@@ -169,5 +169,8 @@ remain separate from this implemented path.
 
 The [F04 calendar and F05 acceleration-label helper](m1-calendar.md) now consume
 the selected gameplay calendar, retain incoming scenario settings and clear only
-the launch marker before label calculation. Full wizard state/cancellation
-composition remains separate from this helper.
+the launch marker before label calculation. The [player/rules wizard](m1-player-setup.md)
+now composes this helper with ordered choices, retained retry locals, custom
+names/titles and opponent selection. Its required synchronous services remain
+separate from application dialogs, cooperative commands and pending-operation
+checkpoint restore.

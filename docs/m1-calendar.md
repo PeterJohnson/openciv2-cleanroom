@@ -44,7 +44,8 @@ and Small maps. Its limited UI evidence is separate from the specification
 tests; original screenshots and private executable state are not test inputs.
 
 This completes the F04 calendar consumer of the gameplay component and its F05
-label helper. V08 retirement consumers, full player/rules wizard composition,
+label helper. The [player/rules wizard](m1-player-setup.md) now composes the label helper.
+V08 retirement consumers, outer new-game composition,
 global-turn progression, display/date conventions, content/session/checkpoint
 admission and original-peer profile gates remain required work. The calendar
 helper does not implement those larger operations or complete M1.

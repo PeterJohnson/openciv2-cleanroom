@@ -1,0 +1,340 @@
+{
+  "format": "openciv2-original-player-setup-observation/1",
+  "createdUtc": "2026-11-14T14:21:36.639277+00:00",
+  "provenance": "Independent normal-UI execution and CIV2.DAT observations, with two declared field edits in the isolated runtime while the original was closed. No reconstruction source, injection, process-memory inspection or historical harness input.",
+  "host": "Windows-11-10.0.26300-SP0",
+  "target": {
+    "edition": "Civilization II Multiplayer Gold Edition 5.4.0f patch 3",
+    "executable": {
+      "path": "build/original-setup-runtime/civ2.exe",
+      "bytes": 2489344,
+      "sha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"
+    },
+    "isolatedWorkingDirectory": "build/original-setup-runtime",
+    "suppliedInstallation": "C:/Projects/civ2/Civ2"
+  },
+  "runtimeData": {
+    "RULES.TXT": {
+      "path": "build/original-setup-runtime/RULES.TXT",
+      "bytes": 26905,
+      "sha256": "4efef8f5f78ae99f123454b374f71c21933405b977bcc23ffa278d54fb1a249e"
+    },
+    "GAME.TXT": {
+      "path": "build/original-setup-runtime/GAME.TXT",
+      "bytes": 108656,
+      "sha256": "431132fc67b9f7b917bba0dc6f1f36c546cb55b88d43854bc4e11fc3b74c0ced"
+    },
+    "LABELS.TXT": {
+      "path": "build/original-setup-runtime/LABELS.TXT",
+      "bytes": 13279,
+      "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+    },
+    "CITY.TXT": {
+      "path": "build/original-setup-runtime/CITY.TXT",
+      "bytes": 6865,
+      "sha256": "4c3dbaed7eea25c66f44a22602b9ba92846e1742f8e389c993b1fa25d897a967"
+    }
+  },
+  "commonChoices": [
+    "Start a New Game",
+    "Small (40x50 squares)",
+    "King",
+    "3 Civilizations",
+    "Raging Hordes",
+    "Female",
+    "Egyptians"
+  ],
+  "preferenceFieldOffsets": {
+    "rules": 0,
+    "difficulty": 4,
+    "tribe": 6,
+    "gender": 8,
+    "opponents": 20,
+    "map_size": 22,
+    "barbarians": 24,
+    "rules_choice": 68,
+    "accelerated_start": 70
+  },
+  "preferenceFiles": {
+    "before": {
+      "path": "build/original-setup-captures/wizard-before.dat",
+      "bytes": 516,
+      "sha256": "f1311e71117b28c4367de6c1e4c6a668d9f00a8ef6ae05c88b946ff33729a7d2",
+      "fields": {
+        "rules": 191,
+        "difficulty": 1,
+        "tribe": 0,
+        "gender": 0,
+        "opponents": 0,
+        "map_size": 0,
+        "barbarians": 1,
+        "rules_choice": 0,
+        "accelerated_start": 0
+      }
+    },
+    "after": {
+      "path": "build/original-setup-captures/wizard-after.dat",
+      "bytes": 516,
+      "sha256": "573d4570d59bbb6c82741248448ef2fb628e1147f064ba0e80bbbbfc998720ef",
+      "fields": {
+        "rules": 191,
+        "difficulty": 3,
+        "tribe": 3,
+        "gender": 1,
+        "opponents": 4,
+        "map_size": 0,
+        "barbarians": 3,
+        "rules_choice": 1,
+        "accelerated_start": 0
+      }
+    },
+    "seeded": {
+      "path": "build/original-setup-captures/wizard-seeded.dat",
+      "bytes": 516,
+      "sha256": "e0811a0663a3a9281d3b8978f682d82eca051a76944f7813b471f426182bd9e4",
+      "fields": {
+        "rules": 191,
+        "difficulty": 3,
+        "tribe": 3,
+        "gender": 1,
+        "opponents": 4,
+        "map_size": 0,
+        "barbarians": 3,
+        "rules_choice": 1,
+        "accelerated_start": 2
+      }
+    },
+    "cancel-standard": {
+      "path": "build/original-setup-captures/wizard-cancel-standard.dat",
+      "bytes": 516,
+      "sha256": "0792deb3911155502a6b5b8f09b28f0fc2c274370208a840764839a33f112353",
+      "fields": {
+        "rules": 191,
+        "difficulty": 3,
+        "tribe": 3,
+        "gender": 1,
+        "opponents": 4,
+        "map_size": 0,
+        "barbarians": 3,
+        "rules_choice": 0,
+        "accelerated_start": 2
+      }
+    },
+    "uncheck-seed": {
+      "path": "build/original-setup-captures/wizard-uncheck-seed.dat",
+      "bytes": 516,
+      "sha256": "e0811a0663a3a9281d3b8978f682d82eca051a76944f7813b471f426182bd9e4",
+      "fields": {
+        "rules": 191,
+        "difficulty": 3,
+        "tribe": 3,
+        "gender": 1,
+        "opponents": 4,
+        "map_size": 0,
+        "barbarians": 3,
+        "rules_choice": 1,
+        "accelerated_start": 2
+      }
+    },
+    "unchecked": {
+      "path": "build/original-setup-captures/wizard-unchecked.dat",
+      "bytes": 516,
+      "sha256": "573d4570d59bbb6c82741248448ef2fb628e1147f064ba0e80bbbbfc998720ef",
+      "fields": {
+        "rules": 191,
+        "difficulty": 3,
+        "tribe": 3,
+        "gender": 1,
+        "opponents": 4,
+        "map_size": 0,
+        "barbarians": 3,
+        "rules_choice": 1,
+        "accelerated_start": 0
+      }
+    }
+  },
+  "authoredSeeds": [
+    {
+      "file": "seeded",
+      "base": "after original process exit",
+      "field": "accelerated_start",
+      "offset": 70,
+      "type": "s16le",
+      "value": 2
+    },
+    {
+      "file": "uncheck-seed",
+      "base": "after second original process exit",
+      "field": "rules_choice",
+      "offset": 68,
+      "type": "s16le",
+      "value": 1,
+      "retainedAcceleratedStart": 2
+    }
+  ],
+  "runs": [
+    {
+      "id": "advanced-cancel-and-custom-names",
+      "inputPreferences": "before",
+      "outputPreferences": "after",
+      "steps": [
+        "Customize Rules; check Accelerated Startup; retain Bloodlust",
+        "Cancel advanced dialog",
+        "Select Starting Year still opens; accept Normal Start",
+        "Female; Egyptians; Custom",
+        "Append -Probe to Cleopatra; open Titles",
+        "Append Discard to Ms.; cancel Titles",
+        "Name dialog retains Cleopatra-Probe; reopen Titles shows Ms.",
+        "Cancel Titles; accept names; choose Far East Pavilion; accept style",
+        "Introduction uses Cleopatra-Probe; copy CIV2.DAT",
+        "Accept introduction; status 4000 B.C.; quit without saving"
+      ],
+      "titleDefaults": [
+        "Ms.",
+        "Pharaoh",
+        "Great Pharaoh",
+        "Comrade",
+        "High Priestess",
+        "Consul",
+        "President"
+      ]
+    },
+    {
+      "id": "acceleration-cancel-then-standard",
+      "inputPreferences": "seeded",
+      "outputPreferences": "cancel-standard",
+      "steps": [
+        "Customize Rules; Accelerated Startup initially checked",
+        "Accept advanced; third year row (2000 B.C.) initially selected",
+        "Cancel acceleration; choose Standard Rules",
+        "Female; Egyptians; ordinary Cleopatra; Bronze Age Monolith",
+        "Introduction lists many technologies; copy CIV2.DAT",
+        "Accept introduction; status 4950 B.C., 280,000 People, -18 Gold",
+        "Dismiss default research, upkeep and population notices; quit without saving"
+      ],
+      "interpretation": "The visible whole-entry result supports retained acceleration state. Its private numeric local was not inspected."
+    },
+    {
+      "id": "explicitly-uncheck-acceleration",
+      "inputPreferences": "uncheck-seed",
+      "outputPreferences": "unchecked",
+      "steps": [
+        "Customize Rules; Accelerated Startup initially checked",
+        "Uncheck Accelerated Startup; accept advanced",
+        "Gender follows directly with no year dialog",
+        "Female; Egyptians; ordinary Cleopatra; Bronze Age Monolith",
+        "Copy CIV2.DAT at introduction; accelerated_start is 0",
+        "Accept introduction; status 4000 B.C., 10,000 People, 0 Gold",
+        "An incidental Hills information panel was opened and closed while quitting; no turn was manually ended",
+        "Quit without saving"
+      ]
+    }
+  ],
+  "limitations": [
+    "Only three generated-world setup paths, all Small/King/Female/Egyptians; no game file saved.",
+    "Runtime data inherit declared name probes from earlier text observations.",
+    "No random sampling, pending overrides, private publication, scenario calendar or unsupported-backing measurements.",
+    "The negative acceleration local is inferred from the behavioral contract and visible outcome; its numeric value was not observed.",
+    "Preference snapshots were taken at introductions, before later exit-time writes.",
+    "Portable tests use specification-authored inputs, not these original files or screenshots."
+  ],
+  "captures": [
+    {
+      "name": "01-advanced-before-cancel",
+      "path": "build/original-setup-captures/wizard-01-advanced-before-cancel.png",
+      "bytes": 61179,
+      "sha256": "797e0132427a1532965122d8996d1d0b2193f77bc14a3c87485a502a94ba4883"
+    },
+    {
+      "name": "02-advanced-cancel-reaches-years",
+      "path": "build/original-setup-captures/wizard-02-advanced-cancel-reaches-years.png",
+      "bytes": 35649,
+      "sha256": "ebe0385138a595d672fadcdd431fa8a6f45f72ecba91b86fe9b2c967e4e78b73"
+    },
+    {
+      "name": "03-custom-defaults",
+      "path": "build/original-setup-captures/wizard-03-custom-defaults.png",
+      "bytes": 35947,
+      "sha256": "2547747450bdc0b05543e424ad1c0cc740ee34eb8273b66ab53ddb546ee0aebc"
+    },
+    {
+      "name": "04-title-defaults",
+      "path": "build/original-setup-captures/wizard-04-title-defaults.png",
+      "bytes": 64714,
+      "sha256": "28021958a07bee06ad7f53ed461aec1fc087678f155b2e202fdbdb200ca85d45"
+    },
+    {
+      "name": "05-title-edited-before-cancel",
+      "path": "build/original-setup-captures/wizard-05-title-edited-before-cancel.png",
+      "bytes": 65244,
+      "sha256": "adfe025fcfd8e8fdc594935360b50fb3c22d213f38e4942fb850bf8edc5eccd5"
+    },
+    {
+      "name": "06-name-retained-after-titles",
+      "path": "build/original-setup-captures/wizard-06-name-retained-after-titles.png",
+      "bytes": 36412,
+      "sha256": "88ba7b210766976771e41418c2a13dd313d7434d67133c24cedb6e5f39034ff7"
+    },
+    {
+      "name": "07-title-cancel-discarded",
+      "path": "build/original-setup-captures/wizard-07-title-cancel-discarded.png",
+      "bytes": 64709,
+      "sha256": "ef116e2b7723300dab07be219a42927b957c850f02695824a031bd343bb5d345"
+    },
+    {
+      "name": "08-city-style",
+      "path": "build/original-setup-captures/wizard-08-city-style.png",
+      "bytes": 48658,
+      "sha256": "6081ce572543b60d68db907a0eb1771e8803e7cf37c7e38092d3807baf9763ef"
+    },
+    {
+      "name": "09-introduction-name-retained",
+      "path": "build/original-setup-captures/wizard-09-introduction-name-retained.png",
+      "bytes": 41069,
+      "sha256": "ae5887e12845e695637add7610c1a75e2ed9481aea61cd175745d28f11ec50fc"
+    },
+    {
+      "name": "10-seeded-acceleration-checked",
+      "path": "build/original-setup-captures/wizard-10-seeded-acceleration-checked.png",
+      "bytes": 61245,
+      "sha256": "002bd9ab59eb7fbbfc25f745cfb0daf5f83ecf9827f83d2c9b5141de71265c26"
+    },
+    {
+      "name": "11-seeded-acceleration-row",
+      "path": "build/original-setup-captures/wizard-11-seeded-acceleration-row.png",
+      "bytes": 35843,
+      "sha256": "ecfd1a0d2ffd4b3fb124084c85f46576028a7b71e6692cdcf7b1f78c62c661c2"
+    },
+    {
+      "name": "12-cancel-standard-introduction",
+      "path": "build/original-setup-captures/wizard-12-cancel-standard-introduction.png",
+      "bytes": 58389,
+      "sha256": "fdc4520b6f4f38ff32c383f40d61bdb18b55619ec5bf3c52281ccde7a0689550"
+    },
+    {
+      "name": "13-cancel-standard-status",
+      "path": "build/original-setup-captures/wizard-13-cancel-standard-status.png",
+      "bytes": 175230,
+      "sha256": "ef88218804077d614434128ba1c12946073bedfa7bd474a0c45e08e397df96ca"
+    },
+    {
+      "name": "14-unchecked-acceleration",
+      "path": "build/original-setup-captures/wizard-14-unchecked-acceleration.png",
+      "bytes": 61116,
+      "sha256": "ef9ecfaa181cb017030d19764a824798513bf9f8699c29e85ed92e9bf4b83f0e"
+    },
+    {
+      "name": "15-unchecked-introduction",
+      "path": "build/original-setup-captures/wizard-15-unchecked-introduction.png",
+      "bytes": 40566,
+      "sha256": "c8d8f5bccfbf51e7cff57c9a1623171bc2816baf93b9ed8fe3728251db592fa4"
+    },
+    {
+      "name": "16-unchecked-status",
+      "path": "build/original-setup-captures/wizard-16-unchecked-status.png",
+      "bytes": 160096,
+      "sha256": "18b2646e930af9bf45dd978217b3fdde92e64702a9cf21bee5dc71d627d24083"
+    }
+  ],
+  "originalClosedAfterAllRuns": true
+}

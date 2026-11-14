@@ -48,6 +48,9 @@ struct GameState {
     WorldSetup world_setup;
     std::array<Civilization, 8> civilizations{};
     std::array<CivilizationNames, 8> names{};
+    // F05 section 4 / V01 section 4: retained until chosen or consumed. Wizard
+    // retries and Random choices do not clear an earlier pending override.
+    std::array<std::int8_t, 8> pending_leader_overrides{-1, -1, -1, -1, -1, -1, -1, -1};
     MultiplayerState multiplayer;
     EventState events;
     PowerHistory power_history{};
