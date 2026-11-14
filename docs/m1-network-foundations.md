@@ -1,6 +1,6 @@
 # M1 network foundations
 
-Status: portable N05 framing and N02 envelope/raw-image primitives implemented.
+Status: portable N05 framing and N02 envelope, image and codec primitives implemented.
 This is a bounded part of the [M1 completion audit](m1-validation.md), not a
 completed transport backend, lobby, synchronization service or playable session.
 
@@ -9,14 +9,15 @@ completed transport backend, lobby, synchronization service or playable session.
 `oc2_network` depends on portable formats/game/base libraries. It has no sockets,
 OS event pump, GUI, Lua or database dependency. Implementations and authored test
 expectations come from [N05 §§4–6](algorithms/N05-transport-and-wire-protocol.md)
-and [N02 §§2,5–6 and Appendices A,C](algorithms/N02-network-commands-and-state-synchronization.md).
+and [N02 §§2,5–7 and Appendices A,C](algorithms/N02-network-commands-and-state-synchronization.md).
 No reconstruction code or historical source-derived execution harness is used.
 
 | Interface | Implemented behavior |
 | --- | --- |
 | `network/stream.hpp` | Little-endian 12-byte headers, 64-byte sender rounding, exact supplied padding; incremental fragmented/coalesced receive; header-fragment-dependent oversize callbacks and discard of only the current receive; reset/close callback boundary; owned partial-send FIFO with live chunk capacity, immediate/drain retry differences and backlog thresholds; UDP header, u16 length narrowing and retained null-payload bytes. |
 | `network/messages.hpp` | Owned 16-byte message and 44-byte argument envelopes, sequence-preserving header initialization, directed/broadcast send sequencing, failure retention and live post-callback broadcast-size comparison. |
-| `network/sections.hpp` | Twenty-byte section prefixes, exact raw-image decoding/encoding, checksum width quirks, all 24 nominal section extents, registration, mirror allocation/invalidation, full/delta/join/map-header raw-image construction and specified old/new checksum ordering. |
+| `network/sections.hpp` | Twenty-byte section prefixes, exact raw-image decoding/encoding, checksum width quirks, all 24 nominal section extents, registration, mirror allocation/invalidation, full/delta/join/map-header raw-image construction and specified old/new checksum ordering; sequential incoming block copies and checksum updates that preserve earlier blocks on failure. |
+| `network/compression.hpp` | Distinct byte/word run-length codecs, explicit final lookahead, thresholds and chunk widths; word size-pass wrapping and separate payload bounds; byte expansion growth; full-image compression tail; allocation fault stages and global full-state receipt-count codec selection. |
 
 Input admission is explicit. Frames require at least 12 bytes and a payload that
 fits the frame. The configurable 8 MiB receive backing limit is a safe profile,
@@ -38,25 +39,55 @@ original failure codes and do not promise rollback. The queued IsConnected case
 stops at the explicitly excluded retired-descriptor boundary. No false common
 error result is invented for it or for retention-allocation failure.
 
-Raw-image construction ends **before compression/allocation and application**.
-It requires the caller to materialize wire sections and lock the event pool.
-It neither reads native C++ object bytes nor applies incoming data to a world.
-Compression, live mirror scanning/diff application, option restoration, event
-relocation, and session ownership remain open. Native sockets, connection IDs,
-accept/timeout barriers, routing, control handling and N01–N03 admission are
-also not implemented by these primitives.
+Raw-image construction requires the caller to materialize wire sections and lock
+the event pool. Its compression tail is a separate operation. Initial producer
+allocation, delta resize and append-report callback effects remain open. The block
+application primitive copies into materialized wire backing, ignores ancillary
+received prefix fields and recomputes checksums from the incoming payload. It
+does not read native C++ object bytes or publish wire fields to a live world.
+Its consumed count records inspected header/payload bytes, not the original
+application's signed consumed-offset workspace.
+
+Codec admission requires nonnegative, nonwrapping input/allocation extents.
+Encoding stops if token selection needs a following byte the caller did not
+supply. Word decoding explicitly rejects token 32767: the original size pass
+counts it as a run but its decoder treats it as a 65535-byte literal. The encoder
+still emits the specified 32767 run chunk; equal decoded bytes do not justify
+silently changing that wire token. Word-image allocation has an explicit default
+8 MiB bound. Malformed payloads stop at the affected read/write boundary, keeping
+prior writes and leaving the caller's output-length value unassigned on failure.
+
+Image buffers distinguish null from an allocated empty image. Fault-injected
+allocation failures preserve the specified publication order: byte compression
+frees input before its final allocation; full-image compression retains partial
+encoded bytes on no-gain failure and publishes a null resize while returning
+the successful encoded length; failed word-image decoding retains the old image.
+New vector backing is zero initialized for memory safety, not evidence of original
+heap contents. Only initialized prefixes and explicitly retained input bytes have
+compatibility meaning after a bounded failure. Native allocation leaks and unsafe
+copies are not reproduced.
+
+Shared codec selection uses the supplied full-state receipt count, regardless
+of the current message kind or compression flag when that count is nonzero.
+These helpers do not implement the enclosing handler's ignored child return,
+packet resize, option restoration, map release/reallocation, event relocation or
+session ownership. Live mirror scanning/diff application, native sockets,
+connection IDs, accept/timeout barriers, routing, control handling and N01–N03
+admission remain open.
 
 ## Validation
 
-Fifteen specification-derived Catch2 cases pass on Windows MSVC and WASM,
+Twenty-three specification-derived Catch2 cases pass on Windows MSVC and WASM,
 including every split of a two-record stream, one-byte feeds, coalescing,
 partial sends, retries/failures, callback reset, retained padding, sequence wrap,
-live callback reads, checksum quirks and section/mirror ordering. They are not
-registered X02 execution fixtures or original-program observations.
+live callback reads, checksum quirks, section/mirror ordering, exact compression
+tokens, lookahead, wrapped size passes, allocation failures and ordered partial
+image application. They are not registered X02 execution fixtures or
+original-program observations.
 
-On the Windows host, all 85 default-off and 87 SQLite-enabled CTests pass. The
+On the Windows host, all 93 default-off and 95 SQLite-enabled CTests pass. The
 pinned Emscripten 4.0.23 / Node 22.16.0 build passes all four CTests, including
-79 portable Catch2 cases and the existing twenty X02 vectors. The native and
+87 portable Catch2 cases and the existing twenty X02 vectors. The native and
 WASM retained X02 reports were refreshed for the changed build definition;
 their operation coverage remains F01/F02/W01. A tools-only build with GUI,
 testing, dependency fetching and Python discovery disabled, and a missing asset

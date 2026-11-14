@@ -31,6 +31,24 @@ struct StateSection {
     formats::Bytes backing; // Includes established padding through padded_size.
 };
 using StateSections = std::array<StateSection, section_count>;
+enum class ImageApplyStop {
+    complete,
+    truncated,
+    invalid_size,
+    invalid_section,
+    destination_extent
+};
+struct ImageApplyResult {
+    ImageApplyStop stop = ImageApplyStop::complete;
+    std::size_t applied = 0, consumed = 0;
+};
+// N02 section 6 block-copy primitive over materialized wire sections. Applies
+// sequentially, keeping prior blocks on rejection; it does not prevalidate the
+// whole image. Ignores received checksum/padding/mirror-offset for destination
+// selection and computes each live checksum from incoming data after the copy.
+// Input is disjoint from section backing. World publication, option restoration,
+// registration, map release/allocation and event relocation belong to the caller.
+ImageApplyResult apply_raw_image(StateSections& sections, std::span<const formats::Byte> bytes);
 // N02 §5 registration primitive. Event-pool lock and wire materialization are
 // caller preconditions; no source-world native object bytes are read here.
 void register_sections(StateSections& sections);

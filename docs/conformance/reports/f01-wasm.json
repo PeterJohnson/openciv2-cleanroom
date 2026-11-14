@@ -1,11 +1,11 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "f01-f02-w01-state-v1",
-  "createdUtc": "2026-11-14T02:05:39.558067+00:00",
-  "implementationRevision": "e49a7ea467b07f51ed26ff1b86b99abd55230b34",
+  "createdUtc": "2026-11-14T02:29:19.720896+00:00",
+  "implementationRevision": "4705ea667aa7069d009667e53e3d3ba4835a550c",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "b185f93577ee1cc4c87778aa0306a5242eab0c2958ac2fc88cb2892c36ca860a",
+    "CMakeLists.txt": "8a7cd9f6d12b0f66c058f10b03cf40299a6b72d6ecb5f8aabe0e380f8ca3d254",
     "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
     "cmake/ConformanceIdentity.cmake": "b223f90aa746fb0005da2b9701cd324be68127bdaa08a1520e2ebce934f4f718",
@@ -30,7 +30,7 @@
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "b185f93577ee1cc4c87778aa0306a5242eab0c2958ac2fc88cb2892c36ca860a",
+      "CMakeLists.txt": "8a7cd9f6d12b0f66c058f10b03cf40299a6b72d6ecb5f8aabe0e380f8ca3d254",
       "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
       "cmake/ConformanceIdentity.cmake": "b223f90aa746fb0005da2b9701cd324be68127bdaa08a1520e2ebce934f4f718",
@@ -54,7 +54,7 @@
   },
   "adapterArtifacts": {
     "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.js": "1d17ebc25d6b753b050af2781e749d9c7792a4bc1cc584ad133b08eb9de5b889",
-    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "cc5b8463ba2dfcaa9a3639cede683d59724197909e8fd2472c74a6f7ff21704e"
+    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "716e21b858dc46cfe3cac724dd1523a4a7d2bd0d1c19dd2448aa829feec823f2"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=C:/Projects/openciv2-cleanroom/build/toolchains/emsdk/upstream/emscripten/em++.bat\ndependency_lock_sha256=c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=OFF\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=C:/Projects/openciv2-cleanroom/build/headless-fetch/_deps/catch2-src\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",

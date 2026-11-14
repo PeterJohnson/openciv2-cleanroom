@@ -82,6 +82,36 @@ std::vector<ImageBlock> decode_raw_image(std::span<const formats::Byte> bytes) {
     }
     return blocks;
 }
+ImageApplyResult apply_raw_image(StateSections& sections, std::span<const formats::Byte> bytes) {
+    ImageApplyResult result;
+    const auto stop = [&](ImageApplyStop reason) {
+        result.stop = reason;
+        return result;
+    };
+    while (result.consumed < bytes.size()) {
+        if (bytes.size() - result.consumed < section_prefix_size)
+            return stop(ImageApplyStop::truncated);
+        const auto descriptor =
+            decode_section_descriptor(bytes.subspan(result.consumed, section_prefix_size));
+        result.consumed += section_prefix_size;
+        if (descriptor.size < 0)
+            return stop(ImageApplyStop::invalid_size);
+        if (descriptor.id < 0 || descriptor.id >= static_cast<std::int32_t>(section_count))
+            return stop(ImageApplyStop::invalid_section);
+        const auto size = static_cast<std::size_t>(descriptor.size);
+        if (size > bytes.size() - result.consumed)
+            return stop(ImageApplyStop::truncated);
+        auto& section = sections[static_cast<std::size_t>(descriptor.id)];
+        if (size > section.backing.size())
+            return stop(ImageApplyStop::destination_extent);
+        const auto incoming = bytes.subspan(result.consumed, size);
+        std::copy(incoming.begin(), incoming.end(), section.backing.begin());
+        section.descriptor.checksum = section_checksum(incoming, descriptor.size);
+        result.consumed += size;
+        ++result.applied;
+    }
+    return result;
+}
 std::array<std::int32_t, section_count> classic_section_sizes(const world::Geometry& geometry) {
     const auto coarse = geometry.coarse_width() * geometry.coarse_height();
     const auto area = static_cast<std::int32_t>(geometry.area());

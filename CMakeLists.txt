@@ -61,7 +61,7 @@ target_include_directories(oc2_formats PUBLIC src)
 target_link_libraries(oc2_formats PUBLIC oc2_game PRIVATE oc2_options)
 
 # N05/N02 portable transport and application-wire primitives; no native sockets.
-add_library(oc2_network src/network/stream.cpp src/network/messages.cpp src/network/sections.cpp)
+add_library(oc2_network src/network/stream.cpp src/network/messages.cpp src/network/sections.cpp src/network/compression.cpp)
 target_include_directories(oc2_network PUBLIC src)
 target_link_libraries(oc2_network PUBLIC oc2_formats PRIVATE oc2_options)
 
@@ -156,6 +156,7 @@ if(BUILD_TESTING)
   include(cmake/Catch2.cmake)
   add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp tests/pool_tests.cpp tests/format_tests.cpp tests/save_tests.cpp tests/query_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/network_stream_tests.cpp tests/network_message_tests.cpp)
+  target_sources(oc2_tests PRIVATE tests/network_compression_tests.cpp)
   target_link_libraries(oc2_tests PRIVATE oc2_query oc2_network oc2_viewmodel oc2_options Catch2::Catch2WithMain)
   if(OC2_BUILD_TOOLS)
     target_sources(oc2_tests PRIVATE tests/native_io_tests.cpp)
