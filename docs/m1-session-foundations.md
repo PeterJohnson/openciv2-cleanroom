@@ -166,3 +166,8 @@ The [premade-world path](m1-premade-world.md) now joins accepted binary input,
 F06 partial map publication, retained setup dimensions and F05 normalization/
 seed/start-location choices. Outer chooser/menu composition and W02 finalization
 remain separate from this implemented path.
+
+The [F04 calendar and F05 acceleration-label helper](m1-calendar.md) now consume
+the selected gameplay calendar, retain incoming scenario settings and clear only
+the launch marker before label calculation. Full wizard state/cancellation
+composition remains separate from this helper.
