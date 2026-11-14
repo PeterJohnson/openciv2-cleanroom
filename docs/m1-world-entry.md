@@ -73,4 +73,6 @@ preservation arguments. The parent therefore requires those operations from
 the content owner instead of inventing a classic application binding; tests
 declare replacement on full load and name retention on table reload. Resolve
 that precise call-site gap by specification clarification or independent original
-observation before claiming complete classic entry wiring. M1 is still open.
+observation before claiming complete classic entry wiring in M3. M1 preserves
+the explicitly supplied-child tests; this gap does not expand the
+[finite closeout contract](m1-closeout.md).

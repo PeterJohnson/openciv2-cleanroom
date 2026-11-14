@@ -72,5 +72,6 @@ native/WASM observations and consumed prefixes match. The developer Python suite
 passes 115 tests with two Windows skips; four additional adapter checks run in
 CTest on both targets. Pinned clang-format 20.1.8 formats the owned sources.
 Local logs for this change use the `build/fresh-game-` prefix. Full M1
-completion still requires the remaining foundation checkpoint, content/profile,
-network-registration and review gates in the audit.
+completion follows only the seven [closeout gates](m1-closeout.md). This reset
+projection and the wider integration cases remain fixed M1-03/M1-05 review and
+regression evidence, not a mandate to expand reset adapters to every future field.

@@ -147,9 +147,11 @@ X02 execution coverage is still F01/F02/W01, not these session cases.
 
 The [command contract](m1-command-contract.md) now implements descriptors,
 admission, owned ordering, effects/continuations, decisions and correlated results,
-including separate fake-peer execution/result paths. Mode-specific integration,
-complete lifecycle/setup/load, whole pending-session checkpoint replay,
-and broader live queries remain required by M1.
+including separate fake-peer execution/result paths. M1-01 in the
+[closeout contract](m1-closeout.md#m1-01-checkpoint-profile) requires only the
+declared local checkpoint proof. Existing ownership/authority/query checks remain
+regressions. Broader live queries, full setup/load, remote checkpoints and mode
+integration join M3–M6; they are not remaining M1 gates.
 
 The [F05 inner new-game initializer](m1-new-game.md) now performs the ordered
 section 5 partial resets and rate adjustments, with explicit V01 creation and

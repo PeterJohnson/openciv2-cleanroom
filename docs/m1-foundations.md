@@ -277,15 +277,13 @@ CTest writes a fresh report in its build directory; CI uploads it with the test
 evidence. Updating the retained reports is an explicit reviewed step after an
 implementation change, not automatic regeneration of expected results.
 
-Remaining F02 process/world lifecycle, ordered setup/load integration, semantic
-content, live scoped queries, session/continuation contracts and complete network
-integration remain M1 work. Stored inspection and optional SQLite export now
-have separate [inspection](m1-inspection.md) and [export](m1-sqlite-export.md)
-contracts; [network primitives](m1-network-foundations.md) and
-[session ownership/client queries](m1-session-foundations.md) likewise have bounded
-coverage. These foundations alone cannot play a turn, load a live world or restore
-a pending interaction. The
-[M1 completion audit](m1-validation.md) preserves the entire outstanding exit gate.
+This is historical foundation evidence, not the remaining M1 task list.
+The [finite closeout contract](m1-closeout.md) bounds checkpoint, conversion,
+review, interoperability and build work. Stored [inspection](m1-inspection.md),
+[SQLite export](m1-sqlite-export.md), [network primitives](m1-network-foundations.md)
+and [session ownership](m1-session-foundations.md) now have their own implemented
+boundaries. Complete gameplay/setup and network integration remain M3–M6.
+The [audit](m1-validation.md) records the seven closeout gates.
 
 ## Local validation — 2026-11-13 UTC
 

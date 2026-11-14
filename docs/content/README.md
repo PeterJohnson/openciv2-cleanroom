@@ -70,8 +70,10 @@ validate document structure. Runtime pack resolution, typed gameplay and native
 rule admission are implemented in the [content runtime](../m1-content-runtime.md).
 [City-production preferences](../m1-classic-text.md) now have native validation
 and application plus an incremental classic reader.
-Classic converters, complete semantic pack validation and a complete
-distributable base pack remain open.
+The three M1 classic-to-native converters are enumerated by
+[M1-02](../m1-closeout.md#m1-02-content-and-conversion-matrix). Complete semantic
+pack validation, reverse/full-resource conversion and a distributable base pack
+remain M2–M5 work. The provenance inventory below does not expand M1's closed scope.
 
 Standalone play must work without original text files. Users may select original
 or scenario text through compatibility adapters that retain the owning algorithm's
@@ -96,14 +98,14 @@ claim.
 
 | Input | Current inventory and distribution policy | Follow-up |
 | --- | --- | --- |
-| Default rules, leader/tribe and city names | Native rules decode into typed definitions with explicit identity mappings and exact normalization; city names and full classic rule adapters remain open. No complete stock rule/name set is bundled. F03/C01 own classic `RULES`/`CITY` compatibility and logical effects. | M1: both readers and paired authored fixtures; M3–M5: complete distributable standalone defaults with provenance. |
+| Default rules, leader/tribe and city names | Native/classic rule readers and city-name providers are implemented with fixed identity mappings and paired authored checks. No complete stock rule/name set is bundled. F03/C01 own `RULES`/`CITY` compatibility and logical effects. | M1-02: the named component conversions; M3–M5: complete comparison profiles and distributable standalone defaults with provenance. |
 | UI messages, labels, help, tutorial and editor text | JSON messages/inputs/defaults, named help/facts and production advice are specified; indexed/source bindings live in the compatibility descriptor. The shell has its own short labels; no full game catalog is bundled. The per-file inventory includes GAME/LABELS/ADVICE/HELP/DEBUG/HERALD/TUTORIAL and PEDIA templates/facts. | M2–M5: register every reachable interaction/lookup and supply native catalogs; test classic scenario/language overrides and partial publication. |
 | Menus, council, briefings and credits | JSON action trees, named council opinions/dialogue and scenario-ID document associations cover the established runtime families. Original text/art are not bundled. MAPMENU companion actions and unconfirmed LEADERS/SC consumers are explicitly distinguished. | M2/M5: implement action mappings, same-line council selection, final-world briefing lookup and all four credit modes; preserve caller effects. |
 | Civilopedia and descriptive text | Native JSON topics are specified; no complete prose set is bundled. P08 owns classic DESCRIBE/PEDIA compatibility and semantic consumers. | M5: author replacements and implement both content paths with correct topic/rule identities. |
-| Scenarios, events, rules overrides, city preferences | Native preference validation/application and classic CITYPREF loading have paired authored checks; event bodies and EVENTS conversion remain open. No playable scenario corpus is bundled. | M1/M5: paired fixtures, authored content, partial-effect/reentry checks and explicit conversion diagnostics. |
+| Scenarios, events, rules overrides, city preferences | Native preference validation/application and classic CITYPREF loading have paired authored checks; event bodies and EVENTS conversion remain open. No playable scenario corpus is bundled. | M1-02: CITYPREF conversion only, plus existing regressions. M5: scenario/event admission, conversion and owning effects. |
 | Sound, music and movies | No runtime sound/media set is present in the approved graphics package. | M2/M5: extend the asset data contract and notices when authored audio arrives; preserve P10 completion/skip semantics with media disabled. |
-| Classic saves/maps/scenarios and imported graphics/text | User inputs, not a source of automatically redistributable stock content. Never scan unrelated directories or silently replace custom content. | M1 onward: explicit import paths, bounded parsers, provenance/hash receipts and original interchange tests. |
-| Three X02 F01 vectors | Authored specification-derived JSON in `docs/algorithms/conformance`; hashes/provenance in the registry. No original execution claimed. | M1: execute through the new runner. |
+| Classic saves/maps/scenarios and imported graphics/text | User inputs, not a source of automatically redistributable stock content. Never scan unrelated directories or silently replace custom content. | M1-04: fixed file corpus and current-export checks; M2–M6: wider content, formats and mode interoperability. |
+| X02 foundation vectors | 57 authored F01/F02/W01 fixtures with hashes/provenance in the registry. No original execution claimed. | M1-03: fixed review/execution denominator; later operation families join their owning milestones. |
 | Shell and metadata test data | Authored Catch2 cases and temporary synthetic metadata/pack containers in `tests/`. No original assets or full font payloads. | Extend as contracts arrive; synthetic container acceptance is not glyph/PNG decoding evidence. |
 | Original executable and installation resources | External comparison target only; absent from this checkout and release packages. | `original-access` below. |
 

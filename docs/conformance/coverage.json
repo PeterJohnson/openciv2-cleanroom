@@ -755,16 +755,16 @@
     {
       "id": "operation-inventory",
       "milestone": "M1\u2013M7",
-      "domain": "All operations beyond two F01 mappings and three F02 identity/reservation primitives; larger shared-state closures remain unregistered.",
-      "knownPrefix": "65 specification documents cataloged; no exhaustive original-entry inventory claim.",
-      "closureEvidence": "Register each implemented operation and full shared state closure from owning specs; reconcile unresolved source evidence through specification updates only."
+      "domain": "Coverage beyond the 15 registered foundation operations at b125df5; full gameplay/shared-state closures join M3\u2013M7.",
+      "knownPrefix": "65 owners cataloged and 15 operations registered; no exhaustive original-entry inventory claim.",
+      "closureEvidence": "M1-03 in docs/m1-closeout.md requires review of the fixed registry and an eight-family Catch2/CLI evidence map, not more per-helper adapters. Register later gameplay operations with their owning milestone; unresolved algorithms require spec updates or independent observations."
     },
     {
       "id": "x02-general-runner",
       "milestone": "M1",
-      "domain": "Composite/replay support and independent review for admitted M1 foundation operations; whole-game providers join with their owning mechanics in M3-M6.",
-      "knownPrefix": "The bounded runner executes pure mappings, token/reservation and geometry primitives, all four semantic F01 laws in each domain, policy v2 origin/position replay, and shared-city-workspace dispatch with an explicitly supplied C03 child. Ordered outputs, failures, observations, synchronous real-entry reentry and unresolved-result prefixes execute on native/WASM. Generic logical values are validated. Blob loading, other providers/queues, composite random histories, invalid-access safe stops and projections remain unsupported; independent fixture review is pending.",
-      "closureEvidence": "Register and independently review admitted foundation adapters, meaningful external callbacks, replay/choice histories and safe admission. Add a bounded fresh-game isolation adapter. Do not require fake mutation inside pure queries; full gameplay adapters are later milestone work."
+      "domain": "M1-03 independent review and execution of the enumerated 15 operations and 57 baseline fixture IDs; whole-game providers join M3\u2013M7.",
+      "knownPrefix": "All 57 vectors execute on native/WASM, including three F02.prepareNewGame projections with declared exclusions. Generic logical values, sampling laws/policy replay, identity/reservation, geometry and supplied-child city dispatch are implemented. Independent fixture review remains open. Blob/provider/queue/general composite support is not claimed.",
+      "closureEvidence": "Complete M1-03 only: record per-fixture independent review, resolve findings in that surface, map eight existing integration families, and compare final native/WASM observations. M1-01 checkpoint tests and M1-02 conversion tests may remain Catch2/CLI evidence. Broader runner/provider work is deferred to M3\u2013M7."
     },
     {
       "id": "integration-fixtures",
@@ -790,23 +790,23 @@
     {
       "id": "stock-content",
       "milestone": "M1\u2013M5",
-      "domain": "Complete native JSON rules/names/events and all established runtime text families, classic text adapters, and sound.",
-      "knownPrefix": "Version 1 semantic formats and owned incomplete examples cover civilizations/tribes, rules in meaningful units, messages/help/facts/advice, menus, council dialogue, scenario-ID briefings/credits and encyclopedia. A separate compatibility descriptor holds classic slots/source addresses/associations. docs/content/text-resources.md inventories 31 observed TXT files plus optional/variant inputs and explicit documentation/legacy/companion dispositions. Draft 2020-12 schemas and an offline developer checker validate document structure, with incomplete rules/council examples rejected as expected. Pack/overlay inheritance and explicit mounted selection now resolve exact parent/file hashes, source ownership, whole-file replacements and complete locale groups. The C++ resolver and CLI preserve bounded selection receipts. Typed native rules now admit complete identity sets, exact F03 normalization, rule references and gameplay government advance bindings, with reversible Windows-1252 names and native/WASM/CLI checks. City names/preferences, non-ASCII byte comparison, remaining component semantics, classic converters, wider profile/interaction registrations and complete playable content remain open. Six first-wave built-in gameplay components now have complete original-value defaults, explicit classic/custom bundle selection, JSON Schemas and pinned specification provenance. Portable C++ loading through pinned jart/json.cpp validates exact integer operands, source hashes and normalized fingerprints, returns immutable typed values and enforces the classic/custom gate; native CLI and native/WASM tests cover this boundary alongside the offline checks. These components do not supply text-backed stock rules or implemented gameplay consumers/session compatibility.",
-      "closureEvidence": "Implement both adapters and register semantic identities/requests with exact classic mappings; provide complete redistributable defaults for each locale; test standalone play, paired classic/JSON behavior, normalization exactly once, name-based naming/advice, retained preferences, resolved council continuations, scenario policies/associations, all credits modes, partial effects original file/peer interchange and audio/media completion. Keep companion actions and unconfirmed consumers explicit; documentation samples never become active configuration."
+      "domain": "M1-02 bounded rules/city-name/city-preference conversion; complete native catalogs, events, media and playable defaults in M2\u2013M5.",
+      "knownPrefix": "The manifest resolver, six gameplay components, native/classic rules, city preferences and city-name providers have typed implementations and paired authored tests. P04 label/popup readers are implemented. Complete playable catalogs, full comparison profiles, reverse/resource converters and mechanic consumers remain open.",
+      "closureEvidence": "For M1, implement only M1-02 in docs/m1-closeout.md: three classic-to-native component conversions, paired semantic checks, explicit unsupported-domain diagnostics and receipts. Complete other component semantics, full comparison profiles, default locale packs, events/media, standalone play and reverse classic exports with M2\u2013M5; peer integration is M6."
     },
     {
       "id": "original-access",
       "milestone": "M1\u2013M7",
-      "domain": "Original file and mixed-peer interoperability; W02 target measurements.",
-      "knownPrefix": "A verified original installation is available on Windows. Seven raw maps and 21 current saves reproduce through stored codecs. Independently authored original-host TCP ID and UDP discovery observations are recorded in docs/conformance/reports/original-peer-windows.json; the subsequent TCP ping timeout is preserved separately. Full file-resume and both-role peer sessions remain open.",
-      "closureEvidence": "Use the verified original installation and external comparison protocol in docs/content/README.md; record original execution, bidirectional file acceptance and peer captures separately from C++ codec round trips."
+      "domain": "M1-04 fixed current-save/raw-map acceptance procedure; broader version/mode/mixed-peer interoperability and W02 measurements in M3\u2013M7.",
+      "knownPrefix": "Historical evidence includes seven raw-map and 21 current-save codec reconstructions, original acceptance of stored/live exports, an original TCP ID greeting and UDP discovery, and a failed TCP ping. Current live-save behavior changed at b125df5, so older captures do not validate that exporter revision.",
+      "closureEvidence": "M1-04 names the only required final-candidate original checks and artifact hashes. Missing files/executable/UI access is an external blocker, not permission to expand implementation. Retain the failed ping honestly; full TCP sessions, mixed-peer codecs and reverse-role play are M6."
     },
     {
       "id": "fresh-game-projection-review",
       "milestone": "M1",
-      "domain": "Fresh-game registered projection and broader integration evidence.",
-      "knownPrefix": "Three authored X01 reset/preservation vectors over all selected backing slots. Explicit excluded state and quiescent admission; not whole-world conformance.",
-      "closureEvidence": "Independent fixture review and continued verification of complete cold/reused/cancelled/failed-entry integrations, pending-command/output guards, mutable content and identity/RNG preservation. Broaden registered observations as admitted state adapters arrive."
+      "domain": "M1-03 review of three frozen reset projections and M1-05 regression of the existing broader isolation cases.",
+      "knownPrefix": "Three authored reset vectors cover their declared projection; broader tests cover cold/reused/cancelled/failed setup, mutable content, pending commands/output and identity/RNG guards. Projection exclusions are explicit.",
+      "closureEvidence": "Review these fixture expectations independently and preserve the existing integration checks. Do not broaden the projection or implement W02/V01/balancing/AI children to close M1. Full gameplay integration belongs to M3/M4."
     }
   ]
 }

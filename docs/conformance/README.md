@@ -11,6 +11,12 @@ by these fixtures. The [fresh-game adapter](../m1-fresh-game.md) adds three
 explicit reset/preservation projections over the real session boundary.
 Metadata validation does not execute gameplay.
 
+[M1-03](../m1-closeout.md#m1-03-finite-conformance-and-review) freezes M1 review
+at the baseline 15 operation IDs and 57 fixture IDs, plus eight explicitly named
+Catch2/CLI evidence families. The ledger records long-term coverage gaps; a gap's
+M1–M7 label is not authorization to implement it all during M1. No new per-helper
+X02 adapter or full gameplay integration family is an additional closeout gate.
+
 ```sh
 python3 tools/check_conformance.py
 python3 tools/check_assets.py

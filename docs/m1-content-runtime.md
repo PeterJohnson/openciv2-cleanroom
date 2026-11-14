@@ -9,8 +9,9 @@ installed while reading. A failure returns no partial bundle.
 This implements the bundle boundary in [gameplay-format.md](content/gameplay-format.md).
 The [F04 calendar consumer](m1-calendar.md) now reads its selected periods and
 supplies F05 acceleration labels, including custom JSON operands. Other owning
-mechanics, complete content semantics, checkpoint admission and original-peer
-gates remain requirements in the [M1 audit](m1-validation.md).
+mechanics and complete content/peer admission join M3–M6. The
+[M1 closeout](m1-closeout.md) limits checkpoint admission to M1-01 and remaining
+content conversion/validation to M1-02.
 The immutable result supplies the operands those bindings need; it is not proof
 that a custom bundle is playable or interoperable.
 The separate [rule decoder](m1-rule-content.md) now resolves the selected

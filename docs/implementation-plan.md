@@ -2,7 +2,7 @@
 
 Status: roadmap for the [architecture](architecture.md), with an initial SDL3
 application shell and build/test infrastructure integrated. The repository also
-contains 65 algorithm specifications and 54 portable conformance fixtures.
+contains 65 algorithm specifications and 57 portable conformance fixtures.
 M1 slices add F01 arithmetic/random contexts, F02 entity/civilization/global records,
 W01 map foundations, F06 stored-save/map codecs, N05/N02 transport primitives and a
 bounded X02 runner. Initial session/controller ownership, scoped queries, commands
@@ -128,8 +128,12 @@ maps these requirements to passing hosted reports and the existing inventories.
 Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
 
 The [initial foundation slices](m1-foundations.md) and [random policy](random-policy.md)
-are implemented. The requirements below remain the complete milestone scope;
-passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
+are implemented. The [finite closeout contract](m1-closeout.md) is the authoritative
+remaining work list: M1-01 through M1-07, frozen at `b125df5`. The requirements below
+describe the milestone's foundation responsibilities within that contract's exact
+domains; they do not authorize recursively extending M1. The
+[audit](m1-validation.md) records gate status and evidence. Passing leaf vectors
+alone does not close M1.
 
 - Implement arithmetic and logical types, F02 pools/lifetimes and retained state,
   W01 topology/coordinates, and explicit process/new-game/load boundaries.
@@ -142,16 +146,18 @@ passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
   with independent initialization and no gameplay sampler exposed to rendering.
   Classify sites by their effects, retaining gameplay ownership for shared
   gameplay/presentation outcomes and for gameplay callbacks invoked by dialogs.
-  Test original sampling laws, ties, retries and numeric boundaries in each
-  applicable domain, plus implementation replay and pending-interaction restore
-  without requiring original seed-to-sequence equality.
+  Preserve the existing sampling-law, tie, retry and numeric-boundary tests.
+  Complete replay and pending-interaction restore only for M1-01's declared local
+  foundation profile, without requiring original seed-to-sequence equality.
 - Implement the X02 v3 loader, operation adapters, scripted external services,
-  comparator, and bounded run reports. Execute the three existing F01 fixtures;
-  add independently reviewed cases for state and geometry.
+  comparator, and bounded run reports. M1-03 freezes the 15 implemented operations
+  and 57 fixture IDs for execution and independent review. Other foundation
+  families may retain Catch2/CLI evidence without new per-helper X02 adapters.
 - Load and validate the [six built-in gameplay components](content/gameplay-format.md)
-  through portable typed interfaces; bind each to its owning mechanic in M3/M4. Default JSON, schemas, source pins, normalization, offline
-  validation and portable C++ bundle loading exist; consumer bindings,
-  checkpoint/profile admission and original-peer gates still need implementation. Keep original
+  through portable typed interfaces; bind each to its owning mechanic in M3/M4.
+  Default JSON, schemas, source pins, normalization, offline validation and portable
+  C++ bundle loading exist. M1-01 bounds checkpoint/profile admission; original-peer
+  joins are M6. Keep original
   defaults, AI heuristics and map generation unchanged.
 - Implement the [native JSON content contract](content/data-format.md), using the
   existing [schemas and structural checks](content/schemas/README.md) as the file
@@ -164,11 +170,13 @@ passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
   parsing is allowed. Test equivalent authored inputs
   through both paths, including movement/HP scaling exactly once, stable classic
   slots, city-name order and retained NoDefend. Native validation does not narrow
-  the classic adapter's required domain. Add explicit content validation and
-  conversion tools with separate outputs and provenance receipts.
+  the classic adapter's required domain. M1-02 enumerates the validation surface
+  and three classic-to-native converters with separate outputs/provenance receipts.
+  Complete playable packs and other component/export families join M2–M5.
 - Implement classic record codecs, raw maps, and the first supported save
   load/export path. Keep content IDs/hashes outside classic payloads and original
-  peer negotiation; expand version/mode coverage and label limitations.
+  peer negotiation. Freeze version/mode coverage at M1-04's matrix; label unsupported
+  domains and expand them only in the later owning milestones.
 - Separate decoded file records from F06's ordered session load. Add native
   `oc2 inspect`, `oc2 validate` and `oc2 diff` for the supported record domain,
   with human-readable and versioned, lossless JSON output, documented exit
@@ -206,12 +214,13 @@ passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
   services for headless drivers. Prove pending decisions, stale-binding rejection
   and revocation without losing committed effects or required replies; do not
   serialize local calls through a socket or replace the specified turn loops.
-- Implement N05 incremental framing plus N02 envelope/state-image primitives
-  against fake streams. Schedule independently authored original-peer discovery
-  and handshake captures as soon as these boundaries are available.
+- Preserve N05 incremental framing plus N02 envelope/state-image primitives
+  against fake streams. Existing original discovery/greeting and failed-ping
+  observations satisfy M1's peer-evidence boundary; full sessions remain M6.
 
-**Exit gate:** exact arithmetic/codec vectors and controlled-choice fixtures pass
-on native and WASM builds. Checkpoint repeat/restore is reproducible under the
+**Exit gate:** all seven [closeout gates](m1-closeout.md#closed-work-list) pass.
+Exact arithmetic/codec vectors and controlled-choice fixtures pass
+on native and WASM builds. M1-01's checkpoint profile repeats/restores under the
 chosen policy. Presentation initialization and draws cannot advance gameplay
 contexts; cosmetic draws also leave presentation-content contexts unchanged.
 Controlled semantic operations agree with and without a presentation consumer.
@@ -221,9 +230,8 @@ create game interleavings. Codec tests use only logical payload bytes, reject
 unsafe tokens and preserve images on failure. Stack repair requires no fabricated
 records or diagnostic callbacks. Portable chooser tests use semantic results and
 owned presentation arguments; original ABI/allocator traces are not M1 gates.
-Start bidirectional original
-raw-map/save checks for the implemented subset, recording unavailable captures or
-unimplemented fields as gaps. A tools-only build runs
+Complete only M1-04's named original raw-map/save exchanges; record unavailable
+access as an external blocker and broader domains as deferred gaps. A tools-only build runs
 basic save inspection without SDL, ImGui, assets, Lua or SQLite. Catch2 covers
 truncated and unsupported records, unchanged input bytes, stable diffs, exact
 JSON integers, and stored-state inspection without load-time identity/counter
@@ -282,7 +290,7 @@ Complete playable creation/balancing, turn flow, owning mechanics, application
 dialogs, AI policies and their consumer bindings belong to M3/M4 (mode-specific
 joins to M5/M6). Preserve useful existing foundation and setup work, but do not
 recursively implement every child merely to finish an M1 parent. M1 X02 adapters
-cover admitted foundation operations; whole-game adapter/provider coverage is a
+cover M1-03's enumerated operations; whole-game adapter/provider coverage is a
 later conformance obligation. Content loading/validation is M1; full mechanic
 consumption is delivered with those mechanics. Unknown original stack values,
 incidental native call order and artificial query callbacks are not exit gates.

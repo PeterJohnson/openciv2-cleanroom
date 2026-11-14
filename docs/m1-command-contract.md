@@ -107,7 +107,10 @@ Cancellation of a command still awaiting a peer explicitly requires the mode
 adapter; this foundation does not invent a cancellation packet or discard the
 awaited result. N01–N03 wire routing, disconnect defaults, endpoint-generation
 checks, timeouts and host transfer remain integration work. Queue/output retention
-budgets and durable session checkpoints are also still open.
+budgets and full durable session checkpoints are later M3–M6 work. M1's only
+serialization deliverable is the [bounded local checkpoint profile](m1-closeout.md#m1-01-checkpoint-profile).
+It uses the real session/continuation boundary with test-only authored owner codecs;
+it does not claim arbitrary-world or pending-peer restore.
 
 The engine-only random ports now support [controlled choices](random-policy.md#controlled-choices-and-semantic-traces)
 and bounded generated traces. Operations supply stable site/call/attempt keys and

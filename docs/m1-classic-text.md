@@ -356,8 +356,8 @@ wrapper cases and seven native adapter/integration cases cover the ordering,
 partial effects and full disk load-edit-save-reload. The graphical resource
 consumer, GAME cache and browser persistence remain separate integration work.
 
-Full application startup/GAME-cache construction, complete content installation,
-the complete comparison profile, remaining native component admission,
-conversion tools/receipts, session wiring and owning production consumers remain
-required. The table readers are ready for those callers; they do not implement
-them implicitly.
+M1 closeout is limited to [M1-02](m1-closeout.md#m1-02-content-and-conversion-matrix)
+and regression checks for the implemented readers. The complete comparison
+profile, other native components, GAME-cache construction, application wiring
+and owning consumers remain M2–M5 work. This historical slice is not an additional
+M1 work list.

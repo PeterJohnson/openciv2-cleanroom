@@ -82,6 +82,8 @@ injection, process-memory inspection or reconstruction harness is used.
 
 This does not establish complete application admission/resource integration,
 legacy conversion interoperability, scenario/event cases, multiplayer or all
-supported edits. Those remain in the [M1 audit](m1-validation.md). Original
+supported edits. The [M1 closeout](m1-closeout.md#m1-04-bounded-file-interoperability)
+requires only its named current-export recheck; broader admission, versions and
+modes remain M3–M6 work. Original
 payloads and screenshots remain under ignored `build/`; only the procedure
 and metadata report are committed.

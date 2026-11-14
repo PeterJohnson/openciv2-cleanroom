@@ -151,9 +151,9 @@ not new original-program observations.
 The [city-name providers](m1-city-names.md) now select by live plural name and
 preserve C01's counter, fallback, retry and publication behavior on both paths.
 
-Remaining M1 work includes full comparison/component admission,
-conversion receipts, broader equivalent native/classic inputs,
-application startup/GAME-cache construction, full content installation and session
-reload policies, owning mechanics,
-session admission and original interoperability. The
-[M1 completion audit](m1-validation.md) remains open.
+Remaining M1 content work is exactly [M1-02](m1-closeout.md#m1-02-content-and-conversion-matrix):
+three classic-to-native conversions and their paired semantic checks/receipts.
+Existing rule installation/reload behavior is regression coverage. Complete
+comparison profiles, other components, reverse conversion, application startup/
+GAME-cache construction and owning consumers join M2–M5. Bounded original-file
+evidence follows M1-04; this slice does not add another interoperability gate.

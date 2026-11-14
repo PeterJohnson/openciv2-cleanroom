@@ -58,7 +58,9 @@ change that exit code.
 `FileAccess::offline_omniscient`. Its owned `StoredSnapshot` exposes immutable
 records, diagnostics, source bytes and SHA-256 observation identity. No API takes
 a mutable world, process lifetime counter, gameplay RNG or live-session grant.
-Live observer/authority filtering and session bindings remain separate M1 work.
+The existing live own-entity queries and session bindings are separate regression
+coverage under [M1-05](m1-closeout.md#m1-05-and-m1-06-regression-and-build-matrix).
+Broader observer/remembered-state and loaded-view semantics join M3–M5.
 
 JSON schemas are `openciv2-inspection/1` and `openciv2-diff/1`. They identify source
 format/version/hash, stored provenance, offline access, validation scope and

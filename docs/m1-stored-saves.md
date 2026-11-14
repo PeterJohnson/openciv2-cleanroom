@@ -341,10 +341,10 @@ and stop before using map storage invalidated by a callback.
 
 This is authored integration evidence, not an original-game core-load comparison
 or an X02 registration. The 21 original-save auxiliary comparisons still pass but
-do not run this orchestrator. Browser storage and graphical resource-context
-bindings, post-load actions/admission, application saving
-and original resumed-state comparisons remain required M1 work. Inspection's
-stored view has not been relabeled as loaded-state analysis.
+do not run this orchestrator. M1-04 in the [closeout contract](m1-closeout.md)
+names the required current-export comparison. Browser storage, graphical resource
+bindings, owning post-load actions and application save/resume join M2–M5.
+Inspection's stored view has not been relabeled as loaded-state analysis.
 
 ## Composed live save
 
@@ -586,10 +586,9 @@ destination; its headless inputs and four CLI cases are documented separately.
 
 ## Remaining M1 work
 
-The [completion audit](m1-validation.md) still governs the milestone. Next are
-semantic content and classic text adapters, explicit process/session
-lifecycles and ordered loading, commands/continuations/authority, generalized
-X02 execution and choice replay, and integration of the
-[N05/N02 primitives](m1-network-foundations.md). Legacy stored-file coverage,
-broader original-program resume/edit checks and full original-peer sessions remain open.
-Do not advertise a loaded-world view based on these stored records.
+Only the seven [closeout gates](m1-closeout.md) govern remaining M1 work;
+the [audit](m1-validation.md) records their status. This slice contributes existing
+codec/load/save regressions and the bounded M1-04 original-file checks. Legacy
+stored views, broader resumed gameplay edits, full application admission and
+original-peer sessions join M3–M6. Do not advertise a loaded-world view based on
+stored records or turn historical next steps into new M1 requirements.

@@ -125,10 +125,8 @@ original-execution result. Do not publish proprietary files as repository fixtur
 
 ## Resume implementation
 
-Continue the full M1 audit. The next dependency is civilization/global and remaining
-F06 records plus the first complete stored-save path, followed by owned queries,
-inspection/diff commands and optional SQLite export. Complete native content/classic
-text adapters and six gameplay-component bindings, process/session lifecycle,
-commands/continuations, semantic choice replay and the generalized X02 runner.
-N05 framing/N02 primitives and original discovery/handshake captures remain required.
-Do not advertise a loaded-world view before the actual ordered load exists.
+This handoff's implementation sequence is historical and has been superseded.
+Resume only from the seven [finite closeout gates](m1-closeout.md) and their
+[current audit status](m1-validation.md#current-closeout-status). Do not reimplement
+completed record/content/query work or expand M1 into full gameplay, generalized
+runner coverage or live networking. Stored and loaded-state claims remain distinct.

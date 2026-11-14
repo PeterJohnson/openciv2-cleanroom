@@ -738,8 +738,11 @@ the rules and council fragments. They do not resolve a selected pack, validate
 semantic references or establish runtime acceptance. The schema guide lists the
 additional checks that remain required.
 
-M1 implements the manifest/resolver, native rules/names/preferences and classic
-adapters, typed models, diagnostics and initial authored fixtures. M2/M5 adds the
+M1's exact validation and three classic-to-native conversion deliverables are
+enumerated in [M1-02](../m1-closeout.md#m1-02-content-and-conversion-matrix).
+The existing manifest/resolver, rules/names/preferences and classic adapters are
+regression coverage. This full-format document does not enlarge M1 to every
+component, reverse converter or playable-pack check below. M2/M5 adds the
 registered semantic messages/help/facts/advice, menus, documents, conditional
 council dialogue, encyclopedia and scenario authoring paths.
 Before claiming a standalone playable release, supply the complete base pack,
