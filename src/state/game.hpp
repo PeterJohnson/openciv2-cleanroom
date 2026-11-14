@@ -30,6 +30,7 @@ struct ProcessContext {
 struct GameState {
     explicit GameState(ProcessContext& process) : map(process.fallback) {}
     EntityPools entities;
+    UnitStackState unit_stacks;
     GlobalValues globals;
     std::array<Civilization, 8> civilizations{};
     std::array<CivilizationNames, 8> names{};

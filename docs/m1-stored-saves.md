@@ -494,6 +494,11 @@ the earlier original live-save report exercised the core driver, not this menu
 wrapper. Native chooser/application binding and accepted-file post-load admission
 remain open.
 
+The [U01 stack foundations](m1-unit-stacks.md) now provide real traversal,
+ordered repair and local placement for the future post-load cleanup. They preserve
+diagnostic mutations, unusual surviving links and explicit backing/resource stops.
+Basic deletion and composition into the accepted-file wrapper remain open.
+
 ## Windows evidence — 2026-11-13 Pacific
 
 Visual Studio 2026 / MSVC 19.51.36260.0, Windows SDK 10.0.26100.0 and CMake 4.4.3

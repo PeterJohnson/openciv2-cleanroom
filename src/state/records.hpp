@@ -135,6 +135,14 @@ struct EntityPools {
     UnitPool units;
     CityPool cities;
 };
+// U01 sections 2–4, 9: retained controls, not stored unit-record fields. Activity
+// is a boolean assignment at operation boundaries, never a nesting counter.
+struct UnitStackState {
+    std::int32_t suppression = 0;
+    bool animation_active = false;
+    bool detach_active = false;
+    bool attach_active = false;
+};
 std::optional<UnitSlot> reserve_unit_slot(UnitPool& pool, CivilizationSlot owner,
                                           std::int16_t military_count,
                                           std::uint8_t effective_humans);

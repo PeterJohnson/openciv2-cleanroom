@@ -1,11 +1,11 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "f01-f02-w01-script-v3",
-  "createdUtc": "2026-11-14T10:37:26.074365+00:00",
-  "implementationRevision": "088a5b438445cd1e6c72daa00c6df2b5297597f6",
+  "createdUtc": "2026-11-14T10:55:53.938787+00:00",
+  "implementationRevision": "62c7bc190bc827e4b8ba2ac092791b05ab70c292",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "fb7624971c7e38edf97acb0f1c689441efffa7e33c3abc811d2290dbd9e56de7",
+    "CMakeLists.txt": "0fe372c745d6c912e9958ed43cc2779c653c4335e14bbc830e46c2d9b549d69f",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
     "cmake/ConformanceIdentity.cmake": "aa5f127fab52305d936f24b50657fc76618e0b36263377095f1419e80d2b96d2",
@@ -19,7 +19,7 @@
     "src/base/hash.cpp": "5bb5938e58e1e096bf64a985ab828be012803cd79addb7290f8c99de9d83d8e3",
     "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
     "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
-    "src/state/records.hpp": "daacdb2b85c9a9178db718a00c17be0fe86aa0931f420d0edf77828f876dad92",
+    "src/state/records.hpp": "9e90eeab6b42a960a43732e2d31dc20948de3fe063a57142c9547f7651db3b73",
     "src/state/records.cpp": "5d5ad05ab566387d57e9fa702c8ff499f0dbb8f52d9a4b0f75d24d79f18e485f",
     "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
     "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
@@ -41,7 +41,7 @@
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "fb7624971c7e38edf97acb0f1c689441efffa7e33c3abc811d2290dbd9e56de7",
+      "CMakeLists.txt": "0fe372c745d6c912e9958ed43cc2779c653c4335e14bbc830e46c2d9b549d69f",
       "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
       "cmake/ConformanceIdentity.cmake": "aa5f127fab52305d936f24b50657fc76618e0b36263377095f1419e80d2b96d2",
@@ -55,7 +55,7 @@
       "src/base/hash.cpp": "5bb5938e58e1e096bf64a985ab828be012803cd79addb7290f8c99de9d83d8e3",
       "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
       "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
-      "src/state/records.hpp": "daacdb2b85c9a9178db718a00c17be0fe86aa0931f420d0edf77828f876dad92",
+      "src/state/records.hpp": "9e90eeab6b42a960a43732e2d31dc20948de3fe063a57142c9547f7651db3b73",
       "src/state/records.cpp": "5d5ad05ab566387d57e9fa702c8ff499f0dbb8f52d9a4b0f75d24d79f18e485f",
       "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
       "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
@@ -72,7 +72,7 @@
   },
   "adapterArtifacts": {
     "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.js": "c35274b9609fd29a7eec1a03d04e68a796461383ca1234dcf9c4fd1ab549e3af",
-    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "955f02671cafbb8726389dd7045b204a980dc1aa3ad4fab2ae6929a720ed69e8"
+    "C:\\Projects\\openciv2-cleanroom\\build\\wasm-headless\\oc2_conformance_adapter.wasm": "c81d038c21a51b0bd93e11a52a62ba9384b9dd9d3438bb1635f3430689908f08"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=web\ncmake=3.31.10\ngenerator=Ninja\nsystem=Emscripten 1\nprocessor=x86\nc=Clang 22.0.0\ncxx=Clang 22.0.0\ncxx_path=C:/Projects/openciv2-cleanroom/build/toolchains/emsdk/upstream/emscripten/em++.bat\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=OFF\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=C:/Projects/openciv2-cleanroom/build/headless-fetch/_deps/catch2-src\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",
