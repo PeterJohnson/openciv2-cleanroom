@@ -250,7 +250,8 @@ Remaining F02 process/world lifecycle, ordered setup/load integration, semantic
 content, live scoped queries, session/continuation contracts and complete network
 integration remain M1 work. Stored inspection and optional SQLite export now
 have separate [inspection](m1-inspection.md) and [export](m1-sqlite-export.md)
-contracts; [network primitives](m1-network-foundations.md) likewise have bounded
+contracts; [network primitives](m1-network-foundations.md) and
+[session ownership/client queries](m1-session-foundations.md) likewise have bounded
 coverage. These foundations alone cannot play a turn, load a live world or restore
 a pending interaction. The
 [M1 completion audit](m1-validation.md) preserves the entire outstanding exit gate.

@@ -1,11 +1,11 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "f01-f02-w01-state-v1",
-  "createdUtc": "2026-11-14T02:29:18.807856+00:00",
-  "implementationRevision": "4705ea667aa7069d009667e53e3d3ba4835a550c",
+  "createdUtc": "2026-11-14T02:42:59.404919+00:00",
+  "implementationRevision": "804ce4280c038547fbfb34faa12cc3c899468cd3",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "8a7cd9f6d12b0f66c058f10b03cf40299a6b72d6ecb5f8aabe0e380f8ca3d254",
+    "CMakeLists.txt": "d392337dae394164042ae35eda24b200dcbbfa88b48b40d8d712f725815f8528",
     "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
     "cmake/ConformanceIdentity.cmake": "b223f90aa746fb0005da2b9701cd324be68127bdaa08a1520e2ebce934f4f718",
@@ -21,7 +21,7 @@
     "src/state/records.cpp": "5d5ad05ab566387d57e9fa702c8ff499f0dbb8f52d9a4b0f75d24d79f18e485f",
     "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
     "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
-    "src/world/map.hpp": "3b007b6c6d57acc43fc6c0e7cd26641efe8d31050a01781b9020f5444729fb37",
+    "src/world/map.hpp": "cb5953124f3b0264088702cd1a6a5c7297b31fb16c90a1943467465ad52279ce",
     "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
     "tools/conformance_adapter.cpp": "ec1e429d223330da7d883ba94c81722425ddea5932a5e38afaa2eea2b231a80f",
     "tools/run_conformance.py": "91c86f2e6defee328ee3c3fb3909b612afcb45beb8979dcae11b7417d5330202",
@@ -30,7 +30,7 @@
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "8a7cd9f6d12b0f66c058f10b03cf40299a6b72d6ecb5f8aabe0e380f8ca3d254",
+      "CMakeLists.txt": "d392337dae394164042ae35eda24b200dcbbfa88b48b40d8d712f725815f8528",
       "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
       "cmake/ConformanceIdentity.cmake": "b223f90aa746fb0005da2b9701cd324be68127bdaa08a1520e2ebce934f4f718",
@@ -46,14 +46,14 @@
       "src/state/records.cpp": "5d5ad05ab566387d57e9fa702c8ff499f0dbb8f52d9a4b0f75d24d79f18e485f",
       "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
       "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
-      "src/world/map.hpp": "3b007b6c6d57acc43fc6c0e7cd26641efe8d31050a01781b9020f5444729fb37",
+      "src/world/map.hpp": "cb5953124f3b0264088702cd1a6a5c7297b31fb16c90a1943467465ad52279ce",
       "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
       "tools/conformance_adapter.cpp": "ec1e429d223330da7d883ba94c81722425ddea5932a5e38afaa2eea2b231a80f"
     },
     "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n"
   },
   "adapterArtifacts": {
-    "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_conformance_adapter.exe": "4647a0d316be9768df5acb03b484683f13c6c1b63232c2c2a202666aa365f5f1"
+    "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_conformance_adapter.exe": "c345564383e4150ccd3b6d9fc5ec7711919b2f74e0acc94557d7c100b09c294b"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n",

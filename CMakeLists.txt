@@ -65,10 +65,15 @@ add_library(oc2_network src/network/stream.cpp src/network/messages.cpp src/netw
 target_include_directories(oc2_network PUBLIC src)
 target_link_libraries(oc2_network PUBLIC oc2_formats PRIVATE oc2_options)
 
-# Owned, read-only stored projections. No host I/O, session load or presentation.
-add_library(oc2_query src/query/stored.cpp src/query/stored_validation.cpp src/query/output.cpp)
+# Owned, read-only projections. No host I/O, session load or presentation.
+add_library(oc2_query src/query/stored.cpp src/query/stored_validation.cpp src/query/output.cpp src/query/live.cpp)
 target_include_directories(oc2_query PUBLIC src)
 target_link_libraries(oc2_query PUBLIC oc2_formats PRIVATE oc2_options)
+
+# Local runtime ownership and scoped clients; no GUI or transport is required.
+add_library(oc2_session src/session/runtime.cpp)
+target_include_directories(oc2_session PUBLIC src)
+target_link_libraries(oc2_session PUBLIC oc2_query PRIVATE oc2_options)
 
 if(OC2_ENABLE_SQLITE_EXPORT)
   if(EMSCRIPTEN)
@@ -157,7 +162,8 @@ if(BUILD_TESTING)
   add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp tests/pool_tests.cpp tests/format_tests.cpp tests/save_tests.cpp tests/query_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/network_stream_tests.cpp tests/network_message_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/network_compression_tests.cpp)
-  target_link_libraries(oc2_tests PRIVATE oc2_query oc2_network oc2_viewmodel oc2_options Catch2::Catch2WithMain)
+  target_sources(oc2_tests PRIVATE tests/session_tests.cpp)
+  target_link_libraries(oc2_tests PRIVATE oc2_session oc2_network oc2_viewmodel oc2_options Catch2::Catch2WithMain)
   if(OC2_BUILD_TOOLS)
     target_sources(oc2_tests PRIVATE tests/native_io_tests.cpp)
     target_link_libraries(oc2_tests PRIVATE oc2_io_native)

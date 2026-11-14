@@ -29,7 +29,7 @@ struct Tile {
     std::uint8_t region = 0;
     std::uint8_t revelation = 0;
     std::uint8_t fertility = 0;
-    std::optional<std::uint8_t> owner = 0;
+    std::optional<std::uint8_t> owner = std::uint8_t{0};
     bool ocean() const noexcept { return terrain == Terrain::ocean; }
     bool city() const noexcept { return (features & 0x42) == 0x02; }
     bool airbase() const noexcept { return (features & 0x42) == 0x42; }

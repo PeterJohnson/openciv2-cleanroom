@@ -1,0 +1,196 @@
+#include "session/runtime.hpp"
+#include <limits>
+#include <map>
+
+namespace openciv::session {
+namespace detail {
+struct Lease {
+    ClientIdentity identity;
+    bool active = true;
+};
+struct RuntimeState {
+    RuntimeState(state::ProcessContext& supplied, RuntimeId identity)
+        : process(supplied), world(supplied), identity(identity) {}
+    state::ProcessContext& process;
+    state::GameState world;
+    RuntimeId identity;
+    bool active = false;
+    SessionId session{0};
+    std::uint64_t next_session = 1, next_participant = 1, next_controller = 1, revision = 0;
+    std::map<ParticipantId, Participant> participants;
+    std::map<ControllerId, std::shared_ptr<Lease>> leases;
+    std::optional<base::GameplayRandom> gameplay;
+    std::optional<base::PresentationRandom> presentation;
+};
+} // namespace detail
+namespace {
+std::uint64_t assign(std::uint64_t& next) {
+    if (next == std::numeric_limits<std::uint64_t>::max())
+        throw std::overflow_error("Session identity space exhausted");
+    return next++;
+}
+void require_active(const detail::RuntimeState& state) {
+    if (!state.active)
+        throw AccessError(AccessFailure::session_ended);
+}
+void admit(state::CivilizationSlot civilization) {
+    if (static_cast<unsigned>(civilization) >= 8)
+        throw std::invalid_argument("Participant civilization must be 0..7");
+}
+void revoke_participant(detail::RuntimeState& state, ParticipantId participant) {
+    for (auto it = state.leases.begin(); it != state.leases.end();) {
+        if (it->second->identity.participant == participant) {
+            it->second->active = false;
+            it = state.leases.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+} // namespace
+AccessError::AccessError(AccessFailure failure)
+    : std::runtime_error(failure == AccessFailure::session_ended ? "Client session has ended"
+                                                                 : "Client binding was revoked"),
+      failure_(failure) {}
+PlayerClient::PlayerClient(std::weak_ptr<detail::RuntimeState> state,
+                           std::weak_ptr<detail::Lease> lease)
+    : state_(std::move(state)), lease_(std::move(lease)) {}
+std::shared_ptr<detail::Lease>
+PlayerClient::checked(const std::shared_ptr<detail::RuntimeState>& state) const {
+    if (!state || !state->active)
+        throw AccessError(AccessFailure::session_ended);
+    auto lease = lease_.lock();
+    if (!lease || !lease->active || lease->identity.session != state->session)
+        throw AccessError(AccessFailure::revoked);
+    return lease;
+}
+ClientIdentity PlayerClient::identity() const {
+    const auto state = state_.lock();
+    return checked(state)->identity;
+}
+query::LiveRecords<query::OwnUnit> PlayerClient::own_units() const {
+    const auto state = state_.lock();
+    const auto lease = checked(state);
+    return query::project_own_units(
+        state->world.entities,
+        {state->identity, state->session, state->revision, lease->identity.observer});
+}
+query::LiveRecords<query::OwnCity> PlayerClient::own_cities() const {
+    const auto state = state_.lock();
+    const auto lease = checked(state);
+    return query::project_own_cities(
+        state->world.entities,
+        {state->identity, state->session, state->revision, lease->identity.observer});
+}
+SessionRuntime::SessionRuntime(state::ProcessContext& process, RuntimeId identity) {
+    if (identity == RuntimeId{0})
+        throw std::invalid_argument("Runtime identity must be nonzero");
+    state_ = std::make_shared<detail::RuntimeState>(process, identity);
+}
+SessionRuntime::~SessionRuntime() = default;
+SessionId SessionRuntime::begin_client_session(Seeds seeds) {
+    // Prepare contexts before revoking old access. A failed preparation has not
+    // started a new lifetime; world setup/load effects are a separate operation.
+    base::GameplayRandom gameplay(seeds.gameplay, "session");
+    base::PresentationRandom presentation(seeds.presentation_content, "session");
+    const auto session = SessionId{assign(state_->next_session)};
+    end_client_session();
+    state_->session = session;
+    state_->gameplay = std::move(gameplay);
+    state_->presentation = std::move(presentation);
+    state_->revision = 0;
+    state_->active = true;
+    return session;
+}
+void SessionRuntime::end_client_session() {
+    for (auto& [id, lease] : state_->leases)
+        lease->active = false;
+    state_->leases.clear();
+    state_->participants.clear();
+    state_->active = false;
+}
+bool SessionRuntime::active() const noexcept {
+    return state_->active;
+}
+ParticipantId SessionRuntime::add_participant(state::CivilizationSlot civilization,
+                                              std::optional<ConnectionId> connection) {
+    require_active(*state_);
+    admit(civilization);
+    const auto id = ParticipantId{assign(state_->next_participant)};
+    state_->participants.emplace(id, Participant{id, civilization, connection});
+    return id;
+}
+Participant SessionRuntime::participant(ParticipantId id) const {
+    require_active(*state_);
+    return state_->participants.at(id);
+}
+void SessionRuntime::reassign_participant(ParticipantId id, state::CivilizationSlot civilization,
+                                          std::optional<ConnectionId> connection) {
+    require_active(*state_);
+    admit(civilization);
+    auto& participant = state_->participants.at(id);
+    revoke_participant(*state_, id);
+    participant.civilization = civilization;
+    participant.connection = connection;
+}
+void SessionRuntime::remove_participant(ParticipantId id) {
+    require_active(*state_);
+    (void)state_->participants.at(id);
+    revoke_participant(*state_, id);
+    state_->participants.erase(id);
+}
+void SessionRuntime::disconnect(ConnectionId connection) {
+    require_active(*state_);
+    for (auto& [id, participant] : state_->participants) {
+        if (participant.connection == connection) {
+            revoke_participant(*state_, id);
+            participant.connection.reset();
+        }
+    }
+}
+PlayerClient SessionRuntime::bind(ParticipantId participant, ControllerKind kind,
+                                  AccessClass access) {
+    require_active(*state_);
+    if (kind != ControllerKind::frontend && kind != ControllerKind::automation &&
+        kind != ControllerKind::scripted && kind != ControllerKind::engine_policy)
+        throw std::invalid_argument("Unknown controller kind");
+    if (access != AccessClass::player && access != AccessClass::developer)
+        throw std::invalid_argument("Unknown client access class");
+    const auto observer = state_->participants.at(participant).civilization;
+    const auto controller = ControllerId{assign(state_->next_controller)};
+    auto lease = std::make_shared<detail::Lease>(detail::Lease{
+        {state_->identity, state_->session, participant, controller, observer, kind, access}});
+    state_->leases.emplace(controller, lease);
+    return PlayerClient{state_, lease};
+}
+void SessionRuntime::revoke(ControllerId controller) {
+    const auto found = state_->leases.find(controller);
+    if (found == state_->leases.end())
+        return;
+    found->second->active = false;
+    state_->leases.erase(found);
+}
+state::GameState& SessionRuntime::world() noexcept {
+    return state_->world;
+}
+const state::GameState& SessionRuntime::world() const noexcept {
+    return state_->world;
+}
+state::ProcessContext& SessionRuntime::process() noexcept {
+    return state_->process;
+}
+void SessionRuntime::publish() {
+    require_active(*state_);
+    if (state_->revision == std::numeric_limits<std::uint64_t>::max())
+        throw std::overflow_error("World observation revision exhausted");
+    ++state_->revision;
+}
+base::GameplayRandom& SessionRuntime::gameplay_random() {
+    require_active(*state_);
+    return *state_->gameplay;
+}
+base::PresentationRandom& SessionRuntime::presentation_random() {
+    require_active(*state_);
+    return *state_->presentation;
+}
+} // namespace openciv::session

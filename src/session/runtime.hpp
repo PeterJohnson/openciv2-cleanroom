@@ -1,0 +1,110 @@
+#pragma once
+
+#include "base/random.hpp"
+#include "base/session_ids.hpp"
+#include "query/live.hpp"
+#include "state/game.hpp"
+#include <memory>
+
+namespace openciv::session {
+using base::ConnectionId;
+using base::ControllerId;
+using base::ParticipantId;
+using base::RuntimeId;
+using base::SessionId;
+enum class ControllerKind { frontend, automation, scripted, engine_policy };
+enum class AccessClass { player, developer };
+enum class AccessFailure { session_ended, revoked };
+class AccessError : public std::runtime_error {
+public:
+    explicit AccessError(AccessFailure failure);
+    AccessFailure failure() const noexcept { return failure_; }
+
+private:
+    AccessFailure failure_;
+};
+struct ClientIdentity {
+    RuntimeId runtime{0};
+    SessionId session{0};
+    ParticipantId participant{0};
+    ControllerId controller{0};
+    state::CivilizationSlot observer{0};
+    ControllerKind kind = ControllerKind::frontend;
+    AccessClass access = AccessClass::player;
+    bool operator==(const ClientIdentity&) const = default;
+};
+struct Participant {
+    ParticipantId id{0};
+    state::CivilizationSlot civilization{0};
+    std::optional<ConnectionId> connection;
+    bool operator==(const Participant&) const = default;
+};
+struct Seeds {
+    std::uint64_t gameplay = 0, presentation_content = 0;
+};
+namespace detail {
+struct RuntimeState;
+struct Lease;
+} // namespace detail
+// The only surface handed to clients. Copying shares the same lease; no public
+// constructor can manufacture or alter authority. Owned query results may be
+// retained, but a revoked client can obtain no subsequent observation.
+class PlayerClient {
+public:
+    PlayerClient(const PlayerClient&) = default;
+    PlayerClient& operator=(const PlayerClient&) = default;
+    ClientIdentity identity() const;
+    query::LiveRecords<query::OwnUnit> own_units() const;
+    query::LiveRecords<query::OwnCity> own_cities() const;
+
+private:
+    friend class SessionRuntime;
+    PlayerClient(std::weak_ptr<detail::RuntimeState> state, std::weak_ptr<detail::Lease> lease);
+    std::shared_ptr<detail::Lease>
+    checked(const std::shared_ptr<detail::RuntimeState>& state) const;
+    std::weak_ptr<detail::RuntimeState> state_;
+    std::weak_ptr<detail::Lease> lease_;
+};
+// Trusted composition/engine owner, never given to player code. One cooperative
+// mutation lane; not thread safe. Process state must outlive this runtime.
+class SessionRuntime {
+public:
+    // The composition root supplies a stable, nonzero identity unique among
+    // runtimes whose observations may be compared; never derive it from an address.
+    SessionRuntime(state::ProcessContext& process, RuntimeId identity);
+    ~SessionRuntime();
+    SessionRuntime(const SessionRuntime&) = delete;
+    SessionRuntime& operator=(const SessionRuntime&) = delete;
+
+    // Client-session lifetimes, separate from F05 new-game/F06 load operations.
+    // No world/process reset is implied. The owner performs specified setup/load
+    // steps explicitly, then issues new participants and controller bindings.
+    SessionId begin_client_session(Seeds seeds);
+    void end_client_session();
+    bool active() const noexcept;
+    ParticipantId add_participant(state::CivilizationSlot civilization,
+                                  std::optional<ConnectionId> connection = {});
+    Participant participant(ParticipantId id) const;
+    void reassign_participant(ParticipantId id, state::CivilizationSlot civilization,
+                              std::optional<ConnectionId> connection = {});
+    void remove_participant(ParticipantId id);
+    // Revokes mapped input access while retaining the seats/world for their
+    // owning mode's disconnect continuation. Does not perform N01 host transfer.
+    void disconnect(ConnectionId connection);
+    PlayerClient bind(ParticipantId participant, ControllerKind kind,
+                      AccessClass access = AccessClass::player);
+    void revoke(ControllerId controller);
+
+    // Engine-only ownership ports. Call publish after each specified publication
+    // and before exposing a query boundary; no automatic recomputation occurs.
+    state::GameState& world() noexcept;
+    const state::GameState& world() const noexcept;
+    state::ProcessContext& process() noexcept;
+    void publish();
+    base::GameplayRandom& gameplay_random();
+    base::PresentationRandom& presentation_random();
+
+private:
+    std::shared_ptr<detail::RuntimeState> state_;
+};
+} // namespace openciv::session
