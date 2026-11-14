@@ -22,6 +22,63 @@ content::MountedPack mount(std::string_view filename) {
             }};
 }
 } // namespace
+int run_rules_convert(std::span<const std::string> arguments) {
+    if (arguments.size() != 3)
+        throw std::invalid_argument(
+            "Usage: oc2 content convert-rules RULES_SOURCE NEW_RULES NEW_COMPATIBILITY");
+    jt::Json report;
+    report["format"] = "openciv2-content-conversion/1";
+    int status = 0;
+    bool published_rules = false;
+    try {
+        const auto input = std::filesystem::absolute(path(arguments[0]));
+        const auto rules_path = std::filesystem::absolute(path(arguments[1]));
+        const auto mapping_path = std::filesystem::absolute(path(arguments[2]));
+        for (const auto& destination : {rules_path, mapping_path})
+            if (std::filesystem::exists(destination) ||
+                std::filesystem::weakly_canonical(destination) ==
+                    std::filesystem::weakly_canonical(input))
+                throw std::runtime_error(
+                    "Conversion requires new outputs distinct from the source");
+        if (std::filesystem::weakly_canonical(rules_path) ==
+            std::filesystem::weakly_canonical(mapping_path))
+            throw std::runtime_error("Rules and compatibility require distinct outputs");
+        openciv::io::ContentDirectory directory(input.parent_path());
+        const auto leaf = input.filename().generic_u8string();
+        const auto source = directory.read(std::string(leaf.begin(), leaf.end()));
+        auto converted =
+            content::convert_rules(source, openciv::formats::classic::ascii_text_case());
+        report = std::move(converted.receipt);
+        auto publish = [&](const char* role, const auto& destination, const std::string& bytes) {
+            const auto utf8 = destination.generic_u8string();
+            report["outputs"][role]["path"] = std::string(utf8.begin(), utf8.end());
+            report["outputs"][role]["published"] = false;
+            openciv::io::write_new_file(
+                destination, {reinterpret_cast<const std::uint8_t*>(bytes.data()), bytes.size()});
+            report["outputs"][role]["published"] = true;
+        };
+        publish("rules", rules_path, converted.rules);
+        published_rules = true;
+        publish("compatibility", mapping_path, converted.compatibility);
+        report["status"] = "converted";
+    } catch (const content::Error& error) {
+        status = error.code == "source-error" ? 2 : error.code == "invalid-json" ? 4 : 1;
+        report["status"] = "rejected";
+        report["code"] = error.code;
+        report["location"] = error.location;
+        report["message"] = error.what();
+    } catch (const std::exception& error) {
+        status = 2;
+        report["status"] = published_rules ? "partial" : "rejected";
+        report["code"] = "input-output-error";
+        report["message"] = error.what();
+    }
+    std::cout << report.toString() << '\n';
+    std::cout.flush();
+    if (!std::cout)
+        throw std::runtime_error("Conversion receipt write failed");
+    return status;
+}
 int run_content_convert(std::span<const std::string> arguments, bool city_names) {
     if (arguments.size() < 3)
         throw std::invalid_argument("Usage: oc2 content convert-names|convert-preferences SOURCE "

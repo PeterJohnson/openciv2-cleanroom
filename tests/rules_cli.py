@@ -74,6 +74,23 @@ def authored_rules():
     return rules, compatibility
 
 
+def authored_classic_rules():
+    text = "@COSMIC\n" + "\n".join(map(str, (3, 2, 2, 5, 5, 1, 2, 7, 14, 8, 12,
+                                                 10, 20, 3, 3, 8, 1, 50, 50, 10, 75, 5))) + "\n"
+    text += "@CIVILIZE\n" + "".join(f"Advance {i},3,1,nil,nil,0,3\n" for i in range(100))
+    text += "@IMPROVE\n" + "".join(f"Café {i},10,1,nil\n" for i in range(67))
+    text += "@ENDWONDER\n" + "nil\n" * 28
+    text += "@UNITS\n" + "".join(f"Unit {i},no,0,2,0,1,1,3,1,10,0,0,nil,0\n" for i in range(62))
+    text += "@TERRAIN\n"
+    for i in range(33):
+        text += f"Terrain {i},1,3,1,1,0" + (",yes,1,3,2,no,0,4,1,Drt" if i < 11 else "") + "\n"
+    text += "@GOVERNMENTS\n" + "".join(f"Government {i},Leader,Leader\n" for i in range(7))
+    text += "@LEADERS\n" + "".join(f"Leader,Leader,1,1,0,Tribe {i},Example,0,0,0\n" for i in range(21))
+    for section, count in (("CARAVAN", 16), ("ORDERS", 12), ("DIFFICULTY", 6), ("ATTITUDES", 9)):
+        text += f"@{section}\n" + "".join(f"Name {i}" + (",x" if section == "ORDERS" else "") + "\n" for i in range(count))
+    return text.encode("cp1252")
+
+
 class RulesCliTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -100,6 +117,66 @@ class RulesCliTests(unittest.TestCase):
         return {"format": "openciv2-city-names/1",
                 "civilizations": [{"pluralName": row["pluralName"], "cityNames": ["First", "First"]}
                                   for row in self.rules["tribes"]], "fallbackNames": None}
+
+    def convert_rules(self, source, rules, mapping, code=0):
+        result = subprocess.run([str(DRIVER), "content", "convert-rules", str(source),
+                                 str(rules), str(mapping)], capture_output=True, text=True,
+                                encoding="utf-8", timeout=10)
+        self.assertEqual(result.returncode, code, result.stdout + result.stderr)
+        return json.loads(result.stdout)
+
+    def test_convert_rules_publishes_both_components_with_valid_receipts(self):
+        source = self.root / "RULES.TXT"
+        source.write_bytes(authored_classic_rules())
+        original = source.read_bytes()
+        rules, mapping = self.root / "converted-rules.json", self.root / "converted-mapping.json"
+        report = self.convert_rules(source, rules, mapping)
+        self.assertEqual(report["status"], "converted")
+        self.assertEqual(report["conversion"], "classic-rules/1")
+        self.assertEqual(report["source"]["sha256"], hashlib.sha256(original).hexdigest())
+        for role, path in (("rules", rules), ("compatibility", mapping)):
+            self.assertTrue(report["outputs"][role]["published"])
+            self.assertEqual(report["outputs"][role]["sha256"], hashlib.sha256(path.read_bytes()).hexdigest())
+        self.assertEqual(source.read_bytes(), original)
+        self.manifest["files"]["rules"] = {"path": rules.name, "sha256": report["outputs"]["rules"]["sha256"]}
+        self.manifest["compatibility"] = {"path": mapping.name, "sha256": report["outputs"]["compatibility"]["sha256"]}
+        write(self.path, self.manifest)
+        self.invoke()
+        self.assertEqual(json.loads(rules.read_bytes())["improvements"][0]["name"], "Café 0")
+        self.assertEqual(report["unsupportedFields"], [])
+        self.assertEqual(report["lossyFields"], [])
+
+    def test_convert_rules_refuses_aliases_existing_outputs_and_malformed_source(self):
+        source = self.root / "RULES.TXT"
+        source.write_bytes(authored_classic_rules())
+        original = source.read_bytes()
+        output = self.root / "new.json"
+        existing = self.root / "existing.json"
+        existing.write_bytes(b"keep")
+        for a, b in ((source, output), (output, source), (output, output), (existing, output), (output, existing)):
+            self.assertEqual(self.convert_rules(source, a, b, code=2)["status"], "rejected")
+            self.assertFalse(output.exists())
+            self.assertEqual(source.read_bytes(), original)
+            self.assertEqual(existing.read_bytes(), b"keep")
+        source.write_bytes(b"@COSMIC\n")
+        self.assertEqual(self.convert_rules(source, output, self.root / "mapping.json", code=1)["status"], "rejected")
+        self.assertFalse(output.exists())
+
+    def test_convert_rules_reports_output_failure_and_partial_publication(self):
+        source = self.root / "RULES.TXT"
+        source.write_bytes(authored_classic_rules())
+        missing = self.root / "missing" / "new.json"
+        output = self.root / "new.json"
+        report = self.convert_rules(source, missing, output, code=2)
+        self.assertEqual(report["status"], "rejected")
+        self.assertFalse(output.exists())
+        report = self.convert_rules(source, output, missing, code=2)
+        self.assertEqual(report["status"], "partial")
+        self.assertTrue(report["outputs"]["rules"]["published"])
+        self.assertFalse(report["outputs"]["compatibility"]["published"])
+        self.assertEqual(hashlib.sha256(output.read_bytes()).hexdigest(), report["outputs"]["rules"]["sha256"])
+        self.assertFalse(missing.exists())
+        self.assertEqual(source.read_bytes(), authored_classic_rules())
 
     def convert_preferences(self, source, output, code=0, operation="convert-preferences"):
         result = subprocess.run([str(DRIVER), "content", operation,
