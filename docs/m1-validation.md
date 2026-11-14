@@ -31,7 +31,7 @@ and broad coverage gaps do not enlarge the goal. Owning specs still govern corre
 | --- | --- | --- |
 | M1-01: local checkpoint profile | Passed | `3b135a6`: [eight-group evidence](m1-checkpoint.md#eight-group-acceptance-evidence), seven session cases/241 assertions each on Windows and WASM; explicit owner codecs, state rejection and atomic admission |
 | M1-02: content conversions | Passed | `d65e659`, portable core `597dec1`: [three-row acceptance evidence](m1-content-conversion.md#m1-02-acceptance-evidence), paired semantics and native admission, receipts, rejection/output failure; 570 native CTests and seven WASM targets |
-| M1-03: fixed conformance review | Open | Baseline has 15 operations/57 vectors; complete independent review, eight-family evidence mapping and final reports |
+| M1-03: fixed conformance review | Open | [Fixed 15-operation/57-fixture packet and eight-family mapping](m1-conformance-review.md) recorded at `d65e659`; independent per-fixture review remains pending; native/WASM observations match |
 | M1-04: original-file evidence | Open | Existing captures are historical; perform only the contract's current-export map/save checks and fixed stored-file corpus |
 | M1-05: foundation regressions | Open | Implemented at `b125df5`: 546 native CTests and seven WASM targets; final verification remains after closeout implementation changes |
 | M1-06: build matrix | Open | Local Windows/WASM results exist; collect the finite final native/SQLite/WASM/sanitizer/tools-only matrix |
