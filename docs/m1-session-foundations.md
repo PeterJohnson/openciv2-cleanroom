@@ -60,7 +60,7 @@ The [composed core loader](m1-stored-saves.md#composed-core-load) now invokes th
 stages over this runtime with required file/path/F03 service bindings. It keeps
 client identities unchanged, publishes query revisions at service boundaries and
 uses the already initialized gameplay context for the classic password-reset law.
-The post-load wrapper, production resource adapters and mode admission remain
+The post-load wrapper, graphical resource adapters and mode admission remain
 separate; this core entry does not make a playable session available.
 The [composed live writer](m1-stored-saves.md#composed-live-save) uses that same
 world with required output services, keeps client lifetimes and random contexts,
@@ -68,6 +68,11 @@ and preserves the specified save-preparation effects on partial failure. Its
 hotseat roster and network-turn selector are distinct from the effective human
 mask and serialized turn/resume fields. Construction defaults do not initialize
 those mode-specific values; the application admission layer must supply them.
+The [native file and rule context](m1-stored-saves.md#native-files-and-rule-context)
+now binds real streams, explicit directory state, label rebuilding and F03
+reloads. Its native integration case preserves host cwd and input files across
+load-edit-save-reload; it does not grant participant admission or implement the
+graphical sprite service.
 
 The composition root supplies a stable nonzero `RuntimeId`, unique among
 runtimes whose observations will be compared. `SessionId`, `ParticipantId` and

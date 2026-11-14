@@ -271,6 +271,13 @@ The [city-name providers](m1-city-names.md) now implement C01's ordered default
 naming through both paths, with shared counter/publication behavior and a native
 validation command.
 
+The [F03 reload context and native file services](m1-stored-saves.md#native-files-and-rule-context)
+now compose label rebuilding, sprite callback, scenario/home selection, full table
+loading and final name-preserving reloads over real native streams. Four portable
+wrapper cases and seven native adapter/integration cases cover the ordering,
+partial effects and full disk load-edit-save-reload. The graphical resource
+consumer, GAME cache and browser persistence remain separate integration work.
+
 Full application startup/GAME-cache construction, complete content installation,
 the complete comparison profile, remaining native component admission,
 conversion tools/receipts, session wiring and owning production consumers remain

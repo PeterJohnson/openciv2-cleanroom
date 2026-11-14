@@ -1,6 +1,6 @@
 {
   "format": "openciv2-original-save-auxiliary-comparison/1",
-  "createdUtc": "2026-11-14T09:52:51.284592+00:00",
+  "createdUtc": "2026-11-14T10:06:45.206097+00:00",
   "scope": "Isolated ordered coarse/region, power/layout/views and scenario/elimination I/O compared with original bytes and stored records; no complete session load, callback/failure trace or new original execution",
   "provenance": {
     "manifest": "docs/conformance/reports/original-saves-windows.json",
@@ -8,10 +8,10 @@
     "installation": "C:\\Projects\\civ2\\Civ2"
   },
   "host": "Windows-11-10.0.26300-SP0",
-  "implementationRevision": "3701156108e5ed54f014d29e575d511a50924a9d",
+  "implementationRevision": "e8fbed89595974bb727ab5f0920fbb96bf5037f5",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "df8261e1c4532db7ecd14aa9c792196f4185a83ecdebbe9bf070fbbee19dd642",
+    "CMakeLists.txt": "9b3f31852840885a1c6c27230fee76c989ae595a525188603d3f8f849950c5c6",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
     "tools/save_roundtrip.cpp": "6b1214688a7113f0877f3426dba7f5108040ae365c221bae13932c4aa0ce7730",
     "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
@@ -40,7 +40,7 @@
   },
   "driver": {
     "path": "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_save_roundtrip.exe",
-    "sha256": "cb9dfe79e8adcf3f3291d70b16273046ca12b22088fa80d844495d87d9029578"
+    "sha256": "2faece07340772c3755fd2894da683cdb0478760be3b1cee0141a405e80a6b72"
   },
   "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n",
   "limitations": [

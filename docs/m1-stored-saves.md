@@ -4,7 +4,8 @@ M1 remains in progress. The complete **stored-file view for version `0x2c`**
 supports lossless re-encoding without load transformations. The separate ordered
 core loader and live writer now compose the stream/name/census and save-preparation
 stages below over `SessionRuntime` with required external service bindings.
-Application file/rule adapters, post-load admission and resumed gameplay remain open.
+Native file services and the F03 reload context are implemented below. Application
+admission, browser persistence and resumed gameplay remain open.
 
 ## Record and file boundary
 
@@ -334,15 +335,15 @@ directories, scan publication before names, post-close mode adaptation,
 scenario/event/name/census ordering,
 rule failures, random ownership and query access through an unchanged client.
 One case invokes the actual F03 full-table and name-preserving final parsers.
-The other ordering cases declare supplied F03 child effects; they do not establish
-the production rule/resource wrapper's behavior. Composition also fixes older
+The other ordering cases declare supplied F03 child effects; the separate native
+integration below exercises the reload wrapper and real files. Composition also fixes older
 map/entity helpers to preserve untouched post-callback fields on partial input
 and stop before using map storage invalidated by a callback.
 
 This is authored integration evidence, not an original-game core-load comparison
 or an X02 registration. The 21 original-save auxiliary comparisons still pass but
-do not run this orchestrator. Concrete native/web file and F03 resource-context
-bindings, full reload-wrapper callbacks, post-load actions/admission, application saving
+do not run this orchestrator. Browser storage and graphical resource-context
+bindings, post-load actions/admission, application saving
 and original resumed-state comparisons remain required M1 work. Inspection's
 stored view has not been relabeled as loaded-state analysis.
 
@@ -392,13 +393,61 @@ The latter uses declared F03 child effects; the separate core-load integration
 case exercises the real F03 parsers. These are independently authored contract
 tests, not X02 registrations or original-game acceptance of live exports.
 
-The full Windows run passes 308 default-off and 310 SQLite-enabled CTests;
-WebAssembly passes six CTests including 296 portable cases (165,640 assertions).
+The full Windows run passes 319 default-off and 321 SQLite-enabled CTests;
+WebAssembly passes six CTests including 300 portable cases (165,698 assertions).
 All 54 existing X02 observations and consumed prefixes match across native/WASM.
 The 21 original-save auxiliary comparisons and original label checks still pass,
-but their retained scope excludes this live writer. Production native/web file
-adapters, application save/admission integration and original edited-export/resume
+but their retained scope excludes this live writer. Browser storage,
+application save/admission integration and original edited-export/resume
 checks remain open.
+
+## Native files and rule context
+
+`platform/classic_files.hpp` supplies native F06 binary input/replacement output,
+F03 text streams, existence probes and an explicit working-directory context.
+The component walk matches ASCII case aliases independently of host filesystem
+case sensitivity and rejects ambiguous aliases. Native path strings use UTF-8;
+non-ASCII bytes match exactly, with no claim to the original non-ASCII folding
+profile. Backslashes are adapted to native separators, including absolute paths
+returned by `classic_path`. Actual traversal preserves symbolic-link/parent
+semantics. No service changes the host process working directory.
+
+Binary item reads return the transferred prefix on short input. Output truncates
+an existing destination, writes each requested item/text/byte and retains partial
+files. Open failure returns an absent service; closing returns the host result,
+which the core operation deliberately ignores under F06. Stream ownership also
+releases native handles on exceptions. These services support regular files;
+they do not implement atomic export or a browser durable-save acknowledgement.
+
+Text input streams from the file rather than copying the whole file into a
+memory snapshot. It translates CRLF, preserves bare CR, observes the 254-byte
+translated read window and seeks physical offsets. NUL/control-Z text still
+stops at an explicit unsupported boundary. The portable reader retains control
+of explicit-file fallback, stream reuse and supplied section indexes; the native
+adapter does not merge scenario and home files or fabricate a GAME cache.
+
+`session/classic_rules.hpp` supplies F03 §1's ordered reload wrapper: rebuild
+labels using the existing search context, invoke the required sprite service,
+probe scenario `RULES` with the live language extension, select scenario/home,
+load all tables, return working state to home, then flush. The selected search
+context remains for subsequent table opens. Failure retains earlier publications
+and directory selection. F06's final advance/improvement/unit calls use the real
+name-preserving parsers and close at the parent-specified boundary. Resource,
+directory, probe, comparison and flush services are required; headless callers
+must explicitly supply their resource/flush consumers.
+
+Four authored portable cases cover wrapper order, home/scenario selection,
+resource/parser failures and final name-preserving reloads. Seven native cases
+cover binary prefixes, replacement/partial output, independent cursors, real
+directory/case lookup, text windows/physical seeks, section fallback and full
+load-edit-save-reload using actual labels/rules files. A failed core save writes
+only the header/version prefix and restores hotseat state before native close.
+The complete file integration checks input preservation and unchanged host cwd;
+its sprite/flush consumers are declared headless callbacks, not graphical loaders.
+These new services are built in the tools-enabled native configuration; the rule
+context remains portable and runs in WASM tests. Linux/macOS filesystem execution,
+browser storage, graphical startup/resources, post-load admission and original
+acceptance of exports through this path remain unverified or incomplete.
 
 ## Windows evidence — 2026-11-13 Pacific
 
