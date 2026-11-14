@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "evidence": "independent-original-program-observations",
+  "originalProfile": "Unmodified copied Civ2 5.4.0f patch 3 and XDaemon 3.5.0; normal UI LAN/TCP host lobby",
+  "setup": {
+    "playerName": "M1 Probe",
+    "gameName": "M1 Wire Test",
+    "world": "Large",
+    "difficulty": "Warlord",
+    "civilizations": 7,
+    "barbarians": "Roving Bands",
+    "rules": "Standard",
+    "turnTimer": "Unlimited"
+  },
+  "driverBoundary": "Independently authored Python socket drivers plus portable C++ codecs; no injection, binary patch, source-derived harness or original linking",
+  "tcp": {
+    "schemaVersion": 1,
+    "evidence": "independent-original-program-observation",
+    "scope": "N05 TCP ID greeting and ping echo; no N01 admission, discovery or gameplay",
+    "utc": "2026-11-14T02:10:29.334556+00:00",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "endpoint": {
+      "host": "127.0.0.1",
+      "port": 4993
+    },
+    "originalExeSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c",
+    "originalTransportSha256": "ae6c1c142cebc04b5cd2daee75b31a52ed0d16b5492fd9a96fa992b4b5fef157",
+    "driverSha256": "f1837bdfdae28562546375ce48f330fe8e64871ee01b1b34913e222b0816cf74",
+    "checkerSha256": "969cd6f3d87eaf13cccddcf937ad931d2b64fa62e163cc92aa8c1cf56506ba8c",
+    "receiveChunks": [
+      {
+        "bytes": 64,
+        "elapsedMs": 511.6981999890413
+      }
+    ],
+    "passed": false,
+    "records": [
+      {
+        "totalBytes": 64,
+        "tag": "0xfa000000",
+        "payloadBytes": 2
+      }
+    ],
+    "connectedMs": 3.4502999915275723,
+    "connectionId": 1,
+    "greetingMs": 511.7512999859173,
+    "pingRequestHex": "80000000000000fc40000000010002030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "error": "timed out",
+    "wireSha256": "7b1bbb0fc3e4d322fc556cb07fd020145abb60b64c479856c26fe037ccc5867a",
+    "rawCapture": "build/original-peer-capture/received-stream.bin (local, untracked)",
+    "postCaptureCodecCheck": {
+      "checkerSha256": "63e908fef6f246985c25c6b7cf9cbc8837b7d56aa5fe777eca60e20aa8b4de15",
+      "result": {
+        "frames": 1,
+        "applicationMessages": 0,
+        "bytes": 64,
+        "oneByteAndCoalesced": true,
+        "byteEqual": true
+      }
+    }
+  },
+  "udp": {
+    "schemaVersion": 1,
+    "evidence": "independent-original-program-observation",
+    "scope": "One UDP GetServers request and matching ServerInfo; no lobby admission",
+    "utc": "2026-11-14T02:12:31.495166+00:00",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "endpoint": {
+      "host": "127.0.0.1",
+      "port": 4994
+    },
+    "originalExeSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c",
+    "originalTransportSha256": "ae6c1c142cebc04b5cd2daee75b31a52ed0d16b5492fd9a96fa992b4b5fef157",
+    "driverSha256": "9160469b2d6e8d6bd82b151c28d41fdeb50bbf8df4bd1b57ad073efe3cb6ea61",
+    "checkerSha256": "63e908fef6f246985c25c6b7cf9cbc8837b7d56aa5fe777eca60e20aa8b4de15",
+    "observedLengths": [
+      412
+    ],
+    "passed": true,
+    "requestHex": "00000000606660660000000074000000000000003132372e302e302e3100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000",
+    "replySha256": "f8a6bde9e1a15e17a1d12a69f3fa853207dcf9e5fc69c91ac0525d932a6c1445",
+    "elapsedMs": 5.9664000000339,
+    "outerHeader": 0,
+    "sequence": 1,
+    "gameName": "M1 Wire Test",
+    "version": "5.4.0f Multiplayer 26-March-99",
+    "cleanroomCodecCheck": {
+      "bytes": 412,
+      "kind": 0,
+      "byteEqual": true
+    },
+    "rawCapture": "build/original-discovery-capture/advertisement.bin (local, untracked)"
+  },
+  "runtimeLogObservation": {
+    "path": "build/original-peer-capture/XDaemon.log (local, untracked)",
+    "sha256": "d9940da02c267d90775fd345bef4cf1926a84e78e0721b96b65cb74ed574fb6f",
+    "observedAcceptedStreamReceiveBufferBytes": 65536,
+    "interpretation": "Consistent with the original low-word receive-length limit documented in N05 Appendix D. No ping reply arrived before the 10-second deadline; no original internal receive call was inspected."
+  },
+  "limits": [
+    "No N01 player admission or state synchronization",
+    "No cleanroom-host/original-client comparison",
+    "No gameplay or frame-parser callback interleaving conformance",
+    "Raw advertisement bytes include local addresses and retained backing, so only their hash and comparison result are retained in Git"
+  ]
+}

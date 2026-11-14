@@ -115,6 +115,7 @@ original program or establishes that it accepted an edited export.
 The [completion audit](m1-validation.md) still governs the milestone. Next are
 semantic content and classic text adapters, explicit process/session
 lifecycles and ordered loading, commands/continuations/authority, generalized
-X02 execution and choice replay, and N05/N02 foundations. Legacy stored-file
-coverage, original-program resume/edit checks and original-peer captures remain
-open. Do not advertise a loaded-world view based on these stored records.
+X02 execution and choice replay, and integration of the
+[N05/N02 primitives](m1-network-foundations.md). Legacy stored-file coverage,
+original-program resume/edit checks and full original-peer sessions remain open.
+Do not advertise a loaded-world view based on these stored records.
