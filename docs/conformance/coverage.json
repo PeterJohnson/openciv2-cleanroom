@@ -448,6 +448,52 @@
       "gaps": [
         "x02-general-runner"
       ]
+    },
+    {
+      "id": "F02.prepareNewGame",
+      "owner": "F02",
+      "operation": "F02.prepareNewGame",
+      "specificationAnchor": "docs/algorithms/F02-game-state-and-invariants.md#2-state-layers-and-lifetimes",
+      "evidenceEntries": [
+        {
+          "kind": "repository-specification-vector",
+          "path": "docs/algorithms/conformance/X02-F02-fresh-game-cold.json",
+          "sha256": "eaf95f7ed8df2c9fc3b43bb950ffd9d53b89aa0fb5eced68b7a0da7f1e7e6e82",
+          "originalFunction": "F02.prepareNewGame",
+          "originalAddress": null
+        },
+        {
+          "kind": "repository-specification-vector",
+          "path": "docs/algorithms/conformance/X02-F02-fresh-game-used.json",
+          "sha256": "b5e1c403fcfdefdb726bdf6bc45ac934c98051f671125ade1fc3c606fa910e74",
+          "originalFunction": "F02.prepareNewGame",
+          "originalAddress": null
+        },
+        {
+          "kind": "repository-specification-vector",
+          "path": "docs/algorithms/conformance/X02-F02-fresh-game-empty-scans.json",
+          "sha256": "36d632f8dfe313c6d216276b9dcd9899ea1d647b0a70ffb05e751e6b379cdafc",
+          "originalFunction": "F02.prepareNewGame",
+          "originalAddress": null
+        }
+      ],
+      "disposition": "game-algorithm",
+      "domain": "Quiescent fresh-game boundary with no pending operations or undrained output. Selected fields vary over their declared scalar/full-capacity domains; other fields start from runtime construction defaults. Map allocation uses an 8 by 6 map. No gameplay child is invoked.",
+      "caseIds": [
+        "X02.F02.fresh-game-cold",
+        "X02.F02.fresh-game-used",
+        "X02.F02.fresh-game-empty-scans"
+      ],
+      "comparisonSurfaces": [
+        "explicit X01 reset/preservation projection",
+        "all backing-slot damage and shields",
+        "old client rejection"
+      ],
+      "implementationStatus": "implemented",
+      "lastRun": "docs/conformance/reports/f01-native.json",
+      "gaps": [
+        "fresh-game-projection-review"
+      ]
     }
   ],
   "integrationFamilies": [
@@ -754,6 +800,13 @@
       "domain": "Original file and mixed-peer interoperability; W02 target measurements.",
       "knownPrefix": "A verified original installation is available on Windows. Seven raw maps and 21 current saves reproduce through stored codecs. Independently authored original-host TCP ID and UDP discovery observations are recorded in docs/conformance/reports/original-peer-windows.json; the subsequent TCP ping timeout is preserved separately. Full file-resume and both-role peer sessions remain open.",
       "closureEvidence": "Use the verified original installation and external comparison protocol in docs/content/README.md; record original execution, bidirectional file acceptance and peer captures separately from C++ codec round trips."
+    },
+    {
+      "id": "fresh-game-projection-review",
+      "milestone": "M1",
+      "domain": "Fresh-game registered projection and broader integration evidence.",
+      "knownPrefix": "Three authored X01 reset/preservation vectors over all selected backing slots. Explicit excluded state and quiescent admission; not whole-world conformance.",
+      "closureEvidence": "Independent fixture review and continued verification of complete cold/reused/cancelled/failed-entry integrations, pending-command/output guards, mutable content and identity/RNG preservation. Broaden registered observations as admitted state adapters arrive."
     }
   ]
 }

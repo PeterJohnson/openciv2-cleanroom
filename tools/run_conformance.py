@@ -19,6 +19,7 @@ import check_conformance as inventory
 import conformance_random as randomness
 import conformance_values as logical
 import conformance_script as scripted
+import conformance_session as session
 
 ROOT = Path(__file__).resolve().parents[1]
 OPERATIONS = {
@@ -35,7 +36,8 @@ OPERATIONS = {
 OPERATIONS.update({operation: {"domain": "text", **schema}
                    for operation, (_, schema) in randomness.SAMPLERS.items()})
 OPERATIONS[scripted.OPERATION] = scripted.ARGUMENTS
-SCOPE = "f01-f02-w01-script-v3"
+OPERATIONS[session.OPERATION] = {}
+SCOPE = "foundation-session-v3"
 TOKEN_STATE = {"F02.nextUnitToken": "u32", "F02.nextCityToken": "u32"}
 RESERVATION_STATE = {"F02.unitEnd": "u32", "F02.unitTokenScan": "u32[]",
                      "F02.militaryCounts": "i16[]", "F02.effectiveHumanSet": "u8"}
@@ -51,10 +53,13 @@ RESULTS = {op: ("unit-slot-or-null" if op == "F02.reserveUnitSlot" else
 RESULTS["F01.secondaryUnit"] = "f64"
 RESULTS[scripted.OPERATION] = "i32"
 STATES[scripted.OPERATION] = scripted.STATES
+STATES[session.OPERATION] = session.STATES
+RESULTS[session.OPERATION] = "null"
 WRITES = {op: (["F02.nextUnitToken"] if op == "F02.assignUnitToken" else
                ["F02.nextCityToken"] if op == "F02.assignCityToken" else
                ["F02.unitEnd"] if op == "F02.reserveUnitSlot" else []) for op in OPERATIONS}
 WRITES[scripted.OPERATION] = list(scripted.STATES)
+WRITES[session.OPERATION] = session.WRITES
 TARGET = {"game": "Civilization II Multiplayer Gold Edition", "version": "5.4.0f patch 3",
           "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"}
 EVENTS = {"root.enter": "enter", "root.return": "return", "root.exit": "snapshot"}
@@ -69,10 +74,22 @@ ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake
                    "src/world/map.hpp", "src/world/map.cpp",
                    "tools/conformance_adapter.cpp", "tools/conformance_io.hpp",
                    "tools/conformance_random.hpp", "tools/conformance_random.cpp",
-                   "tools/conformance_script.hpp", "tools/conformance_script.cpp")
+                   "tools/conformance_script.hpp", "tools/conformance_script.cpp",
+                   "tools/conformance_session.hpp", "tools/conformance_session.cpp",
+                   "src/base/session_ids.hpp", "src/query/fields.hpp",
+                   "src/query/live.hpp", "src/query/live.cpp",
+                   "src/session/runtime.hpp", "src/session/runtime.cpp",
+                   "src/session/runtime_internal.hpp", "src/session/command_runtime.cpp",
+                   "src/session/commands.hpp", "src/session/commands.cpp")
+# Include every state declaration and constructor dependency of the fresh-world
+# boundary. Broader than a leaf adapter's inputs; never report a stale reset.
+ADAPTER_SOURCES = tuple(dict.fromkeys((*ADAPTER_SOURCES, *sorted(
+    path.relative_to(ROOT).as_posix() for path in (ROOT / "src/state").iterdir()
+    if path.suffix in (".hpp", ".cpp")))))
 RUNNER_SOURCES = ("tools/run_conformance.py", "tools/check_conformance.py",
                   "tools/conformance_values.py", "tools/conformance_random.py",
-                  "tools/conformance_script.py", randomness.POLICY_FILE)
+                  "tools/conformance_script.py", "tools/conformance_session.py",
+                  randomness.POLICY_FILE)
 SOURCES = ADAPTER_SOURCES + RUNNER_SOURCES
 
 
@@ -121,6 +138,8 @@ def state_values(state, operation, scan_length=None, case=None):
     require(isinstance(state, dict), "state must be an object")
     if operation == scripted.OPERATION:
         return scripted.state_values(state)
+    if operation == session.OPERATION:
+        return session.state_values(state)
     if operation in randomness.SAMPLERS:
         replay = case["randomness"]["mode"] == "implementation-replay"
         object_keys(state, randomness.STATE if replay else "", "random state closure")
@@ -158,6 +177,9 @@ def state_values(state, operation, scan_length=None, case=None):
 
 def result_value(value, operation):
     kind = RESULTS[operation]
+    if kind == "null":
+        require(value == {"$type": "null"}, "void operation must return typed null")
+        return None
     if kind in ("unit-slot-or-null", "tile-index-or-null"):
         if value == {"$type": "null"}:
             return None
@@ -378,8 +400,10 @@ def load_fixture(path, root=ROOT):
         return case
     owner = op_id.split(".")[0]
     require(set(pins) == {"F01", "X01", "X02", owner}, "foundation contract pins incomplete")
-    supported(boundary["level"] == "primitive" and boundary["suppliedChildren"] == [], "only leaf primitive boundaries supported")
-    start = ("semantic sampler entry with explicit random inputs" if randomness.sampling(case) else
+    supported(boundary["level"] == ("subsystem" if op_id == session.OPERATION else "primitive")
+              and boundary["suppliedChildren"] == [], "unsupported boundary or supplied children")
+    start = ("fresh-game boundary with explicit projection inputs" if op_id == session.OPERATION else
+             "semantic sampler entry with explicit random inputs" if randomness.sampling(case) else
              "pure mapping entry with explicit code argument" if owner == "F01" else
              "state primitive entry with complete registered inputs")
     require(boundary["start"] == start and
@@ -389,6 +413,8 @@ def load_fixture(path, root=ROOT):
     require(operation is not None and operation["owner"] == owner and
             operation["arguments"] == arguments and operation["result"] == RESULTS[op_id], "adapter/registry contract mismatch")
     registered_states = ({randomness.STATE: "random-contexts-v2"} if randomness.sampling(case) else STATES[op_id])
+    if op_id == session.OPERATION:
+        registered_states = {**registered_states, **session.EXCLUDED}
     require(operation["reads"] == list(registered_states) and
             operation["writes"] == ([randomness.STATE] if randomness.sampling(case) else WRITES[op_id]),
             "adapter/registry state closure mismatch")
@@ -443,7 +469,12 @@ def load_fixture(path, root=ROOT):
         require(sample["result"] == expected["result"], "sample/return disagreement")
     comparison = case["comparison"]
     object_keys(comparison, "stateScope traceKinds order exclusions normalizations", "comparison")
-    supported(comparison["stateScope"] == "complete-boundary" and comparison["exclusions"] == comparison["normalizations"] == [], "projected/normalized comparisons not implemented")
+    if op_id == session.OPERATION:
+        require(comparison["stateScope"] == "projection" and
+                comparison["exclusions"] == session.EXCLUSIONS and comparison["normalizations"] == [],
+                "fresh-game projection exclusions must be explicit and exact")
+    else:
+        supported(comparison["stateScope"] == "complete-boundary" and comparison["exclusions"] == comparison["normalizations"] == [], "projected/normalized comparisons not implemented")
     required_kinds = set(selected_events(case).values())
     require(isinstance(comparison["traceKinds"], list) and len(comparison["traceKinds"]) == len(required_kinds) and
             all(isinstance(kind, str) for kind in comparison["traceKinds"]) and set(comparison["traceKinds"]) == required_kinds, "mandatory trace kinds missing or duplicated")
@@ -522,7 +553,7 @@ def execute(path, command, root=ROOT):
     # The adapter receives only actual inputs. State travels on stdin to avoid
     # platform command-line limits; field order belongs to this test protocol.
     words = []
-    for key in ([] if is_script else STATES[operation]):
+    for key in ([] if is_script or operation == session.OPERATION else STATES[operation]):
         value = state[key]
         if isinstance(value, list):
             words.extend(str(item) for item in value)
@@ -534,6 +565,8 @@ def execute(path, command, root=ROOT):
         words = randomness.input_words(case)
     elif is_script:
         words = scripted.input_words(case)
+    elif operation == session.OPERATION:
+        words = session.input_words(case)
     try:
         process = subprocess.run([*command, operation, *args], capture_output=True, text=True,
                                  encoding="utf-8", input="\n".join(words) + ("\n" if words else ""),

@@ -5,11 +5,13 @@ adds civilization/global records and full current stored-file decoding, with
 Windows validation. [Stored inspection](m1-inspection.md) adds owned queries and
 the native `oc2` CLI. [Gameplay content loading](m1-content-runtime.md) adds strict
 JSON admission and typed operands for the six gameplay components. The Linux/WASM
-evidence below describes the earlier slices.
+evidence below describes the earlier slices. The reviewed
+[fresh-game boundary](m1-fresh-game.md) now has registered reset/preservation
+projections and broader lifecycle integration tests.
 Implemented foundations include F01 numeric
 primitives and isolated random contexts in standard-library-only `oc2_base`,
 F02 entity records/pools and W01 map foundations in `oc2_game`, initial F06 codecs
-in `oc2_formats`, and a bounded developer runner for fourteen registered X02 operations. No reconstruction
+in `oc2_formats`, and a bounded developer runner for fifteen registered X02 operations. No reconstruction
 source, legacy harness, original executable or asset checkout is a code input.
 
 ## Implemented boundary

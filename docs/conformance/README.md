@@ -1,13 +1,15 @@
 # Conformance inventory
 
-M0 established the checked metadata. M1 now executes twenty-nine F01, fifteen F02 and
+M0 established the checked metadata. M1 now executes twenty-nine F01, eighteen F02 and
 ten W01 [X02 version 3 fixtures](../algorithms/conformance/) through real C++
 operations on native and WASM. The [bounded runner](../m1-foundations.md) checks
 pure mappings, keyed sampling and policy replay, stateful token/reservation leaves
 and scalar geometry. F02 city dispatch additionally exercises ordered supplied-child
 actions, nested real entries and unresolved-input prefixes. The C03 pipeline is an
 explicit substitute; its gameplay and normal callback schedule are not implemented
-by these fixtures. Metadata validation does not execute gameplay.
+by these fixtures. The [fresh-game adapter](../m1-fresh-game.md) adds three
+explicit reset/preservation projections over the real session boundary.
+Metadata validation does not execute gameplay.
 
 ```sh
 python3 tools/check_conformance.py
@@ -20,11 +22,13 @@ metadata checks. The existing formatter tests additionally use pinned
 clang-format. With Python available, CMake exposes `inventory-check` and CTest
 metadata tests; normal builds and headless Catch2 tests do not require Python.
 With testing and Python enabled, CTest also runs `conformance_foundations` and
-writes `conformance-results.json`. Its test-only adapter links `oc2_game` and
-`oc2_base`, never SDL. `conformance_sampler_rejections` additionally executes
+writes `conformance-results.json`. Its test-only adapter links the portable
+`oc2_session` dependency graph, never SDL. `conformance_sampler_rejections` additionally executes
 negative input and watchdog checks against the compiled native/WASM adapter.
 `conformance_script_rejections` checks ordered input failures, retained effects,
 event/provider/depth bounds and nested missing-result stops on both builds.
+`conformance_session_rejections` checks reset vectors, transport validation,
+every observed field and exact projection exclusions on both builds.
 
 ## Versioned registries
 
@@ -32,7 +36,7 @@ event/provider/depth bounds and nested missing-result stops on both builds.
 
 - All 65 specification families, exact file hashes, specification status and
   separate registration status. This denominator counts documents, not behavior.
-- Six F01, four F02 and four W01 operation contracts, with typed
+- Six F01, five F02 and four W01 operation contracts, with typed
   arguments/results, state closure, preconditions, callbacks, stop/event boundaries,
   dependency edges and explicit
   empty independence claims. All have C++ implementations and executable
@@ -46,16 +50,19 @@ event/provider/depth bounds and nested missing-result stops on both builds.
   registers a complete reachable generator through policy v2 origin/position;
   it is omitted in controlled-choice mode. Sampling events are conditional on
   a nonconstant decision; their registered dependency edges apply when present.
+  Fresh-game observation adds sixteen selected keys and three explicit excluded
+  record groups, bringing the registry to 32 state keys. Its arrays cover all
+  backing slots, while its documented projection excludes other fields.
 - One explicitly supplied C03 child contract, with registered outputs and callbacks.
   It has no gameplay implementation and does not count as an implemented operation.
-- Fifty-four fixture identities/revisions/hashes and their provenance: 47
+- Fifty-seven fixture identities/revisions/hashes and their provenance: 50
   specification vectors and seven explicitly labeled implementation-policy
   regression vectors, with a passing [native report](reports/f01-native.json)
   and a separate [WASM report](reports/f01-wasm.json).
   The target executable hash in a vector is not proof of access to that image.
 
 [coverage.json](coverage.json) uses X02 §8's required row fields and dispositions.
-Rows own the fourteen registered operation contracts. `evidenceEntries` identify the
+Rows own the fifteen registered operation contracts. `evidenceEntries` identify the
 local specification path/hash and operation; no original function-address or
 source-fragment inventory is claimed. Do not follow the specs' reconstruction
 source links to fill these fields or extract/translate their harnesses into tests.

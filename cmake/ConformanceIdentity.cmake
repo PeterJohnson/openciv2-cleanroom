@@ -12,7 +12,22 @@ set(oc2_conformance_sources
   src/world/geometry.hpp src/world/geometry.cpp src/world/map.hpp src/world/map.cpp
   tools/conformance_adapter.cpp tools/conformance_io.hpp
   tools/conformance_random.hpp tools/conformance_random.cpp
-  tools/conformance_script.hpp tools/conformance_script.cpp)
+  tools/conformance_script.hpp tools/conformance_script.cpp
+  tools/conformance_session.hpp tools/conformance_session.cpp
+  src/base/session_ids.hpp src/query/fields.hpp src/query/live.hpp src/query/live.cpp
+  src/session/runtime.hpp src/session/runtime.cpp src/session/runtime_internal.hpp
+  src/session/command_runtime.cpp src/session/commands.hpp src/session/commands.cpp)
+
+if(CMAKE_SCRIPT_MODE_FILE)
+  set(oc2_conformance_root "${OC2_SOURCE_DIR}")
+else()
+  set(oc2_conformance_root "${PROJECT_SOURCE_DIR}")
+endif()
+file(GLOB oc2_state_sources RELATIVE "${oc2_conformance_root}"
+  "${oc2_conformance_root}/src/state/*.hpp" "${oc2_conformance_root}/src/state/*.cpp")
+list(SORT oc2_state_sources)
+list(APPEND oc2_conformance_sources ${oc2_state_sources})
+list(REMOVE_DUPLICATES oc2_conformance_sources)
 
 if(CMAKE_SCRIPT_MODE_FILE)
   # Invoked by the build, not by the reporting process. Only replace the header
