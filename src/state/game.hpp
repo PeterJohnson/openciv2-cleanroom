@@ -1,6 +1,7 @@
 #pragma once
 
 #include "state/civilization.hpp"
+#include "state/events.hpp"
 #include "state/multiplayer.hpp"
 #include "state/rule_state.hpp"
 #include "world/map.hpp"
@@ -28,6 +29,7 @@ struct GameState {
     std::array<Civilization, 8> civilizations{};
     std::array<CivilizationNames, 8> names{};
     MultiplayerState multiplayer;
+    EventState events;
     CityMoodWorkspace mood;
     world::MapStorage map;
 };

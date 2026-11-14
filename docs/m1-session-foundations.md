@@ -17,7 +17,8 @@ clients only a `PlayerClient`. All calls run on one cooperative mutation lane.
 The runtime owns `state::GameState`: the existing stable entity pools, global,
 civilization and name records, retained mood workspace and map storage. It also
 owns saved multiplayer values, runtime local-human/resume selectors and password
-flags, separately from participant/controller bindings. It uses
+flags, plus the ordered event collection and its separate loaded indicator.
+These are separate from participant/controller bindings. It uses
 an injected `ProcessContext` containing lifetime tokens, the shared fallback tile
 and a uniquely owned `RuleState` with rule definitions, a shared text pool, name
 bindings, P04 label/popup tables and live leaders/usage/name cursors, plus the four
@@ -46,6 +47,9 @@ their integration into the complete ordered setup/load paths remains open.
 The [multiplayer load stages](m1-stored-saves.md#passwords-and-multiplayer-loadsave-stages)
 now operate on this world/process state and the session's gameplay random context;
 their isolated ownership test does not claim complete file loading or lobby admission.
+The [event load/copy stages](m1-stored-saves.md#ordered-events-and-string-ownership)
+likewise retain their collection across client lifetime replacement, consume no
+randomness and preserve event identities across compaction.
 
 The composition root supplies a stable nonzero `RuntimeId`, unique among
 runtimes whose observations will be compared. `SessionId`, `ParticipantId` and

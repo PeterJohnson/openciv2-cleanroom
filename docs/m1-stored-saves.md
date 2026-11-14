@@ -194,8 +194,62 @@ and regression evidence, not original password captures or full mixed-peer
 sessions. The owning loader must still sequence these callable stages with
 all surrounding input, cleanup, rule and event operations.
 
+## Ordered events and string ownership
+
+`state/events.hpp` supplies the F02/S02 ordered collection and separate loaded
+indicator now owned by `GameState`. Events have typed logical identities,
+retained payload and owned string references. Absent, present-empty, backed and
+unresolved saved references remain distinct. Serialized presence words are
+retained bits, never dereferenced or used as live identities; `EventRecord`
+continues to use the existing 444-byte codec. Stored-file inspection retains its
+separate immutable string representation and admission limits.
+
+`formats::read_event_items` implements F06 §8 with separate fixed-item and
+character services. An absent, partial or mismatched tag clears only loaded;
+the old list survives. A recognized tag requires a complete signed count before
+resetting the collection. Zero and negative counts yield loaded emptiness after
+completion. All fixed records precede all strings. Partial fixed records retain
+their transferred prefix; unresolved string markers do not fabricate empty text.
+String reads distinguish EOF, NUL and the consumed 256th byte: overlong input
+retains its first 255 bytes without scanning to a later terminator. Each field
+publishes only after successful string creation. A text hole stops text-line
+reads, retaining later unresolved markers; accessing those strings stops safely.
+
+S02 §2 copying first appends payloads, then duplicates strings in the specified
+order. It supports a nonempty destination's old-head rewrite behavior, shared
+source strings and text holes. Duplicated fields acquire distinct identities;
+fields after a hole retain their prior reference relationships. Compaction uses
+two such copies, preserving event identities, payload/order, consumed flags and
+bound selectors. Failure during the first copy leaves the main collection in
+place; failure after replacement retains the second copy's published prefix.
+Logical references keep their backing alive without relying on native addresses.
+
+`EventServices` supplies optional event/string resource outcomes and error
+reporting. String failure reports −9/category 3 and does not publish an empty
+replacement. Copy requests retain the 15/24/1 minimum string capacities, without
+truncating longer content. This is not an emulation of original pool addresses
+or block-allocation traces. Node-invalidating callbacks, an allocation callback
+that changes its captured destination tail, self-copy and copying a source that
+grows beyond its admitted capacity stop with prior effects intact. Record and
+string-content callbacks otherwise remain live at their documented boundaries.
+
+`write_event_items` emits the tag/count, all fixed records, then each selected
+string through its first NUL, with text output and the terminating NUL as separate
+calls. It does not impose the reader's 255-byte retention limit. Presence tokens
+may be canonicalized to nonzero values; logical string identity never enters
+the file. The parent owns the loaded/scenario-export gate. Loaded becomes true
+on read only after successful compaction.
+
+Fifteen authored native/WASM cases cover all fields, partial fixed records,
+optional tags, negative counts, empty/overlong/unterminated strings, text holes,
+allocation/reporting failures, copy aliases, compaction replacement boundaries,
+callbacks, ordered write failures and runtime ownership without RNG changes.
+These are specification/regression evidence, not original event captures or X02
+fixtures. Event parsing, trigger/action execution, editor integration and complete
+F06 orchestration remain separate work.
+
 Full path/rule reload orchestration, remaining stream blocks,
-events, rule-reload/layout completion and live-session
+rule-reload/layout completion and live-session
 admission remain open. No loaded-world claim follows from these isolated stages.
 
 ## Windows evidence — 2026-11-13 Pacific
