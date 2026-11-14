@@ -92,14 +92,14 @@ specification-derived checks, not original-game captures or independently review
 X02 fixtures; C01 is not registered with X02 yet.
 
 The process overload now supplies that resolver from `RuleState`'s shared pool
-and live leaders. F03 loading publishes the signed-16 leader bindings consumed
-by C01, including absolute-label aliasing after narrowing; a dedicated test runs
-that path through a real classic provider and the existing leader record codec.
+and live leaders. F03 loading publishes full-width logical name bindings consumed
+by C01; classic signed markers are translated only by the leader record codec.
 The explicit resolver overload remains available for supplied backing/services.
 The native rule installer also supplies these live bindings; an all-native test
 loads rules/names, selects names through the pool, and preserves the advancing
 cursor across both leader-preserving and leader-replacing rule reloads.
 F06's [name-sign restoration](m1-stored-saves.md#ordered-leader-and-name-operations)
 now operates on the same live leader bindings. Application startup/GAME-cache
-construction, session/city-creation integration, conversion receipts and broader
-original-game comparisons remain required.
+construction and session/city-creation integration join M3/M4. CITY conversion
+and receipts pass [M1-02](m1-content-conversion.md#m1-02-acceptance-evidence);
+original-file evidence is bounded separately by M1-04.

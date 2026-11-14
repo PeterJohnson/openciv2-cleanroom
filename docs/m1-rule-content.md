@@ -98,7 +98,8 @@ checks the single-field 254-byte boundary, line terminators, NUL/control-Z,
 classic token commas, edge trimming and advance/unit comment termination.
 Difficulty and attitude lines retain embedded commas and semicolons. The full
 serialized row plus newline must also fit its classic read boundary; that
-combined-length/export check remains for the classic converter. This command
+combined-length check belongs to later native-to-classic export. The M1 converter
+reads classic input through its existing bounded reader. This validation command
 does not certify classic export representability.
 
 **Specification gap:** F03/C01 prescribe case-insensitive byte comparisons for
@@ -151,8 +152,8 @@ not new original-program observations.
 The [city-name providers](m1-city-names.md) now select by live plural name and
 preserve C01's counter, fallback, retry and publication behavior on both paths.
 
-Remaining M1 content work is exactly [M1-02](m1-closeout.md#m1-02-content-and-conversion-matrix):
-three classic-to-native conversions and their paired semantic checks/receipts.
+The three classic-to-native conversions and their paired semantic checks/receipts
+pass [M1-02](m1-content-conversion.md#m1-02-acceptance-evidence) at `d65e659`.
 Existing rule installation/reload behavior is regression coverage. Complete
 comparison profiles, other components, reverse conversion, application startup/
 GAME-cache construction and owning consumers join M2–M5. Bounded original-file

@@ -1,8 +1,7 @@
 # M1 classic content conversion
 
-M1-02 requires three component conversions. CITYPREF and CITY are implemented here;
-RULES has a conversion core; its CLI publication and failure checks remain open.
-These outputs are not complete playable packs. The owning
+M1-02's three component conversions pass at `d65e659`, with the unchanged portable
+core also tested on WASM at `597dec1`. These outputs are not complete playable packs. The owning
 contracts are F03 section 8, C01 default naming, the native component schemas and the finite
 [M1-02 acceptance matrix](m1-closeout.md#m1-02-content-and-conversion-matrix).
 
@@ -95,7 +94,20 @@ Logs are `build/city-conversion-{native,wasm}-{build,ctest}.log`. The 57-vector
 conformance execution and metadata checks pass on both platforms; their adapter
 implementation/build inputs are unchanged from the retained CITYPREF reports.
 
-## RULES conversion core (publication still open)
+## RULES
+
+```text
+oc2 content convert-rules RULES_SOURCE NEW_RULES NEW_COMPATIBILITY
+```
+
+Both destinations must be new, distinct from each other and from the source.
+The command checks both before writing and publishes each through the existing
+atomic no-overwrite writer. It prints a receipt with per-output `published`
+flags. Failure before either publication reports `rejected`; if the first output
+was published but the second fails, it reports `partial` and returns failure.
+The published first output remains identified by its exact path and hash. Source
+files and pre-existing destinations remain unchanged. Success requires both
+outputs and receipt delivery. No complete-pack manifest is generated.
 
 `formats::content::convert_rules` accepts an explicit source and comparison
 profile. It reads all twelve F03 tables through the existing classic loader and
@@ -123,11 +135,30 @@ fixture, and pair retained-name reloads against the classic loader after changin
 the live road multiplier, advance availability and government titles. They cover
 raw movement wrapping, once-only HP normalization, short-table defaults, reversible
 text, ordered duplicate title overrides, retained ability bits and rejection.
-The CLI's new-destination publication, source preservation and output-failure
-evidence are still required before M1-02 can pass.
+CLI tests additionally admit the emitted files through `validate-rules`, verify
+both hashes and publication flags, preserve the explicit source, refuse existing
+outputs and source/output aliases, and check malformed input plus first/second
+output failures.
 
 Core validation passes five focused RULES/capture cases with 77 assertions on
 Windows and WASM, all 570 native CTests, and seven WASM targets (546 portable
 cases, 290,558 assertions). The 57 conformance observations and consumed prefixes
 remain identical across platforms and prior reports. Local logs are
 `build/rule-conversion-{native,wasm}-{build,ctest,vectors}.log`.
+
+## M1-02 acceptance evidence
+
+| Requirement | Authoritative implementation and checks |
+| --- | --- |
+| RULES, all twelve tables and slot mapping | `rule_conversion.cpp`; complete independent classic/native fixtures in `content_conversion_tests.cpp`; native validator and installer compare every resolved definition |
+| Once-only scaling, fixup and retained-name reloads | RULES reload case changes the live road multiplier, advance availability and government titles; `classic_rules_tests.cpp` checks pre-fixup capture, duplicate overrides and capture reuse |
+| CITY sequences, duplicates, wrap, missing/exhausted fallback | CITY portable cases compare all 256 cursor values for 21 starting selectors and admitted STOP/EXTRA selectors, including null, empty, populated and EOF-ended fallback |
+| CITYPREF order, duplicates, first match and retained NoDefend | CITYPREF portable cases compare active and retained tails, NoDefend 0/7, duplicate names, first matching slot and 32-entry boundary |
+| Reversible text and explicit comparison gaps | Accented Windows-1252 names/selectors; undefined bytes and unknown non-ASCII folding reject, without inventing a locale table |
+| Invalid identities/references, ambiguous selectors and malformed inputs | Native mapping validation, classic reference/enum/HP rejection, repeated CITY selectors, incomplete base lists, NUL/control/undefined encoding cases |
+| Explicit inputs, new outputs and receipts | `content_convert.cpp`; seventeen `rules_cli.py` tests cover native admission of all emitted formats, SHA-256 receipts, unchanged inputs, aliases, overwrite rejection and output failure/partial publication |
+| Frozen regression surface | `d65e659`: all 570 Windows native CTests pass, including content/metadata and conformance. Portable implementation unchanged from `597dec1`: seven WASM targets, 546 cases/290,558 assertions; all 57 vector observations/prefixes equal native and prior reports |
+
+Final CLI logs: `build/conversion-cli-native-{build,ctest}.log`. These authored
+semantic/CLI checks pass M1-02; they do not substitute for M1-03 independent
+fixture review, M1-04 original-file execution or M1-06's final platform matrix.
