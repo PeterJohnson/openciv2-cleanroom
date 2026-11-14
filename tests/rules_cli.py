@@ -89,12 +89,47 @@ class RulesCliTests(unittest.TestCase):
         self.manifest["compatibility"] = write(self.root / "compatibility.json", self.compatibility)
         write(self.path, self.manifest)
 
-    def invoke(self, path=None, *options, code=0):
-        result = subprocess.run([str(DRIVER), "content", "validate-rules", str(path or self.path),
+    def invoke(self, path=None, *options, code=0, operation="validate-rules"):
+        result = subprocess.run([str(DRIVER), "content", operation, str(path or self.path),
                                  "--json", *map(str, options)], cwd=self.root.parent,
                                 capture_output=True, text=True, encoding="utf-8", timeout=10)
         self.assertEqual(result.returncode, code, result.stdout + result.stderr)
         return json.loads(result.stdout)
+
+    def test_preferences_preserve_order_and_report_declaring_source(self):
+        preferences = {"format": "openciv2-city-preferences/1",
+                       "humanCityDefensePriority": "unchanged",
+                       "buildPreferences": ["improvements.authored.2", "improvements.authored.1",
+                                            "improvements.authored.2"]}
+        receipt = write(self.root / "preferences.json", preferences)
+        self.manifest["files"]["cityPreferences"] = receipt
+        self.publish()
+        before = {p: p.read_bytes() for p in self.root.iterdir() if p.is_file()}
+        report = self.invoke(operation="validate-preferences")
+        self.assertEqual(report["format"], "openciv2-city-preferences-validation/1")
+        self.assertEqual(report["scope"], "rules-gameplay-and-city-preferences")
+        self.assertEqual(report["cityPreferences"]["buildSlots"], [2, 1, 2])
+        self.assertEqual(report["cityPreferences"]["humanCityDefensePriority"], "unchanged")
+        source = next(f for f in report["files"] if f["role"] == "cityPreferences")
+        self.assertEqual(source["sha256"], receipt["sha256"])
+        self.assertEqual(source["owner"]["id"], self.manifest["id"])
+        self.assertEqual(before, {p: p.read_bytes() for p in self.root.iterdir() if p.is_file()})
+
+    def test_preferences_reject_collisions_and_unestablished_comparisons(self):
+        preferences = {"format": "openciv2-city-preferences/1",
+                       "humanCityDefensePriority": "deprioritize",
+                       "buildPreferences": ["improvements.authored.2"]}
+        self.manifest["files"]["cityPreferences"] = write(self.root / "preferences.json", preferences)
+        self.rules["improvements"][2]["name"] = "CAFé 1"
+        self.publish()
+        report = self.invoke(code=1, operation="validate-preferences")
+        self.assertEqual(report["code"], "invalid-content")
+        self.assertNotIn("cityPreferences", report)
+        self.rules["improvements"][2]["name"] = "CafÉ 1"
+        self.publish()
+        report = self.invoke(code=1, operation="validate-preferences")
+        self.assertEqual(report["code"], "comparison-unavailable")
+        self.assertIn("buildPreferences", report["location"])
 
     def test_complete_authored_pack_normalizes_without_modifying_sources(self):
         self.rules["units"].reverse()

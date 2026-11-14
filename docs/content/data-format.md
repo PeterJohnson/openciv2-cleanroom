@@ -6,8 +6,11 @@ implementation-plan work.
 The [C++ content loaders](../m1-content-runtime.md) implement the six built-in
 gameplay components, common JSON admission and pack inheritance/selection with
 hash-verified mounted inputs. The [native rule decoder](../m1-rule-content.md)
-admits complete typed rule definitions and their references; city names/preferences
-and other text-backed component bodies still require validation before session admission.
+admits complete typed rule definitions and their references. The
+[city-preference adapters](../m1-classic-text.md) validate native preference IDs
+and apply both native and classic updates, with an explicit partial comparison
+profile. City names and other text-backed component bodies still require
+validation before session admission.
 [JSON Schemas and developer validation](schemas/README.md) check document structure;
 semantic pack validation remains open. The examples below are owned format
 examples, not a stock data set or evidence of gameplay compatibility.

@@ -15,6 +15,10 @@ an installed ruleset or an implemented gameplay consumer. Source receipts retain
 the selected rules and compatibility descriptor's declaring packs and exact
 hashes, including inherited selections.
 
+The separate [classic text reader and preference adapters](m1-classic-text.md)
+now supply F03's byte grammar, section services and native/classic city-production
+preferences. Complete classic rule ingestion remains open.
+
 ## Identity and normalization
 
 Rule arrays may be reordered without changing external identities. A complete,
@@ -62,10 +66,12 @@ does not certify classic export representability.
 section names, build-preference lookup and city-name matching. The native format
 selects Windows-1252 but does not define its non-ASCII comparison table or locale
 behavior. A serialization mapping alone cannot establish case equivalence.
-Before native city-name/preference admission depends on that comparison, resolve
-it in the behavioral contract or capture independent original-game observations,
-including accented pairs and nonletters. Do not substitute Unicode case folding
-or the current host locale. This stage performs no case-insensitive name lookup.
+Before admission depends on an unresolved comparison, resolve it in the
+behavioral contract or capture independent original-game observations, including
+accented pairs and nonletters. The preference adapter admits comparisons resolved
+by byte equality or ASCII folding and rejects other encountered high-byte pairs.
+Do not substitute Unicode case folding or the current host locale. This rule
+definition stage itself performs no case-insensitive name lookup.
 
 An [original Windows observation](m1-original-text-observations.md) selected
 `@pRoBeÉ` for the pooled plural `ProbeÉ` in an ordered three-header CITY input,
@@ -91,12 +97,12 @@ repository format example resolves but fails this rule-validation stage.
 
 Eight portable Catch2 cases check identity order, normalization, exact integers,
 reference fixup, names/titles, codec round trips and invalid inputs. Four native
-CLI cases load independently authored complete definitions from real files and
+CLI rule cases load independently authored complete definitions from real files and
 check readonly behavior, inheritance, receipts and rejection. These are
 specification-derived and integration checks, not original-game observations or
 independent fixture review. No F03 operation is yet registered with X02.
 
-Remaining M1 work includes city names/preferences, full component admission,
+Remaining M1 work includes city names, full comparison/component admission,
 classic F03/C01 text adapters and conversion receipts, equivalent native/classic
 input tests, retained-state installation and reload policies, owning mechanics,
 session admission and original interoperability. The

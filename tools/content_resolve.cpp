@@ -1,5 +1,6 @@
 #include "content_command.hpp"
 #include "formats/content_pack.hpp"
+#include "formats/city_preferences.hpp"
 #include "formats/rules.hpp"
 #include "platform/content_files.hpp"
 #include <iostream>
@@ -26,10 +27,13 @@ jt::Json identity(const content::PackIdentity& value) {
     return out;
 }
 } // namespace
-int run_content_resolve(std::span<const std::string> arguments, bool validate_rules) {
+int run_content_resolve(std::span<const std::string> arguments, ContentValidation validation) {
+    const bool validate_rules = validation != ContentValidation::selection;
+    const bool validate_preferences = validation == ContentValidation::city_preferences;
     if (arguments.empty())
         throw std::invalid_argument(
-            "Usage: oc2 content resolve|validate-rules CONTENT_MANIFEST [--parent "
+            "Usage: oc2 content resolve|validate-rules|validate-preferences CONTENT_MANIFEST "
+            "[--parent "
             "MANIFEST]... [--locale LOCALE] [--require-classic] [--json]");
     std::vector<std::string> parents;
     std::optional<std::string> locale;
@@ -49,8 +53,9 @@ int run_content_resolve(std::span<const std::string> arguments, bool validate_ru
             throw std::invalid_argument("Unknown, repeated or incomplete content selection option");
     }
     jt::Json report;
-    report["format"] = jt::Json(validate_rules ? "openciv2-rules-validation/1"
-                                               : std::string(content::pack_resolver_version));
+    report["format"] = jt::Json(validate_preferences ? "openciv2-city-preferences-validation/1"
+                                : validate_rules     ? "openciv2-rules-validation/1"
+                                                     : std::string(content::pack_resolver_version));
     int result = 0;
     try {
         const auto selected = mount(arguments[0]);
@@ -62,11 +67,25 @@ int run_content_resolve(std::span<const std::string> arguments, bool validate_ru
         report["status"] = jt::Json("resolved");
         report["scope"] = jt::Json("pack-selection-and-gameplay");
         if (validate_rules) {
-            const auto rules = content::load_rules(*pack);
+            const auto preferences = validate_preferences
+                                         ? content::load_city_preferences(
+                                               *pack, openciv::formats::classic::ascii_text_case())
+                                         : nullptr;
+            const auto rules = preferences ? preferences->rules : content::load_rules(*pack);
             const auto& definitions = rules->definitions;
             using openciv::state::CosmicParameter;
             report["status"] = jt::Json("validated");
             report["scope"] = jt::Json("rules-and-gameplay-references");
+            if (preferences) {
+                report["scope"] = jt::Json("rules-gameplay-and-city-preferences");
+                report["cityPreferences"]["humanCityDefensePriority"] = jt::Json(
+                    preferences->update.deprioritize_defense ? "deprioritize" : "unchanged");
+                report["cityPreferences"]["buildSlots"].setArray();
+                for (const auto slot : preferences->update.build_order)
+                    report["cityPreferences"]["buildSlots"].getArray().emplace_back(slot);
+                report["cityPreferences"]["comparison"] =
+                    jt::Json("ascii-with-exact-byte-equality");
+            }
             report["rules"]["enabledAdvances"] = jt::Json(definitions.enabled_advance_count);
             report["rules"]["roadMovementMultiplier"] =
                 jt::Json(definitions.cosmic[CosmicParameter::road_movement_multiplier]);
@@ -148,14 +167,19 @@ int run_content_resolve(std::span<const std::string> arguments, bool validate_ru
         }
         report["limitations"].setArray();
         report["limitations"].getArray().emplace_back(
-            validate_rules
+            validate_preferences
+                ? "Unestablished non-ASCII name comparisons reject. Full classic export "
+                  "representability, city names, text/events, compatibility metadata, world/media "
+                  "bytes, session and original-peer admission are not validated."
+            : validate_rules
                 ? "City names/preferences, text/events, compatibility metadata, world/media bytes, "
                   "session and original-peer admission are not validated."
                 : "Rule/text/event bodies, cross-references, world/media bytes, session and "
                   "original-peer admission are not validated.");
         if (!as_json)
-            std::cout << (validate_rules ? "Validated rule definitions for "
-                                         : "Resolved content pack ")
+            std::cout << (validate_preferences ? "Validated city preferences and rules for "
+                          : validate_rules     ? "Validated rule definitions for "
+                                               : "Resolved content pack ")
                       << pack->manifests.back().pack.id << " revision "
                       << pack->manifests.back().pack.revision << '\n'
                       << "Locale: " << pack->selected_locale
