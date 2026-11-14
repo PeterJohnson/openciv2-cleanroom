@@ -16,9 +16,9 @@ void load_classic_preferences(state::ProcessContext& process,
                               const state::PreferenceDefaults& defaults,
                               const PreferenceFileServices& services);
 enum class PreferenceSaveStatus { success = 0, output = 1 };
-// Binary replacement, stop at first failed write, close, then delete partial
-// output on returned write failure. Open failure does not delete. Close/delete
-// failure is ignored. Required service exceptions retain their reached prefix.
+// F03 production preference contract: coherent configuration, truthful write
+// and close results, exactly-once close. Failed output is removed when possible;
+// accepted preferences remain. Providers do not admit configuration mutations.
 PreferenceSaveStatus save_classic_preferences(const state::ProcessContext& process,
                                               const PreferenceFileServices& services);
 } // namespace openciv::session

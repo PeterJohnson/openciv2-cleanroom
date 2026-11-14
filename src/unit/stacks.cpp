@@ -31,18 +31,21 @@ LocalStacks::LocalStacks(state::UnitPool& units, world::MapStorage& map,
                          StackServices services, RepairPlacement placement)
     : units_(units), map_(map), retained_(retained), budget_(budget),
       services_(std::move(services)), placement_(std::move(placement)) {
-    if (!services_.report)
-        throw std::invalid_argument("Unit stack validation requires a diagnostic service");
     if (static_cast<bool>(placement_.detach) != static_cast<bool>(placement_.attach))
         throw std::invalid_argument("Unit stack repair requires both placement children");
 }
 state::Unit& LocalStacks::record(std::int32_t slot) {
     if (slot >= 0 && static_cast<std::size_t>(slot) < units_.storage().size())
         return units_.storage()[static_cast<std::size_t>(slot)];
-    if (services_.extra_backing)
-        if (auto* supplied = services_.extra_backing(slot))
-            return *supplied;
-    throw std::out_of_range("Unit stack access has no supplied backing: " + std::to_string(slot));
+    throw std::out_of_range("Unit stack index is outside the owned pool: " + std::to_string(slot));
+}
+void LocalStacks::diagnose(StackDiagnostic diagnostic) noexcept {
+    if (services_.diagnostics) {
+        try {
+            services_.diagnostics->push_back(diagnostic);
+        } catch (...) { /* Optional diagnostics cannot interrupt gameplay repair. */
+        }
+    }
 }
 void LocalStacks::step() {
     if (budget_.steps == 0)
@@ -74,13 +77,15 @@ std::int32_t LocalStacks::validate(std::int32_t slot) {
     if (depth_ >= budget_.validation_depth)
         throw StackResourceStop(StackStop::validation_depth);
     Depth depth(depth_);
-    if (slot < 0 || slot > 2049)
-        services_.report({StackProblem::entry_range, slot});
+    if (slot < 0 || static_cast<std::size_t>(slot) >= units_.storage().size()) {
+        diagnose({StackProblem::entry_range, slot});
+        throw std::out_of_range("Stack validation index is outside the owned pool");
+    }
     if (retained_.suppression != 0)
         return 1;
     std::int32_t result = 1;
     if (raw_forward_count(slot) >= 2048) {
-        services_.report({StackProblem::infinite, slot});
+        diagnose({StackProblem::infinite, slot});
         result = 0;
         auto current = slot;
         auto saved_next = record(current).next.value;
@@ -97,8 +102,8 @@ std::int32_t LocalStacks::validate(std::int32_t slot) {
                 attach_at_front(current, position);
             }
             current = saved_next;
-            // U01 section 3: even a negative terminal is read here. Missing
-            // backing stops after placement; it is not a repaired-success return.
+            if (current < 0)
+                break;
             saved_next = record(current).next.value;
         } while (current != slot);
     }
@@ -124,7 +129,7 @@ std::int32_t LocalStacks::validate(std::int32_t slot) {
                 problem = backward ? StackProblem::backward_y : StackProblem::forward_y;
             }
             if (problem) {
-                services_.report({*problem, current, neighbor});
+                diagnose({*problem, current, neighbor});
                 result = 0;
                 cut(current, neighbor, backward);
             }

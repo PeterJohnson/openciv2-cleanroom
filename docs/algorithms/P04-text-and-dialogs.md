@@ -61,6 +61,10 @@ prompt object, modal loop, radio group or listbox. Combine screens, use inline
 editing, change navigation or present a searchable list as appropriate. Duplicate
 choice labels do not merge identities. Translate accepted choices to the numeric
 caller/file/wire result only at the adapter that requires that encoding.
+File choosers follow F06's semantic result contract: accepted path, cancellation
+or failure. Native flags/error integers, buffer capacities and draft path writes
+are not session inputs. Formatting and notices use owned captured values and
+cannot introduce gameplay mutations between name/number lookups.
 
 P04 imposes no Complete/Activated/Prepared flags, active-prompt singleton,
 control-number arithmetic, shared edit array, traversal sequence or return-time

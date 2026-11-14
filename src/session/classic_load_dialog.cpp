@@ -30,8 +30,6 @@ void wrap_network(SessionRuntime& runtime, unit::UnitNetworkServices& services) 
 void cleanup(SessionRuntime& runtime, unit::StackBudget& budget,
              const LoadDialogServices& services) {
     auto stacks = services.stacks;
-    stacks.report = published(runtime, stacks.report);
-    // extra_backing is passive storage lookup, not a reentrant service.
     auto placement = services.placement;
     wrap_network(runtime, placement);
     placement.request = published(runtime, placement.request);

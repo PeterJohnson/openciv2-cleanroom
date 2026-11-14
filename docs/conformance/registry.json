@@ -139,7 +139,7 @@
     {
       "id": "F03",
       "path": "docs/algorithms/F03-rules-and-configuration.md",
-      "sha256": "8b6d629bc5ce5df6e80032b113d94bc655c545c954a29b2129e745a6a850dcec",
+      "sha256": "0693d69eecae9bbc2575434ef6dafacfc2ad1a7fa1916f34b26bbb1974286b7b",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -160,7 +160,7 @@
     {
       "id": "F06",
       "path": "docs/algorithms/F06-save-load-and-file-formats.md",
-      "sha256": "c1353bf60284d462e5283d228068b300acebd3553fd2109304aadddbc92f9143",
+      "sha256": "95332b99718cb445c78ec8e7c9f76d6bf6bf3941fd320444db2400628f6d914a",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -174,7 +174,7 @@
     {
       "id": "N02",
       "path": "docs/algorithms/N02-network-commands-and-state-synchronization.md",
-      "sha256": "6dc15acace4c61db22e69cd5fdf5287deaf1ab40a314d94cf9eae39dc85620a3",
+      "sha256": "480dfefa5f9aafd64243b2548a09b4f5c80457ec4898ddae023f7d2a065c31b8",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -223,7 +223,7 @@
     {
       "id": "P04",
       "path": "docs/algorithms/P04-text-and-dialogs.md",
-      "sha256": "48fb91b7f4ed7d1b75a45aad69399686be7527195a1cf95fda0d15f556fba3e6",
+      "sha256": "74a963564ee23a53aacfc4be70176f85b9de568144dc449e02019fbe33f9950f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -300,7 +300,7 @@
     {
       "id": "U01",
       "path": "docs/algorithms/U01-unit-lifecycle-and-stacks.md",
-      "sha256": "943179f7d3558a5cc27b1594ed6c856bd03bf631d7ced7ae75d066de510706be",
+      "sha256": "b15b4b77765ea210eb23722a0ca5b5a486a0137f89d40ae769fb87ff1f69234e",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },

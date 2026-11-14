@@ -215,7 +215,13 @@ on native and WASM builds. Checkpoint repeat/restore is reproducible under the
 chosen policy. Presentation initialization and draws cannot advance gameplay
 contexts; cosmetic draws also leave presentation-content contexts unchanged.
 Controlled semantic operations agree with and without a presentation consumer.
-Partial I/O and fragmented/coalesced frame cases pass. Start bidirectional original
+Partial I/O and fragmented/coalesced frame cases pass.
+Save success requires successful writes and finalization; file providers cannot
+create game interleavings. Codec tests use only logical payload bytes, reject
+unsafe tokens and preserve images on failure. Stack repair requires no fabricated
+records or diagnostic callbacks. Portable chooser tests use semantic results and
+owned presentation arguments; original ABI/allocator traces are not M1 gates.
+Start bidirectional original
 raw-map/save checks for the implemented subset, recording unavailable captures or
 unimplemented fields as gaps. A tools-only build runs
 basic save inspection without SDL, ImGui, assets, Lua or SQLite. Catch2 covers

@@ -128,9 +128,6 @@ struct Fixture {
             CHECK(dialog.loaded_file_kind == 19);
             trace.push_back("notice:" + std::to_string(static_cast<int>(status)));
         };
-        services.stacks.report = [](unit::StackDiagnostic) {
-            FAIL("This fixture has no invalid live stack links");
-        };
     }
     std::optional<CoreLoadStatus> load(std::optional<std::string> path = "C:\\home\\world.sav",
                                        bool title = true) {

@@ -17,7 +17,7 @@ No reconstruction code or historical source-derived execution harness is used.
 | `network/stream.hpp` | Little-endian 12-byte headers, 64-byte sender rounding, exact supplied padding; incremental fragmented/coalesced receive; header-fragment-dependent oversize callbacks and discard of only the current receive; reset/close callback boundary; owned partial-send FIFO with live chunk capacity, immediate/drain retry differences and backlog thresholds; UDP header, u16 length narrowing and retained null-payload bytes. |
 | `network/messages.hpp` | Owned 16-byte message and 44-byte argument envelopes, sequence-preserving header initialization, directed/broadcast send sequencing, failure retention and live post-callback broadcast-size comparison. |
 | `network/sections.hpp` | Twenty-byte section prefixes, exact raw-image decoding/encoding, checksum width quirks, all 24 nominal section extents, registration, mirror allocation/invalidation, full/delta/join/map-header raw-image construction and specified old/new checksum ordering; sequential incoming block copies and checksum updates that preserve earlier blocks on failure. |
-| `network/compression.hpp` | Distinct byte/word run-length codecs, explicit final lookahead, thresholds and chunk widths; word size-pass wrapping and separate payload bounds; byte expansion growth; full-image compression tail; allocation fault stages and global full-state receipt-count codec selection. |
+| `network/compression.hpp` | Bounded byte/word run-length codecs; logical-input-only tail handling; safe word-run chunks through 32766; validated decoded sizes; owned image replacement on success; semantic statuses and full-state receipt-count codec selection. |
 
 Input admission is explicit. Frames require at least 12 bytes and a payload that
 fits the frame. The configurable 8 MiB receive backing limit is a safe profile,
@@ -48,24 +48,18 @@ does not read native C++ object bytes or publish wire fields to a live world.
 Its consumed count records inspected header/payload bytes, not the original
 application's signed consumed-offset workspace.
 
-Codec admission requires nonnegative, nonwrapping input/allocation extents.
-Encoding stops if token selection needs a following byte the caller did not
-supply. Word decoding explicitly rejects token 32767: the original size pass
-counts it as a run but its decoder treats it as a 65535-byte literal. The encoder
-still emits the specified 32767 run chunk; equal decoded bytes do not justify
-silently changing that wire token. Word-image allocation has an explicit default
-8 MiB bound. Malformed payloads stop at the affected read/write boundary, keeping
-prior writes and leaving the caller's output-length value unassigned on failure.
+Production encoding consumes only the logical payload. Distinct tails finish as
+literals; word runs are split at 32766 to avoid unsafe code 32767. These documented
+N02 repairs use existing wire tokens but do not claim original allocation-dependent
+byte equality. Word decoding rejects ambiguous code 32767, truncated payloads and
+decoded-size overflow. Image decoding has an explicit 8 MiB default bound.
 
-Image buffers distinguish null from an allocated empty image. Fault-injected
-allocation failures preserve the specified publication order: byte compression
-frees input before its final allocation; full-image compression retains partial
-encoded bytes on no-gain failure and publishes a null resize while returning
-the successful encoded length; failed word-image decoding retains the old image.
-New vector backing is zero initialized for memory safety, not evidence of original
-heap contents. Only initialized prefixes and explicitly retained input bytes have
-compatibility meaning after a bounded failure. Native allocation leaks and unsafe
-copies are not reproduced.
+Image transforms stage owned results and preserve input on no gain, invalid input,
+resource limits or allocation failure. Interfaces have no original lookahead,
+null-publication stages, allocator callbacks or native integer return values.
+Tests cover exact supported tokens, long runs, literal chunk boundaries, all 256
+possible final bytes, failure retention and round trips. Original mixed-peer
+compression validation remains open; existing framing captures do not cover it.
 
 Shared codec selection uses the supplied full-state receipt count, regardless
 of the current message kind or compression flag when that count is nonzero.
@@ -81,8 +75,9 @@ Twenty-three specification-derived Catch2 cases pass on Windows MSVC and WASM,
 including every split of a two-record stream, one-byte feeds, coalescing,
 partial sends, retries/failures, callback reset, retained padding, sequence wrap,
 live callback reads, checksum quirks, section/mirror ordering, exact compression
-tokens, lookahead, wrapped size passes, allocation failures and ordered partial
-image application. They are not registered X02 execution fixtures or
+tokens and ordered partial image application. The historical lookahead/allocator
+trace cases were replaced by bounded-codec tests; the counts here describe the
+earlier revision. They are not registered X02 execution fixtures or
 original-program observations.
 
 On the Windows host, all 93 default-off and 95 SQLite-enabled CTests pass. The

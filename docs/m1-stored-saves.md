@@ -181,10 +181,9 @@ resume fallback and flag refresh. A successful read uses the saved resume byte,
 then turn civ, then the first alive civ in 1…7 as specified, with no draws.
 Menu simultaneous and saved simultaneous remain separate fields.
 
-`write_multiplayer_item` implements F06 §5 stage 8: substitute the supplied
-network-turn low byte into saved resume, write one complete block, and restore
-the prior resume byte only on success. A failed or throwing service leaves the
-temporary substitution and any callback effects. `state::adapt_loaded_mode`
+`write_multiplayer_item` implements F06's file-only resume substitution using an
+export copy. The supplied network-turn value is narrowed into the encoded byte;
+live state remains unchanged on success, failure or exception. `state::adapt_loaded_mode`
 is the completion phase, callable only after successful load and file close.
 Equal modes do nothing; entry mode zero retains the loaded mode, while a nonzero
 entry replaces it. Human-mask fallback, doubling and menu preference changes
@@ -349,57 +348,26 @@ stored view has not been relabeled as loaded-state analysis.
 
 ## Composed live save
 
-`session/classic_save.hpp` implements F06 §5 over the same runtime and retained
-file context. It swaps the entry hotseat human mask, selects the extension and
-opens binary replacement through a required output service. Header characters
-are separate unchecked writes; saved-current civilization is narrowed from the
-local-human selector before the checked version item. Each later block observes
-live state at its own boundary. There is no whole-world snapshot, census or region
-rebuild, lifetime renewal or direct random draw.
+`session/classic_save.hpp` implements F06's production save boundary. It prepares
+an owned byte image before opening output. Accepted preparation updates the
+saved-current civilization, scenario knowledge/flags/names and layout. Temporary
+hotseat masks, selected-player and resume values stay in the export context.
+No output provider observes those substitutions in the live session, and no file
+write is a game-event boundary. Census, regions, lifetimes and RNG are unchanged.
 
-Scenario export rebuilds advance known-by masks and first discoverers through
-V03 §2's knowledge query, clears the four specified civilization flags and
-prepares names before writing world records. The knowledge leaf handles negative
-sentinels before civilization access, excludes barbarian knowledge and always
-returns false for Future Technology, even with its raw membership bit set.
-Ordinary active-scenario saves prepare names without rebuilding knowledge.
-Events are emitted only when loaded and not exporting a scenario.
+All output bytes, including the header, are covered by the write result. Success
+requires successful final close/flush/commit. Opened outputs close exactly once
+on returned failure or exception. Preparation failures open no output; later I/O
+failures retain accepted preparation effects. Native output currently uses
+replacement files and can retain partial bytes; atomic providers are permitted.
+No original incoming-stack cleanup mask or per-item mutation contract exists.
 
-Layout preparation follows the successful power-history item and remains after
-later failure. The multiplayer resume byte is temporarily replaced from the
-distinct network-turn selector and restored only after its item succeeds.
-Common cleanup uses the live mode, restores the hotseat mask when applicable,
-then closes once. A callback entering hotseat from another entry mode requires
-explicit incoming cleanup-mask backing; absent backing closes the output and
-stops safely. Close failure does not change the original success status, so this
-core result alone is not a durable browser-save acknowledgement.
-
-Required output failures leave partial bytes and earlier world effects intact.
-Unbacked names or map data stop safely rather than inventing ordinary save-error
-results. The supported runtime domain requires matching global and pool scan
-bounds; this is checked before persistent output and again before entity output.
-A mismatch stops at that boundary without silently repairing either value.
-Production output providers must implement truncating binary replacement and
-preserve partial files. The inspection export's atomic no-overwrite provider has
-a different contract and is not used here.
-
-Thirteen new native/WASM cases cover the knowledge leaf and save composition:
-the complete ordered stream, every required fixed-item failure (including active
-scenario, hotseat and event blocks), header-character failures, signed narrowing,
-scenario discovery/flag/name effects, extension selection, live mode transitions,
-callback changes to later blocks, event text/terminator failures, backing stops,
-empty entity ranges, unchanged client/RNG/token ownership and load-edit-save-reload.
-The latter uses declared F03 child effects; the separate core-load integration
-case exercises the real F03 parsers. These are independently authored contract
-tests, not X02 registrations or original-game acceptance of live exports.
-
-The full Windows run passes 319 default-off and 321 SQLite-enabled CTests;
-WebAssembly passes six CTests including 300 portable cases (165,698 assertions).
-All 54 existing X02 observations and consumed prefixes match across native/WASM.
-The 21 original-save auxiliary comparisons and original label checks still pass,
-but their retained scope excludes this live writer. Browser storage,
-application save/admission integration and original edited-export/resume
-checks remain open.
+Tests compare complete decoded files, scenario/ordinary/event behavior, hotseat
+encoding with unchanged live selectors, header/body partial-output failures,
+close failures, exceptions, preparation errors and unchanged RNG/client identity.
+Historical ordered-call and partial-damage tests have been replaced. The retained
+original live-save evidence predates this refactor; it is not a new interoperability
+claim for this revision.
 
 ## Native files and rule context
 
@@ -415,7 +383,7 @@ semantics. No service changes the host process working directory.
 Binary item reads return the transferred prefix on short input. Output truncates
 an existing destination, writes each requested item/text/byte and retains partial
 files. Open failure returns an absent service; closing returns the host result,
-which the core operation deliberately ignores under F06. Stream ownership also
+which the production save requires to report success. Stream ownership also
 releases native handles on exceptions. These services support regular files;
 they do not implement atomic export or a browser durable-save acknowledgement.
 
@@ -440,8 +408,8 @@ Four authored portable cases cover wrapper order, home/scenario selection,
 resource/parser failures and final name-preserving reloads. Seven native cases
 cover binary prefixes, replacement/partial output, independent cursors, real
 directory/case lookup, text windows/physical seeks, section fallback and full
-load-edit-save-reload using actual labels/rules files. A failed core save writes
-only the header/version prefix and restores hotseat state before native close.
+load-edit-save-reload using actual labels/rules files. A fault-injected native write retains a partial header/version prefix and reports
+failure while live hotseat state remains unchanged throughout.
 The complete file integration checks input preservation and unchanged host cwd;
 its sprite/flush consumers are declared headless callbacks, not graphical loaders.
 These new services are built in the tools-enabled native configuration; the rule
@@ -452,58 +420,30 @@ records original acceptance of two core exports with these native bindings.
 
 ## Save-menu caller and file-choice boundary
 
-`session/classic_save_menu.hpp` implements F06 section 11's portable Save-menu
-caller over the real core writer. The classic session-active latch is separate
-from the runtime's client lifetime. Inactive entry returns without timer, path
-or text effects. Active entry stops the supplied N03 countdown with notify=true,
-builds the private filter and sanitized ruler/year filename, applies the mode-2
-calendar suffix and scenario monthly naming, selects the shared filter, and
-invokes the supplied chooser. It restores the live home directory after either
-acceptance or cancellation. Mode-2 cancellation rebuilds and retries, including
-scenario export; accepted write failures do not retry.
+`session/classic_file_choice.hpp` exchanges semantic file types, a suggested path,
+title, extension and open/save requirements. Results distinguish accepted paths,
+cancellation and failure with an owned diagnostic. Only accepted valid paths are
+published. Native flags, handles, NUL-separated filters, capacities, return-byte
+conventions and extended-error queries are absent from the portable API. A future
+native chooser owns any platform-specific translation.
 
-Ordinary success formats title, ruler, plural, year and difficulty into shared
-parameters at their live read boundaries. Scenario and e-mail success use their
-separate notices. Failed writes resolve error text after the core writer and
-close operation. Every normal active exit starts countdown, rather than using
-N03 resume. Required service exceptions stop at that boundary with prior effects
-retained; they are not translated into an ordinary cancelled dialog or a
-successful notification. The core writer retains its partial file behavior.
+`session/classic_save_menu.hpp` invokes the real writer only after acceptance.
+It supplies a familiar ruler/year suggestion and scenario/email notices as a UI
+choice, not a compatibility gate. Cancellation exits in every mode without saving
+or publishing draft paths; N04 owns any mandatory email-turn save flow. Active
+entry stops N03 countdown and attempts one start on every exit, including errors.
 
-`session/classic_file_choice.hpp` owns the shared mode filter, with scenario/raw
-map precedence, ordered alternatives, no implicit alternate e-mail entry, and
-live mode reads after label callbacks. An unknown mode retains the selected
-extension but establishes no next filter write position; an attempted subsequent
-append stops. The chooser request declares open/save, optional presentation owner,
-title/filter/default extension, flags `0x80e` plus `0x1000` when existence is
-required, filter index 1, and filename capacity 256. Only returned low byte 1
-accepts. Other values query extended error and retain filename writes. Dynamic
-filter/name storage avoids the excluded original buffer overwrites.
+Text services are pure presentation queries on captured values. Notices own their
+arguments, and neither filename suggestions nor notices write process text scratch.
+Tests cover accepted/cancelled/failed selection, paths beyond original capacities,
+coherent file bytes under changed formatting, scenario/email meaning, close errors,
+exceptional cleanup and unchanged unrelated presentation/RNG state. They do not
+require native UI traces or synthetic changes during formatting.
 
-P04's six numeric and eleven ordinary string parameters and shared line now
-belong to `ProcessContext`; client-session transitions do not reset them. The
-save wrapper requires explicit ruler/name, year-formatting, label, lowercase,
-calendar, directory, notice, timer and file services. Native widgets, N03 timer
-execution and the remaining P04 operations are not fabricated by these ports.
-
-Twelve independently authored portable cases exercise the service contract,
-complete core output, short/control/high-byte names, monthly calendar edges,
-mode changes, retry and cancellation, live success parameters, partial write
-errors and unresolved callback stops. These are specification-derived tests;
-the earlier original live-save report exercised the core driver, not this menu
-wrapper. Native chooser/application binding and application load admission remain
-open; the accepted-file caller is described below.
-
-The [U01 stack and deletion foundations](m1-unit-stacks.md) now provide real
-traversal, ordered repair, local placement and basic deletion. The extracted
-F06 cleanup stage establishes host, scans ascending through the live bound,
-clears free-slot links, validates live records and deletes negative-position
-units with notifications false. Counter changes, carrier wakeups and required
-V01 checks remain active. Six composition cases cover ordering, dynamic bounds,
-partial effects and authority changes during repair. Placement children use the
-real U01 request/wait boundaries when callbacks select a nonhost and preserve
-received state. V01's cascade, owning transport bindings and application admission
-remain open.
+U01 post-load cleanup still uses real traversal, repair, placement and deletion.
+Diagnostics are passive output; only admitted game/network children can change
+simulation state. Graphical chooser binding, full S02/P10/V01 children and
+application admission remain separate integration work.
 
 ## Accepted-file load caller
 

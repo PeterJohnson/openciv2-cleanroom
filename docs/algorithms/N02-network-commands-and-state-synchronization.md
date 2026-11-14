@@ -676,7 +676,31 @@ extra records or atomically retain the old map on failure.
 
 ## 7. Compression and incremental differences
 
+### Bounded production codec
+
+The following safety rules override the original encoder/allocator traces below.
+Encoding consumes only the logical input span. At its final byte, finish the
+remaining literal without reading a following byte. Word-code runs use chunks
+of at most **32766**; literals may still contain 32767 bytes. Never emit run code
+32767, whose original decoder interpretation is unsafe. These are deliberate
+bug repairs using the existing token grammar, not original encoded-byte claims.
+Retain the thresholds and token choices elsewhere. Verify decoding reproduces
+the complete input, including distinct-byte tails and long runs; actual mixed-peer
+validation remains a separate interoperability gate.
+
+Image transforms prepare an owned result and replace the input only on success.
+No-gain compression, invalid/truncated input, resource limits and allocation
+failure retain the original image. Return semantic status and length, not original
+native return integers. Allocation schedules, null publication and partial-image
+damage are reference only and must not be exposed as production service inputs.
+Word decoding rejects ambiguous code 32767. Bounded byte decoding retains its
+documented treatment of zero-count tokens and an unmatched final byte.
+
 ### Two distinct run-length codecs
+
+The token grammar and meaningful thresholds remain file/wire definitions; the
+bounded production codec above overrides unsafe lookahead, token emission and
+original allocation/failure traces in this historical procedure.
 
 Byte-code compression has one-byte headers; 16-bit-code compression has unsigned
 little-endian two-byte headers. Both use the following selection procedure, with

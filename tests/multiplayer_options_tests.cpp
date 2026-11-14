@@ -140,12 +140,11 @@ TEST_CASE("N03 accepted host changes save chat first then vote transform and pub
     CHECK(f.runtime.gameplay_random().checkpoint() == random);
 }
 
-TEST_CASE("N03 network clients stop after chat persistence and host authority is read afterward",
+TEST_CASE("N03 network clients persist chat without applying host-only options",
           "[configuration][multiplayer]") {
     for (const bool host_after_save : {false, true}) {
         Fixture f;
-        f.runtime.world().multiplayer.network_host = !host_after_save;
-        f.after_close = [&] { f.runtime.world().multiplayer.network_host = host_after_save; };
+        f.runtime.world().multiplayer.network_host = host_after_save;
         CHECK(f.apply() == (host_after_save ? MultiplayerOptionResult::applied
                                             : MultiplayerOptionResult::client_only));
         if (!host_after_save) {

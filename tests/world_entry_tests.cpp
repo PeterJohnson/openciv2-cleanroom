@@ -82,7 +82,7 @@ struct Fixture {
             };
             output->close = [&] {
                 event("close-preferences");
-                return false;
+                return true;
             };
             return output;
         };

@@ -31,26 +31,35 @@ void load_classic_preferences(state::ProcessContext& process,
 }
 PreferenceSaveStatus save_classic_preferences(const state::ProcessContext& process,
                                               const PreferenceFileServices& services) {
+    // Snapshot configuration before external I/O; write callbacks are not edits.
+    const auto ordinary = formats::encode_ordinary_preferences(process.ordinary_preferences);
+    const auto multiplayer =
+        formats::encode_multiplayer_preferences(process.multiplayer_preferences);
     auto output = services.open_output("CIV2.DAT");
     if (!output)
         return PreferenceSaveStatus::output;
     bool closed = false;
     const auto close = [&] {
-        if (!closed) {
-            closed = true;
-            (void)output->close();
-        }
+        closed = true;
+        return output->close();
     };
     try {
-        const bool success =
-            output->item(formats::encode_ordinary_preferences(process.ordinary_preferences)) &&
-            output->item(formats::encode_multiplayer_preferences(process.multiplayer_preferences));
-        close();
-        if (!success)
+        if (!output->item || !output->close)
+            throw std::invalid_argument("Preference output requires write and close services");
+        const bool written = output->item(ordinary) && output->item(multiplayer);
+        const bool finalized = close();
+        if (!written || !finalized) {
             (void)services.remove_file("CIV2.DAT");
-        return success ? PreferenceSaveStatus::success : PreferenceSaveStatus::output;
+            return PreferenceSaveStatus::output;
+        }
+        return PreferenceSaveStatus::success;
     } catch (...) {
-        close();
+        if (!closed && output->close) {
+            try {
+                (void)close();
+            } catch (...) { /* Preserve the original failure. */
+            }
+        }
         throw;
     }
 }

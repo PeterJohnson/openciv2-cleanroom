@@ -16,8 +16,8 @@ validations. Negative accessor arguments and stored terminal links remain distin
 Validation reports before mutation and follows saved neighbors after cutting an
 edge. Its four passes retain the forward-dead asymmetry: a live member's link to
 a dead terminal can remain. Owner mismatches and missing reciprocal links are not
-general repair conditions. An explicit returning diagnostic can change the reverse
-link before the cut tests it. The infinite-stack branch uses the same real placement
+general repair conditions. Diagnostics are passive output and cannot change
+reverse links or other state. The infinite-stack branch uses the same real placement
 and lookup paths, including recursive validation. A finite chain of exactly 2,048
 units also enters that branch; no inferred cycle-only shortcut replaces it.
 
@@ -31,8 +31,8 @@ markers clear on normal return only, and are boolean assignments rather than loc
 
 `StackOperations` supplies real detach/attach children to repairing traversal,
 including recursive repair during destination lookup. Each child rechecks the
-live mode and host flag independently. A returning diagnostic or received-message
-callback can change authority before the next child. The already selected local
+live mode and host flag independently. An admitted received-message callback can
+change authority before the next child; diagnostics cannot. The already selected local
 body continues after callbacks; it does not restart or discard received effects.
 Standalone `LocalStacks` retains its explicit local/host precondition.
 
@@ -92,27 +92,26 @@ real U01 operations. It establishes host, visits ascending slots through the liv
 bound, clears links on free records, validates live records and deletes them with
 notifications false when either coordinate is negative. It preserves positive
 out-of-map records. A destruction-check callback may extend the bound and those
-new slots are visited. Earlier effects survive a failed diagnostic or child.
+new slots are visited. Earlier effects survive a failed gameplay child; diagnostic
+recording is optional.
 
 This extracted cleanup stage is now called by the
 [accepted-file dialog](m1-stored-saves.md#accepted-file-load-caller) after core input,
 event replacement/execution, preference/audio/title effects and home-directory
 return. Required owning children and application admission remain separate work.
-Its placement children now honor authority
-changes during stack repair through `StackOperations`. A composition case changes
-host status in the infinite-stack diagnostic and supplies distinct incoming
-placement effects/replies, verifying they survive without extra local placement.
-The owning S02/P10/V01 implementations, native bindings and application admission
-remain open.
+Its placement children honor authority changes at real network boundaries.
+Diagnostic-driven authority changes are not production cases. Required S02/P10/V01
+implementations, native bindings and application admission remain open.
 
 ## Backing and execution boundaries
 
-Ordinary slots always resolve to stable pool backing. A passive optional resolver
-can provide explicitly owned special or negative records; it does not override
-ordinary slots. Missing backing throws at the access, preserving earlier effects.
-In particular, the repair loop's negative-terminal read is performed even though
-its value is discarded. Supplying that backing permits continuation; omitting it
-does not turn the preceding repairs into a successful validation result.
+Record access is bounded by the owned unit pool regardless of suppression.
+No special/negative record resolver exists. Negative saved successors end the
+repair loop before any read; a finite 2048-member chain retains its specified
+reversal and completes without invented adjacent memory. Other invalid record
+indices reject safely. Optional diagnostics accumulate in a caller-owned vector;
+there is no callback or reentry at each report. Diagnostic allocation failure
+omits the record without interrupting repair.
 
 The caller supplies a shared step budget and maximum validation depth. Exhaustion
 throws `StackResourceStop`, with a separate reason for each limit. These are host
@@ -123,13 +122,12 @@ the internal depth counter unwinds independently of retained activity markers.
 
 ## Evidence and remaining integration
 
-The 17 cases in `tests/unit_stack_tests.cpp` are independently authored from U01 sections 2–4,
-9–11 and Appendix A. It covers traversal/ties, dead and nonreciprocal edges,
-diagnostic mutations and interruption, ordered positional cuts, suppression after
-assertion, special backing, animation gating/double validation, full-coordinate
-placement, signed owners, self-loop repair, and a complete 2,048-member chain
-reversal with both supplied and missing negative-terminal backing. Resource-stop
-cases check the retained links, coordinates and activity state.
+Current tests cover traversal/ties, dead and nonreciprocal edges, ordered cuts,
+bounded rejection even under suppression, animation gating, placement, self-loop
+repair and 2048-member reversal. With and without diagnostic collection, repairs
+produce the same game state. Synthetic report mutations, interruptions and fake
+out-of-pool records were removed. Tests of real network replies/authority changes
+remain. The following test counts record earlier revisions, not this refactor.
 
 Windows MSVC passes all 445 default-off and 447 SQLite-enabled CTests. Pinned
 Emscripten 4.0.23 passes all six CTests, including 423 portable Catch2 cases

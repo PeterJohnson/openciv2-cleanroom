@@ -11,7 +11,6 @@ struct Fixture {
     unit::StackBudget budget{100000, 64};
     std::vector<unit::StackDiagnostic> reports;
     std::vector<std::pair<std::int32_t, std::int32_t>> checks;
-    std::function<void(unit::StackDiagnostic)> report_action;
     std::function<void()> check_action;
     unit::DeletionServices deletion;
     unit::StackOperationServices placement;
@@ -43,74 +42,11 @@ struct Fixture {
         bound(std::max(slot + 1, world.entities.units.end()));
     }
     void cleanup() {
-        session::cleanup_classic_loaded_units(world, process.rules->definitions, budget,
-                                              {[&](unit::StackDiagnostic event) {
-                                                   if (reports.empty())
-                                                       CHECK(world.multiplayer.network_host);
-                                                   reports.push_back(event);
-                                                   if (report_action)
-                                                       report_action(event);
-                                               },
-                                               {}},
+        session::cleanup_classic_loaded_units(world, process.rules->definitions, budget, {&reports},
                                               placement, deletion);
     }
 };
 } // namespace
-
-TEST_CASE("F06 repair routes placement after a diagnostic changes host authority",
-          "[session][load][unit][placement]") {
-    Fixture f;
-    f.live(0, {2, 2});
-    f.unit(0).previous.value = f.unit(0).next.value = 0;
-    std::vector<unit::PlacementRequest> requests;
-    std::optional<unit::PlacementOperation> pending;
-    std::uint32_t tick = 0;
-    f.report_action = [&](unit::StackDiagnostic event) {
-        CHECK(event.problem == unit::StackProblem::infinite);
-        f.world.multiplayer.network_host = false;
-    };
-    f.placement.request = [&](unit::PlacementRequest request) {
-        requests.push_back(request);
-        pending = request.operation;
-    };
-    f.placement.ticks = [&] { return ++tick; };
-    f.placement.priority_messages = [] { return false; };
-    f.placement.normal_messages = [] { return false; };
-    f.placement.process_messages = [&](std::int32_t first, std::int32_t second) {
-        CHECK(first == 1);
-        CHECK(second == 1);
-        REQUIRE(pending);
-        // Explicit incoming state/replies, not a locally executed host helper.
-        // Distinct positions make any extra local placement observable.
-        if (*pending == unit::PlacementOperation::detach) {
-            CHECK_FALSE(f.world.unit_stacks.detach_active);
-            f.unit(0).x = -321;
-            f.unit(0).y = -322;
-            f.unit(0).previous.value = f.unit(0).next.value = -1;
-            f.world.unit_stacks.detach_reply = 17;
-            f.world.unit_stacks.detach_active = true;
-        } else {
-            CHECK(*pending == unit::PlacementOperation::attach);
-            CHECK_FALSE(f.world.unit_stacks.attach_active);
-            f.unit(0).x = f.unit(0).y = 4;
-            f.world.unit_stacks.attach_reply = 19;
-            f.world.unit_stacks.attach_active = true;
-        }
-        pending.reset();
-    };
-    f.cleanup();
-    CHECK(requests ==
-          std::vector<unit::PlacementRequest>{{unit::PlacementOperation::detach, {0}},
-                                              {unit::PlacementOperation::attach, {0, 2, 2}}});
-    CHECK(f.unit(0).x == 4);
-    CHECK(f.unit(0).y == 4);
-    CHECK(f.unit(0).token == state::UnitToken{1});
-    CHECK_FALSE(f.world.multiplayer.network_host);
-    CHECK(f.world.unit_stacks.detach_active);
-    CHECK(f.world.unit_stacks.attach_active);
-    CHECK(f.world.unit_totals[1] == 3);
-    CHECK(f.world.entities.units.end() == 1);
-}
 
 TEST_CASE("F06 post-load scan establishes host then repairs and deletes in slot order",
           "[session][load][unit]") {
@@ -129,12 +65,6 @@ TEST_CASE("F06 post-load scan establishes host then repairs and deletes in slot 
     f.live(5, {-20, -20});
     f.bound(5);
     const auto outside = f.unit(5);
-    f.report_action = [&](unit::StackDiagnostic event) {
-        CHECK(event == unit::StackDiagnostic{unit::StackProblem::forward_x, 1, 2});
-        CHECK(f.unit(0).previous.value == -1);
-        CHECK(f.unit(0).next.value == -1);
-        CHECK(f.unit(3).previous.value == 99);
-    };
     f.cleanup();
     CHECK(f.world.multiplayer.network_host);
     CHECK(f.reports.size() == 1);
@@ -164,13 +94,6 @@ TEST_CASE("F06 post-load negative coordinate gate uses either component after va
     }
     SECTION("negative y only") {
         f.live(0, {2, -1});
-    }
-    SECTION("validation callback changes coordinates") {
-        f.live(0, {2, 2});
-        f.live(1, {4, 4});
-        f.unit(0).next.value = 1;
-        f.unit(1).previous.value = 0;
-        f.report_action = [&](unit::StackDiagnostic) { f.unit(0).x = -1; };
     }
     f.cleanup();
     CHECK(f.unit(0).token == state::UnitToken{0});
@@ -217,24 +140,4 @@ TEST_CASE("F06 post-load destruction child can extend the live scan after tail d
     CHECK(f.world.globals.unit_end == 2);
     CHECK(f.world.civilizations[1].units_active[4] == 0);
     CHECK(f.world.unit_totals[1] == 1);
-}
-
-TEST_CASE("F06 interrupted post-load repair retains host and earlier slot cleanup",
-          "[session][load][unit]") {
-    Fixture f;
-    f.unit(0).previous.value = 89;
-    f.live(1, {2, 2});
-    f.live(2, {4, 4});
-    f.unit(1).next.value = 2;
-    f.unit(2).previous.value = 1;
-    f.unit(3).previous.value = 88;
-    f.bound(4);
-    f.report_action = [](unit::StackDiagnostic) { throw std::runtime_error("stop"); };
-    CHECK_THROWS_AS(f.cleanup(), std::runtime_error);
-    CHECK(f.world.multiplayer.network_host);
-    CHECK(f.unit(0).previous.value == -1);
-    CHECK(f.unit(1).next.value == 2);
-    CHECK(f.unit(2).previous.value == 1);
-    CHECK(f.unit(3).previous.value == 88);
-    CHECK(f.world.entities.units.end() == 4);
 }

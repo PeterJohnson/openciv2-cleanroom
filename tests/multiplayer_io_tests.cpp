@@ -322,7 +322,7 @@ TEST_CASE("F06 multiplayer callbacks retain live tail bytes and later selector v
     REQUIRE(runtime.saved == state::MultiplayerValues{});
     REQUIRE(runtime.resume_civ == 6);
 }
-TEST_CASE("F06 multiplayer writes restore temporary resume substitution only after success",
+TEST_CASE("F06 multiplayer writes encode resume without live substitution",
           "[formats][multiplayer-io]") {
     for (const bool complete : {false, true}) {
         auto runtime = incoming();
@@ -332,23 +332,21 @@ TEST_CASE("F06 multiplayer writes restore temporary resume substitution only aft
                     [&](std::span<const Byte> bytes) {
                         REQUIRE(bytes.size() == multiplayer_record_size);
                         REQUIRE(bytes[0x464] == 5);
-                        REQUIRE(runtime.saved.resume_civ == 5);
-                        runtime.saved.open_game = 7;
+                        REQUIRE(runtime.saved.resume_civ == 2);
                         return complete;
                     },
                     runtime, 261) == complete);
         auto expected = before;
-        expected.saved.resume_civ = complete ? 2 : 5;
-        expected.saved.open_game = 7;
         REQUIRE(runtime == expected);
     }
     auto runtime = incoming();
+    const auto before_write = runtime;
     REQUIRE_THROWS_AS(
         write_multiplayer_item(
             [](std::span<const Byte>) -> bool { throw std::runtime_error("Write stopped"); },
             runtime, -1),
         std::runtime_error);
-    REQUIRE(runtime.saved.resume_civ == 255);
+    REQUIRE(runtime == before_write);
 }
 TEST_CASE("F06 successful-load mode adaptation keeps entry-zero asymmetry and unrelated state",
           "[state][multiplayer-io]") {

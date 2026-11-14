@@ -307,7 +307,7 @@ TEST_CASE("Native core load edit and save bind real labels rules directories and
     REQUIRE(runtime.world().entities.units.at(state::UnitSlot{0}).token == state::UnitToken{101});
     REQUIRE(fs::current_path() == cwd);
 }
-TEST_CASE("Native failed core save leaves truncated prefix and restores hotseat before close",
+TEST_CASE("Native failed core save reports partial output without live hotseat substitution",
           "[io][classic-files][native-core]") {
     TemporaryDirectory dir;
     const auto target = dir.path / "Partial.HOT";
@@ -321,6 +321,9 @@ TEST_CASE("Native failed core save leaves truncated prefix and restores hotseat 
     world.globals.human_players = 2;
     world.multiplayer.hotseat_participants = 6;
     world.multiplayer.local_human = 3;
+    world.map.allocate(world::Geometry{4, 2});
+    world.map.coarse_grid(0)[0] = 0;
+    world.map.coarse_grid(1)[0] = 0;
     ClassicFileState files;
     std::size_t closes = 0, items = 0;
     CoreSaveServices saving;
@@ -330,8 +333,8 @@ TEST_CASE("Native failed core save leaves truncated prefix and restores hotseat 
         const auto write = output->item;
         output->item = [&, write](std::span<const Byte> bytes) {
             ++items;
-            REQUIRE(bytes.size() == 2); // Inject an actual one-byte version prefix.
-            REQUIRE(write(bytes.first(1)));
+            REQUIRE(bytes.size() > 12); // Inject a real partial file write.
+            REQUIRE(write(bytes.first(11)));
             return false;
         };
         const auto close = output->close;

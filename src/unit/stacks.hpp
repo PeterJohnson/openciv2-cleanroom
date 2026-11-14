@@ -3,6 +3,7 @@
 #include "state/records.hpp"
 #include "world/map.hpp"
 #include <stdexcept>
+#include <vector>
 
 namespace openciv::unit {
 enum class StackProblem {
@@ -22,11 +23,8 @@ struct StackDiagnostic {
     bool operator==(const StackDiagnostic&) const = default;
 };
 struct StackServices {
-    // U01 section 3: required, returning diagnostics may mutate live state.
-    std::function<void(StackDiagnostic)> report;
-    // Passive lookup for explicitly supplied special/negative backing. Ordinary
-    // slots always use the pool, independently of its scan bound and lifetime.
-    std::function<state::Unit*(std::int32_t)> extra_backing;
+    // Optional passive output, consumed after the operation; no diagnostic reentry.
+    std::vector<StackDiagnostic>* diagnostics = nullptr;
 };
 // Repair's placement children use sync=false. LocalStacks defaults to its local
 // bodies; StackOperations supplies the real independently gated operations.
@@ -66,8 +64,8 @@ public:
     std::int32_t first_at(world::Position position);
     void detach(std::int32_t slot);
     void attach_at_front(std::int32_t slot, world::Position position);
-    // Shared U01 backing boundary for lifecycle operations. No liveness/scan
-    // filter and no repair; missing special or negative backing stops here.
+    // Bounded U01 record access. No liveness/scan filter; indices outside the
+    // owned pool are rejected, never resolved through adjacent memory.
     state::Unit& backed_unit(std::int32_t slot) { return record(slot); }
 
 private:
@@ -76,6 +74,7 @@ private:
     void attach_body(std::int32_t slot, world::Position position);
     state::Unit& record(std::int32_t slot);
     void step();
+    void diagnose(StackDiagnostic diagnostic) noexcept;
     std::int32_t end_of_chain(std::int32_t slot, bool backward);
     void cut(std::int32_t slot, std::int32_t neighbor, bool backward);
     state::UnitPool& units_;

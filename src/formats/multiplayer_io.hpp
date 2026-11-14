@@ -13,8 +13,8 @@ bool read_multiplayer_items(const ReadItem& read, std::uint16_t version,
                             state::MultiplayerPreferences& preferences,
                             base::GameplayRandom& random, std::string_view reset_call);
 // F06 section 5 stage 8. The parent decides whether a multiplayer item is
-// required. Temporary saved-resume substitution restores ONLY on success.
+// required. File-only resume substitution never mutates the live state.
 // The network turn selector is distinct from the world's stored turn selector.
-bool write_multiplayer_item(const WriteItem& write, state::MultiplayerState& state,
+bool write_multiplayer_item(const WriteItem& write, const state::MultiplayerState& state,
                             std::int32_t network_turn_civ);
 } // namespace openciv::formats

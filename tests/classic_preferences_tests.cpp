@@ -48,7 +48,7 @@ struct Fixture {
     std::vector<std::string> trace;
     Bytes input = Bytes(516, 0x88), output;
     std::size_t position = 0, reads = 0, writes = 0, closes = 0, removals = 0;
-    bool input_open = true, output_open = true;
+    bool input_open = true, output_open = true, close_ok = true;
     std::optional<std::size_t> short_item, fail_write;
     std::size_t prefix = 0;
     std::function<void(std::size_t)> before_read, after_write;
@@ -101,7 +101,7 @@ struct Fixture {
                            [&] {
                                ++closes;
                                trace.push_back("close");
-                               return false;
+                               return close_ok;
                            }});
         };
         services.remove_file = [&](std::string_view path) {
@@ -342,23 +342,20 @@ TEST_CASE("F03 successful preference input keeps arbitrary values and ignores tr
     CHECK(f.closes == 1);
 }
 
-TEST_CASE("F03 successful preference save reads each live block and ignores close failure",
+TEST_CASE("F03 preference saving encodes both blocks and reports close failure",
           "[preferences][session]") {
-    Fixture f;
-    const auto ordinary = encode_ordinary_preferences(f.process.ordinary_preferences);
-    f.after_write = [&](std::size_t index) {
-        if (index == 0) {
-            f.process.multiplayer_preferences.type = -32768;
-            f.process.multiplayer_preferences.game_name.bytes[3] = 0xff;
-        }
-    };
-    CHECK(f.save() == PreferenceSaveStatus::success);
-    CHECK(f.trace == std::vector<std::string>{"open-output", "write:72", "write:444", "close"});
-    REQUIRE(f.output.size() == 516);
-    CHECK(Bytes(f.output.begin(), f.output.begin() + 72) == ordinary);
-    CHECK(decode_multiplayer_preferences(std::span{f.output}.subspan(72)) ==
-          f.process.multiplayer_preferences);
-    CHECK(f.removals == 0);
+    for (bool close_ok : {false, true}) {
+        Fixture f;
+        f.close_ok = close_ok;
+        auto expected = encode_ordinary_preferences(f.process.ordinary_preferences);
+        const auto second = encode_multiplayer_preferences(f.process.multiplayer_preferences);
+        expected.insert(expected.end(), second.begin(), second.end());
+        CHECK(f.save() ==
+              (close_ok ? PreferenceSaveStatus::success : PreferenceSaveStatus::output));
+        CHECK(f.output == expected);
+        CHECK(f.closes == 1);
+        CHECK(f.removals == (close_ok ? 0 : 1));
+    }
 }
 
 TEST_CASE("F03 failed preference writes close before deleting without rolling back state",
@@ -366,7 +363,7 @@ TEST_CASE("F03 failed preference writes close before deleting without rolling ba
     for (const std::size_t item : {0U, 1U}) {
         Fixture f;
         f.fail_write = item;
-        f.after_write = [&](std::size_t) { f.process.ordinary_preferences.game_options = 0x1234; };
+        f.process.ordinary_preferences.game_options = 0x1234;
         CHECK(f.save() == PreferenceSaveStatus::output);
         CHECK(f.writes == item + 1);
         CHECK(f.closes == 1);

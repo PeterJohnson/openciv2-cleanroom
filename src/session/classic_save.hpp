@@ -11,17 +11,14 @@ struct CoreOutput {
     std::function<bool()> close;
 };
 struct CoreSaveServices {
-    // Binary replacement: a native provider must truncate an existing target.
-    // Failed writes leave a partial file. Close failure does not change status.
+    // The provider owns replacement/commit policy. A false write or close is
+    // failure; providers must not reenter or mutate game state.
     std::function<std::unique_ptr<CoreOutput>(std::string_view)> open;
 };
-// F06 section 5 live operation. Requires an active runtime with settled commands
-// and matching global/pool scan bounds. No whole-world snapshot or direct RNG
-// draw. Saved-current, scenario metadata/names and layout mutations persist.
-// If a callback enters hotseat from another mode, original incoming cleanup
-// backing must be supplied; otherwise cleanup closes the file and stops safely.
+// F06 save/load production boundary: prepare a coherent image before opening
+// output, retaining accepted preparation effects. No RNG or per-write game events.
+// An opened output is closed once, including failure and exception paths.
 CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
                                  std::string_view requested_path, bool scenario_export,
-                                 const CoreSaveServices& services,
-                                 std::optional<std::uint8_t> incoming_cleanup_mask = {});
+                                 const CoreSaveServices& services);
 } // namespace openciv::session

@@ -13,23 +13,7 @@ struct Fixture {
     state::UnitStackState retained;
     StackBudget budget{50000000, 64};
     std::vector<StackDiagnostic> reports;
-    std::map<std::int32_t, state::Unit> extra;
-    std::vector<std::int32_t> extra_reads;
-    std::function<void(StackDiagnostic)> on_report;
-    LocalStacks stacks{units,
-                       map,
-                       retained,
-                       budget,
-                       {[&](StackDiagnostic event) {
-                            reports.push_back(event);
-                            if (on_report)
-                                on_report(event);
-                        },
-                        [&](std::int32_t slot) -> state::Unit* {
-                            extra_reads.push_back(slot);
-                            const auto found = extra.find(slot);
-                            return found == extra.end() ? nullptr : &found->second;
-                        }}};
+    LocalStacks stacks{units, map, retained, budget, {&reports}};
     Fixture() { map.allocate(world::Geometry{8, 6}); }
     state::Unit& unit(std::size_t slot) { return units.storage()[slot]; }
     void live(std::size_t slot, world::Position p = {2, 2}, unsigned owner = 1) {
@@ -108,25 +92,6 @@ TEST_CASE("U01 forward dead pass tests current and retains its incoming link", "
     CHECK(f.unit(2).previous.value == -1);
 }
 
-TEST_CASE("U01 backward repair follows saved neighbors and live reverse links", "[unit][stack]") {
-    Fixture f;
-    f.chain({0, 1, 2});
-    f.unit(0).token = f.unit(1).token = state::UnitToken{0};
-    f.on_report = [&](StackDiagnostic event) {
-        if (event.current == 2) {
-            f.unit(2).previous.value = 0;
-            f.unit(1).next.value = 7;
-        }
-    };
-    CHECK(f.stacks.validate(2) == 0);
-    CHECK(f.reports == std::vector<StackDiagnostic>{{StackProblem::backward_dead, 2, 1},
-                                                    {StackProblem::backward_dead, 1, 0}});
-    CHECK(f.unit(2).previous.value == -1);
-    CHECK(f.unit(1).previous.value == -1);
-    CHECK(f.unit(1).next.value == 7); // Diagnostic changed the reverse before its test.
-    CHECK(f.unit(0).next.value == -1);
-}
-
 TEST_CASE("U01 position passes continue beyond cuts and compare x before y", "[unit][stack]") {
     Fixture f;
     f.chain({0, 1, 2});
@@ -151,71 +116,6 @@ TEST_CASE("U01 position passes continue beyond cuts and compare x before y", "[u
         CHECK(f.unit(i).previous.value == -1);
         CHECK(f.unit(i).next.value == -1);
     }
-}
-
-TEST_CASE("U01 failed diagnostics preserve earlier cuts without cutting the current edge",
-          "[unit][stack]") {
-    Fixture f;
-    f.chain({0, 1, 2});
-    f.unit(0).token = f.unit(1).token = state::UnitToken{0};
-    f.on_report = [&](StackDiagnostic) {
-        if (f.reports.size() == 2)
-            throw std::runtime_error("diagnostic stopped");
-    };
-    CHECK_THROWS_AS(f.stacks.validate(2), std::runtime_error);
-    CHECK(f.unit(2).previous.value == -1);
-    CHECK(f.unit(1).next.value == -1);
-    CHECK(f.unit(1).previous.value == 0);
-    CHECK(f.unit(0).next.value == 1);
-    CHECK(f.reports.size() == 2);
-}
-
-TEST_CASE("U01 assertion precedes suppression and needs backing only after returning",
-          "[unit][stack]") {
-    Fixture f;
-    f.on_report = [&](StackDiagnostic event) {
-        if (event.problem == StackProblem::entry_range)
-            f.retained.suppression = -7;
-    };
-    CHECK(f.stacks.validate(-9) == 1);
-    CHECK(f.reports == std::vector<StackDiagnostic>{{StackProblem::entry_range, -9}});
-    CHECK(f.extra_reads.empty());
-    f.on_report = {};
-    f.retained.suppression = 0;
-    CHECK_THROWS_AS(f.stacks.validate(2048), std::out_of_range);
-    CHECK(f.reports.size() == 1); // 2048 and 2049 do not assert.
-    f.extra[2048] = state::Unit{};
-    CHECK(f.stacks.validate(2048) == 1);
-    f.extra[2050] = state::Unit{};
-    CHECK(f.stacks.validate(2050) == 1);
-    CHECK(f.reports.back() == StackDiagnostic{StackProblem::entry_range, 2050});
-    CHECK(f.units.end() == 0); // Access is not restricted to scanned/live records.
-}
-
-TEST_CASE("U01 exact tile lookup honors animation and performs both validations", "[unit][stack]") {
-    Fixture f;
-    f.chain({0, 1});
-    f.unit(1).x = 4;
-    f.unit(2).x = f.unit(2).y = 2; // Dead, initially unlinked.
-    f.on_report = [&](StackDiagnostic event) {
-        if (event.problem == StackProblem::forward_x) {
-            f.unit(0).previous.value = 2;
-            f.unit(2).next.value = 0;
-        }
-    };
-    f.retained.animation_active = true;
-    CHECK(f.stacks.first_at({2, 2}) == -1);
-    CHECK(f.reports.empty());
-    f.map.tile({2, 2}).features = 1;
-    f.map.tile({2, 2}).owner = 0;
-    CHECK(f.stacks.first_at({3, 2}) == -1);
-    CHECK(f.stacks.first_at({2, 2}) == 0);
-    CHECK(f.reports == std::vector<StackDiagnostic>{{StackProblem::forward_x, 0, 1},
-                                                    {StackProblem::backward_dead, 0, 2}});
-    f.live(0, {-200, -200}, 3);
-    f.retained.animation_active = false;
-    CHECK(f.stacks.first_at({-200, -200}) == 0);
-    CHECK(f.stacks.first_for_owner_at(3, {-200, -200}) == 0);
 }
 
 TEST_CASE("U01 singleton detach retains tile owner fertility and other unit fields",
@@ -316,7 +216,7 @@ TEST_CASE("U01 self loop repair performs detach and front attachment", "[unit][s
     CHECK_FALSE(f.retained.attach_active);
 }
 
-TEST_CASE("U01 finite 2048 member repair retains reversal before the negative terminal read",
+TEST_CASE("U01 finite 2048 member repair terminates without reading negative records",
           "[unit][stack]") {
     Fixture f;
     for (unsigned i = 0; i < 2048; ++i) {
@@ -324,15 +224,8 @@ TEST_CASE("U01 finite 2048 member repair retains reversal before the negative te
         f.unit(i).previous.value = static_cast<std::int16_t>(static_cast<int>(i) - 1);
         f.unit(i).next.value = i == 2047 ? -7 : static_cast<std::int16_t>(i + 1);
     }
-    SECTION("missing negative backing stops after placement") {
-        CHECK_THROWS_AS(f.stacks.validate(0), std::out_of_range);
-    }
-    SECTION("supplied negative backing permits completion") {
-        f.extra[-7].next.value = -9;
-        CHECK(f.stacks.validate(0) == 0);
-    }
+    CHECK(f.stacks.validate(0) == 0);
     CHECK(f.reports == std::vector<StackDiagnostic>{{StackProblem::infinite, 0}});
-    CHECK(f.extra_reads == std::vector<std::int32_t>{-7});
     CHECK(f.units.end() == 2048);
     CHECK_FALSE(f.retained.detach_active);
     CHECK_FALSE(f.retained.attach_active);
@@ -401,4 +294,38 @@ TEST_CASE("U01 unbacked detach retains the earlier neighbor rewrite and activity
     CHECK(f.unit(0).next.value == 3000);
     CHECK(f.unit(0).x == 2);
     CHECK(f.retained.detach_active);
+}
+
+TEST_CASE("U01 invalid record indices reject even with suppression", "[unit][stack]") {
+    Fixture f;
+    for (auto suppression : {0, 1}) {
+        f.retained.suppression = suppression;
+        for (auto slot : {-9, 2048, 2049, 2050}) {
+            CHECK_THROWS_AS(f.stacks.validate(slot), std::out_of_range);
+            CHECK_THROWS_AS(f.stacks.backed_unit(slot), std::out_of_range);
+        }
+    }
+}
+TEST_CASE("U01 optional diagnostics do not change repairs", "[unit][stack]") {
+    Fixture observed, quiet;
+    for (auto* f : {&observed, &quiet}) {
+        f->chain({0, 1, 2});
+        f->unit(0).token = f->unit(1).token = state::UnitToken{0};
+    }
+    LocalStacks no_diagnostics{quiet.units, quiet.map, quiet.retained, quiet.budget, {}};
+    CHECK(observed.stacks.validate(2) == no_diagnostics.validate(2));
+    for (unsigned i = 0; i < 3; ++i)
+        CHECK(observed.unit(i) == quiet.unit(i));
+    CHECK(observed.reports.size() == 2);
+}
+TEST_CASE("U01 tile lookup retains animation gate and exact coordinates", "[unit][stack]") {
+    Fixture f;
+    f.chain({0});
+    CHECK(f.stacks.first_at({2, 2}) == 0);
+    CHECK(f.stacks.first_at({3, 2}) == -1);
+    f.retained.animation_active = true;
+    CHECK(f.stacks.first_at({2, 2}) == -1);
+    f.map.tile({2, 2}).features |= 1;
+    f.map.tile({2, 2}).owner = 1;
+    CHECK(f.stacks.first_at({2, 2}) == 0);
 }

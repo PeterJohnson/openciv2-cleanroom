@@ -869,6 +869,27 @@ file/source checks, not a new native original-program round trip.
 
 ## Save/load production boundary
 
+A production save prepares a coherent encoded image before opening output.
+Apply the accepted save/export transformations (saved-current civilization,
+scenario flags/knowledge/names and layout preparation) explicitly. Use export
+values for temporary hotseat masks, player selectors and resume civilization;
+never publish those temporary values into the live game. Serialization and file
+providers admit no game reentry. Preparation failure opens no output; subsequent
+I/O failure retains accepted preparation effects and reports failure, including
+header/body writes and final close/flush/commit. Close an opened output once on
+success, returned failure or exception. A failed close is not success even if
+every preceding buffered write succeeded. Exact write chunking is not a contract.
+
+File selection exchanges a semantic request (save/open, initial path, file types,
+title and default extension) and an accepted path, cancellation or failure with
+diagnostic text. Cancellation/failure does not publish draft path edits or start
+a save. Native flags, filter-buffer layout, capacities, handles, low-byte return
+decoding and extended-error calls belong only to platform adapters/reference.
+The optional save UI may use a different filename suggestion or navigation flow;
+any mandatory email-turn save/reply remains with N04. Presentation formatting
+consumes captured values and returns owned notice arguments, not shared scratch
+or game mutations between text lookups. Timers still follow N03's real boundaries.
+
 Sections 2–4 and 7–9 define external formats and meaningful interpretation.
 Their fixed offsets/order/widths and opaque imported bytes remain binding in
 codecs, regardless of the live state design. A lossless stored-file round trip

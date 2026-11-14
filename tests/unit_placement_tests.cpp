@@ -16,10 +16,8 @@ struct Fixture {
     std::vector<std::string> calls;
     std::vector<PlacementRequest> requests;
     std::vector<StackDiagnostic> reports;
-    std::function<void(StackDiagnostic)> on_report;
     std::function<void(PlacementRequest)> on_request;
     std::function<void()> on_sync, on_flush;
-    std::map<std::int32_t, state::Unit> extra;
     Fixture() {
         world.map.allocate(world::Geometry{8, 6});
         world.multiplayer.network_host = true;
@@ -97,19 +95,7 @@ struct Fixture {
         }
         throw std::logic_error("bad test selector");
     }
-    StackOperations operations() {
-        return StackOperations(world, budget,
-                               {[&](StackDiagnostic diagnostic) {
-                                    reports.push_back(diagnostic);
-                                    if (on_report)
-                                        on_report(diagnostic);
-                                },
-                                [&](std::int32_t slot) -> state::Unit* {
-                                    const auto found = extra.find(slot);
-                                    return found == extra.end() ? nullptr : &found->second;
-                                }},
-                               services);
-    }
+    StackOperations operations() { return StackOperations(world, budget, {&reports}, services); }
     std::vector<std::int32_t> order(std::int32_t head) {
         std::vector<std::int32_t> result;
         for (auto current = head; current >= 0 && result.size() < 20;
@@ -330,108 +316,6 @@ TEST_CASE("U01 placement authority precedes backing except explicit wrapper guar
     CHECK(f.world.unit_stacks.detach_active);
 }
 
-TEST_CASE("U01 repair rechecks authority between detach and attachment children",
-          "[unit][placement]") {
-    Fixture f;
-    f.live(0);
-    f.unit(0).previous.value = f.unit(0).next.value = 0;
-    f.on_report = [&](StackDiagnostic) { f.world.multiplayer.network_host = false; };
-    f.on_request = [&](PlacementRequest request) {
-        CHECK(request.operation == PlacementOperation::detach);
-        f.unit(0).x = f.unit(0).y = -200;
-        f.unit(0).previous.value = f.unit(0).next.value = -1;
-        f.world.unit_stacks.detach_reply = 0;
-        f.world.multiplayer.network_host = true;
-    };
-    CHECK(f.operations().validate(0) == 0);
-    CHECK(f.requests == std::vector<PlacementRequest>{{PlacementOperation::detach, {0}}});
-    CHECK(f.unit(0).x == 2);
-    CHECK(f.unit(0).y == 2);
-    CHECK(f.world.map.tile({2, 2}).unit());
-    CHECK(f.world.map.tile({2, 2}).owner == 1);
-    CHECK_FALSE(f.world.unit_stacks.attach_active);
-}
-
-TEST_CASE("U01 recursive repair routes nested placement while its selected outer body continues",
-          "[unit][placement]") {
-    Fixture f;
-    for (unsigned i : {0U, 1U}) {
-        f.live(i);
-        f.unit(i).previous.value = f.unit(i).next.value = static_cast<std::int16_t>(i);
-    }
-    f.on_report = [&](StackDiagnostic event) {
-        if (event.current == 1)
-            f.world.multiplayer.network_host = false;
-    };
-    f.on_request = [&](PlacementRequest request) {
-        CHECK(request.arguments[0] == 1);
-        if (request.operation == PlacementOperation::detach) {
-            f.unit(1).previous.value = f.unit(1).next.value = -1;
-            f.unit(1).x = f.unit(1).y = -200;
-        } else {
-            CHECK(request.operation == PlacementOperation::attach);
-            f.unit(1).x = f.unit(1).y = 2;
-        }
-        f.reply(request.operation) = 0;
-    };
-    CHECK(f.operations().validate(0) == 0);
-    CHECK(f.reports ==
-          std::vector<StackDiagnostic>{{StackProblem::infinite, 0}, {StackProblem::infinite, 1}});
-    CHECK(f.requests == std::vector<PlacementRequest>{{PlacementOperation::detach, {1}},
-                                                      {PlacementOperation::attach, {1, 2, 2}}});
-    CHECK(f.order(0) == std::vector<std::int32_t>{0, 1});
-    CHECK(f.unit(1).previous.value == 0);
-    CHECK(f.unit(0).x == 2);
-    CHECK_FALSE(f.world.multiplayer.network_host);
-    CHECK_FALSE(f.world.unit_stacks.attach_active);
-}
-
-TEST_CASE(
-    "U01 attach retains selected local path and tests synchronization mode after lookup callbacks",
-    "[unit][placement]") {
-    Fixture f;
-    f.live(0, {-200, -200});
-    f.chain({1, 2});
-    f.unit(2).x = 4;
-    f.world.globals.multiplayer = 0;
-    f.on_report = [&](StackDiagnostic) {
-        f.world.globals.multiplayer = 3;
-        f.world.multiplayer.network_host = false;
-    };
-    f.operations().attach_at_front(0, {2, 2}, true);
-    CHECK(f.requests.empty());
-    CHECK(f.order(0) == std::vector<std::int32_t>{0, 1});
-    CHECK(f.unit(2).previous.value == -1);
-    CHECK(f.calls == std::vector<std::string>{"sync", "flush"});
-}
-
-TEST_CASE("U01 bottom detach child routes after head lookup changes authority",
-          "[unit][placement]") {
-    Fixture f;
-    f.chain({0, 1, 2});
-    f.unit(0).previous.value = 3;
-    f.unit(3).next.value = 0;
-    f.unit(3).x = f.unit(3).y = 2;
-    f.on_report = [&](StackDiagnostic event) {
-        CHECK(event.problem == StackProblem::backward_dead);
-        f.world.multiplayer.network_host = false;
-    };
-    f.on_request = [&](PlacementRequest request) {
-        CHECK(request == PlacementRequest{PlacementOperation::detach, {0}});
-        f.unit(0).next.value = f.unit(0).previous.value = -1;
-        f.unit(0).x = f.unit(0).y = -200;
-        f.unit(1).previous.value = -1;
-        f.world.unit_stacks.detach_reply = 0;
-    };
-    f.operations().move_to_bottom(0, true);
-    CHECK(f.order(1) == std::vector<std::int32_t>{1, 2, 0});
-    CHECK(f.unit(0).previous.value == 2);
-    CHECK(f.unit(0).x == 2);
-    CHECK(f.requests.size() == 1);
-    CHECK(f.calls == std::vector<std::string>{"request", "ticks", "sync", "flush"});
-    CHECK_FALSE(f.world.unit_stacks.bottom_active);
-}
-
 TEST_CASE("U01 client whole-stack relocation captures next before each request and keeps child "
           "boundaries",
           "[unit][placement]") {
@@ -467,18 +351,6 @@ TEST_CASE("U01 placement failures retain local mutations and nested activity mar
         CHECK(f.world.unit_stacks.detach_active);
         CHECK(f.calls == std::vector<std::string>{"sync"});
     }
-    SECTION("relocation attachment lookup stops after real detach") {
-        f.chain({1, 2}, {6, 2});
-        f.unit(2).y = 4;
-        f.on_report = [](StackDiagnostic) { throw std::runtime_error("lookup stopped"); };
-        CHECK_THROWS_AS(f.operations().relocate(0, {6, 2}, true), std::runtime_error);
-        CHECK(f.unit(0).x == -200);
-        CHECK(f.unit(1).next.value == 2);
-        CHECK(f.world.unit_stacks.relocate_active);
-        CHECK(f.world.unit_stacks.attach_active);
-        CHECK_FALSE(f.world.unit_stacks.detach_active);
-        CHECK(f.calls.empty());
-    }
 }
 
 TEST_CASE("U01 placement timeout drains a late reply without clearing callback activity",
@@ -510,4 +382,16 @@ TEST_CASE("U01 placement timeout drains a late reply without clearing callback a
     CHECK(f.unit(0) == before);
     CHECK(f.world.unit_stacks.attach_reply == 91);
     CHECK(f.world.unit_stacks.attach_active);
+}
+
+TEST_CASE("U01 repair diagnostics preserve host authority", "[unit][placement]") {
+    Fixture f;
+    f.live(0);
+    f.unit(0).previous.value = f.unit(0).next.value = 0;
+    CHECK(f.operations().validate(0) == 0);
+    CHECK(f.world.multiplayer.network_host);
+    CHECK(f.requests.empty());
+    CHECK(f.unit(0).previous.value == -1);
+    CHECK(f.unit(0).next.value == -1);
+    CHECK(f.world.map.tile({2, 2}).unit());
 }

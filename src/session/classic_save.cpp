@@ -42,8 +42,7 @@ void check_scans(const state::GameState& world) {
 } // namespace
 CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
                                  std::string_view requested_path, bool scenario_export,
-                                 const CoreSaveServices& services,
-                                 std::optional<std::uint8_t> incoming_cleanup_mask) {
+                                 const CoreSaveServices& services) {
     if (!services.open)
         throw std::invalid_argument("Core save requires an output-open binding");
     if (!runtime.active() || runtime.has_pending_commands())
@@ -53,95 +52,76 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
         throw std::invalid_argument("Core path must not contain NUL");
     auto& world = runtime.world();
     auto& globals = world.globals;
-    auto restore_mask = incoming_cleanup_mask;
-    if (globals.multiplayer == 1) {
-        restore_mask = globals.human_players;
-        globals.human_players = world.multiplayer.hotseat_participants;
+    check_scans(world);
+    select_classic_extension(scenario_export, globals.multiplayer, retained.extension);
+    retained.opened_path = request;
+    if (request.find('.') == std::string::npos)
+        retained.opened_path += retained.extension;
+
+    Bytes bytes;
+    try {
+        // F06: accepted preparation effects are explicit; encoding has no external
+        // callbacks. Temporary file-only values never enter the authoritative world.
+        globals.saved_current_civ =
+            std::bit_cast<std::int8_t>(static_cast<std::uint8_t>(world.multiplayer.local_human));
+        prepare_scenario(scenario_export, world);
+        prepare_scenario_names(scenario_export, globals, world.civilizations, world.names,
+                               *runtime.process().rules);
+        auto exported = globals;
+        if (exported.multiplayer == 1)
+            exported.human_players = world.multiplayer.hotseat_participants;
+        bytes = encode_game_header();
+        const WriteItem append = [&](std::span<const Byte> value) {
+            bytes.insert(bytes.end(), value.begin(), value.end());
+            return true;
+        };
+        write_persistent_items(append, exported, world.names, world.civilizations);
+        write_map_items(append, MapStream::embedded, world.map, retained.starts);
+        write_map_summary_items(append, world.map);
+        write_entity_items(append, world.entities);
+        write_leader_items(append, exported, world.civilizations, runtime.process().rules->leaders,
+                           retained.cursor);
+        write_history_layout_items(append, world.power_history, retained.current_screen,
+                                   retained.packed_layout, world.layout, world.views);
+        write_scenario_history_items(append, scenario_export, exported, world.scenario,
+                                     world.eliminations);
+        if (exported.multiplayer != 0)
+            write_multiplayer_item(append, world.multiplayer, world.multiplayer.network_turn_civ);
+        if (world.events.loaded && !scenario_export)
+            write_event_items(
+                append, append,
+                [&](Byte value) {
+                    bytes.push_back(value);
+                    return true;
+                },
+                world.events.collection);
+    } catch (...) {
+        runtime.publish();
+        throw;
     }
-    std::unique_ptr<CoreOutput> output;
-    bool cleaned = false;
-    const auto cleanup = [&] {
-        if (cleaned)
-            return;
-        cleaned = true;
-        const bool unresolved = globals.multiplayer == 1 && !restore_mask;
-        if (globals.multiplayer == 1 && restore_mask)
-            globals.human_players = *restore_mask;
-        if (runtime.active())
-            runtime.publish();
-        if (output && output->close)
-            (void)output->close();
-        if (unresolved)
-            throw std::out_of_range("Hotseat cleanup has no supplied incoming human-mask backing");
+    runtime.publish();
+
+    auto output = services.open(retained.opened_path);
+    if (!output)
+        return CoreSaveStatus::output;
+    bool closed = false;
+    const auto close = [&] {
+        closed = true;
+        return output->close();
     };
     try {
-        select_classic_extension(scenario_export, globals.multiplayer, retained.extension);
-        retained.opened_path = request;
-        if (request.find('.') == std::string::npos)
-            retained.opened_path += retained.extension;
-        const auto path = retained.opened_path;
-        runtime.publish();
-        output = services.open(path);
-        auto status = CoreSaveStatus::output;
-        if (output) {
-            if (!output->item || !output->text || !output->byte || !output->close)
-                throw std::invalid_argument("Opened core output has incomplete service bindings");
-            const WriteItem write = [&](std::span<const Byte> bytes) {
-                runtime.publish();
-                return output->item(bytes);
-            };
-            const WriteEventText text = [&](std::span<const Byte> bytes) {
-                runtime.publish();
-                return output->text(bytes);
-            };
-            const WriteEventByte byte = [&](Byte value) {
-                runtime.publish();
-                return output->byte(value);
-            };
-            const auto header = encode_game_header();
-            for (std::size_t i = 0; i < 10; ++i)
-                (void)byte(header[i]); // Header-character write failures are ignored.
-            globals.saved_current_civ = std::bit_cast<std::int8_t>(
-                static_cast<std::uint8_t>(world.multiplayer.local_human));
-            const auto body = [&] {
-                if (!write(std::span{header}.subspan(10)))
-                    return false;
-                prepare_scenario(scenario_export, world);
-                prepare_scenario_names(scenario_export, globals, world.civilizations, world.names,
-                                       *runtime.process().rules);
-                check_scans(world);
-                if (!write_persistent_items(write, globals, world.names, world.civilizations) ||
-                    !write_map_items(write, MapStream::embedded, world.map, retained.starts) ||
-                    !write_map_summary_items(write, world.map))
-                    return false;
-                check_scans(world);
-                if (!write_entity_items(write, world.entities) ||
-                    !write_leader_items(write, globals, world.civilizations,
-                                        runtime.process().rules->leaders, retained.cursor) ||
-                    !write_history_layout_items(write, world.power_history, retained.current_screen,
-                                                retained.packed_layout, world.layout,
-                                                world.views) ||
-                    !write_scenario_history_items(write, scenario_export, globals, world.scenario,
-                                                  world.eliminations))
-                    return false;
-                if (globals.multiplayer != 0 &&
-                    !write_multiplayer_item(write, world.multiplayer,
-                                            world.multiplayer.network_turn_civ))
-                    return false;
-                return !(world.events.loaded && !scenario_export) ||
-                       write_event_items(write, text, byte, world.events.collection);
-            };
-            if (body())
-                status = CoreSaveStatus::success;
-        }
-        cleanup();
-        if (runtime.active())
-            runtime.publish();
-        return status;
+        if (!output->item || !output->close)
+            throw std::invalid_argument("Core output requires write and close services");
+        const bool written = output->item(bytes);
+        const bool finalized = close();
+        return written && finalized ? CoreSaveStatus::success : CoreSaveStatus::output;
     } catch (...) {
-        cleanup();
-        if (runtime.active())
-            runtime.publish();
+        if (!closed && output->close) {
+            try {
+                (void)close();
+            } catch (...) { /* Preserve the original failure. */
+            }
+        }
         throw;
     }
 }

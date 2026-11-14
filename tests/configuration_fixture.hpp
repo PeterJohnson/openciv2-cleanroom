@@ -45,7 +45,7 @@ struct ConfigurationFixture {
                                         trace.push_back("close");
                                         if (after_close)
                                             after_close();
-                                        return false; // A close failure is ignored by F03.
+                                        return true;
                                     }});
         };
         preferences.remove_file = [&](std::string_view path) {

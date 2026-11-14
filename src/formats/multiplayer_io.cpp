@@ -46,13 +46,10 @@ bool read_multiplayer_items(const ReadItem& read, std::uint16_t version,
     state::refresh_password_flags(state);
     return true;
 }
-bool write_multiplayer_item(const WriteItem& write, state::MultiplayerState& state,
+bool write_multiplayer_item(const WriteItem& write, const state::MultiplayerState& state,
                             std::int32_t network_turn_civ) {
-    const auto prior = state.saved.resume_civ;
-    state.saved.resume_civ = static_cast<std::uint8_t>(network_turn_civ);
-    if (!write(encode_multiplayer(state.saved)))
-        return false;
-    state.saved.resume_civ = prior;
-    return true;
+    auto saved = state.saved;
+    saved.resume_civ = static_cast<std::uint8_t>(network_turn_civ);
+    return write(encode_multiplayer(saved));
 }
 } // namespace openciv::formats

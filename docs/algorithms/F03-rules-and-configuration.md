@@ -2,6 +2,12 @@
 
 ## Production contract scope
 
+Preference saving encodes both CIV2.DAT blocks from one coherent configuration
+before output begins. A failed write or final close reports failure and closes
+the output exactly once; accepted preference changes remain in memory. Native
+write-call boundaries admit no game/configuration changes. Original ignored-close
+results and partial-file damage are reference, not production requirements.
+
 Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
 The distinction is the consumer of an observation, not whether a detail appeared
 in the original executable or a historical test.

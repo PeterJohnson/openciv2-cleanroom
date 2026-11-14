@@ -2,6 +2,17 @@
 
 ## Production contract scope
 
+Production stack access is bounded by the owned unit pool. Negative links are
+terminals, never requests for fabricated records outside that pool. In the
+2048-member repair loop, stop at a negative saved successor before reading its
+record; retain the preceding specified repair and resulting stack order. Reject
+other out-of-range record accesses before reading or writing them, including when
+validation suppression is active. No original adjacent-memory input is accepted.
+Diagnostics are passive records, not callbacks that mutate authority, links,
+coordinates or suppression or interrupt a repair. Their presence cannot change
+the operation's game result. Original invalid-memory and diagnostic-reentry cases
+are historical executable comparisons only.
+
 Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
 The distinction is the consumer of an observation, not whether a detail appeared
 in the original executable or a historical test.
@@ -176,20 +187,21 @@ including its tile gate, exact-coordinate comparison and first-slot tie.
 
 ## 3. Ordered stack validation and repair
 
-Nominal coherent stacks return 1 without mutation. Damaged but backed finite
-fixtures use the actual sequence below. Diagnostics are observable callbacks;
-if they return, continue with the described reads/writes. This operation does
-not guarantee that every malformed stack becomes valid.
+Nominal coherent stacks return 1 without mutation. Damaged finite stacks use the
+game-relevant repairs below, subject to the bounded
+production rules at the top of this specification. Diagnostic callbacks and invalid
+record reads in the original procedure are comparison reference only. This
+operation does not guarantee that every malformed stack becomes valid.
 
-1. If entry slot is outside 0..2049, invoke the original assertion/report
-   service. A returning report continues. Read the stack-check suppression
-   marker **after** this callback; if nonzero, return 1 immediately.
+1. Reject an entry outside the owned unit pool before any record access, even
+   when suppression is set. Otherwise if suppression is nonzero, return 1.
+   The original assertion range and returning-report continuation are reference.
 2. Set result=1. Compute rawForwardCount(entry). If at least 2048, report the
    infinite-stack diagnostic, set result=0, and perform the repair below.
 3. Run the four directional passes below in order, each starting again at entry.
    Each pass follows its **saved neighbor** after a cut. It does not stop just
-   because it severed the current edge. On each detected problem, issue its
-   diagnostic, set result=0, and then perform the writes.
+   because it severed the current edge. On each detected problem, optionally record
+   a passive diagnostic, set result=0, and then perform the writes.
 4. Return result. A return of 1 is not proof of liveness, reciprocity, owner
    consistency or termination of an arbitrary future traversal.
 
@@ -204,20 +216,20 @@ repeat:
     detach(current, sync=false)
     attachAtFront(current, savedPosition, sync=false)
     current = savedNext
-    savedNext = unit[current].next       # original performs even for current<0
+    if current < 0: break               # production terminal-read repair
+    savedNext = unit[current].next
 until current == entry
 ```
 
 Attach uses ordinary lookup/accessors and can recursively validate another
 chain. The routine does not set its own suppression marker around this work.
 A self-loop can be repaired; a valid forward chain of exactly 2048 units also
-enters this branch. The negative-terminal read is a real reference access even
-though its value is discarded on the next iteration. Without supplied backing,
-stop after the preceding effects rather than invent a value or claim an orderly
-error. The independent reconstruction deliberately skips that access (BF-095).
+enters this branch. The original negative-terminal read consumes no gameplay value.
+Production stops before it and continues the remaining bounded validation. Original adjacent-memory
+observations do not become inputs to this repair.
 
 For the four remaining passes, use these rules; neighbor is captured before the
-diagnostic or cut, and reverse-link comparisons use the then-current fields:
+cut, and reverse-link comparisons use the then-current fields:
 
 | Pass | Continue while | Problem test | Cut |
 | --- | --- | --- | --- |

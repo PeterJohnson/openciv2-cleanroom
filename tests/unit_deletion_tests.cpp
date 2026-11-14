@@ -14,7 +14,6 @@ struct Fixture {
     state::GameState world{process};
     StackBudget budget{100000, 64};
     std::vector<std::string> calls;
-    std::map<std::int32_t, state::Unit> extra;
     std::function<void()> on_removed, on_refresh, on_destroyed, on_sync;
     DeletionServices services;
     Fixture() {
@@ -85,13 +84,7 @@ struct Fixture {
         bound(std::max(slot + 1, world.entities.units.end()));
     }
     UnitDeletion operation() {
-        return UnitDeletion(world, process.rules->definitions, budget,
-                            {[&](StackDiagnostic) { calls.push_back("stack-report"); },
-                             [&](std::int32_t slot) -> state::Unit* {
-                                 const auto found = extra.find(slot);
-                                 return found == extra.end() ? nullptr : &found->second;
-                             }},
-                            services);
+        return UnitDeletion(world, process.rules->definitions, budget, {}, services);
     }
 };
 } // namespace
@@ -357,18 +350,12 @@ TEST_CASE("U01 deletion activity is a boolean assignment across reentrant childr
     CHECK(f.world.entities.units.end() == 1);
 }
 
-TEST_CASE("U01 special backing skips ordinary counters and negative owners retain signed meaning",
+TEST_CASE("U01 deletion rejects out-of-pool slots and retains signed owner meaning",
           "[unit][deletion]") {
     Fixture f;
-    SECTION("special slot") {
+    SECTION("out-of-pool slot") {
         f.live(0);
-        f.extra[2048] = f.unit(0);
-        f.operation().erase(2048, false);
-        CHECK(f.extra[2048].token == state::UnitToken{0});
-        CHECK(f.civ().military_count == 10);
-        CHECK(f.civ().units_active[3] == 10);
-        CHECK(f.world.unit_totals[1] == 10);
-        CHECK(f.world.entities.units.end() == 1);
+        CHECK_THROWS_AS(f.operation().erase(2048, false), std::out_of_range);
     }
     SECTION("negative owner skips counters and is detached at signed staging") {
         f.live(0);
