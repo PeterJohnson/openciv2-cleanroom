@@ -113,6 +113,6 @@ preserve C01's counter, fallback, retry and publication behavior on both paths.
 
 Remaining M1 work includes full comparison/component admission,
 conversion receipts, broader equivalent native/classic inputs,
-full label startup, retained native installation and session reload policies, owning mechanics,
+application startup/GAME-cache construction, retained native installation and session reload policies, owning mechanics,
 session admission and original interoperability. The
 [M1 completion audit](m1-validation.md) remains open.

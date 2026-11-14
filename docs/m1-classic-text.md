@@ -1,7 +1,7 @@
 # M1 classic text, rules and city preferences
 
-The portable F03 text reader, all twelve classic rule-table readers and both
-city-production preference paths are implemented. Native JSON uses the pinned
+The portable F03 text reader, P04 label loader, all twelve classic rule-table
+readers and both city-production preference paths are implemented. Native JSON uses the pinned
 jart/json.cpp admission wrapper; classic text uses supplied file, section-index
 and byte-comparison services. Both rule paths produce `RuleDefinitions`, and
 both preference paths publish `CityPreferences`. This supplies part of M1's
@@ -53,6 +53,42 @@ ASCII only. Other comparison services can be supplied explicitly. This does not
 close the [F03/C01 non-ASCII comparison gap](m1-rule-content.md#encoding-and-remaining-comparison-gap)
 or turn the [ordered original observation](m1-original-text-observations.md) into
 a complete folding table. Byte text and presentation encoding remain separate.
+
+## Shared labels and startup
+
+`formats::classic::LabelLoader` implements P04 §2 using the same reader and pool.
+Initialization selects the language extension and signed status-language position,
+invokes a supplied GAME-cache builder, raises retained STRINGHEAP capacity when
+requested, and initializes `<nil>`. Label loading is separate. Rebuild repeats
+the capacity/pool step, releases the old label collection, loads labels and then
+popup labels without resetting language or rebuilding the GAME cache.
+
+Label loading publishes the declared signed count and follows its live value.
+Each whole line is pooled in order. Short tables reopen the installation section,
+skip the live primary count, append up to the captured fallback count and then
+fill remaining slots with one shared `[ERROR:LABELS.TXT]` ID. The primary declared
+count remains distinct from the resulting table size. Empty ordinary strings
+return ID zero. Missing LABELS reports failure and clears the usable table/count;
+it does not synthesize a successful label set.
+
+The table has 888 entries. Unwritten backing is represented explicitly; an
+out-of-bounds publication stops after prior allocations and writes, without
+clamping the declared count. Allocation callbacks may change the count or replace
+the live collection. Search-directory overrides restore on both completion and
+safe stops; other preceding effects remain. Native handle/lock errors are not
+emulated as logical labels.
+
+POPUPS publishes three IDs in OK/Help/Cancel order and leaves its stream open.
+Missing POPUPS retains the prior bindings, including across pool replacement;
+before a binding exists, lookup returns the specified English literal. `RuleState`
+owns these labels and retained capacity alongside the pool. Session replacement
+retains them; independent process contexts have separate state.
+
+The GAME-cache builder remains a supplied service. F03 specifies header recognition
+and indexed lookup but not the builder's finite capacity or duplicate insertion
+policy. Those are specification gaps for building the original cache; no guessed
+dictionary implementation is used. Uncached unique-header inputs can already run
+through the reader. Full application startup and session reload wiring remain open.
 
 ## Classic rule tables
 
@@ -116,8 +152,8 @@ is `<nil>`. This distinction is explicit rather than hidden by a cached string.
 The process overloads of city preferences and C01 naming use current pool bindings.
 
 The live leader records pass through the existing 48-byte F06 codec without a
-second representation. P04's full label-file startup/loading, S04 editing,
-retained native rule installation, F06 sign-marker processing and complete
+second representation. Full application startup, GAME-cache construction, S04
+editing, retained native rule installation, F06 sign-marker processing and complete
 session reload orchestration remain open. Supplying an initialized pool alone
 does not claim original startup ordinal equality; the preceding labels and
 allocation sequence must also match.
@@ -125,10 +161,23 @@ allocation sequence must also match.
 A [retained original-save consistency check](conformance/reports/original-rule-labels-windows.json)
 matches all 18 English leader name/plural/adjective/title label magnitudes against
 the sequence `<nil>`, 888 labels, three popup strings and the ordered rule tables.
-The independently authored helper pins the input bytes and decoder. This supports
-the zero-based ordinal interpretation for those values; it neither executes the
-C++ rule loader nor supplies a new original startup trace. The earlier original
+The independently authored helper pins the input bytes and decoder. Its optional
+`oc2_rule_labels` driver now executes the C++ P04 rebuild and F03 rule loader:
+892 pre-rule strings and all 18 resulting bindings match the retained save by
+magnitude. This is not a new original startup trace. The earlier original
 capture pinned the rules and save, but not LABELS; the report identifies that limit.
+
+The native read-only driver is built with testing and tools enabled:
+
+```powershell
+build/headless-fetch/oc2_rule_labels.exe LABELS.TXT RULES.TXT original.sav 12
+```
+
+The last argument is the independently identified tribe slot for the save's one
+leader record. It reports source hashes and all comparisons as JSON; exit 0 means
+all magnitudes match, 1 means mismatch, and 2 means invalid input or load failure.
+The driver uses uncached supplied files and does not discover installations,
+transform saved sign markers, load a live session or write the input files.
 
 Reference failures retain the specified prefix and report the module, code, row,
 position and offending line. A returning diagnostic/cleanup callback is followed
@@ -202,6 +251,9 @@ padding behavior, stable text views, allocation/reset failure and live callbacks
 Leader-boundary cases exercise IDs at 32768 and 65536 through the 48-byte codec
 and actual C01 provider, and distinguish decoded text from a narrowed live label.
 The session ownership case also checks retained and isolated rule/pool state.
+Ten label-loader cases cover language/capacity initialization, full and partial
+tables, fallback, empty/nonpositive counts, popup retention, live callbacks,
+bounded writes and failures. They run on native and WASM targets.
 The preference cases cover paired inputs,
 first-match behavior, retained fields and live name changes.
 Two additional native CLI cases check real mounted files, source preservation,
@@ -213,8 +265,8 @@ The [city-name providers](m1-city-names.md) now implement C01's ordered default
 naming through both paths, with shared counter/publication behavior and a native
 validation command.
 
-Full label startup, retained native rule installation, the complete
-comparison profile, remaining native component admission,
+Full application startup/GAME-cache construction, retained native rule
+installation, the complete comparison profile, remaining native component admission,
 conversion tools/receipts, session wiring and owning production consumers remain
 required. The table readers are ready for those callers; they do not implement
 them implicitly.

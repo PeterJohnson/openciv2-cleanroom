@@ -1,6 +1,6 @@
 {
   "format": "openciv2-original-rule-label-consistency/1",
-  "createdUtc": "2026-11-14T07:31:44.361572+00:00",
+  "createdUtc": "2026-11-14T07:42:52.557042+00:00",
   "scope": "retained-original-save-and-text-consistency; no new original execution",
   "inputs": {
     "labels": {
@@ -21,13 +21,13 @@
   },
   "driver": {
     "path": "C:/Projects/openciv2-cleanroom/tools/check_original_rule_labels.py",
-    "bytes": 6253,
-    "sha256": "904f923c509267debc6ba8df79d9c8f21de3c201c8e83fdcc8408d76f31ecf83"
+    "bytes": 7643,
+    "sha256": "07224f939b479e8a196632cf26b33b3bc652f36dab76dcaeaf891fd3f3b13a71"
   },
   "decoder": {
     "path": "build/headless-fetch/oc2.exe",
     "bytes": 3079168,
-    "sha256": "4b70e22f23ec8a437ab068f00061d9d2fed5fa8ac371060c8f7ea0ac09a99b78"
+    "sha256": "bfaa54b59e098d4f36254765ae6c70923197088c3f83b6de2314f86b52f7fe41"
   },
   "tribe": 12,
   "declaredLabels": 888,
@@ -150,6 +150,146 @@
     "Saved sign markers are compared by magnitude, not normalized into a new save.",
     "The earlier original capture pinned RULES and the save, but not LABELS; current retained LABELS bytes are pinned here.",
     "This corroborates these 18 bindings and the zero-based ordinal sequence; it is not a new startup trace or complete pool/peer conformance.",
-    "The C++ RuleLoader is not executed by this observation helper."
-  ]
+    "The optional C++ comparison runs P04 label rebuild and F03 rules on supplied files; it does not run GAME-cache construction, F06 sign transformations or session loading."
+  ],
+  "implementation": {
+    "comparisons": [
+      {
+        "field": "names[0]",
+        "loaded": 1253,
+        "magnitudeMatches": true,
+        "stored": 1253
+      },
+      {
+        "field": "names[1]",
+        "loaded": 1254,
+        "magnitudeMatches": true,
+        "stored": 1254
+      },
+      {
+        "field": "plural",
+        "loaded": 1255,
+        "magnitudeMatches": true,
+        "stored": -1255
+      },
+      {
+        "field": "adjective",
+        "loaded": 1256,
+        "magnitudeMatches": true,
+        "stored": -1256
+      },
+      {
+        "field": "titles[0][0]",
+        "loaded": 1155,
+        "magnitudeMatches": true,
+        "stored": -1155
+      },
+      {
+        "field": "titles[0][1]",
+        "loaded": 1156,
+        "magnitudeMatches": true,
+        "stored": 1156
+      },
+      {
+        "field": "titles[1][0]",
+        "loaded": 1158,
+        "magnitudeMatches": true,
+        "stored": -1158
+      },
+      {
+        "field": "titles[1][1]",
+        "loaded": 1159,
+        "magnitudeMatches": true,
+        "stored": 1159
+      },
+      {
+        "field": "titles[2][0]",
+        "loaded": 1161,
+        "magnitudeMatches": true,
+        "stored": -1161
+      },
+      {
+        "field": "titles[2][1]",
+        "loaded": 1162,
+        "magnitudeMatches": true,
+        "stored": 1162
+      },
+      {
+        "field": "titles[3][0]",
+        "loaded": 1164,
+        "magnitudeMatches": true,
+        "stored": -1164
+      },
+      {
+        "field": "titles[3][1]",
+        "loaded": 1165,
+        "magnitudeMatches": true,
+        "stored": 1165
+      },
+      {
+        "field": "titles[4][0]",
+        "loaded": 1257,
+        "magnitudeMatches": true,
+        "stored": -1257
+      },
+      {
+        "field": "titles[4][1]",
+        "loaded": 1258,
+        "magnitudeMatches": true,
+        "stored": 1258
+      },
+      {
+        "field": "titles[5][0]",
+        "loaded": 1170,
+        "magnitudeMatches": true,
+        "stored": -1170
+      },
+      {
+        "field": "titles[5][1]",
+        "loaded": 1171,
+        "magnitudeMatches": true,
+        "stored": 1171
+      },
+      {
+        "field": "titles[6][0]",
+        "loaded": 1259,
+        "magnitudeMatches": true,
+        "stored": -1259
+      },
+      {
+        "field": "titles[6][1]",
+        "loaded": 1260,
+        "magnitudeMatches": true,
+        "stored": 1260
+      }
+    ],
+    "declaredLabels": 888,
+    "format": "openciv2-rule-label-comparison/1",
+    "inputs": {
+      "labels": {
+        "path": "C:\\Projects\\openciv2-cleanroom\\build\\original-text-runtime\\Labels.txt",
+        "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+      },
+      "rules": {
+        "path": "C:\\Projects\\openciv2-cleanroom\\build\\original-text-runtime\\RULES.original.txt",
+        "sha256": "8a6f98b8260405091cd41d574c30bb05aa805c99a1f4357c49a73cf382fc2c03"
+      },
+      "save": {
+        "path": "C:\\Projects\\openciv2-cleanroom\\build\\original-text-runtime\\nameprobe_base.sav",
+        "sha256": "d751109faa8a8b9d9a797c7b232ac1bc66cdcbc0636a92a2916e764b2a46558d"
+      }
+    },
+    "poolCapacity": 50000,
+    "postRuleStrings": 1353,
+    "preRuleStrings": 892,
+    "scope": "P04 label rebuild, F03 rules, F06 saved label magnitudes",
+    "status": "matched",
+    "textSearch": "uncached supplied files; ASCII syntax comparison",
+    "tribe": 12
+  },
+  "implementationDriver": {
+    "path": "build/headless-fetch/oc2_rule_labels.exe",
+    "bytes": 1820160,
+    "sha256": "29c8fbf226d2a44fc1db48cc9515e8c56d11af30c81fcc42335f81d7955c9bc4"
+  }
 }

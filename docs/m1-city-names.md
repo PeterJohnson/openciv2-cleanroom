@@ -96,6 +96,6 @@ and live leaders. F03 loading publishes the signed-16 leader bindings consumed
 by C01, including absolute-label aliasing after narrowing; a dedicated test runs
 that path through a real classic provider and the existing leader record codec.
 The explicit resolver overload remains available for supplied backing/services.
-P04's full label startup, F06 sign-marker processing, native rule installation,
+Application startup/GAME-cache construction, F06 sign-marker processing, native rule installation,
 session/city-creation integration, conversion receipts and broader original-game
 comparisons remain required.

@@ -18,7 +18,7 @@ The runtime owns `state::GameState`: the existing stable entity pools, global,
 civilization and name records, retained mood workspace and map storage. It uses
 an injected `ProcessContext` containing lifetime tokens, the shared fallback tile
 and a uniquely owned `RuleState` with rule definitions, a shared text pool, name
-bindings and live leaders/usage/name cursors. That context must outlive the runtime.
+bindings, P04 label/popup tables and live leaders/usage/name cursors. That context must outlive the runtime.
 The large rule tables live outside caller stacks, including on WASM. Independent
 virtual peers supply separate contexts. Preferences, further retained workspaces,
 native rule installation and full classic initialization remain owning-spec work.

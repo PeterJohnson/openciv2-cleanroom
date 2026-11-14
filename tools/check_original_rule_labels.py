@@ -43,6 +43,8 @@ def main():
     parser.add_argument("--save", type=Path, required=True)
     parser.add_argument("--tribe", type=int, required=True)
     parser.add_argument("--cli", type=Path, required=True)
+    parser.add_argument("--bindings", type=Path,
+                        help="Optionally compare the portable C++ label/rule loader too")
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     if not 0 <= args.tribe < 21:
@@ -94,6 +96,20 @@ def main():
                     "magnitudeMatches": abs(fields[key]) == value}
                    for key, value in predicted.items()]
     passed = all(row["magnitudeMatches"] for row in comparisons)
+    implementation = None
+    if args.bindings:
+        loaded = subprocess.run([str(args.bindings.resolve()), str(args.labels.resolve()),
+                                 str(args.rules.resolve()), str(args.save.resolve()), str(args.tribe)],
+                                capture_output=True, text=True, encoding="utf-8", timeout=30)
+        if loaded.returncode not in (0, 1):
+            raise RuntimeError(loaded.stderr)
+        implementation = json.loads(loaded.stdout)
+        loaded_fields = {row["field"]: row for row in implementation["comparisons"]}
+        if set(loaded_fields) != set(predicted):
+            raise ValueError("C++ comparison did not cover the same 18 fields")
+        passed = passed and loaded.returncode == 0 and all(
+            abs(loaded_fields[key]["loaded"]) == value and loaded_fields[key]["stored"] == fields[key]
+            for key, value in predicted.items())
     report = {
         "format": "openciv2-original-rule-label-consistency/1",
         "createdUtc": datetime.now(timezone.utc).isoformat(),
@@ -111,7 +127,11 @@ def main():
             "Saved sign markers are compared by magnitude, not normalized into a new save.",
             "The earlier original capture pinned RULES and the save, but not LABELS; current retained LABELS bytes are pinned here.",
             "This corroborates these 18 bindings and the zero-based ordinal sequence; it is not a new startup trace or complete pool/peer conformance.",
-            "The C++ RuleLoader is not executed by this observation helper."]}
+            ("The optional C++ comparison runs P04 label rebuild and F03 rules on supplied files; it does not run GAME-cache construction, F06 sign transformations or session loading."
+             if implementation else "The C++ RuleLoader is not executed by this observation helper.")]}
+    if implementation:
+        report["implementation"] = implementation
+        report["implementationDriver"] = receipt(args.bindings)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"{len(comparisons)} saved label magnitudes: {report['status']}; pre-rule count {prefix}")
     return 0 if passed else 1

@@ -1,5 +1,6 @@
 #pragma once
 #include "civilization.hpp"
+#include "labels.hpp"
 #include "rules.hpp"
 #include "text_pool.hpp"
 
@@ -25,6 +26,7 @@ struct RuleNameBindings {
 struct RuleState {
     RuleDefinitions definitions;
     TextPool text;
+    Labels labels;
     RuleNameBindings names;
     std::array<Leader, 21> leaders{};
     bool double_movement_applied = false;
