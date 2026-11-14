@@ -60,6 +60,9 @@ public:
     std::int32_t first_at(world::Position position);
     void detach(std::int32_t slot);
     void attach_at_front(std::int32_t slot, world::Position position);
+    // Shared U01 backing boundary for lifecycle operations. No liveness/scan
+    // filter and no repair; missing special or negative backing stops here.
+    state::Unit& backed_unit(std::int32_t slot) { return record(slot); }
 
 private:
     state::Unit& record(std::int32_t slot);

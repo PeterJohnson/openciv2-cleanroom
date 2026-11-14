@@ -1,0 +1,24 @@
+#include "session/classic_loaded_units.hpp"
+#include <utility>
+
+namespace openciv::session {
+void cleanup_classic_loaded_units(state::GameState& world, const state::RuleDefinitions& rules,
+                                  unit::StackBudget& budget, unit::StackServices services,
+                                  unit::DeletionServices deletion_services) {
+    world.multiplayer.network_host = true;
+    unit::LocalStacks stacks(world.entities.units, world.map, world.unit_stacks, budget, services);
+    unit::UnitDeletion deletion(world, rules, budget, std::move(services),
+                                std::move(deletion_services));
+    for (std::size_t i = 0; i < world.entities.units.end(); ++i) {
+        auto& current = world.entities.units.storage()[i];
+        if (!state::occupied(current.token)) {
+            current.previous.value = current.next.value = -1;
+        } else {
+            const auto slot = static_cast<std::int32_t>(i);
+            stacks.validate(slot);
+            if (current.x < 0 || current.y < 0)
+                deletion.erase(slot, false);
+        }
+    }
+}
+} // namespace openciv::session

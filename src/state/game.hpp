@@ -31,6 +31,11 @@ struct GameState {
     explicit GameState(ProcessContext& process) : map(process.fallback) {}
     EntityPools entities;
     UnitStackState unit_stacks;
+    UnitDeletionState unit_deletion;
+    // U01 / V01 retained census, distinct from military and per-type counts.
+    std::array<std::int32_t, 8> unit_totals{};
+    // Classic F04/N03 loop activity is distinct from SessionRuntime clients.
+    bool turn_loop_active = false;
     GlobalValues globals;
     std::array<Civilization, 8> civilizations{};
     std::array<CivilizationNames, 8> names{};

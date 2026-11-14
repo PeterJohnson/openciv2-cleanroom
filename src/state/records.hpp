@@ -143,6 +143,12 @@ struct UnitStackState {
     bool detach_active = false;
     bool attach_active = false;
 };
+// U01 sections 6, 9: deletion has its own activity and reply fields. The reply
+// becomes Pending (-2) at a client request, not at construction or every call.
+struct UnitDeletionState {
+    bool active = false;
+    std::int32_t reply = 0;
+};
 std::optional<UnitSlot> reserve_unit_slot(UnitPool& pool, CivilizationSlot owner,
                                           std::int16_t military_count,
                                           std::uint8_t effective_humans);

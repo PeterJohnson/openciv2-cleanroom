@@ -494,10 +494,15 @@ the earlier original live-save report exercised the core driver, not this menu
 wrapper. Native chooser/application binding and accepted-file post-load admission
 remain open.
 
-The [U01 stack foundations](m1-unit-stacks.md) now provide real traversal,
-ordered repair and local placement for the future post-load cleanup. They preserve
-diagnostic mutations, unusual surviving links and explicit backing/resource stops.
-Basic deletion and composition into the accepted-file wrapper remain open.
+The [U01 stack and deletion foundations](m1-unit-stacks.md) now provide real
+traversal, ordered repair, local placement and basic deletion. The extracted
+F06 cleanup stage establishes host, scans ascending through the live bound,
+clears free-slot links, validates live records and deletes negative-position
+units with notifications false. Counter changes, carrier wakeups and required
+V01 checks remain active. Five composition cases cover ordering, dynamic bounds
+and partial effects. The stage currently requires local/host authority to persist
+during stack repair; routed placement children, V01's cascade and the full
+accepted-file wrapper/application admission remain open.
 
 ## Windows evidence — 2026-11-13 Pacific
 

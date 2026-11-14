@@ -20,9 +20,12 @@ owns saved multiplayer values, runtime local-human/resume/network-turn selectors
 the hotseat participant mask and password flags, plus the ordered event collection
 and its separate loaded indicator,
 power/elimination history, scenario parameters, logical layout and map views.
-The [local U01 stack paths](m1-unit-stacks.md) add retained suppression,
-animation and detach/attach activity controls, without resetting them at client
-lifetime boundaries or claiming complete network-facing unit operations.
+The [U01 stack/deletion paths](m1-unit-stacks.md) add retained suppression,
+animation and detach/attach/delete activity, deletion reply, cached civilization
+unit totals and classic turn-loop activity. Multiplayer retains a distinct
+network-host flag. Client lifetime changes do not reset these fields. Deletion's
+request/wait boundary is implemented through explicit services; complete unit
+routing and owning transport/destruction bindings remain open.
 These are separate from participant/controller bindings. It uses
 an injected `ProcessContext` containing lifetime tokens, the shared fallback tile
 and a uniquely owned `RuleState` with rule definitions, a shared text pool, name

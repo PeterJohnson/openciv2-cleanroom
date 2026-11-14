@@ -36,6 +36,7 @@ struct MultiplayerState {
     // currently effective human mask and serialized turn/resume fields.
     std::uint8_t hotseat_participants = 0;
     std::int32_t network_turn_civ = 0;
+    bool network_host = false; // Runtime authority; not a saved field.
     bool operator==(const MultiplayerState&) const = default;
 };
 // Implemented process-retained preference subset. Saved simultaneous is a
