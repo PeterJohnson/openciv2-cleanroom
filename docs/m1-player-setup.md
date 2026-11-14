@@ -51,9 +51,11 @@ and 192,739 assertions. All 54 registered conformance observations match between
 native and WebAssembly. Logs are retained under
 `build/player-setup-*-final-build.log` and `build/player-setup-*-final-ctest.log`.
 
-The outer F05 menu/chooser sequence, preference save, rule-section reloads,
-W02 generation, V01 creation/balancing, acceleration application and introduction
-remain separate work. The synchronous service API does not yet provide a
+The [new-world entry parent](m1-world-entry.md) now joins this wizard to size/map
+selection, parameters, preference saving, required rule reloads, inner
+initialization and the introduction list. Outer menu/session lifecycle and
+W02 generation, V01 creation/balancing and acceleration bindings remain.
+The synchronous service API does not yet provide a
 cooperative command continuation or pending-wizard checkpoint restore. Complete
 M1 lifecycle, content admission and original-peer profile gates still require
 their owning integrations. This helper does not claim full new-game equivalence.

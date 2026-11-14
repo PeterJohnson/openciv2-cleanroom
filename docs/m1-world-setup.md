@@ -79,7 +79,9 @@ are `build/world-setup-{native,sqlite,wasm}-final-build.log` and
 `build/world-setup-{native,sqlite,wasm}-final-ctest.log`.
 
 The [premade path](m1-premade-world.md) now composes its real F06 reader and
-preparation. Outer new-session/menu lifecycle, the player/rules wizard,
+preparation. The [player/rules wizard](m1-player-setup.md) and
+[new-world entry composition](m1-world-entry.md) now join these helpers.
+Outer new-session/menu lifecycle,
 W02 generation, V01 creation, F05 placement/balancing/
 acceleration, application interaction binding and X02 setup registration remain
 required work. The [inner initializer](m1-new-game.md) is already implemented

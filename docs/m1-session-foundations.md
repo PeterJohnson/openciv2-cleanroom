@@ -174,3 +174,9 @@ now composes this helper with ordered choices, retained retry locals, custom
 names/titles and opponent selection. Its required synchronous services remain
 separate from application dialogs, cooperative commands and pending-operation
 checkpoint restore.
+
+The [new-world entry parent](m1-world-entry.md) now composes size/premade,
+parameters, players, preference saves, ordered F03 reloads, inner initialization
+and the final advance list. W02, V01, balancing, acceleration and presentation
+remain required child operations; outer application/session admission and the
+menu loop remain separate.

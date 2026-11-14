@@ -73,7 +73,9 @@ reflects the reviewed radius-byte clarification. Local final logs are
 `build/premade-world-{native,sqlite,wasm}-final-ctest.log`.
 
 Premade preparation stops before W02. Terrain finalization, region/connectivity
-rebuilding, start-location selection, the player/rules wizard, outer menu/chooser
-composition, V01/F05 creation/placement/balancing/acceleration and application
+rebuilding and start-location selection remain required. The
+[player/rules wizard](m1-player-setup.md) and [new-world entry parent](m1-world-entry.md)
+now compose this path. Outer menu/session lifecycle,
+V01/F05 creation/placement/balancing/acceleration and application
 interaction binding remain required. These tests do not establish a playable
 generated world or complete M1.

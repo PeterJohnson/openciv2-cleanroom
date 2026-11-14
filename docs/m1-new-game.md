@@ -75,7 +75,8 @@ Local ignored logs are `build/new-game-{native,sqlite,wasm}-build.log`,
 `build/new-game-{native,sqlite,wasm}-ctest.log`.
 
 The [world-size and parameter helpers](m1-world-setup.md) are now implemented
-separately. The outer new-session boundary, full menu/wizard cancellation state
-machine, complete V01 creation, F05 placement/balancing/acceleration,
+separately. The [new-world entry parent](m1-world-entry.md) now composes them with
+the player wizard and this initializer. The outer new-session/menu boundary,
+complete V01 creation, F05 placement/balancing/acceleration,
 application composition and X02 registration remain separate required work.
 No new original-program observation is claimed by these tests.
