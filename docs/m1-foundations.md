@@ -2,8 +2,8 @@
 
 M1 is underway, not complete. Implemented foundations include F01 numeric
 primitives and isolated random contexts in standard-library-only `oc2_base`,
-F02 token assignment/unit reservation and W01 map foundations in `oc2_game`, and a
-bounded developer runner for nine registered X02 operations. No reconstruction
+F02 entity records/pools and W01 map foundations in `oc2_game`, initial F06 codecs
+in `oc2_formats`, and a bounded developer runner for nine registered X02 operations. No reconstruction
 source, legacy harness, original executable or asset checkout is a code input.
 
 ## Implemented boundary
@@ -28,10 +28,17 @@ source, legacy harness, original executable or asset checkout is a code input.
 - F02 §§2–3: separate slot/token identity types, process-owned unit/city token
   sequences and the unit-slot reservation prefix, including first-hole reuse,
   retained military counts and effective-human extension limits.
+- F02 §§3,5–6,9: unit/city records and stable pools, deletion finalization,
+  ordered lifetime renewal and shared mood-workspace dispatch. The F05 entity
+  reset portions distinguish outer new-session invalidation from inner scan reset.
 - W01 §§1–6,8: doubled-coordinate geometry, ordered neighborhood inputs,
   contiguous logical tiles, remembered/coarse layers, retained map state,
   allocation/release, spatial queries, coordinate features and primitive tile
   mutations with ordered synchronization effects.
+- F06 §§2–4,7: explicit unit/city/tile/region/header codecs, raw-map stored views
+  and export, ordered raw/embedded map item I/O and versioned entity item loading.
+  The [record/codec handoff](m1-windows-handoff.md) documents the implemented
+  boundary, external original-map comparisons and remaining save/session work.
 
 The nine registered adapters produce actual entry/return/exit traces.
 `oc2_conformance_adapter` is a test executable, not a save-inspection CLI or game
@@ -103,6 +110,12 @@ Catch2 additionally covers the 2039/2040/2047/2048 bounds, both sides of 1948,
 effective-human bits, negative retained counts, invalid views and a caller-driven
 scan reset retaining records and token positions. These are leaf-operation tests,
 not full U01 creation, C01 city reservation, deletion or F06 token-remapping tests.
+
+The subsequent record slice adds five pool/workspace and eleven codec/I/O Catch2
+cases. These cover deletion finalization, entity reset portions, current/legacy
+lifetime renewal, full unit/city payloads, explicit little-endian field vectors,
+retained bytes, truncated records and short-item publication prefixes. Full
+creation/deletion policy, civilization/global records and session load remain open.
 
 ## W01 geometry and map boundary
 
@@ -229,7 +242,7 @@ CTest writes a fresh report in its build directory; CI uploads it with the test
 evidence. Updating the retained reports is an explicit reviewed step after an
 implementation change, not automatic regeneration of expected results.
 
-Full F02 records/pools/process lifecycle, map integration with setup/load, content codecs,
+Remaining F02 world/civilization/process lifecycle, complete setup/load integration, content codecs,
 scoped queries, save inspection/SQLite export, session/continuation contracts and networking
 remain M1 work. These primitives alone cannot play a turn, load a save, restore
 a pending interaction or establish original-game interoperability. The
@@ -237,11 +250,11 @@ a pending interaction or establish original-game interoperability. The
 
 ## Local validation — 2026-11-13 UTC
 
-Linux Clang 20.1.8 / CMake 3.31.10 passes all 34 headless CTests: 31 Catch2 cases,
+Linux Clang 20.1.8 / CMake 3.31.10 passes all 50 headless CTests: 47 Catch2 cases,
 two metadata checks and execution of the twenty X02 vectors. A separate ASan/UBSan
-build passes the same 34 tests with leak detection enabled (outside the local
+build passes the same 50 tests with leak detection enabled (outside the local
 ptrace sandbox). Emscripten 4.0.23 / Clang 22.0.0 passes four CTests under Node:
-the 31 Catch2 cases, two host metadata checks and the twenty adapter vectors.
+the 47 Catch2 cases, two host metadata checks and the twenty adapter vectors.
 The Windows/macOS CI jobs are configured to run the new tests, but these M1
 changes have not yet run on those hosts.
 

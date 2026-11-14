@@ -568,8 +568,8 @@
       "id": "original-access",
       "milestone": "M1\u2013M7",
       "domain": "Original file and mixed-peer interoperability; W02 target measurements.",
-      "knownPrefix": "Target image hash exists in X02 vectors; no original executable or observations acquired here.",
-      "closureEvidence": "Use a separately provisioned original installation and external comparison protocol in docs/content/README.md; record executable hash, inputs and bounded observations."
+      "knownPrefix": "User supplied an original installation at /home/peter/project/civ2/Civ2. Its civ2.exe matches the X02 target hash. Seven original raw maps decode/re-encode byte-exactly; see docs/conformance/reports/original-maps-native.json. Original execution and peer captures remain pending; no Wine/Xvfb is on PATH.",
+      "closureEvidence": "Use the verified original installation and external comparison protocol in docs/content/README.md; record original execution, bidirectional file acceptance and peer captures separately from C++ codec round trips."
     }
   ]
 }

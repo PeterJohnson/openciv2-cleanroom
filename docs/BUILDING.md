@@ -1,8 +1,9 @@
 # Building the application
 
-This builds the initial application shell described in
-[application-shell.md](application-shell.md). Gameplay, graphics-pack loading,
-classic file/wire codecs, and X02 execution remain implementation-plan work.
+This builds the application shell described in
+[application-shell.md](application-shell.md) and the portable
+[M1 foundation libraries](m1-foundations.md). Playable gameplay, graphics-pack
+loading, full save/wire codecs and the general X02 runner remain plan work.
 
 ## Dependencies and presets
 
@@ -58,8 +59,8 @@ when reporting results.
 
 `OC2_BUILD_GUI=OFF` configures without SDL, ImGui, the asset clone, or a display.
 With tests enabled, Catch2 is the only third-party dependency. With
-`BUILD_TESTING=OFF` as well, this builds just the portable view-model library
-and needs no third-party dependency. Future game libraries inherit this boundary.
+`BUILD_TESTING=OFF` as well, this builds the portable base, game, formats and
+view-model libraries and needs no third-party dependency.
 
 ## Pinned CI toolchains and inventories
 

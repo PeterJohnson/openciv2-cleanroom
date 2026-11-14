@@ -112,7 +112,13 @@ Provision a separately licensed Civilization II Multiplayer Gold Edition
 **5.4.0f, patch 3** installation on an external Windows machine or a documented
 compatibility environment. Do not acquire an executable from reconstruction
 repositories, package it with this project, or link it into any target. Access is
-not available in this checkout; the ledger's `original-access` gap stays open.
+now available through the user-supplied installation at
+`/home/peter/project/civ2/Civ2` (2026-11-13). Its `civ2.exe` matches the target hash
+below. Seven original raw maps passed C++ decode/encode with source preservation;
+the [bounded report](../conformance/reports/original-maps-native.json) contains
+hashes, not original payloads. The executable was not run on this Linux host,
+where Wine/Xvfb are absent from PATH. Original-program acceptance and peer captures
+remain open; use the [Windows handoff](../m1-windows-handoff.md).
 
 An independent driver should receive an explicit installation path and a separate
 scratch/output directory. Before running a case, hash the executable, record its

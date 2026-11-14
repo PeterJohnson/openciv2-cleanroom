@@ -51,6 +51,7 @@ ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake
                    "cmake/ConformanceIdentity.cmake", "src/base/arithmetic.hpp",
                    "src/base/arithmetic.cpp", "src/base/random.hpp", "src/base/random.cpp",
                    "src/state/identities.hpp", "src/state/identities.cpp",
+                   "src/state/records.hpp", "src/state/records.cpp",
                    "src/world/geometry.hpp", "src/world/geometry.cpp",
                    "src/world/map.hpp", "src/world/map.cpp",
                    "tools/conformance_adapter.cpp")
