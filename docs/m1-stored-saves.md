@@ -91,15 +91,19 @@ Formatting uses the pinned clang-format 20.1.8. The repository hook is enabled
 in this clone. The Windows sandbox prevents MSVC's PDB service and temporary
 Git-hook commits; those validation commands run outside that sandbox.
 
-The native read-only comparison driver can be run with:
+The native comparison driver can be run with:
 
 ```powershell
 .\build\headless-fetch\oc2_save_roundtrip.exe 'C:\Games\Civ2\EXAMPLE.SAV'
+.\build\headless-fetch\oc2_save_roundtrip.exe 'C:\Games\Civ2\EXAMPLE.SAV' 'C:\Scratch\NEW_OUTPUT.SAV'
 ```
 
 It reads the input, decodes/re-encodes it in C++, compares every byte and prints
-structural metadata. It never creates or overwrites a file. It is a test driver,
-separate from the [implemented inspection CLI](m1-inspection.md).
+structural metadata. With no output argument it writes no file. The optional
+output uses the native atomic publication adapter and refuses an existing
+destination, including the input itself. It reports `outputWritten`; malformed
+input produces no export. The driver requires native tools and tests enabled;
+it is separate from the [implemented inspection CLI](m1-inspection.md).
 
 Against the original installation at `C:\Projects\civ2\Civ2`, all 21 current
 saved games in that directory reproduce their input bytes exactly, with source
@@ -110,6 +114,15 @@ records versions, hashes, driver/build identity, source hashes and diagnostics.
 Original file contents remain external. None of these comparisons executes the
 original program or establishes that it accepted an edited export.
 
+A later [normal-UI Windows run](m1-original-text-observations.md) closes a bounded
+original-resume check: the original accepted a C++ byte-exact export of a fresh
+single-player save, founded a city, processed a turn and saved at 3980 B.C. That
+save also reproduced exactly through C++, and the original accepted the second
+export with the city present. The report keeps full source/output identities
+and limitations. Eight inspection/driver CLI cases now include authored-file
+output, source preservation, existing-destination refusal and malformed-input
+cleanup. These checks do not implement the ordered load or live save operation.
+
 ## Remaining M1 work
 
 The [completion audit](m1-validation.md) still governs the milestone. Next are
@@ -117,5 +130,5 @@ semantic content and classic text adapters, explicit process/session
 lifecycles and ordered loading, commands/continuations/authority, generalized
 X02 execution and choice replay, and integration of the
 [N05/N02 primitives](m1-network-foundations.md). Legacy stored-file coverage,
-original-program resume/edit checks and full original-peer sessions remain open.
+broader original-program resume/edit checks and full original-peer sessions remain open.
 Do not advertise a loaded-world view based on these stored records.

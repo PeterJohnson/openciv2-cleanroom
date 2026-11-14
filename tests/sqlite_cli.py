@@ -11,7 +11,7 @@ import unittest
 # Shares the independently authored input bytes, not exporter expectations.
 import inspection_cli as fixture
 
-DRIVER = fixture.DRIVER
+DRIVER = Path(sys.argv.pop(1)).resolve()
 
 
 class SQLiteCli(unittest.TestCase):

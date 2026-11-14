@@ -66,8 +66,10 @@ Native catalogs describe game concepts; the separate classic compatibility
 descriptor carries source addresses and slot mappings.
 The [owned examples](examples/README.md) illustrate fields and references but deliberately lack complete playable tables
 and interaction coverage. [JSON Schemas and a developer checker](schemas/README.md)
-validate document structure. Runtime loaders/converters, semantic pack validation
-and a complete distributable base pack are not implemented.
+validate document structure. Runtime pack resolution, typed gameplay and native
+rule admission are implemented in the [content runtime](../m1-content-runtime.md).
+Classic converters, complete semantic pack validation and a complete
+distributable base pack remain open.
 
 Standalone play must work without original text files. Users may select original
 or scenario text through compatibility adapters that retain the owning algorithm's
@@ -80,8 +82,9 @@ save/wire formats. Track user-import provenance after conversion as well.
 The [first-wave formats](gameplay-format.md) and [shipped defaults](../../data/gameplay/classic-mge-5.4.0f/README.md)
 cover calendar, spaceship, government, difficulty, combat and scoring values
 previously fixed in the executable. Schemas, source pins and an offline developer
-loader validate these complete component scopes. C++ consumers and runtime
-profile/session integration remain open. The [assessment](built-in-gameplay-data.md)
+loader validate these complete component scopes. Portable C++ loading now
+produces immutable typed values with classic/custom profile gates; owning
+gameplay consumers and session integration remain open. The [assessment](built-in-gameplay-data.md)
 tracks later candidates; further component extraction is deferred until
 implementation reaches the owning mechanics. Changed operands require explicit
 custom mode and do not inherit the classic-default original-file/peer compatibility
@@ -112,13 +115,15 @@ Provision a separately licensed Civilization II Multiplayer Gold Edition
 **5.4.0f, patch 3** installation on an external Windows machine or a documented
 compatibility environment. Do not acquire an executable from reconstruction
 repositories, package it with this project, or link it into any target. Access is
-now available through the user-supplied installation at
-`/home/peter/project/civ2/Civ2` (2026-11-13). Its `civ2.exe` matches the target hash
-below. Seven original raw maps passed C++ decode/encode with source preservation;
-the [bounded report](../conformance/reports/original-maps-native.json) contains
-hashes, not original payloads. The executable was not run on this Linux host,
-where Wine/Xvfb are absent from PATH. Original-program acceptance and peer captures
-remain open; use the [Windows handoff](../m1-windows-handoff.md).
+now available through the user-supplied Windows installation at
+`C:\Projects\civ2\Civ2` (2026-11-13). Its `civ2.exe` matches the target hash below.
+Seven original raw maps and 21 current saves passed C++ decode/encode with source
+preservation. Later isolated Windows runs captured original LAN discovery/ID
+responses and [actual acceptance of two byte-preserving save exports](../m1-original-text-observations.md),
+including original city founding and resave between them. These are bounded
+checks: full live-session interchange and original-peer sessions remain open.
+The [Windows handoff](../m1-windows-handoff.md) preserves the earlier Linux
+stopping point; current scope is in the [M1 audit](../m1-validation.md).
 
 An independent driver should receive an explicit installation path and a separate
 scratch/output directory. Before running a case, hash the executable, record its

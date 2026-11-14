@@ -106,7 +106,7 @@ original-program observation before a consumer depends on it.
 
 Catch2 covers ownership, stable slots, retained/unsigned extremes, exact byte
 coverage, semantic diagnostic offsets, null/absence, optional blocks and diff
-matching. Seven CLI integration tests use independently authored F06 bytes and
+matching. Eight CLI/driver integration tests use independently authored F06 bytes and
 Python's JSON/hash libraries, including Unicode paths, broken output pipes and source preservation.
 SHA-256 tests include published vectors and independent padding-boundary results.
 These checks run independently of graphics and gameplay content.

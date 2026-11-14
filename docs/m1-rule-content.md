@@ -67,6 +67,13 @@ it in the behavioral contract or capture independent original-game observations,
 including accented pairs and nonletters. Do not substitute Unicode case folding
 or the current host locale. This stage performs no case-insensitive name lookup.
 
+An [original Windows observation](m1-original-text-observations.md) selected
+`@pRoBeÉ` for the pooled plural `ProbeÉ` in an ordered three-header CITY input,
+and repeated the proposal after loading a C++ export. Duplicate equivalent
+headers and section-index behavior prevent treating this as a complete or
+isolated comparison test. Single-candidate controls and the broader byte/locale
+domain remain open; no comparison algorithm is inferred here.
+
 ## Command and checks
 
 ```powershell

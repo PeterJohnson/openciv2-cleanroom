@@ -8,7 +8,9 @@ import sys
 import tempfile
 import unittest
 
-DRIVER = Path(sys.argv.pop(1)).resolve()
+if __name__ == '__main__':
+    DRIVER = Path(sys.argv.pop(1)).resolve()
+    ROUNDTRIP = Path(sys.argv.pop(1)).resolve()
 MAP = 12 + 330 + 8 * 242 + 8 * 1428
 UNITS = MAP + 14 + 7 * 4 + 6 * 4 + 2 + 1024
 CITY = UNITS + 32
@@ -44,6 +46,30 @@ class InspectionCli(unittest.TestCase):
                                 encoding='utf-8', timeout=30)
         self.assertEqual(result.returncode, status, result.stderr or result.stdout[:1000])
         return result
+
+    def test_roundtrip_output_preserves_input_and_refuses_existing_paths(self):
+        # F06 sections 2-4/8: stored-view encoding; no live load transformations.
+        def run(*args, status=0):
+            result = subprocess.run([str(ROUNDTRIP), *map(str, args)],
+                                    capture_output=True, encoding='utf-8', timeout=30)
+            self.assertEqual(result.returncode, status, result.stderr)
+            return result
+
+        self.assertFalse(json.loads(run(self.source).stdout)['outputWritten'])
+        output = self.root / 'export with spaces.sav'
+        report = json.loads(run(self.source, output).stdout)
+        self.assertTrue(report['outputWritten'])
+        self.assertTrue(report['byteEqual'])
+        self.assertEqual(output.read_bytes(), self.initial)
+        for destination in (self.source, output):
+            self.assertIn('already exists', run(self.source, destination, status=1).stderr)
+            self.assertEqual(destination.read_bytes(), self.initial)
+        invalid = self.root / 'truncated.sav'
+        invalid.write_bytes(self.initial[:20])
+        rejected = self.root / 'rejected.sav'
+        run(invalid, rejected, status=1)
+        self.assertFalse(rejected.exists())
+        self.assertEqual(set(self.root.iterdir()), {self.source, output, invalid})
 
     def test_json_is_lossless_ordered_and_has_explicit_provenance(self):
         result = self.run_cli('inspect', self.source, '--json')

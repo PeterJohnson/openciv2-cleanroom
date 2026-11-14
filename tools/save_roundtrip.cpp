@@ -1,23 +1,20 @@
-// Native, read-only comparison driver for externally supplied original files.
+// Native comparison driver for externally supplied original files.
 // No load transformation, original execution or semantic validity is claimed.
 #include "formats/classic_save.hpp"
-#include <fstream>
+#include "platform/native_files.hpp"
 #include <iostream>
-#include <iterator>
 
 int main(int argc, char** argv) {
     try {
-        if (argc != 2)
-            throw std::invalid_argument("Usage: oc2_save_roundtrip INPUT.SAV");
-        std::ifstream input(argv[1], std::ios::binary);
-        if (!input)
-            throw std::runtime_error("Cannot open save input");
-        const openciv::formats::Bytes bytes{std::istreambuf_iterator<char>{input}, {}};
-        if (input.bad())
-            throw std::runtime_error("Save input read failed");
+        if (argc != 2 && argc != 3)
+            throw std::invalid_argument("Usage: oc2_save_roundtrip INPUT.SAV [NEW_OUTPUT.SAV]");
+        const auto bytes = openciv::io::read_file(argv[1]);
         const auto save = openciv::formats::decode_stored_save(bytes);
-        if (openciv::formats::encode_stored_save(save) != bytes)
+        const auto encoded = openciv::formats::encode_stored_save(save);
+        if (encoded != bytes)
             throw std::runtime_error("Decoded/encoded bytes differ");
+        if (argc == 3)
+            openciv::io::write_new_file(argv[2], encoded);
         std::cout << "{\"version\":" << save.header.version
                   << ",\"width\":" << save.map.header.width
                   << ",\"height\":" << save.map.header.height
@@ -27,7 +24,8 @@ int main(int argc, char** argv) {
                   << ",\"scenario\":" << (save.scenario ? "true" : "false")
                   << ",\"eventBlock\":" << (save.events ? "true" : "false")
                   << ",\"events\":" << (save.events ? save.events->entries.size() : 0)
-                  << ",\"trailingBytes\":" << save.trailing.size() << ",\"byteEqual\":true}\n";
+                  << ",\"trailingBytes\":" << save.trailing.size() << ",\"byteEqual\":true"
+                  << ",\"outputWritten\":" << (argc == 3 ? "true" : "false") << "}\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
