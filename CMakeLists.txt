@@ -10,6 +10,12 @@ option(OC2_FETCH_SDL "Fetch pinned SDL instead of using an installed package" OF
 option(OC2_SANITIZERS "Enable address and undefined behavior sanitizers" OFF)
 option(OC2_GUI_TESTS "Build Dear ImGui Test Engine GUI tests (desktop testing only)" OFF)
 option(OC2_FETCH_DEPENDENCIES "Allow downloading hash-pinned dependencies" OFF)
+if(EMSCRIPTEN)
+  set(oc2_native_tools_default OFF)
+else()
+  set(oc2_native_tools_default ON)
+endif()
+option(OC2_BUILD_TOOLS "Build native stored-file inspection tools" ${oc2_native_tools_default})
 include(cmake/Formatting.cmake)
 include(cmake/Assets.cmake)
 
@@ -31,7 +37,7 @@ if(EMSCRIPTEN)
 endif()
 
 # F01 portable arithmetic and versioned random contexts: standard library only.
-add_library(oc2_base src/base/arithmetic.cpp src/base/random.cpp)
+add_library(oc2_base src/base/arithmetic.cpp src/base/random.cpp src/base/hash.cpp)
 target_compile_features(oc2_base PUBLIC cxx_std_20)
 target_include_directories(oc2_base PUBLIC src)
 target_link_libraries(oc2_base PRIVATE oc2_options)
@@ -52,6 +58,23 @@ add_library(oc2_formats src/formats/classic_records.cpp src/formats/classic_io.c
   src/formats/save_records.cpp src/formats/classic_save.cpp)
 target_include_directories(oc2_formats PUBLIC src)
 target_link_libraries(oc2_formats PUBLIC oc2_game PRIVATE oc2_options)
+
+# Owned, read-only stored projections. No host I/O, session load or presentation.
+add_library(oc2_query src/query/stored.cpp src/query/stored_validation.cpp src/query/output.cpp)
+target_include_directories(oc2_query PUBLIC src)
+target_link_libraries(oc2_query PUBLIC oc2_formats PRIVATE oc2_options)
+
+if(OC2_BUILD_TOOLS)
+  if(EMSCRIPTEN)
+    message(FATAL_ERROR "OC2_BUILD_TOOLS is native-only; portable oc2_query remains available")
+  endif()
+  add_library(oc2_io_native src/platform/native_files.cpp)
+  target_include_directories(oc2_io_native PUBLIC src)
+  target_link_libraries(oc2_io_native PRIVATE oc2_options)
+  add_executable(oc2_cli tools/oc2.cpp)
+  set_target_properties(oc2_cli PROPERTIES OUTPUT_NAME oc2)
+  target_link_libraries(oc2_cli PRIVATE oc2_query oc2_io_native oc2_options)
+endif()
 
 # Application presentation state, not game mechanics. No SDL or OS dependencies.
 add_library(oc2_viewmodel src/viewmodel/shell.cpp src/viewmodel/menu.cpp)
@@ -111,8 +134,8 @@ endif()
 
 if(BUILD_TESTING)
   include(cmake/Catch2.cmake)
-  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp tests/pool_tests.cpp tests/format_tests.cpp tests/save_tests.cpp)
-  target_link_libraries(oc2_tests PRIVATE oc2_formats oc2_viewmodel oc2_options Catch2::Catch2WithMain)
+  add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp tests/pool_tests.cpp tests/format_tests.cpp tests/save_tests.cpp tests/query_tests.cpp)
+  target_link_libraries(oc2_tests PRIVATE oc2_query oc2_viewmodel oc2_options Catch2::Catch2WithMain)
   add_executable(oc2_conformance_adapter tools/conformance_adapter.cpp)
   target_link_libraries(oc2_conformance_adapter PRIVATE oc2_game oc2_options)
   include(cmake/ConformanceIdentity.cmake)
@@ -153,6 +176,10 @@ endif()
 include(cmake/Metadata.cmake)
 # Record identities after targets, platform languages and dependencies are selected.
 include(cmake/Toolchain.cmake)
+if(BUILD_TESTING AND Python3_Interpreter_FOUND AND OC2_BUILD_TOOLS)
+  add_test(NAME inspection_cli COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tests/inspection_cli.py" $<TARGET_FILE:oc2_cli>)
+  set_tests_properties(inspection_cli PROPERTIES LABELS "tools;headless" TIMEOUT 60)
+endif()
 if(BUILD_TESTING AND Python3_Interpreter_FOUND)
   add_test(NAME conformance_foundations
     COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/run_conformance.py"

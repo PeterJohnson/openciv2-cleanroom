@@ -31,7 +31,7 @@ A preset whose name ends in `-fetch`, plus `gui-tests` and `web`, opts into down
 
 All presets have matching build/test presets except `release`, which has no test
 preset. Keep machine-specific paths in ignored `CMakeUserPresets.json` or pass
-cache settings explicitly. Relevant switches are `OC2_BUILD_GUI`,
+cache settings explicitly. Relevant switches are `OC2_BUILD_GUI`, `OC2_BUILD_TOOLS`,
 `OC2_FETCH_DEPENDENCIES`, `OC2_FETCH_SDL`, `OC2_GUI_TESTS`, `OC2_SANITIZERS`, and
 standard `BUILD_TESTING`. GUI automation is opt-in and native-only.
 
@@ -59,8 +59,11 @@ when reporting results.
 
 `OC2_BUILD_GUI=OFF` configures without SDL, ImGui, the asset clone, or a display.
 With tests enabled, Catch2 is the only third-party dependency. With
-`BUILD_TESTING=OFF` as well, this builds the portable base, game, formats and
-view-model libraries and needs no third-party dependency.
+`BUILD_TESTING=OFF` as well, this builds the portable base, game, formats, query
+and view-model libraries plus the native `oc2` inspection CLI, with no third-party
+dependency. `OC2_BUILD_TOOLS=OFF` omits the CLI and native I/O library. Native tools
+default ON; Emscripten defaults them OFF while retaining the portable query API.
+See [inspection commands and output](m1-inspection.md) for a tools-only build.
 
 ## Pinned CI toolchains and inventories
 

@@ -1,0 +1,2000 @@
+{
+  "format": "openciv2-external-inspection-comparison/1",
+  "createdUtc": "2026-11-14T01:26:52.533273+00:00",
+  "provenance": "User-supplied original files; read-only CLI inspection; no original execution",
+  "installation": "C:\\Projects\\civ2\\Civ2",
+  "host": "Windows-11-10.0.26300-SP0",
+  "executableSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c",
+  "implementationRevision": "ba91e4365b0b303cd62338af130121c70cf66274",
+  "uncommittedImplementationChanges": true,
+  "implementationSources": {
+    "CMakeLists.txt": "8aec26d50f81dc85b6826100f1ea033d653410ee7902ff632c7fb3bf4456e913",
+    "tools/oc2.cpp": "5e586baf761abce6878aebd5dd6bd56c7672aa1fc3e66db1900b48d52d71e402",
+    "src/platform/native_files.hpp": "751300450fa150208b18c6518f1bd3c6f8621ee03bcd7cc3e38270967aa25528",
+    "src/platform/native_files.cpp": "0d25a056019a7422d0f69d07ca5d237214806c822e6eaaa646ee9e7a04eaaf2b",
+    "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
+    "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
+    "src/base/hash.cpp": "5bb5938e58e1e096bf64a985ab828be012803cd79addb7290f8c99de9d83d8e3",
+    "src/base/hash.hpp": "a14f3cf544bb3d2bb8808fee38c760d4858e001bf9ed70498d903279a61d3c67",
+    "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
+    "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
+    "src/state/civilization.hpp": "7fa03e7544111ae91f82cf9912c267bd9aea5ac21b4f408c2cb7b756553cc2a7",
+    "src/state/identities.cpp": "e66195aaae454209b23ed6e5f19c133cd7c01c55b8afa56ded024def6a01801c",
+    "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
+    "src/state/records.cpp": "5d5ad05ab566387d57e9fa702c8ff499f0dbb8f52d9a4b0f75d24d79f18e485f",
+    "src/state/records.hpp": "daacdb2b85c9a9178db718a00c17be0fe86aa0931f420d0edf77828f876dad92",
+    "src/world/geometry.cpp": "5ba0417ebca53396c498b82b77882644b3aa06e8f5bcea778329e554497b21c4",
+    "src/world/geometry.hpp": "c74b0b55dfecff11c48f16d989d77c9e02b93e06f9bb960e2cec5a01896a33eb",
+    "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
+    "src/world/map.hpp": "3b007b6c6d57acc43fc6c0e7cd26641efe8d31050a01781b9020f5444729fb37",
+    "src/formats/bytes.hpp": "8641893e1e2c0466d1440258e25f308444c4172590dfec29f62682551f251888",
+    "src/formats/classic_io.cpp": "46234f09f644e8fb4eebc5f4173ad1218b69406f15542706ada43e32db44ec09",
+    "src/formats/classic_io.hpp": "535a0f51cbbefddea087e7826083a0716ce1bf5db46ee838f5209d9e03ee11cb",
+    "src/formats/classic_records.cpp": "e3f2e379a3b7ae00df0569c4e33c3a2248380d65ac7c345242a0f0b207662a3d",
+    "src/formats/classic_records.hpp": "59c43681d01f3466671246d00609642ef2549763df5e5f5209effc727f7d732d",
+    "src/formats/classic_save.cpp": "1d1ab172c30ccb6a25de438f3391bad504c67fbfce9cabff82769d0146537d2e",
+    "src/formats/classic_save.hpp": "64d193254eacb509b77a6cba4614b380c1cc54cff06435ec02dbb4250b1daf79",
+    "src/formats/record_fields.hpp": "9d6aafe941342f5064654a14b06fc26f24fb22d329f18bc6699b5d8bda1a0a7d",
+    "src/formats/save_records.cpp": "7b8da647e7ff3a1f1838d63e76ea2306119428c49db044ce00e884e78b924184",
+    "src/formats/save_records.hpp": "fec2af91178998ae54d1127fd9317c47ebe08dd9f99b1a1d50a0e82523aa0b9e",
+    "src/query/fields.hpp": "5868f211c944dbf7b998d987fdfc3a0dbe9dbe7981a674c9a288a1d2008da8ff",
+    "src/query/output.cpp": "273ba2a28769dcf7fb3e257a87352b6fde60dd19986302c67c4a4bf9c66a082c",
+    "src/query/output.hpp": "74ebfa6809e2abb9876458bc69b460c5817b85983296587e866af342a75dccdc",
+    "src/query/stored.cpp": "a61a0a461f2aa18655666b410d177765d2a3f248c127e35c291db38244fc99f8",
+    "src/query/stored.hpp": "1a169d16d194c1b0c7b4c1f81395de9219e435112cbbb6fce7b44473ee7afc8a",
+    "src/query/stored_validation.cpp": "e4cd8999cef165e735541827787193ad85ab8afa5602014c68ed20d47cea61a3",
+    "src/query/stored_validation.hpp": "7e128e1ca2185fc41cebfa0ce1af13d0b73851407a5930fc58ed54ad8aadf089"
+  },
+  "driverSha256": "79ac5c1de99a3a0196e95288f03b80e1eb3d85931e6e3549b6c69d1de7e66229",
+  "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=7c9478e87fd5743fe730a20652faf22f8300d7e5e8a8a9bc624759c01cd6cc17\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n",
+  "scope": "Stored query reconstruction and bounded semantic diagnostics; no session load",
+  "cases": [
+    {
+      "name": "Ab_Auto.SAV",
+      "inputBytes": 136379,
+      "inputSha256": "e935f821b6113387e6569fc70f26f8a340f9d7ae964d7fe876732a0dd075fcac",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "e935f821b6113387e6569fc70f26f8a340f9d7ae964d7fe876732a0dd075fcac",
+        "byteCount": "136379"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9287,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "EUROPE.MP",
+      "inputBytes": 54098,
+      "inputSha256": "8ef3dfa730535aa85292a96bb41a2b4ca4bf11c709afee6487e1cbe17ede5b98",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-raw-map",
+        "version": null,
+        "sha256": "8ef3dfa730535aa85292a96bb41a2b4ca4bf11c709afee6487e1cbe17ede5b98",
+        "byteCount": "54098"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-raw-map-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "map_header",
+        "starts",
+        "tiles",
+        "trailing"
+      ],
+      "recordCount": 9004
+    },
+    {
+      "name": "GREECE.MP",
+      "inputBytes": 24098,
+      "inputSha256": "dad06a074ea7b28e521ab496dfb2be77f3382dcc905ef3c9ac7946eb64699f7d",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-raw-map",
+        "version": null,
+        "sha256": "dad06a074ea7b28e521ab496dfb2be77f3382dcc905ef3c9ac7946eb64699f7d",
+        "byteCount": "24098"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-raw-map-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "map_header",
+        "starts",
+        "tiles",
+        "trailing"
+      ],
+      "recordCount": 4004
+    },
+    {
+      "name": "He_Auto.SAV",
+      "inputBytes": 144675,
+      "inputSha256": "0cfbe652a3785934f643e76ac18b9f84a0bffba07264d45f072afc927f35bde3",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "0cfbe652a3785934f643e76ac18b9f84a0bffba07264d45f072afc927f35bde3",
+        "byteCount": "144675"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9471,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "He_Auto2.SAV",
+      "inputBytes": 144611,
+      "inputSha256": "d182badc5495ac63d0ebb3566a48910146e34ca02e1b7d9b59f3baa678c4a3ac",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "d182badc5495ac63d0ebb3566a48910146e34ca02e1b7d9b59f3baa678c4a3ac",
+        "byteCount": "144611"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9469,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "he_b1100.sav",
+      "inputBytes": 152723,
+      "inputSha256": "176dfd632e9f1e2cdfdd9f38183aeb7b539e2f9c874b9d6bfc8815ef7d7e9ae3",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "176dfd632e9f1e2cdfdd9f38183aeb7b539e2f9c874b9d6bfc8815ef7d7e9ae3",
+        "byteCount": "152723"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 10068,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "he_b1180.sav",
+      "inputBytes": 152315,
+      "inputSha256": "60ce6beb3a2f0f91b6b821a91161e91c168e15bec4a5e11544a5a6b56504ed0d",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "60ce6beb3a2f0f91b6b821a91161e91c168e15bec4a5e11544a5a6b56504ed0d",
+        "byteCount": "152315"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 10057,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "he_b3300.sav",
+      "inputBytes": 145603,
+      "inputSha256": "875f27aeb74a9244700fa1d15606367842955618a0db8a80e4fb5dc02dd85a60",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "875f27aeb74a9244700fa1d15606367842955618a0db8a80e4fb5dc02dd85a60",
+        "byteCount": "145603"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9912,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "he_b980.sav",
+      "inputBytes": 153451,
+      "inputSha256": "8643afca24fb6a1734afc82cac7364b9bd2a09c1097334d49ccad9c7058f91a0",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "8643afca24fb6a1734afc82cac7364b9bd2a09c1097334d49ccad9c7058f91a0",
+        "byteCount": "153451"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 10082,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "MEDITERR.MP",
+      "inputBytes": 24098,
+      "inputSha256": "a32d5ba4a74a16e863a31925a2fde9257230a8bedcae91421a3322ba15310751",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-raw-map",
+        "version": null,
+        "sha256": "a32d5ba4a74a16e863a31925a2fde9257230a8bedcae91421a3322ba15310751",
+        "byteCount": "24098"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-raw-map-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "map_header",
+        "starts",
+        "tiles",
+        "trailing"
+      ],
+      "recordCount": 4004
+    },
+    {
+      "name": "my_Auto.SAV",
+      "inputBytes": 136931,
+      "inputSha256": "8df6f3be5544a0ffcd8827b94a55f22bd786f99360b8e3c1d45e980ee41549e4",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "8df6f3be5544a0ffcd8827b94a55f22bd786f99360b8e3c1d45e980ee41549e4",
+        "byteCount": "136931"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9299,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "my_Auto2.SAV",
+      "inputBytes": 136835,
+      "inputSha256": "717f5e88ba09cc224705ccd467066bd92b895371ae2af5195df5f346bc1aee79",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "717f5e88ba09cc224705ccd467066bd92b895371ae2af5195df5f346bc1aee79",
+        "byteCount": "136835"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9296,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "PACIFIC.MP",
+      "inputBytes": 54098,
+      "inputSha256": "2cd657954bc67d2b6f15f69492393e41301c031d2c8b79ff9a8f46cc8df8174b",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-raw-map",
+        "version": null,
+        "sha256": "2cd657954bc67d2b6f15f69492393e41301c031d2c8b79ff9a8f46cc8df8174b",
+        "byteCount": "54098"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-raw-map-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "map_header",
+        "starts",
+        "tiles",
+        "trailing"
+      ],
+      "recordCount": 9004
+    },
+    {
+      "name": "Ph_Auto.SAV",
+      "inputBytes": 147683,
+      "inputSha256": "a8c65f3ab02c9d0158908936b6558f7d85b997a4877baaf5d70757e43dc74e44",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "a8c65f3ab02c9d0158908936b6558f7d85b997a4877baaf5d70757e43dc74e44",
+        "byteCount": "147683"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9537,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "Ph_Auto2.SAV",
+      "inputBytes": 147619,
+      "inputSha256": "31ae4a64442001656ca84b76e1e3876701e684845c6f8133b35397911e946d7d",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "31ae4a64442001656ca84b76e1e3876701e684845c6f8133b35397911e946d7d",
+        "byteCount": "147619"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9535,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "ph_b1500.sav",
+      "inputBytes": 144235,
+      "inputSha256": "94ba86740ac980c21ef82b7ae214a2285298c853e8a6fb620c2f63da2a7b5009",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "94ba86740ac980c21ef82b7ae214a2285298c853e8a6fb620c2f63da2a7b5009",
+        "byteCount": "144235"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9459,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "ph_b740.sav",
+      "inputBytes": 147683,
+      "inputSha256": "cf52e77c3b1bc6455732ab020884a15403b69786389c054a8092ffb80536e29c",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "cf52e77c3b1bc6455732ab020884a15403b69786389c054a8092ffb80536e29c",
+        "byteCount": "147683"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9537,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "ROME.SCN",
+      "inputBytes": 77339,
+      "inputSha256": "48ddc0cd7fe911c0799c7ff41e2b1013a35feb08c5d1c69bfea695fef933e563",
+      "exitCode": 3,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "39",
+        "sha256": "48ddc0cd7fe911c0799c7ff41e2b1013a35feb08c5d1c69bfea695fef933e563",
+        "byteCount": "77339"
+      },
+      "validation": {
+        "status": "unsupported",
+        "complete": false,
+        "checks": [],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "error",
+          "code": "unsupported-version",
+          "field": "header.version",
+          "offset": "10",
+          "message": "Stored inspection supports version 0x2c; input version is 39"
+        }
+      ]
+    },
+    {
+      "name": "TUTORIAL.SAV",
+      "inputBytes": 69749,
+      "inputSha256": "21b36d9a00aaf1941b124130ffd7225984d2d77a53e36d0a8e25c3c88557cc49",
+      "exitCode": 3,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "39",
+        "sha256": "21b36d9a00aaf1941b124130ffd7225984d2d77a53e36d0a8e25c3c88557cc49",
+        "byteCount": "69749"
+      },
+      "validation": {
+        "status": "unsupported",
+        "complete": false,
+        "checks": [],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "error",
+          "code": "unsupported-version",
+          "field": "header.version",
+          "offset": "10",
+          "message": "Stored inspection supports version 0x2c; input version is 39"
+        }
+      ]
+    },
+    {
+      "name": "vi_a160.sav",
+      "inputBytes": 151651,
+      "inputSha256": "557d2bbe03bb560f32c4f6aaae8872e9897c4f27677ccd3b22ad59b612af89e4",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "557d2bbe03bb560f32c4f6aaae8872e9897c4f27677ccd3b22ad59b612af89e4",
+        "byteCount": "151651"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9619,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "Vi_Auto.SAV",
+      "inputBytes": 151651,
+      "inputSha256": "3650675863a3b4735e58a94abd8a3d8c6bca3b29c014a7482353ffc3f23c55bc",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "3650675863a3b4735e58a94abd8a3d8c6bca3b29c014a7482353ffc3f23c55bc",
+        "byteCount": "151651"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9619,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "Vi_Auto2.SAV",
+      "inputBytes": 151651,
+      "inputSha256": "d12e4d35a90271c85872885768dee804d0977b771329052c59d4d3e43d6830f1",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "d12e4d35a90271c85872885768dee804d0977b771329052c59d4d3e43d6830f1",
+        "byteCount": "151651"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9619,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "vi_b140.sav",
+      "inputBytes": 150499,
+      "inputSha256": "fe3c6c5cca50a03f31d9cca10ff312d787d18c836166caf553eeef1cefe7223a",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "fe3c6c5cca50a03f31d9cca10ff312d787d18c836166caf553eeef1cefe7223a",
+        "byteCount": "150499"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9597,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "vi_b1420.sav",
+      "inputBytes": 143531,
+      "inputSha256": "64f49e00bc8231f6c65b942b3bd59bb36379a8ddb60632bb996fb7adffd54899",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "64f49e00bc8231f6c65b942b3bd59bb36379a8ddb60632bb996fb7adffd54899",
+        "byteCount": "143531"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9437,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "vi_b1920.sav",
+      "inputBytes": 142235,
+      "inputSha256": "19dbf9684b62dd29cee8b4717bb86614278f56aa156b05ddb16136535853822f",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "19dbf9684b62dd29cee8b4717bb86614278f56aa156b05ddb16136535853822f",
+        "byteCount": "142235"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9414,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "vi_b320.sav",
+      "inputBytes": 149019,
+      "inputSha256": "7518853a92191bc63f42bc6b693522cb39e3fdd4983e6617eab49ef1580f92bb",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "7518853a92191bc63f42bc6b693522cb39e3fdd4983e6617eab49ef1580f92bb",
+        "byteCount": "149019"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9556,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "vi_b560.sav",
+      "inputBytes": 148027,
+      "inputSha256": "55500d53948aefb718e6eef1bd16eabb3be3f4e8fa4ec591e92d3aa164ecb5fe",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "44",
+        "sha256": "55500d53948aefb718e6eef1bd16eabb3be3f4e8fa4ec591e92d3aa164ecb5fe",
+        "byteCount": "148027"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-save-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains",
+          "F06.fixed-text-termination",
+          "F06.selector-view-history-domains",
+          "F02.live-entity-references",
+          "F02.stack-reciprocity-position-cycles"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "view-civ-domain-unresolved",
+          "field": "globals[0].view_civ",
+          "offset": "42",
+          "message": "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation"
+        },
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "header",
+        "globals",
+        "civilization_names",
+        "civilizations",
+        "map_header",
+        "remembered",
+        "tiles",
+        "coarse",
+        "regions",
+        "units",
+        "cities",
+        "tribes",
+        "cursor",
+        "leaders",
+        "power_history",
+        "layout",
+        "views",
+        "eliminations",
+        "trailing"
+      ],
+      "recordCount": 9539,
+      "storedViewCiv": "-1"
+    },
+    {
+      "name": "WORLD.MP",
+      "inputBytes": 54098,
+      "inputSha256": "bc99986ca2d5ba875951cd5724314be07a816e49bba656532028e84585679587",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-raw-map",
+        "version": null,
+        "sha256": "bc99986ca2d5ba875951cd5724314be07a816e49bba656532028e84585679587",
+        "byteCount": "54098"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-raw-map-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "map_header",
+        "starts",
+        "tiles",
+        "trailing"
+      ],
+      "recordCount": 9004
+    },
+    {
+      "name": "WORLD_M.MP",
+      "inputBytes": 24098,
+      "inputSha256": "dcdd198fa6c9ab19faf0743ce673e85da177bc746ba23bd9fe21ee0f53e91643",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-raw-map",
+        "version": null,
+        "sha256": "dcdd198fa6c9ab19faf0743ce673e85da177bc746ba23bd9fe21ee0f53e91643",
+        "byteCount": "24098"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-raw-map-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "map_header",
+        "starts",
+        "tiles",
+        "trailing"
+      ],
+      "recordCount": 4004
+    },
+    {
+      "name": "WORLD_S.MP",
+      "inputBytes": 12098,
+      "inputSha256": "b7b12560440b45d6661bc32a852037e290bf7fb9a706fb5ae303244a5bfa3c02",
+      "exitCode": 0,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-raw-map",
+        "version": null,
+        "sha256": "b7b12560440b45d6661bc32a852037e290bf7fb9a706fb5ae303244a5bfa3c02",
+        "byteCount": "12098"
+      },
+      "validation": {
+        "status": "passed-available-checks",
+        "complete": false,
+        "checks": [
+          "F06.current-raw-map-structure",
+          "F06.map-size-consistency",
+          "W01.tile-scalar-domains"
+        ],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "information",
+          "code": "rules-unavailable",
+          "field": "",
+          "offset": null,
+          "message": "External rules and language mapping were not loaded; rule-dependent validation and text interpretation are unavailable"
+        }
+      ],
+      "rawRecordReconstructionExact": true,
+      "sections": [
+        "map_header",
+        "starts",
+        "tiles",
+        "trailing"
+      ],
+      "recordCount": 2004
+    },
+    {
+      "name": "WWII.SCN",
+      "inputBytes": 154951,
+      "inputSha256": "2947d2079384c38b95ec3f3a7c40cde4f1f6ec55f58228ab1efb379f7901759d",
+      "exitCode": 3,
+      "sourceUnchanged": true,
+      "source": {
+        "format": "classic-save",
+        "version": "39",
+        "sha256": "2947d2079384c38b95ec3f3a7c40cde4f1f6ec55f58228ab1efb379f7901759d",
+        "byteCount": "154951"
+      },
+      "validation": {
+        "status": "unsupported",
+        "complete": false,
+        "checks": [],
+        "unavailable": [
+          "rule-dependent-validation",
+          "loaded-state",
+          "gameplay-compatibility"
+        ]
+      },
+      "diagnostics": [
+        {
+          "category": "compatibility",
+          "severity": "error",
+          "code": "unsupported-version",
+          "field": "header.version",
+          "offset": "10",
+          "message": "Stored inspection supports version 0x2c; input version is 39"
+        }
+      ]
+    }
+  ]
+}

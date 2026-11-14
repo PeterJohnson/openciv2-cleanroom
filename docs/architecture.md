@@ -397,8 +397,9 @@ rules, not a promise of background execution.
 
 ## 5. Inspection tools, console, and user automation
 
-These are planned engine features, not changes to classic simulation rules or
-claims that the current shell already supports gameplay commands. Keep user
+These include planned engine features and the implemented
+[stored inspection subset](m1-inspection.md), not changes to classic simulation
+rules or claims that the current shell supports gameplay commands. Keep user
 automation distinct from the specified classic AI and S02 scenario event system.
 
 ### Shared queries and command contracts
@@ -436,7 +437,8 @@ transactions; cancellation or a script error does not undo earlier commands.
 ### Saved-game inspection CLI
 
 Provide a native `oc2` executable that works without SDL, ImGui, graphical assets,
-or a Lua runtime. Proposed commands, not currently implemented:
+or a Lua runtime. These commands are implemented for current stored saves and
+raw maps; their [output contract and limits](m1-inspection.md) are explicit:
 
 ```sh
 oc2 inspect game.sav --cities --json

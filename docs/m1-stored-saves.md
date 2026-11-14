@@ -99,7 +99,7 @@ The native read-only comparison driver can be run with:
 
 It reads the input, decodes/re-encodes it in C++, compares every byte and prints
 structural metadata. It never creates or overwrites a file. It is a test driver,
-not the forthcoming `oc2 inspect`, `validate` or `diff` commands.
+separate from the [implemented inspection CLI](m1-inspection.md).
 
 Against the original installation at `C:\Projects\civ2\Civ2`, all 21 current
 saved games in that directory reproduce their input bytes exactly, with source
@@ -113,8 +113,8 @@ original program or establishes that it accepted an edited export.
 ## Remaining M1 work
 
 The [completion audit](m1-validation.md) still governs the milestone. Next are
-owned stored queries and inspection/validation/diff commands, optional SQLite
-export, semantic content and classic text adapters, explicit process/session
+optional SQLite export over the implemented stored queries and inspection CLI,
+semantic content and classic text adapters, explicit process/session
 lifecycles and ordered loading, commands/continuations/authority, generalized
 X02 execution and choice replay, and N05/N02 foundations. Legacy stored-file
 coverage, original-program resume/edit checks and original-peer captures remain
