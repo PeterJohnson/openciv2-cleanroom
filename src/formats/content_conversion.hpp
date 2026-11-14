@@ -11,4 +11,6 @@ struct ContentConversion {
 // rule selection; no filesystem access, mutation, fallback mounts or publication.
 ContentConversion convert_city_preferences(const Source& source, const ResolvedPack& selected,
                                            const classic::TextCase& comparison);
+ContentConversion convert_city_names(const Source& source, const ResolvedPack& selected,
+                                     const classic::TextCase& comparison);
 } // namespace openciv::formats::content

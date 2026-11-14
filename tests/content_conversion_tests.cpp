@@ -2,6 +2,7 @@
 #include "rule_fixture.hpp"
 #include "formats/content_conversion.hpp"
 #include "formats/city_preferences.hpp"
+#include "formats/city_names.hpp"
 #include "rules/city_preferences.hpp"
 #include "base/hash.hpp"
 #include <catch2/catch_test_macros.hpp>
@@ -37,6 +38,124 @@ state::CityPreferences classic_result(const content::Source& input,
     return out;
 }
 } // namespace
+TEST_CASE("CITY conversion preserves classic name sequences across every cursor",
+          "[content][conversion]") {
+    rule_fixture::Input fixture;
+    const auto selected = fixture.pack();
+    for (int fallback = 0; fallback < 5; ++fallback) {
+        const bool populated = fallback == 2 || fallback == 3;
+        std::string text;
+        for (int i = 0; i < 21; ++i)
+            text += "@tribes " + std::to_string(i) + "\r\nFirst\r\nFirst\r\nCaf\xe9\r\n@STOP\r\n";
+        if (fallback) {
+            text += "@EXTRA\n";
+            if (populated)
+                text += "Extra One\nExtra Two\n";
+            if (fallback < 3)
+                text += "@STOP\n";
+        }
+        auto input = source(text);
+        input.identity = "authored/CITY.TXT";
+        const auto converted =
+            content::convert_city_names(input, selected, classic::ascii_text_case());
+        auto verification = selected;
+        verification.components["cityNames"] = {
+            nullptr, content::parse_json(converted.component, "converted")};
+        const auto admitted = content::load_city_names(verification, classic::ascii_text_case());
+        CHECK(admitted->lists.fallback.has_value() == (fallback != 0));
+        auto native = content::city_name_provider(admitted, classic::ascii_text_case());
+        classic::TextWorkspace workspace;
+        classic::TextDirectories directories;
+        classic::TextReader reader(workspace, directories,
+                                   {[&](auto, auto) -> classic::OpenedText {
+                                        return {input.identity,
+                                                std::make_unique<classic::MemoryTextStream>(text)};
+                                    },
+                                    {}},
+                                   classic::ascii_text_case());
+        auto original =
+            classic::city_name_provider(reader, directories, classic::ascii_text_case());
+        for (int tribe = 0; tribe < 21; ++tribe) {
+            const auto plural = "tribes " + std::to_string(tribe);
+            for (unsigned cursor = 0; cursor < 256; ++cursor) {
+                const auto a = original.attempt(plural, static_cast<std::uint8_t>(cursor));
+                const auto b = native.attempt(plural, static_cast<std::uint8_t>(cursor));
+                REQUIRE(a.outcome == b.outcome);
+                REQUIRE(a.bytes == b.bytes);
+                const auto expected = cursor == 0                ? "@" + plural
+                                      : cursor <= 2              ? std::string("First")
+                                      : cursor == 3              ? std::string("Caf\xe9")
+                                      : populated && cursor == 4 ? std::string("Extra One")
+                                      : populated && cursor == 5 ? std::string("Extra Two")
+                                                                 : std::string{};
+                REQUIRE(b.bytes == expected);
+                original.close();
+            }
+        }
+        CHECK(native.attempt("Missing", 1).outcome == city::NameOutcome::unavailable);
+        for (const auto& list : admitted->lists.civilizations) {
+            if (list.plural.classic != "STOP" && list.plural.classic != "EXTRA")
+                continue;
+            for (unsigned cursor = 0; cursor < 256; ++cursor) {
+                const auto a =
+                    original.attempt(list.plural.classic, static_cast<std::uint8_t>(cursor));
+                const auto b =
+                    native.attempt(list.plural.classic, static_cast<std::uint8_t>(cursor));
+                REQUIRE(a.outcome == b.outcome);
+                REQUIRE(a.bytes == b.bytes);
+                original.close();
+            }
+        }
+        CHECK(converted.receipt["source"]["sha256"].getString() == base::sha256(input.bytes));
+        CHECK(converted.receipt["conversion"].getString() == "classic-city-names/1");
+    }
+}
+
+TEST_CASE("CITY conversion diagnoses ambiguous selectors and unsupported input",
+          "[content][conversion]") {
+    rule_fixture::Input fixture;
+    auto selected = fixture.pack();
+    selected.manifests.resize(2);
+    for (const auto* text :
+         {"@Custom\nOne\n@STOP\n@CUSTOM\nTwo\n@STOP\n", "@Custom\nOne\n", "@Custom\n\x81\n@STOP\n",
+          "@Custom\nOne\n@STOP\n@EXTRA\nOne\n@STOP\n@extra\nTwo\n@STOP\n"})
+        CHECK_THROWS(
+            content::convert_city_names(source(text), selected, classic::ascii_text_case()));
+    CHECK_THROWS(content::convert_city_names(source("@Custom\nOne\n@STOP\n"), fixture.pack(),
+                                             classic::ascii_text_case()));
+    const auto input = source("@Custom\nOne\n@Other\nTwo\n@STOP\n");
+    const auto converted = content::convert_city_names(input, selected, classic::ascii_text_case());
+    const auto json = content::parse_json(converted.component, "converted").value;
+    CHECK(json["civilizations"][0]["cityNames"].getArray().size() == 3);
+    CHECK(json["civilizations"][0]["cityNames"][1].getString() == "@Other");
+}
+
+TEST_CASE("CITY conversion preserves reversible selectors and classic read boundaries",
+          "[content][conversion]") {
+    rule_fixture::Input fixture;
+    auto selected = fixture.pack();
+    selected.manifests.resize(2);
+    const auto text = std::string("@Caf\xe9\r\n") + std::string(255, 'x') + "\r\n@STOP\r\n";
+    const auto converted =
+        content::convert_city_names(source(text), selected, classic::ascii_text_case());
+    auto verification = selected;
+    verification.components["cityNames"] = {nullptr,
+                                            content::parse_json(converted.component, "converted")};
+    const auto loaded = content::load_city_names(verification, classic::ascii_text_case());
+    REQUIRE(loaded->lists.civilizations.size() == 1);
+    CHECK(loaded->lists.civilizations[0].plural.classic == std::string("Caf\xe9"));
+    REQUIRE(loaded->lists.civilizations[0].names.size() == 2);
+    CHECK(loaded->lists.civilizations[0].names[0].classic == std::string(254, 'x'));
+    CHECK(loaded->lists.civilizations[0].names[1].classic == "x");
+    try {
+        content::convert_city_names(source(text + "@CAF\xc9\nTwo\n@STOP\n"), selected,
+                                    classic::ascii_text_case());
+        FAIL("unknown non-ASCII equivalence must reject");
+    } catch (const content::Error& error) {
+        CHECK(error.code == "comparison-unavailable");
+    }
+}
+
 TEST_CASE("CITYPREF conversion validates native output and preserves retained semantics",
           "[content][conversion]") {
     rule_fixture::Input fixture;

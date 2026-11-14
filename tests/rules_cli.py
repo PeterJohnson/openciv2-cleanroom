@@ -101,12 +101,46 @@ class RulesCliTests(unittest.TestCase):
                 "civilizations": [{"pluralName": row["pluralName"], "cityNames": ["First", "First"]}
                                   for row in self.rules["tribes"]], "fallbackNames": None}
 
-    def convert_preferences(self, source, output, code=0):
-        result = subprocess.run([str(DRIVER), "content", "convert-preferences",
+    def convert_preferences(self, source, output, code=0, operation="convert-preferences"):
+        result = subprocess.run([str(DRIVER), "content", operation,
                                  str(source), str(self.path), str(output)],
                                 capture_output=True, text=True, encoding="utf-8", timeout=10)
         self.assertEqual(result.returncode, code, result.stdout + result.stderr)
         return json.loads(result.stdout)
+
+    def test_convert_names_publishes_valid_component_and_preserves_sources(self):
+        for slot, row in enumerate(self.rules["tribes"]):
+            row["pluralName"] = f"Tribe {slot}"
+        self.publish()
+        source = self.root / "CITY.TXT"
+        source.write_bytes(("".join(f"@Tribe {slot}\nFirst\nFirst\n@STOP\n" for slot in range(21)) +
+                            "@EXTRA\nCafé\n@STOP\n").encode("cp1252"))
+        before = {p: p.read_bytes() for p in self.root.iterdir() if p.is_file()}
+        output = self.root / "converted-names.json"
+        receipt = self.convert_preferences(source, output, operation="convert-names")
+        self.assertEqual(receipt["conversion"], "classic-city-names/1")
+        self.assertEqual(receipt["status"], "converted")
+        self.assertEqual(receipt["source"]["sha256"], hashlib.sha256(source.read_bytes()).hexdigest())
+        self.assertEqual(receipt["output"]["sha256"], hashlib.sha256(output.read_bytes()).hexdigest())
+        self.assertEqual(before, {p: p.read_bytes() for p in before})
+        self.assertEqual(json.loads(output.read_bytes())["fallbackNames"], ["Café"])
+        self.manifest["files"]["cityNames"] = {
+            "path": output.name, "sha256": receipt["output"]["sha256"]}
+        self.publish()
+        self.invoke(operation="validate-names")
+        for destination in (source, output, self.root / "missing" / "new.json"):
+            self.assertEqual(self.convert_preferences(source, destination, code=2,
+                             operation="convert-names")["status"], "rejected")
+        self.assertEqual(source.read_bytes(), before[source])
+
+    def test_convert_names_rejects_ambiguous_input_without_publication(self):
+        self.publish()
+        source = self.root / "CITY.TXT"
+        source.write_bytes(b"@Custom\nFirst\n@STOP\n@CUSTOM\nSecond\n@STOP\n")
+        output = self.root / "converted-names.json"
+        self.assertEqual(self.convert_preferences(source, output, code=1,
+                         operation="convert-names")["code"], "ambiguous-classic-selector")
+        self.assertFalse(output.exists())
 
     def test_convert_preferences_publishes_valid_component_and_receipts(self):
         for slot, row in enumerate(self.rules["improvements"]):

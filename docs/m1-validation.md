@@ -30,7 +30,7 @@ and broad coverage gaps do not enlarge the goal. Owning specs still govern corre
 | Gate | Status | Evidence or remaining deliverable |
 | --- | --- | --- |
 | M1-01: local checkpoint profile | Passed | `3b135a6`: [eight-group evidence](m1-checkpoint.md#eight-group-acceptance-evidence), seven session cases/241 assertions each on Windows and WASM; explicit owner codecs, state rejection and atomic admission |
-| M1-02: content conversions | Open | [CITYPREF conversion](m1-content-conversion.md) implements paired semantic checks and receipts; RULES and CITY conversions remain |
+| M1-02: content conversions | Open | [CITYPREF and CITY conversions](m1-content-conversion.md) implement paired semantic checks and receipts; RULES conversion remains |
 | M1-03: fixed conformance review | Open | Baseline has 15 operations/57 vectors; complete independent review, eight-family evidence mapping and final reports |
 | M1-04: original-file evidence | Open | Existing captures are historical; perform only the contract's current-export map/save checks and fixed stored-file corpus |
 | M1-05: foundation regressions | Open | Implemented at `b125df5`: 546 native CTests and seven WASM targets; final verification remains after closeout implementation changes |

@@ -22,9 +22,9 @@ content::MountedPack mount(std::string_view filename) {
             }};
 }
 } // namespace
-int run_content_convert_preferences(std::span<const std::string> arguments) {
+int run_content_convert(std::span<const std::string> arguments, bool city_names) {
     if (arguments.size() < 3)
-        throw std::invalid_argument("Usage: oc2 content convert-preferences CITYPREF_SOURCE "
+        throw std::invalid_argument("Usage: oc2 content convert-names|convert-preferences SOURCE "
                                     "CONTENT_MANIFEST NEW_OUTPUT [--parent MANIFEST]...");
     std::vector<std::string> parents;
     for (std::size_t i = 3; i < arguments.size(); ++i) {
@@ -50,8 +50,11 @@ int run_content_convert_preferences(std::span<const std::string> arguments) {
         for (const auto& parent : parents)
             registered.push_back(mount(parent));
         const auto pack = content::resolve_pack(selected, registered);
-        auto converted = content::convert_city_preferences(
-            source, *pack, openciv::formats::classic::ascii_text_case());
+        auto converted =
+            city_names ? content::convert_city_names(source, *pack,
+                                                     openciv::formats::classic::ascii_text_case())
+                       : content::convert_city_preferences(
+                             source, *pack, openciv::formats::classic::ascii_text_case());
         report = std::move(converted.receipt);
         const auto destination = output.generic_u8string();
         report["output"]["path"] = std::string(destination.begin(), destination.end());
