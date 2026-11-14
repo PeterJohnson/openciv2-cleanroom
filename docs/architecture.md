@@ -241,6 +241,36 @@ boundaries, not for every algorithm. Avoid a general ECS, plugin framework,
 global service locator, or C++ modules requirement in the initial implementation.
 Source-level include and CMake dependency checks enforce the graphical boundary.
 
+### C++ interface choices
+
+Use structs for owned values with meaningful public fields: decoded records,
+requests, results, rules and observations. Use free functions for algorithms
+whose state and dependencies are explicit operands. Neither needs an artificial
+object identity. Keep format records separate from live state and encode fields
+explicitly.
+
+Use classes to enforce invariants, resource ownership and state transitions.
+`PlayerClient` protects authority; `SessionRuntime` owns execution;
+`ClassicSaveOperation` owns a suspended save; `SessionActivity` pins its world.
+Public client/value headers do not include mutable state or engine operation
+interfaces. Transitive include checks and portable target dependency checks
+protect these boundaries as the frontend grows.
+
+Use virtual interfaces for a cohesive service with implementation identity and a
+lifecycle, such as `RandomSource`, `Continuation`, `TextStream` and `FileChooser`.
+Required methods are part of the interface, and ownership is explicit. The file
+chooser is owned by its workflow; asynchronous results must not retain stack
+references to an earlier call.
+
+Use `std::function` for individual injected policies, notifications and registered
+operation factories when captured configuration is useful. A callback bundle is
+appropriate for a local composition adapter, but must validate required bindings
+before effects and document capture lifetimes. Promote a bundle to an owned
+service class when its functions share a protocol or retained state. Existing
+F05 setup bundles remain supplied-child adapters until their interactive callers
+migrate; adding a class per algorithm or replacing every callable with inheritance
+does not improve their behavioral contracts.
+
 ## 3. State and deterministic execution
 
 Use ordinary C++ structures and containers as the authoritative runtime state.

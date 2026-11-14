@@ -1,7 +1,7 @@
 # M1 stored inspection
 
 The native `oc2` CLI and portable `oc2_query` library implement offline inspection
-of version `0x2c` saves and classic raw maps. M1 remains in progress; this is a
+of version `0x2c` saves and classic raw maps. M1 is complete within its [finite scope](m1-validation.md); this remains a
 stored observation, not a loaded session or a gameplay compatibility claim.
 Optional [SQLite export](m1-sqlite-export.md) consumes the same owned snapshots.
 

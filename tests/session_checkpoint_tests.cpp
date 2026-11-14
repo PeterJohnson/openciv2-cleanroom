@@ -251,6 +251,17 @@ TEST_CASE("M1 checkpoint idle profile restores separate process and all preferen
     CHECK(client.own_units().records.empty());
     CHECK_FALSE(destination.runtime.has_pending_commands());
     CHECK_FALSE(destination.runtime.advance_one());
+    const auto random = destination.runtime.gameplay_random().checkpoint();
+    {
+        auto activity = destination.runtime.begin_activity();
+        CHECK_THROWS_AS(destination.runtime.checkpoint(profile(), content_hash),
+                        std::invalid_argument);
+        CHECK_THROWS_AS(destination.restore(saved), std::invalid_argument);
+        CHECK(destination.runtime.gameplay_random().checkpoint() == random);
+        CHECK(destination.runtime.world().civilizations[1].gold == INT32_MIN);
+        CHECK_NOTHROW(client.identity()); // Rejection leaves the existing binding valid.
+    }
+    CHECK_NOTHROW(destination.runtime.checkpoint(profile(), content_hash));
 }
 
 TEST_CASE("M1 suspended checkpoint resumes generated and controlled commands once",

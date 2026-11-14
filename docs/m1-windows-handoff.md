@@ -1,8 +1,8 @@
 # M1 record/codec handoff to Windows
 
-M1 remains **in progress**. This is a stable stopping point for continuing the
-[full completion audit](m1-validation.md), not a milestone completion claim.
-The user requested pausing after this commit to resume on a Windows machine.
+Historical handoff: M1 was in progress at this stopping point. The later
+[completion audit](m1-validation.md) records all seven gates passed. The
+Windows continuation below preserves the earlier pause and its evidence.
 
 The Windows continuation is recorded in [M1 stored-save records](m1-stored-saves.md).
 The remainder of this handoff preserves the earlier stopping-point evidence.

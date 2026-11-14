@@ -7,7 +7,7 @@ that original resave and exported it; the original reopened the second export
 with the city, year and treasury present. The
 [metadata report](conformance/reports/original-live-save-windows.json) retains
 source, executable, input, output and capture identities. This is independent
-normal-UI interoperability evidence, outside X02. M1 remains in progress.
+normal-UI interoperability evidence, outside X02. This historical observation predates the [completed M1 audit](m1-validation.md).
 
 ## Driver and reproduction
 

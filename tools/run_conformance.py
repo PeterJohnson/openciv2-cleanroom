@@ -79,6 +79,8 @@ ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake
                    "tools/conformance_session.hpp", "tools/conformance_session.cpp",
                    "src/base/session_ids.hpp", "src/query/fields.hpp",
                    "src/query/live.hpp", "src/query/live.cpp",
+                   "src/query/live_records.hpp", "src/session/client.hpp",
+                   "src/session/command_types.hpp",
                    "src/session/runtime.hpp", "src/session/runtime.cpp",
                    "src/session/runtime_internal.hpp", "src/session/command_runtime.cpp",
                    "src/session/commands.hpp", "src/session/commands.cpp")

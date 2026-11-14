@@ -1,39 +1,23 @@
 #pragma once
 
-#include "base/random.hpp"
-#include "base/session_ids.hpp"
-#include "query/live.hpp"
+#include "session/client.hpp"
 #include "session/commands.hpp"
 #include "state/game.hpp"
-#include <memory>
 
 namespace openciv::session {
-using base::CommandId;
-using base::ConnectionId;
-using base::ControllerId;
-using base::InteractionId;
-using base::ParticipantId;
-using base::RuntimeId;
-using base::SessionId;
-enum class ControllerKind { frontend, automation, scripted, engine_policy };
-enum class AccessFailure { session_ended, revoked };
-class AccessError : public std::runtime_error {
+// Pins a live world while an owner workflow waits for external input. It does
+// not block command steps or deadlines; replacement requires cancellation first.
+class SessionActivity {
 public:
-    explicit AccessError(AccessFailure failure);
-    AccessFailure failure() const noexcept { return failure_; }
+    SessionActivity(SessionActivity&&) noexcept = default;
+    SessionActivity(const SessionActivity&) = delete;
+    SessionActivity& operator=(const SessionActivity&) = delete;
+    ~SessionActivity();
 
 private:
-    AccessFailure failure_;
-};
-struct ClientIdentity {
-    RuntimeId runtime{0};
-    SessionId session{0};
-    ParticipantId participant{0};
-    ControllerId controller{0};
-    state::CivilizationSlot observer{0};
-    ControllerKind kind = ControllerKind::frontend;
-    AccessClass access = AccessClass::player;
-    bool operator==(const ClientIdentity&) const = default;
+    friend class SessionRuntime;
+    explicit SessionActivity(std::shared_ptr<detail::RuntimeState> state);
+    std::shared_ptr<detail::RuntimeState> state_;
 };
 struct Participant {
     ParticipantId id{0};
@@ -53,35 +37,6 @@ struct CheckpointProfile {
     std::function<CheckpointBytes(const state::GameState&, const state::ProcessContext&)> encode;
     std::function<void(std::span<const std::uint8_t>, state::GameState&, state::ProcessContext&)>
         decode;
-};
-namespace detail {
-struct RuntimeState;
-struct Lease;
-} // namespace detail
-// The only surface handed to clients. Copying shares the same lease; no public
-// constructor can manufacture or alter authority. Owned query results may be
-// retained, but a revoked client can obtain no subsequent observation.
-class PlayerClient {
-public:
-    PlayerClient(const PlayerClient&) = default;
-    PlayerClient& operator=(const PlayerClient&) = default;
-    ClientIdentity identity() const;
-    query::LiveRecords<query::OwnUnit> own_units() const;
-    query::LiveRecords<query::OwnCity> own_cities() const;
-    std::vector<CommandDescriptor> commands() const;
-    CommandUpdate submit(CommandRequest request) const;
-    std::vector<CommandUpdate> updates() const;
-    std::optional<CommandUpdate> result(CommandId command) const;
-    InputReceipt reply(InteractionId interaction, std::int32_t choice) const;
-    InputReceipt cancel(CommandId command) const;
-
-private:
-    friend class SessionRuntime;
-    PlayerClient(std::weak_ptr<detail::RuntimeState> state, std::weak_ptr<detail::Lease> lease);
-    std::shared_ptr<detail::Lease>
-    checked(const std::shared_ptr<detail::RuntimeState>& state) const;
-    std::weak_ptr<detail::RuntimeState> state_;
-    std::weak_ptr<detail::Lease> lease_;
 };
 // Trusted composition/engine owner, never given to player code. One cooperative
 // mutation lane; not thread safe. Process state must outlive this runtime.
@@ -108,6 +63,10 @@ public:
     // Load/resume and within-game civilization creation do not call this.
     void prepare_new_game();
     bool active() const noexcept;
+    // At most one owner workflow; runtime and its injected process/services
+    // must outlive it. Starting requires settled commands, then ordinary command
+    // and timeout processing remains available while the workflow is pending.
+    SessionActivity begin_activity();
     ParticipantId add_participant(state::CivilizationSlot civilization,
                                   std::optional<ConnectionId> connection = {});
     Participant participant(ParticipantId id) const;
@@ -131,6 +90,11 @@ public:
     cancel_command(CommandId command); // Owning lifecycle/mode input, no client lease required.
     std::size_t expire_interactions(std::uint64_t now);
     bool has_pending_commands() const noexcept;
+    // Owner-selected result lifetime. Retire a terminal local result only after
+    // all live clients have drained its updates and consumed any desired result.
+    // Returns false for pending work, unread notifications or retained peer
+    // duplicate receipts/outboxes. Already returned owned values remain valid.
+    bool retire_command(CommandId command);
     CommandUpdate receive_request(ConnectionId source, ParticipantId participant,
                                   CommandCorrelation correlation, CommandRequest request);
     InputReceipt receive_result(ConnectionId source, const RoutedReply& reply);

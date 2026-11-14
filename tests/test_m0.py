@@ -24,6 +24,7 @@ class RegistryTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+        self.report = conformance.read_json(conformance.ROOT / "docs/conformance/registry.json")["fixtures"][0]["runReport"]
         shutil.copytree(conformance.ROOT / "docs", self.root / "docs")
         shutil.copyfile(conformance.ROOT / "dependencies.json", self.root / "dependencies.json")
         shutil.copyfile(conformance.ROOT / "CMakeLists.txt", self.root / "CMakeLists.txt")
@@ -89,7 +90,7 @@ class RegistryTests(unittest.TestCase):
             conformance.validate(self.root)
 
     def test_recorded_pass_must_match_the_unchanged_fixture(self):
-        self.edit("docs/conformance/reports/f01-native.json",
+        self.edit(self.report,
                   lambda r: r["cases"][0]["actual"]["result"].update(value="999"))
         with self.assertRaisesRegex(ValueError, "execution report does not match fixture"):
             conformance.validate(self.root)
@@ -109,15 +110,15 @@ class RegistryTests(unittest.TestCase):
         from run_conformance import ADAPTER_SOURCES
         for source in ADAPTER_SOURCES:
             with self.subTest(source=source):
-                self.edit("docs/conformance/reports/f01-native.json",
+                self.edit(self.report,
                           lambda r: r["adapterIdentity"]["sources"].update({source: "0" * 64}))
                 with self.assertRaisesRegex(ValueError, "stale or incomplete adapter"):
                     conformance.validate(self.root)
-                shutil.copyfile(conformance.ROOT / "docs/conformance/reports/f01-native.json",
-                                self.root / "docs/conformance/reports/f01-native.json")
+                shutil.copyfile(conformance.ROOT / self.report,
+                                self.root / self.report)
 
     def test_report_build_identity_must_come_from_the_adapter(self):
-        self.edit("docs/conformance/reports/f01-native.json",
+        self.edit(self.report,
                   lambda r: r.update(buildIdentity="different build"))
         with self.assertRaisesRegex(ValueError, "build identity mismatch"):
             conformance.validate(self.root)

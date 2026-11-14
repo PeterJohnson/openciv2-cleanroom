@@ -5,8 +5,9 @@ readers and both city-production preference paths are implemented. Native JSON u
 jart/json.cpp admission wrapper; classic text uses supplied file, section-index
 and byte-comparison services. Both rule paths produce `RuleDefinitions`, and
 both preference paths publish `CityPreferences`. This supplies part of M1's
-native/classic content boundary, not complete rules conversion or session content
-admission. [The completion audit](m1-validation.md) remains open.
+native/classic content boundary. The later [conversion slice](m1-content-conversion.md)
+completes the three M1 conversions; playable session content admission remains
+later work. [The completion audit](m1-validation.md) records the closed M1 scope.
 
 ## Text representation refactor
 

@@ -1,4 +1,5 @@
 #include "session/runtime.hpp"
+#include "query/live.hpp"
 #include "session/runtime_internal.hpp"
 #include <limits>
 
@@ -68,6 +69,19 @@ SessionRuntime::SessionRuntime(state::ProcessContext& process, RuntimeId identit
     state_ = std::make_shared<detail::RuntimeState>(process, identity);
 }
 SessionRuntime::~SessionRuntime() = default;
+SessionActivity::SessionActivity(std::shared_ptr<detail::RuntimeState> state)
+    : state_(std::move(state)) {
+    ++state_->activities;
+}
+SessionActivity::~SessionActivity() {
+    if (state_)
+        --state_->activities;
+}
+SessionActivity SessionRuntime::begin_activity() {
+    require_active(*state_);
+    detail::require_quiescent(*state_);
+    return SessionActivity{state_};
+}
 SessionId SessionRuntime::begin_client_session(Seeds seeds) {
     detail::require_quiescent(*state_);
     // Prepare contexts before revoking old access. A failed preparation has not
@@ -166,6 +180,7 @@ PlayerClient SessionRuntime::bind(ParticipantId participant, ControllerKind kind
     auto lease = std::make_shared<detail::Lease>(detail::Lease{
         {state_->identity, state_->session, participant, controller, observer, kind, access},
         true,
+        {},
         {}});
     detail::restore_pending_updates(*state_, *lease);
     state_->leases.emplace(controller, lease);

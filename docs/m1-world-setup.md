@@ -85,4 +85,4 @@ Outer new-session/menu lifecycle,
 W02 generation, V01 creation, F05 placement/balancing/
 acceleration, application interaction binding and X02 setup registration remain
 required work. The [inner initializer](m1-new-game.md) is already implemented
-with required creation/balancing children. M1 remains incomplete.
+with required creation/balancing children. The later [finite audit](m1-validation.md) closes M1; these supplied children remain later gameplay work.

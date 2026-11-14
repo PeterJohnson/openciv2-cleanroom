@@ -34,9 +34,15 @@ bool decision_access(const Lease& lease, const CommandRecord& record) {
            (interaction->recipient != record.actor.participant ||
             permitted(lease.identity.access, record.definition->descriptor.access));
 }
-std::optional<CommandUpdate> visible(const Lease& lease, const CommandRecord& record) {
+std::optional<CommandUpdate> visible(const Lease& lease, const CommandRecord& record,
+                                     std::size_t first_effect = 0) {
     if (owner(lease, record)) {
-        auto update = record.update;
+        const auto& stored = record.update;
+        CommandUpdate update{stored.correlation, stored.status,      stored.code,
+                             stored.result,      stored.interaction, {}};
+        update.committed.assign(stored.committed.begin() +
+                                    static_cast<std::ptrdiff_t>(first_effect),
+                                stored.committed.end());
         if (update.interaction && !recipient(lease, *update.interaction))
             update.interaction.reset();
         return update;
@@ -52,9 +58,23 @@ std::optional<CommandUpdate> visible(const Lease& lease, const CommandRecord& re
     return {};
 }
 void deliver(RuntimeState& state, const CommandRecord& record) {
-    for (auto& [id, lease] : state.leases)
-        if (auto update = visible(*lease, record))
-            lease->updates.push_back(std::move(*update));
+    const auto command = record.update.correlation.command;
+    for (auto& [id, lease] : state.leases) {
+        const auto found = lease->delivered_effects.find(command);
+        const auto first = found == lease->delivered_effects.end() ? 0 : found->second;
+        if (auto update = visible(*lease, record, first)) {
+            if (owner(*lease, record)) {
+                // Allocate the cursor before enqueueing, then advance it only
+                // after the notification is retained. Failed delivery cannot
+                // silently skip a committed effect on the next attempt.
+                auto& cursor = lease->delivered_effects.try_emplace(command, first).first->second;
+                lease->updates.push_back(std::move(*update));
+                cursor = record.update.committed.size();
+            } else {
+                lease->updates.push_back(std::move(*update));
+            }
+        }
+    }
 }
 void clear_interaction(RuntimeState& state, CommandRecord& record) {
     if (record.update.interaction) {
@@ -192,15 +212,19 @@ bool pending(const RuntimeState& state) noexcept {
                        [](const auto& entry) { return !terminal(entry.second.update.status); });
 }
 void require_quiescent(const RuntimeState& state) {
-    if (state.advancing || pending(state) || !state.requests.empty() || !state.replies.empty())
-        throw std::logic_error(
-            "Finish admitted commands and transfer required outboxes before ending a session");
+    if (state.advancing || state.activities || pending(state) || !state.requests.empty() ||
+        !state.replies.empty())
+        throw std::logic_error("Finish owner workflows/commands and transfer required outboxes "
+                               "before replacing a session");
 }
 void restore_pending_updates(RuntimeState& state, Lease& lease) {
     for (const auto& [id, record] : state.commands)
         if (!terminal(record.update.status))
-            if (auto update = visible(lease, record))
+            if (auto update = visible(lease, record)) {
+                if (owner(lease, record))
+                    lease.delivered_effects[id] = record.update.committed.size();
                 lease.updates.push_back(std::move(*update));
+            }
 }
 } // namespace detail
 
@@ -392,6 +416,36 @@ std::size_t SessionRuntime::expire_interactions(std::uint64_t now) {
         ++count;
     }
     return count;
+}
+bool SessionRuntime::retire_command(CommandId command) {
+    require_active_commands(*state_);
+    if (state_->advancing)
+        throw std::logic_error("Retire commands only between operation steps");
+    const auto found = state_->commands.find(command);
+    if (found == state_->commands.end() || !terminal(found->second.update.status))
+        return false;
+    // Peer receipts remain valid for the entire session. A mode adapter must
+    // establish a protocol-specific acknowledgement/epoch boundary before a
+    // future API can retire them; forgetting one here could reexecute a duplicate.
+    for (const auto& [origin, retained] : state_->received)
+        if (retained == command)
+            return false;
+    for (const auto& request : state_->requests)
+        if (request.correlation == found->second.update.correlation)
+            return false;
+    if (found->second.reply_to)
+        return false;
+    for (const auto& [id, lease] : state_->leases)
+        for (const auto& update : lease->updates)
+            if (update.correlation.command == command)
+                return false;
+    // A terminal command may still have a late queued cancellation. It cannot
+    // execute any work and must not leave an index into the retired record.
+    std::erase_if(state_->ready, [&](const auto& work) { return work.command == command; });
+    for (auto& [id, lease] : state_->leases)
+        lease->delivered_effects.erase(command);
+    state_->commands.erase(found);
+    return true;
 }
 bool SessionRuntime::has_pending_commands() const noexcept {
     return detail::pending(*state_);

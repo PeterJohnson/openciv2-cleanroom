@@ -1,6 +1,7 @@
 # M1 initial foundations
 
-M1 is underway, not complete. The subsequent [stored-save slice](m1-stored-saves.md)
+Historical foundation-slice evidence follows. M1 is now complete under the
+[finite closeout audit](m1-validation.md). The subsequent [stored-save slice](m1-stored-saves.md)
 adds civilization/global records and full current stored-file decoding, with
 Windows validation. [Stored inspection](m1-inspection.md) adds owned queries and
 the native `oc2` CLI. [Gameplay content loading](m1-content-runtime.md) adds strict

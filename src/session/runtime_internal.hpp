@@ -9,6 +9,7 @@ struct Lease {
     ClientIdentity identity;
     bool active = true;
     std::deque<CommandUpdate> updates;
+    std::map<CommandId, std::size_t> delivered_effects;
 };
 struct CommandRecord {
     CommandActor actor;
@@ -33,6 +34,7 @@ struct RuntimeState {
     std::unique_ptr<state::GameState> world;
     RuntimeId identity;
     bool active = false, advancing = false;
+    unsigned activities = 0;
     SessionId session{0};
     std::uint64_t next_session = 1, next_participant = 1, next_controller = 1, revision = 0;
     std::uint64_t next_command = 1, next_interaction = 1;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "state/identities.hpp"
+#include "state/unit_types.hpp"
 #include <algorithm>
 #include <array>
 #include <functional>
@@ -10,23 +11,6 @@
 namespace openciv::state {
 // F02 §§3,5–6: logical runtime values, never a packed file/wire representation.
 // Narrow numeric members preserve the specified cyclic publication domains.
-enum class UnitType : std::uint8_t {};
-enum class UnitOrder : std::int8_t {
-    none = -1,
-    fortifying = 1,
-    fortified = 2,
-    sleeping = 3,
-    fortress = 4,
-    road = 5,
-    irrigate = 6,
-    mine = 7,
-    transform = 8,
-    clean = 9,
-    airbase = 10,
-    go_to = 11,
-    ai_idle = 16,
-    ai_go_to = 27
-};
 // Every negative link is terminal. Retain its actual signed value for round trips;
 // interpreting a link does not validate or repair its target record.
 template <class Slot> struct SlotLink {

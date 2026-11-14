@@ -7,7 +7,7 @@ original reopened it with the city present. The
 [retained report](conformance/reports/original-text-and-save-windows.json)
 records executable/input/output/source hashes, build identity, actions and local
 capture identities. This is independent original-program evidence, outside X02.
-M1 remains in progress.
+This historical observation predates the [completed M1 audit](m1-validation.md).
 
 ## Setup and reproduction
 

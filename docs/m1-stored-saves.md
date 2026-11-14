@@ -1,6 +1,6 @@
 # M1 stored-save records
 
-M1 remains in progress. The complete **stored-file view for version `0x2c`**
+M1 is complete within its [finite scope](m1-validation.md). The complete **stored-file view for version `0x2c`**
 supports lossless re-encoding without load transformations. The separate ordered
 core loader and live writer now compose the stream/name/census and save-preparation
 stages below over `SessionRuntime` with required external service bindings.
@@ -424,14 +424,20 @@ records original acceptance of two core exports with these native bindings.
 title, extension and open/save requirements. Results distinguish accepted paths,
 cancellation and failure with an owned diagnostic. Only accepted valid paths are
 published. Native flags, handles, NUL-separated filters, capacities, return-byte
-conventions and extended-error queries are absent from the portable API. A future
-native chooser owns any platform-specific translation.
+conventions and extended-error queries are absent from the portable API.
+`FileChooser` is an owned virtual service with nonblocking begin/poll/cancel
+operations. M2 supplies ImGui and browser adapters for its semantic requests.
 
 `session/classic_save_menu.hpp` invokes the real writer only after acceptance.
 It supplies a familiar ruler/year suggestion and scenario/email notices as a UI
 choice, not a compatibility gate. Cancellation exits in every mode without saving
 or publishing draft paths; N04 owns any mandatory email-turn save flow. Active
 entry stops N03 countdown and attempts one start on every exit, including errors.
+`ClassicSaveOperation` retains the workflow across event-loop iterations and
+revalidates/captures the live game at acceptance. Its `SessionActivity` guard
+requires cancellation before session replacement, without blocking command or
+deadline processing. The existing synchronous helper is an immediate-provider
+adapter over the same phases; F05 setup migration follows its eventual UI.
 
 Text services are pure presentation queries on captured values. Notices own their
 arguments, and neither filename suggestions nor notices write process text scratch.

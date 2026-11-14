@@ -44,14 +44,14 @@ X01 and X02 define that convention and its conformance checks.
 The initial C++20/CMake/SDL3 shell provides native macOS/Windows menus, ImGui
 Linux/browser menus and dialogs, and a development view with illustrative tiles. Drawn text uses pinned DejaVu
 TrueType fonts rasterized at runtime; headless builds need no font data.
-It has no game simulation, asset-pack or game-content loader, save inspection,
-command console or Lua runtime yet. JSON content formats and the classic text
-compatibility boundary are specified; a complete standalone content set remains
-part of the implementation plan. Catch2 covers the portable shell and SDL
-integration; ImGui Test Engine covers the drawn interface. M0 is complete.
-The [initial M1 foundations](docs/m1-foundations.md) add portable F01 arithmetic,
-isolated random contexts and execution of the three pure conformance vectors;
-the rest of M1 remains in progress.
+M0 and [M1's finite foundation contract](docs/m1-validation.md) are complete.
+Portable libraries now provide state, content loading/conversion, save codecs,
+inspection, scoped session clients, commands and bounded checkpoint support.
+The graphical shell has not yet connected those services into playable gameplay.
+M2 proves rendering, asynchronous interaction and platform storage; M3 delivers
+the first playable slice. A complete standalone content set, console and Lua
+integration retain their milestones in the implementation plan. Catch2 covers
+portable behavior and SDL integration; ImGui Test Engine covers the drawn interface.
 
 To build with explicitly enabled pinned dependency downloads (CMake 3.24+,
 Ninja, and a C++20 compiler required):

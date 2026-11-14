@@ -294,7 +294,10 @@ TEST_CASE("Local submissions own their inputs and run in explicit FIFO order",
     const auto updates = first.updates();
     REQUIRE(updates.size() >= 4);
     CHECK(updates.back().correlation == b.correlation);
-    CHECK(updates.back().committed[0].index == 1);
+    CHECK(updates.back().committed.empty()); // Completion does not repeat an earlier effect.
+    CHECK(std::count_if(updates.begin(), updates.end(), [](const auto& update) {
+              return !update.committed.empty() && update.committed[0].index == 1;
+          }) == 2);
     CHECK(first.updates().empty());
     CHECK(runtime.take_requests().empty());
     runtime.end_client_session();
@@ -618,4 +621,80 @@ TEST_CASE("Authority changes are checked at admission and by the owning executio
     }
     CHECK(executions == 0);
     CHECK_FALSE(host.has_pending_commands());
+}
+
+TEST_CASE("Command notification effects are linear and independent for each lease",
+          "[session][commands]") {
+    state::ProcessContext process;
+    SessionRuntime runtime(process, RuntimeId{1});
+    runtime.register_command(definition("test.action", [](auto& context, auto) {
+        for (int i = 0; i < 1000; ++i)
+            context.effect("test.burst", {{"value", i}});
+        return done(1000);
+    }));
+    runtime.begin_client_session({1, 2});
+    const auto first = client(runtime);
+    const auto second = runtime.bind(first.identity().participant, ControllerKind::automation);
+    const auto outsider = client(runtime, 2);
+    const auto submitted = first.submit(request(1));
+    CHECK_FALSE(runtime.retire_command(id(submitted)));
+    CHECK(runtime.advance_one());
+    CHECK_FALSE(runtime.retire_command(id(submitted))); // Unread notifications.
+    const auto retained = first.result(id(submitted));
+    REQUIRE(retained);
+    CHECK(retained->committed.size() == 1000);
+    for (const auto* observer : {&first, &second}) {
+        std::uint64_t effects = 0;
+        for (const auto& update : observer->updates())
+            for (const auto& effect : update.committed)
+                CHECK(effect.index == ++effects);
+        CHECK(effects == 1000);
+    }
+    CHECK(outsider.updates().empty());
+    CHECK(runtime.retire_command(id(submitted)));
+    CHECK_FALSE(first.result(id(submitted)));
+    CHECK(retained->committed.size() == 1000); // Owned snapshots survive retirement.
+    CHECK_FALSE(runtime.retire_command(id(submitted)));
+    for (int i = 0; i < 20; ++i) {
+        const auto next = first.submit(request(1));
+        REQUIRE(runtime.advance_one());
+        first.updates();
+        second.updates();
+        REQUIRE(runtime.retire_command(id(next)));
+    }
+    CHECK_FALSE(runtime.has_pending_commands());
+}
+TEST_CASE(
+    "Command retirement preserves peer duplicate receipts and discards terminal queued inputs",
+    "[session][commands]") {
+    state::ProcessContext process;
+    SessionRuntime runtime(process, RuntimeId{1});
+    unsigned executions = 0;
+    runtime.register_command(definition("test.action", [&](auto&, auto) {
+        ++executions;
+        return done(1);
+    }));
+    runtime.begin_client_session({1, 2});
+    auto local = client(runtime);
+    const auto submitted = local.submit(request(1));
+    CHECK(local.cancel(id(submitted)).accepted); // Behind begin, which completes.
+    CHECK(runtime.advance_one());
+    local.updates();
+    CHECK(runtime.retire_command(id(submitted)));
+    CHECK_FALSE(runtime.advance_one()); // No dangling queued command index.
+    const auto peer = runtime.add_participant(state::CivilizationSlot{2}, ConnectionId{7});
+    const CommandCorrelation origin{RuntimeId{2}, SessionId{1}, CommandId{1}};
+    const auto received = runtime.receive_request(ConnectionId{7}, peer, origin, request(1));
+    REQUIRE(runtime.advance_one());
+    CHECK_FALSE(runtime.retire_command(id(received)));
+    const auto replies = runtime.take_replies();
+    REQUIRE(replies.size() == 1);
+    CHECK_FALSE(runtime.retire_command(id(received)));
+    runtime.receive_request(ConnectionId{7}, peer, origin, request(1));
+    CHECK(executions == 2);
+    const auto duplicate = runtime.take_replies();
+    REQUIRE(duplicate.size() == 1);
+    CHECK(duplicate[0].correlation == replies[0].correlation);
+    CHECK(duplicate[0].result == replies[0].result);
+    CHECK(duplicate[0].status == replies[0].status);
 }

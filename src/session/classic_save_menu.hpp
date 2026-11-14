@@ -1,6 +1,7 @@
 #pragma once
 #include "session/classic_file_choice.hpp"
 #include "session/classic_save.hpp"
+#include "session/runtime.hpp"
 
 namespace openciv::session {
 struct ClassicSaveMenuState {
@@ -29,6 +30,38 @@ struct SaveMenuServices {
     std::function<void(const SaveNotice&)> notice;
 };
 enum class SaveMenuResult { inactive, cancelled, saved, failed };
+// F06 asynchronous owner workflow. The operation owns its chooser, request and
+// service bindings; runtime/files/menu and captured service owners must outlive
+// it. advance performs one phase and returns nullopt while the chooser is open.
+// Cancellation/destruction dismisses the chooser and restarts a stopped timer
+// once. Explicit completion propagates failures; destruction is best-effort.
+// No participant binding is invented for application lifecycle work.
+class ClassicSaveOperation {
+public:
+    ClassicSaveOperation(SessionRuntime& runtime, ClassicFileState& files,
+                         ClassicSaveMenuState& menu, bool scenario, SaveMenuServices services,
+                         std::unique_ptr<FileChooser> chooser);
+    ~ClassicSaveOperation();
+    ClassicSaveOperation(const ClassicSaveOperation&) = delete;
+    ClassicSaveOperation& operator=(const ClassicSaveOperation&) = delete;
+    std::optional<SaveMenuResult> advance();
+    SaveMenuResult cancel();
+    const std::optional<SaveMenuResult>& result() const noexcept { return result_; }
+
+private:
+    FileChoiceRequest prepare_request();
+    SaveMenuResult accept(FileChoiceResult choice);
+    void finish(SaveMenuResult result);
+    void abandon() noexcept;
+    SessionRuntime& runtime_;
+    ClassicFileState& files_;
+    ClassicSaveMenuState& menu_;
+    bool scenario_, started_ = false, stopped_ = false, advancing_ = false;
+    SaveMenuServices services_;
+    std::unique_ptr<FileChooser> chooser_;
+    std::optional<SessionActivity> activity_;
+    std::optional<SaveMenuResult> result_;
+};
 // F06 production save UI. Captured presentation values and owned notice arguments;
 // only an accepted path starts saving. Every completed timer stop has one restart
 // attempt, including cancellation, chooser errors and exceptional providers.

@@ -4,7 +4,7 @@ Status: portable semantic command, interaction and authority-adapter foundations
 implemented in `oc2_session`, from [architecture §§4–5](architecture.md#4-commands-interactions-and-event-delivery).
 No fake gameplay command is installed in production. The authored test operations
 prove the service contract; owning mechanics and classic mode loops must register
-their actual operations as they arrive. The [M1 audit](m1-validation.md) remains open.
+their actual operations as they arrive. The [M1 audit](m1-validation.md) records completion of the finite foundation scope.
 
 ## Admission and execution
 
@@ -48,11 +48,22 @@ not an allocation-failure emulation or a transaction guarantee. Engine mutation
 still calls `publish()` or emits a semantic effect at its specified publication
 boundary before clients observe state.
 
-Updates carry the correlation, lifecycle status, result, diagnostic code and a
-cumulative list of committed effects. Effect indices are stable and one-based
-within a command; repeated copies in later updates are observations of the same
-effects, not instructions to apply them again. Updates and results are owned
-values; polling consumes that lease's notification queue without running mechanics.
+Notifications carry correlation, lifecycle status, result, diagnostic code and
+only the committed effects not already delivered to that lease. Each command
+owns one cumulative effect log; per-lease cursors select its next suffix without
+copying earlier effects. Effect indices remain stable and one-based. A new
+binding receives the complete prefix of any visible pending command once.
+`result()` explicitly returns an owned cumulative snapshot. Polling notifications
+never runs mechanics, and separate recipients still see only their own prompts.
+
+The trusted owner calls `retire_command` after consuming a terminal local result.
+Retirement refuses pending commands, unread notifications on any live binding,
+untransferred requests, and incoming-peer duplicate receipts. It removes obsolete
+queued cancellations and delivery cursors together with the command. Already
+returned snapshots remain valid. Local drivers must drain/revoke their bindings
+and retire results to bound long-session history; no automatic age-based eviction
+changes result availability. Incoming-peer receipts remain until session end;
+M6 must define its protocol acknowledgement/epoch retirement before pruning them.
 
 An interaction has its own identity, explicit recipient/observer, optional typed
 target, ordered allowed choices, prompt, cancellation permission and optional
@@ -106,8 +117,9 @@ a cancellation operation; owners must finish that protocol work first.
 Cancellation of a command still awaiting a peer explicitly requires the mode
 adapter; this foundation does not invent a cancellation packet or discard the
 awaited result. N01–N03 wire routing, disconnect defaults, endpoint-generation
-checks, timeouts and host transfer remain integration work. Queue/output retention
-budgets and full durable session checkpoints are later M3–M6 work. M1's only
+checks, timeouts and host transfer remain integration work. Hard queue/output budgets, peer-receipt retirement and full durable session
+checkpoints remain M3–M6 work. Local result retirement and linear effect delivery
+are implemented above. M1's only
 serialization deliverable is the [bounded local checkpoint profile](m1-closeout.md#m1-01-checkpoint-profile),
 now implemented with [eight-group evidence](m1-checkpoint.md#eight-group-acceptance-evidence).
 It uses the real session/continuation boundary with test-only authored owner codecs;
@@ -143,3 +155,42 @@ and compiled-adapter rejection checks). The tools-only build remains independent
 discovery and dependency downloads. Retained native/WASM reports were refreshed
 for build identity; these command scenarios are not yet registered X02 fixtures
 and are not original-program observations.
+
+## Post-M1 integration interfaces
+
+Player code includes `session/client.hpp` and `session/command_types.hpp`;
+`query/live_records.hpp` contains owned observations without exposing entity pools.
+The engine retains `runtime.hpp`, operation definitions and mutable contexts.
+`tools/check_boundaries.py` follows transitive includes, and CMake rejects graphical
+or platform dependencies in portable targets.
+
+`ClassicSaveOperation` is the first asynchronous lifecycle workflow. Its owned
+`FileChooser` interface has nonblocking begin/poll/cancel operations. A pending
+choice retains no native stack and draws no RNG. `SessionActivity` prevents
+new-game/end/restore replacement until the workflow is cancelled or finished,
+while ordinary commands, incoming requests and deadlines continue to run.
+Acceptance rechecks the current core-save preconditions and captures current
+notice/snapshot values. Cancellation, chooser exceptions and destruction dismiss
+the chooser and attempt one restart after a completed timer stop. The synchronous
+headless wrapper drives these same phases through an immediate chooser.
+
+The application still needs ImGui/browser implementations of this interface in
+M2. The broader F05 wizard migration accompanies its M3 UI; its existing supplied
+interaction tests and semantic ordering remain intact.
+
+Post-M1 refactor validation (working tree based on `91a4c82`, 2026-11-14):
+577 native CTests, 577 ASan/UBSan CTests and all eight WASM CTest targets pass;
+the WASM portable suite contains 552 cases. All 118 Python tests pass, including
+transitive boundary rejection tests. A 1,000-effect regression delivers exactly
+1,000 effect entries to each owner lease; cumulative snapshots remain available.
+Pending workflow checks cover cancellation/destruction, chooser failure,
+replacement/restore rejection, accepted live-state changes, deadlines and peer
+replies. LeakSanitizer cannot run under this environment's tracer; sanitizer
+execution uses `ASAN_OPTIONS=detect_leaks=0`.
+
+The desktop application and native storage library build with
+`OC2_BUILD_TOOLS=OFF`. New [native](conformance/reports/post-m1-native.json) and
+[WASM](conformance/reports/post-m1-wasm.json) reports bind the same 57 fixture
+observations and consumed prefixes to current compiled inputs. The original M1
+hosted/original-game evidence remains unchanged and revision-bound; these local
+checks do not claim a new Windows/macOS or original-game run.

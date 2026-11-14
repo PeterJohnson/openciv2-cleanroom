@@ -228,8 +228,8 @@ const ContinuationCodec& operation_codec(const CommandDefinition& definition) {
     return *definition.checkpoint;
 }
 void local_boundary(const detail::RuntimeState& state) {
-    require(state.active && !state.advancing && state.participants.size() == 1 && state.gameplay &&
-                state.presentation,
+    require(state.active && !state.advancing && !state.activities &&
+                state.participants.size() == 1 && state.gameplay && state.presentation,
             "Checkpoint requires an active local participant between steps");
     const auto& participant = state.participants.begin()->second;
     require(participant.civilization == state::CivilizationSlot{1} && !participant.connection,
@@ -314,7 +314,8 @@ void SessionRuntime::restore_checkpoint(std::span<const std::uint8_t> encoded,
                                         const CheckpointProfile& profile,
                                         std::string_view content_hash) {
     profile_valid(profile, content_hash);
-    require(!state_->advancing, "Cannot restore during a command step");
+    require(!state_->advancing && !state_->activities,
+            "Cannot restore during a command step or owner workflow");
     require(encoded.size() <= 16 * 1024 * 1024, "Checkpoint input exceeds limit");
     // Replacing a pending local decision is explicit, but never discard peer work
     // or an already queued client input at the destination.

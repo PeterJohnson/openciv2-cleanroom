@@ -4,7 +4,7 @@ The C01 default-name operation now uses either classic CITY text or admitted
 native JSON lists. Both paths apply the same retained counter and publication
 rules. This closes the isolated naming/content-provider portion of M1; complete
 city creation, founding prompts, cancellation, process rule installation and
-session admission remain separate work. The [M1 audit](m1-validation.md) is open.
+session admission remain separate work. The [M1 audit](m1-validation.md) records completion of the finite M1 scope.
 
 ## Operation and state
 

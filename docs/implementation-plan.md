@@ -622,22 +622,22 @@ and does not replace, X02's operation-level coverage ledger.
 
 ## Immediate implementation backlog
 
-M0 is complete. Build the next implementation changes on the integrated shell,
-maintaining the [registries/ledger](conformance/README.md) and
-[content inventory](content/README.md) as operations and inputs arrive:
+M0 and M1 are complete under the [finite closeout audit](m1-validation.md).
+Preserve the [registries/ledger](conformance/README.md) and
+[content inventory](content/README.md) as later operations and inputs arrive:
 
-1. Close the remaining M1 foundation inventory and X02 registrations/replay for
-   admitted operations; retain the implemented codecs, content loaders, queries,
-   session contracts and bounded original file/peer evidence.
-2. Maintain fresh-game isolation across content/setup/load failure integration.
-   Register the cold/reused-runtime check and keep pending-command/transport
-   obligations explicit. Do not add AI work to menu reset.
-3. Finish the M2 graphics/platform boundary and application content installation.
-4. Deliver the M3 authored-map playable slice through the shared session API:
+1. Finish M2 graphics/platform and content installation. Drive the new owned
+   file-choice/save workflow from ImGui/browser adapters; keep native menu
+   tracking, fake traffic and deadlines responsive.
+2. Maintain fresh-game isolation and the registered cold/reused-runtime checks.
+   Cancel pending owner workflows before replacement, drain command notifications,
+   and retire completed local results at explicit consumer boundaries.
+3. Deliver the M3 authored-map playable slice through the shared client API:
    movement, founding a city, production/research, end turn, save and resume.
-5. Complete W02/V01/setup balancing, AI and remaining gameplay in M4; replace
+   Migrate setup interactions to explicit resumable phases as their UI arrives.
+4. Complete W02/V01/setup balancing, AI and remaining gameplay in M4; replace
    supplied children with real mechanics and validate their observable joins.
-6. Add the M4 Lua production-policy slice, then hotseat/scenario and mixed-peer
+5. Add the M4 Lua production-policy slice, then hotseat/scenario and mixed-peer
    integration in M5/M6. Whole-game conformance closes at M7.
 
 For each change: cite the owning specification, implement the smallest coherent

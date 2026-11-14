@@ -52,7 +52,9 @@ FileChoiceResult choose_classic_file(const FileChoiceRequest& request,
                                      const FileChoiceServices& services) {
     if (!services.choose)
         throw std::invalid_argument("Missing file chooser");
-    auto result = services.choose(request);
+    return validate_file_choice(services.choose(request));
+}
+FileChoiceResult validate_file_choice(FileChoiceResult result) {
     if (result.status == FileChoiceStatus::accepted) {
         if (result.path.empty() || result.path.find('\0') != std::string::npos)
             return {FileChoiceStatus::failed, {}, "Invalid selected path"};

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -25,6 +26,17 @@ struct FileChoiceResult {
     FileChoiceStatus status = FileChoiceStatus::cancelled;
     std::string path, error;
 };
+// One owned chooser per operation. begin starts presentation and returns;
+// poll never waits. A result is consumed once. cancel dismisses any remaining
+// native/browser presentation and is also safe after a result or begin failure.
+class FileChooser {
+public:
+    virtual ~FileChooser() = default;
+    virtual void begin(FileChoiceRequest request) = 0;
+    virtual std::optional<FileChoiceResult> poll() = 0;
+    virtual void cancel() noexcept = 0;
+};
+FileChoiceResult validate_file_choice(FileChoiceResult result);
 struct FileChoiceServices {
     std::function<FileChoiceResult(const FileChoiceRequest&)> choose;
 };

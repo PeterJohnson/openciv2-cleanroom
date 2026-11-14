@@ -67,7 +67,9 @@ remain independent of the JSON library. With tests enabled, Catch2 is the only
 additional headless dependency. With
 `BUILD_TESTING=OFF` as well, this builds the portable base, game, formats, query
 and view-model libraries plus the native `oc2` inspection CLI, using only the
-vendored JSON dependency. `OC2_BUILD_TOOLS=OFF` omits the CLI and native I/O library. Native tools
+vendored JSON dependency. `OC2_BUILD_TOOLS=OFF` omits CLI executables. The native `oc2_io_native` library
+remains available to the graphical application and other native clients; its
+public format dependencies propagate to consumers. Native tools
 default ON; Emscripten defaults them OFF while retaining the portable query API.
 See [inspection commands and output](m1-inspection.md) for a tools-only build.
 See [SQLite export](m1-sqlite-export.md) for the optional dependency and schema.
