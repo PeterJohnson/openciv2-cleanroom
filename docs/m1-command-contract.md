@@ -108,7 +108,8 @@ adapter; this foundation does not invent a cancellation packet or discard the
 awaited result. N01–N03 wire routing, disconnect defaults, endpoint-generation
 checks, timeouts and host transfer remain integration work. Queue/output retention
 budgets and full durable session checkpoints are later M3–M6 work. M1's only
-serialization deliverable is the [bounded local checkpoint profile](m1-closeout.md#m1-01-checkpoint-profile).
+serialization deliverable is the [bounded local checkpoint profile](m1-closeout.md#m1-01-checkpoint-profile),
+now implemented with [eight-group evidence](m1-checkpoint.md#eight-group-acceptance-evidence).
 It uses the real session/continuation boundary with test-only authored owner codecs;
 it does not claim arbitrary-world or pending-peer restore.
 
@@ -117,8 +118,10 @@ and bounded generated traces. Operations supply stable site/call/attempt keys an
 exact law arguments; retries and retained choices belong to the continuation.
 A choice mismatch terminates the command with `random_choice_<category>`, retaining
 its already-published effects and consumed input prefix. The context checkpoint
-owns the tape/trace and rejects consumed keys after restore. This does not yet
-serialize a suspended continuation or the surrounding world, process and queues.
+owns the tape/trace and rejects consumed keys after restore. M1-01 now serializes
+the declared local state and suspended owner continuation, with versioned codecs
+and fresh client binding. Arbitrary world/process/queue and actual gameplay
+continuation persistence remain outside this profile.
 
 ## Validation
 

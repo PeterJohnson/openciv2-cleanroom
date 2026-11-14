@@ -1,6 +1,6 @@
 # M1 local checkpoint implementation
 
-Status: RNG component implemented; M1-01 remains open. The exact session profile
+Status: **M1-01 passed at `3b135a6`** on Windows native and WASM. The exact session profile
 and eight acceptance groups are defined by [the closeout contract](m1-closeout.md#m1-01-checkpoint-profile).
 This document does not expand that profile or claim a whole-game save feature.
 
@@ -52,11 +52,66 @@ skips. All 57 conformance observations and consumed prefixes matched native/WASM
 and the preceding revision. These are component/regression results, not completion
 of the eight session-level M1-01 groups or the final M1-06 platform matrix.
 
-## Remaining M1-01 work
+## Local session profile
 
-Compose this component with explicit owner continuation/state codecs at the session
-boundary. Preserve the declared treasury, preferences/tokens, identities/effects,
-interaction and counters, admit the matching immutable-content hash, reject all
-unsupported state, and replace only after complete admission. Exercise the eight
-session scenario groups on native/WASM before marking the gate passed. The authored
-operation and its codec belong in tests; no fake command is installed in production.
+`SessionRuntime::checkpoint` and `restore_checkpoint` implement the production
+boundary. `CheckpointProfile` supplies the named state projection codec;
+`CommandDefinition::checkpoint` supplies the versioned continuation codec. These
+are trusted, non-reentrant owner functions: encoding is read-only; decoding writes
+only supplied staged state, without services or access to the shared map fallback.
+No native stack, closure or function pointer is serialized.
+
+The concrete `test.local-foundation/1` profile and `test.checkpoint` operation live
+only in `tests/session_checkpoint_tests.cpp`. Fresh defaults are constructor-default
+world/process values. Treasury, complete ordinary/multiplayer preferences and token
+counters are the mutable state closure; the codec checks all other world, content
+and workspace state against those defaults. Immutable default test content has an
+explicit versioned identity whose SHA-256 must be supplied again on restore.
+
+The runtime requires one local civilization-1 participant and either no command or
+one owned suspended decision. Additional commands, queued inputs, connected
+participants and peer-routing work reject. It retains actor/participant identity,
+arguments and codec versions, committed effects, interaction choices, recipient,
+target, deadline/default, correlations, RNG components and identity/revision counters.
+The operation codec retains its phase, debit argument and resolved random choice.
+Restore invokes the codec, never the execution factory or committed prefix.
+
+Strict JSON format `openciv2-local-checkpoint/1` contains an exact payload string
+and SHA-256. The hash detects accidental damage, not an authenticated author. The
+payload binds the profile/content hash and carries explicit owner bytes as hex.
+Integers are decimal strings and command text is byte-preserving hex. Limits are
+16 MiB input, 4 MiB payload, 512 KiB per owner blob, 4096 bytes per text and 4096
+elements per array. RNG replay uses the component's one-million-draw default limit.
+
+Decode/admission and owner codecs complete before no-throw process/runtime
+replacement. Failure retains destination state, bindings and RNG. Success revokes
+old leases; fresh binding reconstructs notifications from the retained update.
+The destination retains its runtime identity and the accepted command retains its
+original correlation. Counters retain both saved and destination high-water marks.
+Replacing a destination with queued inputs or peer obligations rejects.
+
+## Eight-group acceptance evidence
+
+Test source: `tests/session_checkpoint_tests.cpp`, revision `3b135a6`.
+Every row uses owned serialized bytes and the production session API.
+
+| M1-01 group | Executed evidence |
+| --- | --- |
+| 1. Idle | Separate runtime/process; exact treasury, token counters, complete preferences and distinct saved RNG context names; empty queries/work queue |
+| 2. Pending decision | Generated/controlled variants restore the same pending update and match uninterrupted treasury, effects, result and RNG suffix after the same reply; the prefix runs once |
+| 3. Cancellation | Treasury 95 and one committed debit survive; matches uninterrupted cancellation |
+| 4. Timeout | No action at 49; retained deadline/default acts at 50 and matches uninterrupted completion |
+| 5. RNG variants | Gameplay/presentation contexts persist, prefix keys remain consumed and completed tapes are exhausted; component cases cover all laws and engine-block boundaries |
+| 6. Bindings/replies | Old and repeated-restore leases reject, fresh binding answers, duplicate/stale replies reject, controller/command/interaction identities advance without reuse |
+| 7. Bad input | Truncation, damaged payload, unknown format/policy/profile/operation/codec, content mismatch, bad owner bytes/counters/recipient reject; destination checkpoint and client remain unchanged |
+| 8. Unsupported state | World/process/content deviations, participant/domain changes, extra commands, queued inputs and accepted routed peer requests reject; RNG/treasury and routed output survive; missing operation codecs reject |
+
+Seven session cases passed with 241 assertions on each platform. Full verification
+passed 558 native CTests and seven WASM targets (534 portable cases, 206183
+assertions). All 57 X02 observations and consumed prefixes matched native/WASM and
+the preceding revision. Session cases are implementation foundation proofs, not
+original-game observations or extra X02 operation registrations.
+
+M1-01 is complete for this profile. Arbitrary world/process state, actual gameplay
+continuations, remote queues, F05 wizard persistence and efficient arbitrary-engine
+persistence remain M3–M6 work. The final M1-06 matrix remains a separate gate.
