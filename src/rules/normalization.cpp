@@ -4,17 +4,21 @@
 #include <stdexcept>
 
 namespace openciv::rules {
-state::CosmicRules normalize_cosmic(const std::array<std::int32_t, 22>& input) {
+std::uint8_t normalize_cosmic_value(state::CosmicParameter parameter, std::int32_t input) {
     constexpr std::array<std::int32_t, 22> low{1, 1, 0, 4, 4, 0, 0, 4, 10, 4,  4,
                                                3, 5, 0, 0, 0, 1, 0, 0, 4,  25, 0};
     constexpr std::array<std::int32_t, 22> high{10, 100, 10, 20, 20, 10, 10,  12,  100, 50,  50,
                                                 10, 100, 8,  8,  8,  20, 100, 100, 100, 200, 10};
+    const auto i = static_cast<std::size_t>(parameter);
+    auto out = code8(std::clamp(input, low.at(i), high.at(i)));
+    if (parameter == state::CosmicParameter::food_box_rows && out % 2)
+        ++out;
+    return out;
+}
+state::CosmicRules normalize_cosmic(const std::array<std::int32_t, 22>& input) {
     state::CosmicRules out;
     for (std::size_t i = 0; i < input.size(); ++i)
-        out.values[i] = code8(std::clamp(input[i], low[i], high[i]));
-    auto& food = out.values[static_cast<std::size_t>(state::CosmicParameter::food_box_rows)];
-    if (food % 2)
-        ++food;
+        out.values[i] = normalize_cosmic_value(static_cast<state::CosmicParameter>(i), input[i]);
     return out;
 }
 std::uint8_t normalize_movement(std::int32_t points, std::uint8_t road) {

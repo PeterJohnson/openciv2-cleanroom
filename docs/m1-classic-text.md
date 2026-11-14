@@ -1,11 +1,12 @@
-# M1 classic text and city preferences
+# M1 classic text, rules and city preferences
 
-The portable F03 text reader and both city-production preference paths are
-implemented. Native JSON uses the pinned jart/json.cpp admission wrapper;
-classic text uses supplied file, section-index and byte-comparison services.
-They publish the same logical `CityPreferences` state. This supplies part of
-M1's native/classic content boundary, not complete rules conversion or session
-content admission. [The completion audit](m1-validation.md) remains open.
+The portable F03 text reader, all twelve classic rule-table readers and both
+city-production preference paths are implemented. Native JSON uses the pinned
+jart/json.cpp admission wrapper; classic text uses supplied file, section-index
+and byte-comparison services. Both rule paths produce `RuleDefinitions`, and
+both preference paths publish `CityPreferences`. This supplies part of M1's
+native/classic content boundary, not complete rules conversion or session content
+admission. [The completion audit](m1-validation.md) remains open.
 
 ## Classic reader
 
@@ -53,6 +54,62 @@ close the [F03/C01 non-ASCII comparison gap](m1-rule-content.md#encoding-and-rem
 or turn the [ordered original observation](m1-original-text-observations.md) into
 a complete folding table. Byte text and presentation encoding remain separate.
 
+## Classic rule tables
+
+`formats/classic_rules.hpp` implements F03 §§3–7/9 and the declared Appendix A
+reference vocabulary. `RuleLoader::load` requests COSMIC, CIVILIZE, IMPROVE,
+ENDWONDER, UNITS, TERRAIN, GOVERNMENTS, LEADERS, CARAVAN, ORDERS, DIFFICULTY and
+ATTITUDES in that order. The first three opens use an owned explicit filename;
+later sections reuse the selected improvement stream. Physical section order
+can differ. A successful full load closes the stream. Individual section readers
+start immediately after an already selected header.
+
+The loader updates existing definitions field by field. It preserves caller
+identity IDs and never infers them from classic names. Shared cosmic, movement,
+HP, cost and leader normalization is applied once; the cosmic helper also
+supports individual line publication. Advances reset enablement/prerequisites,
+apply only their documented tail defaults and fix references after the full
+table. Improvement prerequisites follow disabled advances, while unit references
+and wonder expiry do not. Enabled cycles remain accepted. Unit abilities assign
+a zero-extended 16-bit result into the 32-bit logical field, clearing old high
+bits. Special terrain rows retain existing work/transformation values.
+
+Individual advance, improvement and unit readers support `keep_names`, including
+default tails. Government definitions always change. Leader preservation consumes
+and stores the new strings, then restores each previous field individually;
+it neither selects a new current name nor installs default title pairs. Repeated
+optional title overrides use the last value. The loader has no access to leader
+usage counts or city-name cursors and does not reset them.
+
+`RuleLoadState` retains append-only logical string allocations with their
+terminators and zero padding, interface unit-name allocation ordinals, selected
+leader-name values and the double-movement-applied flag. Ordinary empty strings
+do not append; padded empty names become one space. Equal strings append
+separately and minimum capacities do not truncate names. Parsed unit names update
+the interface binding; defaulted tail names append without updating it. Optional
+allocation hooks can inspect prior state or fail before the next stored string.
+These ordinals **are not original string IDs**. Original ID assignment, signed
+16-bit leader bindings/aliasing, shared editable name references and installation
+into the saved/live leader records remain separate work. The current selected
+leader names are logical values, not claims about original pointers.
+
+Reference failures retain the specified prefix and report the module, code, row,
+position and offending line. A returning diagnostic/cleanup callback is followed
+by `RuleLoadError`; it cannot resume parsing. An invalid optional title index
+stops before allocating that pair or attempting an out-of-bounds write. Missing
+explicit sections stop at the failed open with a separate diagnostic, without
+inventing an original fatal-reference code. Failed reused sections and unbacked
+cursor/stream accesses retain the reader's bounded `TextError` behavior.
+Fixed-row reads use the retained buffer after an EOF result until the next
+unsupported access; they do not fill missing tables with stock rows. The safe
+missing-section stop is not a claim about an original invalid-access result.
+
+Stored names currently require reversible Windows-1252 presentation decoding.
+Undefined bytes fail before storing that name, preserving earlier updates;
+other language encodings and the broader comparison profile remain open. There
+is no filesystem discovery, session reload orchestration, native installation
+policy or classic export command hidden in this API.
+
 ## City-production preferences
 
 `formats::classic::load_city_preferences` follows F03 §8 incrementally. It
@@ -95,16 +152,20 @@ marker collisions still belong to the conversion boundary.
 
 ## Evidence and remaining work
 
-Fifteen authored portable reader cases and six preference cases cover the above
-contracts, including paired native/classic inputs, first-match behavior,
-retained fields, live name changes and a bounded failure after earlier writes.
+Fifteen authored portable reader cases, fourteen classic rule cases and six
+preference cases cover the above contracts. The rule cases include a complete
+independently authored native/classic equivalence check with out-of-order
+sections, explicit fallback/reuse, normalization, reference failures, name/leader
+preservation across callbacks, allocation failure, tail interface bindings and
+retained special terrain work. The preference cases cover paired inputs,
+first-match behavior, retained fields and live name changes.
 Two additional native CLI cases check real mounted files, source preservation,
 receipts and collision/comparison diagnostics. These are specification-derived
 and regression checks, not new original-game observations or independently
 reviewed X02 fixtures. F03 is not yet registered with X02.
 
-Full classic rule ingestion, string-pool identity/allocation effects, retained
-rule installation, city-name providers, the complete comparison profile, native
-component admission, conversion tools/receipts, session wiring and owning
-production consumers remain required. The low-level reader is ready for those
-callers; it does not implement them implicitly.
+Original string-ID bindings, retained native rule installation, city-name
+providers, the complete comparison profile, remaining native component admission,
+conversion tools/receipts, session wiring and owning production consumers remain
+required. The table readers are ready for those callers; they do not implement
+them implicitly.

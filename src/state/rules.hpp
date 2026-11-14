@@ -84,7 +84,8 @@ struct UnitRule {
     RuleRole role{};
     std::uint8_t movement = 0, range = 0, attack = 0, defense = 0, hit_points = 0, firepower = 0,
                  cost_rows = 0, capacity = 0;
-    std::uint16_t abilities = 0;
+    // F03 Appendix A: retained flags are 32-bit; parsing clears positions 16..31.
+    std::uint32_t abilities = 0;
     bool operator==(const UnitRule&) const = default;
 };
 struct TerrainWork {

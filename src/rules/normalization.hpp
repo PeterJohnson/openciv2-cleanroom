@@ -13,6 +13,7 @@ constexpr std::int8_t signed8(std::int32_t value) {
 constexpr std::int16_t signed16(std::int32_t value) {
     return std::bit_cast<std::int16_t>(static_cast<std::uint16_t>(value));
 }
+std::uint8_t normalize_cosmic_value(state::CosmicParameter parameter, std::int32_t input);
 state::CosmicRules normalize_cosmic(const std::array<std::int32_t, 22>& input);
 std::uint8_t normalize_movement(std::int32_t whole_points, std::uint8_t road_multiplier);
 std::uint8_t normalize_classic_hp(std::int32_t groups_of_ten);

@@ -102,8 +102,13 @@ check readonly behavior, inheritance, receipts and rejection. These are
 specification-derived and integration checks, not original-game observations or
 independent fixture review. No F03 operation is yet registered with X02.
 
+The [classic rule loader](m1-classic-text.md#classic-rule-tables) now reads all
+twelve F03 tables into the same definitions, with a complete paired native/classic
+fixture, ordered partial updates and caller-controlled preservation. Its logical
+string allocations do not yet bind original string IDs or live saved leaders.
+
 Remaining M1 work includes city names, full comparison/component admission,
-classic F03/C01 text adapters and conversion receipts, equivalent native/classic
-input tests, retained-state installation and reload policies, owning mechanics,
+C01 adapters and conversion receipts, broader equivalent native/classic inputs,
+retained native installation and session reload policies, owning mechanics,
 session admission and original interoperability. The
 [M1 completion audit](m1-validation.md) remains open.

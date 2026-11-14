@@ -14,8 +14,9 @@ The immutable result supplies the operands those bindings need; it is not proof
 that a custom bundle is playable or interoperable.
 The separate [rule decoder](m1-rule-content.md) now resolves the selected
 gameplay government advance references against fixed identities and native rules.
-The [city-preference validator and classic text reader](m1-classic-text.md) add
-ordered preference admission and retained-state application through both paths.
+The [classic text/rule readers and city-preference validator](m1-classic-text.md)
+add ordered rule ingestion, preservation policies, paired native/classic rule
+checks, and preference admission/application through both paths.
 
 ## JSON and operand admission
 

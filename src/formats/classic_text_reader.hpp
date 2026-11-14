@@ -104,6 +104,7 @@ public:
     void close();
     bool is_open() const noexcept { return stream_ != nullptr; }
     std::string_view source_path() const noexcept { return path_; }
+    std::string_view line() const { return workspace_.line(); }
     bool next_line();
     std::string next_token();
     std::int32_t next_integer();
