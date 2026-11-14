@@ -93,8 +93,8 @@ independence from human flags, retained process values and isolated virtual peer
 They exercise the separate F02 entity-reset helper and independent presentation
 consumers, without claiming a completed F05 setup or original mode transcript.
 
-Windows MSVC passes 111 default-off and 113 SQLite-enabled CTests. The pinned
-Emscripten 4.0.23 build passes four CTests, including 105 portable Catch2 cases
+Windows MSVC passes 120 default-off and 122 SQLite-enabled CTests. The pinned
+Emscripten 4.0.23 build passes four CTests, including 114 portable Catch2 cases
 and the existing twenty X02 vectors. The tools-only configuration also builds
 the session library without GUI, tests, dependency fetching, Python discovery
 or assets. Retained native/WASM reports were refreshed for build/source identity;
@@ -103,5 +103,5 @@ X02 execution coverage is still F01/F02/W01, not these session cases.
 The [command contract](m1-command-contract.md) now implements descriptors,
 admission, owned ordering, effects/continuations, decisions and correlated results,
 including separate fake-peer execution/result paths. Mode-specific integration,
-complete lifecycle/setup/load, controlled-choice and pending-checkpoint replay,
+complete lifecycle/setup/load, whole pending-session checkpoint replay,
 and broader live queries remain required by M1.

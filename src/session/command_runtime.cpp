@@ -337,6 +337,10 @@ bool SessionRuntime::advance_one() {
             },
             [&] { publish_revision(*state_); }};
         step = record.continuation->resume(context, work.input);
+    } catch (const base::ChoiceError& error) {
+        finish(*state_, record, CommandStatus::failed, {},
+               "random_choice_" + std::string(base::choice_failure_code(error.failure())));
+        return true;
     } catch (...) {
         finish(*state_, record, CommandStatus::failed, {}, "operation_exception");
         return true;

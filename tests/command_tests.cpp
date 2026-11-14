@@ -2,6 +2,7 @@
 // they establish continuation/authority contracts, not classic gameplay rules.
 #include "session/runtime.hpp"
 #include <catch2/catch_test_macros.hpp>
+#include <array>
 
 using namespace openciv;
 using namespace openciv::session;
@@ -77,6 +78,127 @@ Handler decision(std::function<void(OperationContext&)> callback = {},
         };
 }
 } // namespace
+
+TEST_CASE("Controlled retries retain resolved choices across an interaction and random restore",
+          "[session][commands][choices]") {
+    // F01 §§2,6; X02 §§2,4. Authored operation, not an implementation of a game
+    // selection rule. Ties retain the first candidate without requesting a draw.
+    const auto point = [](std::int32_t attempt) {
+        return base::ChoiceKey{"test.candidate", "test.operation/one", attempt};
+    };
+    base::ControlledChoices tape{
+        {base::make_choice(point(0), base::PrimaryModulo{3}, std::int32_t{6}),
+         base::make_choice(point(1), base::PrimaryModulo{3}, std::int32_t{8}),
+         base::make_choice({"test.reward", "test.operation/one", 0}, base::SecondaryRange{1, 14},
+                           UINT32_MAX)}};
+    const auto operation = [phase = 0, selected = -1, point](OperationContext& context,
+                                                             OperationInput input) mutable {
+        auto& gold = context.world.civilizations[1].gold;
+        if (phase++ == 0) {
+            for (std::int32_t attempt = 0; attempt < 3; ++attempt) {
+                selected = context.gameplay.primary_modulo(point(attempt), 3);
+                if (selected != 0)
+                    break;
+            }
+            // A deterministic tie is owned by the operation, never the sampler.
+            const std::array scores{7, 7};
+            const auto tied = scores[1] > scores[0] ? 1 : 0;
+            CHECK(selected == 2);
+            CHECK(tied == 0);
+            gold -= selected;
+            context.effect("test.selected", {{"candidate", selected}});
+            InteractionSpec prompt;
+            prompt.prompt = "Resolve retained candidate";
+            prompt.choices = {1, 2};
+            return OperationStep{CommandStatus::awaiting_interaction, {}, {}, prompt};
+        }
+        REQUIRE(input.choice.has_value());
+        gold += selected; // Reuse the retained choice and read the post-callback gold.
+        return done(context.gameplay.secondary_range(
+            base::ChoiceKey{"test.reward", "test.operation/one", 0}, 1, gold));
+    };
+    state::ProcessContext first_process, second_process;
+    SessionRuntime headless(first_process, RuntimeId{1}), with_view(second_process, RuntimeId{2});
+    headless.register_command(definition("test.action", operation));
+    with_view.register_command(definition("test.action", operation));
+    headless.begin_client_session({1, 2});
+    with_view.begin_client_session({1, 2});
+    base::GameplayRandom controlled(tape, "session");
+    headless.gameplay_random().restore(controlled.checkpoint());
+    with_view.gameplay_random().restore(controlled.checkpoint());
+    const auto first_client = client(headless), second_client = client(with_view);
+    const auto first = id(first_client.submit(request())),
+               second = id(second_client.submit(request()));
+    headless.world().civilizations[1].gold = 10;
+    with_view.world().civilizations[1].gold = 10;
+    REQUIRE(headless.advance_one());
+    REQUIRE(with_view.advance_one());
+    CHECK(headless.world().civilizations[1].gold == 8);
+    REQUIRE(headless.gameplay_random().checkpoint().trace->events.size() == 2);
+    CHECK(first_client.result(first)->committed[0].values ==
+          second_client.result(second)->committed[0].values);
+    const auto suspended_random = with_view.gameplay_random().checkpoint();
+    base::GameplayRandom replacement(999, "session");
+    replacement.restore(suspended_random);
+    with_view.gameplay_random() = std::move(replacement);
+    // This restores the context while the existing continuation remains alive;
+    // it does not claim a serialized whole-session/pending-operation restore.
+    base::CosmeticRandom cosmetic(3, "frontend");
+    for (int i = 0; i < 50; ++i) {
+        with_view.presentation_random().primary_modulo("test.report", 7);
+        cosmetic.secondary_code("test.animation");
+        second_client.own_units();
+    }
+    CHECK(with_view.gameplay_random().checkpoint() == suspended_random);
+    headless.world().civilizations[1].gold = 12;
+    with_view.world().civilizations[1].gold = 12;
+    REQUIRE(first_client.reply(interaction(first_client, first), 1).accepted);
+    REQUIRE(second_client.reply(interaction(second_client, second), 1).accepted);
+    REQUIRE(headless.advance_one());
+    REQUIRE(with_view.advance_one());
+    REQUIRE(first_client.result(first)->status == CommandStatus::completed);
+    REQUIRE(second_client.result(second)->status == CommandStatus::completed);
+    CHECK(first_client.result(first)->result == CommandValues{{"value", std::int32_t{14}}});
+    CHECK(first_client.result(first)->result == second_client.result(second)->result);
+    CHECK(headless.world().civilizations[1].gold == with_view.world().civilizations[1].gold);
+    CHECK(headless.gameplay_random().checkpoint() == with_view.gameplay_random().checkpoint());
+    CHECK_NOTHROW(headless.gameplay_random().require_choices_consumed());
+    CHECK_NOTHROW(with_view.gameplay_random().require_choices_consumed());
+}
+
+TEST_CASE("A command choice mismatch retains committed effects and reports its category",
+          "[session][commands][choices]") {
+    state::ProcessContext process;
+    SessionRuntime runtime(process, RuntimeId{1});
+    const base::ChoiceKey point{"test.choice", "test.operation/one", 0};
+    runtime.register_command(definition("test.action", [point](auto& context, auto) {
+        auto& gold = context.world.civilizations[1].gold;
+        gold += context.gameplay.primary_modulo(point, 3);
+        context.effect("test.credit", {{"amount", gold}});
+        return done(context.gameplay.primary_code(
+            base::ChoiceKey{"test.missing", "test.operation/one", 0}));
+    }));
+    runtime.begin_client_session({1, 2});
+    base::GameplayRandom controlled(base::ControlledChoices{{base::make_choice(
+                                        point, base::PrimaryModulo{3}, std::int32_t{8})}},
+                                    "session");
+    runtime.gameplay_random().restore(controlled.checkpoint());
+    const auto player = client(runtime);
+    const auto command = id(player.submit(request()));
+    runtime.world().civilizations[1].gold = 10;
+    REQUIRE(runtime.advance_one());
+    const auto result = player.result(command);
+    REQUIRE(result.has_value());
+    CHECK(result->status == CommandStatus::failed);
+    CHECK(result->code == "random_choice_missing");
+    REQUIRE(result->committed.size() == 1);
+    CHECK(runtime.world().civilizations[1].gold == 12);
+    const auto random = runtime.gameplay_random().checkpoint();
+    CHECK(random.draws == 0);
+    REQUIRE(random.trace->events.size() == 1);
+    CHECK(random.trace->events[0].key == point);
+    CHECK_FALSE(runtime.advance_one());
+}
 
 TEST_CASE("Command descriptors validate shape without performing execution",
           "[session][commands]") {

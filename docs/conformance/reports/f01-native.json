@@ -1,18 +1,20 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "f01-f02-w01-state-v1",
-  "createdUtc": "2026-11-14T03:10:49.189214+00:00",
-  "implementationRevision": "a6ad34da373835fd49b6ff21778f702c95eb22c2",
+  "createdUtc": "2026-11-14T03:29:43.052698+00:00",
+  "implementationRevision": "654a20a571f8f84b30142bf22341c4e5d492553e",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "722f7fd813a5b3208310e69d98e8fe98a3bc1996f46e92aaad7375e409fa91bd",
+    "CMakeLists.txt": "8fd8d4dd40b2e63686924915f853ea8b4352b8261caa1859812c4ac01dcff770",
     "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
-    "cmake/ConformanceIdentity.cmake": "b223f90aa746fb0005da2b9701cd324be68127bdaa08a1520e2ebce934f4f718",
+    "cmake/ConformanceIdentity.cmake": "8652d95edee7fa0b12fda3fa36437aee2d71c230793bd36fe3cf3472379353b3",
     "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
     "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
-    "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
-    "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
+    "src/base/random.hpp": "e2d3858b58e12ec7e5d409d6b3d6ea51ebf4ffcf7dc39c1b7d395c654a412f87",
+    "src/base/random.cpp": "d5bd1075f8a9b176021d4b51e84cabe297ea9aa45192240b232f80e6fa2a04c9",
+    "src/base/choices.hpp": "cd0d68b86ca9f17257d724e676a19ef55dd181a278b0ec7d350964bf3a842ad9",
+    "src/base/choices.cpp": "a189fde99e8ecb91a2ffa3de37afdd4da5e2708ba71f8dcb677f8155f1d6f942",
     "src/base/hash.hpp": "a14f3cf544bb3d2bb8808fee38c760d4858e001bf9ed70498d903279a61d3c67",
     "src/base/hash.cpp": "5bb5938e58e1e096bf64a985ab828be012803cd79addb7290f8c99de9d83d8e3",
     "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
@@ -24,20 +26,22 @@
     "src/world/map.hpp": "cb5953124f3b0264088702cd1a6a5c7297b31fb16c90a1943467465ad52279ce",
     "src/world/map.cpp": "a85593e12c548f11d1d5360a555bce01733a29d5abad01dfe1f895983cdcb1d0",
     "tools/conformance_adapter.cpp": "ec1e429d223330da7d883ba94c81722425ddea5932a5e38afaa2eea2b231a80f",
-    "tools/run_conformance.py": "91c86f2e6defee328ee3c3fb3909b612afcb45beb8979dcae11b7417d5330202",
+    "tools/run_conformance.py": "819de6e24fb830bc69aab0ee7781bf158dd99ce2679be80a8a8944a47b24d2c3",
     "tools/check_conformance.py": "42ea581723a21263eef078e294ced9b74876c0d396b738dbc7d0b62a2e0c589e"
   },
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "722f7fd813a5b3208310e69d98e8fe98a3bc1996f46e92aaad7375e409fa91bd",
+      "CMakeLists.txt": "8fd8d4dd40b2e63686924915f853ea8b4352b8261caa1859812c4ac01dcff770",
       "dependencies.json": "c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
-      "cmake/ConformanceIdentity.cmake": "b223f90aa746fb0005da2b9701cd324be68127bdaa08a1520e2ebce934f4f718",
+      "cmake/ConformanceIdentity.cmake": "8652d95edee7fa0b12fda3fa36437aee2d71c230793bd36fe3cf3472379353b3",
       "src/base/arithmetic.hpp": "09f6bfdc77fb8fe765a7a33369a699fb3275eb528ec9c5ddc3b2dbba2e4db1b4",
       "src/base/arithmetic.cpp": "7547169234df01eaf5cf93acf02fae9e8fe0e004ae9fc4068bbbd0ff84671ede",
-      "src/base/random.hpp": "4abbc99ee2222f9dfa2b6ac8f8d75b7cf10ca67faeade27eee0e70255b371998",
-      "src/base/random.cpp": "3c0e69045b3f3f19868ee3aab0b4bf67dae82574b6829ed8294c564787da0deb",
+      "src/base/random.hpp": "e2d3858b58e12ec7e5d409d6b3d6ea51ebf4ffcf7dc39c1b7d395c654a412f87",
+      "src/base/random.cpp": "d5bd1075f8a9b176021d4b51e84cabe297ea9aa45192240b232f80e6fa2a04c9",
+      "src/base/choices.hpp": "cd0d68b86ca9f17257d724e676a19ef55dd181a278b0ec7d350964bf3a842ad9",
+      "src/base/choices.cpp": "a189fde99e8ecb91a2ffa3de37afdd4da5e2708ba71f8dcb677f8155f1d6f942",
       "src/base/hash.hpp": "a14f3cf544bb3d2bb8808fee38c760d4858e001bf9ed70498d903279a61d3c67",
       "src/base/hash.cpp": "5bb5938e58e1e096bf64a985ab828be012803cd79addb7290f8c99de9d83d8e3",
       "src/state/identities.hpp": "ce4c9645f3022877c334e3ca828402e8df7a0f7453b653ebcb5249ec0231ebe2",
@@ -53,7 +57,7 @@
     "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n"
   },
   "adapterArtifacts": {
-    "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_conformance_adapter.exe": "03cd409832479d5cc80927ee1f21d6c50f735b0bbf684bb69e24cacb06ba2e7d"
+    "C:\\Projects\\openciv2-cleanroom\\build\\headless-fetch\\oc2_conformance_adapter.exe": "ff9e81ffe7707c2ca91a5593abdcad41e86dc53c8c6ff03def149b0015c5fe05"
   },
   "host": "Windows-11-10.0.26300-SP0",
   "buildIdentity": "status=configured-only\nplatform=windows\ncmake=4.4.3\ngenerator=Ninja\nsystem=Windows 10.0.26300\nprocessor=AMD64\nc=MSVC 19.51.36260.0\ncxx=MSVC 19.51.36260.0\ncxx_path=C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64/cl.exe\ndependency_lock_sha256=c477b0bbc84c06a4712233396be39fdce47e88a977df645bab0914026db18bd8\nOC2_VERIFY_TOOLCHAIN=OFF\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=ON\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=14.51.36231\nWindowsSDKVersion=10.0.26100.0\\\n",

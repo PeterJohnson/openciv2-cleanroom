@@ -107,19 +107,32 @@ Cancellation of a command still awaiting a peer explicitly requires the mode
 adapter; this foundation does not invent a cancellation packet or discard the
 awaited result. N01–N03 wire routing, disconnect defaults, endpoint-generation
 checks, timeouts and host transfer remain integration work. Queue/output retention
-budgets, durable checkpoints and controlled-choice tapes are also still open.
+budgets and durable session checkpoints are also still open.
+
+The engine-only random ports now support [controlled choices](random-policy.md#controlled-choices-and-semantic-traces)
+and bounded generated traces. Operations supply stable site/call/attempt keys and
+exact law arguments; retries and retained choices belong to the continuation.
+A choice mismatch terminates the command with `random_choice_<category>`, retaining
+its already-published effects and consumed input prefix. The context checkpoint
+owns the tape/trace and rejects consumed keys after restore. This does not yet
+serialize a suspended continuation or the surrounding world, process and queues.
 
 ## Validation
 
-Ten authored command cases and eight existing session cases pass on Windows
+Twelve authored command cases and eight existing session cases pass on Windows
 MSVC and WASM. They cover descriptor/access validation, owned FIFO inputs,
 acceptance versus completion, callbacks/live reads, cancellation and deadlines,
 private prompts and withdrawal, stale targets, replacement controllers,
 independent fake peers, result application without rerolling, duplicate handling,
 authority changes and required replies after disconnect/removal or cancellation.
+The two controlled-choice scenarios additionally cover retries, deterministic ties,
+retained decisions across an interaction, random-context restore while suspended,
+live sampling arguments after a reply, presentation-consumer invariance, and a
+missing choice after a committed effect. These fake operations establish the
+foundation contract, not any particular classic gameplay selection rule.
 
-The full builds pass 111 default-off and 113 SQLite-enabled Windows CTests and
-all four WASM CTests (105 portable Catch2 cases plus metadata and twenty existing
+The full builds pass 120 default-off and 122 SQLite-enabled Windows CTests and
+all four WASM CTests (114 portable Catch2 cases plus metadata and twenty existing
 X02 vectors). The tools-only build remains independent of GUI, assets, Python
 discovery and dependency downloads. Retained native/WASM reports were refreshed
 for build identity; these command scenarios are not yet registered X02 fixtures

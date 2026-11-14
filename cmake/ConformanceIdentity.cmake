@@ -5,6 +5,7 @@ set(oc2_conformance_sources
   cmake/ConformanceIdentity.cmake
   src/base/arithmetic.hpp src/base/arithmetic.cpp
   src/base/random.hpp src/base/random.cpp
+  src/base/choices.hpp src/base/choices.cpp
   src/base/hash.hpp src/base/hash.cpp
   src/state/identities.hpp src/state/identities.cpp
   src/state/records.hpp src/state/records.cpp

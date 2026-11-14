@@ -56,11 +56,72 @@ engine's object bytes; a future codec must define its portable representation.
 Game operations must retain their own arguments, resolved choices and
 continuations separately.
 
-Controlled pure-mapping tests supply F01 codes directly and bypass generators.
-The first X02 runner supports only those mappings; semantic choice tapes,
-provider callbacks and implementation-replay fixture execution remain subsequent
-work. Catch2 separately tests this policy's repeat/restore, boundary behavior and
-presentation isolation, including restore across multiple engine state blocks.
+Checkpoints now also own optional controlled input and a bounded semantic trace,
+as described below. This extends the logical in-memory record, without changing
+the version 2 generator sequence or defining a persistent checkpoint format.
+Restore prepares and validates all records and lookup state before replacement.
+It checks unique keys, mapping results, trace budgets and consumed records against
+their tape; a controlled checkpoint must have zero generated draws. A generated
+trace cannot contain more events than generated draws. Validation does not prove
+the provenance of a caller-supplied engine or its relation to a hand-edited trace.
+The engine owner must capture trusted checkpoints at an admitted boundary.
+
+## Controlled choices and semantic traces
+
+Each typed random context accepts an owned `ControlledChoices` input in place of
+a seed. Operations use the semantic overloads with `ChoiceKey{site, call, attempt}`.
+Site/call are nonempty symbolic strings, and attempt is a nonnegative i32 semantic
+candidate/round identity. A key is independent of tape position or a global draw
+counter. The original site-only overloads remain available for generated contexts
+without semantic recording. Nonconstant site-only calls fail when controlled
+input or semantic recording is active; there is no fallback generator draw.
+
+`PrimaryCode`, `PrimaryModulo{n}`, `SecondaryUnit` and `SecondaryRange{lo, hi}`
+encode X02's four laws and exact arguments. Codes retain signed i32 versus
+unsigned u32 types. Results retain i32 versus binary64, compared by exact bits.
+Installation checks every supplied code/result against F01, including biases,
+inclusive endpoints, signed wrap, and negative-zero disagreement. Duplicate
+`(site, call, attempt)` keys are rejected. Each request looks up its key, matches
+the exact law/arguments and consumes the record once. Independent sites may be
+requested in a different order than the tape. Swapped range arguments still
+constitute an input mismatch even though their F01 mappings agree.
+
+Missing, reused, mismatched or malformed choices raise `ChoiceError` with a stable
+category and, where applicable, the key. The already-consumed prefix remains.
+At the registered stop boundary the harness calls `require_choices_consumed()`;
+any unused mandatory input fails. Constant decisions return without a key, code
+or trace event. Supplying a redundant constant choice therefore leaves an unused
+input. The context neither synthesizes retries nor chooses deterministic ties;
+the owning operation assigns attempts, retains reused decisions and samples at
+the specified live-state boundary. No provider callback executes inside a sampler.
+
+Controlled mode always retains an owned chronological trace, bounded by its input
+size, and leaves the dormant engine/counter untouched. Generated contexts can opt
+into `record_choices(limit)` for a bounded capture. Budget exhaustion rejects the
+next decision before generator advancement. Tracing requires unique semantic
+keys, records actual codes/results, and changes no policy v2 outputs. Ordinary
+generated contexts keep no decision history. The owning typed context supplies
+domain/name metadata; one context never requests input from another.
+
+Checkpoint restore includes input, consumed prefix and trace budget, so a consumed
+choice remains unavailable after restore and the same suffix can be reproduced.
+A trusted session owner may install a matching domain/context checkpoint through
+its engine-only random port. `SessionRuntime` exposes explicit
+`random_choice_<category>` command failures while retaining published effects.
+Restoring a random context while its existing continuation is suspended is tested;
+serializing/reconstructing that continuation, world/process state, client inputs,
+effects and routing queues remains separate pending-session checkpoint work.
+
+These are C++ semantic records, not a new X02 JSON codec. A fixture adapter must
+also validate event IDs, global fixture key uniqueness, typed JSON and ordered
+provider/state dependencies. The current X02 runner still supports only pure F01
+mappings and the registered F02/W01 leaves. Choice-input JSON execution, provider
+callbacks and implementation-replay fixtures remain subsequent work.
+
+Catch2 tests controlled mappings in all three domains, invalid input/prefix
+preservation, bounded generated traces, restore across engine state blocks, and
+an authored command with retries, deterministic ties, retained choices across an
+interaction, a live read after a reply, and presentation-consumer invariance.
 The standard's 10,000th-output reference vector checks seeding, advancement and
 both code projections on native and WASM. Policy and standard-library vectors
 do not count as original-program observations. No OpenCiv2 or reconstruction

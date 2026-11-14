@@ -144,7 +144,9 @@ PlayerClient SessionRuntime::bind(ParticipantId participant, ControllerKind kind
     const auto observer = state_->participants.at(participant).civilization;
     const auto controller = ControllerId{assign(state_->next_controller)};
     auto lease = std::make_shared<detail::Lease>(detail::Lease{
-        {state_->identity, state_->session, participant, controller, observer, kind, access}});
+        {state_->identity, state_->session, participant, controller, observer, kind, access},
+        true,
+        {}});
     detail::restore_pending_updates(*state_, *lease);
     state_->leases.emplace(controller, lease);
     return PlayerClient{state_, lease};

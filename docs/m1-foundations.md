@@ -26,7 +26,8 @@ source, legacy harness, original executable or asset checkout is a code input.
 - F01 §§2,6 and the architecture: [versioned random policy](random-policy.md)
   using `std::mt19937_64`,
   explicit seeds, distinct gameplay/presentation-content/cosmetic context types,
-  in-memory checkpoints, repeat/restore and isolation tests. No frontend links
+  in-memory checkpoints, keyed controlled choices and bounded semantic traces,
+  repeat/restore and isolation tests. No frontend links
   a gameplay context; real mechanics and semantic presentation consumers are
   still future work.
 - F02 §§2–3: separate slot/token identity types, process-owned unit/city token
