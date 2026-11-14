@@ -1,7 +1,7 @@
 {
   "format": "openciv2-conformance/3",
   "id": "X02.F01.sample-gameplay-range",
-  "revision": 3,
+  "revision": 6,
   "target": {
     "game": "Civilization II Multiplayer Gold Edition",
     "version": "5.4.0f patch 3",
@@ -11,17 +11,17 @@
     {
       "id": "F01",
       "file": "../F01-determinism-and-arithmetic.md",
-      "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
+      "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d"
     },
     {
       "id": "X01",
       "file": "../X01-classic-compatibility-contract.md",
-      "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6"
+      "sha256": "4040da80070a03666d6cb4f555dd8b4c8c71a1bccc8ad79c11b1e14990c1b4ba"
     },
     {
       "id": "X02",
       "file": "../X02-whole-game-conformance.md",
-      "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70"
+      "sha256": "5c428d3ba67f20548be59901473560011682b0fdfbfb810398e224e9d236f0c9"
     }
   ],
   "boundary": {
@@ -212,12 +212,15 @@
       {
         "file": "../F01-determinism-and-arithmetic.md",
         "section": "4-secondary-sampling-law",
-        "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9"
+        "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d"
       }
     ],
     "limitations": [
       "Authored sampler boundary; no gameplay parent, provider/reentry or original-program capture. Independent fixture review remains pending.",
-      "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance."
+      "Repinned for fresh-game isolation and supported safety repairs; these within-game primitive expectations are unchanged and do not establish new-game gameplay conformance.",
+      "Repinned for semantic text/reference separation; expected foundation observations are unchanged. This vector does not validate text storage or allocation traces.",
+      "Repinned for presentation design freedom and explicit semantic/data contracts; expected foundation observations are unchanged. This vector does not validate UI flows or presentation-driven calculation repairs.",
+      "Repinned for all-owner gameplay/interchange/executable-reference scope; expected foundation observations are unchanged. This vector does not validate all scoped algorithms, safe I/O policies or original-file/peer interoperability."
     ]
   },
   "limits": {

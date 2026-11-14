@@ -68,35 +68,32 @@ RuleLoader::RuleLoader(TextReader& reader, RuleState& retained, TextCase compari
     if (!retained_.text.size())
         throw std::invalid_argument("Rule loading requires an initialized shared text pool");
 }
-RuleLoader::StoredText RuleLoader::store(std::string text, std::size_t minimum) {
-    if (minimum && text.empty())
+RuleLoader::StoredText RuleLoader::store(std::string text, bool blank_as_space) {
+    if (blank_as_space && text.empty())
         text = " ";
     RuleText value{content::decode_windows1252(text, "classic rule text"), text};
-    const auto id = retained_.text.store(text, minimum, services_.allocate);
+    const auto id = retained_.text.store(text);
     return {std::move(value), id};
 }
 void RuleLoader::store_into(RuleText& target, TextId& binding, std::string text,
-                            std::size_t minimum) {
-    auto stored = store(std::move(text), minimum);
+                            bool blank_as_space) {
+    auto stored = store(std::move(text), blank_as_space);
     binding = stored.id;
     target = std::move(stored.value);
 }
-void RuleLoader::name_into(RuleText& target, TextId& binding, std::size_t minimum, bool keep) {
+void RuleLoader::name_into(RuleText& target, TextId& binding, bool blank_as_space, bool keep) {
     auto token = reader_.next_token();
     if (!keep)
-        store_into(target, binding, std::move(token), minimum);
+        store_into(target, binding, std::move(token), blank_as_space);
 }
-void RuleLoader::leader_name(RuleText& target, std::int16_t& binding, std::size_t minimum,
+void RuleLoader::leader_name(RuleText& target, NameReference& binding, bool blank_as_space,
                              bool replace) {
-    auto previous_text = target;
-    const auto previous_binding = binding;
-    auto stored = store(reader_.next_token(), minimum);
-    binding = std::bit_cast<std::int16_t>(static_cast<std::uint16_t>(stored.id));
+    auto token = reader_.next_token();
+    if (!replace)
+        return;
+    auto stored = store(std::move(token), blank_as_space);
+    binding = {stored.id, false};
     target = std::move(stored.value);
-    if (!replace) {
-        target = std::move(previous_text);
-        binding = previous_binding;
-    }
 }
 void RuleLoader::section(std::optional<std::string_view> filename, std::string_view name) {
     if (!reader_.open(filename, name))
@@ -111,7 +108,7 @@ void RuleLoader::fail(RuleLoadFault fault, std::string_view section, std::size_t
     throw error;
 }
 void RuleLoader::load(std::string_view filename, bool replace_leader_data) {
-    // Own the request across file/allocation callbacks and retained-state changes.
+    // Own the request across file callbacks and retained-state changes.
     const std::string owned_filename(filename);
     section(owned_filename, "COSMIC");
     cosmic();
@@ -158,7 +155,7 @@ void RuleLoader::advances(bool keep_names) {
         if (reader_.line().empty() || reader_.line().front() == ';')
             break;
         auto& row = rules_.advances[i];
-        name_into(row.identity.name, retained_.names.advances[i], 20, keep_names);
+        name_into(row.identity.name, retained_.names.advances[i], true, keep_names);
         row.ai_value = rules::signed8(reader_.next_integer());
         row.civilized_ai_modifier = rules::signed8(reader_.next_integer());
         for (int p = 0; p < 2; ++p) {
@@ -175,7 +172,7 @@ void RuleLoader::advances(bool keep_names) {
         auto& row = rules_.advances[i];
         if (!keep_names)
             store_into(row.identity.name, retained_.names.advances[i],
-                       "Advance " + std::to_string(i + 1), 20);
+                       "Advance " + std::to_string(i + 1), true);
         row.ai_value = 3;
         row.civilized_ai_modifier = 0;
         row.epoch = AdvanceEpoch{};
@@ -194,7 +191,7 @@ void RuleLoader::improvements(bool keep_names) {
     for (std::size_t i = 0; i < rules_.improvements.size(); ++i) {
         reader_.next_line();
         auto& row = rules_.improvements[i];
-        name_into(row.identity.name, retained_.names.improvements[i], 25, keep_names);
+        name_into(row.identity.name, retained_.names.improvements[i], true, keep_names);
         row.cost_rows = rules::code8(reader_.next_integer());
         row.upkeep = rules::code8(reader_.next_integer());
         row.prerequisite = advance_reference(reader_.next_token());
@@ -222,9 +219,7 @@ void RuleLoader::units(bool keep_names) {
         if (reader_.line().empty() || reader_.line().front() == ';')
             break;
         auto& row = rules_.units[i];
-        name_into(row.identity.name, retained_.names.units[i], 15, keep_names);
-        if (!keep_names)
-            retained_.names.interface_units[i] = retained_.text.last();
+        name_into(row.identity.name, retained_.names.units[i], true, keep_names);
         row.obsolete_by = advance_reference(reader_.next_token());
         row.domain = static_cast<RuleDomain>(rules::code8(reader_.next_integer()));
         row.movement = rules::normalize_movement(
@@ -260,7 +255,7 @@ void RuleLoader::terrain() {
     for (std::size_t i = 0; i < rules_.terrain.size(); ++i) {
         reader_.next_line();
         auto& row = rules_.terrain[i];
-        name_into(row.identity.name, retained_.names.terrain[i], 15);
+        name_into(row.identity.name, retained_.names.terrain[i], true);
         row.movement_cost = rules::code8(reader_.next_integer());
         row.defense_factor = rules::code8(reader_.next_integer());
         row.food = rules::code8(reader_.next_integer());
@@ -288,9 +283,9 @@ void RuleLoader::governments() {
     for (std::size_t i = 0; i < rules_.governments.size(); ++i) {
         reader_.next_line();
         auto& row = rules_.governments[i];
-        name_into(row.identity.name, retained_.names.governments[i], 15);
-        name_into(row.titles.male, retained_.names.government_titles[i][0], 15);
-        name_into(row.titles.female, retained_.names.government_titles[i][1], 15);
+        name_into(row.identity.name, retained_.names.governments[i], true);
+        name_into(row.titles.male, retained_.names.government_titles[i][0], true);
+        name_into(row.titles.female, retained_.names.government_titles[i][1], true);
     }
 }
 void RuleLoader::leaders(bool replace) {
@@ -299,7 +294,7 @@ void RuleLoader::leaders(bool replace) {
         auto& row = rules_.tribes[i];
         auto& live = retained_.leaders[i];
         for (std::size_t sex = 0; sex < 2; ++sex)
-            leader_name(row.leaders[sex], live.names[sex], 24, replace);
+            leader_name(row.leaders[sex], live.names[sex], true, replace);
         leader_field(row.preferred_gender, live.female, replace,
                      [&] { return std::clamp(reader_.next_integer(), 0, 1); });
         if (replace)
@@ -308,8 +303,8 @@ void RuleLoader::leaders(bool replace) {
                      [&] { return rules::normalize_leader_color(reader_.next_integer()); });
         leader_field(row.city_style, live.city_style, replace,
                      [&] { return rules::normalize_leader_style(reader_.next_integer()); });
-        leader_name(row.plural, live.plural, 24, replace);
-        leader_name(row.adjective, live.adjective, 24, replace);
+        leader_name(row.plural, live.plural, true, replace);
+        leader_name(row.adjective, live.adjective, true, replace);
         leader_field(row.personality[0], live.attack, replace,
                      [&] { return rules::signed8(reader_.next_integer()); });
         leader_field(row.personality[1], live.expand, replace,
@@ -320,8 +315,8 @@ void RuleLoader::leaders(bool replace) {
             for (std::size_t g = 0; g < row.titles.size(); ++g) {
                 row.titles[g] = rules_.governments[g].titles;
                 for (std::size_t sex = 0; sex < 2; ++sex)
-                    live.titles[g][sex] = std::bit_cast<std::int16_t>(
-                        static_cast<std::uint16_t>(retained_.names.government_titles[g][sex]));
+                    live.titles[g][sex] =
+                        NameReference{retained_.names.government_titles[g][sex], false};
             }
         while (true) {
             const auto government = reader_.next_integer();
@@ -330,22 +325,22 @@ void RuleLoader::leaders(bool replace) {
             if (government > 6)
                 fail(RuleLoadFault::invalid_title_index, "LEADERS", i, government, 0);
             const auto g = static_cast<std::size_t>(government);
-            leader_name(row.titles[g].male, live.titles[g][0], 0, replace);
-            leader_name(row.titles[g].female, live.titles[g][1], 0, replace);
+            leader_name(row.titles[g].male, live.titles[g][0], false, replace);
+            leader_name(row.titles[g].female, live.titles[g][1], false, replace);
         }
     }
 }
 void RuleLoader::commodities() {
     for (std::size_t i = 0; i < rules_.commodities.size(); ++i) {
         reader_.next_line();
-        name_into(rules_.commodities[i].name, retained_.names.commodities[i], 10);
+        name_into(rules_.commodities[i].name, retained_.names.commodities[i], true);
     }
 }
 void RuleLoader::orders() {
     for (std::size_t i = 0; i < rules_.orders.size(); ++i) {
         reader_.next_line();
         auto& row = rules_.orders[i];
-        name_into(row.identity.name, retained_.names.orders[i + 1], 0);
+        name_into(row.identity.name, retained_.names.orders[i + 1], false);
         const auto key = reader_.next_token();
         row.shortcut = key.empty() ? 0 : static_cast<std::uint8_t>(key.front());
     }

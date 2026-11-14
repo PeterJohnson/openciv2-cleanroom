@@ -10,23 +10,16 @@ void publish(SessionRuntime& runtime) {
     if (runtime.active())
         runtime.publish();
 }
-std::int16_t negate(std::int16_t value) {
-    return std::bit_cast<std::int16_t>(
-        static_cast<std::uint16_t>(0U - static_cast<std::uint16_t>(value)));
-}
 void restore_names(state::RuleState& rules) {
     for (auto& leader : rules.leaders) {
         if (leader.female >= leader.names.size())
             throw std::out_of_range("Setup leader gender has no name backing");
         leader.leader_name = leader.names[leader.female];
-        if (leader.plural <= 0)
-            leader.plural = negate(leader.plural);
-        if (leader.adjective <= 0)
-            leader.adjective = negate(leader.adjective);
+        leader.plural.custom = false;
+        leader.adjective.custom = false;
         for (auto& pair : leader.titles)
             for (auto& id : pair)
-                if (id <= 0)
-                    id = negate(id);
+                id.custom = false;
     }
 }
 void copy(state::FixedText<24>& target, std::string_view text) {
@@ -35,9 +28,10 @@ void copy(state::FixedText<24>& target, std::string_view text) {
     std::copy(text.begin(), text.end(), target.bytes.begin());
     target.bytes[text.size()] = 0; // Retain bytes after the new terminator.
 }
-void customize(state::FixedText<24>& target, std::int16_t& label, const state::TextPool& pool) {
-    copy(target, pool.text(state::label_magnitude(label)));
-    label = negate(label);
+void customize(state::FixedText<24>& target, state::NameReference& label,
+               const state::TextPool& pool) {
+    copy(target, pool.text(label.id));
+    label.custom = true;
 }
 std::string text(const state::FixedText<24>& value) {
     if (!value.terminated())
@@ -52,8 +46,7 @@ std::vector<SetupTribeOption> tribes(const state::RuleState& rules,
         const auto& leader = rules.leaders[i];
         if (!color || leader.color == *color)
             result.push_back({static_cast<std::int32_t>(i),
-                              std::string(rules.text.text(state::label_magnitude(leader.plural))),
-                              leader.color});
+                              std::string(rules.text.text(leader.plural.id)), leader.color});
     }
     return result;
 }

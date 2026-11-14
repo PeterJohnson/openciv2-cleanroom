@@ -1,5 +1,29 @@
 # Rules and configuration
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in F03 |
+| --- | --- |
+| Gameplay | Interpreted rule values, defaults and accepted configuration effects, including deliberate in-game name preservation and movement-rule changes. |
+| Original files/content | Classic section/token/line grammar, field conversions, cross-references, language and override precedence; native content uses its separate schema. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Singleton parser streams/cursors, process-directory changes, allocation order, native dialogs and partial parser-object mutations. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -29,12 +53,40 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 Token/section consumption, accepted partial rule publication and name/reference
 resolution retain their dependencies. Independent conversion work may be staged
 only if later reads, parser failures and published values remain equivalent.
+
+### Logical text and classic name markers
+
+Live names use full-width implementation-local references or owned strings and
+explicit custom-name flags, never signed 16-bit pool ordinals. UI label rebuilds
+must not rebind retained rule names. Reload policies preserve or replace semantic
+names/flags; preserved fields need no discarded allocations. Original padding,
+last-allocation pointers, minimum extents and heap-size hints are comparison-only.
+Empty padded-name input still means one space; ordinary empty classic pooled
+input resolves to `<nil>`. These content rules do not require padded storage.
+
+F06 stored leader records retain their exact 48-byte encoding in a separate codec
+type. Live loading rebuilds names from chosen rules and consumes saved signs at
+the specified stages; saved magnitudes do not index replacement text storage.
+Live export writes custom/noncustom markers as -1/+1 independently of local IDs.
+Lossless stored-file decode/re-encode preserves original magnitudes, including
+zero and -32768. This canonical live encoding follows F06's sign-only restoration
+contract; it does not claim equality with original allocation-dependent exports.
+Repeated selected-tribe effects retain their specified behavior.
+
+Narrowing a text ID into an unrelated earlier name or an accidental custom-name
+marker is a repaired storage defect. Preserve intended names and flags beyond
+32767/65535 entries. Reference tools may report original ordinals/aliasing;
+production tests assert text, reload behavior, bounds and file-marker semantics.
+Unrelated scalar arithmetic and external field widths remain unchanged. This
+contract overrides original-storage interpretations elsewhere in this document.
+
 
 ## Compatibility policy
 
@@ -86,11 +138,13 @@ the leader-replacement policy, and any already-open text stream and section
 index. Configuration operations also take the current game mode, live options,
 remembered preferences, accepted dialog values and external service results.
 
-Outputs are ordered changes to those tables and settings, newly stored names,
-the enabled-advance count, file/cursor state, and the effects explicitly listed
-below. Original admitted-input loading is **not transactional**: a later
-failure retains earlier names/fields. Declared rejection of off-nominal content
-may instead validate before publication under the policy above. A full table load
+Outputs are interpreted tables/settings/names, the enabled-advance count and
+accepted configuration effects. Token position matters to interpreting the
+source grammar, not as a required global parser object. A replacement may parse
+and validate privately before publishing a complete rule set; native partial
+name/field writes after file/allocation failure are optional reference. Preserve
+already accepted configuration actions and meaningful in-game reload policies.
+A full table load
 is also not a new-game reset: it does not recreate cities, units, civilization knowledge or leader usage/name
 cursors. These lifetimes follow [F02](F02-game-state-and-invariants.md#2-state-layers-and-lifetimes).
 
@@ -136,8 +190,8 @@ Only the advance/unit tail defaults and preference defaults described here
 are supplied by the algorithm.
 
 The isolated parsers, reference fixups and movement-table transformation use
-**no random draws or clock queries**. File operations, allocation, error
-reporting and presentation are external services. The surrounding reload
+**no random draws or clock queries**. File operations, error reporting and semantic presentation are external services.
+String allocation is an implementation detail and cannot mutate rule operands. The surrounding reload
 command reloads labels, reloads game sprites, selects the scenario directory
 or home directory according to the existence of `RULES.` plus the language
 extension, loads the tables, returns to the home directory, and flushes input
@@ -177,6 +231,18 @@ consumer's full custom-value limits are not established here, do not infer
 them from the original field width or from a successful parse. Likewise, a
 known normalization such as rounding food-box rows is part of the algorithm,
 not automatically evidence of a malformed file.
+
+## Parser implementation freedom
+
+Section selection, case rules, line consumption, token delimiters, conversions,
+defaults and resource precedence below define classic input interpretation.
+In particular, the 254-character read rule can change how long source lines
+are interpreted and remains an adapter rule; it does not require a fixed buffer.
+Use an owned parser/document and independent cursors if desired. The process
+working directory, open-file singleton, cursor addresses, stale EOF bytes and
+per-read callbacks are reference mechanisms. EOF/invalid-stream defects require
+safe diagnostics, not a retained pointer. A successful reload preserves the
+specified logical values, not parser allocation history.
 
 ## 2. Finding sections and consuming text
 
@@ -275,7 +341,8 @@ or become data in a fixed-count section.
 
 Most names use the padded-name operation: an empty token becomes a single
 space; other text is retained as parsed. Padding provides editing capacity,
-not a maximum name length. Ordinary pooled text keeps an empty string empty.
+not a maximum name length. Ordinary empty classic text resolves to `<nil>`; the decoded source may retain
+an empty token separately.
 The tables below identify which operation applies. A cleanroom implementation
 may use normal strings; Appendix A records allocation/identity effects needed
 for reference-memory or save-format validation.
@@ -595,7 +662,8 @@ With `replaceLeaderData` false, still read every field and allocate its strings,
 but restore each previous leader field after reading its replacement. Do not
 change the selected leader name or initialize the leader's default title pairs.
 Read/allocate optional title overrides and restore those old pairs too. This
-preserves leader data while leaving parser and string-allocation side effects.
+preserves leader data while consuming the required input. Discarded allocations
+and temporary name publication are original-reference details, not required effects.
 
 Neither policy resets the leader's times-used count or next city-name cursor.
 The existing values are retained across this operation.

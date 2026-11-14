@@ -1,5 +1,29 @@
 # S03 — World and scenario editors
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in S03 |
+| --- | --- |
+| Gameplay | Editor authority, field meanings/domains, accepted world/scenario/event changes and necessary game recalculation. |
+| Original files/content | F03/F06/S02/P03 definitions, exported scenario/event text semantics and original-game readability. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Picker/menu flows, controller selection/history, native scratch and per-widget partial publication; accepted subcommands are distinct from draft editing. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -30,8 +54,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 ## Compatibility policy
 
@@ -52,6 +77,19 @@ The main sections use logical values, identities and operations. Original memory
 allocation and platform mechanics are recorded in [Appendix C](#appendix-c-original-implementation-reference). Preserve required
 state changes and externally visible results without reproducing those mechanisms.
 Exact numeric domains and file/wire encodings remain required wherever specified.
+
+## Editor operations and draft state
+
+Provide the admitted world/scenario/event edits and authority rules, preserving
+their actual field meanings, conversions, reference propagation and resulting
+game behavior. Preserve exported formats and event action order. Selection menus,
+modal steps, controller flags, scratch arrays and capture order are reference.
+The UI may group edits into a draft and validate before a named Apply operation;
+Cancel can discard that draft. Explicitly accepted subcommands (for example an
+already applied world edit or file export) retain their effects when a later
+draft is cancelled. Do not treat a widget getter or selection change as a commit.
+Revalidate accepted targets and input domains; native allocation/paint callbacks
+do not authorize arbitrary world mutations or unsafe stale selection reads.
 
 ## 1. Inputs, domains and cancellation
 
@@ -74,10 +112,10 @@ parameters retain signed 16. Membership uses the low-five-bit shift followed by
 its byte reduction. Only the significant conversion effects are required; a native field size is
 not prescribed. Original masks and buffer extents belong in Appendix A.
 
-A modal result is not a transaction. Each accepted substep commits immediately;
-later cancellation normally keeps it. Most command pickers accept any
-nonnegative result without a second membership/range check. Unknown or stale
-reads require established backing, supplied input or a bounded stop. Do not
+An accepted semantic command commits its game/file effects; later cancellation
+of another draft keeps those effects. Original picker steps and unchecked
+nonnegative control returns below are reference, not required command admission.
+Unknown or stale inputs are validated/rejected safely under X01. Do not
 invent a missing choice, string, cursor or event. A stricter input profile may
 be declared. Out-of-bounds writes and collateral corruption are excluded bugs
 under [X01](X01-classic-compatibility-contract.md#out-of-bounds-writes-are-excluded-bugs),
@@ -85,10 +123,10 @@ including mapped adjacent fields and writes through invalid/retired records.
 Reject, safely omit an established unsafe write, or stop before it while
 retaining prior valid effects.
 
-State is live at each access unless captured. UI, file, allocation and gameplay
-children can mutate it. Normal cleanup and explicit cancellation are distinct
-from a child fault or diagnostic stop; do not add rollback/cleanup not reached
-by the original control flow.
+Preserve captured/current values across actual accepted game, file and network
+events. UI, allocation and drawing calls alone create no mutation boundary.
+Use safe cleanup and staged unpublished work under X01; diagnostic native stops
+do not require leaking resources or publishing incomplete editor state.
 
 ## 2. Command admission and common selection
 
@@ -848,6 +886,12 @@ Do not claim editor text export/import preserves runtime state:
   are written. Text parsing's location counting is a different algorithm.
 
 ## 13. Conformance cases and caller integration
+
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
 
 Compare ordered state, callbacks and file operations, not only final screens:
 

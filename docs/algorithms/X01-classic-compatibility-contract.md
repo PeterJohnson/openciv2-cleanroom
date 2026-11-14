@@ -1,5 +1,29 @@
 # Classic compatibility contract
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in X01 |
+| --- | --- |
+| Gameplay | Defines the product behavior, RNG/bug-repair policies and what constitutes a meaningful game observation. |
+| Original files/content | Defines interchange obligations, including lossless stored data versus live export. |
+| Original peers | Original-peer TCP/IP is required interoperability, distinct from reproducing the original executable internals. |
+| Executable comparison only | Defines optional executable/ABI/storage/trace comparison; historical evidence does not enlarge production requirements. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **ID:** X01. **Target:** Civilization II Multiplayer Gold
 Edition **5.4.0f, patch 3**, the 32-bit Windows game.
 
@@ -23,6 +47,155 @@ the dispositions below. Historical algorithms remain evidence; these policies
 control which observations a cleanroom implementation must reproduce.
 AI heuristics and map-generation algorithms are unchanged by these relaxations.
 
+### Logical text and classic name markers
+
+Live names use full-width implementation-local references or owned strings and
+explicit custom-name flags, never signed 16-bit pool ordinals. UI label rebuilds
+must not rebind retained rule names. Reload policies preserve or replace semantic
+names/flags; preserved fields need no discarded allocations. Original padding,
+last-allocation pointers, minimum extents and heap-size hints are comparison-only.
+Empty padded-name input still means one space; ordinary empty classic pooled
+input resolves to `<nil>`. These content rules do not require padded storage.
+
+F06 stored leader records retain their exact 48-byte encoding in a separate codec
+type. Live loading rebuilds names from chosen rules and consumes saved signs at
+the specified stages; saved magnitudes do not index replacement text storage.
+Live export writes custom/noncustom markers as -1/+1 independently of local IDs.
+Lossless stored-file decode/re-encode preserves original magnitudes, including
+zero and -32768. This canonical live encoding follows F06's sign-only restoration
+contract; it does not claim equality with original allocation-dependent exports.
+Repeated selected-tribe effects retain their specified behavior.
+
+Narrowing a text ID into an unrelated earlier name or an accidental custom-name
+marker is a repaired storage defect. Preserve intended names and flags beyond
+32767/65535 entries. Reference tools may report original ordinals/aliasing;
+production tests assert text, reload behavior, bounds and file-marker semantics.
+Unrelated scalar arithmetic and external field widths remain unchanged. This
+contract overrides original-storage interpretations elsewhere in this document.
+
+
+## Production contract and comparison surfaces
+
+There are three distinct compatibility surfaces. Each specification's
+**Production contract scope** identifies its obligations on them. This policy
+applies to every paragraph, example, appendix and conformance list, including
+historical wording that calls an executable detail “required.”
+
+| Surface | Production obligation | Appropriate evidence |
+| --- | --- | --- |
+| Gameplay matching | Same game rules, decisions, meaningful information and state transitions for equivalent logical inputs and controlled choices, subject to the RNG and documented bug-repair policies | Rule/decision tests and independent original-game observations at semantic boundaries |
+| Original interchange | Correct original file/content interpretation and supported exports; required original-peer TCP/IP behavior, encoded fields and synchronization | Codec/resource tests, original-game file round trips and actual mixed-peer sessions |
+| Original executable matching | Optional reproduction of original private storage, function/ABI behavior, native traces and diagnostic fault cases | Clearly labeled reference tools/evidence, isolated from production dependencies |
+
+The third surface is **not** an additional product target. Executable observation
+can establish evidence for either of the first two, but the observation must
+identify the actual game or external-format consumer. Visibility to a debugger,
+memory snapshot, source-derived harness or injected callback alone is insufficient.
+Independent original-game observations remain valuable; do not replace them with
+self-generated regression snapshots or import reconstruction code into tests.
+
+### Gameplay values, representation and boundaries
+
+Preserve effects that influence later play even if they are not immediately
+visible: eligibility, prices, scores, probabilities, deterministic ties, turn and
+event order, knowledge, ownership and intentionally retained decision inputs.
+This includes stale summaries where a specified game operation actually consumes
+them. Do not silently refresh them early, drop side effects from an AI survey or
+replace a stateful algorithm with a superficially similar result.
+
+Those obligations do not require original objects, globals, field names, packed
+bits, temporary arrays, local variables, pointer aliasing, allocator capacities
+or helper APIs. An explicit value/context can replace shared scratch; a different
+data structure can preserve logical slot/stack/candidate order. Internal IDs may
+be mapped to required external IDs. Preserve any identity/order dependency that
+affects game decisions; map/list enumeration is not automatically cosmetic.
+Unused internal values, irrelevant intermediate writes and ignored helper
+returns need not exist. No formal original-executable proof is required merely
+to choose storage, ownership, API or function boundaries.
+
+Algorithm transformations still need a reasoned equivalence argument and tests
+for their meaningful effects across the admitted domain. Preserve significant
+arithmetic and data dependencies; F01 wrap/rounding that changes a decision is
+not “just storage.” Original CPU instructions or intermediate casts with no such
+effect are reference. The reference algorithm remains a useful evaluation of
+game rules, not a mandatory execution transcript.
+
+A callback boundary is binding only when it represents an admitted game action,
+scenario event, network delivery, decision response or actual external-service
+result that the owner permits there. Mere allocation, lookup, formatting, painting
+or diagnostic logging introduces no reentry obligation. Test doubles cannot
+invent mutations at those sites and promote them to gameplay requirements.
+Keep captured versus current inputs across **real** boundaries; private reads
+inside one uninterrupted semantic step may use a snapshot. Threading, event-loop
+and polling mechanisms are implementation choices under the same game/protocol
+ordering and deadline obligations. Original native callback timing is not a
+required schedule of concurrent player actions.
+
+### External formats without an original runtime
+
+External field widths, endianness, record/block order, IDs, checksums, token
+grammar, resource precedence, source-sheet coordinates and protocol messages
+remain binding where the original file or peer consumes them. An appendix can
+contain required data definitions. A native in-memory offset or ABI declaration
+is not a file definition merely because it uses the same numbers.
+
+Keep these cases distinct:
+
+- **Lossless stored-data codec:** when promised by the owner, decode/re-encode
+  preserves all imported bytes, including unknown/reserved fields and string
+  tails. Keep opaque data in the codec/document representation, not gameplay
+  fields invented to explain it. Do not normalize bytes during a lossless pass.
+- **Live import and export:** apply the specified restoration/conversion and
+  gameplay effects, and emit a valid original encoding of the resulting game.
+  Preserve opaque imported fields where required, or use the owner's documented
+  valid translation/canonical value for generated data. This does not require
+  the same arbitrary heap/stack/padding bytes as a separate original execution.
+  Missing valid generated-byte rules remain format gaps, not permission to copy
+  uninitialized memory or silently zero fields with unknown consumers.
+- **Original-peer operation:** encode protocol section images independently of
+  native objects; calculate checksums/deltas/compression from those images.
+  Keep authority, sequence/ordering, acknowledgments, deadlines and peer-visible
+  effects. Socket chunk sizes, buffer allocation, native error codes and call
+  counts are not protocol obligations. Alternate legal encodings/schedules need
+  support from the wire contract; do not assume equal final state excuses a
+  changed message or synchronization rule.
+
+An exported file need not use the original writer's calls or failure damage to
+be compatible. Resource grammar need not use its original parser singleton.
+Real file and network failures require truthful results, safe cleanup, retained
+already accepted effects and required peer replies. Unpublished parsing/loading
+may be staged, and file replacement may be atomic. On failure, keeping the prior
+coherent game/file is allowed instead of exposing the original partial memory
+overwrite/truncated output. Native allocator/provider failures and close errors
+must not fabricate success. Named accepted game actions or peer-visible effects
+cannot be rolled back merely because a later preparation/export failed.
+
+This is an explicit safe-failure policy, not a claim that original failure traces
+match. Successful load transforms and game consequences remain specified. An
+owner requiring partial publication must identify the real game/peer consumer;
+a short `fread` or return from an internal helper is not sufficient by itself.
+The same principle permits bounded validation of malformed data. Normal custom
+content and valid fragmented TCP input remain required support.
+
+### Reading and testing a mixed historical procedure
+
+For a disputed detail, identify its consumer: game decision/state, file/resource
+parser, peer protocol, or only the original executable/harness. Retain the first
+three contracts and classify the last as reference. This is a scope test, not
+permission to remove a game effect whose consumer has not yet been traced.
+Resolve missing required behavior in its owner; do not fill it from external
+reconstruction sources. Confirmed unsafe reads/writes use the bug-repair policy,
+not supplied original stack bytes as production inputs.
+
+Baseline tests compare the minimum complete semantic state/outputs needed for
+the claim, plus required external bytes at their adapters. They do not demand
+original private memory, every helper invocation, arbitrary injected callback
+schedules or native error integers. Implementation regression tests may pin a
+chosen internal API, but must not present that choice as a classic compatibility
+requirement. Optional executable diagnostics cannot block baseline completion.
+Source-derived harnesses remain historical evidence, never new implementation
+or test inputs. X02 keeps gameplay, interchange and reference claims distinct.
+
 ## 1. The behavior being reproduced
 
 For a declared operation, supply the same entry state and ordered external
@@ -34,7 +207,7 @@ even if the final visible screen happens to match.
 
 | Observation | Required agreement |
 | --- | --- |
-| Simulation state | Exact field values, flags, IDs, ownership, list/stack order, counters, caches that affect later decisions, and mutations of shared scratch state where specified. |
+| Simulation state | Equivalent logical values, ownership, identities, meaningful collection order and retained inputs consumed by later game operations. Exact original field/global layout and private scratch snapshots are not observations. |
 | Decisions | Exact eligibility, scores, deterministic tie breaks, state-dependent scan consequences and branches; exact outcomes conditional on the same logical random choices. |
 | Randomness | F01 sampling laws, thresholds, retained samples, candidate/retry rules and reproducibility within the new implementation. Original generators, seed-to-sequence mappings, stream sharing and raw/discarded-draw counts are not required. |
 | Interaction | Equivalent information and available decisions; command eligibility/targets, acceptance/cancellation effects, active player/unit and visibility. Preserve interaction ordering that affects gameplay or the protocol; native widgets and navigation may differ. |
@@ -43,12 +216,11 @@ even if the final visible screen happens to match.
 | Presentation | Same meaningful information, scenario-authored content, decisions and gameplay effects. Art, layout, wording of stock interface chrome, rendering, cosmetic media/timing and native control behavior may differ under the presentation policy. |
 | Failure | Required gameplay/file/TCP-IP failure effects within the supported domain; documented safe rejection outside it. Harmless native UI failures use the simplified policy below. Successful-path cases do not establish failure handling. |
 
-Matching return values alone does not establish equivalent ordering under the
-rule below. A
-message pump can dispatch a callback; a failed attempt can change a cache or
-affect the next candidate. Each owning document must state these effects or
-constrain its boundary so they cannot occur. Purely discarded random samples, presentation/gameplay stream coupling and
-presentation-only callback traces are exceptions under the policies below.
+Matching return values alone does not establish equivalent gameplay. A real
+game/network event or meaningful failed attempt can affect a later decision.
+The owner must identify that event/consumer; an original pump, allocation or
+injected test callback alone does not establish one. Discarded random samples,
+presentation/gameplay stream coupling and native callback traces are reference.
 F01 gives the shared
 [determinism contract](F01-determinism-and-arithmetic.md).
 
@@ -132,14 +304,18 @@ or parallelize internal work when it establishes equivalent required behavior
 over the complete admitted execution domain. This rule applies throughout the
 collection, including earlier source pins and wording such as “in order” or
 “do not reorder”; it does not remove any dependency that those instructions
-protect. Without such an argument, follow the reference sequence.
+protect within the production scope. Preserve a known game/file/peer dependency
+unless equivalence is established. No proof is needed to omit a reference-only
+native/store/helper event; first determine whether it is a required observation.
 
 A dependency requires one action before another when changing their order can
 change a required value, selected identity, decision, external effect, failure
 or state observed by a later consumer. In particular, preserve:
 
-- Read-after-write, overlapping/aliased writes, captured versus live inputs,
-  retained scratch values and publications across real callbacks or reentry.
+- Logical read-after-write dependencies, captured versus current inputs and
+  retained values across real game events/reentry. Physical overlap and aliasing
+  are required only through their meaningful data-flow effect, not as a memory
+  layout. An original private alias without a production consumer is reference.
 - Candidate eligibility, meaningful attempts/retries, first/last-match ties,
   scan bounds and retained cursors; allocation/lifetime, stack and event order
   wherever they determine later behavior. A tie rule can be represented explicitly
@@ -156,16 +332,18 @@ or state observed by a later consumer. In particular, preserve:
 Purity must be established, not inferred from a name such as query, preview or
 recalculate. A pure internal query on stable, fully backed inputs may be cached,
 combined or skipped after its result becomes irrelevant. Keep an ordered fallback
-when admitted missing reads, failures or actual callbacks make its execution
-observable. Do not turn a supplied pure-query test adapter into an arbitrary
+when an admitted game/file/peer effect makes its evaluation observable; arbitrary
+original backing bytes and native callbacks do not establish that domain. Do not turn a supplied pure-query test adapter into an arbitrary
 mutating provider solely to require the original call sequence.
 
 Independent field/tile updates may be grouped before a publication boundary if
 no admitted observer can distinguish their intermediate states. A callback,
 remote command or later phase that reads those states defeats that argument.
 Preserve the logical publication even when no player sees it immediately.
-Reordered computation does not license replacing live input with an entry snapshot
-across a boundary where it can change, or making a partial operation transactional.
+Reordered computation does not license replacing current input with an entry
+snapshot across a real boundary where it can change, or rolling back an accepted
+game/peer effect. Unpublished preparation and file replacement may be staged
+under the safe-failure policy; native partial copies are not game commits.
 
 Random choices retain F01's laws, arguments, reuse, decision/candidate/attempt
 identity and dependence on state. Independent samples may be generated in another
@@ -241,77 +419,93 @@ unrepresentable data rather than silently changing names, identities or rules.
 
 ### Presentation and semantic interaction policy
 
-A replacement may use new stock art, layouts, fonts, rendering and playback
-libraries, scaling, camera/zoom controls, menus, widgets, shortcuts, navigation
-and cosmetic timing. It need not reproduce original pixels, audio samples,
-palette cycling, line wrapping, window geometry, native control IDs, widget
-allocation/cleanup order, redraw counts or cosmetic animation/media choices.
-Purely visual sampling rules are optional reference behavior as well; gameplay
-probabilities, AI choices and map generation are unchanged.
+The goal is the same gameplay, subject to the RNG and documented bug-repair
+policies, with a broadly similar Civilization II feel and support for original
+configuration/scenario files. **Exact user-facing UI behavior is not a
+compatibility goal.** Familiar map, city management, turns, advisors and authored
+content guide design; they do not require matching individual screens or actions
+used to navigate to a game decision. Qualitative play review assesses that feel.
 
-The required contract is what the player can learn and do, and what each action
-changes. Preserve:
+Design prompt models, menus, navigation, search, sorting, input bindings,
+selection/focus, dialogs, editing, layouts, formatting, drawing, fonts, art,
+audio/video and cosmetic timing freely. Screens may be combined, reordered or
+replaced by nonmodal interactions. No proof of equivalence to original prompt
+flags, widget transitions, click sequences, getters, cached UI values or native
+callbacks is needed. A missing UI design detail is not a specification gap.
 
-- Information values and units, meaningful notices, eligible choices, selected
-  object/actor and the command represented by each choice. Presentation sorting
-  may differ only when choice identity and automatic gameplay selections do not.
-- Fog of war, remembered knowledge, private diplomacy and hotseat concealment.
-  A new layout must not expose information unavailable to the current observer.
-- Gameplay/file effects of acceptance, cancellation, editing, completion and
-  skipping. Preserve already published edits; cancellation is not automatically
-  rollback. Keep gameplay-dependent choice/notification order and defaults used
-  by timeouts or automatic decisions.
-- Original scenario text, names, substitutions, supported graphics/media and
-  resource override rules. New stock artwork does not replace scenario-authored
-  content silently. Decode source palettes/transparency/sheet identities so the
-  intended custom content survives new rendering; exact screen rasterization is
-  optional. Classic editor exports retain their external formats.
-- Original command authority, response/result mapping, publication, processing
-  of incoming network events, phase barriers and turn deadlines. A new dialog
-  sends the existing protocol's values; no new UI or RNG negotiation is required.
+The binding contract is limited to:
 
-Separate the semantic command and its effects from its visual realization.
-Native mouse coordinates may become semantic tile/object selections; widget
-returns may become named choices with a protocol adapter where needed. This
-freedom changes screen projection, not W01 topology, map coordinates, distance
-rules or stored map patterns. Reordered screens or nonmodal alternatives must
-still prevent actions during the same gameplay/network busy states and handle
-changed ownership, deleted targets, remote results and timeout closure.
+- Game rules and meaningful information: correct values/units and rule facts,
+  eligible game choices, command identity, actor and target. Preserve automatic
+  gameplay selections and their tie rules; display sorting/focus is free.
+- Privacy: fog, remembered knowledge, private diplomacy and hotseat concealment.
+  A new screen cannot disclose information unavailable to its observer.
+- Accepted game, file and network effects, including actual partial commits and
+  authority/phase barriers. Preserve game-dependent decision order, automatic
+  defaults, remote results and real deadlines. Do not equate an old UI buffer
+  write with a game commit. Local drafts may be discarded on cancellation;
+  already accepted commands cannot be rolled back merely by closing a view.
+- Original-file support: rule/configuration meanings, scenario-authored names,
+  text and substitutions, choice identities, supported assets/media and override
+  precedence. File syntax, source-image dimensions/rectangles, palette and
+  transparency definitions remain exact where they encode authored content.
+  Layout directives are hints unless they encode a nonvisual field constraint.
+  Native catalogs need not model original control markup or storage.
+- Original save/map/scenario and required TCP/IP interoperability. Translate
+  semantic choices into the owning file/wire values; new UI state does not add
+  protocol negotiation or occupy reserved classic fields. Saved UI preferences
+  may use a documented valid translation; lossless codec round trips retain bytes.
 
-A painting, text or media call in a recovered algorithm may recalculate cities,
-mutate shared simulation state or admit a network operation. Such effects remain
-required at the owning semantic boundary even if the original renderer is gone.
-When geometry selects simulation work, keep that original logical admission
-calculation and its declared classic view inputs independently of new rendering.
-For example, V08/P07 score-report layout limits which cities are recalculated;
-a new viewport must not silently change that prefix or refresh every city. The
-required fixture declares those inputs; do not invent a canonical replacement
-viewport or infer them from new font metrics.
+These rules apply across all families, including F/V/S/N descriptions of prompts
+and their callers. A reference to P04 or an original wrapper does not import its
+modal state machine. An owning game operation must identify a real commit or
+protocol effect before UI sequencing becomes a requirement. Availability is
+queried; acceptance revalidates current authority and target identity. Native
+callbacks, paints, control allocation and text appends create no game events.
 
-The implementation may use a different event loop; it need not recreate each
-native message pump, allocation callback or paint interleaving. It must preserve
-required operation order and state observed across relevant external events.
-Shorter/skippable animations must not skip damage, duplicate commands, freeze
-network service or change turn-timeout policy. Different real user/network timing
-is an external input, not an obligation to match one native execution trace.
+#### Presentation-driven calculation repair
 
-UI-only retained buffers, caches and stale values can be eliminated or initialized
-safely. Shared values read by simulation, AI, map generation, persistence or the
-protocol remain required under their owners. Saved UI fields retain their F06
-encoding: retain original values or use an explicitly documented valid translation
-for changed local preferences. Do not drop fields, repurpose reserved bytes or
-store new layout metadata in classic payloads.
+Rendering, navigation, window size, fonts, pagination and cosmetic completion
+must not select or repeat simulation work. Separate required calculations from
+the old drawing routines into explicit semantic preparation/refresh operations.
+Keep the calculation's rule arithmetic, meaningful effects and dependencies;
+execute it once for the admitted semantic domain, then render a read-only model.
+Repainting does not refresh simulation. Relevant accepted state changes may
+invalidate a model and require another semantic preparation.
 
-Put detailed original geometry, raster, native-control and cosmetic media
-procedures in clearly labeled **Original presentation reference** appendices.
-P01–P10 and affected callers keep required semantic/gameplay/file/network behavior
-in the main specification, including any calculation performed by a display
-routine. Source-image and export pixels remain required where they encode file
-content. Reference procedures retain original context but do not create a second
-normative algorithm or require new UI geometry to match the old layout.
-X02 tests semantic interaction and labels original visual/native traces separately.
-Historical validation counts are evidence, not a demand to reproduce the original
-UI architecture.
+P06 defines city preparation; P07 defines report preparation. In particular,
+V08 ordinary score-report preparation recalculates **all live owned cities** in
+ascending slot order before scoring, independently of the old citizen-layout
+cutoff. Objective scoring keeps its separate branch. Attitude's requested mood
+refresh covers all owned cities, and Trade's estimate is prepared independently
+of row visibility. These are deliberate corrections of display-dependent
+calculation, not claims of original equivalence. Original layout-selected
+prefixes remain optional comparison evidence. New viewport/font compatibility
+records are neither required nor valid simulation inputs.
+
+Do not omit a real game effect merely because it originally ran inside a
+renderer. If its semantic scope is not specified by an owner, resolve that game
+contract explicitly; do not recreate original geometry to choose the scope.
+Shorter/skipped media cannot omit damage, duplicate commands, freeze required
+network service or change timeouts. External user/network event timing remains
+an input, without requiring a particular native pump/paint schedule.
+
+#### Reading presentation specifications
+
+P01–P10 begin with explicit required contracts and identify the exact external
+data definitions and information/game calculations they adopt. The detailed
+numbered procedures and old appendices are subordinate **Original behavior
+reference**, including original user-facing operation and historical mandatory
+wording. Importing a file definition or formula does not adopt its surrounding
+UI algorithm. No original prompt architecture, navigation, drawing or private
+storage is a production requirement merely because it was observable in a
+historical comparison. Original trace emulation belongs in optional comparison
+tools/tests, outside production dependencies.
+
+X02 compares decoded content, meaningful information and accepted game actions,
+including invariance across different UI realizations. Original visual/native
+traces are separately labeled optional evidence; historical validation counts
+do not establish the redesigned implementation or the repairs above.
 
 ### Harmless native UI failures
 
@@ -430,8 +624,8 @@ conversion policy. Routine defaults/fallbacks specified for nominal content are
 still required, not a license to reject every omitted optional section.
 
 If an implementation explicitly supports an off-nominal domain, preserve its
-recovered interpretation, defined errors, scalar wrap and relevant partial
-mutations, subject to the presentation and excluded-write policies. Original
+declared interpretation, meaningful errors, scalar wrap and accepted semantic
+effects, subject to the representation, safe-failure and bug-repair policies. Original
 malformed-input traces remain reference evidence for that optional domain.
 Missing legitimate inputs still need an owning contract. Confirmed original
 uninitialized/invalid-memory reads use the bug-repair policy above; historical

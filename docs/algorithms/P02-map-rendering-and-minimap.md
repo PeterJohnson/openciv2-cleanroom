@@ -1,64 +1,103 @@
 # P02: Map rendering and minimap
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-This specification describes classic Civilization II Multiplayer Gold Edition
-5.4.0f, patch 3 map composition: terrain connections and overlays, cities, unit
-stacks and shields, labels, redraw scheduling, and overview colors/rectangles.
-It includes the shared city/unit sprite renderers used by other interfaces.
-The required output conveys the specified map information and visibility.
-Ordered raster/text operations describe original reference rendering; different
-art and composition are permitted without changing fog, knowledge or game rules.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-[P01](P01-map-projection-and-interaction.md) owns zoom arithmetic, view geometry,
-projection, membership, clipping rectangles and overview transforms.
-[W01](W01-map-geometry-and-spatial-state.md) owns topology, neighborhoods,
-feature predicates, resource patterns and distance; [W03](W03-visibility-and-exploration.md)
-owns visibility and remembered information. [U01](U01-unit-lifecycle-and-stacks.md)
-owns stack traversal, [U04](U04-unit-orders-and-activation.md) activation/blink
-state and unit eligibility, and [C08](C08-buildings-and-wonders.md) building and
-active-wonder queries. [P03](P03-graphics-and-asset-processing.md) owns resource
-loading, sprite extraction/markers,
-palettes, scaling and pixel primitives; [P04](P04-text-and-dialogs.md) owns fonts, measured/styled text
-and window chrome. P05/N02 own native input and network polling. P10 owns
-animation timelines that supply temporary rendering selections here.
+| Surface | Binding scope in P02 |
+| --- | --- |
+| Gameplay | Truthful known map/city/unit information and observer concealment. |
+| Original files/content | P03 source assets and F03/F06 terrain/unit/city meanings. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Pixels, layer/draw order, minimap projection, blink and display stack representatives. |
 
-[F01](F01-determinism-and-arithmetic.md) applies to arithmetic and ordering.
-These rendering algorithms do not directly consume gameplay random choices.
-Message pumps and child callbacks can execute other algorithms, so drawing is
-not generally a pure snapshot of game state.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+## Required presentation contract
 
-## Required contract and reading guide
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-Terrain/resource/route/city/unit information and identities, stack/selection
-semantics, actual versus remembered knowledge, fog/privacy and any simulation
-changes made by queries. Scenario overrides remain supported.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-## 1. Inputs and observable state
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
+
+## Map information obligations
+
+- Present known terrain, resources, improvements, cities, units and ownership
+  with their actual rule/state identities. Use W03's current versus remembered
+  knowledge and N04's observer restrictions, including concealed hotseat views.
+  Reference §§2–7 describe the information inventory; texture layering, icon
+  positions, text placement, blink and preferred *display* unit are optional.
+- Distinguish unknown, explored and currently visible information, selected or
+  active objects, and meaningful city/unit status. Do not infer unseen live state
+  from unrestricted records. Preserve unit/city facts and named custom content;
+  the visual vocabulary, filtering and grouping may differ.
+- Multiple units may be summarized, expanded or selected through a new stack UI.
+  A representative icon does not select the unit for a gameplay command. U04
+  activation and order semantics remain binding when an action is accepted.
+- Map and overview rendering are read-only projections. Full/partial redraw,
+  cache eviction, clipping and visibility of a widget cannot trigger simulation,
+  change gameplay random state or decide which commands are admitted.
+
+## Original-file input contract
+
+P03 owns source palettes, sprite identities, sheet extraction and overrides;
+F03/W01 own rule and terrain meanings. Preserve authored source content through
+those adapters. Pixel placement, draw order, original screen palette choices and
+minimap scale in this reference are not external data contracts. Exported image
+formats, where supported, remain P03/F06 obligations.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Inputs and observable state
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 A nominal operation supplies a loaded world, observer, logical view and valid
 city/unit/rule identities. Terrain queries accept a negative observer for
@@ -106,7 +145,10 @@ Invalid reads require known backing, supplied retained input or an explicit
 stop after preceding valid effects. A negative unit result is not universally
 an early-return sentinel in these callers; the precise boundaries are below.
 
-## 2. Terrain tile composition
+### 2. Terrain tile composition
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Present terrain, river, resources and improvements for the supplied observer.
 Use the following knowledge/actual-versus-remembered rules before drawing. Source
@@ -141,13 +183,16 @@ knowledge sources above rather than replace remembered facts with live ones.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 3. Civilization colors and unit selection
+### 3. Civilization colors and unit selection
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Civilization identity must remain distinguishable. New display colors may differ;
 scenario color metadata remains an input. Preserve the representative-unit
 selection below.
 
-### Preferred unit in a stack
+#### Preferred unit in a stack
 
 If the supplied unit is negative, return −1 before record or map reads.
 Capture that unit's signed x/y. If valid, query whether it is Ocean; retain
@@ -170,7 +215,10 @@ render-only repair.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 4. Direct unit renderer
+### 4. Direct unit renderer
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 For a requested unit, optionally select the representative through §3 before
 reading/displaying its record; a negative representative produces no unit.
@@ -186,7 +234,10 @@ silently or change combat state.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 5. Direct city renderer
+### 5. Direct city renderer
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Display city identity, ownership, wall/garrison/disorder indicators and permitted
 population information. City Walls or active Great Wall supplies the wall flag.
@@ -201,9 +252,12 @@ that city's remembered size for the local observer.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 6. Tile overlays and visibility
+### 6. Tile overlays and visibility
 
-### City overlay
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### City overlay
 
 Look up the city before the coordinate-validity check; return if absent or
 invalid. Query W03 visibility to the local observer. If signed owner differs
@@ -216,7 +270,7 @@ Show the city if that result is true, unrestricted display is enabled, or
 scenario reveal is enabled, using §5 ordinary disclosure. The caller's terrain
 observer is not passed to this city operation.
 
-### Unit overlay at a tile
+#### Unit overlay at a tile
 
 Return on invalid world coordinate; otherwise query top unit, including an empty
 result. Pixel offsets are reference behavior.
@@ -243,7 +297,7 @@ Negative record reads need the backing described in Appendix B or a bounded
 stop. Do not replace all empty-stack paths by an unconditional no-op and claim
 the same off-nominal behavior; equally, do not reproduce corrupting writes.
 
-### One-unit chooser and blink wrappers
+#### One-unit chooser and blink wrappers
 
 For a supplied slot and pixel position:
 
@@ -265,7 +319,7 @@ that draws a unit at its own location has this same early gate before any
 unit reads, then loads y before x, projects with P01, subtracts live stepY and
 invokes the direct renderer with those flags.
 
-### Complete map tile
+#### Complete map tile
 
 Present terrain for the supplied world coordinate/observer and ordinary radius
 selector−1. Service relevant external events even when it is unexplored/invalid.
@@ -285,7 +339,10 @@ query; first success ends the scan. Indicate city radius on success, ordinary
 grid otherwise. This indication
 has no additional exploration gate and still runs in bare-terrain mode.
 
-## 7. City names
+### 7. City names
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Bare-terrain at entry bypasses every view/font/city read. Otherwise, when
 supplied radius is nonnegative, add 3 with wrapping. Select the view's large
@@ -305,7 +362,10 @@ measurement and native helper return-register residue are reference details.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 8. Full and partial map redraw
+### 8. Full and partial map redraw
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 A refresh is inactive when the session is inactive. While it owns the refresh
 operation, preserve the busy/deferral gate, the selected observer and the input-
@@ -318,7 +378,10 @@ A local refresh must not mutate knowledge or substitute a different active unit.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 9. Overview rendering
+### 9. Overview rendering
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 The overview is a distinct disclosure path; do not substitute the main map's
 city/unit overlay filters. For a tile:
@@ -340,7 +403,10 @@ scheduling are reference procedures.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 10. Nominal and off-nominal conformance
+### 10. Nominal and off-nominal conformance
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate terrain and remembered improvements for each observer, city/unit/name
 visibility separately, representative-stack tie breaking and active/moving
@@ -350,7 +416,7 @@ blink and redraw-traversal cases are optional reference validation.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Evidence and source ownership
+### Appendix A. Evidence and source ownership
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -391,7 +457,7 @@ independently of reconstructed global initialization.
 The source retains explicit native/unknown-value boundaries; a reconstructed
 adapter's diagnostic exception is not claimed to be the original UI result.
 
-## Appendix B. Representation and excluded bugs
+### Appendix B. Representation and excluded bugs
 
 The following values identify original snapshots and externally observable
 palette/flag choices; they do not require a matching memory model.
@@ -460,7 +526,7 @@ safe profile. Do not translate corruption of a neighbor record into an intended
 palette/font/game-state mutation. Scalar wrap, deliberate preview storage,
 backed reads and rendering quirks remain distinct from these excluded bugs.
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -499,7 +565,7 @@ actual text/raster output, production window initialization or arbitrary
 reentrant gameplay. §10 lists the remaining finite joins. Source accounting,
 bounded tests and whole-game compatibility remain separate claims.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -510,13 +576,13 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §2. Terrain tile composition
+#### Original §2. Terrain tile composition
 
 Inputs are target, pixel origin `(px,py)`, map coordinate `(x,y)`, observer,
 zoom and radiusIndex. The pixel origin is the upper-left corner of the terrain
 bounding rectangle, not the taller city/unit rectangle.
 
-#### Entry, dimensions and knowledge
+##### Entry, dimensions and knowledge
 
 If the receiver's signed stored zoom equals supplied zoom, capture its cached
 tile width/height and half-width/half-height. Use them even when inconsistent
@@ -531,7 +597,7 @@ not remembered terrain. Initialize four blend choices to None. Then perform
 the terrain-specific base composition, resource and feature layers, followed
 by unexplored-edge blends. Reset sprite scale only after normal completion.
 
-#### Coast quadrants
+##### Coast quadrants
 
 The coast helper clears all four shared quadrant descriptors, then returns 0
 if the center is invalid. Otherwise scan W01's eight directions in order:
@@ -565,7 +631,7 @@ A neighboring tile's Ocean/land test is independent of whether it is explored.
 Callbacks may change later descriptors or neighbors; the descriptors are shared
 working state, not four immutable locals captured before drawing.
 
-#### Land base, connections and underlays
+##### Land base, connections and underlays
 
 Begin same-terrain connectivity and river connectivity at zero. If zoom is
 below −4, set river connectivity to all four contacts and skip neighbor queries.
@@ -602,7 +668,7 @@ Continue in this order:
 The adjacency underlay can therefore use actual improvements alongside a
 remembered center. It is not a generalized smoothing of all irrigated neighbors.
 
-#### Resources, roads and later features
+##### Resources, roads and later features
 
 After the Ocean/land branch, at zoom greater than −4 and invalid=false,
 query W01's special resource. For a nonzero resource index, draw the matching
@@ -642,7 +708,7 @@ At zoom greater than −5 and invalid=false, continue:
   color throughout that rectangle. Neither unit visibility nor ownership of
   the observer filters the occupancy scan.
 
-#### Unexplored edges
+##### Unexplored edges
 
 Finally, when zoom>−4 and observer>=0, examine diagonals NE, SE, SW, NW.
 For a negative radiusIndex, skip a world-invalid neighbor entirely: ordinary
@@ -657,7 +723,7 @@ Draw the unexplored-edge blend for each hidden quadrant at the same origins
 as land blending. Hidden terrain, city-radius clipping and world invalidity
 are separate decisions.
 
-### Original §3. Civilization colors and unit selection
+#### Original §3. Civilization colors and unit selection
 
 P03 loads eight color records from the city asset. Each provides primary shield,
 secondary shield and label/overview colors. Ordinary primary/secondary/label
@@ -672,7 +738,7 @@ mapping. Asset colors are live inputs; palette indices appear in Appendix B.
 
 [Required behavior is retained in the main section.](#3-civilization-colors-and-unit-selection)
 
-### Original §4. Direct unit renderer
+#### Original §4. Direct unit renderer
 
 Inputs are target, unit, drawing flags, pixel x/y, zoom and fortress-overlay
 suppression. Flags are logically ShowStack, SelectRepresentative and ShowDamage;
@@ -689,7 +755,7 @@ markers to compute `sx=x+scale(markerX,zoom)` then
 `sy=y+scale(markerY,zoom)`. Shield width is scale(12), height scale(20).
 Reread markerX; direction is −1 when below 32, otherwise +1.
 
-#### Shield stack and borders
+##### Shield stack and borders
 
 If ShowStack and either current previous/next stack link is nonnegative:
 
@@ -709,7 +775,7 @@ at `(sx,sy)`; recolor primary placeholder to primary and secondary placeholder
 to secondary. These are ordered rectangle recolor operations, not necessarily
 recoloring only pixels written by the immediately preceding sprite.
 
-#### Health bar
+##### Health bar
 
 Construct/fill a black band of height scale(2) at the shield top. Advance the
 same shield rectangle's top by the band's measured rectangle height. Construct
@@ -741,7 +807,7 @@ length 7/Yellow, damage 7 gives length 3/Red. Damage 12 gives length −2/Red;
 a restrictive profile may reject that record, but compatibility does not
 silently clamp it to an empty bar. P03 owns the resulting rectangle primitive.
 
-#### Order glyph and body
+##### Order glyph and body
 
 Read the signed order byte's low four bits; separately reread full order and
 force the local order to −1 when that full value is the AI-idle encoding.
@@ -775,7 +841,7 @@ draw Fortress at `(x,y)`. Reset scale on normal return. A unit can move/change
 orders in callbacks; captured owner/sprite/position remain captured, while the
 late overlay predicates use their stated live fields.
 
-#### Preview record
+##### Preview record
 
 The preview initializer uses F02's reserved preview unit slot. Store low-byte
 type then owner, x=y=−50, attributes 0, home Absent, spent movement 0, visibility
@@ -786,7 +852,7 @@ A flags-zero preview still reads damage, then suppresses its value in the
 health calculation; it does not prove that the original initialized damage.
 Only a backed, otherwise unobserved value can be folded away.
 
-### Original §5. Direct city renderer
+#### Original §5. Direct city renderer
 
 Select scale; capture width scale(64), height scale(48), then signed owner.
 Form the entry rectangle and select target globally. Query secondary shield
@@ -844,9 +910,9 @@ Reset sprite scale on normal return. Cached owner/style/size survive drawing;
 live city flags, occupancy, font handle and markers do not become a single
 entry snapshot. P03 owns asset markers, P04 style and measurement semantics.
 
-### Original §8. Full and partial map redraw
+#### Original §8. Full and partial map redraw
 
-#### Full tile traversal
+##### Full tile traversal
 
 If either view margin is nonzero, fill the view target black. Starting row 0,
 recompute `rowLimit=baseRows+drawRows+1` at each row test. For an admitted row,
@@ -861,7 +927,7 @@ radius −1, passing that captured rowLimit as incoming residual result. Return
 the name helper's result. There is no global map snapshot or batching away of
 per-tile message/network pumps.
 
-#### Full redraw controller
+##### Full redraw controller
 
 If the session-active byte is zero, return 0 without receiver access.
 Otherwise:
@@ -886,7 +952,7 @@ preserves preceding drawing/input effects. Overview's final pump may have an
 unrecovered residual return; a void caller may discard it, while a consumer
 needs that input/result or a stop after valid cleanup.
 
-#### Neighborhood traversal
+##### Neighborhood traversal
 
 Use P01's tile-radius rectangle and set it as the target clip, ignoring the
 intersection Boolean. Capture `span=2*level+2`. Visit dy from −span through
@@ -908,7 +974,7 @@ A negative/overflowed span follows the actual signed loop conditions; no
 artificial minimum radius is inserted. Pixel clipping limits raster output,
 not which admitted tile children perform state queries/message pumps.
 
-#### Partial redraw controller
+##### Partial redraw controller
 
 If session-active is zero, return without effects. Set map-redraw-busy=1;
 capture unrestricted observer −1 or supplied observer; perform the neighborhood
@@ -930,13 +996,13 @@ level-0/present pass using its captured local observer argument, then reloads
 the observer for the second pass. No later view is skipped merely because an
 earlier view failed to change pixels.
 
-### Original §9. Overview rendering
+#### Original §9. Overview rendering
 
 P01 supplies overview dimensions, spans, origin/margins, projection and clicks.
 Overview rendering below uses those live values and shared local visibility;
 it does not call main-view terrain/city/unit sprite composition.
 
-#### Tile color
+##### Tile color
 
 Return UnknownBlack for invalid world coordinates. Query visibility to the
 local observer; if false and unrestricted display is off, return UnknownBlack.
@@ -953,7 +1019,7 @@ truth-value conversion of the phase. Otherwise return OceanColor for actual
 Ocean, LandColor for everything else. Scenario reveal has no independent gate.
 Nominal palette indices are in Appendix B.
 
-#### Viewport outline
+##### Viewport outline
 
 If either primary margin is nonzero, return. Project primary `(left,top)` and
 `(right,bottom)` with P01 overview projection. If firstX<secondX use them as
@@ -962,7 +1028,7 @@ and bottom increased by 1; draw outline in HighlightColor on the current target.
 There is no cylindrical seam split or analogous y sorting. The selected target
 is a caller input and can differ from the overview receiver after callbacks.
 
-#### Full overview redraw
+##### Full overview redraw
 
 Capture the suppression byte; if nonzero, return that unsigned byte. If session
 inactive, return 0. Prepare overview surface/chrome, select overview target,
@@ -987,7 +1053,7 @@ present overview, then pump native messages and return that pump's result.
 No explicit network-poll calls are inserted here beyond what native pumping
 may deliver. Do not repair the origin/bounds quirks owned by P01.
 
-#### Partial overview region
+##### Partial overview region
 
 If overview suppression is nonzero, return. This helper has no session-active
 gate. Initialize minX=minY=999 and maxX=maxY=−1; select overview target.
@@ -1011,7 +1077,7 @@ rectangle with widths `max−min+1`, then present that rectangle. No native pump
 or input discard is added. Radius-zero at an odd center y can draw the next
 even row, while a last-row correction can invalidate it.
 
-### Original §10. Nominal and off-nominal conformance
+#### Original §10. Nominal and off-nominal conformance
 
 A conforming raster backend should expose draw calls or pixels plus observable
 scale, clip, target, font, busy and callback traces. Use the same assets, palette,
@@ -1060,7 +1126,7 @@ publication/cleanup of both render overrides; and full/partial overview across
 the cylindrical seam and restored F06 view state. Retain failure prefixes,
 unknown-read inputs and excluded-write handling in those comparisons.
 
-### Original drawing observations
+#### Original drawing observations
 
 A nominal call supplies a valid view/graphics target, initialized sprite/font
 resources and a loaded map, with ordinary civilization/unit/city/rule indices.
@@ -1075,7 +1141,7 @@ Changing a global drawing target or text style is not undone unless a step
 explicitly does so. The sprite reset restores its default scale; it does not
 restore an arbitrary previous scale selected by the caller.
 
-### Original city-name composition
+#### Original city-name composition
 
 For each admitted name:
 
@@ -1098,19 +1164,19 @@ normal helper returns the final loop-test city bound. Its bare-terrain path
 retains incoming result-register state; void callers need only its lack of
 effects. Appendix B records when a caller supplies/consumes that residue.
 
-### Original city overlay placement
+#### Original city overlay placement
 
 Draw if that result is true, unrestricted display is enabled, or scenario
 reveal is enabled. Subtract the view's live stepY from the supplied pixel y,
 then invoke §5 with ordinary flags and the live view zoom. The caller's terrain
 observer is not passed to the city renderer.
 
-### Original unit overlay placement
+#### Original unit overlay placement
 
 Subtract live view stepY from pixel y before checking map validity. Return on
 invalid coordinate; otherwise query top unit, including an empty result.
 
-### Original §9. Overview rendering
+#### Original §9. Overview rendering
 
 Present the observer's permitted terrain/city/unit information and view position.
 The overview must honor W03 knowledge and the distinct scenario/unrestricted
@@ -1119,26 +1185,26 @@ Its geometry, palette and redraw schedule may differ from the original.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-### Original unexplored-terrain raster gate
+#### Original unexplored-terrain raster gate
 
 world-bounds query. Otherwise test W01 rectangular validity. Select the supplied
 sprite scale. If observer is nonnegative or the tile is invalid, require a
 valid tile and, for a valid tile, W03 visibility to that observer. On failure,
 draw the unexplored tile sprite at `(px,py)`, reset scale and return.
 
-### Original complete-tile projection/pumping
+#### Original complete-tile projection/pumping
 
 Project supplied map coordinate with P01. Draw terrain at the captured pixels,
 using the supplied observer, live view zoom and ordinary radius selector −1.
 Pump native messages even if terrain drew an unexplored/invalid tile. If the
 now-live unsigned game mode is at least 3, poll network with `(1,0)`.
 
-### Original radius sprite scale
+#### Original radius sprite scale
 
 If ShowCityRadius is now enabled, select the view's current sprite scale and
 scan cities
 
-### Original radius grid placement
+#### Original radius grid placement
 
 query; first success ends the scan. Draw city-radius grid on success, ordinary
 grid otherwise, at the captured tile pixels, then reset scale. This grid pass

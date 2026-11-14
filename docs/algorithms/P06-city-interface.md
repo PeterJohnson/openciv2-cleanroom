@@ -1,66 +1,120 @@
 # P06: City interface
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-This specification describes classic Civilization II Multiplayer Gold Edition
-5.4.0f, patch 3 city windows, their displayed state and hit regions, city cycling,
-unit controls, production presentation, notices and the illustrated city view.
-Different window, widget and scene representations may implement these rules.
-Preserve information, semantic actions and required gameplay/network effects;
-original geometry, decorative scenes and native repaint traces are reference behavior.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-[F01](F01-determinism-and-arithmetic.md) owns arithmetic;
-[C02](C02-city-tiles-and-worker-assignment.md) owns tile/citizen assignment;
-[C03](C03-city-economy-and-corruption.md) owns recalculation;
-[C04](C04-city-happiness-and-disorder.md) owns happiness stages;
-[C05](C05-city-growth-and-support.md) owns support and growth;
-[C06](C06-city-production-and-purchasing.md) owns buying, selling and changing
-production. [C08](C08-buildings-and-wonders.md) supplies building/wonder queries.
-[P02](P02-map-rendering-and-minimap.md) supplies terrain/unit/city drawing;
-[P03](P03-graphics-and-asset-processing.md) supplies raster, sprites and assets;
-[P04](P04-text-and-dialogs.md) supplies text, fonts, prompts and controls;
-[P05](P05-input-and-command-dispatch.md) supplies native events, keyboard/character
-routing and message pumping. [N02](N02-network-commands-and-state-synchronization.md)
-owns deferred-request replay. These owners specify the child algorithms called
-below; this document specifies their city-interface callers.
+| Surface | Binding scope in P06 |
+| --- | --- |
+| Gameplay | City management information/decisions and explicit semantic city preparation. |
+| Original files/content | F03 city rules, P03/P04 authored resources and F06 state/preferences. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Pane/controller/window flags, draft widgets, painting and geometry-driven recalculation. |
 
-Random choices and supplied-draw fixtures use F01’s sampling laws. Counts refer
-to semantic choices, not raw generator calls; unused original samples are
-optional. Gameplay-dependent ordering and callbacks remain required; purely
-cosmetic randomness and native traces follow the presentation policy.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+## Required presentation contract
 
-## Required contract and reading guide
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-City/citizen/resource values, worker/specialist and unit actions,
-production/buy/sell/rename eligibility and effects, cancellation after committed
-edits, deleted/changed-owner targets, recalculation side effects and network
-timeout/polling obligations.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-## 1. Inputs, state and domains
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
+
+## City information and decisions
+
+Provide access to the city's name/owner, population and citizen moods, workers
+and specialists, food/shields/trade, stocks/yields/upkeep, production and costs,
+improvements, supported/present units and relevant local map information.
+Use the active rules, C02–C08 calculations and U04 unit semantics. Reference
+§§4–8 inventory the original facts and actions; their game-rule meaning is
+binding, their panes, control lifecycle, list order and selection gestures are not.
+
+Preserve worker/specialist assignment, production change, buy, sell, rename and
+unit-action eligibility, prices, effects and authority under their owners.
+Submit intentional commands with stable city/unit identities and revalidate
+after ownership changes, deletion, phase changes or remote responses. A changed
+screen or closed window must not silently act on a replacement slot occupant.
+Closing a city view does not undo an accepted city command; draft fields can be
+discarded. “Proceed” may be any suitable completion action at the owning turn
+boundary, without a Proceed-refresh flag or original modal stack.
+
+## City preparation and rendering
+
+Prepare current city information through an explicit session operation. Opening
+or explicitly refreshing a valid city performs required C03 calculation with
+force=1 before publishing the model; accepted city/unit changes use their owning
+calculation/invalidation rules. Preserve those calculations' actual game effects.
+Reading, painting, resizing, paging or rebuilding controls consumes the published
+model and never repeats the calculation. A relevant game-state update can require
+a new preparation independently of repainting. Do not reproduce hidden-window,
+pane-order or partial-paint differences as simulation admission rules.
+
+This is the X01 correction of presentation-driven calculation, not a change to
+C03 arithmetic. Original full/partial refresh recipes in §2 remain reference.
+The implementation owns caches, suspension, redraw flags and update scopes;
+they cannot influence command results or make displayed values silently stale.
+City illustrations, pane geometry, citizen ordering and animation are design
+choices. Preserve the recognizable city-management function and authored content.
+
+## Original-file input contract
+
+P03/P04 supply classic assets and text; F03 supplies rules. F06 owns saved city
+and view fields, including any documented translation of UI preferences. No
+rectangle, hit region, widget handle or old private city-window field is required
+live state merely because it appears in the reference.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Inputs, state and domains
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal inputs are initialized logical city-interface state, valid live city/unit
 records, complete rules/assets and supported text. Preserve selected city,
@@ -86,9 +140,12 @@ Retain preceding valid effects, then reject, omit or stop before the overwrite.
 A declared restrictive profile may reject unsupported inputs earlier. Mapped
 adjacent storage does not make corruption part of this interface contract.
 
-## 2. Window lifetime, selection and refresh
+### 2. Window lifetime, selection and refresh
 
-### Initialization and opening
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Initialization and opening
 
 Prefix initialization clears hit-region count, sets hidden, clears suspended
 and redraw-suppressed, selects no city, sets improvement scroll=0/count=1, and
@@ -135,7 +192,7 @@ Its full original return is branch-dependent, not a Boolean success code;
 ignored returns need no invented value. Appendix A describes observed returns
 and supplied incoming state for callers that consume them.
 
-### Hiding, closing and release
+#### Hiding, closing and release
 
 Hide sets hidden, hides the native window, then selects no city, focuses and
 raises the main window, and prepares effects through P05. Native hide callbacks
@@ -164,7 +221,7 @@ captures whether the state was Visible, clears the state, rebuilds Proceed(1)
 only when that captured condition holds, then clears pending-Proceed-refresh.
 The rebuild observes the already cleared scope state.
 
-### Refresh variants
+#### Refresh variants
 
 These operations are deliberately different:
 
@@ -193,7 +250,10 @@ append space and parenthesized Treasury label, colon and live signed owner's
 gold. Population/owner queries reread the selected city. Set the bounded caption,
 draw status and present the title strip using its live bottom boundary.
 
-## 3. Layout, controls and cached backgrounds
+### 3. Layout, controls and cached backgrounds
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 A redesigned city interface may arrange its controls and panes freely. Preserve
 semantic Next/Previous, Buy, Change, mode, Rename, City View and Proceed actions,
@@ -203,7 +263,10 @@ not gameplay state.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 4. Hit regions and command delivery
+### 4. Hit regions and command delivery
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 An input adapter resolves a gesture to a semantic city action and its identified
 tile, citizen, unit or improvement. It must not select a different target because
@@ -228,7 +291,10 @@ Left and right callbacks supply flag0/1 respectively, but this ready dispatch
 does not test that flag. It does not add a blanket city ownership check; each
 child owns its permission checks. P05 independently handles key/character routing.
 
-## 5. City cycling and direct controls
+### 5. City cycling and direct controls
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Previous/Next first query selection; None returns. A second selection's signed
 owner must equal local observer, unless score-lock is set. During city processing
@@ -270,7 +336,10 @@ the illustrated viewer for the freshly selected city. No additional ownership
 or game-mode gate exists here. Buy, Change and selling retain C06's different
 gates and mutation semantics.
 
-## 6. Present and supported unit dialogs
+### 6. Present and supported unit dialogs
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Both controllers construct a prompt and sprite **before** testing their shared
 busy flag. Busy entry destroys sprite then prompt and leaves the flag unchanged.
@@ -287,7 +356,7 @@ Prepare three text parameters for a captured unit:
 3. Reread home city after earlier text callbacks; format its name, with the
    absent-home value passed as absent to P04.
 
-### Present-unit selection
+#### Present-unit selection
 
 Create a transparent64×32 preview before permission checking. Require central
 mode Units/Trade after calculation. Read city y and x through separate selected
@@ -326,7 +395,7 @@ resource-supplied stack-reinsert choice.
 - All other outcomes, including cancellation and ordinary order changes,
   calculate(0) for a fresh selection and draw Central(1), then finish.
 
-### Supported-unit selection
+#### Supported-unit selection
 
 The region ID is already a full unit slot; do not narrow it to a stack ordinal.
 After permission/calculation, set chooser zoom8 **before** creating the preview,
@@ -347,7 +416,10 @@ mode and focusActive(0). Otherwise enterView(0), select its current coordinates,
 then center using **post-selection** unit coordinates. The close choice then
 hides the city. Finish; there is no unconditional Central redraw here.
 
-## 7. Pane drawing and resource display
+### 7. Pane drawing and resource display
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Pane operations return when hidden, suspended, redraw-suppressed or without a
 selected city. The central display chooses Units/Trade, Support Map or Happiness;
@@ -436,14 +508,17 @@ Unhappy amount=away*penalty. New icon spacing must not change that amount.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 8. Production presentation and city notices
+### 8. Production presentation and city notices
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 C06 owns eligibility, option order, turn estimates, purchasing, sales, selection
 effects and the Change/Autobuild/Help/Freebie loop. This section owns the text,
 art, advice panels and idle processing used by those flows. Do not recalculate
 eligibility or production merely to paint a row.
 
-### Production rows and advice
+#### Production rows and advice
 
 Format an eligible unit option as its name, ` |(`, C06's turn estimate,
 `, `, the attack/defense/movement label, colon, signed attack, `/`, signed
@@ -474,7 +549,7 @@ names; overlong construction is excluded corruption. A safe profile must
 explicitly reject/omit overlong advice or use a declared enlarged-string
 extension, rather than claim the original overflow produced a valid section.
 
-### Production idle processing
+#### Production idle processing
 
 The same idle callback is installed by production, Rename and Buy dialogs.
 If `(quitTimer && statusTimer<=0)` or selected city is absent:
@@ -490,7 +565,7 @@ P04's ordinary active-prompt reference. Regardless of gate or timeout outcome,
 call N02 polling `(1,0)` afterward. There is no implicit timer reset on an
 ordinary nongated callback, and no unsigned elapsed-time replacement.
 
-### City preview prompt
+#### City preview prompt
 
 Load the requested GAME resource, ignoring its load status as a new early-exit
 gate. Present the selected city using P02's ordinary disclosure and run the P04
@@ -498,7 +573,7 @@ interaction with argument0. Capture its full result and publish its secondary
 result to the shared city-dialog result. Native preview buffers, placement,
 scaling and Sprite/Prompt destruction order are reference behavior in Appendix D.
 
-### Turn notice and picture notice
+#### Turn notice and picture notice
 
 The text/sprite turn-notice wrapper constructs Prompt before testing autoplay.
 Autoplay, or neither local-notice permission nor force, destroys it and returns0.
@@ -534,7 +609,10 @@ and its outer Sprite/Palette; do not invent a completed-popup rollback on an
 unrelated diagnostic stop. None of these wrappers validates arbitrary city or
 asset indices by replacing them with a default city/image.
 
-## 9. Illustrated city view
+### 9. Illustrated city view
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 The illustrated city scene is cosmetic. Its art/layout/shuffling, placement,
 resource composition, panning and native modal lifecycle may be replaced.
@@ -544,7 +622,10 @@ city calculation or W02 world generation. Scene randomness is presentation-only.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 10. Conformance cases and joins
+### 10. Conformance cases and joins
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate city opening/closing and Proceed behavior, full versus partial C03
 refresh effects, live selection and owner changes, city cycling, rename and unit
@@ -555,7 +636,7 @@ icons, cached backgrounds and illustrated-city raster cases are optional.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Evidence identity and original adapter
+### Appendix A. Evidence identity and original adapter
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -599,7 +680,7 @@ its original initialized data. Geometry starts at0061c360, improvement pools
 0061cce0 and wonder pools0061ce58. These addresses identify validation evidence,
 not required implementation pointers.
 
-### IDs, resources and representation
+#### IDs, resources and representation
 
 Logical state may use different records/collections. For comparison with the
 reference, city size/owner/production and route commodities/count are signed
@@ -639,7 +720,7 @@ supplied palette; they do not require byte-packed colors or those sprite-object
 addresses. P03 owns extraction/scale/raster semantics; P04 owns label and text
 formatting. An alternative UI may declare different visual conformance.
 
-### Excluded bugs and unknown reads
+#### Excluded bugs and unknown reads
 
 The original uses200 hit rows, six caption icons,60 viewer assignments/sprites,
 three city routes,31/24 pool entries per layout,80-byte navigation/advice name
@@ -669,7 +750,7 @@ exception-chain return values) matter only to an adapter/caller consuming them;
 callers that discard them need no invented zero return. This does not make
 use-after-free, invalid native handles or any overwrite a required behavior.
 
-## Appendix B. City-view asset data
+### Appendix B. City-view asset data
 
 These are canonical data inputs for pixel-identical classic composition, not a
 required memory layout. Coordinates are source `(x,y,width,height)` or scene
@@ -678,7 +759,7 @@ A replacement asset set may use an explicit equivalent mapping. Preserve table
 order and the mutable template copy at construction when comparing optional original RNG
 and placement traces. Empty trailing pool entries are −1.
 
-### Initial shuffled pools
+#### Initial shuffled pools
 
 Improvement pools, in index order:
 
@@ -696,7 +777,7 @@ River: 56,38,0,35,31,10,39,44,36,3,33,40,37,9,8,49,48,34,51,7,47,46,42,41
 Inland: 9,56,42,39,35,55,2,8,7,43,33,44,40,37,41,6,51,50,48,38,46,45,31,30
 ```
 
-### Building-sheet rectangles
+#### Building-sheet rectangles
 
 | Improvement ID | x | y | width | height |
 | --- | ---: | ---: | ---: | ---: |
@@ -735,7 +816,7 @@ Inland: 9,56,42,39,35,55,2,8,7,43,33,44,40,37,41,6,51,50,48,38,46,45,31,30
 | 33 | 125 | 416 | 123 | 82 |
 | 34 | 222 | 499 | 367 | 118 |
 
-### Wonder-sheet rectangles
+#### Wonder-sheet rectangles
 
 | Wonder ID | x | y | width | height |
 | --- | ---: | ---: | ---: | ---: |
@@ -768,7 +849,7 @@ Inland: 9,56,42,39,35,55,2,8,7,43,33,44,40,37,41,6,51,50,48,38,46,45,31,30
 | 26 | 319 | 231 | 158 | 114 |
 | 27 | 478 | 576 | 158 | 114 |
 
-### Scene positions and overlap order
+#### Scene positions and overlap order
 
 | Slot | Coast (x,y) | River (x,y) | Inland (x,y) |
 | --- | --- | --- | --- |
@@ -833,7 +914,7 @@ Inland: 9,56,42,39,35,55,2,8,7,43,33,44,40,37,41,6,51,50,48,38,46,45,31,30
 | 58 | 1070,319 | 0,0 | 1156,288 |
 | 59 | 1176,304 | 0,0 | 1156,397 |
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 Historical research scaffolding included pinned source/body hashes, extracted
 routines, explicit adapters, asset hashes, original instruction/table probes and
@@ -877,7 +958,7 @@ Asset identities used for this research:
 | Labels.txt | `b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd` |
 | Game.txt | `431132fc67b9f7b917bba0dc6f1f36c546cb55b88d43854bc4e11fc3b74c0ced` |
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -888,7 +969,7 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §3. Layout, controls and cached backgrounds
+#### Original §3. Layout, controls and cached backgrounds
 
 Let `L(v)` return v when layout scale is exactly 2; otherwise signed wrapping
 `scale*v / 2`, truncating toward zero. The exact-2 shortcut avoids an unnecessary
@@ -988,7 +1069,7 @@ previous zoom. When zoom differs from its cache, publish it, allocate
 pick sprite at (0,0), reset scale. The cached surface supplies C02's quadrant
 pixel reads; do not replace its pixels by corrected hit geometry.
 
-#### Next/Previous icon controls
+##### Next/Previous icon controls
 
 These two controls use a specialized pressed-image and event path. Configure
 clears its private state, captures parent palette, forms the rectangle and
@@ -1051,7 +1132,7 @@ callback return values do not change the native event's return0. A direct
 callback-dispatch helper returns the child result, or the incoming control token
 when no callback exists; tokens have no required representation in a new UI.
 
-### Original city hit-region storage and geometry
+#### Original city hit-region storage and geometry
 
 Hit regions are ordered half-open rectangles with a group and ID. First match
 wins; overlap is not resolved by smallest area or most recent insertion.
@@ -1068,7 +1149,7 @@ top<=y<bottom, then writes ID before independently reading/writing group. Output
 arguments may be absent; a miss leaves them unchanged. This ordering matters
 when output storage aliases a field. It does not permit an invalid destination.
 
-### Original §7. Pane drawing and resource display
+#### Original §7. Pane drawing and resource display
 
 Each public pane renderer returns immediately when hidden, suspended,
 redraw-suppressed or selected city is negative. Preparation selects the graphics
@@ -1088,7 +1169,7 @@ Read each `L` call separately; a drawing callback can change scale. A named
 local is captured until explicitly replaced. Workspace values and selected-city
 fields remain live at their stated uses.
 
-#### Citizens and hit regions
+##### Citizens and hit regions
 
 Citizen art style queries the supplied owner in this short-circuit order:
 Electronics and Automobile =>3; otherwise Industrialization =>2; otherwise
@@ -1118,7 +1199,7 @@ width=returned spacing and height=`L(30)`. The crowded layout's hit width is
 spacing, even when it exceeds visible glyph width. The second public argument
 does not alter this rendering.
 
-#### Present units, pollution and trade
+##### Present units, pollution and trade
 
 Capture Central left/top, unit zoom, `M(64,z)` width, `M(48,z)` height,
 `M(64,z)` horizontal pitch and `M(52,z)` row pitch. Compute columns as
@@ -1156,7 +1237,7 @@ y+`L(3)`, selecting/resetting scale for each icon. Advance the captured row
 pitch. Off-nominal counts need supplied readable backing beyond the three
 logical routes; there are no invented extra routes or zero values.
 
-#### Worked-tile map and yield icons
+##### Worked-tile map and yield icons
 
 Capture Resources left/top, tile width=`M(64,live unitZoom)`, height=
 `M(32,fresh unitZoom)` and their arithmetic halves. Start at `(left+L(5),
@@ -1200,7 +1281,7 @@ heading at its header bottom−`L(14)`, style124/57. Continue into the four bars
 below in order. Their icon counts are presentation packing, not replacements
 for C03's simulation totals.
 
-#### Food and shield bar packing
+##### Food and shield bar packing
 
 All bars begin at `x=Resources.left+L(205)` and nominal width `B=L(226)`.
 After icon drawing, each bar recomputes label left=`left+L(205)` and
@@ -1292,7 +1373,7 @@ in11/29 when nonzero; right label75 if S<0 else68 displays `abs(S)` in11/29 or
 92/10. A positive S also performs the original production read, even though
 its result does not change this label. Retain captured **shield S** for Trade.
 
-#### Trade and distribution bars
+##### Trade and distribution bars
 
 Trade starts with cached total=live total Trade, n=that total, extent=B−`L(2)`.
 If live Loss≠0 subtract `L(4)+I` from extent and decrement n. Compute spacing.
@@ -1336,7 +1417,7 @@ Luxury aligned left, then centered; Luxury style41/10 uses its chosen alignment;
 Science style94/10 is right unless Luxury aligned right, then centered.
 Reset sprite scale and optionally present Resources.
 
-#### Food stock and production stock
+##### Food stock and production stock
 
 Food title uses label43, style44/10, centered at pane top. Place a box relative
 `(6,15,183,147)`, scaling each component with L and inset by `L(3)` on both
@@ -1377,7 +1458,7 @@ each with min(stock,perRow), total perRow, icon width `L(17)`, current box width
 flags1. Subtract count, advance y by captured pitch; reset and present.
 The lower-right pane only restores background and optionally presents it.
 
-#### Supported units and improvements
+##### Supported units and improvements
 
 Support captures pane left/top; zoom−3, replaced by−6 at scale1 or0 at scale3.
 Pitch=`M(69,z)`, row pitch=`M(52,z)`, columns=`L(192)/pitch`, rows=
@@ -1415,7 +1496,7 @@ Ordinary entries also draw a Coin at content.right−`L(14)−L(4)`,y−1 with s
 Publish total count in the canonical window. Set native scrollbar range0..count−1,
 page rows−1, then position from the live stored scroll. Present if requested.
 
-#### Support Map
+##### Support Map
 
 Capture signed owner; draw heading452 in124/18. Available width/height are
 Central dimensions−literal4. Divide width by live map width, then height by
@@ -1432,7 +1513,7 @@ and draw its square in29, with no additional map-validity/visibility check.
 Finally separately read selected-city x/y, wrap x−origin, and fill in41. This
 ordering lets the city marker overwrite unit and terrain markers.
 
-#### Happiness stages
+##### Happiness stages
 
 Capture signed owner and draw heading453. Start x=header.left+2,
 y=header.top+`L(14)`+2; available width/height are header dimensions−4.
@@ -1470,7 +1551,7 @@ is Republic, decrement it. Icons=away*penalty; zero returns. Apply spacing to
 icons, width `L(10)+1`, extent−`L(2)`, accepting adjusted count. Reserve
 `L(10)+(icons−1)*pitch`, select scale, draw the unhappy row with flags0, reset.
 
-### Original production row rendering and dialog layout
+#### Original production row rendering and dialog layout
 
 The row renderer decodes value<62 as a unit; otherwise improvement=value−62.
 If row flags request an inset, add38 to x. For a nonnegative unit, set
@@ -1485,7 +1566,7 @@ visible rows. Modal width is300. The Freebie button requires the live cheat flag
 parent's separate live gates. Clear the timeout-armed state before and after
 the modal interaction. C06 owns any resulting world mutations.
 
-### Original §9. Illustrated city view
+#### Original §9. Illustrated city view
 
 This view builds a 1280-wide scene from supplied city-view assets and tables,
 then displays/pans a viewport. Use a repeatable layout context keyed as below;
@@ -1494,7 +1575,7 @@ simulation. Window/surface providers, screen rectangle, cursor samples, key
 states and modal events remain explicit external inputs. Original reseeding of
 the shared gameplay stream is evidence in F01 Appendix D.
 
-#### Construction, classification and resources
+##### Construction, classification and resources
 
 Construct outer window, child window, scene surface, palette, building sheet,
 wonder sheet and resource module; then60 scene sprites, four each of small
@@ -1545,7 +1626,7 @@ window creation does preparation place the scene, draw it, destroy temporary
 surface and return1. Ordinary failure still leads the caller to destroy the
 constructed viewer. Allocation failure creates/runs nothing.
 
-#### Slot selection and scene placement
+##### Slot selection and scene placement
 
 The slot selector returns−1 without RNG when remaining count=0. Otherwise
 capture `maximum=remaining−1` and `numerator=3*remaining−3`, draw F01's inclusive
@@ -1615,7 +1696,7 @@ invalid wonder layout has that established retained value. Geometry reads
 outside valid tables require supplied backing or a stop; they do not grant
 permission for the corresponding out-of-bounds mutation.
 
-#### Drawing, modal lifetime and panning
+##### Drawing, modal lifetime and panning
 
 Draw scene slots in ascending order while index<live draw limit. A nonempty
 assignment causes a position read from live layout/index, then a fresh sprite
@@ -1672,7 +1753,7 @@ allocation afterward; a setup/run diagnostic does not establish an invented
 exception-cleanup path. Continuing or releasing the layout context follows the
 implementation's declared policy; no gameplay RNG restoration is prescribed.
 
-### Original §10. Conformance cases and joins
+#### Original §10. Conformance cases and joins
 
 Compare ordered child calls, selected city, flags, calculation workspace,
 regions, controls, controlled visual choices or implementation random context,
@@ -1730,7 +1811,7 @@ P07 owns advisor refresh destinations. X02 must test those joins with initialize
 gameplay and independent state/draw/event traces. A finite unit harness does not
 establish complete native GUI, pixel or multiplayer conformance.
 
-### Original city display state
+#### Original city display state
 
 Nominal inputs are initialized city/window state, backed live city/unit records,
 complete rules and assets, fitting names, valid geometry and positive divisors.
@@ -1746,7 +1827,7 @@ the cached Autobuild button state, pending Proceed refresh, Proceed-requested,
 unit-dialog busy, production-dialog timeout state, and the city-calculation
 workspace. Central modes are Units/Trade, Support Map and Happiness.
 
-### Original city-window construction
+#### Original city-window construction
 
 Reuse the saved city rectangle only when restore-player is nonzero and the saved
 main-window-state selector is nonzero. Otherwise choose the default scale and
@@ -1765,7 +1846,7 @@ Larger caption icons in that order. Clear ordinary control references. Register:
 | Key press / character | P05 map-key / map-character controller. |
 | Size / move | Query the current parent-relative rectangle and save it. Callback coordinates are ignored. |
 
-### Original city-window release
+#### Original city-window release
 
 Release first sets suspended, then releases controls, then resets graphics/window
 storage. Control release is gated solely by the Buy reference: if absent,
@@ -1777,7 +1858,7 @@ reference immediately after its own deletion; the final reset clears the ordinar
 button/icon references but retains the scrollbar reference. A later use of that
 retired object requires a safe failure boundary, not fabricated live storage.
 
-### Original happiness stage presentation
+#### Original happiness stage presentation
 
 - Stage1 skips when Happy−Unhappy equals the previous stage's balance. Otherwise
   set previous=1 and draw a Diamond at right−`L(14)`, vertically centered.
@@ -1790,7 +1871,7 @@ retired object requires a safe failure boundary, not fabricated live storage.
   Otherwise right-align the Wonders label, style41/10, at row middle−half font
   height, and use its returned left edge.
 
-### Original city preview prompt construction
+#### Original city preview prompt construction
 
 Construct Prompt then Sprite. Query shared popup scale separately for preview
 height (48 or96) and width (64 or128), create a solid preview in color0, load

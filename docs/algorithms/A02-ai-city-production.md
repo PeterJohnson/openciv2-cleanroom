@@ -1,5 +1,29 @@
 # A02 — AI city production
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in A02 |
+| --- | --- |
+| Gameplay | Production eligibility/scores/ties, survey side effects, sales/airlift and recommendations; non-wonder rivalry uses the documented safe zero contribution. |
+| Original files/content | F03 cost/prerequisite/leader inputs and F06 selected production/AI fields. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Adjacent-local rivalry bytes, temporary score layout, unused candidate traces and supplied stack backing. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -38,8 +62,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 AI scores, candidate sets, deterministic ties and stateful decisions are unchanged.
 Pure candidate work may be reordered only with identical decisions and required
@@ -677,6 +702,12 @@ which returns 99. Comparison is strictly greater than 500; equality is accepted.
 No generic final C06 eligibility recheck is added.
 
 ## 10. Conformance cases and failure policy
+
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
 
 Each case declares prior state, child results and retained read inputs. Compare
 the return, both recommendation outputs, candidate scores where exposed by a

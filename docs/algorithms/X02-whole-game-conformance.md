@@ -1,5 +1,29 @@
 # X02: Whole-game conformance
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in X02 |
+| --- | --- |
+| Gameplay | Tests declared gameplay observations, decisions, dependencies, repairs and own-engine reproducibility. |
+| Original files/content | Tests original input/output interpretation and original-game round trips separately from gameplay fixtures. |
+| Original peers | Tests actual mixed-peer sessions, wire/checksum validity and protocol outcomes independently of file round trips and native call traces. |
+| Executable comparison only | Historical executable traces and source-derived harness evidence are optional reference; an internal regression test does not define universal compatibility. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -33,6 +57,43 @@ failed-load histories. Normalize only identity generations that cannot influence
 gameplay. Previous simulation bytes and arbitrary original stack inputs are not
 baseline observations. Separate documented repair expectations from original
 captures; preserve within-game/file/protocol tests and real callback dependencies.
+
+## Gameplay, interchange and executable-comparison claims
+
+Every registration/case identifies its comparison surface under X01 in its
+owning contract, boundary description and evidence limitations. The existing
+fixture schema is sufficient; do not add runtime legacy-state requirements to
+make a reference capture fit it.
+
+| Claim | Compare | Do not infer |
+| --- | --- | --- |
+| Gameplay | Logical decisions/state and real game-event dependencies under aligned inputs/choices | Original object/global layout, every private field or helper invocation |
+| File/content compatibility | Defined grammar/values, required external fields and opaque bytes for lossless codecs; original-game import/export | Original parser/writer API, I/O chunking, live structures or partial-failure damage |
+| Peer compatibility | Wire/section/checksum definitions and actual authority, synchronization and delivery outcomes | Native callback ABI, socket buffers, OS errors or original polling schedule |
+| Executable reference | Only the declared historical storage/trace/fault surface | A baseline production requirement or proof of complete gameplay/interoperability |
+
+Use separate claims even when one case supplies evidence for several surfaces.
+A private helper regression test is useful for this implementation, but does not
+require every correct implementation to expose that helper or state. Optional
+executable comparisons cannot block gameplay/interchange milestone acceptance.
+Independent original-game captures can support semantic and interchange claims;
+source-derived harnesses remain historical records, not test inputs.
+
+Each required state observation names its downstream game or external consumer.
+Each required callback/event names a real admitted boundary and producer. A
+“complete” closure covers those semantic inputs/outputs, not all bytes touched
+by an original routine. No arbitrary mutation through an allocator, text getter,
+paint callback or diagnostic provider is a baseline event merely because an
+old test supplied it. Retained values with real consumers still need explicit
+producer/lifetime coverage; an omitted required effect is not presentation freedom.
+
+Safe loading/saving tests may assert staged rejection and atomic replacement.
+Compare successful decoded/exported meaning and required accepted effects;
+do not demand original partial-record corruption, unchanged error integers or
+false success after buffered close failure. Malformed/unsafe original execution
+is diagnostic evidence. A repaired or safely rejected case is labeled accordingly,
+not reported as exact original execution. Valid custom inputs and arbitrary
+fragmentation of valid TCP streams remain baseline cases.
 
 ## 1. Claims and test boundaries
 
@@ -100,12 +161,26 @@ It must not hide a game mutation or invent an operation that the tested UI canno
 actually perform. Raw screen coordinates and widget return numbers belong only
 to an implementation-specific adapter or optional original-presentation test.
 
-Use the owners' main sections for required semantic operations. Their **Original
-presentation reference** appendices preserve optional native/raster procedures;
-register those checks separately. Keep any layout-dependent simulation admission
-in the semantic fixture's logical inputs, independent of the new renderer.
-Relocating a paragraph does not turn source-image/export bytes or game-state
-mutations into optional comparisons.
+Use P01–P10's explicit required contracts, including the data/formulas they
+adopt; their numbered original procedures are reference, not blanket requirements.
+Test decoded original configuration, meaningful information and identified game
+decisions. Original prompts, exact navigation, draft publication, sorting, drawing
+and native state machines do not define baseline operations.
+
+Apply X01's documented presentation-driven calculation repairs. Compare the same
+semantic operation with different window sizes, fonts, pagination, navigation
+and repaint counts; gameplay results must agree. Test score preparation with more
+cities than fit on a screen, Attitude refresh on multiple pages and Trade's
+estimate offscreen. No classic viewport/font input belongs in these fixtures.
+Check that cancelling a draft emits no game commit, while cancelling after an
+already accepted action leaves that action intact. Keep actual game callbacks,
+network deadlines and partial commits explicit rather than emulating UI calls.
+
+Original comparisons of repaired behavior record the intentional difference;
+they cannot claim byte-for-byte equivalence or block the repaired contract.
+Preserve exact source-image/export bytes where they encode external content.
+Qualitative review of the broad game feel supplements semantic tests; it does
+not impose original screens, clicks, widgets or pixel thresholds.
 
 Original pixels/fonts, audio samples, window/control geometry, repaint/native
 pump traces and cosmetic randomness are optional reference comparisons. Record
@@ -162,8 +237,9 @@ revision and hash in a run report. Do not invent a universal hash of native memo
 
 An operation ID is `OWNER.name`, for example `F01.primaryModuloFromCode`. Its adapter
 registration records: owning document/anchor, argument names/types, result type,
-read/write state closure, ordinary preconditions, callback opportunities and
-stop boundaries. It also defines stable invocation/event identities, required
+semantic read/write closure, ordinary preconditions, actual event opportunities
+and safe failure boundaries. Each compared value/dependency identifies its
+game/file/peer consumer or is explicitly an optional reference observation. It also defines stable invocation/event identities, required
 observation boundaries and dependencies, and the domain and evidence for each
 claimed independence. Include aliasing, actual callbacks, accepted faults and
 partial effects. A fixture cannot weaken those obligations by omitting an edge.
@@ -176,7 +252,9 @@ cross-reference rules. A composite fixture must use the same key for the same
 shared state across parents and children. Keep city caches shared where required;
 random contexts follow the implementation's declared partition, not the old
 globals. The owner table in §8 routes new registrations; each owner's
-main text supplies the actual field meanings and operations.
+production scope supplies the required meanings and operations. State keys can
+be projections derived by an adapter; they do not mandate live fields, shared
+globals or the original storage representation.
 
 The included vectors register `F01.primaryModuloFromCode` with i32 `code`/`n`
 arguments and `F01.secondaryRangeFromCode` with i32 `lo`/`hi` and u32 `U`.
@@ -316,8 +394,9 @@ declared encoding. `text` is appropriate only after the owning conversion.
 Unterminated original strings need bounded bytes, not a JSON string that
 silently supplies the missing terminator.
 
-Capture all state that may be read before a defining write, including through
-callbacks or aliases. F02's layers are process, session, world, retained derived
+Capture the semantic inputs that can influence the claimed game/file/peer
+observations before replacement, including through admitted events and genuine
+logical data sharing. Original private reads with no such consumer are reference. F02's layers are process, session, world, retained derived
 state and operation workspace. Include mode-appropriate random inputs, token generators,
 scan bounds, holes and payload of retained slots when relevant; actor, observer,
 human mask, authority and resume identity separately; map seed/topology/knowledge;
@@ -335,9 +414,10 @@ names the operation and exact first-read boundary; origin records backing or
 the original observation supplying it. Installing a retained input does not
 initialize unrelated fields. Shared/overlapping **valid** input storage uses
 one logical storage ID plus views, so later valid writes affect later reads.
-Native addresses are evidence metadata only. An invalid read can be supplied
-for a bounded conditional comparison; its address cannot authorize an invalid
-write or redefine the destination object's bounds.
+Native addresses are evidence metadata only. An invalid read can be described
+in optional executable evidence; it cannot become a production argument or
+authorize an invalid write. Baseline cases use the owning safe repair/rejection,
+and unresolved required algorithms remain explicit gaps.
 
 For `complete-boundary` stateScope, the registered closure must be covered by
 entry values, documented producers, and expected final values. Missing inputs
@@ -398,12 +478,12 @@ an adapter unrelated game fields as implicit inputs. Reentrant deliveries may
 call real game entries, replace globals or change the state a parent reads
 afterward. Preserve call nesting and pre-call captures separately from live reads.
 
-Clock records distinguish system seconds, multimedia milliseconds, game ticks
-and derived conversions. Record each query and full return, even repeated equal
-values. Wrap and signed deadline comparisons remain F01/P05/P10 behavior. Timer
-registration, cancellation, queued expiry and callback delivery are separate
-events. An idle loop's number of polls is determined by the supplied sequence,
-not by how fast the implementation runs on the test machine.
+Clock records distinguish semantic clock domains and derived conversions.
+Script actual deadline/decision/expiry inputs, including wrap and signed
+comparisons required by F01/N03. A chosen implementation's per-query clock tests
+may record every call, but those traces do not require the original query count,
+timer handles or idle-loop poll count. Compare elapsed-time decisions and admitted
+deliveries; wall-clock speed of the test runner cannot determine the result.
 
 Network records distinguish provider receipt, transport framing, command queue,
 dispatch, authority, replies and state publication. A received packet is not
@@ -413,8 +493,10 @@ where the contract says so. Match N01–N05 routing and barriers before comparin
 shared world state. Real scheduling experiments should be captured into a new
 script rather than retroactively changing a deterministic fixture.
 
-Files record opens, seek positions, short reads/writes, close/rename results and
-visible partial bytes within the admitted domain. Required media/input records
+File fixtures record content and meaningful success/failure/commit outcomes.
+Adapter regression tests may additionally script opens/seeks/short I/O and
+close/rename calls for that backend; their call shape is not an original-file
+compatibility gate. X01 permits staged loading and atomic replacement. Required media/input records
 capture authored content, semantic choices, completion/cancellation and relevant
 network/gameplay events. Optional original-presentation records may also capture
 decoded frames, sample output, palette changes, native repaint and widget events.
@@ -552,12 +634,15 @@ cause synthetic clock advancement, RNG draws, frames, replies or cancellation.
 If the owner specifies a deliberate restrictive timeout, test that timeout as
 a distinct restricted-policy operation with the actual game-clock inputs.
 
-Allowed normalization includes mapping native allocation/handle identities to
-consistent symbolic IDs, relocating known pointers into logical references, and
-excluding specific padding proved unconsumed by the scoped contract. Preserve
-alias identity and reuse order. Never normalize slot order, lifetime tokens,
-same-policy random contexts, meaningful byte widths, signedness, failed partial output, selection
-ties or known scratch values to hide a mismatch. Every exclusion names a field/
+Define the comparison on semantic state before considering original memory
+normalization. Native private fields need not enter a baseline fixture at all.
+For an original-state adapter, map identities to consistent symbolic references
+and exclude padding not consumed by that surface. Preserve logical sharing and
+reuse where they affect game or interchange meaning. Within the required closure,
+never normalize meaningful slot order, lifetime behavior, same-policy random
+contexts, conversions, accepted partial effects, ties or retained decision inputs
+to hide a mismatch. Native failed-I/O damage follows X01's separate safe policy.
+Every exclusion from an already registered comparison names a field/
 byte range, owner justification and affected claim. An exclusion record is
 `{surface,selector,owner,reason}`: surface is `state`, `trace` or `bytes`, selector
 names an exact registered state path/event/byte range, and owner is its document
@@ -747,7 +832,7 @@ linked document; callers own admission and order, not duplicate child formulas.
 | [F03](F03-rules-and-configuration.md) | Rule/option parsing, conversions, references and mutable configuration |
 | [F04](F04-turn-sequencing.md) | Single-player global/civilization/city/unit phase orchestration and resume |
 | [F05](F05-game-setup-and-starting-positions.md) | Setup choices, starts, compensation, acceleration and reset boundaries |
-| [F06](F06-save-load-and-file-formats.md) | Save/load/map/settings/Hall of Fame byte formats and partial publication |
+| [F06](F06-save-load-and-file-formats.md) | Save/load/map/settings/Hall formats, successful restoration, lossless codecs and coherent failure handling |
 | [W01](W01-map-geometry-and-spatial-state.md) | Coordinates, distances, neighbors, regions, tile fields and coordinate features |
 | [W02](W02-map-generation.md) | Generation land/terrain/rain/age/rivers/poles/fertility orchestration |
 | [W03](W03-visibility-and-exploration.md) | Knowledge channels, revelation/contact and map exchanges |
@@ -798,7 +883,7 @@ linked document; callers own admission and order, not duplicate child formulas.
 | [P01](P01-map-projection-and-interaction.md) | Map/overview projection, view geometry and map-click selection |
 | [P02](P02-map-rendering-and-minimap.md) | Terrain/city/unit/minimap composition and redraw controllers |
 | [P03](P03-graphics-and-asset-processing.md) | Graphics/assets, image decoding, sprites, palettes, scaling and blitting |
-| [P04](P04-text-and-dialogs.md) | Text, substitution, layout, fonts, dialogs, controls and results |
+| [P04](P04-text-and-dialogs.md) | Original text/configuration decoding, substitution, semantic decisions and result adapters; UI design is free |
 | [P05](P05-input-and-command-dispatch.md) | Native event translation, menus/commands, queues, modal delivery and timers |
 | [P06](P06-city-interface.md) | City presentation, hit controls and live city-command/redraw lifetimes |
 | [P07](P07-advisors-reports-and-history.md) | Reports/advisors/history, tax/ship/herald, chat and Parley presentation |
@@ -929,12 +1014,12 @@ owned examples alone establish neither runtime parsing nor gameplay equivalence.
 | --- | --- |
 | Redesigned controls, new stock art/layout and different zoom/font choices | Same information, visibility and eligible semantic actions; equivalent game mutations and command/result payloads for the same choices. No original screenshot requirement. |
 | Nominal scenario with customized names, text substitutions, graphics and media | Authored content and override identity survive; classic exported files/assets load in the original. New UI does not substitute stock content silently. |
-| Cancel after committed edit; deleted/changed-owner target; remote reply or turn expiry while a dialog is open | Correct retained edits, target/actor, failure/cancel result, locks, reply and continuation; no unauthorized action or information leak. |
+| Cancel an unsubmitted draft or cancel after an accepted command; deleted/changed-owner target; remote reply or turn expiry while an interaction is pending | Draft cancellation need not publish edits; accepted effects remain. Correct target/actor, failure/cancel result, locks, reply and continuation; no unauthorized action or information leak. |
 | Disabled/skipped/shorter media and different repaint schedules | Same semantic outcomes under aligned external decisions/events; gameplay effects occur once, network processing continues, original timeout policy remains. Cosmetic native traces need not agree. |
 | Harmless font/widget/audio-device failure | Clear diagnostic or fallback, safe cleanup and coherent UI state; committed game/file effects and pending protocol obligations remain intact. |
 | Malformed/truncated/unsupported input and nominal custom control cases | Documented rejection before unsupported execution; no fabricated success or corruption; ordinary custom content, sentinels, wrap and normal fragmented traffic remain accepted. |
 | Omitted IPX/modem/serial/legacy lobby provider | Unavailable choice is hidden or explicit; TCP/IP/UDP, hotseat and supported file handling continue. No claim of original support being absent. |
-| Score report with a different font/window size | V08/P07 use declared classic logical admission inputs for the same recalculated city prefix and score; the new renderer may display additional rows without causing additional simulation work. |
+| Score/Attitude/Trade reports with different fonts, window sizes and pagination | P07/V08 preparation uses the semantic domain, not a visible prefix or row. All-owned-city score/eligible Attitude refresh and Trade estimate agree across layouts; repainting does not repeat simulation work. |
 | Save through a redesigned UI and reload in original | Required UI fields remain valid/preserved or explicitly translated; no new layout metadata embedded in classic bytes. |
 
 These are semantic/policy test requirements. Actual original-peer and file round

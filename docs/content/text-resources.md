@@ -126,7 +126,7 @@ The native formats cover these distinct obligations:
 
 | Obligation | Native representation | Acceptance evidence still required |
 | --- | --- | --- |
-| Game/dialog/help/tutorial text and numeric/string substitutions | `text.messages`, typed parameters, input fields/defaults; adapter source bindings | Register actual operation inputs/results; preserve Append/PreserveBlank, edits on cancellation, dynamic choices and caller effects. |
+| Game/dialog/help/tutorial text and numeric/string substitutions | `text.messages`, typed parameters, input fields/defaults; adapter source bindings | Preserve authored content, classic grammar including PreserveBlank, dynamic choice identities and accepted caller effects. Append is content composition; prompt state and cancelled draft copying are reference only. |
 | Indexed labels and raw ordered text | `text.labels`, `text.helpTopics`, `text.facts`; adapter index mappings | LABELS/POPUPS identity and classic tail fallback; DEBUG/EDITCOSMIC's 22 descriptions; all PEDIA fact tables in consumer order. |
 | Name-based advisor content | `text.productionAdvice` headings, name-based recommendations and fallback messages | Live name resolution, `@WONDER` and `@DEFAULT`, header/body composition; unchanged advisor decisions. |
 | Main menus | `menus` with registered actions and catalog labels | Fixed MENU row/action mapping, live label/state updates and command dispatch; native placement/shortcuts are free. |

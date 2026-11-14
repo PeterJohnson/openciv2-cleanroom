@@ -30,7 +30,7 @@ struct Fixture {
         runtime.begin_client_session({10, 20});
         process.tokens = {100, 200};
         process.rules->text.initialize();
-        const auto label = static_cast<std::int16_t>(process.rules->text.store("Label"));
+        const auto label = state::NameReference{process.rules->text.store("Label"), false};
         for (auto& leader : process.rules->leaders) {
             leader.leader_name = leader.plural = leader.adjective = label;
         }
@@ -214,7 +214,7 @@ TEST_CASE("F06 scenario save rebuilds knowledge and flags before names and omits
     w.civilizations[0].advances[0] = 4;
     w.civilizations[1].advances[11] = 2; // Raw Future Technology bit must be ignored.
     w.scenario.technology_paradigm = -11;
-    f.process.rules->leaders[0].plural = -1;
+    f.process.rules->leaders[0].plural = state::NameReference{1, true};
     w.names[1].tribe.bytes[0] = 'X';
     REQUIRE(f.save(true) == CoreSaveStatus::success);
     REQUIRE(f.path == "C:\\saves\\Name.SCN");
@@ -433,7 +433,7 @@ TEST_CASE("F06 save event text and terminator failures keep completed multiplaye
 TEST_CASE("F06 save backing failures retain preceding preparation and close output",
           "[session][core-save]") {
     Fixture names;
-    names.process.rules->leaders[0].plural = 32767;
+    names.process.rules->leaders[0].plural = state::NameReference{32767, false};
     REQUIRE_THROWS_AS(names.save(true), std::out_of_range);
     REQUIRE(names.items.size() == 1);
     REQUIRE(names.runtime.world().names[1].adjective.bytes[0] == 'L');

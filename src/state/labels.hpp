@@ -1,15 +1,15 @@
 #pragma once
 #include "text_pool.hpp"
 #include <array>
+#include <optional>
 #include <stdexcept>
 #include <vector>
 
 namespace openciv::state {
-// P04 section 2 and Appendix B. A missing entry is unestablished backing, not
+// P04 classic resource indices, independent of text storage. Missing content is not
 // an implicit label zero. Construction supplies only the specified defaults.
 struct Labels {
     static constexpr std::size_t capacity = 888;
-    std::int32_t pool_capacity = 35000;
     std::int32_t status_language = 0;
     std::int32_t declared_count = 0;
     std::vector<std::optional<TextId>> entries;

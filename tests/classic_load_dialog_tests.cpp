@@ -46,7 +46,7 @@ struct Fixture {
         process.tokens = {100, 200};
         process.ordinary_preferences.game_options = 0x10018;
         process.rules->text.initialize();
-        const auto label = static_cast<std::int16_t>(process.rules->text.store("Default"));
+        const auto label = state::NameReference{process.rules->text.store("Default"), false};
         for (auto& leader : process.rules->leaders) {
             leader.names.fill(label);
             leader.plural = leader.adjective = label;

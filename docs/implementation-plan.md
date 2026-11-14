@@ -159,7 +159,9 @@ passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
   manifests, explicit dependency/hash resolution, rules/names/preferences and
   diagnostics. Implement F03/C01 classic text compatibility adapters into the same
   logical models, accepting nominal custom content and retaining specified
-  conversions, fallback and partial effects. Test equivalent authored inputs
+  conversions, fallback and accepted configuration effects. Native parser
+  scratch/allocation traces and failed-load partial memory are not gates; staged
+  parsing is allowed. Test equivalent authored inputs
   through both paths, including movement/HP scaling exactly once, stable classic
   slots, city-name order and retained NoDefend. Native validation does not narrow
   the classic adapter's required domain. Add explicit content validation and
@@ -191,8 +193,10 @@ passing F01/F02/W01 leaf vectors does not close M1 or its integration gates.
   connection identities. Controller changes must not implicitly change the
   effective human set. Give bindings explicit session/lifetime/access scope.
 - Define command/effect/interaction records and cooperative continuation APIs.
-  Prove a fake decision can resume an operation, a callback can change a live
-  read, and cancellation can retain an already-published effect.
+  Prove a supplied decision can resume an operation, an admitted game/peer
+  event can change a subsequent live read, and cancellation retains an already
+  accepted effect. Do not invent reentry through allocation, painting or parsing
+  solely to match an original helper trace.
   Add descriptor schemas for semantic names, typed arguments, access classes
   and help, plus correlated submission/pending/interaction/completion results.
   Keep descriptor parsing separate from the owning execution checks.
@@ -228,6 +232,35 @@ or unauthorized client contexts. Independent virtual peers have isolated process
 contexts. Starting a second game isolates all simulation state and mutable
 content, preserving only the explicit X01 preference/configuration/identity
 allowlist. These are foundation tests, not completed mode conformance.
+
+### Text and presentation acceptance
+
+M1 text gates compare parsed/resolved content, reload policy and codec semantics.
+P04 prompt state machines, shared edit buffers, native navigation and drawing
+are not M1 objectives. Resource layout directives are decoded as hints; source
+choice identities, substitutions and real field constraints remain content.
+Later UI milestones design their own flows under the P01–P10 contracts.
+Original pool IDs, padding/capacities and allocation/widget traces are not gates.
+Production adapters translate classic resource indices and signed save markers;
+optional comparison tools retain original-storage evidence without game linkage.
+M2–M5 presentation work follows this same boundary.
+
+### Compatibility scope for every milestone
+
+Use each of the 65 owners' Production contract scope and X01's three surfaces.
+Gameplay gates test meaningful rules, state, ties, sampling and real event
+dependencies. Interchange gates test original content/files and required peer
+behavior through their adapters. Original private layout, ABI/helper traces,
+native error codes and arbitrary backing bytes are optional comparison work,
+never baseline objectives or reasons to add live globals/fields.
+
+M1 need not reproduce original parser/writer/allocator APIs or I/O damage. Test
+coherent failure handling, successful restoration and exact external definitions;
+lossless stored-file round trips and live game exports are distinct claims.
+Internal regressions may keep stricter implementation-specific checks, labeled
+as such. A passing historical trace is not gameplay or interoperability coverage.
+Later milestones preserve actual retained decision inputs and real protocol
+effects; they do not assume all caches are pure or discard meaningful state.
 
 ### M1 scope after the compatibility review
 
@@ -266,8 +299,8 @@ Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
   rasterization already connected to the shell. Exclude the asset package's
   historical bitmap font caches. Extend font roles/measurement to custom dialogs;
   verify DPI/zoom, glyph fallback, size/cache lifetime, native/WASM rendering and
-  required text coverage. Preserve classic logical admission independently of
-  visual font metrics; do not infer full shaping from glyph availability.
+  required text coverage. Font metrics and window geometry must not select
+  simulation work; do not infer full shaping from glyph availability.
 - Implement the single action/menu model and native AppKit/Win32 menu adapters;
   use ImGui main menus on Linux/web. Route native and ImGui selections to the
   same semantic commands, with P05 availability and execution rules distinct.
@@ -442,8 +475,13 @@ Owners: S01–S04, N04, P01–P10; F03/F06 and the actual mutation owners.
   a cleanroom import of its own output is insufficient.
 - Complete advisors/reports/history, diplomacy/chat presentation, Civilopedia
   and technology links, council/throne choices, and meaningful media flows.
-  Move required query/recalculation effects into session operations while keeping
-  new drawing read-only. Retain gameplay-relevant classic view inputs.
+  Implement P01–P10's concise semantic contracts, not their original procedural
+  reference. Design navigation, prompts, sorting and drawing freely with a
+  familiar overall game feel. Preserve original configuration/scenario decoding.
+  Move required calculations into explicit preparation/refresh operations and
+  keep drawing read-only. Apply P06/P07/V08's layout-independent repairs, with
+  no old viewport/font compatibility state. Test different layouts, page sizes,
+  navigation and repaint counts against the same game outcomes.
 - Implement N04 roster, passwords, handoff, per-player views, save/resume and
   concealment. Test cached map/dialog/report information across two handoffs.
   Keep one runtime/world and switch the frontend's participant binding only at
@@ -464,8 +502,10 @@ Owners: S01–S04, N04, P01–P10; F03/F06 and the actual mutation owners.
   completion, skip/cancel, and incoming events during playback.
 
 **Exit gate:** G13–G15 and G19–G22 have integrated coverage with custom content,
-changed-owner/deleted targets, timeout/reply cases, and retained edits after
-cancel. Original interchange works for the advertised scenario/editor domain.
+changed-owner/deleted targets, timeout/reply cases, discarded unsubmitted drafts
+and retained already accepted effects after cancel. Original interchange works
+for the advertised scenario/editor domain. Qualitative play review checks the
+familiar map/city/turn/advisor feel, not original dialog/navigation replication.
 GUI tests exercise semantic outcomes and custom controls; desktop smoke tests
 cover both native menus and browser tests cover persistence/import/export.
 Scripted and console-driven play pass hotseat concealment and save/resume tests,

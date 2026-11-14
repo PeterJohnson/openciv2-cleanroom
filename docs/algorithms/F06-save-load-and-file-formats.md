@@ -1,5 +1,29 @@
 # F06: Save, load and file formats
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in F06 |
+| --- | --- |
+| Gameplay | Successful restoration, version conversion, mode adaptation and meaningful save/export effects; report failures honestly and keep coherent session state. |
+| Original files/content | Headers, versions, sizes, record/block order, field encodings, opaque imported bytes, events, passwords, maps, preferences and Hall of Fame. Distinguish lossless codec round trips from live saves. |
+| Original peers | N01/N02 own multiplayer restoration/authority; file bytes do not require the original networking implementation. |
+| Executable comparison only | Native structures/stream calls, write chunk sizes, temporary live-field substitution, chooser buffers and original failed-I/O partial-memory traces. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -41,12 +65,40 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 The file's section/record order and load transformations remain exact. Reordering
 private encoding calculations does not change serialized bytes, lifetime renewal,
 accepted partial-load state or observable I/O failure prefixes.
+
+### Logical text and classic name markers
+
+Live names use full-width implementation-local references or owned strings and
+explicit custom-name flags, never signed 16-bit pool ordinals. UI label rebuilds
+must not rebind retained rule names. Reload policies preserve or replace semantic
+names/flags; preserved fields need no discarded allocations. Original padding,
+last-allocation pointers, minimum extents and heap-size hints are comparison-only.
+Empty padded-name input still means one space; ordinary empty classic pooled
+input resolves to `<nil>`. These content rules do not require padded storage.
+
+F06 stored leader records retain their exact 48-byte encoding in a separate codec
+type. Live loading rebuilds names from chosen rules and consumes saved signs at
+the specified stages; saved magnitudes do not index replacement text storage.
+Live export writes custom/noncustom markers as -1/+1 independently of local IDs.
+Lossless stored-file decode/re-encode preserves original magnitudes, including
+zero and -32768. This canonical live encoding follows F06's sign-only restoration
+contract; it does not claim equality with original allocation-dependent exports.
+Repeated selected-tribe effects retain their specified behavior.
+
+Narrowing a text ID into an unrelated earlier name or an accidental custom-name
+marker is a repaired storage defect. Preserve intended names and flags beyond
+32767/65535 entries. Reference tools may report original ordinals/aliasing;
+production tests assert text, reload behavior, bounds and file-marker semantics.
+Unrelated scalar arithmetic and external field widths remain unchanged. This
+contract overrides original-storage interpretations elsewhere in this document.
+
 
 ## Compatibility policy
 
@@ -101,8 +153,10 @@ Saving returns **0 success, 1 failure**. Core game loading returns:
 
 Raw map read/write returns 0 success, 1 failure. Preference load has no success
 return; it installs defaults for failed blocks. Preference save returns 0/1.
-Fatal service failures and original out-of-backing accesses are separate from
-these orderly returns. None of the readers provides transactional rollback.
+These numeric results describe the original interface; production may use
+typed results with equivalent success/unsupported-version/failure meaning.
+Original invalid-memory accesses are excluded defects. Loaders may stage and
+validate before publication under X01's safe-failure policy.
 
 ### Nominal inputs
 
@@ -813,10 +867,37 @@ The layout was checked against both source declarations and exercised in V08's
 source-derived record insertion/save/load and short-file checks. Those are host
 file/source checks, not a new native original-program round trip.
 
+## Save/load production boundary
+
+Sections 2–4 and 7–9 define external formats and meaningful interpretation.
+Their fixed offsets/order/widths and opaque imported bytes remain binding in
+codecs, regardless of the live state design. A lossless stored-file round trip
+preserves bytes; a live save encodes the actual game using those definitions and
+documented translations, not an original allocator image.
+
+The procedures in §§5–6 identify successful save/load transforms and game
+dependencies. Their file-call order, partial memory copies, native return codes
+and temporary substitutions into live objects are reference implementations.
+Prepare an encoded snapshot at a coherent semantic save boundary, keep required
+export/game transformations explicit, and use any equivalent read/write strategy.
+Temporary hotseat masks, player selectors and resume bytes can be values in the
+export context rather than writes into the live session.
+
+Staged import and atomic file replacement are allowed. A failed import may leave
+the prior coherent session intact; a failed save may leave the prior file intact.
+Never report success after a required write/close/commit failed. Preserve already
+accepted preference/game actions and required peer effects, not native partial
+object or truncated-file damage. The original partial-failure tables in §10
+remain diagnostic reference unless a row defines actual format interpretation
+or a separately accepted semantic effect. Required bytes and successful version,
+name, identity, recount and scenario transformations are not weakened.
+
 ## 5. Ordered save operation
 
-The writer is an operation on live state. It does not first snapshot the whole
-world. Each block observes the state at its own write boundary.
+The following records the original writer's order. Adopt successful encoded
+values and meaningful game/export effects, not its stream calls or failure damage.
+A coherent snapshot is permitted when no real game/peer event is admitted inside
+the save; native write callbacks do not invent such an event.
 
 1. Set result to 1. If entry mode is hotseat, remember the current human mask
    and replace it with the hotseat participant mask.
@@ -859,16 +940,16 @@ world. Each block observes the state at its own write boundary.
     mask; then close the opened file once. Original close failure does not
     change the result. Return result.
 
-If a callback changes mode into hotseat when entry was not hotseat, the cleanup
-mask was not initialized by this operation. A compatibility fixture must supply
-that original incoming value, or stop at the unresolved boundary; substituting
-zero is not recovered behavior. Ordinary callbacks leave mode stable.
+An original injected callback can switch mode and expose an uninitialized
+cleanup mask. That is executable diagnostic evidence only. Capture an owned
+export context, do not admit arbitrary native callbacks during encoding, and
+never consume an uninitialized mask in production.
 
 There is no direct random draw, map/region rebuild or lifetime renewal in this
-writer. Game flags, discovery metadata, selected names, saved local civ and
-layout changes are not rolled back. Failed saves leave partial files; they do
-not use the preference writer's delete-on-failed-write rule. Saving can report
-success even if a buffered close fails in the original.
+writer. Game/export transformations must follow the declared successful path.
+The original retained partial-file/state changes and success after a failed
+buffered close are reference failure behavior, superseded by the safe-failure
+policy above. Native failures are not required game commands.
 
 ## 6. Ordered core game load
 
@@ -1179,6 +1260,10 @@ password-strength check is part of this operation.
 
 ### Defined behavior to preserve
 
+Interpret format/version/value rows as data contracts. Partial-read/write and
+buffered-close rows describe original diagnostic behavior; production follows
+the safe-failure policy above and need not publish those partial mutations.
+
 | Input or failure | Classic effect |
 | --- | --- |
 | Version `25`, `29`, `2a`, `2b` | Return 2 after header/version; no rule/world load. |
@@ -1362,6 +1447,12 @@ initialization. None should add a global "repair everything" stage to this
 core contract without identifying an actual caller operation.
 
 ## 12. Conformance cases
+
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
 
 A fixture supplies all unmentioned retained bytes, counters, streams and service
 outcomes; it compares file positions, result, changed state and remaining random

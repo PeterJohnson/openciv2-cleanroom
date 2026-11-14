@@ -1,63 +1,143 @@
 # P07: Advisors, reports and history
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-Target: classic Civilization II Multiplayer Gold Edition 5.4.0f, patch 3.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-This document specifies report construction, filters, ranking, drawing, input,
-refresh and their observable side effects. [A01](A01-ai-strategy-and-assessment.md)
-owns power/history publication; [V02](V02-governments-and-tax-rates.md) owns rate
-changes and population; [V03](V03-research-and-technology.md) owns research;
-[V04](V04-diplomacy-and-treaties.md) owns diplomacy;
-[V07](V07-spaceship.md) owns ship calculation/launch; and
-[V08](V08-scoring-victory-and-retirement.md) owns score, rating, Hall of Fame
-records and retirement decisions. [C03](C03-city-economy-and-corruption.md),
-[C04](C04-city-happiness-and-disorder.md), [C06](C06-city-production-and-purchasing.md)
-and [C08](C08-buildings-and-wonders.md) supply city/rule queries and mutations.
-[P03](P03-graphics-and-asset-processing.md), [P04](P04-text-and-dialogs.md) and
-[P05](P05-input-and-command-dispatch.md) own shared raster, text, controls and
-native event services. [P06](P06-city-interface.md) owns city-window actions
-and citizen art style. These report callers preserve their actual query and
-mutation order; drawing is not assumed to be a pure observation.
+| Surface | Binding scope in P07 |
+| --- | --- |
+| Gameplay | Report facts/formulas/privacy, identified choices, chat/negotiation meaning and layout-independent preparation. |
+| Original files/content | P04 authored resources, F06 history/Hall records and N02 chat/Parley values. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Report layout/sorting/navigation, row-derived effects and private text/history buffers. |
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-## Required contract and reading guide
+## Required presentation contract
 
-Report values, scoring/ranking formulas and meaningful ties, visibility filters,
-tax/research/ship/diplomacy commands, chat/Parley recipients and published
-results; query-induced simulation updates.
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix E](#appendix-e-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-## Implementation boundary
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-The main sections use logical values, identities and operations. Original memory,
-allocation and platform mechanics are recorded in [Appendix F](#appendix-f-original-implementation-reference). Preserve required
-state changes and externally visible results without reproducing those mechanisms.
-Exact numeric domains and file/wire encodings remain required wherever specified.
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
 
-## 1. Inputs, state and compatibility
+## Report information and actions
+
+Provide city status/attitudes, top cities, military/trade/science/intelligence,
+wonders, demographics, history, score/rating/Hall of Fame, taxes and spaceship
+information, plus diplomacy/chat decisions. These functions may be combined,
+searched, sorted or presented as new panels/charts. Exact report pages, row
+ordinals, history buffers, text assembly, navigation and modal transitions are
+optional. Identity, privacy and game meaning are binding.
+
+The following reference definitions are adopted for **information and game
+operations only**, not their evaluation inside a draw loop:
+
+| Definition | Required meaning / owner |
+| --- | --- |
+| §§3–11 city, top-city, military, trade, science, embassy, foreign and wonder reports | Rule/state values, numerical ranking formulas, intelligence/disclosure predicates and identified cities, units, technologies and civilizations; C03/C07/C08/V03/V04 own invoked mechanics |
+| §12 demographics | Accumulation and thirteen numerical metrics, rounding, ranking and disclosure; correct units may replace retained/wrong suffix text |
+| §§13–14 history | Actual loss/history records, dates, civilization identity and permitted disclosure; graph geometry and row grouping are optional |
+| §§15–19 score, rating, Hall, tax and ship | V08/F06 scores and persistent records; V02 tax preview/commit and V07 ship statistics/actions. Keep pending versus awarded points and scenario/cheat meaning |
+| §20 science information | Advance identities, possession/ranking and permitted disclosure; herald artwork and cache layout are optional |
+| §§21–24 chat and Parley | Recipient visibility/routing, private versus public text, identified offer items, prices, negotiated state and accepted responses under N02/V04/V05; no required panes, row order, modal flags or edit history representation |
+
+Stock historian topics, flavor wording and presentation order may change;
+authored conditional content retains its declared interpretation. Preserve
+authored text and allow all eligible decisions, including meaningful
+automatic defaults at their game/protocol boundary. Choosing a sorted display
+row resolves its stable item identity; sorting never changes a negotiated offer
+or automatic game selection. Resolve pending operations after changed targets,
+remote results and real deadlines. Local edits can remain drafts until accepted.
+
+## Report preparation independent of layout
+
+Rendering is read-only. Perform required calculation once per semantic report
+opening/refresh against the current admitted state, and publish the resulting
+observer-filtered model. Subsequent repaint, pagination, font change or resizing
+does not recalculate or mutate simulation. Preserve actual calculation ordering
+and arithmetic under C03/F01 where dependent; UI callbacks add no interleavings.
+
+- City Status uses stored yields and does not introduce C03 recalculation.
+- Attitude consumes its mood-refresh request once at preparation. If requested
+  and the actor's government is Republic or Democracy, run C03(city,1) for **all**
+  live owned cities in ascending slot order, not just a visible page.
+- Trade retains its stored-income/upkeep calculations without C03. Prepare the
+  research-turn estimate whenever the report is prepared, independently of row
+  visibility. Floor the local estimate's cost/science as specified in §7; the
+  presentation cache is local, not a new mutation of simulation science.
+- Demographics runs the §12 city accumulation/C03 pass once per preparation over
+  all admitted live cities, retaining its meaningful calculation effects.
+- Civilization Score uses V08's explicit preparation: refresh every live owned
+  city in ascending slot order for ordinary scoring; objective scoring skips
+  that pass. Scored and direct-rating/Hall callers keep their separate contracts.
+
+These are documented repairs of layout/paint-dependent effects. Do not retain
+classic viewport/font inputs to select a city prefix. Other report formulas and
+game operations above remain unchanged. Random flavor choices and authored
+conditional content are resolved for an interaction, not on each repaint.
+
+## Original-file input contract
+
+F03/P04 own resource parsing, substitution and original label meanings. Preserve
+scenario/custom report text and named fame sections with their record values.
+F06 owns Hall/history formats; N02 owns chat/Parley payloads and result codes.
+Appendix C artwork records are source-asset definitions only when importing that
+artwork. Screen placements and original report/private buffer layouts are not
+file contracts. UI display errors, including the retained military-service
+suffix, need not be reproduced as misinformation.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Inputs, state and compatibility
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal inputs are initialized game/rules/map state, valid indices, supported
 assets/text and semantic report operations. External gameplay/network events,
@@ -97,7 +177,10 @@ exact selection equality. No match does nothing and retains the selector as the
 original full return; a matched update returns its child result when consumed.
 No refresh implicitly opens or switches a report.
 
-## 2. Shared auxiliary window
+### 2. Shared auxiliary window
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 An auxiliary report retains its semantic kind, actor/target, selection, paging
 state needed by gameplay-dependent queries, pending result and active/closed
@@ -109,9 +192,12 @@ declared compatibility inputs independent of the redesigned viewport.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 3. City Status and Attitude
+### 3. City Status and Attitude
 
-### Shared heading, paging and city selection
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Shared heading, paging and city selection
 
 Capture actor before report preparation and relevant external events. Show the
 title, government-prefix label `limit(government−1,0,4)+328`, label140 and
@@ -140,7 +226,7 @@ first item; rescan city slots with identity and owner equal to **live report
 actor**, then open the matching city through P06. Original pixel-to-row conversion
 is in Appendix E and does not constrain redesigned hit regions.
 
-### City Status row
+#### City Status row
 
 Show live city name and stored signed Food, Shields and net Trade; do not call
 C03 for these values. A negative live production selects improvement name and
@@ -148,7 +234,7 @@ unsigned cost; nonnegative selects unit name and signed cost. Show shield stock
 and full cost `live shieldBoxRows*captured cost` separated by a slash, not a
 division or turns estimate. Read stock/box rows after composing production name.
 
-### Attitude redraw and citizen strip
+#### Attitude redraw and citizen strip
 
 Before capturing actor, capture the city-mood-recalculation request bit and
 clear it in the live game word. After heading/paging, recalculate C03 `(city,1)`
@@ -167,7 +253,10 @@ Ordinary count is recomputed as live size−(captured unhappy+live shared specia
 events between semantic reads. Do not restore shared specialist count or add C03
 work. Icon parity, art/style and spacing are in Appendix E.
 
-## 4. Top Cities
+### 4. Top Cities
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Display the ranked city identity, owner, mood information and wonders using the
 ranking below. Do not introduce contact/visibility filtering or a new C03
@@ -183,7 +272,10 @@ Equal scores favor earlier city indices; scores≤−1 never replace an empty sl
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 5. Historian report
+### 5. Historian report
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 F04 owns scheduling and N02 remote invocation. Construct Prompt before opening
 GAME's `HISTORIANS`. On successful section open, read one line (even if EOF),
@@ -220,7 +312,10 @@ section avoids the modal. There is no extra explicit rank-stream close in this
 parent. Overlong rank text crossing its logical scratch capacity is excluded;
 do not adopt truncation or adjacent overwrite as a classic rank title.
 
-## 6. Defense Minister
+### 6. Defense Minister
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Initialize actor and mode0. Toggling maps0→1 and any nonzero→0, retaining scroll.
 Show title335 and label344 for mode0 or345 otherwise, with §3's ruler/civilization
@@ -253,7 +348,10 @@ lifetimes are reference procedures; changing display layout cannot change counts
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 7. Trade Advisor and commodity search
+### 7. Trade Advisor and commodity search
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Offer Close and Supply Search for the live report actor. Native controls and
 window geometry are reference presentation.
@@ -306,7 +404,10 @@ buildingKinds+1 shows label135 and total upkeep. Other right rows have no conten
 Scroll stores the supplied first item and refreshes. Native scrollbar behavior
 is reference material; new layout must not change the turns-row mutation admission.
 
-## 8. Science Advisor and shared technology grid
+### 8. Science Advisor and shared technology grid
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Offer Research through V03 goal chooser `(live actor,1,0)`. Capture actor before
 report preparation; show title339 and §3's ruler/civilization information. If the
@@ -332,7 +433,10 @@ or display sorting must preserve the selected advance's identity.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 9. Embassy Intelligence
+### 9. Embassy Intelligence
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Open an intelligence interaction, then store actor and target. Offer Close and
 Cities. Repeatedly reset retry0, install intelligence idle for mode≥3, set timeout
@@ -369,7 +473,10 @@ label color and advance detail height. After all entries advance6 and draw §8's
 Intelligence technology grid for captured target. All relation/technology queries
 remain live at their stated positions; there is no extra secrecy filter here.
 
-## 10. Foreign Minister chooser
+### 10. Foreign Minister chooser
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Construct Prompt. If mode≥3 and the multiplayer diplomacy window is open,
 bring that window forward, destroy Prompt and return. Otherwise repeat the
@@ -425,7 +532,10 @@ civilization-to-player mapping. A vanished slot's original retained read require
 known backing or a stop, not a guessed network recipient. V05 owns both accepted
 and failed audience continuations; N02 owns encoding, delivery and receipt.
 
-## 11. Wonders of the World
+### 11. Wonders of the World
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Present existing wonders0..27 whose location!=−1, including destroyed negative
 locations, without actor/contact filtering. Group by era `wonder/7`, each nonempty
@@ -442,7 +552,10 @@ frames and fonts may differ; required identities, status and authored text remai
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 12. Demographics
+### 12. Demographics
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Open report/resource9 modal600×400 with standard Close and §2 lifecycle. Redraw
 captures actor first. Initialize eight-entry totals to zero, except `citizens=1`
@@ -510,7 +623,10 @@ therefore uses the life-expectancy rank suffix. Do not normalize this to its
 own displayed unit label. Actor0's ranking scratch was not initialized by the
 1..7 pass: require supplied input or reject that off-nominal call.
 
-## 13. Casualty timeline
+### 13. Casualty timeline
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 N02/U06 own combat-history records and mutation. This report uses the second
 auxiliary window, selection12/resource2. If already open, opening only updates
@@ -549,7 +665,10 @@ tail. Otherwise read record y then x, reloading report actor for each, and cente
 map0. Preserve this identity mapping independently of the optional native
 scrollbar and double-click hit rectangles.
 
-## 14. Power-history graph
+### 14. Power-history graph
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 A01 supplies 150 power-history samples; F04 supplies calendar conversion.
 Use sample count `limit(turn/divisor,0,150)`, with divisor2 for objective scenarios
@@ -562,7 +681,10 @@ not itself install an intelligence timeout.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 15. Civilization Score
+### 15. Civilization Score
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V08 owns numeric score calculations and the Scored/objective branches. Capture
 actor before report preparation. If Scored, present label457 and return without
@@ -574,7 +696,7 @@ clientY+2, advances its heading height, places ruler/civilization/year at the
 detail height and advances that height+4 to establish top; left=clientX+2.
 These inputs are compatibility state independent of the actual new viewport.
 
-### Ordinary citizen and wonder layout
+#### Ordinary citizen and wonder layout
 
 The city-recalculation admission calculation below affects V08 score and remains
 required. Run it with the declared classic logical view inputs independently of
@@ -602,7 +724,7 @@ when nonzero; show pollution penalty, nonzero peace bonus only for turn≥200,
 nonzero future-technology points, and barbarian adjustment with its sign. Labels
 and stock composition are recorded in Appendix E; values remain V08 outputs.
 
-### Objective and final lines
+#### Objective and final lines
 
 Objective mode skips the ordinary city-recalculation pass and calls V08 scoring.
 Show total objective value; configured civilization's adjective/value if nonzero;
@@ -616,7 +738,10 @@ otherwise ordinary407. Include Scenario418 and Cheated410 when their live flags
 are set. Native measurement/draw passes, spacing and fonts are reference behavior;
 the score publication and flags above remain required.
 
-## 16. Fame/rating ladder
+### 16. Fame/rating ladder
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V08 owns percentage and rank selection. Capture actor and run its percentage/rank
 publication before composing heading text. Present label412 with percentage and
@@ -631,7 +756,10 @@ The highest title is distinguished from earlier entries. Original font sizes and
 bottom-up layout are reference details. An oversized template/substitution uses
 safe storage/rejection; expanded storage is not the original stack layout.
 
-## 17. Hall of Fame presentation
+### 17. Hall of Fame presentation
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V08 owns load/validation, insertion, rank/calendar fields and the caller's reset
 loop. Reload the table for each display; retain requested highlight and initialize
@@ -663,7 +791,10 @@ negative stored calendar increment, compute
 space,abs(calendar/12), preserving signed truncation/remainder. No live game's
 calendar replaces record fields.
 
-## 18. Tax-rate window layout
+### 18. Tax-rate window layout
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V02 owns rate normalization, held-rate state, rate-change callbacks, preview
 calculation and commit/close behavior. Present Tax, Science and Luxury choices
@@ -674,7 +805,10 @@ layout must invoke those semantic operations, including cancellation effects.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 19. Spaceship presentation
+### 19. Spaceship presentation
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V07 owns construction/launch decisions and success calculation. Semantic states
 are Incomplete0, Ready1, LaunchRequested2 and InFlight3. Publish the selected
@@ -720,14 +854,17 @@ embedded inner loop. The start timestamp is not reset here.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 20. Diplomatic herald artwork and science display
+### 20. Diplomatic herald artwork and science display
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V05 owns the audience, actors and diplomacy outcomes. Graphical Diplomacy may
 change the presenter's artwork but not its information or required science-cache
 updates below. Preserve supported resource overrides and P10 media completion;
 herald resource/window allocation, palette transitions and staging are optional.
 
-### Science ranking and cache
+#### Science ranking and cache
 
 Herald art/font allocation is optional. The following ranking and cache mutations
 remain required even when text disclosure is false.
@@ -756,7 +893,7 @@ slots5 down0, skipping negative advance IDs. Present category identity and, only
 when cached intelligence permits text, the advance's authored name. P03 interprets
 custom source icons; native herald allocation and load-failure traces are optional.
 
-### Science row text
+#### Science row text
 
 Preserve the selected advance identity, signed category and the text disclosure
 gate above. Original uppercasing, word splitting, two-line clipping, ellipses and
@@ -766,7 +903,10 @@ calculation and must not expose the name when its intelligence gate is false.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 21. Chat visibility, messages and history
+### 21. Chat visibility, messages and history
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 N01 owns session state, N02 packet receipt/send and V05 parley transactions.
 The separate Chat and Parley windows share history/input storage. Their logical
@@ -775,7 +915,7 @@ mute flags, and Anonymous/MuteAnonymous/AllRecipients options. The control named
 snoop in the original UI acts as a **receive suppression** flag here; it is
 separate from V06's directed SpyChat treaty used for interception.
 
-### Opening and options
+#### Opening and options
 
 Chat-only opening captures allContacts=(raw UN location!=−1 OR local active
 Marco Polo OR scoreLocked). Scan others1..7; exclude local,dead and nonhuman.
@@ -808,7 +948,7 @@ stores AllRecipients0. Receive-suppression callbacks accept only their seven
 civilization control IDs and copy the corresponding value. Appendix A records
 IDs without prescribing native control classes.
 
-### Received text and interception
+#### Received text and interception
 
 Receipt first copies canonical Chat history edit into the cached history-buffer
 destination. Clear shared composition text, then re-read history; prepend CRLF
@@ -832,7 +972,7 @@ If Chat is still closed, increment missed then unread counters separately with
 wrap. If both Parley and Chat are now closed, request Chat-only opening(0,4),
 which can itself fail its contact filter or clear those counters.
 
-### Sending and input dispatch
+#### Sending and input dispatch
 
 Macro commands are handled below and return0. Close invokes focus-and-close
 and returns0. Other unhandled actions return1. Send copies the current window's
@@ -856,7 +996,7 @@ callbacks may alter later gates. Finally clear live input buffer, set the
 current window's input edit to that empty text and return0. Native focus and
 physical Enter/Escape bindings are reference procedures in Appendix E.
 
-### Shared history storage and logging
+#### Shared history storage and logging
 
 Append-history captures capacity, measures current history, computes unsigned
 remaining=`capacity−(historyLength+1)`,then measures incoming text. If remaining
@@ -892,7 +1032,7 @@ text. Retire its interaction/storage afterward. Do not replace that empty log
 with the nonempty session-log behavior. Native destructor/deallocation order is
 reference machinery; the file effects and preceding committed messages remain.
 
-### Name and file macros
+#### Name and file macros
 
 Adjective and ruler selectors each start1 and rotate independently1..7. Every
 macro invocation clears shared composition and captures allCivilizations=(raw
@@ -919,7 +1059,10 @@ select `(end−length,end)`. Unrecognized direct macro IDs still perform this
 replacement with the cleared line after the allCivilizations queries. No
 trim/newline normalization or automatic contact-record creation is added.
 
-## 22. Chat and Parley windows and panes
+### 22. Chat and Parley windows and panes
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V05 owns negotiation modes, action transitions and admission. P04 supplies
 controls, native text and surface services; P07 owns their composition here.
@@ -929,7 +1072,7 @@ left/right panes, per-side readiness, controls and redraw rectangle. Capturing
 current before a focus callback does not make all later child operations use
 that receiver: children that recapture current do so independently.
 
-### Pane selection and shared framing
+#### Pane selection and shared framing
 
 The mode→(left,right) table is in Appendix A. A pane-selection call first reports
 an invalid side or signed-negative pane through P04's assertion service; if it
@@ -991,7 +1134,7 @@ admission and execution.
 Null adds no content. Other unresolved/nonnegative pane values only receive
 the shared setup and tail, not a fabricated default pane.
 
-### Chat option pane
+#### Chat option pane
 
 Reevaluate §21's allContacts result and candidate filter. Publish canonical Chat
 Anonymous745, MuteAnonymous865 and AllRecipients746 values and their callbacks.
@@ -1000,7 +1143,7 @@ ones. Eligible civilizations expose both options with their canonical values and
 civilization adjective. These eligibility updates can clear prior choices.
 Native columns, spacing and checkbox objects are reference behavior.
 
-### Button refresh and cleanup
+#### Button refresh and cleanup
 
 If either Send control is absent, button refresh returns. Unless modeAwaitOffer,
 hide/disable both global disclosure buttons. AwaitResponse/AwaitOffer hide/
@@ -1018,7 +1161,10 @@ Native deletion order, widget-slot replacement and repaint geometry are optional
 reference behavior. Preserve any already committed negotiation effects and
 required caller/network completion; cleanup is not a rollback.
 
-## 23. Parley selection lists
+### 23. Parley selection lists
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V05 owns eligible rows, stable IDs and transaction admission. Keep per-side
 values, stable IDs, selection flags, range anchor, first item and readiness.
@@ -1026,7 +1172,7 @@ Nonzero flags count for readiness; V05 packs only flags exactly1. Display sortin
 must not change semantic identities or automatic selections; the original
 ordering algorithms below retain their contractual role where callers use them.
 
-### Semantic row selection
+#### Semantic row selection
 
 Resolve a user action to a row ordinal in the current semantic list, using stable
 identity for unit/city rows. Reject negative or out-of-count ordinals; City also
@@ -1036,7 +1182,7 @@ with Control set anchor and XOR this row's flag with1; without Control first
 clear other rows, then set anchor and XOR this flag. Do not normalize a nonbinary
 flag before XOR. These are semantic modifiers; physical key bindings may differ.
 
-### Required row information and refresh
+#### Required row information and refresh
 
 Recompute readiness from any nonzero selection. Empty lists clear readiness.
 Unit rows resolve their stable IDs; a missing unit (negative result) repopulates
@@ -1056,7 +1202,7 @@ concealed asset information. Button availability uses V05 plus readiness.
 Original scrollbar geometry, hit testing, drawing and decorative representative
 city art are in the appendix.
 
-### Sorting and rebuilds
+#### Sorting and rebuilds
 
 Unit construction stores the side's offer/receive selector, captures the input
 rectangle, resets shared sort mode to Type, and invokes V05 population with
@@ -1087,7 +1233,7 @@ unconditional right-Palace rule. Type/Home buttons focus/select the captured
 current window, read its live count, then sort0..count−1 and redraw; sorter and
 renderer each independently recapture current after callbacks.
 
-### Gold edit and disclosure controls
+#### Gold edit and disclosure controls
 
 Gold edit targets canonical Parley: its left control ID selects side0, every
 other ID side1. Clear both temporary text buffers, capture edit selection end,
@@ -1124,7 +1270,10 @@ assets or retroactively change a packed offer.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## 24. Parley offer descriptions
+### 24. Parley offer descriptions
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V05/N02 own the admitted offer and its ordered execution. This renderer produces
 text from that offer; it does not execute or revalidate it. A null request
@@ -1201,7 +1350,10 @@ then finish with NL. This groups units by current type and does not preserve
 the supplied row order in the text, although execution still uses V05 order.
 
 
-## 25. Required conformance
+### 25. Required conformance
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Check report values/ranks, privacy, query-induced recalculation and scratch/cache
 publication, including layout-dependent admission retained as logical inputs.
@@ -1212,7 +1364,7 @@ Original geometry, native controls and raster tests are appendix reference cases
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-## Appendix A. Reference encodings and control identities
+### Appendix A. Reference encodings and control identities
 
 These values support original-program validation and asset/control adapters.
 They do not require byte-packed game objects or native widgets. Rule, label and
@@ -1303,7 +1455,7 @@ Empty Advance value[-1] reads the other side's count for side0,or last left-valu
 slot for side1. Those are retained inputs, not synthetic zero sentinels. Preserve
 only supported reads; any write outside a logical row array is excluded.
 
-## Appendix B. Nominal inputs, retained reads and excluded bugs
+### Appendix B. Nominal inputs, retained reads and excluded bugs
 
 Ordinary shipped resources, valid live identities and successful native providers
 are the nominal domain. Parsed custom rules can still expose an original defect;
@@ -1338,7 +1490,7 @@ a separate text owner provide a safe cleanroom domain; unsupported aliases may
 stop after the valid prefix. Read-only missing-ID name accesses likewise need
 established original bytes or explicit supplied input, not a fabricated name.
 
-## Appendix C. Spaceship artwork records
+### Appendix C. Spaceship artwork records
 
 These ordered data inputs determine composition with classic `ss.dll`; their
 original stack/receiver encodings are not implementation requirements. Part IDs
@@ -1456,7 +1608,7 @@ original adjacent read bytes can be supplied to a validation adapter; otherwise
 stop before consuming unknown geometry. Every resulting out-of-bounds write is
 excluded irrespective of whether the source read was recovered.
 
-## Appendix D. Evidence and validation
+### Appendix D. Evidence and validation
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -1483,7 +1635,7 @@ cleanroom implementation. No reconstruction source was changed for this document
 | Independent `src/civ_score_window.cpp`, `civ_fame_window.cpp`, `high_scores.cpp`, `tax_rate.cpp`, `civ_spaceship*.cpp`, `civ_spaceship_render_records.inc`, `herald_window.cpp` | Score/art composition, local lifetimes, callback timing, primary repair differences and original data inputs. |
 | Independent `src/multiplayer_chat.cpp`, `multiplayer_window.cpp`, `multiplayer_dialog.cpp`, `multiplayer_selection.cpp`, `multiplayer_request.cpp`, relevant headers, `font.cpp`, `intro_surface.cpp`, `civilopedia_detail.cpp`, `analysis/reference/bugfix-log.md` | Chat history/options, pane geometry, identity refresh, selection/description order and excluded corruption. |
 
-### Checks performed for this document
+#### Checks performed for this document
 
 Eleven **unchanged whole source bodies** were extracted and checked with declared
 external query, text, drawing and logical-storage adapters. Forty assertions
@@ -1514,7 +1666,7 @@ integrity checks matched31 independent files and7 primary files to their pins;
 asset identities below were hashed. Relative links, anchors, source references,
 unique specification IDs and document presence were checked separately.
 
-### Remaining integration and useful conformance cases
+#### Remaining integration and useful conformance cases
 
 Join actual C03/C04/C06 city calculations, V02/V03/V05/V07/V08 controllers,
 N01/N02 network receipt, P03/P04 assets/fonts/controls, P05 event delivery and
@@ -1540,7 +1692,7 @@ The following cases remain integration targets, not newly executed traces:
   identities, changed callbacks and bounded long text. Rejection must retain
   the valid prefix and must not corrupt the admitted offer.
 
-### Input identities
+#### Input identities
 
 | Input | SHA-256 |
 | --- | --- |
@@ -1550,7 +1702,7 @@ The following cases remain integration targets, not newly executed traces:
 | `Civ2/ss.dll` | `2a163a486ccfe90ee4adfdb14408d2d7637949a2dfbbe2afc334301b4c86db6a` |
 | `Civ2/mk.dll` | `1a1d503e70f411a891fdb834011f91bcbdbbafd9750d4aeea2d20e3d7576e196` |
 
-## Appendix E. Original presentation reference
+### Appendix E. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -1561,9 +1713,9 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §2. Shared auxiliary window
+#### Original §2. Shared auxiliary window
 
-#### Setup and cleanup
+##### Setup and cleanup
 
 Setup takes resource, selection, modal flag, requested background width/height
 and requested window width/height. Construct a temporary Palette, then clear
@@ -1603,7 +1755,7 @@ its auxiliary receiver determines the action: modal => clear its event loop;
 nonmodal => clear selection. Missing parent requires a stop at its original
 access, not an invented close of the canonical window.
 
-#### Ordinary and modal opening
+##### Ordinary and modal opening
 
 City Status and Attitude call setup with matching report/resource IDs1 and4,
 nonmodal,600×400 background and zero requested window dimensions. Store incoming
@@ -1618,7 +1770,7 @@ wrapping `now−live start >1200`. If true, clear the auxiliary loop then obtain
 a **fresh** tick sample and publish it as start. This differs from P06's
 production timeout, which compares an absolute signed deadline.
 
-### Original §4. Top Cities
+#### Original §4. Top Cities
 
 [Required behavior is retained in the main section.](#4-top-cities)
 
@@ -1638,7 +1790,7 @@ right−x>35, draw its icon at x,y+6 and advance x38. Advance y32, outline
 `(clientX+3,rowTop,clientX+width−3,y)` with live owner shield color, then advance
 y6. Missing ranks consume no row space. Present.
 
-### Original §14. Power-history graph
+#### Original §14. Power-history graph
 
 A01 owns publication of the150 samples; F04 owns calendar conversion. Construct
 window, graph font, legend font and Prompt in that order; replace fonts with
@@ -1678,7 +1830,7 @@ The foreground can observe changed samples/alive sets after shadow callbacks.
 Do not rescale horizontal spacing to window width or omit extinct civilizations
 from maximum computation. This window installs no intelligence timeout itself.
 
-### Original §18. Tax-rate window layout
+#### Original §18. Tax-rate window layout
 
 [V02](V02-governments-and-tax-rates.md#8-rate-dialog-lifecycle) owns
 opening guards, normalization, held rates, callbacks, preview effects and commit
@@ -1724,7 +1876,7 @@ line label137:V02 full-cost turns,space,label44; V02 owns its cost/science floor
 and previewScience mutation. Present. Every text helper uses freshly read
 layout fields at its own call, not a captured whole-layout snapshot.
 
-### Original §19. Spaceship presentation
+#### Original §19. Spaceship presentation
 
 V07 owns selectors, construction/launch mechanics, success calculation and the
 local/general/negative-argument entry decisions. Its presentation states are
@@ -1734,7 +1886,7 @@ playback and the moving star-field effect. Timer callbacks and typing use F01
 sampling laws and may use an independent presentation context. Preserve real
 callbacks/state effects without requiring the original shared gameplay sequence.
 
-#### Construction, assets and statistics
+##### Construction, assets and statistics
 
 Construct outer window, inner surface, resource module, palette, title/success/
 statistics fonts, composite port, component sprite, three Exit sprites, three
@@ -1766,7 +1918,7 @@ label213 for language0, `Lancer` for1, `Starten` for2, empty for every other
 full language value. Draw/extract67×36 at(1,38),(69,38),(137,38),again0,2,1.
 Destroy temporary port. Font is statistics font; rectangle text flags0.
 
-#### Component assembly
+##### Component assembly
 
 Cache six signed raw part counts in order0..5 when the V07 modal caller requests
 it. Rendering uses this shared cache for **admission**, and fresh V07 capped
@@ -1801,7 +1953,7 @@ ruler name,space,`(`,adjective,`)`. Color250; draw with title font in
 (0,0,639,40). Active window is reloaded separately for font and drawing target;
 pump afterward.
 
-#### Buttons and hit regions
+##### Buttons and hit regions
 
 P06 owns first-match interaction-list semantics. Clear regions. For local owner
 and state neither0 nor3, add Exit0 at(501,417,52,36) then Launch1 at
@@ -1816,7 +1968,7 @@ first clears(501,417,553,453) to0 when state neither0 nor1, then Exit(1,1),
 Launch(0,1). Blink toggles its retained boolean, then Launch(0,1) when nonzero,
 Launch(1,1) otherwise.
 
-#### Statistics typing
+##### Statistics typing
 
 A timer step uses randomGate1; if inclusive random(0,1) is nonzero, return1
 immediately with no text/font/message activity. Forced completion uses gate0.
@@ -1837,7 +1989,7 @@ captured character area and return whether the **live** next byte is nonzero.
 There is no early empty-text guard before drawing/increment; out-of-range text
 reads require backing/supplied state or a stop.
 
-#### Pointer and key actions
+##### Pointer and key actions
 
 Callbacks capture the active ship window once. Key and click/release also capture
 the native current window before subsequent drawing. Only internal keys208..210
@@ -1873,7 +2025,7 @@ forces completion,set complete1,raises Exit; already complete clears current loo
 Hit Launch only acts in state1/complete: draw pressed,set state2,clear current loop.
 Video-finished callback clears video's loop only for nonzero live video token.
 
-#### Modal sequencing and timer boundaries
+##### Modal sequencing and timer boundaries
 
 V07 owns launch/no-launch decisions. General modal constructs temporary port and
 sprite, caches counts, renders; render0 destroys sprite then port and returns.
@@ -1915,7 +2067,7 @@ sprites reverse,component,composite,statistics/success/title fonts,palette,modul
 inner surface,outer window. P10 launch-video failure effects are preserved; a
 successful outer report return is not proof that media playback succeeded.
 
-### Original §20. Diplomatic herald artwork and science display
+#### Original §20. Diplomatic herald artwork and science display
 
 V05 owns audience decisions. This section owns their graphical presenter; P10
 owns [animation frames, media opening and sound playback](P10-audio-video-and-animation.md#15-herald-video-and-spaceship-stars). Art, palette, font and
@@ -1923,7 +2075,7 @@ media-provider results are explicit inputs. Construction creates background,
 art surface, tile port, palette, resource module and embedded video, queries the
 screen and initializes requested animation0.
 
-#### Contact opening and cleanup
+##### Contact opening and cleanup
 
 Clear audio gate. Set pending sound to `((unsigned map seed+other)&7)+83` without
 an RNG draw. Resolve the absolute signed leader index into the 21-entry sound
@@ -1963,7 +2115,7 @@ playback. Destruction clears active animation and destroys video, module,
 palette, tile, main art and background in that order. Reentrant replacement is
 not automatically restored.
 
-#### Static composition
+##### Static composition
 
 Tile allocates64×64, ignores allocation's ordinary result, loads resource299
 with palette start10/count32 into the initializer palette, and returns whether
@@ -1997,7 +2149,7 @@ palette and sprite, returning the load success.
 
 [Required behavior is retained in the main section.](#20-diplomatic-herald-artwork-and-science-display)
 
-### Original Chat and Parley geometry, redraw and controls
+#### Original Chat and Parley geometry, redraw and controls
 
 Shared layout inputs initially are vertical gap`v=2`, horizontal margin`m=8`,
 inner border`b=2`, button padding`p=2`, spacing`s=2`. Each use is live unless
@@ -2005,7 +2157,7 @@ captured below. Fonts all use face0: small/large heading20/30, pane16/24 with
 weight1, list14/21 ordinary, buttons16/24 ordinary. Font metrics are provider
 results; replacing a font need not preserve its previous dimensions.
 
-#### Window geometry, redraw and controls
+##### Window geometry, redraw and controls
 
 Region calculation queries surface width then height and publishes both.
 Caption=`2*v+2*b+headingHeight`. Set full rectangle0,0,width,height. Inner size
@@ -2089,7 +2241,7 @@ focuses/raises main and prepares queued-effect presentation. Double-click on a
 choice list queries Send enabled, then alternate Send enabled only if needed;
 if either is enabled, focus/select captured current and invoke V05's action.
 
-### Original §23. Parley selection lists
+#### Original §23. Parley selection lists
 
 [V05's parley selection rules](V05-diplomatic-negotiation.md#parley-modes-and-local-selection)
 own row eligibility, stable-identity preservation and transaction admission.
@@ -2102,7 +2254,7 @@ wrapping counters. No array may grow by overwriting another logical field.
 
 [Required behavior is retained in the main section.](#23-parley-selection-lists)
 
-#### List controls and clicking
+##### List controls and clicking
 
 After population, set first0 when signed count>0, otherwise−1. Set list kind
 Unit0, Civilization2, Advance3 or City4 and copy the incoming rectangle. When
@@ -2149,7 +2301,7 @@ all other rows, then store anchor and XOR the chosen flag. A second ordinary
 click can therefore leave no row selected. Finally redraw, forwarding its
 ordinary result if consumed. Do not normalize nonbinary flags before XOR.
 
-#### Shared row renderer
+##### Shared row renderer
 
 Capture current and its port, save clip and set the list clip. Fill list with
 P04's ordinary list-background color. Select small/large list font by live
@@ -2224,7 +2376,7 @@ Then resolve live civilization name and ruler name separately and display
 
 [Required behavior is retained in the main section.](#23-parley-selection-lists)
 
-### Original report window and font inventory
+#### Original report window and font inventory
 
 The primary auxiliary window holds report selection, actor/target, modal state,
 background/client geometry, controls, first displayed item, row origin/height,
@@ -2235,7 +2387,7 @@ ordinary weight, detail14 with weight1, Hall16 with weight1, fame-small12 with
 weight1, and controls16 with ordinary weight. P04 defines their metric and
 replacement semantics; provider results remain inputs.
 
-### Original report heading composition
+#### Original report heading composition
 
 Capture actor before frame/status/background callbacks. Prepare P04 shared
 frame, draw status, copy background. Set y=clientY+2, bottom=clientY+372,
@@ -2245,7 +2397,7 @@ label `limit(government−1,0,4)+328`, space, label140, space, civilization name
 advance. Center ruler title, space, ruler name, colon and current year. Let
 afterHeading=y+height and first row y=afterHeading+2.
 
-### Original city-report row placement and scrolling
+#### Original city-report row placement and scrolling
 
 City x=live clientX+2+64*(post-increment ordinal mod2), y=current drawing row;
 draw P02 city flags0/zoom0. No alphabetic sorting or unconditional recalculation
@@ -2258,7 +2410,7 @@ show it, install left-click and set created1. Later redraws still recalculate
 paging fields but do **not** update that native scrollbar through this branch.
 Present after drawing. Scroll stores the full supplied first item and redraws.
 
-### Original city-report click mapping
+#### Original city-report click mapping
 
 Both click handlers ignore x. Compute relative=y−live click origin; negative
 returns. Divide by live row height with the original signed division boundary;
@@ -2267,7 +2419,7 @@ again, requiring identity and signed owner==**live report actor**; on matching
 ordinal invoke P06 open city and return. There is no separate negative-row
 test after division or native scrollbar validation.
 
-### Original City Status row rendering
+#### Original City Status row rendering
 
 After city art, select detail font and style37/18 offset1/1. Draw live name at
 clientX+140,rowY+9. Set resource start=nameX+105. For Food, Shields and net Trade,
@@ -2283,7 +2435,7 @@ signed cost. Append space and draw, retaining text end+4. Draw
 text offsets. The slash separates current stock and full cost; it is not a
 division or a turns estimate. Advance row y by24.
 
-### Original Attitude citizen-strip rendering
+#### Original Attitude citizen-strip rendering
 
 After city art select detail font37/18, offset1/1. If unsigned unhappy count=0
 and signed size−signed happy≤half(signed size), select41/18. Independently, if
@@ -2303,7 +2455,7 @@ iteration; specialist loop also tests the live shared count. Advance x by
 captured spacing and return it. Do not restore the overwritten shared specialist
 count or synthesize another C03 calculation.
 
-### Original §6. Defense Minister
+#### Original §6. Defense Minister
 
 Open the primary window with resource/report2, nonmodal,600×400. Store actor,
 then mode0. Two half-width bottom button positions are `(2,0,297,24)`, moved
@@ -2367,19 +2519,19 @@ but **update its range, position and page size on every redraw**. Range is
 0..limit(count−1,0,999); page=live visible rows. Show/set-created only once.
 Present. Scroll stores the supplied position then redraws.
 
-### Original Trade Advisor construction
+#### Original Trade Advisor construction
 
 Open resource/report5 nonmodal600×400, actor after setup. Use §6's two positions:
 right Close100/default/cancel; left Supply101,label367 invokes commodity search
 with live report actor. Install redraw, update, show.
 
-### Original Trade heading and row geometry
+#### Original Trade heading and row geometry
 
 Redraw captures actor before frame/status/background. Use §3 heading with
 Trade title338. Row origin=afterHeading+4, stored click origin=afterHeading+12,
 rowHeight24; bottom=clientY+372, visible rows clamped1..99. No row-click action.
 
-### Original Trade row placement
+#### Original Trade row placement
 
 Row0 headings at y+10: label364 at
 clientX+140 and365 at clientX+335, heading font/style41/10,offset1/1. For every
@@ -2395,7 +2547,7 @@ independent:
 | cityCount+3 | label366, colon, science total, science icon |
 | cityCount+4 | label137, colon, turns estimate, space, label44 |
 
-### Original Trade right column and scrolling
+#### Original Trade right column and scrolling
 
 Right column starts clientX+335. Ordinals below buildingKinds choose the nth
 nonzero count in building index order. Draw count, space, name, space, `(`,
@@ -2407,7 +2559,7 @@ Create vertical scrollbar200 with range0..limit(total−1,0,999), position first
 and page visibleRows only on its first redraw; later redraws leave native
 scrollbar properties unchanged. Present. Scroll stores position then redraws.
 
-### Original §8. Science Advisor and shared technology grid
+#### Original §8. Science Advisor and shared technology grid
 
 Open resource/report6 nonmodal600×400 and actor. Use §6's two button positions:
 right Close100/default/cancel, left Research101,label371 calls V03 goal chooser
@@ -2458,7 +2610,7 @@ coordinate arithmetic. Matching ordinal opens P08 advance help. Science returns;
 Intelligence then clears its modal loop and sets shared retry1. Neither adds
 negative quotient tests after signed division.
 
-### Original Intelligence construction
+#### Original Intelligence construction
 
 Open resource/report3 modal600×400; then store actor and target. Right Close100
 is default/cancel; left Cities101,label197, uses §6 positions. Install redraw,
@@ -2466,7 +2618,7 @@ update,show. Repeatedly reset retry0, conditionally install intelligence idle fo
 mode≥3, set timeout ticks, run modal, clear idle; repeat while **live** retry
 nonzero. Clear selection after the loop.
 
-### Original Intelligence heading and statistics rendering
+#### Original Intelligence heading and statistics rendering
 
 Redraw captures actor and target before shared preparation. Center label336 at
 clientY+2 using heading font37/18,offset2/1; next line ruler title/name, label140,
@@ -2486,7 +2638,7 @@ Right-align label236 colon,current research name (label14 for negative target).
 Scratch text is bounded as Appendix B; a long nominal rule name does not make
 its original overwrite compatible. Advance detail height+6.
 
-### Original foreign-chooser city illustration
+#### Original foreign-chooser city illustration
 
 The row renderer independently finds that civilization's city maximizing signed
 size+200 if Palace+100 if **live production is Palace**. Query Palace after
@@ -2496,7 +2648,7 @@ flags0; selected-style rows shift x38. y is incoming y minus truncation toward
 zero of `(scaledMapHeight(48,−2)−rowHeight)/2`. Return0 so normal option text
 also draws. No selected city produces no art.
 
-### Original §11. Wonders of the World
+#### Original §11. Wonders of the World
 
 Open report/resource7 modal600×400 with standard Close and §2 modal lifecycle.
 Redraw reads actor before preparation but does not use it for filtering. Use
@@ -2527,7 +2679,7 @@ coordinates before querying color. Create/configure/show vertical scrollbar200
 only on first redraw, range0..limit(total−1,0,999), position first,page visibleRows.
 Present. Scroll stores supplied first and redraws.
 
-### Original Demographics heading and geometry
+#### Original Demographics heading and geometry
 
 After accumulation prepare shared frame/status/background. Heading is adjective
 plus space only for language0, then label342; center at clientY+2 in37/18,
@@ -2535,28 +2687,28 @@ offset2/1. Advance heading height+10. Publish rowHeight25/top/available height.
 Columns: label clientX+2,value clientX+180,rank clientX+322,right clientX+width−2.
 Draw13 rows, each recomputing values for civilizations1..7 even if dead. All
 
-### Original Demographics label style
+#### Original Demographics label style
 
 Label style resets37/18 retaining offsets each row. Actor value uses P04 long
 
-### Original Demographics leader style
+#### Original Demographics leader style
 
 actor Marco Polo OR actor UN. Render right-aligned in leader label color/18,
 offset1/1:
 
-### Original Demographics separators
+#### Original Demographics separators
 
 own displayed unit label. Draw separator color99 at rowY+23 except final row;
 advance25 and present. Actor0's ranking scratch was not initialized by the
 
-### Original casualty heading and row geometry
+#### Original casualty heading and row geometry
 
 Redraw captures actor before preparation. Heading is §6's Defense heading with
 label872 after colon; this report uses the heading font's **cached** height.
 First draw y=afterHeading+2; rowHeight24, clickTop=firstY+24, visible rows
 limit((clientY+372−firstY)/24,1,99).
 
-### Original casualty row rendering
+#### Original casualty row rendering
 
 1. Prepare unit preview from the history record's signed unit type and captured
    actor; draw at clientX+2+64*((displayed+1) mod2),rowY.
@@ -2573,7 +2725,7 @@ limit((clientY+372−firstY)/24,1,99).
 6. Increment displayed, decrement index; if negative set299 (not add300),
    advance rowY24.
 
-### Original casualty native scrolling and selection
+#### Original casualty native scrolling and selection
 
 The historical record can change between its art/name/year/coordinate reads.
 Create vertical scrollbar200 and double-click callback only once, but set range
@@ -2587,7 +2739,7 @@ index. Also return if fresh head==0 AND fresh historyCount<299 AND index≥fresh
 tail. Otherwise read record y then x, reloading report actor for each, and center
 map window0. It does not require that a row was actually drawn.
 
-### Original Score heading and view preparation
+#### Original Score heading and view preparation
 
 V08 owns all numeric score calculations and the Scored/objective branches.
 Open report/resource10 modal600×400 with standard Close and §2 lifecycle.
@@ -2598,7 +2750,7 @@ name,comma,year. Advance detail height+4; publish row height/top/available heigh
 to clientY+372. Left=clientX+2. If Scored, center label457 and present; return
 without score calculation. Objective mode follows the separate branch below.
 
-### Original Score citizen art and point-line layout
+#### Original Score citizen art and point-line layout
 
 Capture P06 citizen art group once for actor. Start x=left,y=top,parity0,row0.
 Scan live owned cities, identity required. Call C03 `(city,1)`. Capture full happy,
@@ -2631,7 +2783,7 @@ nonzero, label406+colon+`(+bonus)`+four spaces; nonzero future points, Future
 Technology name+colon+`(+points)`+five spaces; always label15+colon+parenthesized
 barbarian adjustment, adding `+` for nonnegative value. Draw and advance one line.
 
-### Original Score objective and final-line rendering
+#### Original Score objective and final-line rendering
 
 Objective mode skips all citizen art/recalculations, starts top+38, calls V08
 score calculation, then centers label433:total objective value. If configured
@@ -2655,7 +2807,7 @@ a drawing pass. Later callbacks can change flags/values between passes. Private
 x updates in the measurement pass are dead: no unknown x input is required.
 Present only after final rendering.
 
-### Original Fame setup and heading
+#### Original Fame setup and heading
 
 V08 owns percentage and rank selection. Open resource/report10 as for Score,
 but request CD track3 **after update and before show**. Modal cleanup is §2.
@@ -2664,7 +2816,7 @@ bottom=clientY+372, heading height=measured height−3. Run V08's percentage/ran
 publication before any heading text. Center label412:percentage`%`, then labels
 413 and414 on successive lines. Add height+4 after the third, publish row fields.
 
-### Original Fame typography
+#### Original Fame typography
 
 P04-expand substitutions. Rows below rank use fame-small font29/18 and height
 measured−3; final uses heading font, height measured−4, then style37/18. Subtract
@@ -2672,7 +2824,7 @@ height from bottom and center each text there. The highest title consequently
 appears above earlier entries. Present. An oversized template/substitution is
 an excluded write; expanded-storage repairs are not original stack layouts.
 
-### Original Hall setup and heading
+#### Original Hall setup and heading
 
 V08 owns load/validation, record insertion, rank/calendar fields and the caller's
 reset loop. Every display reloads the table, then opens resource/report8 modal
@@ -2688,29 +2840,29 @@ switch to Hall font,height measured−3,advance6,publish row fields. Scan record
 0..5; skip record5 unless highlight==5, and skip negative scores. Each admitted
 record supplies three centered lines followed by6 pixels:
 
-### Original Hall highlight style
+#### Original Hall highlight style
 
 civilization+space+`(`+label443+space+record date+`)`. Use122/18 when highlighted,
    else175/18, retaining offsets.
 
-### Original Hall row styling
+#### Original Hall row styling
 
    Keep previous row style.
 3. `-- `,label445,colon,percentage,`% --` in37/18.
 
-### Original Hall row spacing
+#### Original Hall row spacing
 
 Advance the captured Hall height after each line. Ordinary dates use stored
 
-### Original Hall present call
+#### Original Hall present call
 
 calendar replaces record fields. Ordinary redraw ends with present.
 
-### Original herald science allocation
+#### Original herald science allocation
 
 Construct face0/size11 ordinary font, five category sprites, palette and port.
 
-### Original herald science sprite and text rendering
+#### Original herald science sprite and text rendering
 
 Clamp owned count to6. Zero destroys port, palette, sprites4..0 and font and
 returns1. Otherwise load215 with palette start10/count236; failure performs
@@ -2721,7 +2873,7 @@ and text rectangle `(531,137,589,157)`, width58. Traverse ranked slots5 down0;
 skip negative advance IDs. Draw each admitted row below, then move text
 rectangle and icon y down31. Finally perform the same cleanup and return1.
 
-#### Science row text
+##### Science row text
 
 Read the advance's signed category and draw that category sprite first. Nominal
 categories0..3 have text colors19,98,19,37 by art group0..3; category4 has a valid
@@ -2770,12 +2922,12 @@ distinguishes this exclusion from the retained-text read and scalar wrap.
 
 Original presentation procedures: [Appendix E](#appendix-e-original-presentation-reference).
 
-### Original Parley pane origin
+#### Original Parley pane origin
 
 pane x as inner.left+s for left or inner.left+inner.width/2+s for right, before
 cleanup callbacks. BarterItem and DemandItem redirect choice0..6 to
 
-### Original Parley pane framing and controls
+#### Original Parley pane framing and controls
 
 The following notation expresses framing without prescribing native widgets.
 `H` is a fresh pane-font cached height, `L` a list-font height and `B` a button
@@ -2865,13 +3017,13 @@ Send,show/disable Send,disable NeverMind. Then consult live local Unit and City
 disclosure flags: both0 shows/enables RevealAll and hides/disables ConcealAll;
 otherwise reverse those states.
 
-### Original Parley description widget
+#### Original Parley description widget
 
 with mode0 for Description,1 for Review. Create read-only multiline edit in
 `(inner.left+s,inner.top+v,inner.right−s,dialogBottom)`,list font,limit8192,
 §21 edit-key callback,show.
 
-### Original Chat option geometry
+#### Original Chat option geometry
 
 Use §21's allContacts result and candidate filter, evaluated again while building
 controls. At inner.left+s,inner.top+v, place Anonymous(label745),
@@ -2889,7 +3041,7 @@ pane x,first-column x=inner.left+s. On each completed pair advance y by row step
 Small inset remains5; large inset is0 in second column,23 in first. Excluded
 civilizations leave no gap. These eligibility updates can clear prior choices.
 
-### Original Parley cleanup and repaint order
+#### Original Parley cleanup and repaint order
 
 Side cleanup first removes shared description/chat controls when sideRight:
 description edit,Anonymous,MuteAnonymous,AllRecipients,then for each index0..7
@@ -2908,7 +3060,7 @@ and suppression; then left and right side controls in the order above. It does
 not invoke side cleanup's repaint between each item. Ordinary callback effects
 remain; compiler exception-unwind paths are not a recovered platform contract.
 
-### Original report input provider domain
+#### Original report input provider domain
 
 Nominal inputs are initialized game/rules/map state, backed indices, terminated
 fitting text, supported assets, usable fonts/windows and positive geometry
@@ -2917,34 +3069,34 @@ file/resource results and ordered callbacks. Pixel comparison requires identical
 asset, palette and font inputs; an alternative widget implementation may use a
 different representation with the same observable behavior.
 
-### Original city-report click offsets
+#### Original city-report click offsets
 
 City Status title is334 and row height24. Its click origin is afterHeading+10,
 **eight pixels below drawing origin**. Attitude title337, row height32, click
 origin=first row y. Publish available height=bottom−first row y and visible
 
-### Original Trade summary font
+#### Original Trade summary font
 
 Summary rows use detail font41/10,offset1/1. Turns queries V03 full research
 
-### Original Chat input bindings
+#### Original Chat input bindings
 
 Macro commands are handled below and return0. Escape invokes focus-and-close
 and returns0. Other than Enter returns1. Enter copies the current window's
 
-### Original Chat edit-key bindings
+#### Original Chat edit-key bindings
 
 current window's input edit to that empty text,focus it,return0. Send-button
 routes to Enter. The edit-key handler only intercepts native Escape27 or
 internal Escape210, closes and returns0; all other keys return1.
 
-### Original Trade row traversal placement
+#### Original Trade row traversal placement
 
 Total logical rows=max(cityCount+6,buildingKinds+3). Page count and first item
 use §3's formulas. Draw indices from first through first+visibleRows−1,
 advancing y24 only when index<total.
 
-## Appendix F. Original implementation reference
+### Appendix F. Original implementation reference
 
 This appendix preserves original storage, allocation, native API and adapter
 procedures for reference validation. The main text defines required behavior.
@@ -2956,7 +3108,7 @@ appearing here. Original memory/handle traces are not a second normative algorit
 Optional providers and harmless UI failures retain X01's existing scope limits;
 this reorganization introduces no new gameplay or interoperability relaxation.
 
-### Original chat buffers and destructor logging
+#### Original chat buffers and destructor logging
 
 Clear-history zeros capacity+1 bytes with unsigned wrap (zero length accesses
 nothing),updates Chat then Parley history edits using fresh storage,then focuses
@@ -2984,7 +3136,7 @@ input if present,clearing each shared pointer after deletion callbacks. Destroy
 file object,clear window controls,reset graphics storage,destroy base window.
 The empty destructor log is not silently replaced by N01's nonempty session log.
 
-### Original chat edit selection after append
+#### Original chat edit selection after append
 
 storage. Set Chat history edit,then Parley history edit. Query Chat end and
 collapse Chat selection; query **Chat end again** and collapse Parley selection

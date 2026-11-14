@@ -117,7 +117,7 @@ struct Fixture {
         runtime.begin_client_session({10, 20});
         process.tokens = {100, 200};
         process.rules->text.initialize();
-        const auto id = static_cast<std::int16_t>(process.rules->text.store("Label"));
+        const auto id = state::NameReference{process.rules->text.store("Label"), false};
         for (auto& leader : process.rules->leaders) {
             leader.names.fill(id);
             leader.plural = leader.adjective = id;
@@ -381,7 +381,7 @@ TEST_CASE("F06 core scenario transforms and events precede names census and rule
         REQUIRE(f.runtime.world().events.loaded);
         REQUIRE(f.runtime.world().events.collection.at(0)->strings[0].value() == "U");
         REQUIRE(f.runtime.world().civilizations[1].units_active[2] == 1);
-        REQUIRE(f.process.rules->leaders[0].leader_name < 0);
+        REQUIRE(f.process.rules->leaders[0].leader_name.custom);
         reload(table, initialization);
     };
     REQUIRE(f.load() == CoreLoadStatus::success);
@@ -470,8 +470,8 @@ TEST_CASE("F06 core composes real F03 tables and name preserving final reloads",
     REQUIRE(f.process.rules->text.size() == text_count);
     REQUIRE_FALSE(reader.is_open());
     REQUIRE(f.process.rules->definitions.cosmic.values[0] == 3);
-    REQUIRE(f.process.rules->leaders[0].leader_name < 0);
-    REQUIRE(f.process.rules->leaders[0].plural < 0);
+    REQUIRE(f.process.rules->leaders[0].leader_name.custom);
+    REQUIRE(f.process.rules->leaders[0].plural.custom);
 }
 TEST_CASE("F06 composed map and entity failures preserve post callback untouched record bytes",
           "[session][core-load]") {

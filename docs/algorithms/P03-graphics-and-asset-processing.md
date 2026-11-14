@@ -1,75 +1,112 @@
 # P03: Graphics and asset processing
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-This specification describes classic Civilization II Multiplayer Gold Edition
-5.4.0f, patch 3 resource lookup, image decoding, sheet extraction, palette
-operations, sprite sampling and surface primitives. It supplies the drawing
-services used throughout the interface. Asset identity and content are inputs:
-a compatible implementation can use different storage and platform APIs while
-preserving interpreted custom content and required semantic/file effects.
-Exact display pixels and native graphics failures are optional reference behavior.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-[P01](P01-map-projection-and-interaction.md) owns map coordinates, zoom geometry
-and mask classification; [P02](P02-map-rendering-and-minimap.md) owns map layers,
-city/unit selection, labels and redraw controllers. [P04](P04-text-and-dialogs.md) owns text, fonts,
-dialog layout, captions and controls; [P10](P10-audio-video-and-animation.md) owns media and animation scheduling.
-[S04](S04-rules-and-asset-editors.md) owns editor transactions and composition
-of exported sheets. [F03](F03-rules-and-configuration.md) and
-[F06](F06-save-load-and-file-formats.md) establish scenario/resource context.
-Their callers use these shared primitives rather than duplicate them.
+| Surface | Binding scope in P03 |
+| --- | --- |
+| Gameplay | Meaningful custom asset identity and safe content availability; rendering adds no game effects. |
+| Original files/content | Explicitly adopted palette/image headers, compression interpretation, sheet rectangles, transparency, overrides and exports. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Decoder implementation, surface locks, native handles, allocators and screen drawing. |
 
-[F01](F01-determinism-and-arithmetic.md) supplies arithmetic and sampling laws.
-Palette construction and commits select a nonzero primary-law generation token;
-an independent presentation context is permitted. That publication and token
-comparison behavior is original presentation evidence; a new renderer may use
-different cache invalidation when required content and game effects agree. Pure pixel
-copies and scale-table generation make no random decisions; callbacks can invoke
-other algorithms. Original shared-stream consumption is historical evidence.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-Random choices and supplied-draw fixtures use F01’s sampling laws. Counts refer
-to semantic choices, not raw generator calls; unused original samples are
-optional. Gameplay-dependent ordering and callbacks remain required; purely
-cosmetic randomness and native traces follow the presentation policy.
+## Required presentation contract
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-## Required contract and reading guide
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-Nominal asset lookup/override precedence, source image content, sheet/slot
-identity, transparency and marker meaning, supported scenario assets and
-classic-compatible editor exports.
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
 
-## Implementation boundary
+## Asset obligations
 
-The main sections use logical values, identities and operations. Original memory,
-allocation and platform mechanics are recorded in [Appendix E](#appendix-e-original-implementation-reference). Preserve required
-state changes and externally visible results without reproducing those mechanisms.
-Exact numeric domains and file/wire encodings remain required wherever specified.
+Load supported original graphics and scenario overrides into an owned asset
+model. Preserve source colors, transparency, dimensions and semantic identities
+where they encode authored content. Use any suitable independent codecs, pixel
+formats, atlases, resource caches and rendering libraries. Scaling, filtering,
+screen color matching, clipping primitives and palette effects are free choices.
 
-## 1. Domains, state and observations
+The following are required **data definitions only**; the linked procedures are
+reference implementations, not mandated decoder or provider algorithms:
+
+| Input or output | Adopted definition | Excluded runtime machinery |
+| --- | --- | --- |
+| Resource lookup | §2 resource names/type identities, name sanitization and primary-before-registered resource precedence; F03 scenario/install content precedence | Drive-letter discovery, CD retry dialogs, process current directory, handle registry and live buffer rereads |
+| Color files / CTAB | §3 RGB values, first/count fields, byte widths/order and payload meaning; Appendix B external asset bytes | Palette handles, generation tokens, aliased-buffer effects and ignored write failures |
+| Original sheets | §5 filenames, scenario BMP then scenario GIF then installation GIF fallback, palette mapping, source rectangles, transparency/key and replacement-color meaning | Destructive loading, extraction allocation order, stale working images after failed loads |
+| GIF and compact pictures | §8 admitted framing, compression and decoded pixels; compact-picture headers/palette dimensions | Dictionary allocation, native status codes and original incremental write timing |
+| BMP input/export | §9 admitted BMP headers, orientation, palette/pixel encoding, sheet dimensions and exported bytes | Surface locks, row-buffer capacities and provider call order |
+| Other supported images | §10 admitted Targa, PCX and LBM/PBM structures and pixel/color meaning | Native resource ownership and conversion traces |
+
+Sheet coordinates are input-file definitions, never mandatory screen geometry.
+Correct decoded content is the contract; there is no requirement to reimplement
+the original LZW loop or pixel copier. Preserve original editor export formats
+and test interoperability for the advertised domain. Safely diagnose failed or
+unsupported loads; do not extract a previous image as if it were the new asset.
+The native pack has its own [asset-format contract](../content/asset-format.md).
+
+## Presentation freedom
+
+New stock art, themes, fonts, resolution, animation and drawing are permitted.
+Retain a recognizable strategy-map/city/unit vocabulary and meaningful scenario
+customization. User-selected content locations replace original installation/CD
+discovery. No missing file requires the original dialog or native failure trace.
+Do not silently replace successfully supplied scenario content with stock art.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Domains, state and observations
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal inputs have valid initialized graphics objects, sufficient image and
 pixel backing, positive supported dimensions, valid rectangles and palette
@@ -109,9 +146,12 @@ explicit inputs. An adapter's failure check or reconstruction exception is not
 automatically an original branch. The native raster limitations in §11 remain
 separate from the complete ordinary indexed algorithms.
 
-## 2. Resource names, paths and modules
+### 2. Resource names, paths and modules
 
-### Search paths and drive discovery
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Search paths and drive discovery
 
 Initialization requests the executable module's filename into the primary
 search-prefix buffer. On a nominal complete path, remove characters after its
@@ -144,7 +184,7 @@ CDROMNOTFOUND2 message with retry/cancel behavior. Read the shared dialog result
 zero returns failure; nonzero repeats both discovery attempts. Current prefixes
 and dialog/provider callbacks remain live between attempts.
 
-### Resolving a file
+#### Resolving a file
 
 Given a mutable input path, obtain its length twice before scanning backward
 for its last backslash; capture the basename. Save error mode and suppress
@@ -169,7 +209,7 @@ there, append dot and the supplied extension, then uppercase the whole result
 using the active CRT rules. Preserve source/destination alias effects; an
 overflowing destination is an excluded bug.
 
-### Resource modules
+#### Resource modules
 
 Registration loads a module as data. Failure reports the missing file and
 returns no module; success appends it to the ordered registry, increments the
@@ -191,14 +231,17 @@ the count, shift following entries left, including the read of the first
 unused slot, decrement count and release the module. That last read requires
 backed spare state; it does not authorize writing outside the registry.
 
-## 3. Palette state, publication and matching
+### 3. Palette state, publication and matching
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Decode and retain source palettes so custom images and exported assets have the
 specified colors/transparency. The operations below remain required for source-
 image editing and file conversion. Native palette handles, display generations,
 nearest-color cache representation and screen fades are reference procedures.
 
-### RGB writes, imports and commits
+#### RGB writes, imports and commits
 
 Writing one source RGB entry stores red, green and blue low bytes. Source import
 and range operations apply only this upper clamp:
@@ -217,7 +260,7 @@ Single-entry setRGB writes then commits one entry. Extraction writes red,
 then loads/writes green, then loads/writes blue for each entry; overlapping
 output can change later reads. It does not commit or draw randomness.
 
-### Color files
+#### Color files
 
 The operations below define input/output values. Native assignment, palette
 rotation, repetition and fade procedures are retained in Appendix D. They are
@@ -237,7 +280,10 @@ unlock/free traces are in the implementation appendix.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 4. Sprite scaling and sampling
+### 4. Sprite scaling and sampling
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Choose any screen scaling/sampling implementation that preserves interpreted
 asset content, object identity and transparency. Screen resampling does not
@@ -246,14 +292,17 @@ to use the required source/format contracts in §§5 and 8–10.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 5. Sheet loading and extraction catalog
+### 5. Sheet loading and extraction catalog
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 The game-sprite parent constructs its temporary window/surface context, then
 loads **Cities, general interface assets, Terrain, Units**, and finally destroys
 that context. This order establishes civilization colors before portraits and
 retains palette publication order.
 
-### Common sheet operation
+#### Common sheet operation
 
 For CITIES, ICONS, PEOPLE, TERRAIN1, TERRAIN2 and UNITS:
 
@@ -275,7 +324,7 @@ does not recompute content bounds. All coordinates below refer to the decoded
 sheet, with palette offset already applied. These are external asset-layout
 contracts, not requirements on internal object placement.
 
-### Terrain sheets
+#### Terrain sheets
 
 TERRAIN1 extractions, in order:
 
@@ -308,7 +357,7 @@ TERRAIN2:
 Release the surface, then destroy the temporary Ocean-blend and mask sprites
 in that order. P02 owns which connections select these extracted sprites.
 
-### Cities, shields and units
+#### Cities, shields and units
 
 For each city style 0..5, and size class 0..3 within it, y=39+49*style.
 Reset ordinary and walled sprites, then extract ordinary at
@@ -334,7 +383,7 @@ borders for marker 4, starting offsets at zero and using the last matching
 column/row directly, without the city marker's subtraction. Finally extract
 the 12×20 unit shield at (586,1) and release the surface.
 
-### Interface, editor, people and diplomacy sheets
+#### Interface, editor, people and diplomacy sheets
 
 Construct a local palette first. Change to the search directory and load GIF
 resource 85 with first=10,count=192 into that palette. On failure retry after
@@ -393,14 +442,17 @@ For each civilization 0..7 extract its 64×64 portrait from (2,398) and replace
 color 8 by its live primary shield color. Release the surface and destroy the
 local palette. P04/P07/P08/P09/P10 own selection of this art in their interfaces.
 
-## 6. Sprite extraction, lifetime and drawing
+### 6. Sprite extraction, lifetime and drawing
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Sprite storage, allocation and on-screen drawing are implementation choices.
 Preserve the source-content extraction below for classic asset interpretation;
 its logical result can be stored without the original row/arena representation.
 S04 export transforms remain exact source-image operations.
 
-### Extraction
+#### Extraction
 
 Intersect the requested rectangle with the surface clip, ignoring the
 intersection return value, and capture width/height. Read the established source
@@ -441,7 +493,10 @@ procedures; use X01's safe cleanup policy.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 7. Surfaces, clipping and raster primitives
+### 7. Surfaces, clipping and raster primitives
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Native surface allocation/orientation is optional. The following image-operation
 semantics remain required where S04 uses them to produce classic files or edited
@@ -449,7 +504,7 @@ source assets; they do not require the on-screen renderer to use the same
 primitives. Preserve clipping, transparency and output pixels at that file/asset
 boundary.
 
-### Clips and pixel operations
+#### Clips and pixel operations
 
 Setting a clip captures input bottom, right, top, left before writing the clip,
 then intersects it with full bounds. Reset restores full bounds. Copying a clip
@@ -463,7 +518,7 @@ Replacing a color clips the rectangle and scans rows/columns, replacing equal
 bytes; extents remain live during the scan. Native access acquisition and
 empty-region row-table reads are reference details.
 
-### Fill and copy
+#### Fill and copy
 
 Indexed fill establishes writable pixels, intersects with the current clip
 and returns on zero width or height. Ordinary
@@ -508,7 +563,7 @@ horizontal offset for each row. Do not reload tile dimensions after callbacks.
 Zero tile dimensions reach division failure unless a restrictive profile rejects
 them first.
 
-### Lines and RGB primitives
+#### Lines and RGB primitives
 
 The line parent first performs four coarse tests: at least one endpoint is at
 or beyond clip left/top and at least one is below clip right/bottom, plus a
@@ -547,9 +602,12 @@ implementation appendix.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 8. GIF framing and LZW decoding
+### 8. GIF framing and LZW decoding
 
-### File and resource entry points
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### File and resource entry points
 
 The file loader opens and reads the file, then requires its first three bytes
 to be GIF. The resource loader looks up type GIFS but rejects only a
@@ -580,7 +638,7 @@ missing resource reports failure first. Safe cleanup of native resources does
 not roll back preceding palette or pixel effects. Original lock/allocation,
 message-pump and double-close sequences are retained in [Appendix E](#appendix-e-original-implementation-reference).
 
-### Dictionary, stream and output algorithm
+#### Dictionary, stream and output algorithm
 
 Create a logical dictionary of 4096 entries. Failure returns 0. Initialize
 every entry's prefix to absent, character to
@@ -656,7 +714,7 @@ resource loaders discard that result too. Output bytes and palette effects
 therefore survive a decoder exit. Neither a blanket standard-GIF decoder nor
 an all-or-nothing decode transaction matches this contract.
 
-### Compact picture resources
+#### Compact picture resources
 
 A compact picture has a six-byte header: big-endian width/height, one-byte
 minimum code size, one-byte color-count-minus-one; then RGB triples and the
@@ -668,9 +726,12 @@ conversion table only from declared colors; other indices need supplied backing
 or a stop. Appendix B records the code-argument upper-word retention in these
 entry points.
 
-## 9. BMP sheet input, output and alternate loaders
+### 9. BMP sheet input, output and alternate loaders
 
-### Dedicated 640×480 sheet input
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Dedicated 640×480 sheet input
 
 Open in binary read mode. Open failure returns 0 without the later error notice.
 Read the 14-byte file header and require BM. Read the information-header size,
@@ -717,7 +778,7 @@ Close before presenting any final error message. Close failure is ignored.
 Neither error handling nor a restrictive rejection rolls back earlier palette
 generation draws, allocation or valid pixels.
 
-### Sheet output
+#### Sheet output
 
 The writer always emits a 640×480, 8-bit uncompressed BMP. Build the fixed
 headers in Appendix B. Initialize all palette RGB triples to black, then set
@@ -736,7 +797,7 @@ writes. Close before error presentation, ignoring close failure. Retain a
 partially written file. S04 owns sheet composition, destination selection and
 removal of an earlier file.
 
-### Generic indexed BMP
+#### Generic indexed BMP
 
 These are distinct entry points from the sheet loader. A file maps the DIB at
 offset 14; a bitmap resource begins directly with it. Capture width/height and
@@ -756,7 +817,7 @@ as image pixels**. Resource input advances by alignedWidth; file input advances
 by the live port stride. Assign the palette unconditionally, release/unmap input
 and return success. Unsafely large counts/dimensions do not authorize overwrites.
 
-### RGB555 and RGB24 BMP
+#### RGB555 and RGB24 BMP
 
 Allocate the requested true-color mode from captured dimensions first. Round
 the source **pixel count** up to a multiple of four. For RGB555 with 8-bit input,
@@ -772,9 +833,12 @@ destination row/frame. That write is an excluded bug; choose a supported
 dimension profile, omit the unsafe suffix or stop before it. A corrected
 standard BMP stride is a declared repair, not the recovered rule.
 
-## 10. Other image inputs and conversion
+### 10. Other image inputs and conversion
 
-### Indexed Targa
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Indexed Targa
 
 Capture width and height from the 18-byte header, then invoke the receiver's
 allocation service. Other header fields remain live after that callback.
@@ -794,7 +858,7 @@ Missing/unsupported input reporting and all logical effects before failure
 remain observable; a restrictive profile can reject unsupported types before
 decoding. Native mapping, unlocking and destruction are reference mechanisms.
 
-### True-color Targa and GIF
+#### True-color Targa and GIF
 
 True-color Targa similarly caches dimensions before allocation and reads other
 fields afterward. Type 2 is the uncompressed input:
@@ -826,7 +890,7 @@ into the descriptor. A read-only file mapping makes those identity writes fault
 on valid files. Removing them is an explicitly identified repair; a nominal
 compatibility profile must state whether it includes that repaired file path.
 
-### PCX
+#### PCX
 
 Copy the entire 128-byte header before allocation. Reject when manufacturer!=10
 **and** encoding==0; separately reject when depth!=8 **and** planes!=1. These
@@ -854,7 +918,7 @@ the caller range and import RGB triples after it; then assign the palette even
 if the marker was absent. Resource allocation failure leaves it locked;
 ordinary success releases it. File failures retain the file object's cleanup.
 
-### LBM/PBM resources and row helpers
+#### LBM/PBM resources and row helpers
 
 Require FORM and then PBM-space or ILBM; ignore FORM's declared total size.
 Repeatedly read an eight-byte chunk header and round its big-endian length up
@@ -892,7 +956,10 @@ it for ILBM. Unsupported compression can leave temporary bytes unproduced;
 Appendix B records its fixed capacity. Do not substitute a standard multi-plane
 decoder while claiming this unusual entry-point behavior.
 
-## 11. Integration boundaries and conformance
+### 11. Integration boundaries and conformance
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate nominal custom asset search/override precedence, decoded source content,
 sheet slots/markers, transparency and source palettes. Exercise supported file
@@ -902,7 +969,7 @@ palette generations and raster traces are optional; export bytes are not.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Evidence and source identity
+### Appendix A. Evidence and source identity
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -947,9 +1014,9 @@ search `005c7e06`. These addresses are evidence locators, not cleanroom APIs;
 the checker records exact instruction probes separately. Paired call sites
 `005d0d8c` and `005d1092` both target `0061a759`.
 
-## Appendix B. Representation and excluded bugs
+### Appendix B. Representation and excluded bugs
 
-### External asset bytes
+#### External asset bytes
 
 These layouts constrain file/resource compatibility rather than internal
 classes. Multi-byte values are little-endian except the stated big-endian
@@ -970,7 +1037,7 @@ words 0; DIB size 40,width 640,height 480,planes 1,depth 8,compression 0,
 image bytes 307200,resolution/count/important fields 0. Its 256 reserved palette
 bytes are the retained inputs described in §9.
 
-### Internal evidence adapter
+#### Internal evidence adapter
 
 - Original sprite rows are little-endian DWORD left,count followed immediately
   by count bytes; headers can be unaligned. Extraction allocates eight extra
@@ -1021,7 +1088,7 @@ boundaries: supplied established bytes or a stop, never invented black pixels.
 Read-only GIF descriptor writes, explicit cursor initialization and deterministic
 BMP reserved bytes are separately identified repairs, not hidden original facts.
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 The historical research bundle included pinned source hashes, extracted bodies,
 fixture adapters, original-byte probes and documentation checks. That scaffolding
@@ -1056,7 +1123,7 @@ bodies, four primary files, ten original instruction probes and the original
 GIF-comparison literal and asset identity. Repository checks validate document
 links/anchors and specification IDs.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -1067,9 +1134,9 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §4. Sprite scaling and sampling
+#### Original §4. Sprite scaling and sampling
 
-#### Ratio selection and table generation
+##### Ratio selection and table generation
 
 A single scale has numerator and denominator, each independently clamped to at
 least 1. Map scale selection supplies (wrap32(zoom+8),8); reset selects (1,1).
@@ -1109,7 +1176,7 @@ slot from replacement candidates. Initialization clears ratio/timestamp metadata
 selects identity once for the ordinary scale, then identity for both paired
 scales. Cache capacity and the no-candidate overwrite are in Appendix B.
 
-#### Distance through a table
+##### Distance through a table
 
 For distance(value,base,roundUp):
 
@@ -1126,11 +1193,11 @@ the other form. At 3/8, distance(1,0,false)=0 and distance(1,0,true)=1.
 A missing lookup entry is a read boundary. Do not silently extrapolate
 arbitrary corrupted tables.
 
-### Original §6. Sprite extraction, lifetime and drawing
+#### Original §6. Sprite extraction, lifetime and drawing
 
 [Required behavior is retained in the main section.](#6-sprite-extraction-lifetime-and-drawing)
 
-#### Initialization, replacement and copying
+##### Initialization, replacement and copying
 
 Initialization makes both rectangles empty, offsets zero, key zero, storage and
 active access empty, and the two retained scale attributes 1. Destruction, when
@@ -1181,7 +1248,7 @@ the temporary rectangle by the destination's current content origin, publish
 it as both content and full bounds, release/free old destination storage,
 unlock output, install it and acquire it. Destination offsets/key remain live.
 
-#### Ordinary and colored drawing
+##### Ordinary and colored drawing
 
 Choose the sprite's stored key only when the draw argument is −1; otherwise
 use the argument's low byte. Capture source origin relative to full bounds:
@@ -1229,9 +1296,9 @@ after successful intersection; a failed lock omits drawing. On success read
 height/pitch/lookup/rows, draw and release the live surface before writing the
 returned rectangle. Paired-axis drawing has the limitation in §11.
 
-### Original §7. Surfaces, clipping and raster primitives
+#### Original §7. Surfaces, clipping and raster primitives
 
-#### Allocation and orientation
+##### Allocation and orientation
 
 Replacing a surface releases its active access and old backend before testing
 new geometry. Null or zero-width/height rectangles initialize an empty surface
@@ -1262,9 +1329,9 @@ and stride reads remain live around those copies.
 
 [Required behavior is retained in the main section.](#7-surfaces-clipping-and-raster-primitives)
 
-### Original §3. Palette state, publication and matching
+#### Original §3. Palette state, publication and matching
 
-#### System initialization and generation
+##### System initialization and generation
 
 A palette contains 256 entries. Query the device's palette capability. If it
 is absent, set reservedCount=0 and shared paletteMode=0. Otherwise set
@@ -1291,7 +1358,7 @@ not remove the subsequent generation selection.
 
 [Required behavior is retained in the main section.](#3-palette-state-publication-and-matching)
 
-#### Nearest-color tree
+##### Nearest-color tree
 
 Palette conversion uses this particular tree/search, not a global scan for
 minimum RGB distance.
@@ -1332,9 +1399,9 @@ is an excluded overwrite, not a permission to return an invented candidate.
 
 [Required behavior is retained in the main section.](#3-palette-state-publication-and-matching)
 
-### Original §11. Integration boundaries and conformance
+#### Original §11. Integration boundaries and conformance
 
-#### Paired-axis native raster boundary
+##### Paired-axis native raster boundary
 
 Paired drawing selects independent §4 ratios/tables and computes x/y origins,
 offsets and content extents with their respective distance operations. It clips
@@ -1352,7 +1419,7 @@ path needs a supplied native binding or further evidence for the conversion
 and call convention; until then stop at the child after the valid geometry
 prefix. The standalone segmented kernel alone is not proof of this join.
 
-#### Finite checks and remaining joins
+##### Finite checks and remaining joins
 
 An implementation should compare pixels and ordered effects separately. Useful
 discriminating cases include:
@@ -1382,7 +1449,7 @@ allocation, palette, message and presentation services. These are distinct from
 the bounded kernel validation below. Platform raster services and unavailable
 incoming bytes remain explicit inputs, not guessed implementation details.
 
-### Original graphics object state and observations
+#### Original graphics object state and observations
 
 Observe resource-search order, current-directory changes, published palettes
 and sprites, raster pixels, clipping, returned rectangles, active storage,
@@ -1403,7 +1470,7 @@ Logical state consists of:
   modules, current directory, working sheet surface and asset families.
 - Single-axis and paired sprite scale ratios and lookup tables.
 
-### Original palette flags and native commits
+#### Original palette flags and native commits
 
 Writing one RGB entry stores red, green and blue low bytes, then NoCollapse.
 Scan the low reserved entries and then high reserved entries; exact RGB equality
@@ -1421,7 +1488,7 @@ native call. **Always renew generation afterward**, including empty ranges,
 negative accepted counts and disabled native palette mode. Invalid entry writes
 or oversized native spans must stop before an excluded overwrite.
 
-### Original palette assignment and effects
+#### Original palette assignment and effects
 
 Assigning a palette to a surface unconditionally reads the palette generation,
 including when a null palette was supplied. If different from the surface cache,
@@ -1434,7 +1501,7 @@ native handle. Even mode 0 performs that handle read. Mode 1 then stores the
 handle in the backend and selects it into the window device context. P04 owns
 window activation and realization around those operations.
 
-#### Rotation, repetition, scaling and color files
+##### Rotation, repetition, scaling and color files
 
 Repeat-color clamps the range as above but takes its source from entry
 **count**, not entry first. Each destination receives a fresh read of that
@@ -1478,7 +1545,7 @@ rule. Finish imports the captured original range, unlocks/frees original then
 frees target. Unlike scale completion it does not repeat a color. P10 owns the
 timing and window presentation surrounding these primitives.
 
-### Original DirectDraw sprite ownership
+#### Original DirectDraw sprite ownership
 
 The DirectDraw-surface variant first locks pixels, returning immediately on
 failure. It uses the same trimming rules with the surface's row accessor and
@@ -1488,7 +1555,7 @@ uses an explicit lock/release pair, described below.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix E. Original implementation reference
+### Appendix E. Original implementation reference
 
 This appendix preserves original storage, allocation, native API and adapter
 procedures for reference validation. The main text defines required behavior.
@@ -1500,7 +1567,7 @@ appearing here. Original memory/handle traces are not a second normative algorit
 Optional providers and harmless UI failures retain X01's existing scope limits;
 this reorganization introduces no new gameplay or interoperability relaxation.
 
-### Original sprite extraction storage procedure
+#### Original sprite extraction storage procedure
 
 Intersect the requested rectangle with the surface clip, ignoring the
 intersection return value. Capture its width and height. If the surface has no
@@ -1541,33 +1608,33 @@ new storage, release source access acquired here and dispose the scratch tables.
 The low-level operation returns the new storage; only its wrapper installs and
 acquires it. Appendix B records row packing and capacity limits for validation.
 
-### Original indexed pixel addressing
+#### Original indexed pixel addressing
 
 loads. Pixel addressing uses row-index[y]+activePixels+x in indexed mode.
 
-### Original color-replacement access management
+#### Original color-replacement access management
 
 Replacing a color in a rectangle acquires access if needed, clips and scans
 rows/columns, replacing equal bytes; it restores access afterward if acquired
 here. Its row-table access occurs even on an empty region, and extents/stride
 remain live during the scan.
 
-### Original fill access acquisition
+#### Original fill access acquisition
 
 Indexed fill warns/acquires when inactive and **keeps** that access afterward.
 Intersect with the current clip and return on zero width or height.
 
-### Original surface-copy access acquisition
+#### Original surface-copy access acquisition
 
 Surface copy acquires source then destination when necessary, with warnings.
 Intersect source and destination rectangles
 
-### Original surface-copy access release
+#### Original surface-copy access release
 
 snapshot nor a direction-changing overlapping copy. Release source before
 destination when access was acquired here.
 
-### Original diagonal native pen procedure
+#### Original diagonal native pen procedure
 
 The diagonal path asks the backend palette for the current indexed color,
 creates/selects a one-pixel solid pen, moves to the first endpoint, draws to the
@@ -1575,26 +1642,26 @@ second using native line semantics, restores the prior object and deletes the
 pen. Failed color lookup requires supplied RGB bytes or a stop before their
 use. It does not establish black.
 
-### Original RGB line mechanism
+#### Original RGB line mechanism
 
 coordinates themselves. The line clip handles those edges; do not subtract 1
 in a replacement outline. RGB lines use the same coarse gate and native pen
 sequence for every direction, with low-byte RGB components.
 
-### Original RGB brush procedure
+#### Original RGB brush procedure
 
 RGB fill acquires and keeps access just like indexed fill. In RGB555 mode, each
 pixel is ((red AND 248)<<7)+((green AND 248)<<2)+((blue AND 255)>>3).
 Other modes select a solid RGB brush, fill the clipped rectangle through the
 backend, restore the prior object and delete the brush.
 
-### Original stretch context ownership
+#### Original stretch context ownership
 
 These stretch parents acquire/restore source access when needed. Transfers to
 DirectDraw obtain its device context and copy/stretch/release only on exact
 native success. They do not implement §4's sprite lookup sampling.
 
-### Original GIF file and resource plumbing
+#### Original GIF file and resource plumbing
 
 The file loader opens, allocates file-size backing, pumps messages, then checks
 allocation success. It locks, reads the live file size ignoring read success
@@ -1629,29 +1696,29 @@ paths unlock/free input, report the corresponding format error and return 0;
 missing file simply returns 0, while missing resource logs/reports first.
 Short-read bytes retain the allocation's established backing, not invented data.
 
-### Original GIF dictionary allocation
+#### Original GIF dictionary allocation
 
 Allocate three dictionary tables, each with 4096 entries. Failure logs and
 returns 0. Initialize every entry's prefix to absent, character to
 
-### Original GIF dictionary teardown
+#### Original GIF dictionary teardown
 
 The wrapper discards statuses 1..5, unlocks/frees tables and returns 1.
 
-### Original generic BMP resource cleanup
+#### Original generic BMP resource cleanup
 
 palette count do not redirect these reads. Resource format failure returns
 without unlocking/freeing the resource; allocation failure frees without
 unlocking. File error exits retain their destructor cleanup.
 
-### Original Targa mapping and teardown
+#### Original Targa mapping and teardown
 
 Resource allocation failure frees without unlocking. File loading maps read-only
 input, unmaps/closes after the pixel helper, then destroys the file object.
 Missing/unsupported input reporting and all effects before failure remain
 observable; a restrictive profile can reject unsupported types before decoding.
 
-### Original color-file resource ownership
+#### Original color-file resource ownership
 
 Color files store little-endian signed first and count, followed by count RGB
 triples. The default writer uses first=0,count=255. It captures RGB before
@@ -1665,14 +1732,14 @@ importing and committing. A CTAB resource's default loader reads little-endian
 The separate explicit-range loader skips those bytes and uses the caller's
 first/count instead. Both unlock/free the resource after import/commit effects.
 
-### Original GIF output-address limit
+#### Original GIF output-address limit
 
 Set rowWidth=u16(width), padding=u16(stride−width), and the output limit to
 destination+u16(height)×u16(stride)+1 under wrapping address arithmetic.
 The original comparisons interpret output and limit as signed addresses;
 Appendix B distinguishes that validation adapter from a logical surface bound.
 
-### Original GIF status checks against native addresses
+#### Original GIF status checks against native addresses
 
 5. If previous==clear, read this code's length, advance output and rowCount,
    and return status 3 if signed output>=signed limit. Otherwise set

@@ -9,8 +9,7 @@ namespace openciv::formats::content {
 // reload/setup operation. This neither admits a session nor opens virtual files.
 class RuleInstaller {
 public:
-    RuleInstaller(std::shared_ptr<const RuleContent> input, state::RuleState& retained,
-                  state::TextAllocation allocate = {});
+    RuleInstaller(std::shared_ptr<const RuleContent> input, state::RuleState& retained);
     // Same table order and leader policy as the full classic loader. Names are
     // replaced; individual advance/improvement/unit methods also support keep.
     void load(bool replace_leader_data);
@@ -29,13 +28,12 @@ public:
 
 private:
     void text_into(state::RuleText& target, state::TextId& binding, const state::RuleText& value,
-                   std::size_t minimum);
+                   bool blank_as_space);
     void name_into(state::RuleName& target, state::TextId& binding, const state::RuleName& value,
-                   std::size_t minimum, bool keep = false);
-    void leader_name(state::RuleText& target, std::int16_t& binding, const state::RuleText& value,
-                     std::size_t minimum, bool replace);
+                   bool blank_as_space, bool keep = false);
+    void leader_name(state::RuleText& target, state::NameReference& binding,
+                     const state::RuleText& value, bool blank_as_space, bool replace);
     std::shared_ptr<const RuleContent> input_;
     state::RuleState& retained_;
-    state::TextAllocation allocate_;
 };
 } // namespace openciv::formats::content

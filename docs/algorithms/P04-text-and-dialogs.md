@@ -1,74 +1,145 @@
 # P04: Text and dialogs
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-This specification describes classic Civilization II Multiplayer Gold Edition
-5.4.0f, patch 3 label loading, text expansion and formatting, fonts, wrapping,
-dialog construction, controls, selection and modal results. A replacement may
-use different string, widget and window representations and presentation.
-Preserve authored content, semantic information, decisions and required effects;
-original geometry and native control traces are reference behavior.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-[F03](F03-rules-and-configuration.md#2-finding-sections-and-consuming-text)
-owns named-section lookup and physical text-line reading. [F01](F01-determinism-and-arithmetic.md)
-owns arithmetic; [P03](P03-graphics-and-asset-processing.md) owns palettes,
-sprites and surface primitives. [P05](P05-input-and-command-dispatch.md) owns general message delivery, menus,
-keyboard translation, focus traversal and default-button dispatch; this document
-owns what dialog controls do with those events. Population quantities belong to
-[V02](V02-governments-and-tax-rates.md#population-queries), and calendar progression to
-[F04](F04-turn-sequencing.md). Their display formatting is specified here.
+| Surface | Binding scope in P04 |
+| --- | --- |
+| Gameplay | Information and named decisions with owner-defined accepted effects and real deadlines. |
+| Original files/content | Explicit classic label/substitution/dialog-resource grammar, source choice identities and field meanings. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Prompt model/state machine, navigation, shared text/pool ordinals and cancelled draft copying. |
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-## Required contract and reading guide
+## Required presentation contract
 
-Scenario/resource text and substitutions, information values/units, offered
-semantic choices, input domains, target identity and accepted/cancelled effects;
-numeric protocol results mapped from named choices where required.
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-## Implementation boundary
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-The main sections use logical values, identities and operations. Original memory,
-allocation and platform mechanics are recorded in [Appendix E](#appendix-e-original-implementation-reference). Preserve required
-state changes and externally visible results without reproducing those mechanisms.
-Exact numeric domains and file/wire encodings remain required wherever specified.
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
 
-## Native text and classic resource compatibility
+## Text and interaction obligations
 
-Standalone catalogs use [native JSON text and interaction records](../content/data-format.md#6-text-and-interaction-catalogs).
-They preserve information, parameters, semantic choices and caller effects while
-using new prose/layouts. Native inputs/defaults and named help/fact/advice
-content also cover editor/help/tutorial resources; classic source addresses
-belong to the adapter/compatibility descriptor, not the native text catalog. The
-[per-file inventory](../content/text-resources.md) records those consumers. Classic
-resource parsing, indexed substitutions and fallback below remain the compatibility-adapter contract for user-selected text;
-they do not require native catalogs to reproduce classic control markup. Preserve
-scenario-authored content and do not translate unsupported resource semantics
-into a different command or a stock fallback silently.
+Support original text/configuration files through F03 and the data contract
+below, and [native semantic text catalogs](../content/data-format.md#6-text-and-interaction-catalogs).
+Preserve authored names, prose, substitutions and distinct choice identities.
+Stock chrome wording, number grouping, date layout, wrapping, fonts and dialog
+structure may change while conveying the correct values, units and meaning.
 
-## 1. Inputs, state and compatibility
+An interaction describes its actor/target, information, available named actions,
+input domains and any actual game/protocol default or deadline. It need not be a
+prompt object, modal loop, radio group or listbox. Combine screens, use inline
+editing, change navigation or present a searchable list as appropriate. Duplicate
+choice labels do not merge identities. Translate accepted choices to the numeric
+caller/file/wire result only at the adapter that requires that encoding.
+
+P04 imposes no Complete/Activated/Prepared flags, active-prompt singleton,
+control-number arithmetic, shared edit array, traversal sequence or return-time
+publication. In particular, closing or cancelling a draft need not copy its text
+or checkbox values into shared parameters. Commit effects come from the owning
+game operation, not from the old widget getter. Previously accepted commands
+remain accepted when another interaction is cancelled.
+
+Show truthful turn/actor status under N03 and the disclosure predicates recorded
+in reference §4: civilization identity requires the permitted contact/self/shared
+identity case; otherwise use the permitted participant identity or generic AI.
+The cached countdown-minus-one calculation, title suffix layout and cache update
+schedule are optional reference. A new countdown represents N03's actual remaining
+time; it cannot change the deadline or leak a concealed actor.
+
+## Original-file input contract
+
+The following definitions are binding for the classic adapter. They do not
+prescribe live storage or original prompt operation:
+
+- F03 section/line reading, text encodings, selected language extension and
+  scenario/install lookup; §2 LABELS slot meanings, install fallback and POPUPS
+  labels. The classic label catalog has 888 slots (0–887); capacity beyond the
+  catalog, allocation size and STRINGHEAP hints are not live-state requirements.
+  Preserve unrelated rule names during label reload and use owned strings/local
+  references. Ordinary empty pooled input means `<nil>`; padded-name empty input
+  means one space, without padded allocations. F02/F06 own custom-name flags and
+  stored leader markers.
+- §2 decimal-token interpretation and variable expansion's token spelling,
+  case sensitivity, selector meaning, cursor advancement and expanded text.
+  This includes the documented `%STRING00` and `%NUMBER01` suffix behavior.
+  Expand once against explicit supplied parameters. Mutating input buffers,
+  global parameter tables and per-append live reads are not requirements.
+- §5 section grammar: Text/Options transitions, blank-line and PreserveBlank
+  handling, termination markers, source option ordinals, literal versus expanded
+  default text, title/button content and checkbox versus single-choice meaning.
+  Recognize the documented directive spelling and numeric parsing. WIDTH,
+  HEIGHT, COLUMNS, LISTBOX, X/Y, SMALLFONT and SYSTEM are presentation hints;
+  recognizing them does not require implementing their original effects.
+- LENGTH and DEFAULT carry authored field constraints/defaults. Retain their
+  meaning in the decoded content; UI focus and presentation can differ. Enforce
+  externally meaningful input domains at acceptance. A private buffer capacity
+  is not an additional game limit. Keep defaults used by automatic decisions or
+  timeouts; a local focus preference does not authorize an automatic decision.
+- Caller-required result values are adapter mappings from semantic choices.
+  Reference §10 wrapper return conventions and Appendix B can identify those
+  mappings, but private result slots, cancelled draft copying, unused returns and
+  flags have no independent requirement. Packed labels in §11 are an old widget
+  representation, not a format the production prompt model must mirror.
+
+Population/calendar values follow V02/F04; text may format them clearly without
+the mixed-destination shared-line writes in §3. Unknown selectors and malformed
+resources receive safe diagnostics, not reads of old stack or heap bytes.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Inputs, state and compatibility
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal inputs are complete classic text resources, valid label/parameter indices,
 safe text storage and identified prompt operations. Preserve label/string pools,
@@ -101,22 +172,20 @@ backing, supplied retained input or a stop. A stricter input profile may reject
 unsupported resources explicitly. Appendix B separates original capacities and
 corruption evidence from the representation-independent algorithms.
 
-## 2. Labels and shared text parameters
+### 2. Labels and shared text parameters
 
-### Label initialization
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Label initialization
 
 Text startup derives the status-language position from signed defaultLanguage−1,
 resetting it to0 only when greater than2. Select TXT by default, then
-TXT/FRE/GER/ITA/SPA for languages1..5. Build F03's GAME section cache. Read
-LABELS/STRINGHEAP; a request greater than the retained logical capacity raises it
-(initial35000). Initialize the logical pool empty with `<nil>` first. F03 owns
-string identity and empty/padded-name interpretation. Capacity may be modeled
-without allocating the original contiguous arena.
-
-Rebuild repeats that capacity step without resetting language/cache, replaces
-the logical pool and `<nil>`, clears old labels, loads labels below ignoring its
-return, then loads popup labels. Original handles, locking and numeric UI-error
-codes are in [Appendix E](#appendix-e-original-implementation-reference).
+TXT/FRE/GER/ITA/SPA for languages1..5. Build F03's GAME section cache. Original LABELS/STRINGHEAP capacity hints are comparison-only. Initialize
+text ownership and the `<nil>` fallback without imposing an arena layout.
+Rebuild replaces the label collection and reloads labels/popups, preserving
+unrelated rule references and existing popup values when no replacement is
+supplied. It does not reset language or resource lookup configuration.
 
 Open section `LABELS` of `LABELS` through F03. Missing section reports failure.
 On success read and publish declared count. Starting0, read one pooled string per
@@ -140,7 +209,7 @@ If found, read three pooled strings and publish them, in order, as OK, Help,
 Cancel. Missing section leaves the current labels; this routine does not close
 the section file. Initial labels are the literal English `OK`, `Help`, `Cancel`.
 
-### Parameter setters and decimal parsing
+#### Parameter setters and decimal parsing
 
 A number setter replaces the chosen number; the byte-valued setter zero-extends
 its low byte into the full number. A string setter copies through the terminating
@@ -156,7 +225,7 @@ every operation. Negate with wrap for a minus sign. Return zero when no digits
 occur. Stop at the first nondigit; `0x10` therefore parses as zero. Classification
 inputs are bytes here; directive scans below sign-extend their source bytes.
 
-### Variable expansion
+#### Variable expansion
 
 Expansion consumes a **writable input** and an output string. Clear the output
 first. Repeatedly find the next `%`, replace it in the input with NUL, and append
@@ -173,9 +242,9 @@ the input cursor past `%` and test these branches in order:
 
 Advancement is not based on how many digits the parser consumed. For example,
 with string 0=`alpha` and number 1=−12, `%STRING00!` gives `alpha0!` and
-`%NUMBER01x` gives `-121x`. `%number0` gives `number0`. The input's inserted NULs
-remain. Do not expand again after growing an output buffer or snapshot every
-parameter before processing: later branches read current shared values.
+`%NUMBER01x` gives `-121x`. `%number0` gives `number0`. Mutation of original scratch buffers is a reference detail. Expand once from
+the supplied semantic input. Parameters may be captured at an actual interaction
+boundary; appending text does not create a callback or mutation boundary.
 
 A HEX value wider than four digits underflows the original unsigned padding
 count. Its ensuing buffer overwrite is excluded; a safe implementation may
@@ -183,7 +252,10 @@ reject that width before padding. Ordinary string selectors and the separately
 backed profile selector are listed in Appendix B. Other selectors require real
 read backing or a stop, not a synthesized empty string.
 
-## 3. String and quantity formatting
+### 3. String and quantity formatting
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Basic appenders append pooled or label text verbatim. City name uses label 14
 for a negative city argument, otherwise the selected city's name. A braced pool
@@ -215,8 +287,8 @@ Year formatting uses the live scenario flag and signed scenario calendar:
   space and label 1 after the number. A negative year always appends a space
   and label 0 afterward. `abs(INT_MIN)` wraps to INT_MIN.
 
-Read the language flag separately before and after formatting the number; a
-callback or aliased write can change it. Monthly output to another destination
+Use the language choice established for this formatting operation; formatting
+does not create a callback or mutation boundary. Monthly output to another destination
 still modifies the shared line. Year zero uses the nonpositive monthly branch.
 
 Gold formatting appends signed decimal to its requested destination, then a
@@ -227,14 +299,17 @@ The single-character category helper maps either case of M,S,T,F,A to 0,1,2,3,4;
 other initial characters return −1. This mapping alone does not establish a
 new game-rule meaning for those categories.
 
-## 4. Fonts, measurement and basic drawing
+### 4. Fonts, measurement and basic drawing
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Render the required text and information using any fonts, measurement, framing and
 caption widgets. Keep scenario text and substitutions intact; font/device failure
 follows X01. Native font metrics remain inputs only for an explicitly retained
 simulation admission calculation such as P07 scoring.
 
-### Status information and disclosure
+#### Status information and disclosure
 
 For autoplay with turn-status enabled, a changed cached countdown takes a fresh
 signed autoplay-remaining value. Otherwise a human saved-player actor with countdown
@@ -271,7 +346,10 @@ clearly. This status computation must not change N03's actual deadline.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 5. Dialog setup and resource parsing
+### 5. Dialog setup and resource parsing
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 A logical prompt contains authored text/title, identified options, edit values,
 checkbox state, offered buttons, initial/default selection and completion/result
@@ -279,7 +357,7 @@ state. Parse resource content as below; layout directives are recognized syntax
 and presentation hints, not mandatory screen geometry. Keep LENGTH, DEFAULT,
 choice values and option ordering wherever they determine semantic results.
 
-### Resource state machine
+#### Resource state machine
 
 Copy the section name to the shared prompt-section label, then use F03 lookup.
 On lookup failure, ordinary mode still calls setup; Append mode does not. Return
@@ -324,7 +402,10 @@ are not extra syntax rules.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 6. Flow text and option-label drawing
+### 6. Flow text and option-label drawing
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Present authored text, semantic option labels and complete information.
 Typography, wrapping, alignment, scrolling and text drawing may differ; they must
@@ -333,7 +414,10 @@ semantics.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 7. Layout, window creation and painting
+### 7. Layout, window creation and painting
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Construct and display the interaction with the information, choices and result
 behavior in §§5, 9–10. Layout, button geometry, placement, native window creation
@@ -341,7 +425,10 @@ and painting are optional reference details.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 8. Control construction and shared widget behavior
+### 8. Control construction and shared widget behavior
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Provide enabled semantic options, editable values and accepted actions. Widget
 construction, native control messages, focus/capture and pressed-state painting
@@ -350,7 +437,10 @@ may differ. Preserve choice/result identity, edits and publication described in
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 9. Selection, mouse and keyboard algorithms
+### 9. Selection, mouse and keyboard algorithms
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 User input selects identified enabled options or explicitly offered custom
 actions. New key/mouse bindings need not reproduce native focus/capture paths.
@@ -358,7 +448,7 @@ Preserve primary/secondary results, live callback effects and the action semanti
 below. Convert new control identities to the declared option/button values;
 action completion must not manufacture an accepted result after cancellation.
 
-### Prompt actions and results
+#### Prompt actions and results
 
 All following callbacks use the **live active prompt** after children unless
 explicitly captured. Completing a prompt sets Complete, then reloads the active
@@ -384,7 +474,10 @@ Complete the live prompt in every ordinary button branch.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 10. Modal completion, wrappers and cleanup
+### 10. Modal completion, wrappers and cleanup
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 While awaiting a decision, enforce the caller's gameplay/network gates and run
 its required idle/timeout/network work. Completion, cancellation and cleanup must
@@ -392,7 +485,7 @@ resolve the pending interaction and any required protocol reply. The following
 publication/wrapper rules remain required; native modal stacks, window enabling
 and destruction order are reference implementation details.
 
-### Prompt modal operation
+#### Prompt modal operation
 
 1. If prompt mode equals 16, return the current primary result immediately.
    Otherwise obtain a clock sample. Set activity timer to ticks when timeout
@@ -426,7 +519,7 @@ is active and compares signed now against the wrapped drag-start+124 deadline; i
 does not recheck active after the clock call. These callbacks stop presentation;
 network/drag owners retain their own state-transition rules.
 
-### Public convenience wrappers
+#### Public convenience wrappers
 
 - Choice wrapper constructs an ordinary arena dialog and loads the resource.
   On success, checkbox mode initializes marks from the shared option mask using
@@ -458,7 +551,10 @@ whole-list clear traverses next after each flag mutation.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 11. Packed-label legacy dialog
+### 11. Packed-label legacy dialog
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Legacy packed-label controls need not be recreated. If a caller uses this service,
 decode its offered labels/choices and return the corresponding semantic result
@@ -467,7 +563,10 @@ widget construction are reference details.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 12. Conformance cases and integration boundaries
+### 12. Conformance cases and integration boundaries
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate authored resource parsing/substitutions, values and units, option and
 result identity, timeout/remote completion, cancelled edit/checkbox publication,
@@ -477,7 +576,7 @@ layout, mouse/key and native allocation traces are optional reference tests.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Evidence identity and source navigation
+### Appendix A. Evidence identity and source navigation
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -522,9 +621,9 @@ evidence locators, not required implementation addresses. Selected instruction
 bytes are checked in the research bundle; source coverage and runtime coverage
 are separate claims.
 
-## Appendix B. Encodings, capacities and excluded defects
+### Appendix B. Encodings, capacities and excluded defects
 
-### Native representation adapters
+#### Native representation adapters
 
 These details support validation against original storage. Internal replacement
 objects need not match them.
@@ -597,7 +696,7 @@ bitmap resource IDs are disabled/unchecked/checked=306/305/304;
 radio equivalents are 301/303/302. Native glyph and system-widget behavior remains
 a declared service input.
 
-### Original storage limits and safe treatment
+#### Original storage limits and safe treatment
 
 - Label table has 888 identifiers. Substitution number table has six signed
   DWORDs. Ordinary strings are eleven 260-byte slots. The scenario text producer
@@ -655,7 +754,7 @@ negative-y placement abort after a failed geometry query. The original read
 boundaries above distinguish supplied incoming state from those repairs. No
 uninitialized-value replacement or overwrite is silently required for conformance.
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -699,7 +798,7 @@ above and original `00552ed2/00553169/005532d7`. This addition is not exercised
 by the 28-body harness. P06 records its own bounded checks and remaining native
 control/layout joins.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -710,7 +809,7 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §4. Fonts, measurement and basic drawing
+#### Original §4. Fonts, measurement and basic drawing
 
 Font creation accepts family, size and style. Nominal families are Times New
 Roman, Arial, System and Courier. Height is the wrapped negative of size; width,
@@ -754,7 +853,7 @@ walks the live count, deletes nonnull entries and clears each after deletion,
 removes the resource, then unlocks/frees. Resource installation/removal broadcasts
 font change only on the corresponding success branch. Capacity spills are bugs.
 
-#### Drawing services
+##### Drawing services
 
 Selecting a text color uses the low byte and returns the previous byte. Selecting
 extra width normalizes it to Boolean. Styled point text draws a shadow when its
@@ -789,7 +888,7 @@ independently request bottom and right alignment. Its port wrapper can shadow
 by the font-height offset; paragraph text has no corresponding port shadow.
 Failed palette/geometry/metric queries need defined outputs before consumption.
 
-#### Shared window captions and status frames
+##### Shared window captions and status frames
 
 This service supplies P01/P02 map captions and compatible auxiliary/intro frames.
 Title publication first clears its title storage, then copies a bounded title;
@@ -836,7 +935,7 @@ Draw color 10 at x+2,y+1, select color 26 and draw x+1,y then x,y with the selec
 font. Restore clip to the live client rectangle. Composition overflow is an
 excluded bug; font-query output and retained timer text must be supplied.
 
-#### Shared frame preparation and caption controls
+##### Shared frame preparation and caption controls
 
 Map, city, advisor and compatible intro windows use this common preparation
 before layout/redraw. Capture surface width then height and form full bounds at
@@ -864,7 +963,7 @@ or an excessive slot write is excluded corruption. P01/P06 supply commands;
 these generic sprite controls are distinct from P06's specialized city cycling
 buttons. Their paint/hit behavior remains with the ordinary P04 control owners.
 
-#### Shared intro-style surface creation
+##### Shared intro-style surface creation
 
 Reports, tax-rate/history surfaces and compatible editor windows call this
 creator with title, position, extent, caption/side margins, resize border and
@@ -885,7 +984,7 @@ preparation above, then install begin/end window-drag handlers. Do not restore
 fields overwritten by callbacks or treat a failed title copy as successful
 creation. A title crossing its logical destination is excluded corruption.
 
-### Original §6. Flow text and option-label drawing
+#### Original §6. Flow text and option-label drawing
 
 A dialog reports that it has flow text when any text node has x<0. The actual
 measurement routine treats x>0 as absolute and **x=0 as flow**; retain this
@@ -946,13 +1045,13 @@ the delimiter afterward; any truncation on either side remains. A node marked
 disabled uses emphasis in a custom list; this drawing flag does not prevent that
 list from selecting it.
 
-### Original §7. Layout, window creation and painting
+#### Original §7. Layout, window creation and painting
 
 All maximum comparisons in this section are signed. Read flags again at later
 phase gates: text/font/window callbacks can change them. FixedLayout preserves
 caller geometry only in the branches explicitly skipped below.
 
-#### Body geometry
+##### Body geometry
 
 1. Unless FixedLayout, raise content width for each forced text line's measured
    width plus shadow extra. If a nonempty title and title font exist, raise
@@ -1005,7 +1104,7 @@ node. Repeat for pane 1 only with TwoPanes, take the maximum pane height, and
 restore current pane to zero. SystemList omits custom geometry. Zero divisors,
 null selected-node reads or nonprogressing off-nominal loops are not normalized.
 
-#### Buttons and screen placement
+##### Buttons and screen placement
 
 With no buttons add outer border to both window and chrome height. Otherwise:
 
@@ -1044,7 +1143,7 @@ Add client origin to body/option/edit origins in this nonfixed branch; sprite
 origins do not get that addition. Always add client origin to button coordinates.
 Normal layout returns zero.
 
-#### Window and paint order
+##### Window and paint order
 
 Creation returns zero immediately when a window is already present. Otherwise
 allocate/construct and publish a surface window; use title or empty text, and
@@ -1103,9 +1202,9 @@ inset selection bevel, fill selected/ordinary background, and draw §6 label at
 cell x+2,y with the node's disabled flag as emphasis. Optionally present the cell;
 return the captured selection Boolean.
 
-### Original §8. Control construction and shared widget behavior
+#### Original §8. Control construction and shared widget behavior
 
-#### Prompt control setup
+##### Prompt control setup
 
 When this dialog is not active, validate prompt-stack mode in 0..15, report a
 fatal diagnostic if invalid, increment the live mode, publish this dialog as
@@ -1134,7 +1233,7 @@ configuration follows links. Mismatches cannot justify writing beyond allocated
 controls. Finally install prompt key/character handlers and set ControlsReady.
 Default-key routing and traversal are P05's responsibility.
 
-#### Labels, radio groups and checkbox controls
+##### Labels, radio groups and checkbox controls
 
 Ordinary button/checkbox accelerator parsing scans the copied label for the first
 `~`. Remove it by shifting each following character left, recomputing current
@@ -1165,7 +1264,7 @@ rule. Configuration resets callback/value to zero and enabled to one after base
 initialization, then creates the control. Initial values supplied later can be
 non-Boolean; a toggle maps any nonzero value to zero, zero to one.
 
-#### Native control services
+##### Native control services
 
 EDIT, COMBOBOX and system LISTBOX clone the corresponding native class and keep
 its lower procedure. Registration publication occurs even when registration
@@ -1207,7 +1306,7 @@ message to the lower procedure. Supply that incoming byte or stop at its first
 use. The deterministic SDK-message dispatcher in the reconstruction is an
 explicit fix, not recovered classic behavior. Appendix A pins the instructions.
 
-#### Button and option painting
+##### Button and option painting
 
 A push button prepares normal, pressed and disabled bitmaps in that order, each
 sized to the control bounds minus two pixels in width/height. A failure logs,
@@ -1243,7 +1342,7 @@ bitmap selection treats any nonzero as enabled. Focus outlines start 32 pixels
 right of the client left. Push buttons outline full client bounds and an inset
 of four when focused with traversal enabled. P03 supplies bitmap/raster services.
 
-### Original §11. Packed-label legacy dialog
+#### Original §11. Packed-label legacy dialog
 
 This separate helper takes message text and underscore-separated labels. It is
 not the resource-driven state machine. The original allocation for each copied
@@ -1283,9 +1382,9 @@ modal loop. Delete copied inputs, capture shared selection, then destroy radio,
 Cancel, OK, window, font and palette in reverse construction order. Shared font
 and window references are not restored by this helper.
 
-### Original §5. Dialog setup and resource parsing
+#### Original §5. Dialog setup and resource parsing
 
-#### Logical defaults and setters
+##### Logical defaults and setters
 
 Reset is sparse. It clears the window/background, font references, node heads,
 counts, callbacks, controls, title, selections and both results; sets columns to
@@ -1328,7 +1427,7 @@ callback. Button height is live body line height plus 4 plus twice live vertical
 padding. Button width captures sprite gap before measuring the button font,
 then returns measured width plus 4 plus four times that gap.
 
-#### Nodes
+##### Nodes
 
 Text append stores an ordinal starting at one, copied text, requested x/y and
 optional center coordinate. Strip one initial `^` and mark a forced line; if a
@@ -1370,9 +1469,9 @@ reached. Its count is reloaded after allocation and copying.
 
 [Required behavior is retained in the main section.](#5-dialog-setup-and-resource-parsing)
 
-### Original §9. Selection, mouse and keyboard algorithms
+#### Original §9. Selection, mouse and keyboard algorithms
 
-#### Group lookup and selection primitive
+##### Group lookup and selection primitive
 
 `optionIndex(target)` counts preceding nodes in the **target's group**, returns
 that count on pointer identity and returns zero if absent. A null target with a
@@ -1408,7 +1507,7 @@ Selecting a node with `present`:
    dialog and the target node's live value. With present=false, neither drawing
    nor the selection callback occurs.
 
-#### Custom-list mouse behavior
+##### Custom-list mouse behavior
 
 Mouse-down chooses a pane and clears its drag marker, then requires a nonempty
 custom list. A nonnegative point index sets drag, captures the window and selects
@@ -1435,7 +1534,7 @@ mark Activated and complete the active prompt. Scrollbar callbacks choose their
 fixed pane, change viewport by row or rows*column, and redraw when changed;
 they do not change selected option.
 
-#### Control activation
+##### Control activation
 
 Radio mouse-down changes selection only when the row is enabled=1 and differs.
 Invalidate old selection when not −1, publish new selection, focus, invalidate,
@@ -1473,7 +1572,7 @@ calls action. Preserve these callback and timing boundaries.
 
 [Required behavior is retained in the main section.](#9-selection-mouse-and-keyboard-algorithms)
 
-#### Prompt keys and characters
+##### Prompt keys and characters
 
 Reset the activity timer on key events unless List is set and no edits exist.
 For highlighted sprites, next/down advances with wrap, previous/up finds the
@@ -1512,9 +1611,9 @@ global ordinal as native selection; ordinary radio groups receive that raw
 selection ordinal; checkbox mode does nothing. This path does not test disabled
 flags and does not filter the option search by group.
 
-### Original §10. Modal completion, wrappers and cleanup
+#### Original §10. Modal completion, wrappers and cleanup
 
-#### Generic modal window
+##### Generic modal window
 
 This is separate from the prompt stack. Its depth starts at −1. At entry,
 **depth==15** returns immediately; this is an equality test, not a range check.
@@ -1537,7 +1636,7 @@ slot. Invalid stack writes are excluded; unknown stack reads require backing.
 
 [Required behavior is retained in the main section.](#10-modal-completion-wrappers-and-cleanup)
 
-#### Cleanup and destruction
+##### Cleanup and destruction
 
 Focus the explicit prompt parent, otherwise the ready main window. Delete and
 clear controls in this order: radio group, checkbox array, edits, buttons,
@@ -1554,7 +1653,7 @@ out-of-bounds restores with a guessed parent. Ordinary destruction calls this
 cleanup and then releases the string arena. No exception rollback is implied
 for a diagnostic stop in a reconstruction fixture.
 
-### Original §12. Conformance cases and integration boundaries
+#### Original §12. Conformance cases and integration boundaries
 
 A cleanroom suite should distinguish these observations:
 
@@ -1582,7 +1681,7 @@ labels, choices and effects the game requests. This specification does not claim
 that substitute metrics or a deterministic repaired edit dispatcher establish
 pixel-exact original behavior.
 
-### Original prompt state and native domain
+#### Original prompt state and native domain
 
 Nominal inputs are complete classic text resources, valid label/parameter
 indices, initialized fonts and dialogs, positive layout divisors, sufficient
@@ -1612,18 +1711,18 @@ values, accepted/cancelled results, message pumping and retained state. Dialogs
 are not transactions. Cancel does not generally undo edit-buffer or checkbox
 publication.
 
-### Original prompt window restore
+#### Original prompt window restore
 
    is zero, else `ticks+timeout*60−1200`, with wrap. When map input is enabled
    after that callback and the main window is iconic, restore it.
 
-### Original prompt completion pumping
+#### Original prompt completion pumping
 
 7. Unless Keep, clean up, discard queued input, pump messages, flush queued paint,
    then pump messages again. Return the **live primary result after all of these
    callbacks**, not the value captured at completion.
 
-### Original timer string formatting
+#### Original timer string formatting
 
 Timer text has two branches. With the shared autoplay flag and turn-status
 presentation enabled, compare cached countdown with the signed autoplay-remaining
@@ -1637,7 +1736,7 @@ colon at character index 2 regardless of minute width. Seconds below ten get a
 leading zero and negative seconds clamp to zero. Other cases clear only the
 first timer character. Unchanged cache retains its existing text.
 
-## Appendix E. Original implementation reference
+### Appendix E. Original implementation reference
 
 This appendix preserves original storage, allocation, native API and adapter
 procedures for reference validation. The main text defines required behavior.
@@ -1649,7 +1748,7 @@ appearing here. Original memory/handle traces are not a second normative algorit
 Optional providers and harmless UI failures retain X01's existing scope limits;
 this reorganization introduces no new gameplay or interoperability relaxation.
 
-### Original label-pool allocation and native failures
+#### Original label-pool allocation and native failures
 
 Text startup derives the status-language position from signed defaultLanguage−1,
 resetting it to zero only when greater than two. Select extension TXT by default,
@@ -1686,7 +1785,7 @@ and count, but retain the published table reference. Reads or writes beyond
 established collections follow §1. The primary reconstruction's count clamp is
 a repair, not an extra original parsing rule.
 
-## Appendix F. Original numeric annotations
+### Appendix F. Original numeric annotations
 
 These original annotations retain storage widths and reference-evaluation context.
 They do not prescribe internal types or redundant casts. The main contract and
@@ -1695,7 +1794,7 @@ file/wire encodings remain normative in their owning mappings. Where an excerpt
 includes an off-nominal conversion, it applies to that explicitly admitted profile,
 not as a new requirement to accept unsupported inputs.
 
-### Reference annotation 1
+#### Reference annotation 1
 
 Colors use their low byte. A rectangle is half-open except the explicit inclusive
 pane-choice test.

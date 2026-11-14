@@ -1,5 +1,29 @@
 # C06 — City production and purchasing
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in C06 |
+| --- | --- |
+| Gameplay | Build eligibility, switching penalties, buy/sell/change-production prices and effects, city-turn production and AI purchasing. |
+| Original files/content | F03 costs/prerequisites and F06 production/stock/treasury state. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Prompt/control sequence, private modal results and synthetic callbacks changing an unrelated selected city during purchase. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -13,8 +37,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 ## Target and ownership
 
@@ -761,6 +786,12 @@ occurs only after this operation returns normally.
 
 ## Discriminating conformance cases
 
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
+
 Unless varied, use a valid flat map, city0 at (8,6), owner1 human, King difficulty,
 raw shield rule10 and shieldRows10, no relevant improvements/wonders, a single
 valid unit type0 with signed cost4 and ordinary attack role, no busy network
@@ -780,7 +811,7 @@ the selected result alone does not establish equivalence.
 | AI changes nonwonder to wonder with stock9 | Stock becomes4 through truncating halving. Human snapshot penalties are not used. |
 | AI zero-stock first wonder in group; all human group counts nonzero, King, raw cost3 | Grant9 shields, not90. Started flag is set even if autoplay suppresses its notice. |
 | Unit purchase, stock10 and treasury1000 | Remaining30, price105; confirmed purchase leaves treasury895 and stock40, republishes the snapshot, and creates nothing yet. Stock0 instead gives doubled price320. |
-| Purchase modal changes treasury to1, raw rule to12 and selection to another city | Deduct retained105 from captured owner, producing-104; set new selected stock48 from captured cost4 and fresh rule12. No second affordability test. |
+| Executable diagnostic: injected purchase-modal callback changes treasury to1, raw rule to12 and selection to another city | Original trace deducts retained105 from captured owner, producing-104; sets new selected stock48 from captured cost4 and fresh rule12. This synthetic UI mutation is not a required production interaction; accepted commands retain identified targets. |
 | Disorder, unit versus ordinary building purchase | Unit gets Complete2 and no purchase. Building remains purchasable. Capitalization returns without the purchase dialog. |
 | Busy map lock on Buy/Change | Publish corresponding deferred work and fresh selection arguments; no recalculation or modal purchase/change action. |
 | Sell one Granary with raw cost3 | Credit30, remove facility, set sold flag. Next sale blocks unless reveal-map and scenario mode are both active. Palace has the same two-mode exception to its separate prohibition. |

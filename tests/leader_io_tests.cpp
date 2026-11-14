@@ -21,11 +21,11 @@ struct World {
             (*civs)[i].tribe = static_cast<std::int16_t>(i);
         rules->text.initialize();
         for (auto& leader : rules->leaders) {
-            leader.names = {12, -13};
-            leader.leader_name = 444;
-            leader.plural = -14;
-            leader.adjective = -32768;
-            leader.titles.fill({-16, 0});
+            leader.names = {state::NameReference{12, false}, state::NameReference{13, true}};
+            leader.leader_name = state::NameReference{444, false};
+            leader.plural = state::NameReference{14, true};
+            leader.adjective = state::NameReference{32768, true};
+            leader.titles.fill({state::NameReference{16, true}, state::NameReference{0, false}});
             leader.female = 1;
             leader.times_used = 72;
             leader.city_name_index = 73;
@@ -47,16 +47,16 @@ void scenario_rules(World& w) {
     for (std::size_t i = 0; i < w.rules->leaders.size(); ++i) {
         auto& live = w.rules->leaders[i];
         live.female = 0;
-        live.names[0] = static_cast<std::int16_t>(w.rules->text.store("Male"));
-        live.names[1] = static_cast<std::int16_t>(w.rules->text.store("Female"));
-        live.plural = static_cast<std::int16_t>(w.rules->text.store("People"));
-        live.adjective = static_cast<std::int16_t>(w.rules->text.store("Adjective"));
+        live.names[0] = state::NameReference{w.rules->text.store("Male"), false};
+        live.names[1] = state::NameReference{w.rules->text.store("Female"), false};
+        live.plural = state::NameReference{w.rules->text.store("People"), false};
+        live.adjective = state::NameReference{w.rules->text.store("Adjective"), false};
     }
     for (std::size_t g = 0; g < 7; ++g)
         w.rules->names.government_titles[g] = {static_cast<state::TextId>(100 + g * 2),
                                                static_cast<state::TextId>(101 + g * 2)};
 }
-Bytes input_bytes(const state::Leader& first, const state::Leader& second) {
+Bytes input_bytes(const StoredLeader& first, const StoredLeader& second) {
     ByteWriter bytes;
     for (unsigned i = 0; i < 21; ++i) {
         bytes.u8(static_cast<Byte>(i));
@@ -82,7 +82,7 @@ TEST_CASE("F06 leader items publish triplets and keep selected records in tribe-
     World w;
     two_humans(w);
     w.rules->leaders[3].attack = 17;
-    state::Leader first, second;
+    StoredLeader first, second;
     first.plural = -12;
     second.plural = 15;
     second.attack = -22;
@@ -107,7 +107,7 @@ TEST_CASE("F06 leader items publish triplets and keep selected records in tribe-
     REQUIRE(w.rules->leaders[3].city_name_index == 24);
     REQUIRE(w.rules->leaders[3].female == 1);
     REQUIRE(w.rules->leaders[3].attack == 17);
-    REQUIRE(w.rules->leaders[3].plural == -14);
+    REQUIRE(w.rules->leaders[3].plural == state::NameReference{14, true});
     REQUIRE(w.cursor.x == -321);
     REQUIRE(w.cursor.y == 456);
     REQUIRE(memory.position() == bytes.size());
@@ -129,7 +129,7 @@ TEST_CASE("F06 leader items publish triplets and keep selected records in tribe-
 }
 TEST_CASE("F06 every truncated leader-item prefix retains earlier fields and scratch backing",
           "[formats][leader-io]") {
-    state::Leader first, second;
+    StoredLeader first, second;
     first.plural = -111;
     first.leader_name = 222;
     second.plural = -333;
@@ -147,7 +147,8 @@ TEST_CASE("F06 every truncated leader-item prefix retains earlier fields and scr
             REQUIRE(live.times_used == (length > i * 3 ? bytes[i * 3] : 72));
             REQUIRE(live.city_name_index == (length > i * 3 + 1 ? bytes[i * 3 + 1] : 73));
             REQUIRE(live.female == (length > i * 3 + 2 ? bytes[i * 3 + 2] : 1));
-            REQUIRE(live.plural == -14); // Saved Leader never overwrites the rule row.
+            REQUIRE(live.plural ==
+                    state::NameReference{14, true}); // Saved Leader never overwrites the rule row.
         }
         Bytes cursor{0x88, 0x77, 0x66, 0x55};
         const auto cursor_bytes = length > 63 ? std::min<std::size_t>(4, length - 63) : 0;
@@ -242,7 +243,7 @@ TEST_CASE("F06 leader writes observe live fields and restore the multiplayer sel
                 w.rules->leaders[0].city_name_index = 99;
             if (bytes.size() == 48) {
                 players.push_back(w.globals.player_civ);
-                w.rules->leaders[3].plural = -55;
+                w.rules->leaders[3].plural.custom = false;
                 return players.size() < 2;
             }
             return true;
@@ -251,8 +252,8 @@ TEST_CASE("F06 leader writes observe live fields and restore the multiplayer sel
     REQUIRE(writes.size() == 67);
     REQUIRE(writes[1] == Bytes{99});
     REQUIRE(players == std::vector<std::int8_t>{0, 2});
-    REQUIRE(decode_leader(writes[65]).plural == -14);
-    REQUIRE(decode_leader(writes[66]).plural == -55);
+    REQUIRE(decode_leader(writes[65]).plural == -1);
+    REQUIRE(decode_leader(writes[66]).plural == 1);
     REQUIRE(w.globals.player_civ == 6);
     w.globals.human_players = 0;
     unsigned count = 0;
@@ -269,7 +270,7 @@ TEST_CASE("F06 ordinary loaded names normalize all leaders and use saved signs w
           "[formats][leader-names]") {
     World w;
     (*w.civs)[1].tribe = 2;
-    state::Leader saved;
+    StoredLeader saved;
     saved.leader_name = 99; // The sign here does not control current-name negation.
     saved.plural = -100;
     saved.adjective = -200;
@@ -279,19 +280,22 @@ TEST_CASE("F06 ordinary loaded names normalize all leaders and use saved signs w
     w.scratch.by_tribe[2].assign(saved);
     w.restore(false);
     const auto& live = w.rules->leaders[2];
-    REQUIRE(live.leader_name == 13); // Negation, not forcing a negative sign.
-    REQUIRE(live.names == std::array<std::int16_t, 2>{12, -13});
-    REQUIRE(live.plural == -14);
-    REQUIRE(live.adjective == -32768);
-    REQUIRE(live.titles[0] == std::array<std::int16_t, 2>{-16, 0});
-    REQUIRE(live.titles[1][0] == 16);
+    REQUIRE(live.leader_name ==
+            state::NameReference{13, false}); // Negation, not forcing a negative sign.
+    REQUIRE(live.names == std::array<state::NameReference, 2>{state::NameReference{12, false},
+                                                              state::NameReference{13, true}});
+    REQUIRE(live.plural == state::NameReference{14, true});
+    REQUIRE(live.adjective == state::NameReference{32768, true});
+    REQUIRE(live.titles[0] == std::array<state::NameReference, 2>{state::NameReference{16, true},
+                                                                  state::NameReference{0, false}});
+    REQUIRE(live.titles[1][0] == state::NameReference{16, false});
     REQUIRE(live.female == 1);
     REQUIRE(live.attack == 0);
     REQUIRE(live.times_used == 72);
     REQUIRE(live.city_name_index == 73);
-    REQUIRE(w.rules->leaders[20].leader_name == -13);
-    REQUIRE(w.rules->leaders[20].plural == 14);
-    REQUIRE(w.rules->leaders[20].adjective == -32768);
+    REQUIRE(w.rules->leaders[20].leader_name == state::NameReference{13, true});
+    REQUIRE(w.rules->leaders[20].plural == state::NameReference{14, false});
+    REQUIRE(w.rules->leaders[20].adjective == state::NameReference{32768, false});
     REQUIRE(w.rules->text.size() == 1);
 }
 TEST_CASE("F06 repeated human tribes toggle saved name signs once for every selected civilization",
@@ -302,13 +306,13 @@ TEST_CASE("F06 repeated human tribes toggle saved name signs once for every sele
         w.globals.human_players = humans;
         w.globals.player_civ = 5;
         (*w.civs)[0].tribe = (*w.civs)[2].tribe = (*w.civs)[7].tribe = 3;
-        state::Leader saved;
+        StoredLeader saved;
         saved.plural = saved.titles[0][0] = -1;
         w.scratch.by_tribe[3].assign(saved);
         w.restore(false);
-        REQUIRE(w.rules->leaders[3].leader_name == (humans == 0x81 ? -13 : 13));
-        REQUIRE(w.rules->leaders[3].plural == (humans == 0x81 ? 14 : -14));
-        REQUIRE(w.rules->leaders[3].titles[0][0] == (humans == 0x81 ? 16 : -16));
+        REQUIRE(w.rules->leaders[3].leader_name == state::NameReference{13, humans == 0x81});
+        REQUIRE(w.rules->leaders[3].plural == state::NameReference{14, humans != 0x81});
+        REQUIRE(w.rules->leaders[3].titles[0][0] == state::NameReference{16, humans != 0x81});
         REQUIRE(w.globals.player_civ == 5);
     }
 }
@@ -317,18 +321,18 @@ TEST_CASE("F06 name restoration safe stops preserve normalization and selected-n
     World w;
     w.rules->leaders[4].female = 2;
     REQUIRE_THROWS_AS(w.restore(false), std::out_of_range);
-    REQUIRE(w.rules->leaders[3].leader_name == -13);
-    REQUIRE(w.rules->leaders[4].leader_name == 444);
-    REQUIRE(w.rules->leaders[5].plural == -14);
+    REQUIRE(w.rules->leaders[3].leader_name == state::NameReference{13, true});
+    REQUIRE(w.rules->leaders[4].leader_name == state::NameReference{444, false});
+    REQUIRE(w.rules->leaders[5].plural == state::NameReference{14, true});
     w.rules->leaders[4].female = 1;
     w.globals.multiplayer = 3;
     w.globals.human_players = 2;
     w.globals.player_civ = 6;
     REQUIRE_THROWS_AS(w.restore(false), std::out_of_range); // No saved scratch backing.
-    REQUIRE(w.rules->leaders[1].leader_name == 13);
-    REQUIRE(w.rules->leaders[1].plural == 14);
+    REQUIRE(w.rules->leaders[1].leader_name == state::NameReference{13, false});
+    REQUIRE(w.rules->leaders[1].plural == state::NameReference{14, false});
     REQUIRE(w.globals.player_civ == 6);
-    REQUIRE(w.rules->leaders[20].leader_name == -13);
+    REQUIRE(w.rules->leaders[20].leader_name == state::NameReference{13, true});
 }
 TEST_CASE("F06 scenario names reset titles on exact plural equality and retain the prior gender "
           "selection",
@@ -344,11 +348,15 @@ TEST_CASE("F06 scenario names reset titles on exact plural equality and retain t
     w.restore(true); // No saved scratch is required by this branch.
     REQUIRE(w.rules->leaders[1].female == 1);
     REQUIRE((*w.civs)[1].leader_portrait == 22);
-    REQUIRE(w.rules->leaders[1].leader_name == -male); // Step 16 does not reselect the female name.
-    REQUIRE(w.rules->leaders[1].titles[0][0] == -25536);
-    REQUIRE(w.rules->leaders[1].titles[6] == std::array<std::int16_t, 2>{112, 113});
-    REQUIRE(w.rules->leaders[2].titles[0][0] == 16);
-    REQUIRE(w.rules->leaders[2].plural < 0);
+    REQUIRE(
+        w.rules->leaders[1].leader_name ==
+        state::NameReference{male.id, !male.custom}); // Step 16 does not reselect the female name.
+    REQUIRE(w.rules->leaders[1].titles[0][0] == state::NameReference{40000, false});
+    REQUIRE(w.rules->leaders[1].titles[6] ==
+            std::array<state::NameReference, 2>{state::NameReference{112, false},
+                                                state::NameReference{113, false}});
+    REQUIRE(w.rules->leaders[2].titles[0][0] == state::NameReference{16, false});
+    REQUIRE(w.rules->leaders[2].plural.custom);
     REQUIRE(w.rules->text.size() == count);
     REQUIRE(w.globals.player_civ == 1);
 
@@ -374,14 +382,14 @@ TEST_CASE("F06 scenario name comparison stops on missing text backing after gend
         scenario_rules(w);
         (*w.civs)[1].flags = 0x200;
         if (missing_pool)
-            w.rules->leaders[1].plural = 30000;
+            w.rules->leaders[1].plural = state::NameReference{30000, false};
         else
             w.names[1].tribe.bytes.fill('A');
         REQUIRE_THROWS_AS(w.restore(true), std::out_of_range);
         REQUIRE(w.rules->leaders[1].female == 1);
         REQUIRE((*w.civs)[1].leader_portrait == 22);
         REQUIRE(w.rules->leaders[1].leader_name == w.rules->leaders[1].names[0]);
-        REQUIRE(w.rules->leaders[1].titles[0][0] == 16);
+        REQUIRE(w.rules->leaders[1].titles[0][0] == state::NameReference{16, false});
         REQUIRE(w.rules->leaders[20].leader_name == w.rules->leaders[20].names[0]);
     }
 }
@@ -395,10 +403,10 @@ TEST_CASE(
         text(names.tribe, "Custom");
     }
     for (auto& live : w.rules->leaders)
-        live.adjective = live.plural = live.leader_name = -1;
+        live.adjective = live.plural = live.leader_name = state::NameReference{1, true};
     auto& live = w.rules->leaders[1];
-    live.adjective = static_cast<std::int16_t>(w.rules->text.store("Caf\xe9"));
-    live.leader_name = 0;
+    live.adjective = state::NameReference{w.rules->text.store("Caf\xe9"), false};
+    live.leader_name = state::NameReference{0, false};
     const auto before = w.names;
     prepare_scenario_names(false, w.globals, *w.civs, w.names, *w.rules);
     REQUIRE(w.names == before);
@@ -417,8 +425,8 @@ TEST_CASE(
     REQUIRE(w.names[1].leader.bytes[6] == 0xa5);
     REQUIRE(w.names[1].titles == before[1].titles);
     w.globals.game_flags = 0;
-    live.plural = static_cast<std::int16_t>(w.rules->text.store(std::string(24, 'X')));
-    live.leader_name = static_cast<std::int16_t>(w.rules->text.store("Later"));
+    live.plural = state::NameReference{w.rules->text.store(std::string(24, 'X')), false};
+    live.leader_name = state::NameReference{w.rules->text.store("Later"), false};
     w.names[1].adjective.bytes[0] = '!';
     const auto leader_before = w.names[1].leader;
     REQUIRE_THROWS_AS(prepare_scenario_names(true, w.globals, *w.civs, w.names, *w.rules),

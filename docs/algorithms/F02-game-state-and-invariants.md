@@ -1,5 +1,29 @@
 # Game state and invariants
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in F02 |
+| --- | --- |
+| Gameplay | Logical identities/lifetimes, meaningful slot and stack order, ownership, fresh-game isolation and retained values actually consumed by game operations. |
+| Original files/content | F06 owns stored records and F03 rule input. Keep external slot/token mappings separate from live object representation. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Record addresses/packing, global workspace placement, private aliases, unused fields and snapshots with no game/file/protocol consumer. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -28,8 +52,36 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
+
+### Logical text and classic name markers
+
+Live names use full-width implementation-local references or owned strings and
+explicit custom-name flags, never signed 16-bit pool ordinals. UI label rebuilds
+must not rebind retained rule names. Reload policies preserve or replace semantic
+names/flags; preserved fields need no discarded allocations. Original padding,
+last-allocation pointers, minimum extents and heap-size hints are comparison-only.
+Empty padded-name input still means one space; ordinary empty classic pooled
+input resolves to `<nil>`. These content rules do not require padded storage.
+
+F06 stored leader records retain their exact 48-byte encoding in a separate codec
+type. Live loading rebuilds names from chosen rules and consumes saved signs at
+the specified stages; saved magnitudes do not index replacement text storage.
+Live export writes custom/noncustom markers as -1/+1 independently of local IDs.
+Lossless stored-file decode/re-encode preserves original magnitudes, including
+zero and -32768. This canonical live encoding follows F06's sign-only restoration
+contract; it does not claim equality with original allocation-dependent exports.
+Repeated selected-tribe effects retain their specified behavior.
+
+Narrowing a text ID into an unrelated earlier name or an accidental custom-name
+marker is a repaired storage defect. Preserve intended names and flags beyond
+32767/65535 entries. Reference tools may report original ordinals/aliasing;
+production tests assert text, reload behavior, bounds and file-marker semantics.
+Unrelated scalar arithmetic and external field widths remain unchanged. This
+contract overrides original-storage interpretations elsewhere in this document.
+
 
 ## Compatibility policy
 
@@ -42,6 +94,22 @@ even when the new UI does not use the original windows. This is not permission
 to reset simulation scratch, change slot/list order, recompute stale gameplay
 caches early or alter AI inputs. Input rejection follows X01; accepted state
 operations and normal-play arithmetic remain as specified.
+
+## Semantic state versus codec and diagnostic state
+
+The state catalog describes logical inputs and dependencies, not a list of
+mandatory live members. Keep a value when a supported game operation reads it
+before replacement, or when an external format consumes its encoded value.
+Document that consumer. Pass workspaces explicitly, cache or recompute pure
+values at equivalent boundaries, and use different object/collection designs.
+Original addresses, padding, unused fields and artificial snapshot visibility
+are not reasons to retain a global. Real stale decision inputs remain meaningful.
+
+Slot/stack order and token behavior matter where they select game objects or
+encode external references; a typed identity may map to those values. F06/N02
+codec state can retain opaque imported bytes separately. Do not add live fields
+or aliases solely to recreate an original memory image. A primitive test boundary
+does not require exposing that primitive as a production API.
 
 ## 1. Scope and entry conditions
 
@@ -626,6 +694,12 @@ cache equals a fresh census, every selected slot is live, every live unit is
 on-map, every known size is current, or every diplomatic relation is symmetric.
 
 ## 10. Worked conformance cases
+
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
 
 The following are operation-level cases, not complete game snapshots. Unless
 otherwise stated, use local single-player mode, coherent ordinary records,

@@ -7,14 +7,6 @@ LabelLoader::LabelLoader(TextReader& reader, TextDirectories& directories, state
     : reader_(reader), directories_(directories), pool_(pool), labels_(labels),
       services_(std::move(services)) {}
 
-void LabelLoader::raise_capacity() {
-    if (reader_.open("LABELS", "STRINGHEAP")) {
-        reader_.next_line();
-        const auto requested = reader_.next_integer();
-        if (requested > labels_.pool_capacity)
-            labels_.pool_capacity = requested;
-    }
-}
 void LabelLoader::initialize(std::int32_t default_language,
                              const std::function<void()>& build_game_cache) {
     if (!build_game_cache)
@@ -28,23 +20,21 @@ void LabelLoader::initialize(std::int32_t default_language,
                                  ? extensions[static_cast<std::size_t>(default_language - 1)]
                                  : "TXT";
     build_game_cache();
-    raise_capacity();
-    pool_.initialize(services_.allocate_text);
+    pool_.initialize();
 }
 void LabelLoader::rebuild() {
-    raise_capacity();
-    pool_.initialize(services_.allocate_text);
+    if (!pool_.size())
+        pool_.initialize();
     labels_.entries.clear();
     load_labels();
     load_popups();
 }
 state::TextId LabelLoader::next_string() {
     reader_.next_line();
-    return pool_.store(reader_.line(), 0, services_.allocate_text);
+    return pool_.store(reader_.line());
 }
 void LabelLoader::publish(std::int32_t index, state::TextId id) {
-    // X01/P04: retain allocations and earlier entries, stop before an unsafe
-    // write. Callbacks may replace/shorten the live collection while pooling.
+    // Bound classic resource indices before publishing an entry.
     if (index < 0 || static_cast<std::size_t>(index) >= state::Labels::capacity ||
         static_cast<std::size_t>(index) >= labels_.entries.size())
         throw std::out_of_range("Label publication exceeds established table backing");
@@ -57,8 +47,6 @@ std::int32_t LabelLoader::load_labels() {
     if (reader_.open("LABELS", "LABELS")) {
         reader_.next_line();
         labels_.declared_count = reader_.next_integer();
-        if (services_.allocate_labels)
-            services_.allocate_labels(state::Labels::capacity);
         labels_.entries.assign(state::Labels::capacity, std::nullopt);
         while (index < labels_.declared_count) {
             const auto id = next_string();
@@ -87,7 +75,7 @@ std::int32_t LabelLoader::load_labels() {
             }
         }
         if (index < static_cast<std::int32_t>(state::Labels::capacity)) {
-            const auto error = pool_.store("[ERROR:LABELS.TXT]", 0, services_.allocate_text);
+            const auto error = pool_.store("[ERROR:LABELS.TXT]");
             while (index < static_cast<std::int32_t>(state::Labels::capacity))
                 publish(index++, error);
         }

@@ -1,5 +1,29 @@
 # Determinism and arithmetic
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in F01 |
+| --- | --- |
+| Gameplay | Numeric results, significant rounding/wrap, sampling laws, retained choices and reproducibility under the selected RNG policy. |
+| Original files/content | Numeric encodings belong to their file/content owners; a fixture numeric tag is not a runtime field type. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Original PRNG streams, raw draw counts, machine intermediates, CRT/ABI and per-helper clock traces. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -26,8 +50,8 @@ layout or source-language types.
 
 The main text specifies mathematical values, reductions and rounding steps.
 An implementation may use larger integers, arbitrary-precision arithmetic or
-different storage if it preserves the required results, state publications and
-control flow. Equivalent evaluation need not reproduce unobserved machine
+different storage if it preserves the required game/file/protocol results and
+semantic publications. Equivalent internal control flow may differ. Equivalent evaluation need not reproduce unobserved machine
 intermediates or execute a cast whose conversion has no effect.
 [Appendix A](#appendix-a-original-runtime-and-representation) describes the
 original runtime and representation;

@@ -82,13 +82,17 @@ void poison(state::GameState& world, state::ProcessContext& process) {
     process.rules->names.units.fill(name);
     process.rules->labels.entries = {name};
     process.rules->labels.popups.fill(name);
-    process.rules->labels.pool_capacity = 9999;
     process.rules->labels.declared_count = 1;
     process.rules->labels.status_language = 3;
     process.rules->definitions.units[0].attack = 123;
     process.rules->definitions.units[0].identity.id = "old-unit";
-    for (auto& leader : process.rules->leaders)
-        leader = formats::decode_leader(formats::Bytes(formats::leader_record_size, 0xa5));
+    for (auto& leader : process.rules->leaders) {
+        leader.attack = -91;
+        leader.times_used = leader.city_name_index = 165;
+        leader.leader_name = leader.plural = leader.adjective = {70000, true};
+        leader.names.fill({80000, true});
+        leader.titles.fill({state::NameReference{90000, true}, state::NameReference{100000, true}});
+    }
     process.rules->double_movement_applied = true;
 }
 
@@ -157,7 +161,6 @@ TEST_CASE(
     CHECK(process.rules->text.text(0) == "<nil>");
     CHECK(process.rules->labels.entries.empty());
     CHECK(process.rules->labels.popups == state::Labels{}.popups);
-    CHECK(process.rules->labels.pool_capacity == 35000);
     CHECK(process.rules->labels.declared_count == 0);
     CHECK(process.rules->labels.status_language == 0);
     CHECK(process.text_parameters.numbers == state::TextParameters{}.numbers);

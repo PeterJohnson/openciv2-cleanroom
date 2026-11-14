@@ -4,7 +4,7 @@
 namespace openciv::city {
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
                   std::span<state::Leader> leaders,
-                  const std::function<std::string(std::int32_t)>& resolve_plural,
+                  const std::function<std::string(state::TextId)>& resolve_plural,
                   const NameProvider& provider) {
     if (!resolve_plural || !provider.attempt || !provider.close)
         throw std::invalid_argument("City naming requires plural and name-provider services");
@@ -17,8 +17,7 @@ bool default_name(state::City& city, std::span<const state::Civilization> civili
             throw std::out_of_range("City naming tribe has no leader backing");
         return leaders[static_cast<std::size_t>(tribe)];
     };
-    const std::int32_t label = live_leader().plural;
-    const std::string plural = resolve_plural(label < 0 ? -label : label);
+    const std::string plural = resolve_plural(live_leader().plural.id);
     bool published = false;
     for (unsigned attempt = 0; attempt < 2; ++attempt) {
         auto& counter = live_leader().city_name_index;
@@ -47,7 +46,7 @@ bool default_name(state::City& city, std::span<const state::Civilization> civili
                   state::RuleState& rules, const NameProvider& provider) {
     return default_name(
         city, civilizations, rules.leaders,
-        [&](std::int32_t id) {
+        [&](state::TextId id) {
             return std::string(rules.text.text(static_cast<state::TextId>(id)));
         },
         provider);

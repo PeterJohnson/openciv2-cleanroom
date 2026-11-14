@@ -6,455 +6,455 @@
     {
       "id": "A01",
       "path": "docs/algorithms/A01-ai-strategy-and-assessment.md",
-      "sha256": "6bb38d67502ecc4d36fd3929768eb80ba6f3372164fd044658e04fbf24f6c812",
+      "sha256": "86854093d03c10fc7960894c1039d7e97611f32690005fa33213d2417266ea89",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A02",
       "path": "docs/algorithms/A02-ai-city-production.md",
-      "sha256": "8e19bfefee49f54a31a4748a42d1066ec86bdc98700dc87a84b0a071f48f39bf",
+      "sha256": "d068c2b6b5803e1244158c1cb0430027d8444b761dd80db8022d3fc63c62a796",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A03",
       "path": "docs/algorithms/A03-ai-settlement-and-terrain-work.md",
-      "sha256": "a1b6fcf6c4a65076c62ce5633c300324d1bcd54ea6cfcc8fe41e112e8b526789",
+      "sha256": "a09647f38dab97fcdc26a2f80f63f9b3e26b20ba307c43a6d48a2cb8e1f397d9",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A04",
       "path": "docs/algorithms/A04-ai-ground-tactics.md",
-      "sha256": "40a90fca2c38350bb99387571ab763000e8eb39faf95380db0051fbad5054514",
+      "sha256": "8c0422eb9b0aadcfcec9b83975534460e3443549c41fb7875e50ef4313f32de8",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A05",
       "path": "docs/algorithms/A05-ai-naval-and-transport.md",
-      "sha256": "10d5d27514f38edffebb7764c7bda6dfa7fa471e4af6e7fa2995674f910b10a6",
+      "sha256": "a6883d59a71e507eff17b7ee5c79096f6465cdbeb9ce343e4989ecf2a27b927b",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A06",
       "path": "docs/algorithms/A06-ai-air-and-nuclear.md",
-      "sha256": "2ffd3d12d20dec5cfa6b68a3813154f8f5187874f756d7dec835cd3ae3776bc6",
+      "sha256": "e335bf6b8d1fec80cb799bdcd5076d0fab3e5de20fd4d8e2345c91d704780088",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A07",
       "path": "docs/algorithms/A07-ai-special-unit-missions.md",
-      "sha256": "7682621a6e36bb7c62370972ad983904762041a1dd5a6266637a12a8327c9fe4",
+      "sha256": "71645994747f5075ed91ae56ec626ffc6c82d5923423e60da926987d6028be7b",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "A08",
       "path": "docs/algorithms/A08-ai-research-government-and-diplomacy.md",
-      "sha256": "a487b327e81f8f22c4c9ac1aa0c92eb2e4fe108a9458cff7440a78b109965fdc",
+      "sha256": "00e4fed727e259fd90feb1f861b831cd2bbd112b8112bd50c8c694cd314fcbea",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C01",
       "path": "docs/algorithms/C01-city-lifecycle-and-ownership.md",
-      "sha256": "d96d52fb7ee90060b25534cb4f3b74971342b0eca1aad7cb3a3296088ebc4e18",
+      "sha256": "20e4f631e2f232686fdbedf8058eb966fdd707925b26437b0fb0acaf86f3844b",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C02",
       "path": "docs/algorithms/C02-city-tiles-and-worker-assignment.md",
-      "sha256": "5e9413886016e12249d9ac6059c29cfdce0df5c134b634a6c5a54f8a6bca8ba9",
+      "sha256": "d0907d14277c400a972d247b1e8f30cfda6fda3ac3a72800a6129c79e816b96d",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C03",
       "path": "docs/algorithms/C03-city-economy-and-corruption.md",
-      "sha256": "4a376f327a2b310cf079a60d9fd2f745f3663ab75ae0044a377bf132628a4490",
+      "sha256": "424d79df67f0766213eb3adde6b95cc3ba6e6c2656cd915f952c2b70b7add006",
       "specificationStatus": "specified",
       "registrationStatus": "partial"
     },
     {
       "id": "C04",
       "path": "docs/algorithms/C04-city-happiness-and-disorder.md",
-      "sha256": "3ee602d50c1ca39710fbc579e2fd16e6316e9b0dfb4d32a88b24f0c439acb2bc",
+      "sha256": "da8a4e7b54016737541bbfc784612aea412c29792a66db460cca1056c4d1fcda",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C05",
       "path": "docs/algorithms/C05-city-growth-and-support.md",
-      "sha256": "99c1a90faee899ff3f2785c725e3cc298ff71c514957037c5f0901f1361f7839",
+      "sha256": "cb662a8f9daf6cc8617a348b769559a2fefd1e0d9718a3a9cc8b02d94539ee46",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C06",
       "path": "docs/algorithms/C06-city-production-and-purchasing.md",
-      "sha256": "36cad462c43dbf0af334841ecdf4e1958207e571c92bf53466fefb5793f20ec2",
+      "sha256": "c43059680dd5ec2c6993f7ba600af548d25d13ee4a198b29dd06f7ae192183f8",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C07",
       "path": "docs/algorithms/C07-trade-and-commodities.md",
-      "sha256": "952ff9646e1829012e4b9a65a21071d20590c992830ff86739bd6238b08fad8c",
+      "sha256": "e5ba44bf4c9ab905aadb1e3828e767ff097e1c010cb1829db36779f985e57177",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C08",
       "path": "docs/algorithms/C08-buildings-and-wonders.md",
-      "sha256": "76b273f81001cfec91325630842b4d2265b8debb2759bc109d6565c99d260e8f",
+      "sha256": "78d90d1cedcd3931c5188eb464f722b333c2e73961ac03a5218903e0f25b2843",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "C09",
       "path": "docs/algorithms/C09-city-capture-and-revolt.md",
-      "sha256": "1c3d79c61400e5de5fd25edc8673eec631723321e0f6a260999cbc5a30a38ed9",
+      "sha256": "abf0411c8711267422944e3be2ec2fda0e868fc9b270d615b15fe4cb5624d4dc",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F01",
       "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-      "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
+      "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d",
       "specificationStatus": "specified",
       "registrationStatus": "partial"
     },
     {
       "id": "F02",
       "path": "docs/algorithms/F02-game-state-and-invariants.md",
-      "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
+      "sha256": "b01c1279ba0411b2a0d5f0118cf924e3b73608eb38189c368c755a2a5249157b",
       "specificationStatus": "specified",
       "registrationStatus": "partial"
     },
     {
       "id": "F03",
       "path": "docs/algorithms/F03-rules-and-configuration.md",
-      "sha256": "1f9c52e5b0c7e8a00532818060879d8e6cdb891653fd3cbb440e365815b6b4eb",
+      "sha256": "8b6d629bc5ce5df6e80032b113d94bc655c545c954a29b2129e745a6a850dcec",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F04",
       "path": "docs/algorithms/F04-turn-sequencing.md",
-      "sha256": "cf414a6f0fd11c68b407832aa1ce3e891ff7e2f18f3808d1b2a9356051eabd2f",
+      "sha256": "0ed0b2e14916abe2b2978552b6347522573b2117616b7e7d3ab27ac7ac2b18e8",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F05",
       "path": "docs/algorithms/F05-game-setup-and-starting-positions.md",
-      "sha256": "48351d6382fcb27b74ab73d22c8a32470fd488b96d216e0ad996b9b0e45fde62",
+      "sha256": "8050b68b2446eba5f51182f005a4a9eb519124f1aca1eda4decb2f2a29a8dc58",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "F06",
       "path": "docs/algorithms/F06-save-load-and-file-formats.md",
-      "sha256": "55da4566f2c050a617cd4d79d83fff6de5035ed613e3bf58cf24763493d38948",
+      "sha256": "c1353bf60284d462e5283d228068b300acebd3553fd2109304aadddbc92f9143",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N01",
       "path": "docs/algorithms/N01-multiplayer-session-and-lobby.md",
-      "sha256": "c37c491eadb92e5a2fc1fed440de3a25523f1bcdf180b9518c8afe0c74f77749",
+      "sha256": "f40d69b6bc5be803682ce3474740719f120a172a5fa0220b98cd6c960524edba",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N02",
       "path": "docs/algorithms/N02-network-commands-and-state-synchronization.md",
-      "sha256": "cfbef1eba7bb42a5f61c26bda7c7f14e7655610579c98509cb7d21accf1edfb3",
+      "sha256": "6dc15acace4c61db22e69cd5fdf5287deaf1ab40a314d94cf9eae39dc85620a3",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N03",
       "path": "docs/algorithms/N03-multiplayer-turn-sequencing.md",
-      "sha256": "41218adec0d7ebd0623ebb8b23e298afae27d478daf5901ce6dcc7945fafd378",
+      "sha256": "048e22ccb49cf06df5193c2a555eb821f32dedda4f8249e30a9dc5d02ac0ddfe",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N04",
       "path": "docs/algorithms/N04-hotseat-and-player-handoff.md",
-      "sha256": "23cdd4610cd18cc5e3feba941b0cc11797f44ab80498eed8eaf9317c576e3c13",
+      "sha256": "86c22c6a236368fa69c23dd8cf5db3f4136f9f2bcf69431c2cea64184e046cdb",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "N05",
       "path": "docs/algorithms/N05-transport-and-wire-protocol.md",
-      "sha256": "ff8226df149a6f5070993161602aab7ceb51a9a2422044b56690943c5e99c7fe",
+      "sha256": "565c6363da13584e1ca84471221c8db06aadf1eaf576253b363b4df3c624d86f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P01",
       "path": "docs/algorithms/P01-map-projection-and-interaction.md",
-      "sha256": "c6d503c3778f3533e487d0c6166d4ec3cc3c55269b9cc20dcf75b71cbc31476d",
+      "sha256": "76b4f7eae3642eb919ab4835113d6159784cccea17884adba1046b4a14ad122c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P02",
       "path": "docs/algorithms/P02-map-rendering-and-minimap.md",
-      "sha256": "27c4f2670913de94e3ec0943e62e60710046c3eb51d4e98112cb19f7a1286e79",
+      "sha256": "1e454c2b557bbbb34bab60981d4820c21a345a1725201dc05d3174da4d75c20b",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P03",
       "path": "docs/algorithms/P03-graphics-and-asset-processing.md",
-      "sha256": "1744e8ece1b0bde1cc42a50b9c15a1d4dcb4f7f564b9b9529b14d084f17d5525",
+      "sha256": "3cdc5b5f9e638baf1b2b61222af750fb41a8f6724751e10b13b7e06ea9ebd3a5",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P04",
       "path": "docs/algorithms/P04-text-and-dialogs.md",
-      "sha256": "a5dc7c0a890ac5615d162297826956d96e97c242466fa3f5d458c8b753d64b98",
+      "sha256": "48fb91b7f4ed7d1b75a45aad69399686be7527195a1cf95fda0d15f556fba3e6",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P05",
       "path": "docs/algorithms/P05-input-and-command-dispatch.md",
-      "sha256": "df8dc51a74b3cd0cc7bc386fcec43ccf27477c797fd771f11eaff8224ce2e660",
+      "sha256": "dec9a39827d852df672d51f97e07d126c233fc04972a988e12bfbfbdc30dfc4f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P06",
       "path": "docs/algorithms/P06-city-interface.md",
-      "sha256": "946e6dc82b7f932ec41d26c1fa22aa88886ef74a9bdfa6537181136e95acb1bd",
+      "sha256": "71b7b3ef3f35ebb58962943818c98dcda3c378cd7fcad9b59b1c397a50bbba85",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P07",
       "path": "docs/algorithms/P07-advisors-reports-and-history.md",
-      "sha256": "09be11184b6d4174a5ae22db2053ecb7969e431f11f371402546c4021ee6c521",
+      "sha256": "c6e7089f6f3422cc4a0e9d2929af156fcd689291eb2f8dff5e8d47b073981c7f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P08",
       "path": "docs/algorithms/P08-civilopedia-and-technology-tree.md",
-      "sha256": "31f6c10e630b1de76c8dd43348c9c7208b0f1e186b30ff1e615335d4f6e47404",
+      "sha256": "aedcbc5a59195039e913676d9ecba56934fcc09e53187d0e2250b7bcef98e8b1",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P09",
       "path": "docs/algorithms/P09-council-and-throne-room.md",
-      "sha256": "d67a04804a629e387a5129ebb832c021a196fbc812d826693de5b2c0a5b6091a",
+      "sha256": "e3d02640bc909a9d3ec21192451b03be62eef99eccc62bdf363a177624042e3d",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P10",
       "path": "docs/algorithms/P10-audio-video-and-animation.md",
-      "sha256": "66a480da7a01c009344f00b25f63887e8873105e98e3067bed833b6d0265a103",
+      "sha256": "f954ea548720eaba8bced8c444ebfbef35fdac89315b123bf884150e472bb74d",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S01",
       "path": "docs/algorithms/S01-scenario-loading-and-parameters.md",
-      "sha256": "10169e551efb9c20e1e8778647ba2dffe21a1f8ecd54c7faca68ba6b97d4749e",
+      "sha256": "2f42bc0cf5bd7033112eba25f1fbf0390cb4627acb55f24d8f77bd66d0842993",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S02",
       "path": "docs/algorithms/S02-event-language-and-execution.md",
-      "sha256": "72d5514fdd8f317148948ad1530539e2744b94980b9254943ca4ab522cbeb3db",
+      "sha256": "e5f50f7b515c02e32959fbff383e821965f4c78764c9ac0f330a1207ac4dd45d",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S03",
       "path": "docs/algorithms/S03-world-and-scenario-editors.md",
-      "sha256": "9ab66b39ca19ce8d0d968fc425a714dbc8864d79e9faa58b6b326bff44e37174",
+      "sha256": "167a1fd67ad74e3639078e39f777fde3aca516e18070d1b6f0271e29349e2da4",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "S04",
       "path": "docs/algorithms/S04-rules-and-asset-editors.md",
-      "sha256": "b92adc9b199adb285d53fac86efd0108f154be0a4e49c317fa50ad1a783c43b6",
+      "sha256": "f788749993b98c5494640568e62a3ed471811efc10fbda65829754d75bce8b25",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U01",
       "path": "docs/algorithms/U01-unit-lifecycle-and-stacks.md",
-      "sha256": "a9c1591dffd04dbf91217558137c92bf8d5ad290736e1ad86562b2d87326efbb",
+      "sha256": "943179f7d3558a5cc27b1594ed6c856bd03bf631d7ced7ae75d066de510706be",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U02",
       "path": "docs/algorithms/U02-movement-and-zones-of-control.md",
-      "sha256": "574f42e0b5058398bf043832b7232729aa338d6e96fe1a554ad3241b0c58c1da",
+      "sha256": "5d73cd41564ee6ab02c30dd0c854dda87d9c4c85af31f1466c754099663cf7a0",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U03",
       "path": "docs/algorithms/U03-pathfinding-and-goto.md",
-      "sha256": "8151a8d836772438eb32b307a3da07c98adb08d046f4fd2f563ce1e6e33b9e3f",
+      "sha256": "24c5b86501b96ace1577ab437f55e999d3177efff5751338ebf9b0db36231a5a",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U04",
       "path": "docs/algorithms/U04-unit-orders-and-activation.md",
-      "sha256": "65f64000b2278440793540945bf3865eb4972f780fc72d636c9042d97ab41ad2",
+      "sha256": "8f19d96dae44e774dac955faf3f1fa572a3842c1a3a1ada9b2bcf26ca4a27028",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U05",
       "path": "docs/algorithms/U05-transport-and-special-movement.md",
-      "sha256": "ddd4081a1bd0dee5d79b76b35fa119b5ea1f161ce6b1554ba1fda5ce5a670377",
+      "sha256": "151d3b68cb0a1db129fe8895814de6211a621acb2321d223ff240c4fad5cf532",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U06",
       "path": "docs/algorithms/U06-combat-and-veterancy.md",
-      "sha256": "d563631f76710e237ba99543e789da7da21e7ffae8c274f07d6800a6e1be89be",
+      "sha256": "9d3340f390e4b8b98f0c2c8e8f7f6750e8743d6474af4f16069dccb3ccaa9889",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "U07",
       "path": "docs/algorithms/U07-nuclear-attacks.md",
-      "sha256": "99461332a91c6e44fdde3c61cb4fe8aa00068a00fa44d8dd2db8d4c3df5845f8",
+      "sha256": "2070136063114e5ef8e3b14e7979164de3707a07fbdd340c88657e5c96eac9e4",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V01",
       "path": "docs/algorithms/V01-civilization-lifecycle-and-civil-war.md",
-      "sha256": "4ae3a34cc3d35ef4a74da255a93b65c1bf111c82e1521fa96c081efb67c2b960",
+      "sha256": "dfe60ece60e56cdcd672e07c79007e0b5257a953b58b8b2a0ce01ce0dd1ca5f1",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V02",
       "path": "docs/algorithms/V02-governments-and-tax-rates.md",
-      "sha256": "b7a703d5ae9bee48fd43288d18d221c5487aaebcf0a061aba8a2ff9f920e0507",
+      "sha256": "54e9e430bf37c043663bd0d3cc00aa371b082c060ba97c74e324abff4611c5b6",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V03",
       "path": "docs/algorithms/V03-research-and-technology.md",
-      "sha256": "4c7d39cd50cf4a94db6025ce7b5376d6fe87b061fddc9afe4d427d4cd8500af8",
+      "sha256": "ccc81b65d8ab2c29c270f5ee27cea91d68646724304fad636fb18a27864b9df0",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V04",
       "path": "docs/algorithms/V04-diplomacy-and-treaties.md",
-      "sha256": "ba48031a8a9f85eaed73127c10db0b8665ae71a38be88f76d7833857c8d9b81f",
+      "sha256": "b2e1914fd5defdf52f2355e405bbeec6592988dbddf532238a31df7a25582f83",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V05",
       "path": "docs/algorithms/V05-diplomatic-negotiation.md",
-      "sha256": "ffdcbf8d2b49c1eb3b629524336d82524647de8a24183acf95de1fe43a86c136",
+      "sha256": "766f9e19e751dded43ba75da54866f772cb5b6949c29b3323e58626f626f95cc",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V06",
       "path": "docs/algorithms/V06-espionage-and-bribery.md",
-      "sha256": "9ed31fb94a7fdb58856917a68e599e21dc4aa10a28830791f26866d31a6f8382",
+      "sha256": "b53ae82c091d507af3f837d97fbb479c7d765b1005ef5e6232b3eca109a40ca4",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V07",
       "path": "docs/algorithms/V07-spaceship.md",
-      "sha256": "84c813eaf154ac0678b2f050c18f95aa98bfe215be14dc385988929fd3808db4",
+      "sha256": "af8b242f48e0935fbb810fea9b0b6ffbd21ecb8c87c7cddeaa7809c5967a988f",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "V08",
       "path": "docs/algorithms/V08-scoring-victory-and-retirement.md",
-      "sha256": "b68a80d897dce4fa3155854f12d2ae6016d973a8ade915d85dbce8d21f6bc906",
+      "sha256": "ac11da74af470743dae9649a3f3bea062a74a4d182cf7a52ebcb84dfbd9e8366",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W01",
       "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-      "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
+      "sha256": "ecd6d9dae70f5017c6c7c0caac676b0f8c101b9aeab1e639069b0f0dad043916",
       "specificationStatus": "specified",
       "registrationStatus": "partial"
     },
     {
       "id": "W02",
       "path": "docs/algorithms/W02-map-generation.md",
-      "sha256": "dbbf63ea365c11960df878f60fd5f4e63637ce49dfa09f61779664f071b9340d",
+      "sha256": "0de553d126bac2f626d51a60e744d4fe2120316c10ac0e8b7abffe48954ab8d0",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W03",
       "path": "docs/algorithms/W03-visibility-and-exploration.md",
-      "sha256": "4ea2b4bc7220dff68ed890bf24e33e44cc2d319ead00f347512099e8f4fb136f",
+      "sha256": "2905124549215fdbec72a9bba8bfd48664cd9e641098cd3461912b480985f0c5",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W04",
       "path": "docs/algorithms/W04-terrain-work-and-improvements.md",
-      "sha256": "81f3bab940d29de6794938ae24022df1b244988b9ee032e07e6256f6032122e5",
+      "sha256": "2c0a29425d73a80c3c6635fa74c47c938e6f8df00cf865e8af3f82c3422b4f04",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W05",
       "path": "docs/algorithms/W05-pollution-and-global-warming.md",
-      "sha256": "ea1344d27ca6234938b8500e181e18b8d5f6ffcb39b9dbfdb9530148b1c41fdd",
+      "sha256": "a99d7dd90da1b9642b9b1d34af2c3120d726583b63fb5284b3b78474f928e3f2",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "W06",
       "path": "docs/algorithms/W06-huts-and-barbarians.md",
-      "sha256": "bcfbbb68209ece462e9e6194dfb26388b1562fb95556999a3c882c5b9ffdc307",
+      "sha256": "55d64cbbf4d58e981e7e4690cb31efb1b5ed4a3cf19d54094082abb3c71bc38d",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "X01",
       "path": "docs/algorithms/X01-classic-compatibility-contract.md",
-      "sha256": "c82f52fcc6b668bcb22f4101010a7470c3013b2720afca995d2e3b58fdac8de6",
+      "sha256": "4040da80070a03666d6cb4f555dd8b4c8c71a1bccc8ad79c11b1e14990c1b4ba",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "X02",
       "path": "docs/algorithms/X02-whole-game-conformance.md",
-      "sha256": "5afbc34e17116389b0d5d5c2047f34cf06f3f81cae023c739b6906d1ab036d70",
+      "sha256": "5c428d3ba67f20548be59901473560011682b0fdfbfb810398e224e9d236f0c9",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     }
@@ -1595,9 +1595,9 @@
   "fixtures": [
     {
       "id": "X02.F01.equal-range",
-      "revision": 13,
+      "revision": 16,
       "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
-      "sha256": "ea8d20529a3ac9be42bb22a189d56003d8c0669def2313dc187dba175735d2e7",
+      "sha256": "8da89c3a270dc53539a139e98569ecc9ea8308344a88db2907f821ccae378bd8",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1605,9 +1605,9 @@
     },
     {
       "id": "X02.F01.primary-modulo",
-      "revision": 12,
+      "revision": 15,
       "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
-      "sha256": "5f2ad9bc6bc8c23454b6b13cd06504d1e34c752ec77a2578620e803452d0fa4a",
+      "sha256": "4f078421db2c406ba5bd37b1cc2e6aebdd45c233ced468f7b2f51fcca97ea245",
       "operation": "F01.primaryModuloFromCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1615,9 +1615,9 @@
     },
     {
       "id": "X02.F01.wrapped-range",
-      "revision": 13,
+      "revision": 16,
       "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
-      "sha256": "da0e2b5258763aa2a763239a1e4876d2f77c79c2efe6c364a6595bdf28d7d9b4",
+      "sha256": "414838bafd1ab3b5411a6415940bf6fe7a33d49a9659f09ca8701f84ce831894",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1625,9 +1625,9 @@
     },
     {
       "id": "X02.F02.unit-token-initial",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F02-unit-token-initial.json",
-      "sha256": "aed68ee1e94a0814f2266bfaae7ce9b2eccbf2aef6995c0977c36d9c3bfe6c5a",
+      "sha256": "01f887eba06942da21ca5fc268f057883d1da11b1b080c4428484c77d6d3ba62",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1635,9 +1635,9 @@
     },
     {
       "id": "X02.F02.unit-token-wrap",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F02-unit-token-wrap.json",
-      "sha256": "b391326c79bacb75dd569be46b475d1eade4688563955ede8c6cd3ac9c434244",
+      "sha256": "d310242f24610ca5b30d5cbf4763d70a4608c9e5f3739750cf58eb0d5320a3e1",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1645,9 +1645,9 @@
     },
     {
       "id": "X02.F02.unit-token-zero",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F02-unit-token-zero.json",
-      "sha256": "b73060bfd47c3843574a952a5db00436e364810b04be0c50b3b0543b2e23fe9b",
+      "sha256": "2fa10d9f22f7f02f41e917967cebb79ae7362eebe58ae4f8ae8614dbbee6e829",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1655,9 +1655,9 @@
     },
     {
       "id": "X02.F02.city-token-wrap",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F02-city-token-wrap.json",
-      "sha256": "c10ce1739978c5cb394cc94e22f6a5577992fa93fc66ed7e4142db51d50b80da",
+      "sha256": "03bfd5c30f35a9f6a1fb76338f121b0353d0d9cbb277daf29e11c542d05e180c",
       "operation": "F02.assignCityToken",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1665,9 +1665,9 @@
     },
     {
       "id": "X02.F02.unit-reserve-hole",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-hole.json",
-      "sha256": "694ce39c835fad5a5215dbe9db3c13da0dc2a28542bf1fd31b5b57b96183577a",
+      "sha256": "698a7face726c99ce8e329d8b8c75c545b698567f6a328958b36a24a7c429dae",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1675,9 +1675,9 @@
     },
     {
       "id": "X02.F02.unit-reserve-extend",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-extend.json",
-      "sha256": "a4264c4d1be7cd0c66ee4478104fc99b3c0c4897bfda5566e9249efc8d816f1e",
+      "sha256": "1e9d65215719af4b129c60e969efa3fa337f62b2ed1d605e7b38422e2973b1b0",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1685,9 +1685,9 @@
     },
     {
       "id": "X02.F02.unit-reserve-military-limit",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
-      "sha256": "917dcf31a04f1d94407d090e215276a7faa18411b3886420496be4ef9e086c09",
+      "sha256": "03c70898335d8283686788c8aeb735270160abc2d06ea34a6ee2d20f2f2707c6",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1695,9 +1695,9 @@
     },
     {
       "id": "X02.W01.wrap-far-positive",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-wrap-far-positive.json",
-      "sha256": "31a546d421ebf9553ef23a3b75e56901e5f8ada085af6744f1bb66be2f02afb4",
+      "sha256": "18714a1abe44e64fcc441e8eaa6d67a10901dd66f1ccb8f1598f97e18504d223",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1705,9 +1705,9 @@
     },
     {
       "id": "X02.W01.wrap-far-negative",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-wrap-far-negative.json",
-      "sha256": "c4f9ec9407f4292cab2d6bd6d8dcc2cebcda0feef0543df1b188ee779cafb045",
+      "sha256": "dad4a803203e158b63e65b9a15b9be840ad49f1d4143589000eb119da1f02a74",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1715,9 +1715,9 @@
     },
     {
       "id": "X02.W01.wrap-flat",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-wrap-flat.json",
-      "sha256": "8a2e6011448b6e7b69b4173ff0c9f91496c138e5793dc8e0c0e5a8cc2a7c2780",
+      "sha256": "7264fba40cee653ec882aef91ed0f5215577e1f634ad8fee2900d4d388dabc42",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1725,9 +1725,9 @@
     },
     {
       "id": "X02.W01.step-seam",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-step-seam.json",
-      "sha256": "41889b949cdc8c6caaa3972bd9ef1bb151243a5e56a53345746e11992c227b44",
+      "sha256": "ce5e4a459d1d88f276eaaf5e81d2fa3cb9fcdb7a60abb292b6841e02556d6ada",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1735,9 +1735,9 @@
     },
     {
       "id": "X02.W01.step-off-map",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-step-off-map.json",
-      "sha256": "3c8e3250c62902b3770f23d36efc5ca0aaebfebef5aad2e63fdadc2810cd0be5",
+      "sha256": "665a85cfc2891b6b515e4aaeae4182d942ea8db3f0b8112402503fbb3acdcb5c",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1745,9 +1745,9 @@
     },
     {
       "id": "X02.W01.step-minimum",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-step-minimum.json",
-      "sha256": "f6e9c6747b765c0bb648c4cc04c348e919dddb222d322c49df3b88dfee3a2d04",
+      "sha256": "ce8d0cb1e58f79c17584bb0ddfade1a6222ce600847629391d8aa69b48d2c37a",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1755,9 +1755,9 @@
     },
     {
       "id": "X02.W01.weighted-off-map",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-weighted-off-map.json",
-      "sha256": "3e97e399c5d5d5354555753fc103fa2f95bc719605577bc167f604332bf4abfa",
+      "sha256": "7217c67df188556c91c1552fa4935d2107ebd188bc9b6c2ae8a2e868300a8d14",
       "operation": "W01.weightedDistance",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1765,9 +1765,9 @@
     },
     {
       "id": "X02.W01.lookup-alias",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-lookup-alias.json",
-      "sha256": "1faa0835af64300e3b6d56663080c73ed7eca49dcb15d99a93aab83f64ed7ca5",
+      "sha256": "13c8748241c11820867d3a68e50e9a09567c209194d708b8e343e9090fd708f5",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1775,9 +1775,9 @@
     },
     {
       "id": "X02.W01.lookup-canonical",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-lookup-canonical.json",
-      "sha256": "852fadc6f755618fbbbcbbfa17a90efb10118093e8e1523e0eb265142a853c24",
+      "sha256": "82a984b16c7f8d62217ebf4f60f041c5e367ce4e877c85d91b8c748e69011137",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1785,9 +1785,9 @@
     },
     {
       "id": "X02.W01.lookup-miss",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-W01-lookup-miss.json",
-      "sha256": "04bdcb88156011420c8d8accfcf6757b3d7890a250cd39c2a8a7dc66ec097a9a",
+      "sha256": "bf6e903d4f761e8688b5159361a5d058fd8365f6b0102d73a19f18bcaa445ed8",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1795,9 +1795,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-code",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-code.json",
-      "sha256": "0862766d9c0733f9ecf751b94d85bb35804c88a2f688681a8d2226c5b9543a91",
+      "sha256": "384affa895f73863bf44c3bba7d045fbd115b78d4a8aa02b0267026c0313fb43",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1805,9 +1805,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-modulo",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-modulo.json",
-      "sha256": "3d9ee65f6cb7bec0d64e92e66bc44fc02fbb682e3e847d8c1301a1624a7c7e66",
+      "sha256": "f6d606b05846293a5c2d3235a9c1f1d25c4048df0079456f1f31dbbe58b7cdba",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1815,9 +1815,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-unit",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-unit.json",
-      "sha256": "8ecde4bfefcb0c629cd250106d24a07b2ec2cccee056fac3e0701c6a6dbea089",
+      "sha256": "c69f45a1065bc9fc5a2eb1d80a4fb02173d200bde9684d1461d10b8fdd88ff34",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1825,9 +1825,9 @@
     },
     {
       "id": "X02.F01.sample-gameplay-range",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-range.json",
-      "sha256": "276b54272ee5ae33c6db458adb2faccfde058207b8afde4082e5cf616c13415f",
+      "sha256": "fc578ec797fa699cb58080b131cee42f973ce9c7a9cd1e52dc67cabc0e942fbe",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1835,9 +1835,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-code",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-code.json",
-      "sha256": "f5c3764744d8e8541424ab1c3cdf2d6fd58329819ab3fcf5aca68111134a0df2",
+      "sha256": "ac3482ca32ee1e198fdc5c077284cfa18a9f6ef62756b074a69927d6a3df7c10",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1845,9 +1845,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-modulo",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-modulo.json",
-      "sha256": "3e6aa0f8ce2745cd37fe03264fe2dd86eab64ba885db2ca00e532650e4f0e2f4",
+      "sha256": "701ad9e7956382fc92e547aee8cf8d4bc9ec9499fded054220d0350df572283e",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1855,9 +1855,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-unit",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-unit.json",
-      "sha256": "a1cebb41eeb49ef610947ac3812faf1096c6bd82549b2c8e7b1a123e13f03314",
+      "sha256": "c7354f4886567d83e797b3717054e1ba209180fd82c1725928f229f42c59cb48",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1865,9 +1865,9 @@
     },
     {
       "id": "X02.F01.sample-presentation-content-range",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-range.json",
-      "sha256": "024605dcfc34e2ef43725c69c6676f245c75a5fb043842cd91e01f6258d6783f",
+      "sha256": "594589993acca1d805af1431c29519570a4c2ce5c6bd6338a6dfc2d0d106b008",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1875,9 +1875,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-code",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-code.json",
-      "sha256": "347f0e8bdac08f435e4ad82aedfbafbb5f7ce13944e46f3baa73657cf84d1c32",
+      "sha256": "792f329f6ccd73c501da952827b4203cb2109861529f158eb3ace001998865e3",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1885,9 +1885,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-modulo",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-modulo.json",
-      "sha256": "3275d7e3ecfabc5f02076c94f2f6f476f99939728fae8bce2d12d9b9b6bf6adb",
+      "sha256": "bcdd0b954a99d7f45952406b66f34fc412d6b89980c9502812de272eee8944b7",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1895,9 +1895,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-unit",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-unit.json",
-      "sha256": "04a06db18fd936c00651fe123813e28c74e60127b94062719a851de21ee16b23",
+      "sha256": "37ec502977b754d36a69248582a4df9b2b7eba70390d1c9101d0fe869a6f9115",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1905,9 +1905,9 @@
     },
     {
       "id": "X02.F01.sample-cosmetic-range",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-range.json",
-      "sha256": "e09fe26f35e6223aa08aa2521c2f9bd1acbb71b1ee4f0c36d948e59f80156d52",
+      "sha256": "8fa81ef3a941421a970bd9c0c8a03c7d1d6a2470bc4a2e48618e927da6c6f59a",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1915,9 +1915,9 @@
     },
     {
       "id": "X02.F01.sample-large-divisor",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-large-divisor.json",
-      "sha256": "adccbbfd9711b30a51ddec30a384e366008991d9e0fbd1a999aca064a72a7026",
+      "sha256": "90765a2bbc796862d78172dd7904fb710135722e0821dfac4e2dcbe66a2194dc",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1925,9 +1925,9 @@
     },
     {
       "id": "X02.F01.sample-singleton",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-singleton.json",
-      "sha256": "d2769bc3ebeae2cfdc070a0db47a3fbea01f2d6b46d8d2698542dec4a3e1752a",
+      "sha256": "d1d7623ffacadf354c09b3d8a544774c3135e7b50979025ab8b3cec6eee8700d",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1935,9 +1935,9 @@
     },
     {
       "id": "X02.F01.sample-equal-range",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-equal-range.json",
-      "sha256": "3e7db02384d576e7f0290509e832e50e66ddbfd474d4f682e53c986a79a42637",
+      "sha256": "12423016c75cbf5c1dcdde4e6bf43242e08b49cd3572038fd6d7e579f14e9883",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1945,9 +1945,9 @@
     },
     {
       "id": "X02.F01.sample-reversed-range",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-reversed-range.json",
-      "sha256": "bc6ecaa7be03c510e614d783ea1e41450733ea57f1854701fef5bdd2b19c5ef7",
+      "sha256": "7533eec677ad5c64e1a04dfde54b25075c29300d3668a84a398dd5d5fe03611a",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1955,9 +1955,9 @@
     },
     {
       "id": "X02.F01.sample-wrapped-range",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
-      "sha256": "247103bb44bb06d3233a55fb9db21daff7c14707cd1c3e5b88ef09f1e8947de8",
+      "sha256": "10cb55636e4db2f4e5af5bee5af44aeaa7fa3098df55496550b2b13f177a4973",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1965,9 +1965,9 @@
     },
     {
       "id": "X02.F01.sample-rounded-endpoint",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
-      "sha256": "1e39a717cf9157da0711c023cdcca48cd51349fb0fd1a80146d31be00aa149b9",
+      "sha256": "b0a13a809dcb056a49067116b44f77299f7c7d553e4d8c6159de555bb057a885",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1975,9 +1975,9 @@
     },
     {
       "id": "X02.F01.sample-zero-unit",
-      "revision": 3,
+      "revision": 6,
       "path": "docs/algorithms/conformance/X02-F01-sample-zero-unit.json",
-      "sha256": "a9167f9b4b8b727ba12ec8ddf04fc9aaa8b59f569458a407ecd12d039422cb68",
+      "sha256": "0e4fe9b9ff08913dffcab3fe6b9d977d9dc3f3873262a3ea120210516d577e48",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -1985,9 +1985,9 @@
     },
     {
       "id": "X02.F01.sample-replay-gameplay",
-      "revision": 4,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
-      "sha256": "232309d330601e79dbf1f5f781291b4f8cfe3140159050a120cceadc1ffb3f57",
+      "sha256": "57be427bb7b5deb23cd4bce103f1a2db750ea28a49a63cb10fbbd72eccf49696",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -1995,9 +1995,9 @@
     },
     {
       "id": "X02.F01.sample-replay-presentation-content",
-      "revision": 4,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
-      "sha256": "b4dc475767eec794fdef36793a262bd0e119241035d3b853322482f8bf664699",
+      "sha256": "11fd980b2159a38897d5c150cfdb536c3a79f9400e0f975de3f917439af86a98",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -2005,9 +2005,9 @@
     },
     {
       "id": "X02.F01.sample-replay-cosmetic",
-      "revision": 4,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
-      "sha256": "f96b9b37f06d4d647a0ddc8a508953ffdb8b559a9ef749b830a285b0dc785247",
+      "sha256": "025f89c7148ccf60fba4c614dc2cd482fae4955cb4197da2757833754e598f57",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -2015,9 +2015,9 @@
     },
     {
       "id": "X02.F01.sample-replay-modulo",
-      "revision": 4,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
-      "sha256": "6dbd61d2d92388638efcbeca5bac934eefe0c2267c5bea00886134828fdebe0c",
+      "sha256": "dc5394f49fa026ca1d057aec37410861145ba8b6e5000b1b620a8318443e141f",
       "operation": "F01.primaryModulo",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -2025,9 +2025,9 @@
     },
     {
       "id": "X02.F01.sample-replay-unit",
-      "revision": 4,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
-      "sha256": "f779cd34a5456930b7e0547fe6555034a2cfcc8c67f01e253a8de205d8144b7d",
+      "sha256": "eb697016b7db17301b3e32983b9e6571a3f9d6bb96078a7b161160f89accf2f9",
       "operation": "F01.secondaryUnit",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -2035,9 +2035,9 @@
     },
     {
       "id": "X02.F01.sample-replay-singleton",
-      "revision": 4,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
-      "sha256": "4b53abe680fd1be5ba74d0827b29670b8607f6c4c107dac9ce874fd233a67330",
+      "sha256": "09fa4d4d66e8dd8959a4485ff0c573c9e5cb7072dcd8cb0cf32681e7b9ae2dcc",
       "operation": "F01.primaryModulo",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -2045,9 +2045,9 @@
     },
     {
       "id": "X02.F01.sample-replay-equal-range",
-      "revision": 4,
+      "revision": 7,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
-      "sha256": "8f392e3ee905758b21ae9d8246ee1259f50b3190b9aa0ee6067f17786fde7721",
+      "sha256": "523c6feeadcef9b3c139d13aa69308a7510a5a17ee5e0a1c90c34a0a712915ed",
       "operation": "F01.secondaryRange",
       "provenance": "implementation-regression",
       "executionStatus": "passed",
@@ -2055,9 +2055,9 @@
     },
     {
       "id": "X02.F02.workspace-absent",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-absent.json",
-      "sha256": "fabefdb86e92ee4f8d7ea2441f7e89f7e9177c969f717b75b1477f52bee2adfa",
+      "sha256": "76f81efaf7b63cdba42139ad371735e547926039722db8827d5d2e684bb6c44f",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2065,9 +2065,9 @@
     },
     {
       "id": "X02.F02.workspace-cached",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-cached.json",
-      "sha256": "9b5e81bce104df1ce00128b5bf36334b672576e564bd2049f786616e15117c88",
+      "sha256": "e6b75c1d3c3ff82df1409a249e60bb23c13cfba0fc2d04f874982a43de88c955",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2075,9 +2075,9 @@
     },
     {
       "id": "X02.F02.workspace-cached-wrap",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-cached-wrap.json",
-      "sha256": "356a604180864573bdeb118dca1b2247dc47b553c12f79f19ad8e6a6071487fd",
+      "sha256": "c6d089c90e12725d0e0fa363db3a167bb3c2dab7ceccafda7c10be976c043133",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2085,9 +2085,9 @@
     },
     {
       "id": "X02.F02.workspace-publication",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-publication.json",
-      "sha256": "d27749397dacc7c6ce502b6b795e9448ee19f093c27ecc58b8b7950fd5c77d33",
+      "sha256": "3e63e88742c9e2f584f720ec4d17eb0ddcda310942e977cc278aac3faf234353",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2095,9 +2095,9 @@
     },
     {
       "id": "X02.F02.workspace-failure-output",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-failure-output.json",
-      "sha256": "55242602ec36c9124cdbf7338f49f25f5770e22f339ebe303c526656a4fdecee",
+      "sha256": "3de9f8cb1b6fc811acb6cf171a1a97147fe8b6cd750ed327b0eb0dacde26b071",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2105,9 +2105,9 @@
     },
     {
       "id": "X02.F02.workspace-reentry",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-reentry.json",
-      "sha256": "3d5dbc8d6eb650f1412d5bef6717b7d74583ffa856a8fad480cad38889c67053",
+      "sha256": "9a318f0e009e076e9878b3bfbc919c73dedcea8aa3803b195af146bec3c13e75",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2115,9 +2115,9 @@
     },
     {
       "id": "X02.F02.workspace-unresolved",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved.json",
-      "sha256": "e1e88467dcb347dc6aba15ec362f20b0e616d0997c3b1be46ab7216d358b661e",
+      "sha256": "0d3132c7fd9762f9cb5c8cee5684273200c2d090b8f8faee42f6f03af5d1e0de",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2125,9 +2125,9 @@
     },
     {
       "id": "X02.F02.workspace-unresolved-after-reentry",
-      "revision": 2,
+      "revision": 5,
       "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved-after-reentry.json",
-      "sha256": "d6ac626c57dca64857965a8bf5ada797f4cf4efbd1d2e86dfb0141a4ce7f2485",
+      "sha256": "c1764577419903082da44a46f6bef9cf723433b8903ad30015d731993609ffe5",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2135,9 +2135,9 @@
     },
     {
       "id": "X02.F02.fresh-game-cold",
-      "revision": 1,
+      "revision": 4,
       "path": "docs/algorithms/conformance/X02-F02-fresh-game-cold.json",
-      "sha256": "eaf95f7ed8df2c9fc3b43bb950ffd9d53b89aa0fb5eced68b7a0da7f1e7e6e82",
+      "sha256": "9171ac20e1c0e781766a70f594e91e6b99956e9f6676d2c15845dd2c68cf249e",
       "operation": "F02.prepareNewGame",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2145,9 +2145,9 @@
     },
     {
       "id": "X02.F02.fresh-game-used",
-      "revision": 1,
+      "revision": 4,
       "path": "docs/algorithms/conformance/X02-F02-fresh-game-used.json",
-      "sha256": "b5e1c403fcfdefdb726bdf6bc45ac934c98051f671125ade1fc3c606fa910e74",
+      "sha256": "603dfa8e8f3c9bd632dee71b6906311186fb33ce017fa6001ee5871ac0d9805a",
       "operation": "F02.prepareNewGame",
       "provenance": "specification-vector",
       "executionStatus": "passed",
@@ -2155,9 +2155,9 @@
     },
     {
       "id": "X02.F02.fresh-game-empty-scans",
-      "revision": 1,
+      "revision": 4,
       "path": "docs/algorithms/conformance/X02-F02-fresh-game-empty-scans.json",
-      "sha256": "36d632f8dfe313c6d216276b9dcd9899ea1d647b0a70ffb05e751e6b379cdafc",
+      "sha256": "cadec30f269b0351cf36c516097a70895bb9ba2c021fec9f13b106c500c53c1f",
       "operation": "F02.prepareNewGame",
       "provenance": "specification-vector",
       "executionStatus": "passed",

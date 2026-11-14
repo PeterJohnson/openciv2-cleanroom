@@ -55,9 +55,11 @@ Implementation rules:
 Required compatibility includes simulation, classic AI and map generation,
 scenario-authored content, bidirectional original save/map/scenario interchange,
 hotseat, and original-peer TCP/IP multiplayer with either engine hosting.
-Presentation can change while preserving information, privacy, choices, effects,
-and timing obligations. IPX, modem, serial, and original pixel/native-widget
-fidelity remain optional reference work under X01.
+Presentation has broad design freedom: preserve game rules, meaningful
+information, privacy, accepted commands and actual protocol timing, while loading
+original configuration/scenario content and retaining a familiar overall feel.
+Exact prompt operation, navigation, sorting, formatting, drawing and native UI
+behavior are reference only. IPX, modem and serial remain optional under X01.
 
 F01 permits a new reproducible RNG policy. It does **not** permit changed
 sampling laws, AI heuristics, map-generation rules, arithmetic, deterministic
@@ -88,6 +90,70 @@ Pure queries have no invented callback/mutation contract. Confirmed invalid-memo
 or uninitialized-local behavior uses a documented narrow repair; diagnostic
 original-stack cases are not production inputs. Missing behavior remains an owner
 gap until resolved from the contract or independent original-game observations.
+
+## Compatibility surfaces in the implementation
+
+X01 and each owner's Production contract scope distinguish game behavior,
+external interchange and optional executable comparison. The core owns logical
+rules/state and meaningful retained inputs. Format/protocol adapters own external
+layouts, opaque imported fields and valid translations. Comparison tools own
+original private memory/ABI/native traces; production does not depend on them.
+Independent original-game file/peer tests remain required evidence for supported
+interchange, separate from optional trace matching.
+
+Architecture choices here (libraries, records, services and APIs) are project
+design decisions, not claims that classic compatibility requires those shapes.
+Pass operation contexts explicitly; preserve true data flow rather than globals
+or aliases. Only real admitted commands/events/responses constrain live reads.
+Allocation, drawing, formatting and diagnostic callbacks do not create game
+interleavings. Codecs/checksums use defined byte images rather than native structs.
+Staged import and atomic output replacement are allowed; accepted game/peer
+effects remain committed and all real failures are reported truthfully.
+
+## Production and reference boundary
+
+Production code implements semantic information, choices, authored content and
+required game/file/network effects. Original storage addresses, pool ordinals,
+allocation extents and padding, heap capacities, handle ownership, widget flags,
+private buffers, native-control traces and allocator call order are comparison
+details only unless an owning file/wire/resource contract explicitly consumes
+them. Do not add them to live state or service interfaces to match a reference
+snapshot. Original trace emulation belongs in optional tools/tests which
+production targets neither link nor depend on.
+
+Classic adapters remain production code: they translate externally meaningful
+indices, encodings and results into the semantic model. For each representation
+detail, identify its actual external consumer; compare resolved values or encode
+through that adapter. Allocation-failure tests may check resource safety, but
+cannot invent gameplay callbacks, per-allocation publication or reentry. Harmless
+UI failures do not prescribe original fatal-error timing. This boundary overrides
+mixed historical excerpts and stronger storage/trace language below.
+
+### Logical text and classic name markers
+
+Live names use full-width implementation-local references or owned strings and
+explicit custom-name flags, never signed 16-bit pool ordinals. UI label rebuilds
+must not rebind retained rule names. Reload policies preserve or replace semantic
+names/flags; preserved fields need no discarded allocations. Original padding,
+last-allocation pointers, minimum extents and heap-size hints are comparison-only.
+Empty padded-name input still means one space; ordinary empty classic pooled
+input resolves to `<nil>`. These content rules do not require padded storage.
+
+F06 stored leader records retain their exact 48-byte encoding in a separate codec
+type. Live loading rebuilds names from chosen rules and consumes saved signs at
+the specified stages; saved magnitudes do not index replacement text storage.
+Live export writes custom/noncustom markers as -1/+1 independently of local IDs.
+Lossless stored-file decode/re-encode preserves original magnitudes, including
+zero and -32768. This canonical live encoding follows F06's sign-only restoration
+contract; it does not claim equality with original allocation-dependent exports.
+Repeated selected-tribe effects retain their specified behavior.
+
+Narrowing a text ID into an unrelated earlier name or an accidental custom-name
+marker is a repaired storage defect. Preserve intended names and flags beyond
+32767/65535 entries. Reference tools may report original ordinals/aliasing;
+production tests assert text, reload behavior, bounds and file-marker semantics.
+Unrelated scalar arithmetic and external field widths remain unchanged. This
+contract overrides original-storage interpretations elsewhere in this document.
 
 ## 2. Dependency structure
 
@@ -627,9 +693,11 @@ do not build several renderers upfront. The upstream
 documents these integrations.
 
 Build one menu/action model with stable action IDs, labels, shortcuts, checked,
-enabled, and hidden states. Retain P05's specified update semantics, including
-fields a refresh leaves unchanged. Menu implementations render that model and
-return an action identity through the same dispatch path.
+enabled, and hidden states. Derive availability from current game state; stale
+fields left by an original menu refresh are not required. Menu implementations
+render that model and return an action identity through the same dispatch path.
+The command service revalidates authority and target when accepting the action.
+The menu hierarchy, shortcuts and prompt/navigation flows are design choices.
 
 | Platform | Main menu bar | Dialogs |
 | --- | --- | --- |
@@ -659,10 +727,12 @@ The renderer reads observer-filtered models rather than unrestricted world state
 W03 and N04 govern fog, remembered knowledge, diplomacy privacy, and hotseat
 concealment. Clear outgoing-player views, popups, and cached presentation data
 before handoff. Rendering is read-only: required recalculations historically
-performed by a report or dialog move into an explicit session operation at the
-same semantic boundary. Where classic logical view geometry affects gameplay
-(for example V08/P07 report admission), preserve it as a declared compatibility
-input independent of the new viewport and fonts. Apply the
+performed by a report or dialog move into an explicit preparation/refresh
+operation. P06/P07/V08 define the corrected semantic scope: no classic viewport,
+font metric, page or repaint selects simulation work. Original score/Attitude
+visible-prefix refreshes and Trade row-visibility effects are reference bugs,
+not compatibility inputs. Local UI drafts can be discarded; accepted commands
+retain their effects. Apply the
 [randomness ownership rules](#randomness-ownership): presentation models carry
 resolved report/dialog choices, and repainting or rebuilding a view of the same
 interaction does not resample them. Cosmetic work uses only its own context.
@@ -742,9 +812,10 @@ native consumers do not scan virtual text-file sections.
 
 `oc2_formats` owns these codecs and receives explicit byte sources. Native pack
 validation precedes installation; classic selected files retain F03/C01/P04/P08/
-P09/S02 fallback, conversions, retained state and partial-publication behavior.
-Do not route classic in-game reloads through a transaction that erases their
-required effects. Resolve native inheritance explicitly, keep scenario-authored
+P09/S02 grammar, fallback, conversions and meaningful reload state. Classic
+parsing/loading may also stage unpublished results under X01. Preserve accepted
+game/peer effects and in-game keepNames/leader policies; native partial parser
+memory is not a required publication. Resolve inheritance explicitly, keep scenario-authored
 classic overrides, and record source kind/hashes. JSON does not replace F06
 save formats or N02/N05 wire formats, add required original-peer negotiation,
 or make original peers capable of reading JSON packs.
@@ -868,8 +939,10 @@ registry, controlled-choice and implementation-replay modes, dependency-aware
 trace comparison, provenance, and coverage ledger. Start with the three fixtures
 already in `docs/algorithms/conformance/`. Missing scripted inputs fail; they
 never fall back to random values or real clocks. Hash explicit logical state,
-not native object memory. Separate regression evidence from original-game
-interoperability and optional original-presentation comparisons.
+not native object memory. Separate gameplay, file/content, peer interoperability
+and optional executable-reference claims. Internal API/provider regression tests
+are implementation tests, not additional classic contracts. Capture meaningful
+state closure and real event dependencies, not all original helper/global traces.
 
 Test randomness isolation with the same initial gameplay and presentation-content
 contexts, semantic operations, player responses and ordered external callbacks. Vary redraw count,

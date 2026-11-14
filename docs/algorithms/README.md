@@ -22,6 +22,34 @@ changes. [Source provenance](#source-provenance) records the collection's resear
 history separately from implementation guidance. Source links and filenames
 there do not authorize reading or deriving implementation from those sources.
 
+## Reading the production contract
+
+All 65 specifications begin with a **Production contract scope** table separating
+gameplay, original files/content, required original-peer behavior and optional
+executable comparison. Start there, then read the algorithms for their scoped
+meaning. [X01](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces)
+defines the three compatibility surfaces; [X02](X02-whole-game-conformance.md#gameplay-interchange-and-executable-comparison-claims)
+keeps their tests and claims distinct.
+
+Game formulas, significant rounding, deterministic ties and actual phase/event
+dependencies remain requirements. Original functions, global scratch, native
+aliases, allocation/callback order and debugger-visible values do not become
+requirements without a game or external-format consumer. Explicit workspaces,
+typed identities and different algorithms/data structures are allowed when they
+preserve those semantics. No original-executable trace proof is needed merely
+to choose an implementation architecture.
+
+File/wire/data definitions remain binding even in appendices. Preserve opaque
+bytes in a lossless stored-data codec, and use documented encodings/translations
+for live import/export; do not mirror original structs in game state. Native
+partial parser/load mutations and truncated writes are optional failure evidence:
+safe staged loading and atomic file replacement are allowed. Preserve already
+accepted game/peer effects and report failures truthfully.
+
+Presentation recipes and historical validation lists cannot enlarge this scope.
+Real retained gameplay inputs are still required; unknown required behavior is
+an owning gap, not permission to assume purity or read reconstruction sources.
+
 ## Classic compatibility target
 
 The target is **Civilization II Multiplayer Gold Edition 5.4.0f, patch 3**, with
@@ -58,13 +86,21 @@ required compatibility from retained original implementation evidence:
 
 | Area | Required implementation | Optional reference or extension |
 | --- | --- | --- |
-| Presentation | Information, authored scenario content, privacy, semantic choices, accepted/cancelled effects and gameplay/network timing obligations | Original art/layout/pixels/fonts, screen projection, controls/shortcuts, cosmetic media and native callback/paint traces |
+| Presentation | Game rules, meaningful information, authored content/original configuration decoding, privacy, accepted game commands and actual protocol deadlines; broadly familiar game feel | Exact user-facing prompt operation, navigation, sorting, layout/formatting/drawing, screen projection, controls/shortcuts, cosmetic media and native traces |
 | Harmless UI failures | Clear diagnostics/fallback, safe cleanup, no fabricated success or loss of committed effects/required replies | Native error numbers, allocation/lock sequences, stale UI buffers and partial drawing |
 | Input admission | Nominal supported formats and custom content, documented defaults, normal network fragmentation, normal-play arithmetic/wrap; safe declared rejection outside the domain | Reproducing malformed/unsupported original inputs and their partial traces; exact behavior applies when an extra domain is explicitly supported |
 | Multiplayer transports | Original TCP/IP streams and UDP discovery, both host roles, sequential/simultaneous play, join/resume/host transfer; hotseat separately | IPX/SPX, modem/dial-up, serial and legacy DirectPlay/launch-lobby integration |
 
-AI heuristics, world/map generation, simulation rules and file/application wire
-formats are unchanged. Purely cosmetic city-scene generation is presentation;
+P01–P10 begin with concise required contracts and explicitly adopted data
+definitions/calculations. Their detailed numbered procedures are original
+reference, including historical imperative wording. New UI designs require no
+proof of equivalence to those procedures. Draft cancellation is distinct from
+undoing an accepted game command. P06/P07/V08 explicitly repair display-dependent
+calculation; classic fonts, viewport sizes and pagination are not simulation
+inputs. Tests compare semantic outcomes across alternative UI realizations.
+
+AI heuristics, world/map generation, underlying simulation formulas and
+file/application wire formats are unchanged. Purely cosmetic city-scene generation is presentation;
 W02 terrain generation remains required. New UI geometry does not change W01
 coordinates, topology, distance or resource predicates.
 
@@ -122,8 +158,8 @@ result. Defined overflow/wrap and deliberate sentinel storage remain in scope.
 
 All specifications use [X01's behaviorally significant ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering).
 Ordered pseudocode is reference evaluation. Keep dependencies that affect values,
-selected identities, live/captured inputs, callbacks, partial failure, file bytes
-or network effects. Independent work may be reordered, combined, cached,
+selected identities, captured/current inputs across real game events, accepted
+partial effects, external file definitions or peer behavior. Independent work may be reordered, combined, cached,
 short-circuited or parallelized only with an equivalence argument covering the
 complete admitted domain; otherwise retain reference order.
 
@@ -136,9 +172,9 @@ or matching return values alone. Real callback/failure prefixes remain observabl
 artificial internal checkpoints do not create extra compatibility requirements.
 
 [X02](X02-whole-game-conformance.md#dependency-comparison) compares stable semantic
-event identities and declared dependencies. Every unordered event pair needs an
-owner-backed independence declaration; missing edges are not implicit permission
-to reorder. Record chronological traces for diagnosis and same-policy replay,
+event identities and declared dependencies. Within an already scoped fixture, unordered semantic events need an
+owner-backed independence declaration. First exclude native/helper events with
+no required consumer; they do not need graph nodes or an independence proof. Record chronological traces for diagnosis and same-policy replay,
 while keeping original native/helper traces within their reference scope.
 Required protocol/file ordering, AI heuristics and world-generation rules remain
 unchanged. Version 3 fixture metadata makes this comparison explicit.

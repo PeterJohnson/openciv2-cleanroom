@@ -55,20 +55,17 @@ template <class Record> bool selected_records(state::GlobalValues& globals, Reco
         }
     return true;
 }
-std::int16_t negate(std::int16_t value) {
-    return std::bit_cast<std::int16_t>(
-        static_cast<std::uint16_t>(0U - static_cast<std::uint16_t>(value)));
-}
 std::string_view fixed_text(const state::FixedText<24>& text) {
     if (!text.terminated())
         throw std::out_of_range("Civilization name has no backed terminator");
     const auto bytes = text.text();
     return {reinterpret_cast<const char*>(bytes.data()), bytes.size()};
 }
-void copy_label(state::FixedText<24>& target, std::int16_t id, const state::TextPool& pool) {
-    if (id < 0)
+void copy_label(state::FixedText<24>& target, state::NameReference name,
+                const state::TextPool& pool) {
+    if (name.custom)
         return;
-    const auto bytes = pool.text(static_cast<state::TextId>(id));
+    const auto bytes = pool.text(name.id);
     if (bytes.size() >= target.bytes.size())
         throw std::out_of_range("Rule label does not fit the saved civilization name field");
     for (std::size_t i = 0; i < bytes.size(); ++i)
@@ -76,12 +73,37 @@ void copy_label(state::FixedText<24>& target, std::int16_t id, const state::Text
     target.bytes[bytes.size()] = 0;
 }
 } // namespace
-state::Leader LeaderScratchRecord::value() const {
+StoredLeader stored_leader(const state::Leader& live) {
+    StoredLeader result;
+    result.attack = live.attack;
+    result.expand = live.expand;
+    result.civilize = live.civilize;
+    result.times_used = live.times_used;
+    result.female = live.female;
+    result.city_name_index = live.city_name_index;
+    result.color = live.color;
+    result.city_style = live.city_style;
+    // F06 consumes signs after rebuilding names from the selected rules. A
+    // canonical nonzero magnitude avoids coupling export to runtime text IDs.
+    const auto marker = [](state::NameReference name) -> std::int16_t {
+        return name.custom ? -1 : 1;
+    };
+    result.leader_name = marker(live.leader_name);
+    result.plural = marker(live.plural);
+    result.adjective = marker(live.adjective);
+    for (std::size_t sex = 0; sex < 2; ++sex)
+        result.names[sex] = marker(live.names[sex]);
+    for (std::size_t g = 0; g < 7; ++g)
+        for (std::size_t sex = 0; sex < 2; ++sex)
+            result.titles[g][sex] = marker(live.titles[g][sex]);
+    return result;
+}
+StoredLeader LeaderScratchRecord::value() const {
     if (backed != bytes.size())
         throw std::out_of_range("Saved leader scratch record lacks complete backing");
     return decode_leader(bytes);
 }
-void LeaderScratchRecord::assign(const state::Leader& leader) {
+void LeaderScratchRecord::assign(const StoredLeader& leader) {
     const auto encoded = encode_leader(leader);
     std::copy(encoded.begin(), encoded.end(), bytes.begin());
     backed = bytes.size();
@@ -124,8 +146,8 @@ bool write_leader_items(const WriteItem& write, state::GlobalValues& globals,
     if (!write(word(cursor.x)) || !write(word(cursor.y)))
         return false;
     return selected_records(globals, [&] {
-        return write(
-            encode_leader(leaders[tribe(globals.player_civ, civilizations, leaders.size())]));
+        return write(encode_leader(
+            stored_leader(leaders[tribe(globals.player_civ, civilizations, leaders.size())])));
     });
 }
 void restore_leader_names(bool scenario, state::GlobalValues& globals,
@@ -136,29 +158,26 @@ void restore_leader_names(bool scenario, state::GlobalValues& globals,
         if (live.female >= live.names.size())
             throw std::out_of_range("Leader gender has no selected-name backing");
         live.leader_name = live.names[live.female];
-        if (live.plural <= 0)
-            live.plural = negate(live.plural);
-        if (live.adjective <= 0)
-            live.adjective = negate(live.adjective);
+        live.plural.custom = false;
+        live.adjective.custom = false;
         for (auto& pair : live.titles)
             for (auto& id : pair)
-                if (id <= 0)
-                    id = negate(id);
+                id.custom = false;
     }
     if (!scenario) {
         selected_records(globals, [&] {
             const auto selected = tribe(globals.player_civ, civilizations, rules.leaders.size());
             auto& live = rules.leaders[selected];
-            live.leader_name = negate(live.leader_name);
+            live.leader_name.custom = !live.leader_name.custom;
             const auto saved = scratch.by_tribe[selected].value();
             if (saved.plural < 0)
-                live.plural = negate(live.plural);
+                live.plural.custom = !live.plural.custom;
             if (saved.adjective < 0)
-                live.adjective = negate(live.adjective);
+                live.adjective.custom = !live.adjective.custom;
             for (std::size_t g = 0; g < live.titles.size(); ++g)
                 for (std::size_t sex = 0; sex < 2; ++sex)
                     if (saved.titles[g][sex] < 0)
-                        live.titles[g][sex] = negate(live.titles[g][sex]);
+                        live.titles[g][sex].custom = !live.titles[g][sex].custom;
             return true;
         });
         return;
@@ -171,14 +190,14 @@ void restore_leader_names(bool scenario, state::GlobalValues& globals,
         civilizations[civ].leader_portrait = static_cast<std::uint8_t>(selected + 21 * live.female);
         if (civ >= names.size())
             throw std::out_of_range("Scenario civilization has no name backing");
-        if (fixed_text(names[civ].tribe) == rules.text.text(state::label_magnitude(live.plural)))
+        if (fixed_text(names[civ].tribe) == rules.text.text(live.plural.id))
             for (std::size_t g = 0; g < live.titles.size(); ++g)
                 for (std::size_t sex = 0; sex < 2; ++sex)
-                    live.titles[g][sex] = std::bit_cast<std::int16_t>(
-                        static_cast<std::uint16_t>(rules.names.government_titles[g][sex]));
-        live.leader_name = negate(live.leader_name);
-        live.plural = negate(live.plural);
-        live.adjective = negate(live.adjective);
+                    live.titles[g][sex] =
+                        state::NameReference{rules.names.government_titles[g][sex], false};
+        live.leader_name.custom = !live.leader_name.custom;
+        live.plural.custom = !live.plural.custom;
+        live.adjective.custom = !live.adjective.custom;
     }
 }
 void prepare_scenario_names(bool scenario_export, const state::GlobalValues& globals,

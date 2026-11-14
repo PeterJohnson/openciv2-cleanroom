@@ -8,6 +8,27 @@ both preference paths publish `CityPreferences`. This supplies part of M1's
 native/classic content boundary, not complete rules conversion or session content
 admission. [The completion audit](m1-validation.md) remains open.
 
+## Text representation refactor
+
+Current production text uses unpadded owned strings and local references with
+explicit custom-name flags. The F06 stored leader codec is a separate type;
+live export translates flags without narrowing text IDs. Label rebuilds preserve
+unrelated rule references. Synthetic text-allocation callbacks, padding checks
+and matching allocation traces have been removed from production interfaces/tests.
+Original ordinal calculation remains only in `tools/check_original_rule_labels.py`,
+using original data and the lossless stored inspector. The former C++ ordinal
+comparison executable is removed. Earlier allocation/ordinal results below are
+historical evidence, not current implementation or milestone requirements.
+Semantic regression checks replace the historical allocation-trace assertions.
+
+Refactor validation: 559 native CTests (547 Catch2 cases), all seven WASM CTests,
+115 Python tests with two expected skips, and all 57 registered conformance
+vectors on both targets pass. Pinned formatting and metadata checks pass.
+These are implementation regressions and specification-derived checks. No new
+original-executable run was performed for canonical live name markers; their
+translation is checked against the specified F06 restoration consumer. Historical
+original reports remain historical and are not relabeled as evidence for this build.
+
 ## Classic reader
 
 `formats/classic_text_reader.hpp` implements F03 §2/9 and the required retained
@@ -57,32 +78,16 @@ a complete folding table. Byte text and presentation encoding remain separate.
 ## Shared labels and startup
 
 `formats::classic::LabelLoader` implements P04 §2 using the same reader and pool.
-Initialization selects the language extension and signed status-language position,
-invokes a supplied GAME-cache builder, raises retained STRINGHEAP capacity when
-requested, and initializes `<nil>`. Label loading is separate. Rebuild repeats
-the capacity/pool step, releases the old label collection, loads labels and then
-popup labels without resetting language or rebuilding the GAME cache.
+Initialization selects language and invokes the supplied GAME-cache builder.
+Original STRINGHEAP size hints are ignored. Label loading is separate. Rebuild
+replaces labels while preserving rule references and missing-popup fallbacks;
+it does not reset the text pool, language or lookup configuration.
 
-Label loading publishes the declared signed count and follows its live value.
-Each whole line is pooled in order. Short tables reopen the installation section,
-skip the live primary count, append up to the captured fallback count and then
-fill remaining slots with one shared `[ERROR:LABELS.TXT]` ID. The primary declared
-count remains distinct from the resulting table size. Empty ordinary strings
-return ID zero. Missing LABELS reports failure and clears the usable table/count;
-it does not synthesize a successful label set.
-
-The table has 888 entries. Unwritten backing is represented explicitly; an
-out-of-bounds publication stops after prior allocations and writes, without
-clamping the declared count. Allocation callbacks may change the count or replace
-the live collection. Search-directory overrides restore on both completion and
-safe stops; other preceding effects remain. Native handle/lock errors are not
-emulated as logical labels.
-
-POPUPS publishes three IDs in OK/Help/Cancel order and leaves its stream open.
-Missing POPUPS retains the prior bindings, including across pool replacement;
-before a binding exists, lookup returns the specified English literal. `RuleState`
-owns these labels and retained capacity alongside the pool. Session replacement
-retains them; independent process contexts have separate state.
+Classic resources use 888 label indices and three popup roles. Short tables
+load installation fallbacks and then `[ERROR:LABELS.TXT]`; ordinary empty text
+resolves to `<nil>`. Invalid writes are bounded, missing LABELS reports failure,
+and scoped search overrides restore on failure. No original handle/lock errors,
+heap capacity or allocation callbacks are modeled.
 
 The GAME-cache builder remains a supplied service. F03 specifies header recognition
 and indexed lookup but not the builder's finite capacity or duplicate insertion
@@ -117,72 +122,20 @@ it neither selects a new current name nor installs default title pairs. Repeated
 optional title overrides use the last value. The loader retains each leader's
 usage count and city-name cursor.
 
-`state::RuleState` now owns the decoded definitions, shared `TextPool`, numeric
-name bindings, 21 live `Leader` records and the double-movement-applied flag.
-`ProcessContext::rules` uniquely owns that state outside the caller's stack.
-Independent processes have independent pools; client-session replacement and
-entity-scan reset retain the installed rules, labels and leader counters.
+`state::RuleState` owns decoded definitions, text storage, logical name references,
+21 live leaders and the double-movement flag. Name references are full-width;
+custom-name status is an explicit flag. Preserving names does not allocate or
+publish discarded replacements. Appends retain existing views. Label rebuilds
+preserve unrelated rule references; new-game preparation replaces the whole state.
+The original parallel unit-name pointer table has no runtime consumer and is omitted.
 
-The pool implements F02's ordinal identities and F03's append-only allocation
-effects. Explicit `initialize()` clears it and stores P04's `<nil>` at ordinal
-zero. Initialization is not implicit in construction or a client-session change.
-Ordinary nonempty text appends bytes plus NUL; empty text returns ID zero without
-allocating or changing the last allocation. Padded empty names become one space;
-minimum capacities zero-pad without truncating. Equal strings append separately.
-Existing text views remain valid across appends, while pool replacement invalidates
-them. An allocation hook runs before publication; an exception preserves preceding
-effects. Input bytes are owned across that callback, and the returned ordinal uses
-the pool's resulting live size.
-
-All classic name assignments publish their 32-bit bindings. Leader name, plural,
-adjective and title bindings narrow to signed 16 bits; government default title
-IDs narrow when installed in leaders. Gender selects the current leader label.
-Preservation restores each previous binding and decoded field after reading its
-replacement, while retaining allocations. Parsed unit names update the parallel
-interface binding; defaulted tail names change the rule binding without updating
-the interface binding. Order-name slot zero remains untouched.
-
-Decoded `RuleText` values describe the loaded content. Live name consumers must
-resolve numeric bindings, including sign interpretation at the owning operation;
-they cannot substitute those decoded strings after narrowing, pool replacement
-or F06 sign-marker changes. For example, an allocated ID 32769 narrows to −32767:
-C01's absolute-label lookup reads ordinal 32767, not the newly allocated string.
-Ordinary empty decoded text similarly has ID zero, whose initialized pool value
-is `<nil>`. This distinction is explicit rather than hidden by a cached string.
-The process overloads of city preferences and C01 naming use current pool bindings.
-
-The live leader records pass through the existing 48-byte F06 codec without a
-second representation. Full application startup, GAME-cache construction, S04
-editing and complete session reload orchestration remain open. Supplying an initialized pool alone
-does not claim original startup ordinal equality; the preceding labels and
-allocation sequence must also match.
-
-A [retained original-save consistency check](conformance/reports/original-rule-labels-windows.json)
-matches all 18 English leader name/plural/adjective/title label magnitudes against
-the sequence `<nil>`, 888 labels, three popup strings and the ordered rule tables.
-The independently authored helper pins the input bytes and decoder. Its optional
-`oc2_rule_labels` driver now executes the C++ P04 rebuild and F03 rule loader:
-892 pre-rule strings and all 18 resulting bindings match the retained save by
-magnitude. The separate [F06 name phase](m1-stored-saves.md#ordered-leader-and-name-operations)
-now also reconstructs the complete saved leader record from the loaded rule row,
-saved triplets and saved sign markers. This is not a new original startup trace.
-The earlier original capture pinned the rules and save, but not LABELS; the report
-identifies that limit.
-
-The native read-only driver is built with testing and tools enabled:
-
-```powershell
-build/headless-fetch/oc2_rule_labels.exe LABELS.TXT RULES.TXT original.sav 12
-```
-
-The last argument is the independently identified tribe slot for the save's one
-leader record. It reports source hashes and all comparisons as JSON; exit 0 means
-all performed comparisons match, 1 means mismatch, and 2 means invalid input or
-load failure.
-The driver uses uncached supplied files and does not discover installations,
-load a live session or write input files. For matching ordinary single-player
-inputs it separately reports the F06 name-phase comparison, including all record
-bytes; it does not execute the complete ordered I/O path.
+The separate F06 `StoredLeader` type preserves every byte of an imported record.
+Live name restoration consumes its sign markers, and live saving writes canonical
+markers without depending on UI text allocation history. The original consistency
+[report](conformance/reports/original-rule-labels-windows.json) is historical
+evidence about original ordinals. Its independent Python predictor remains in
+`tools/check_original_rule_labels.py`; the old C++ ordinal driver was removed.
+No original source/harness is an implementation input.
 
 Reference failures retain the specified prefix and report the module, code, row,
 position and offending line. A returning diagnostic/cleanup callback is followed
@@ -378,19 +331,13 @@ the eight staged C++ files. Logs are retained locally in ignored
 
 ## Evidence and remaining work
 
-Fifteen authored portable reader cases, seventeen classic rule cases and six
-preference cases cover the above contracts. The rule cases include a complete
-independently authored native/classic equivalence check with out-of-order
-sections, explicit fallback/reuse, normalization, reference failures, name/leader
-preservation across callbacks, allocation failure, tail interface bindings and
-retained special terrain work. Three additional pool cases check ordinal/empty/
-padding behavior, stable text views, allocation/reset failure and live callbacks.
-Leader-boundary cases exercise IDs at 32768 and 65536 through the 48-byte codec
-and actual C01 provider, and distinguish decoded text from a narrowed live label.
-The session ownership case also checks retained and isolated rule/pool state.
-Ten label-loader cases cover language/capacity initialization, full and partial
-tables, fallback, empty/nonpositive counts, popup retention, live callbacks,
-bounded writes and failures. They run on native and WASM targets.
+Portable reader, classic/native rule, label and text tests cover authored parsing,
+fallback, name preservation, malformed-input bounds and real I/O failures.
+Paired installation compares semantic values with different preceding text
+allocations. Large-ID tests verify intended names remain correct above 65535;
+separate tests preserve signed codec fields and verify custom-name restoration.
+Label rebuild tests retain old rule and popup text. Original allocation counts,
+padding and manufactured allocator callbacks are no longer acceptance criteria.
 The preference cases cover paired inputs,
 first-match behavior, retained fields and live name changes.
 Two additional native CLI cases check real mounted files, source preservation,

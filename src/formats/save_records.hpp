@@ -21,6 +21,16 @@ inline constexpr std::size_t elimination_record_size = 338;
 inline constexpr std::size_t multiplayer_record_size = 1172;
 inline constexpr std::size_t event_record_size = 444;
 
+// F06 stored representation only. Never a live rule/name record.
+struct StoredLeader {
+    std::int8_t attack = 0, expand = 0, civilize = 0;
+    std::uint8_t times_used = 0, female = 0, city_name_index = 0;
+    std::int16_t color = 0, city_style = 0, leader_name = 0, plural = 0, adjective = 0;
+    std::array<std::int16_t, 2> names{};
+    std::array<std::array<std::int16_t, 2>, 7> titles{};
+    bool operator==(const StoredLeader&) const = default;
+};
+
 struct SavedRectangle {
     std::int16_t left = 0, top = 0, right = 0, bottom = 0;
     bool operator==(const SavedRectangle&) const = default;
@@ -40,7 +50,7 @@ using EventRecord = state::EventValues;
 state::GlobalValues decode_globals(std::span<const Byte> bytes);
 state::Civilization decode_civilization(std::span<const Byte> bytes);
 state::CivilizationNames decode_civilization_names(std::span<const Byte> bytes);
-state::Leader decode_leader(std::span<const Byte> bytes);
+StoredLeader decode_leader(std::span<const Byte> bytes);
 SavedLayout decode_layout(std::span<const Byte> bytes);
 SavedMapView decode_map_view(std::span<const Byte> bytes);
 ScenarioParameters decode_scenario_parameters(std::span<const Byte> bytes);
@@ -50,7 +60,7 @@ EventRecord decode_event_record(std::span<const Byte> bytes);
 Bytes encode_globals(const state::GlobalValues& value);
 Bytes encode_civilization(const state::Civilization& value);
 Bytes encode_civilization_names(const state::CivilizationNames& value);
-Bytes encode_leader(const state::Leader& value);
+Bytes encode_leader(const StoredLeader& value);
 Bytes encode_layout(const SavedLayout& value);
 Bytes encode_map_view(const SavedMapView& value);
 Bytes encode_scenario_parameters(const ScenarioParameters& value);

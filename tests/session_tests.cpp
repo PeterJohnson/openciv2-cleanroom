@@ -217,7 +217,6 @@ TEST_CASE("Session ownership retains process values and isolates virtual peers",
     process.rules->names.units[3] = label;
     process.rules->labels.entries = {label};
     process.rules->labels.popups[1] = label;
-    process.rules->labels.pool_capacity = 50000;
     process.rules->definitions.units[3].attack = 91;
     process.fallback.fertility = 99;
     runtime.world().map.allocate(world::Geometry{4, 2});
@@ -231,7 +230,6 @@ TEST_CASE("Session ownership retains process values and isolates virtual peers",
     CHECK(peer_process.rules->leaders[4].city_name_index == 0);
     CHECK(peer_process.rules->text.size() == 0);
     CHECK(peer_process.rules->labels.entries.empty());
-    CHECK(peer_process.rules->labels.pool_capacity == 35000);
     CHECK(peer_process.rules->definitions.units[3].attack == 0);
     CHECK(peer_process.fallback.fertility == 0);
     // A client-session transition itself must not pretend to be F05 new-game reset.
@@ -241,7 +239,6 @@ TEST_CASE("Session ownership retains process values and isolates virtual peers",
     CHECK(process.rules->text.text(process.rules->names.units[3]) == "Retained rule");
     CHECK(process.rules->labels.label(0, process.rules->text) == "Retained rule");
     CHECK(process.rules->labels.popup(1, process.rules->text) == "Retained rule");
-    CHECK(process.rules->labels.pool_capacity == 50000);
     CHECK(process.rules->definitions.units[3].attack == 91);
     CHECK(runtime.world().entities.units.end() == 5);
     CHECK(runtime.world().map.tiles()[0].fertility == 42);

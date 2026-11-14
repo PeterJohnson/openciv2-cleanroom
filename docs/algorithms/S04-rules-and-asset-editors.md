@@ -1,5 +1,29 @@
 # S04 — Rules and asset editors
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in S04 |
+| --- | --- |
+| Gameplay | Accepted rule edits, renaming/reference propagation and necessary consumer refresh; preserve game meaning after editing. |
+| Original files/content | F03 rule grammar/conversions, P03 source-sheet pixels/markers, sound identities and valid original exports. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Scalar-editor controller, property capture order, private scratch, click/tool geometry and native media/provider calls. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -29,8 +53,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 Rule/name publication, apply/cancel effects, source-image output and file failures
 retain their dependencies. Independent conversions or pixel work may be grouped
@@ -57,6 +82,18 @@ allocation and platform mechanics are recorded in [Appendix D](#appendix-d-origi
 state changes and externally visible results without reproducing those mechanisms.
 Exact numeric domains and file/wire encodings remain required wherever specified.
 
+## Rule and asset edit contract
+
+The binding definitions are field meanings/domains/conversions, accepted edits
+and reference updates, plus original rule/image/sound formats and source-sheet
+geometry. The scalar-controller recipe, screen tool geometry, native controls,
+shared scratch and capture order are reference. Implement draft documents and a
+validated Apply if desired. A separate accepted icon/sound/export command keeps
+its effects when another draft is cancelled; merely changing a control need not
+commit it. No failed widget getter supplies old private bytes to a game edit.
+Revalidation, safe cleanup and staged file replacement follow X01. Source-image
+coordinates remain binding even when the editor uses a different screen layout.
+
 ## 1. Domains and publication boundaries
 
 Inputs are the live rule tables, name service, civilizations, event list,
@@ -72,15 +109,16 @@ they affect subsequent reads, independent of the implementation's storage.
 Rule editors share scratch names and values. A session loads only its specified
 fields; other fields retain prior contents. Most scalar edits change scratch
 until OK, but nested icon and sound commands can change live assets or files
-immediately. Cancel clears the editor's Running flag and ends its modal loop;
-it does not reverse those child effects or reset shared scratch. The effects
-editor has its own file-only publication rule. Do not impose one transaction
-on all editors.
+immediately. The old Cancel/Running/shared-scratch sequence is reference. Preserve separately
+accepted child effects; draft state can be discarded. The effects editor's output
+meaning remains file-only. New editor transaction boundaries are permitted for
+unsubmitted work, without undoing an already accepted command.
 
 State is live unless explicitly captured. In particular control IDs, the active
 editor, current row, names and rule values may be reread after callbacks. A
-failed text getter leaves previous/private input rather than producing zero.
-Require its established backing, supplied retained input or a bounded stop.
+failed text getter supplies no accepted edit; keep the draft unchanged or report
+the error. Original retained private input is diagnostic evidence, not a required
+production argument.
 Unsupported references, cycles and missing resources retain their separate
 read/fault/termination boundaries. A declared stricter input profile is allowed.
 Out-of-bounds writes are excluded bugs under
@@ -835,6 +873,12 @@ fault unwinding. P10 owns waveform decoding/playback and effect-name lookup;
 P04 owns label-region geometry and modal delivery.
 
 ## 13. Conformance and integration
+
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
 
 These procedures contain no direct random draws. Named resource, modal,
 rendering, file and gameplay children retain their own ordered effects; do not

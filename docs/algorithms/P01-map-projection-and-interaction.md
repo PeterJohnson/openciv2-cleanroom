@@ -1,67 +1,107 @@
 # P01: Map projection and interaction
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-This specification describes classic Civilization II Multiplayer Gold Edition
-5.4.0f, patch 3 map-window geometry, coordinate conversion, centering, cursor
-selection and map gestures. It covers the eight map views and the overview
-window. A replacement can use different windowing and graphics representations,
-while preserving world-coordinate identities and semantic interaction effects.
-Original screen-coordinate formulas are reference presentation behavior.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-[F01](F01-determinism-and-arithmetic.md) owns arithmetic conventions;
-[W01](W01-map-geometry-and-spatial-state.md) owns world coordinates, bounds,
-one-step horizontal wrapping, neighborhoods and rectangle membership.
-[W03](W03-visibility-and-exploration.md) owns knowledge queries.
-[U04](U04-unit-orders-and-activation.md) owns unit activation, View/Move-units
-transitions and accepted Goto execution; [U05](U05-transport-and-special-movement.md)
-owns paradrop execution; [U02](U02-movement-and-zones-of-control.md) owns
-directional movement. [P02](P02-map-rendering-and-minimap.md) owns drawing and
-redraw sequencing, [P03](P03-graphics-and-asset-processing.md) image, palette and
-scaling services, [P04](P04-text-and-dialogs.md) fonts, captions and dialog
-controls, and [P05](P05-input-and-command-dispatch.md) native window events, event translation, general key/menu
-dispatch and deferred-event delivery. P01 owns the
-map-click controller after event delivery, including its gates and continuation.
-P05 must call that controller rather than reproduce its branches.
+| Surface | Binding scope in P01 |
+| --- | --- |
+| Gameplay | Map target identity, exploration/privacy and access to actual activation/movement commands. |
+| Original files/content | W01 map coordinates and F06 saved preference translations. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Projection, camera, hit regions, zoom/cursors and navigation. |
 
-[F06](F06-save-load-and-file-formats.md) owns saved rectangles, centers and zoom;
-[N03](N03-multiplayer-turn-sequencing.md) owns session timing and timer mechanics.
-No operation specified here directly draws from either gameplay sampling law.
-A child operation may do so under its own contract.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+## Required presentation contract
 
-## Required contract and reading guide
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-World-coordinate identity, topology, visible/selectable objects, active unit/city,
-command eligibility/targets and accepted movement/Goto/paradrop effects; saved
-view fields through F06.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-## 1. Domain, state and arithmetic
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
 
-### Intended inputs
+## Map interaction obligations
+
+- Use W01 map coordinates, topology, wrapping, distances and tile identities.
+  Screen projection, zoom range, camera limits, scrolling and hit testing are
+  implementation choices; a selected screen target must resolve to the intended
+  valid tile, city or unit, including edges and wrapped seams.
+- Preserve W03 knowledge and N04 observer/hotseat concealment. A minimap or
+  alternate camera must not reveal unseen terrain, cities or units.
+- Distinguish inspecting a tile/object from accepting a move, order or activation.
+  U02/U04/U05 own those game operations, eligibility and effects. Preserve the
+  selected actor/target through dispatch and revalidate it after relevant events.
+  Inspecting, centering, hovering or repainting is not a game command.
+- Offer map exploration, object inspection, unit selection and movement/order
+  access. The selection/controller notes in reference §§6–7 identify original
+  command meanings, not required clicks, hold delays, mode toggles, cursor flags,
+  stack display order or automatically chosen focus targets. Any automatic
+  *gameplay* activation still follows U04; visual focus does not replace it.
+- A readable tile map and navigable overview support the intended feel. Exact
+  isometric metrics, window arrangement and saved screen coordinates are optional.
+
+## Original-file input contract
+
+F06 owns stored map/view preferences and their encoding. Preserve lossless
+stored-file handling; a live UI may translate unsupported preferences to valid
+documented defaults without using reserved fields for new metadata. This family
+adds no required screen-coordinate or native-window format. Reference projection
+and geometry constants do not become external map coordinates.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Domain, state and arithmetic
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Intended inputs
 
 Nominal inputs are a loaded world, valid logical view slots and identified user
 commands. World dimensions/topology and doubled map coordinates satisfy W01.
@@ -76,7 +116,7 @@ observer, View/Move mode, active unit, selection, last accepted target, operatio
 busy/deferral state and active targeting mode. Screen rectangles, pixel caches,
 font keys, masks, cursor art and native receivers belong to the reference adapter.
 
-### Numeric behavior and off-nominal inputs
+#### Numeric behavior and off-nominal inputs
 
 Use F01 reference results for intermediate sums, differences and products; signed division truncates toward zero. `sar(v,n)` is arithmetic right
 shift, including negative values. `s16(v)` retains the low 16 bits and interprets
@@ -101,7 +141,10 @@ follow the stated store order. Unknown receiver/table backing needs supplied
 input or a stop; out-of-bounds writes are excluded bugs under
 [X01](X01-classic-compatibility-contract.md#out-of-bounds-writes-are-excluded-bugs).
 
-## 2. Zoom and map geometry
+### 2. Zoom and map geometry
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 The renderer chooses screen scale and projection. Preserve the selected world
 tile, active unit/city and F06 view fields when a zoom operation changes local
@@ -109,7 +152,10 @@ presentation; W01 world geometry is unchanged.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 3. Projection, hit testing and clipping
+### 3. Projection, hit testing and clipping
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Convert a gesture to an identified world tile or direction, then invoke §7. Reject
 a gesture that has no target without issuing a game command. W01 owns
@@ -118,7 +164,10 @@ clipping are renderer choices.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 4. Centering, scrolling and following
+### 4. Centering, scrolling and following
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Centering, scrolling and following change local view state. They must not issue
 movement commands, change the shared selected object implicitly or reveal
@@ -127,7 +176,10 @@ saved view values.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 5. Overview geometry and interaction
+### 5. Overview geometry and interaction
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 The overview conveys the same permitted world information and provides semantic
 map selection/centering. Its screen geometry and click projection may differ; a
@@ -135,7 +187,10 @@ click must resolve to the world target used by the resulting action.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 6. Map cursors and the hold gesture
+### 6. Map cursors and the hold gesture
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Provide semantic Goto, movement and paradrop targeting and cancellation. Gesture
 duration, cursor artwork and timer implementation may differ. Once accepted,
@@ -143,9 +198,12 @@ dispatch the identified target through §7 and the U04/U05 owners.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 7. Selection and the map-click controller
+### 7. Selection and the map-click controller
 
-### Change the shared selection
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Change the shared selection
 
 For requested x/y, first require W01 rectangular validity. On failure return 0
 without effects. Otherwise clear blink phase, redraw the current selection in
@@ -162,7 +220,7 @@ child changed the selection meanwhile. Ordinary directions are W01's 0–7;
 its stationary entry and bounded additional zero backing are covered in
 Appendix B. An invalid endpoint does not wrap vertically.
 
-### Entry and deferral
+#### Entry and deferral
 
 Delivered left click calls the controller with mode 0; right click uses mode 1.
 Any nonzero mode follows the right-click branches below. If game mode is
@@ -189,7 +247,7 @@ clear input-busy and return. On conversion success set input-discard suppression
 return. Otherwise publish last-click x, then y. Unless a branch says otherwise,
 all later mechanics read their live shared state.
 
-### Accepted-coordinate branches
+#### Accepted-coordinate branches
 
 A normal-return early exit below clears input-discard suppression and then
 input-busy. Child failures preserve preceding effects and bypass this cleanup.
@@ -233,7 +291,7 @@ byte, or both scenario mode and whole-map reveal are enabled. P06 owns the
 contents of those views. Merely finding an inaccessible city still consumes
 the click; it does not fall through to unit activation or final centering.
 
-### Double click
+#### Double click
 
 Capture whether game mode is nonzero and input-busy was nonzero at entry.
 Unlike ordinary click, still query the same flush/mutation deferral predicate.
@@ -253,7 +311,10 @@ Clear input-busy only when this call owned it at entry; callback changes do
 not alter that captured cleanup decision. It does not change last-click state,
 center a view or run ordinary map-click conversion itself.
 
-## 8. View lifecycle and screen placement
+### 8. View lifecycle and screen placement
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Keep logical view identity, follow/center preferences and saved F06 fields
 distinct from native windows. Creation/release must establish and retire the
@@ -262,7 +323,10 @@ New windows do not change player/observer or active-unit identity.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 9. Conformance cases and integration limits
+### 9. Conformance cases and integration limits
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate world-target identity, View/Move selection and activation, owned/foreign
 city visibility, Goto/paradrop/directional routing, busy deferral and cancellation.
@@ -272,7 +336,7 @@ zoom, gestures and cursor art. Original geometry cases are reference tests.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Source and original instruction traceability
+### Appendix A. Source and original instruction traceability
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -314,7 +378,7 @@ Shift testing and byte-only centering/scroll/selection flags. All 17 bounded
 adjustment pairs and 4,096 nominal mask classifications match their pinned inputs.
 No Ghidra annotation or reconstruction campaign was changed or resumed.
 
-## Appendix B. Original representation and bounded exceptions
+### Appendix B. Original representation and bounded exceptions
 
 These details support reference snapshots; they do not prescribe cleanroom
 storage. A native map record has stride `0x3f0`; event receiver is its presentation
@@ -400,7 +464,7 @@ Do not turn a write into an assignment to an adjacent view or global merely
 because the original address happens to be mapped. Null receivers remain
 explicit failure boundaries after their documented entry effects.
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -438,7 +502,7 @@ The current original-byte probes and asset classification checks establish
 specific constants/instruction facts only. The outstanding real-child/native
 joins are listed in §9; the finite checks do not establish whole-game conformance.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -449,9 +513,9 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §2. Zoom and map geometry
+#### Original §2. Zoom and map geometry
 
-#### Scaling and accepted zoom operations
+##### Scaling and accepted zoom operations
 
 For an integer size `v` and level `z`:
 
@@ -481,7 +545,7 @@ below −7 can still increment, and one above 8 can still decrement. Primary
 preset operations overwrite a retained off-nominal zoom directly. No zoom
 operation here changes another view's zoom.
 
-#### Geometry pass
+##### Geometry pass
 
 For one view, perform these assignments in order:
 
@@ -539,9 +603,9 @@ At 640×320, zoom 0, world 80×50 and center `(40,24)`, the spans are
 margins zero. At content 300×400, world 8×10 and zoom 0, the oversized-world
 branches instead give `(4,5,5,11)` and margins `(22,120)`.
 
-### Original §3. Projection, hit testing and clipping
+#### Original §3. Projection, hit testing and clipping
 
-#### Map to pixel
+##### Map to pixel
 
 Capture `dx=wrapX(x-left)` and `dy=y-top` before output writes. Then:
 
@@ -563,7 +627,7 @@ For the 640×320 example above with bias `(8,20)`, tile `(40,24)` projects to
 same call finishes with 172: Y's intermediate 144 replaces X, then the X bias
 and Y bias are added in order.
 
-#### Pixel to map
+##### Pixel to map
 
 Start by narrowing incoming pixel x/y with `s16`. Replace x by
 `s16(x-biasX)` and y by `s16(y-biasY)`. Reject with result 1 if x or y is
@@ -610,7 +674,7 @@ With the previous view and bias, incoming `(328,180)` selects the base cell
 `(41,25)` when its sampled pick is zero. A pick of 1 changes it to `(42,24)`;
 a pick of 4 changes it to `(40,24)`.
 
-#### Direction at the active unit
+##### Direction at the active unit
 
 Project the supplied unit coordinates with the forward transform. Incoming
 mouse coordinates are signed low 16-bit values. Return 8 if the point is left
@@ -623,7 +687,7 @@ sample directionMask at the captured tile-relative offsets and return
 `sar(wrap32(color-10),4)` without a range clamp. This result need not be 0–8
 for off-nominal mask data. The mouse controller accepts only 0–7 as directions.
 
-#### Input masks
+##### Input masks
 
 The masks are algorithm inputs from the terrain asset, not geometric estimates.
 The terrain loader takes 64×32 cells at `(66,447)` for picking and `(261,447)`
@@ -652,7 +716,7 @@ A cleanroom implementation may scale categorical masks equivalently only after
 establishing the same sample selection and untouched/transparent-pixel effects.
 The actual nominal masks contain no transparent cells; modified assets may.
 
-#### Membership and redraw rectangles
+##### Membership and redraw rectangles
 
 A view's membership query calls W01's rectangle-membership algorithm with
 `left,top`, width `baseColumns+drawColumns` and height
@@ -672,9 +736,9 @@ A nonempty intersection returns true; an empty one produces the platform
 empty rectangle and false. P02 owns the subsequent draw/blit and whether the
 caller consumes this Boolean. This helper adds no tile-validity or radius gate.
 
-### Original §4. Centering, scrolling and following
+#### Original §4. Centering, scrolling and following
 
-#### Center on a coordinate
+##### Center on a coordinate
 
 Store `centerX=s16(wrapX(x))`, then `centerY=s16(y)`. Capture the current
 blink-active low-byte value, clear that low byte, redraw this view for the live
@@ -691,7 +755,7 @@ and `s16(requestedY)`. A separate primary-view helper redraws only when either
 stored signed center differs from the full requested coordinate, comparing
 before any narrowing/wrapping.
 
-#### Scroll if near an edge
+##### Scroll if near an edge
 
 Capture left and top; initialize result 0. On a cylindrical world, if
 `x<=2*baseColumns` and `worldWidth−2*baseColumns<=capturedLeft`, add worldWidth
@@ -709,7 +773,7 @@ scroll triggered by the other axis still passes both local coordinates to
 centering. Result means a center/redraw call occurred, not that the requested
 tile was formerly outside the visible rectangle.
 
-#### All views
+##### All views
 
 Initialize aggregate 1 and set map-redraw-busy to 1. Capture the follow filter:
 both permissions for a negative supplied civilization; local permission when
@@ -724,13 +788,13 @@ scrolls, not when any view scrolls. Closed auxiliaries are ignored. Callback
 changes to later Enabled/follow fields are observed; the filter remains the
 one captured before the scan.
 
-### Original §5. Overview geometry and interaction
+#### Original §5. Overview geometry and interaction
 
 P01 owns overview layout and coordinate interaction; P02 owns its color selection,
 painting and viewport outline. The overview uses rectangular tile marks rather
 than the main view's diamond masks.
 
-#### Layout
+##### Layout
 
 Capture content width/height. Let `sx=width/worldWidth`, replacing it by 1
 when at most 1; similarly let `sy=height/worldHeight`, replacing it by 1 when
@@ -756,7 +820,7 @@ handles them. Do not repair these bounds to fit a conventional minimap camera.
 With content 160×100, world 80×50 and primary center `(40,24)`, the result is
 4×2 pixel marks, 39 columns, 50 rows, margins `(2,0)` and origin `(0,0)`.
 
-#### Forward transform
+##### Forward transform
 
 Capture `dx=x−originX`; on cylindrical maps only, add worldWidth once if dx
 is negative. Arithmetic-shift dx right by one. Capture `dy=y−originY`.
@@ -766,7 +830,7 @@ Add live biasX to X, then live biasY to Y. These ordered writes preserve valid
 output/geometry aliases. Unlike main projection, a positive dx beyond the
 world width is not reduced.
 
-#### Click location
+##### Click location
 
 Subtract the overview's full biasX/biasY from incoming pixels without narrowing
 to 16 bits. Reject outside its half-open content rectangle. Only after that
@@ -788,7 +852,7 @@ whose Enabled is zero, then center that same slot on the captured coordinates
 and stop scanning. If all auxiliaries are enabled, do nothing. Creation may
 change live state, but does not replace the captured target coordinate.
 
-### Original §6. Map cursors and the hold gesture
+#### Original §6. Map cursors and the hold gesture
 
 The special/paradrop-mode query looks **only at primary view's cursor**, returning
 true for either valid or invalid paradrop. It does not scan other windows.
@@ -798,7 +862,7 @@ the primary special-mode query once, then, if true, scans the same active slots,
 publishes the ordinary pointer and applies it. Later participation is live after
 callbacks; the initial reset decision is not retested.
 
-#### Mouse movement
+##### Mouse movement
 
 Capture the native event's view receiver. If a modal city/dialog is active,
 return before using it. If this view is in Goto cursor mode, return.
@@ -821,7 +885,7 @@ If the chosen candidate differs from the receiver's live cursor, publish it
 before native load/apply. A callback cannot change which receiver this event
 uses. No map-click coordinates or selection are published by mouse movement.
 
-#### Clear pending gesture
+##### Clear pending gesture
 
 If holdTimer is nonnegative, destroy that timer, then store −1 in holdTimer.
 Reread holdView. If it is nonnegative and that view's cursor is Goto, publish
@@ -831,7 +895,7 @@ to −1. A cursor-load/apply callback can change the selected index used for
 release. Negative timer values mean no timer destruction; negative view values
 mean no cursor/capture operation.
 
-#### Left button down, timer expiry and release
+##### Left button down, timer expiry and release
 
 Button down returns immediately if a modal city/dialog is active, or if the
 game mode is nonzero and input-busy is already nonzero. Otherwise set input-busy
@@ -862,14 +926,14 @@ release alone leaves Goto mode armed for the ensuing map-click controller.
 P05/P04 own native delivery order of release and click events; keep their
 callbacks distinct. Moving the pointer while held does not itself scroll.
 
-### Original §8. View lifecycle and screen placement
+#### Original §8. View lifecycle and screen placement
 
 P04 owns native creation, control layout, window resources and destruction.
 The logical preparation and placement policies here feed those services.
 F06 restores saved values before these runtime steps; this is not a second
 save-file decoder.
 
-#### Sparse initialization and creation
+##### Sparse initialization and creation
 
 Sparse initialization writes the slot index, sets follow to local-only for
 slot 0 and neither for auxiliaries, sets cursor to retained Unknown, and, when
@@ -909,7 +973,7 @@ end-turn-blink timers using live tokens, deselects it, then destroys graphics
 window storage for active slots 0–7. It does not clear the tokens or Enabled
 flags. Later gates remain live after earlier destruction callbacks.
 
-#### Default rectangles
+##### Default rectangles
 
 Primary placement first queries main-frame client width and subtracts the
 saved overview rectangle's width. Query main-frame client height separately
@@ -933,7 +997,7 @@ set minimum size 40×25, install redraw/overview-click and shared key/character
 callbacks, load its pointer/main icon, and install focus/close/move/resize
 callbacks. Update, then show unless the live game mode is 1.
 
-#### Closing, resize and titles
+##### Closing, resize and titles
 
 Ordinary close on primary minimizes it and returns 0 to refuse normal close.
 Close on an auxiliary clears its Enabled and returns 1; the native close
@@ -965,7 +1029,7 @@ that title through P04's bounded caption/status redraw service. The category
 survives text callbacks, while language mode and auxiliary participation are
 read at their stated steps.
 
-### Original view and native state inventory
+#### Original view and native state inventory
 
 Each view retains:
 
@@ -993,7 +1057,7 @@ hold view, current native event receiver, saved rectangles, restore flag and
 saved-window marker. The overview has its own content geometry, margins,
 origin, tile dimensions and spans. Selection is shared; view centers are not.
 
-### Original §9. Conformance cases and integration limits
+#### Original §9. Conformance cases and integration limits
 
 Cases start with independent writable outputs and initialized view/resources
 unless an alias or boundary is explicitly stated. No P01 random draws occur.
@@ -1039,7 +1103,7 @@ actual effects and cancellation; F06 must resume distinct auxiliary centers,
 zoom and saved rectangles; N03 must join real timers and reentrant input.
 These remain open validation obligations rather than missing formula owners.
 
-### Original view inputs and coordinate spaces
+#### Original view inputs and coordinate spaces
 
 Nominal inputs are a loaded world, valid map-window slots, initialized native
 client/content rectangles, loaded terrain masks and delivered window events.
@@ -1054,17 +1118,17 @@ coordinates share the window coordinate space. `biasX,biasY` locate the content
 rectangle within that space; they are distinct from map-centering margins.
 A center or scroll request need not be a playable tile.
 
-### Original coordinate narrowing
+#### Original coordinate narrowing
 
 Stored centers and zoom use `s16`; pixel arguments are narrowed where stated.
 
-### Original double-click native event read
+#### Original double-click native event read
 
 city/dialog invokes its prompt. Otherwise read the native event token without
 using the receiver, then capture **last accepted click coordinates**, ignoring
 the incoming double-click pixel position for selection.
 
-## Appendix E. Original numeric annotations
+### Appendix E. Original numeric annotations
 
 These original annotations retain storage widths and reference-evaluation context.
 They do not prescribe internal types or redundant casts. The main contract and
@@ -1073,7 +1137,7 @@ file/wire encodings remain normative in their owning mappings. Where an excerpt
 includes an off-nominal conversion, it applies to that explicitly admitted profile,
 not as a new requirement to accept unsupported inputs.
 
-### Reference annotation 1
+#### Reference annotation 1
 
 Stored centers and zoom use `s16`; native pixel narrowing is in Appendix D.
 These are behavioral ranges, not requirements to lay out a particular object.

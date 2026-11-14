@@ -22,7 +22,7 @@ struct NameProvider {
 // provider calls. Publishes at most 15 classic bytes and a cleared tail.
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
                   std::span<state::Leader> leaders,
-                  const std::function<std::string(std::int32_t)>& resolve_plural,
+                  const std::function<std::string(state::TextId)>& resolve_plural,
                   const NameProvider& provider);
 // Process-owned rule/leader/pool binding of the same operation.
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,

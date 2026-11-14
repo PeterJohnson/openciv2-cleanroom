@@ -1,5 +1,29 @@
 # V02 — Governments and tax rates
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in V02 |
+| --- | --- |
+| Gameplay | Government/revolution, cap enforcement, rate normalization/balancing, meaningful accepted rate changes, treasury/population results and previews. |
+| Original files/content | F03 government rules and F06 rate/preference fields. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Rate-dialog receiver, scrollbar callbacks, palette lifetime and original edit/close choreography; drafts are not automatic game commits. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -34,8 +58,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 ## 1. State, accepted inputs and arithmetic
 
@@ -298,12 +323,26 @@ occur if callbacks leave each successive test true. Negative derived luxury
 alone does not trigger a call. N02 owns receipt, where TaxCheck and KingdomRates
 invoke the corresponding operation for the receiving local-human slot.
 
+## Rate operations versus original controls
+
+Government caps, normalization/balancing formulas, preview values and accepted
+rate changes are game semantics. The following dialog/scroll recipes describe
+one UI realization. Prepare required cap normalization explicitly and publish
+any real game effect once; window construction and painting do not perform it.
+Use named rate-adjustment/acceptance operations. A new UI can stage adjustments
+until Apply; an immediate-apply UI treats each accepted adjustment as a command.
+Cancel discards only unsubmitted drafts. Retain accepted normalization/rate
+effects and remote TaxCheck/KingdomRates obligations. Shared receivers, hold
+widgets, scroll callbacks, palette lifetime and native close order are reference.
+Real government/authority changes while a decision is pending still require the
+owner's game validation; synthetic widget callbacks are not additional inputs.
+
 ## 8. Rate-dialog lifecycle
 
-The following describes behavioral state and service ordering. P03/P04/P07 own
-pixel layout, fonts, sprites, labels, focus and native window/control resources.
-Their creation/show callbacks occur at the stated boundaries; a failed service
-does not silently undo the earlier simulation prefix.
+The following retains original interaction and service ordering as reference.
+Adopt rate arithmetic and actual game/peer effects under the operation contract
+above; P03/P04/P07 permit different controls and presentation. Native creation,
+show or paint callbacks do not create required game publications.
 
 ### Opening and normalization
 
@@ -543,6 +582,12 @@ Shared callbacks require actual child effects or a declared boundary; they are
 not assumed-success no-ops.
 
 ## 13. Conformance cases
+
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
 
 | Inputs | Required observation |
 | --- | --- |

@@ -38,9 +38,19 @@ struct Fixture {
         for (std::size_t i = 0; i < world.civilizations.size(); ++i)
             world.civilizations[i] = formats::decode_civilization(formats::Bytes(
                 formats::civilization_record_size, static_cast<formats::Byte>(0xa5 + i)));
-        for (std::size_t i = 0; i < process.rules->leaders.size(); ++i)
-            process.rules->leaders[i] = formats::decode_leader(
-                formats::Bytes(formats::leader_record_size, static_cast<formats::Byte>(0x21 + i)));
+        for (std::size_t i = 0; i < process.rules->leaders.size(); ++i) {
+            auto& leader = process.rules->leaders[i];
+            leader.attack = -12;
+            leader.times_used = static_cast<std::uint8_t>(33 + i);
+            leader.city_name_index = static_cast<std::uint8_t>(66 + i);
+            leader.female = 1;
+            leader.color = 7;
+            leader.city_style = 3;
+            leader.leader_name = leader.plural = leader.adjective = {70000, true};
+            leader.names.fill({80000, false});
+            leader.titles.fill(
+                {state::NameReference{90000, true}, state::NameReference{100000, false}});
+        }
         process.ordinary_preferences.game_options = 0x812387ffU;
         process.ordinary_preferences.disabled_messages = 0xf123;
         process.ordinary_preferences.science = 5;

@@ -36,7 +36,8 @@ struct Fixture {
         RuleContextServices services;
         services.comparison = classic::ascii_text_case();
         services.reload_sprites = [&] {
-            REQUIRE(rules->text.size() == 7); // nil, two labels, error filler, three popups.
+            REQUIRE(rules->labels.label(0, rules->text) == "Label one");
+            REQUIRE(rules->labels.popup(2, rules->text) == "P3");
             REQUIRE(files.text.search == "old");
             trace.push_back("sprites");
             if (sprites_hook)
@@ -67,12 +68,11 @@ TEST_CASE("F03 reload rebuilds labels before sprites and selects rules before re
         REQUIRE(f.files.text.search == selected);
         REQUIRE(f.files.text.working == "home");
         REQUIRE(f.rules->definitions.cosmic.values[0] == 3);
-        REQUIRE(f.rules->names.advances[0] == 7);
+        REQUIRE(f.rules->text.text(f.rules->names.advances[0]) == "advances 0");
         REQUIRE_FALSE(f.context->is_open());
         REQUIRE(f.trace == std::vector<std::string>{
-                               "open:old/LABELS.TXT", "open:old/LABELS.TXT", "open:home/LABELS.TXT",
-                               "open:old/LABELS.TXT", "sprites", "probe",
-                               "cd:" + std::string(selected),
+                               "open:old/LABELS.TXT", "open:home/LABELS.TXT", "open:old/LABELS.TXT",
+                               "sprites", "probe", "cd:" + std::string(selected),
                                "open:" + std::string(selected) + "/RULES.TXT",
                                "open:" + std::string(selected) + "/RULES.TXT",
                                "open:" + std::string(selected) + "/RULES.TXT", "cd:home", "flush"});

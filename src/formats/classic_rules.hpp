@@ -15,9 +15,6 @@ public:
     static constexpr int module = 3;
 };
 struct RuleLoadServices {
-    // Called before publishing each nonempty/padded allocation. Throwing stops
-    // at that boundary. Ordinary empty text makes no allocation call.
-    state::TextAllocation allocate;
     // Diagnostic/cleanup hook. Returning never resumes the offending parser.
     std::function<void(const RuleLoadError&)> fatal;
 };
@@ -51,12 +48,12 @@ private:
         state::RuleText value;
         state::TextId id;
     };
-    StoredText store(std::string text, std::size_t minimum);
+    StoredText store(std::string text, bool blank_as_space);
     void store_into(state::RuleText& target, state::TextId& binding, std::string text,
-                    std::size_t minimum);
-    void name_into(state::RuleText& target, state::TextId& binding, std::size_t minimum,
+                    bool blank_as_space);
+    void name_into(state::RuleText& target, state::TextId& binding, bool blank_as_space,
                    bool keep = false);
-    void leader_name(state::RuleText& target, std::int16_t& binding, std::size_t minimum,
+    void leader_name(state::RuleText& target, state::NameReference& binding, bool blank_as_space,
                      bool replace);
     void section(std::optional<std::string_view> filename, std::string_view name);
     [[noreturn]] void fail(RuleLoadFault fault, std::string_view section, std::size_t row,

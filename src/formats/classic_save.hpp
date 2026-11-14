@@ -49,7 +49,7 @@ struct StoredSave {
     std::array<TribeUsage, 21> tribes;
     std::int16_t cursor_x = 0, cursor_y = 0;
     // File order, including repeated tribes. No last-tribe-wins load transform.
-    std::vector<state::Leader> leaders;
+    std::vector<StoredLeader> leaders;
     std::array<std::array<Byte, 8>, 150> power_history{};
     SavedLayout layout;
     std::array<SavedMapView, 8> views;

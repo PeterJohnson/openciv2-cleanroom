@@ -20,6 +20,19 @@ The separate [classic text reader and preference adapters](m1-classic-text.md)
 now supply F03's byte grammar, section services and native/classic city-production
 preferences and all twelve classic rule-table readers.
 
+## Text representation refactor
+
+Current production text uses unpadded owned strings and local references with
+explicit custom-name flags. The F06 stored leader codec is a separate type;
+live export translates flags without narrowing text IDs. Label rebuilds preserve
+unrelated rule references. Synthetic text-allocation callbacks, padding checks
+and matching allocation traces have been removed from production interfaces/tests.
+Original ordinal calculation remains only in `tools/check_original_rule_labels.py`,
+using original data and the lossless stored inspector. The former C++ ordinal
+comparison executable is removed. Earlier allocation/ordinal results below are
+historical evidence, not current implementation or milestone requirements.
+Semantic regression checks replace the historical allocation-trace assertions.
+
 ## Identity and normalization
 
 Rule arrays may be reordered without changing external identities. A complete,
@@ -64,25 +77,16 @@ movement points, and every ordered title override. The installer uses those
 operands at the owning boundary: advance enablement precedes fixup, improvement
 fixup reads the current advance table, and movement uses the current cosmic road
 multiplier. Already normalized HP, costs and scalar codes are not scaled again.
-This matters when an allocation callback changes live state between rows.
+These dependencies remain explicit without allocation-time callbacks.
 
-Name allocation and binding publication use the same append-only pool as classic
-loading. Leader IDs narrow to signed 16 bits. Repeated title overrides allocate
-in order even when overwritten or when leader data is being preserved; ordinary
-empty overrides return label zero. Government default titles come from the live
-government table. Preservation captures/restores each affected name binding and
-decoded value across its allocation callback. Usage and city-name counters remain.
-All 62 native unit rows are explicit and update interface bindings when replacing
-names; the classic shortened-table tail distinction remains in that adapter.
-Special terrain rows retain existing work values, and order-name slot zero stays.
+Names use full-width local references and explicit custom-name flags. Preserved
+leader fields require no discarded allocations; repeated title overrides retain
+their final semantic value. Usage and city-name counters remain. Special terrain
+rows retain existing work values, and order-name slot zero stays unchanged.
 
-Rule admission still completes before any installation starts. An allocation
-failure during an invoked installation retains the reached publication prefix;
-it does not make the classic path transactional. The installer retains ownership
-of its input across callbacks and does not reparse or renormalize JSON there.
-It does not admit a complete pack/session, install the gameplay bundle, choose a
-reload command, rebuild labels/sprites, recalculate cities or reset the world.
-Those setup/reload operations and their profile/source receipts remain caller work.
+Rule admission precedes installation. The installer owns its admitted input and
+does not invent event/reentry boundaries while storing text. Setup, full pack
+admission, session reload and mechanic consumers remain separate owning work.
 
 ## Encoding and remaining comparison gap
 
@@ -137,19 +141,12 @@ check readonly behavior, inheritance, receipts and rejection. These are
 specification-derived and integration checks, not original-game observations or
 independent fixture review. No F03 operation is yet registered with X02.
 
-Eight additional native/WASM cases exercise retained rule installation, including
-six dedicated installer cases, a paired classic/native allocation trace with both
-leader policies and a mid-override failure, and an all-native C01 naming/reload
-flow. The paired trace changes live references, movement scaling and government
-titles, then compares publication prefixes, complete definitions, numeric bindings,
-leader records and allocated bytes. It is authored regression/specification
-evidence, not an independent original-program observation.
-
-The [classic rule loader](m1-classic-text.md#classic-rule-tables) now reads all
-twelve F03 tables into the same definitions, with a complete paired native/classic
-fixture, ordered partial updates and caller-controlled preservation. Its shared
-pool now supplies 32-bit rule-name IDs and signed-16 live leader bindings, with
-the retained unit-interface distinction and existing leader codec integration.
+Portable installation tests cover name preservation, custom markers, counters,
+special terrain retention and final title overrides. A paired native/classic
+test uses different preceding text allocations and compares resolved names and
+decoded rules. Large-ID tests prevent signed-name aliasing. F06 codec tests
+remain separate from live text identity tests. These are authored regressions,
+not new original-program observations.
 
 The [city-name providers](m1-city-names.md) now select by live plural name and
 preserve C01's counter, fallback, retry and publication behavior on both paths.

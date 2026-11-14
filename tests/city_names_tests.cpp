@@ -43,7 +43,7 @@ struct World {
         city.owner = state::CivilizationSlot{1};
         city.name.bytes.fill(0xa5);
         city.name.bytes[0] = 0;
-        leaders[0].plural = -123;
+        leaders[0].plural = state::NameReference{123, true};
     }
     bool run(const city::NameProvider& provider) {
         return city::default_name(
@@ -254,7 +254,7 @@ TEST_CASE("C01 owner and plural are captured but counters follow live tribe chan
     World world;
     world.leaders[0].city_name_index = 7;
     world.leaders[2].city_name_index = 19;
-    world.leaders[2].plural = -456;
+    world.leaders[2].plural = state::NameReference{456, true};
     world.civilizations[3].tribe = 4;
     world.leaders[4].city_name_index = 99;
     unsigned calls = 0, closes = 0;
@@ -327,7 +327,7 @@ TEST_CASE("C01 classic fallback selection retains the chosen file and leaves hom
 TEST_CASE("C01 provider failures preserve reached effects without invented normal cleanup",
           "[city][names][classic]") {
     World world;
-    world.leaders[0].plural = -32768;
+    world.leaders[0].plural = state::NameReference{32768, true};
     unsigned closed = 0;
     city::NameProvider provider{[&](auto, auto) -> city::NameAttempt {
                                     world.city.name.bytes[4] = 77;

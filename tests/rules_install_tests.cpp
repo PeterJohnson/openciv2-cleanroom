@@ -1,157 +1,98 @@
-// Authored data-format sections 1/4/Appendix B and F03 sections 3-7 expectations.
+// F02/F03 logical text and F06 storage separation.
 #include "formats/rules_install.hpp"
-#include "formats/save_records.hpp"
+#include "formats/leader_io.hpp"
 #include "rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <new>
-
 using namespace openciv;
 using namespace openciv::formats::content;
-namespace {
-auto target() {
-    auto out = std::make_unique<state::RuleState>();
-    out->text.initialize();
-    return out;
-}
-} // namespace
-TEST_CASE("Native rules install identities names and live leaders without rescaling operands",
-          "[content][rules-install]") {
+TEST_CASE("Native names survive unrelated text allocations and preserve requested state",
+          "[rules-install]") {
     const auto source = rule_fixture::Input{}.load();
-    auto live = target();
-    live->names.orders[0] = 900;
-    live->leaders[0].times_used = 71;
-    live->leaders[0].city_name_index = 93;
-    live->labels.popups[1] = 0;
-    live->double_movement_applied = true;
-    RuleInstaller(source, *live).load(true);
-    REQUIRE(live->definitions == source->definitions);
-    REQUIRE(live->text.size() == 411);
-    REQUIRE(live->names.advances[0] == 1);
-    REQUIRE(live->names.units[0] == 168);
-    REQUIRE(live->names.interface_units[61] == live->names.units[61]);
-    REQUIRE(live->names.orders[0] == 900);
-    REQUIRE(live->leaders[0].names == std::array<std::int16_t, 2>{284, 285});
-    REQUIRE(live->leaders[0].leader_name == 285);
-    REQUIRE(live->leaders[0].plural == 286);
-    REQUIRE(live->leaders[0].titles[0] == std::array<std::int16_t, 2>{264, 265});
-    REQUIRE(live->leaders[0].times_used == 71);
-    REQUIRE(live->leaders[0].city_name_index == 93);
-    REQUIRE(live->definitions.units[0].movement == 6);
-    REQUIRE(live->definitions.units[0].hit_points == 30);
-    REQUIRE(live->labels.popups[1] == 0);
-    REQUIRE_FALSE(live->double_movement_applied);
-    REQUIRE(formats::decode_leader(formats::encode_leader(live->leaders[0])) == live->leaders[0]);
+    for (unsigned prefix : {0U, 70000U}) {
+        auto live = std::make_unique<state::RuleState>();
+        live->text.initialize();
+        for (unsigned i = 0; i < prefix; ++i)
+            live->text.store("Earlier");
+        RuleInstaller install(source, *live);
+        install.load(true);
+        REQUIRE(live->definitions == source->definitions);
+        auto& leader = live->leaders[0];
+        REQUIRE(live->text.text(leader.names[0].id) ==
+                source->definitions.tribes[0].leaders[0].classic);
+        REQUIRE(live->text.text(leader.plural.id) == source->definitions.tribes[0].plural.classic);
+        REQUIRE(leader.leader_name == leader.names[leader.female]);
+        REQUIRE_FALSE(leader.leader_name.custom);
+        leader.plural.custom = true;
+        leader.times_used = 71;
+        leader.city_name_index = 93;
+        const auto before = live->leaders;
+        const auto count = live->text.size();
+        install.leaders(false);
+        REQUIRE(live->leaders == before);
+        REQUIRE(live->text.size() == count);
+        const auto old = live->text.store("Old name");
+        live->names.units[0] = old;
+        live->definitions.units[0].identity.name = {"Old name", "Old name"};
+        install.units(true);
+        REQUIRE(live->text.text(live->names.units[0]) == "Old name");
+        REQUIRE(live->definitions.units[0].movement == 6);
+        REQUIRE(live->definitions.units[0].hit_points == 30);
+        live->definitions.terrain[11].work = state::BaseTerrainWork{};
+        live->definitions.terrain[11].work->irrigation.work_turns = 97;
+        install.terrain();
+        REQUIRE(live->definitions.terrain[11].work->irrigation.work_turns == 97);
+    }
 }
-TEST_CASE("Native rule sections keep selected names and retain special terrain work",
-          "[content][rules-install]") {
-    const auto source = rule_fixture::Input{}.load();
-    auto live = target();
-    const auto label = live->text.store("Old name");
-    live->definitions.advances[0].identity = {"old.advance", {"Old name", "Old name"}};
-    live->definitions.improvements[0].identity.name = {"Old name", "Old name"};
-    live->definitions.units[0].identity.name = {"Old name", "Old name"};
-    live->names.advances[0] = live->names.improvements[0] = live->names.units[0] = label;
-    live->names.interface_units[0] = 999;
-    live->definitions.terrain[11].work = state::BaseTerrainWork{};
-    live->definitions.terrain[11].work->irrigation.work_turns = 97;
-    RuleInstaller install(source, *live, [](std::string_view, std::size_t) {
-        FAIL("Keeping names must not allocate");
-    });
-    install.cosmic();
-    install.advances(true);
-    install.improvements(true);
-    install.units(true);
-    REQUIRE(live->definitions.advances[0].identity.id ==
-            source->definitions.advances[0].identity.id);
-    REQUIRE(live->definitions.advances[0].identity.name.classic == "Old name");
-    REQUIRE(live->definitions.improvements[0].identity.name.classic == "Old name");
-    REQUIRE(live->definitions.units[0].identity.name.classic == "Old name");
-    REQUIRE(live->names.advances[0] == label);
-    REQUIRE(live->names.improvements[0] == label);
-    REQUIRE(live->names.units[0] == label);
-    REQUIRE(live->names.interface_units[0] == 999);
-    REQUIRE(live->definitions.units[0].hit_points == 30);
-    REQUIRE(live->text.size() == 2);
-    RuleInstaller(source, *live).terrain();
-    REQUIRE(live->definitions.terrain[0].work == source->definitions.terrain[0].work);
-    REQUIRE(live->definitions.terrain[11].work->irrigation.work_turns == 97);
-}
-TEST_CASE(
-    "Native rule installation owns admitted input across callbacks and retains failure prefix",
-    "[content][rules-install]") {
-    auto source = rule_fixture::Input{}.load();
-    auto live = target();
-    live->definitions.improvements[1].cost_rows = 99;
-    RuleInstaller install(source, *live, [&](std::string_view text, std::size_t) {
-        source.reset();
-        if (text == "improvements 1")
-            throw std::bad_alloc();
-    });
-    REQUIRE_THROWS_AS(install.load(true), std::bad_alloc);
-    REQUIRE_FALSE(source);
-    REQUIRE(live->definitions.enabled_advance_count == 100);
-    REQUIRE(live->definitions.improvements[0].cost_rows == 10);
-    REQUIRE(live->definitions.improvements[1].cost_rows == 99);
-    REQUIRE(live->definitions.improvements[1].identity.name.classic.empty());
-    REQUIRE(live->text.size() == 102);
-    REQUIRE(live->names.improvements[0] == 101);
-    REQUIRE(live->names.improvements[1] == 0);
-    REQUIRE(live->definitions.units[0].identity.name.classic.empty());
-}
-TEST_CASE("Native leader reload retains ordered duplicate override allocations and preservation",
-          "[content][rules-install]") {
+TEST_CASE("Repeated title overrides select final names without storage constraints",
+          "[rules-install]") {
     rule_fixture::Input input;
     input.rules["tribes"][0]["governmentTitles"] = rule_fixture::json(
         R"([{"government":"governments.authored.1","male":"First","female":"Old"},
             {"government":"governments.authored.1","male":"Last","female":""}])");
-    const auto source = input.load();
-    REQUIRE(source->title_overrides[0].size() == 2);
-    REQUIRE(source->title_overrides[0][0].titles.male.classic == "First");
-    REQUIRE(source->definitions.tribes[0].titles[1].male.classic == "Last");
-    auto live = target();
-    RuleInstaller(source, *live).load(true);
-    REQUIRE(live->text.size() == 414);
-    REQUIRE(live->leaders[0].titles[1] == std::array<std::int16_t, 2>{290, 0});
-    REQUIRE(live->text.text(288) == "First");
-    REQUIRE(live->text.text(289) == "Old");
-    REQUIRE(live->text.text(290) == "Last");
-    REQUIRE(live->text.text(0) == "<nil>");
-    const auto before = live->leaders;
-    const auto before_model = live->definitions.tribes;
-    const auto count = live->text.size();
-    bool callback = false;
-    RuleInstaller(source, *live, [&](std::string_view, std::size_t) {
-        if (!callback) {
-            callback = true;
-            live->leaders[0].names[0] = -77;
-            live->definitions.tribes[0].leaders[0] = {"Callback", "Callback"};
-        }
-    }).leaders(false);
-    REQUIRE(live->leaders == before);
-    REQUIRE(live->definitions.tribes == before_model);
-    REQUIRE(live->text.size() == count + 87);
+    auto live = std::make_unique<state::RuleState>();
+    live->text.initialize();
+    RuleInstaller(input.load(), *live).load(true);
+    REQUIRE(live->text.text(live->leaders[0].titles[1][0].id) == "Last");
+    REQUIRE(live->text.text(live->leaders[0].titles[1][1].id) == "<nil>");
 }
-TEST_CASE("Native leader labels narrow at the same signed boundaries without changing input text",
-          "[content][rules-install]") {
-    const auto source = rule_fixture::Input{}.load();
-    auto live = target();
-    while (live->text.size() < 32768)
-        live->text.store("Earlier");
-    RuleInstaller(source, *live).leaders(true);
-    REQUIRE(live->leaders[0].names[0] == -32768);
-    REQUIRE(live->leaders[0].names[1] == -32767);
-    REQUIRE(live->leaders[0].leader_name == -32767);
-    REQUIRE(live->text.text(state::label_magnitude(live->leaders[0].leader_name)) == "Earlier");
-    REQUIRE(live->definitions.tribes[0].leaders[1].classic == "Leader");
+TEST_CASE("Stored markers preserve custom status independently of text identities",
+          "[leader-names]") {
+    auto live = std::make_unique<state::RuleState>();
+    auto& leader = live->leaders[1];
+    leader.names = {state::NameReference{90000, false}, state::NameReference{80000, false}};
+    leader.plural = {70000, true};
+    leader.adjective = {0, true};
+    leader.titles[3][1] = {100000, true};
+    auto stored = formats::stored_leader(leader);
+    REQUIRE(stored.plural == -1);
+    REQUIRE(stored.adjective == -1);
+    REQUIRE(stored.titles[3][1] == -1);
+    const auto bytes = formats::encode_leader(stored);
+    leader.plural.id = 10;
+    REQUIRE(formats::encode_leader(formats::stored_leader(leader)) == bytes);
+    stored.plural = -32768;
+    stored.names[0] = 12345;
+    REQUIRE(formats::decode_leader(formats::encode_leader(stored)) == stored);
+    formats::LeaderLoadScratch scratch;
+    scratch.by_tribe[1].assign(stored);
+    state::GlobalValues globals;
+    globals.player_civ = 1;
+    auto civs = std::make_unique<std::array<state::Civilization, 8>>();
+    (*civs)[1].tribe = 1;
+    std::array<state::CivilizationNames, 8> names;
+    formats::restore_leader_names(false, globals, *civs, names, *live, scratch);
+    REQUIRE(leader.plural == state::NameReference{10, true});
+    REQUIRE(leader.adjective.custom);
+    REQUIRE(leader.titles[3][1].custom);
+    REQUIRE(leader.leader_name == state::NameReference{90000, true});
 }
-TEST_CASE("Invalid native content cannot reach installation or change existing rules",
-          "[content][rules-install]") {
-    auto live = target();
+TEST_CASE("Invalid native rules leave current content unchanged", "[rules-install]") {
+    auto live = std::make_unique<state::RuleState>();
+    live->text.initialize();
     live->definitions.units[0].attack = 72;
     rule_fixture::Input input;
     input.rules["units"][0]["hitPoints"] = jt::Json(31);
     REQUIRE_THROWS_AS(RuleInstaller(input.load(), *live).load(true), Error);
     REQUIRE(live->definitions.units[0].attack == 72);
-    REQUIRE(live->text.size() == 1);
     REQUIRE_THROWS_AS(RuleInstaller(nullptr, *live), std::invalid_argument);
 }

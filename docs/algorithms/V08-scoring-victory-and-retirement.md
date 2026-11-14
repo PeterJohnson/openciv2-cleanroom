@@ -1,5 +1,29 @@
 # V08 — Scoring, victory and retirement
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in V08 |
+| --- | --- |
+| Gameplay | Score/objective/rating formulas, outcomes/retirement/Continue decisions, Hall insertion and explicit layout-independent report preparation. |
+| Original files/content | F06 Hall of Fame and score/history fields, plus P04 authored fame/ending text. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Draw-limited score refresh, native title buffers, modal result slots and media schedules. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -20,7 +44,7 @@ and the mutations producing conquest or defeat. [V07](V07-spaceship.md) owns
 ship calculation and arrival predicates. [V02](V02-governments-and-tax-rates.md#population-queries)
 owns population conversion; [C03](C03-city-economy-and-corruption.md)/[C04](C04-city-happiness-and-disorder.md)
 own city recalculation and moods. [F06](F06-save-load-and-file-formats.md)
-owns serialized Hall of Fame bytes. [P07](P07-advisors-reports-and-history.md#15-civilization-score) owns report layouts/input and P10
+owns serialized Hall of Fame bytes. [P07](P07-advisors-reports-and-history.md#report-preparation-independent-of-layout) owns report preparation and information; UI layout is free. P10
 movie/media execution; N01–N05 own session, message and authority services.
 Their callbacks have real effects and cannot be universally replaced by no-ops.
 
@@ -29,8 +53,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 ## Implementation boundary
 
@@ -147,20 +172,17 @@ again. The global objectiveOutcome can therefore differ from C's point outcome.
 
 ## 3. Score report, rating and title
 
-The score report's draw callback captures its report civilization. If Scored is
-set, show the already-scored message and skip the normal calculation/display
-branch. Otherwise:
+Score-report preparation is an explicit session operation, independent of
+painting. Capture its civilization. If Scored is set, publish the already-scored
+notice and skip calculation. Otherwise:
 
-- Ordinary scoring first draws the citizen presentation. That child scans owned
-  live cities and calls cityRecalc(city,1) before drawing each city's citizens.
-  It stops when its row/display budget fills, so it may recalculate only a prefix
-  of cities. Then calculateScore scans all owned cities using the stored mood
-  fields now present. Do not replace this with an unconditional all-city refresh.
-  P07 owns the original logical row/pixel admission calculation. Under
-  [X01's presentation policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy),
-  preserve this recalculated prefix using declared classic view inputs separately
-  from the new renderer's geometry; exact drawing is optional. A larger new report
-  must not silently change the score by refreshing more cities.
+- Ordinary score-report preparation scans every live owned city in ascending
+  slot order and calls C03 cityRecalc(city,1), then calls calculateScore using the
+  resulting stored mood fields. This deliberately repairs the original
+  layout-limited city prefix under [X01](X01-classic-compatibility-contract.md#presentation-driven-calculation-repair).
+  Font metrics, screen dimensions and pagination are not operation inputs.
+  Refresh once per semantic report preparation, never per repaint. The direct
+  calculateScore query itself still does not recalculate cities.
 - Objective scoring calls calculateScore directly from the objective report;
   it does not first run the ordinary citizen-recalculation presentation.
 - The ordinary report lists citizen/wonder components, spaceship points, pollution,
@@ -175,12 +197,13 @@ branch. Otherwise:
   only when conquestBonus>total; equal values use the ordinary total label.
   Scenario/Cheated annotations do not invalidate the score.
 
-Opening the score report does not independently set Scored. Report callbacks can
-recalculate or mutate scratch more than once. Rating and Hall of Fame callers
-rely on the resulting shared fields rather than taking a frozen score snapshot.
+Preparing the score report does not independently set Scored. Publish its score
+fields once; repeated painting only consumes the prepared model. Another explicit
+refresh can recalculate current state. Rating and Hall of Fame operations consume
+the resulting shared score fields at their semantic boundary; they do not add an
+implicit score calculation.
 
-The rating draw callback captures the report civilization, performs its window
-layout/caption/blit work, then computes:
+Rating preparation captures the report civilization and computes:
 
 | Difficulty | Chieftain | Warlord | Prince | King | Emperor | Deity |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -198,9 +221,9 @@ Choose MaleFame/FemaleFame by the report civilization's leader gender. Publish i
 leader name, then read/expand resource lines 0…titleIndex in order. If section open
 fails, earlier lines use Error and the final line uses the leader-name placeholder.
 Draw earlier titles in the subordinate style and the final one emphasized.
-P07 owns placement, font metrics and native modal lifetime. Rating display starts
-music track 3 after its initial repaint; the shared rating is later retained as a
-signed 16-bit Hall of Fame field.
+P07 permits new placement, navigation and media. Original music track 3 after
+repaint is optional reference. The published rating is later retained as a
+signed 16-bit Hall of Fame field; that external encoding is unchanged.
 
 ## 4. Hall of Fame records, insertion and display
 
@@ -281,11 +304,11 @@ substitute F04's current scenario settings: these are the saved entry's settings
 Population is shown unless the entry is a scenario and objective count>=0.
 Difficulty display uses its low four bits; the Cheated marker is separate.
 
-A negative title on an admitted custom file can skip all title-line writers. A
-first such row needs incoming original text backing or a stop; a later row can
-reuse the prior produced title. This is a read/state issue, not a reason to invent
-an empty title. Invalid difficulty/name reads require their own backing/stop or a
-declared ingress restriction. Invalid writes during expansion remain excluded.
+A negative title can leave the original display buffer unwritten. The new UI
+may omit the unavailable title or identify it as unavailable; do not show another
+record's retained title. Preserve the stored record and its other valid facts.
+Invalid difficulty/name inputs receive safe diagnostics or a declared ingress
+restriction. No display requires original scratch bytes or invalid writes.
 
 ## 5. Outcome producers and scheduled retirement
 
@@ -390,6 +413,12 @@ owns surrounding hotseat handoff; N01/N03 own network departure/host transfer.
 
 ## 8. Conformance cases
 
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
+
 Compare returned values, shared score/rating scratch, persistent fields and
 ordered presentation/file/network calls. These are implementation targets;
 the finite executed subset is stated in Appendix B.
@@ -406,7 +435,7 @@ the finite executed subset is stated in Appendix B.
 | Objective mode with a configured opponent | Store its original outcome, invert only the scoring perspective, add C's objectives. |
 | Unordered custom scenario thresholds | Follow the stated branch order without sorting or inventing a rejection. |
 | Positive conquest bonus in objective mode | Double scenario points, then replace conquestBonus by -1. |
-| Citizen report fills before later owned cities | Recalculate only the displayed prefix; calculateScore still scans all cities using their then-stored moods. |
+| Citizen report has more cities than fit on screen | Prepare all live owned cities in ascending slot order before ordinary scoring; window size/paging/repaints do not affect results. Original prefix behavior is optional bug evidence. |
 | Difficulty 0…5, best score 100 | Ratings 4,5,6,8,10,13. At rating 192, title 23. |
 | Score report skipped, direct rating/Hall of Fame entry | Consume current shared scratch; do not silently recalculate. |
 | Stored Hall of Fame score 40000 | Retain -25536 and hide the row under classic signed display; no B15 repair. |

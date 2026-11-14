@@ -1,58 +1,114 @@
 # P05: Input and command dispatch
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-This specification describes classic Civilization II Multiplayer Gold Edition
-5.4.0f, patch 3 menu construction and availability, keyboard and mouse delivery,
-command routing, focus, queued input and timer ordering. Different event-loop and
-widget implementations are permitted. Preserve semantic commands, their state
-changes, arguments and required gameplay/network ordering. Original native input
-traces and harmless UI failures follow the policies below.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-[F01](F01-determinism-and-arithmetic.md) owns arithmetic;
-[F03](F03-rules-and-configuration.md) owns text-file reading and option changes.
-[P01](P01-map-projection-and-interaction.md) owns map geometry, zoom actions,
-selection, click/hold controllers and view placement;
-[P02](P02-map-rendering-and-minimap.md) owns redraws;
-[P04](P04-text-and-dialogs.md) owns text, captions, controls' own behavior and the
-shared modal loop. This document supplies events to those controllers.
-[U04](U04-unit-orders-and-activation.md) owns unit activation, View/Move-units
-transitions and unit commands. [N02](N02-network-commands-and-state-synchronization.md#polling-and-deferred-input)
-owns network polling and deferred-request execution;
-[N03](N03-multiplayer-turn-sequencing.md) owns the turn countdown. P06–P10 own the
-city, report, encyclopedia, council/throne and media consumers named below.
+| Surface | Binding scope in P05 |
+| --- | --- |
+| Gameplay | Command identity, eligibility, authority and validated execution; responsive real network/deadline handling. |
+| Original files/content | Classic menu-resource grammar/bindings and F06 preference translations. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Menu hierarchy, shortcuts, focus, native pumps and callback/timer slots. |
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-## Required contract and reading guide
+## Required presentation contract
 
-Command availability and actor/target, View/Move meaning, busy/action gating,
-committed effects, timer/deferred-network delivery, response mapping and
-gameplay-dependent ordering.
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-## 1. Inputs and observable state
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
+
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
+
+## Command and input obligations
+
+Offer the game's actions using stable semantic command identities, explicit
+actors/targets and current eligibility. Reference §§6–9 catalog the command
+meanings, rule predicates and owning F/U/C/V/S/N operations. Those game rules,
+authority checks and effects remain required; menu layout, cached enabled bits,
+shortcuts, keyboard modes and native dispatch sequences do not.
+
+The command service validates an action when accepted. A stale menu, alternate
+shortcut, console or redesigned screen must not bypass ownership, busy-phase,
+permission or target checks. Merely displaying availability is a query, not an
+AI refresh, new-game initialization or simulation command. F02/F05 own explicit
+new-game setup; F06 owns loading/saving; U04 owns gameplay unit activation.
+
+Translate platform events into intentional semantic actions exactly once.
+Discard input addressed to obsolete clients/targets. Continue N02/N03 network
+processing and actual deadlines while awaiting decisions. Preserve required
+phase barriers and deferred game requests, without reproducing native queues,
+message filtering, pump counts, timer slots, focus traversal or key repeat.
+No original click/key sequence is a conformance requirement.
+
+Find City, help, tutorials, view selection and window arrangement may use new
+navigation. Preserve permitted city information, selected identity and any
+accepted game command; original city-list order and intermediate focus/camera
+state are not gameplay rules. UI availability may be recomputed from current
+state instead of preserving fields that an old refresh happened not to write.
+
+## Original-file input contract
+
+F03/P04 own text lookup and substitution. Appendix B's **Native menu grammar and
+IDs** defines original menu-resource syntax and its command bindings. Decode
+authored labels and map each known game action to its semantic identity;
+preserve separators/shortcuts as usable presentation hints, not required menus.
+Native control IDs, virtual keys and message numbers are not network commands.
+N02 owns actual protocol identifiers. F06 owns stored preferences and any valid
+translation to the new interface; new UI metadata does not occupy reserved bytes.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Inputs and observable state
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal inputs are initialized game and semantic interaction state, valid
 unit/city identities, complete resources and backed collections. Required state
@@ -83,7 +139,10 @@ in scope. An unproduced read requires established backing, supplied retained
 input or a stop. A declared restrictive profile may reject unsupported input.
 Do not silently fabricate zero geometry, stale messages or timer records.
 
-## 2. Message pumps, polling and waits
+### 2. Message pumps, polling and waits
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Service relevant game/network events while a semantic operation is pending.
 Apply those events before subsequent live state reads; preserve explicitly
@@ -104,7 +163,10 @@ cancellation and continuation effects.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 3. Native event delivery
+### 3. Native event delivery
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Translate platform input into semantic commands, identified targets and explicit
 modifier intent. Deliver gameplay/network events at their required boundaries.
@@ -113,7 +175,10 @@ reference details.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 4. Control focus and parent dispatch
+### 4. Control focus and parent dispatch
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Keep control availability and semantic action identity. Focus traversal,
 accelerators, scrollbars and native parent dispatch may be implemented
@@ -122,7 +187,10 @@ command.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 5. Menu model, construction and presentation
+### 5. Menu model, construction and presentation
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 [Native JSON menus](../content/data-format.md#63-menus) supply labeled action
 trees; registered action identities preserve the command routes and live state
@@ -136,7 +204,10 @@ native menu IDs are presentation/reference adapter details.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 6. Main-menu availability
+### 6. Main-menu availability
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 An availability refresh performs these phases in order. `disable(name,b)` and
 `hide(name,b)` replace that Boolean state; neither tests the other state.
@@ -144,7 +215,7 @@ Labels are P04 label strings expanded with the current substitution parameters,
 then copied into the existing item and followed by its disabled-state update.
 No unspecified item is reset merely because another gate changed.
 
-### Session and government
+#### Session and government
 
 First disable Spaceships when the custom rule suppresses them. Then:
 
@@ -158,7 +229,7 @@ exactly one. Disable Revolution if scenario rules forbid government changes;
 otherwise disable it when the live local civilization is in Anarchy. These
 refresh checks do not by themselves add checks to direct command execution.
 
-### Active-unit orders
+#### Active-unit orders
 
 Enter this branch only when movement mode is nonzero, total-unit count nonzero,
 active slot nonnegative and **no greater than** the count, and its identity is
@@ -215,7 +286,7 @@ For the settler terrain branch:
   cached unit's live type is Engineers. These are UI predicates, not W04's work
   eligibility algorithm.
 
-### Final cheat, editor and network pass
+#### Final cheat, editor and network pass
 
 Disable the Cheat group unless cheat is on and game mode exactly zero; check
 Toggle Cheat under the same condition. Then independently disable Toggle Cheat
@@ -232,9 +303,12 @@ then disable Scenario Flag for nonzero mode. Finally present the existing menu
 without a new window attachment. Directory comparisons are exact byte-string
 comparisons, not canonicalized filesystem paths.
 
-## 7. Main-menu command execution
+### 7. Main-menu command execution
 
-### Entry, deferral and city processing
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Entry, deferral and city processing
 
 Query transport flush-in-progress **first**. If zero, short-circuit the live
 operation guards in this order: unit create/delete, city create/delete, map
@@ -256,7 +330,7 @@ input-busy or validate that the menu item exists. Unknown commands do nothing.
 Unless stated, child results are ignored and local-observer arguments are read
 at each call.
 
-### Command routes
+#### Command routes
 
 | Commands | Action and owner |
 | --- | --- |
@@ -296,7 +370,7 @@ if set, invoke Fame with freshly read observer, then History without another
 score-lock test. Ordinary Spaceships opens its world chooser, which does not
 consume the caller's pushed observer argument.
 
-### City-modal notice and shared view actions
+#### City-modal notice and shared view actions
 
 The city-modal notice returns immediately if its own byte guard is nonzero.
 Otherwise set it, clear the shared text line, append `CITYMODAL` and decimal
@@ -315,7 +389,10 @@ city; clear overview/status suppression; retire enabled secondary maps1..7,
 clearing each Enabled state before reset; refresh the primary map and prepare
 effect presentation (§2). Original maximize/move/frame order is in Appendix D.
 
-## 8. Map keyboard and character controllers
+### 8. Map keyboard and character controllers
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 A new input binding resolves to a semantic command before dispatch. Physical
 key codes, case-sensitive shortcut spellings, keypad aliases and native key-state
@@ -323,7 +400,7 @@ queries are reference adapter behavior in Appendix D. They do not constrain new
 controls. Preserve these routes and gates rather than mapping every action to a
 single generic handler.
 
-### Command admission and deferral
+#### Command admission and deferral
 
 Require input-enabled. In nonzero game mode during city processing, a Close/Accept
 city action closes an open city before input-busy or transport tests. Other
@@ -342,7 +419,7 @@ Change Production, Buy, Happiness, Central Information, Support Map, Rename and
 City View. Invoke the P06 action with argument0 when it accepts a control ID,
 ignore its return, then clear busy. Other commands retain their general routes.
 
-### General actions and route-specific gates
+#### General actions and route-specific gates
 
 Use §7's owners for reports, options, commands and edits. The direct key route
 has the following additional conditions; do not use menu visibility alone as
@@ -371,7 +448,7 @@ resetting retained terrain selection to absent first; keyboard Destroy Units
 omits the menu route's trailing focusActive call. The appendix records their
 original bindings; S03/S04 own resulting edits.
 
-### Direction and active-unit commands
+#### Direction and active-unit commands
 
 For a direction, require active slot nonnegative, below live total and identity
 nonzero. Movement mode exactly1 calls U02 move(active,direction,3); otherwise
@@ -407,9 +484,12 @@ reference material; accepted semantic actions keep their game effects.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 9. Find City, loading and tutorial advice
+### 9. Find City, loading and tutorial advice
 
-### Find City
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Find City
 
 Construct one P04 prompt, then capture the local observer before loading
 `FINDCITY` with Cancel and Sorted enabled. Ignore the load result. Scan city
@@ -437,7 +517,7 @@ An application exception after successful construction performs the prompt's
 ordinary owned cleanup before propagating; map and text effects are not rolled
 back. An unrecovered-state stop does not assert an original exception occurred.
 
-### Current-game load command
+#### Current-game load command
 
 Stop countdown(notify=1); hide city; close diplomacy, chat and research help;
 clear both auxiliary report selections. Capture whether music is enabled after
@@ -467,7 +547,7 @@ the earlier unconditional mode-zero store. No rollback of closed windows or a
 partially successful load is implied. F06 separately owns the save-menu filename,
 file choice and post-write notices.
 
-### Settler tutorial advice
+#### Settler tutorial advice
 
 U04 invokes this with a selected settler. Return immediately if a worker hint
 has already been shown this turn. Capture its coordinates, signed owner, terrain,
@@ -499,7 +579,10 @@ This is tutorial selection, independent of A03's AI work scoring and W04's
 actual command validation. A nearest-city failure reaching name access requires
 backing or a stop, not an invented unnamed city.
 
-## 10. Timer scheduling and native service boundaries
+### 10. Timer scheduling and native service boundaries
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Use any scheduler that delivers required game, multiplayer and semantic
 completion events. N03 owns countdown registration, deadlines and pause/resume;
@@ -516,7 +599,10 @@ not permit silently skipping a required game or protocol callback.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 11. Conformance cases and limits
+### 11. Conformance cases and limits
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate semantic command availability separately from command execution,
 actor/target routing, busy deferral, replacement of pending requests, accepted
@@ -526,7 +612,7 @@ keyboard shortcuts, focus/capture and repaint traces are optional reference case
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Evidence and source identity
+### Appendix A. Evidence and source identity
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -576,9 +662,9 @@ then test that result for zero. Thus both disable only for nonzero mode and zero
 override. Section 6 follows those original bytes; this source discrepancy is
 not a classic quirk. Reference repositories were not changed.
 
-## Appendix B. Original adapter, constants and excluded bugs
+### Appendix B. Original adapter, constants and excluded bugs
 
-### Keys and message codes
+#### Keys and message codes
 
 Native key map has 256 mutable DWORDs; unlisted entries are zero. Index is the
 low byte of the native key. Modifiers are bitwise OR with Shift=0x100, Control=0x200.
@@ -616,7 +702,7 @@ receiver is original00637ea4. Attached-child behavior uses presentation0x200;
 backend native-scroll flags are byte48 bit0x80 and byte49 bit1. Geometry and
 native pointer/handle layouts are adapters, not proposed cleanroom storage.
 
-### Menu IDs and resource order
+#### Menu IDs and resource order
 
 IDs below are hexadecimal. Each ordered item consumes one text line except
 `—`, which inserts separator ID0/null text. First line names its group.
@@ -664,7 +750,7 @@ Worker advice terrain IDs are Hills4,Plains1,Grassland2; Monarchy2. Its yields a
 movement cost are signed bytes. Menu technology IDs are CombinedArms13,
 Construction18,Radio66,Railroad67,BridgeBuilding7,Refrigeration70,Trade84.
 
-### Native menu grammar and IDs
+#### Native menu grammar and IDs
 
 The low-level menu-description service consumes titles with `{...}` child lists.
 Spaces between entries are skipped; `_` ends a leaf and `}` ends a list. There
@@ -685,7 +771,7 @@ search packs `((itemIndex+1)<<16) | (traversalCounter−1)` without masking the 
 before OR. Direct native item mutators use command IDs; linked-model mutators
 resolve positions. Keep these namespaces distinct.
 
-### Storage, failures and excluded behavior
+#### Storage, failures and excluded behavior
 
 Original menu nodes occupy28 bytes; arena size7100, allocation requests narrowed
 to unsigned16. The six mutable Orders labels reserve at least60 characters plus
@@ -710,7 +796,7 @@ separate. N02 owns replay. Timer capability starts1 and forced mode0; library
 ResetTimerNotified. These describe the original adapter; a different timer
 provider may satisfy the same scheduling/message contract.
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -764,7 +850,7 @@ Documentation checks verify internal links/anchors, pinned primary source links,
 and the unique specification IDs. Working fixtures and
 source evidence remain outside this documentation repository.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -775,9 +861,9 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §3. Native event delivery
+#### Original §3. Native event delivery
 
-#### Translation and the current event window
+##### Translation and the current event window
 
 Translate a native virtual key using its low byte as an index into Appendix B's
 mutable key map. Capture the mapped value. If zero return zero without modifier
@@ -844,7 +930,7 @@ return whether realized-entry count was nonzero. Without a palette the original
 result was not produced: supply the retained value or stop. A replacement's
 explicit false-on-no-palette policy is a repair, not a recovered original value.
 
-#### Base-window behavior
+##### Base-window behavior
 
 Base paint begins painting and resolves the presentation. When minimized, query
 the window rectangle (unused result), draw the installed icon or the default
@@ -886,7 +972,7 @@ If still Client, apply the live cursor. Failed geometry queries need already
 established/incoming outputs; the reconstruction's retain-default-result policy
 is separate. No clamping of packed negative coordinates is implicit.
 
-### Original §4. Control focus and parent dispatch
+#### Original §4. Control focus and parent dispatch
 
 The extended control dispatcher runs before §3 and resolves its receiver once.
 Without one it immediately delegates. Destroy clears the control list and its
@@ -918,7 +1004,7 @@ height. If this is no greater than the proposed top, replace top with it and
 bottom with **new top plus proposed width**, not height. Preserve this bounded
 geometry defect. Query failure requires supplied retained child geometry.
 
-#### Focus traversal
+##### Focus traversal
 
 Forward walks native next sibling, wrapping to first; backward walks previous,
 wrapping to last. Each step first verifies its current native window. When no
@@ -947,7 +1033,7 @@ select focuses/raises first and performs selection using the later live list.
 Failed native class-name queries require retained bytes; treating them as
 non-group is a separate safe policy.
 
-#### Accelerators and scrollbars
+##### Accelerators and scrollbars
 
 Accelerator search takes the low key byte, lowercases it, and scans linked
 controls. For a nonnegative accelerator index with matching character, activate
@@ -975,7 +1061,7 @@ page size. These four commands set native position, query accepted position,
 publish parent, store and notify. Unknown commands do nothing after the initial
 position read. Keep the initially resolved control across native callbacks.
 
-### Original §5. Menu model, construction and presentation
+#### Original §5. Menu model, construction and presentation
 
 A menu contains ordered groups, each with ordered items. Records have an ID,
 text, hidden/disabled/checked state and links; each group counts presented items.
@@ -1000,7 +1086,7 @@ does not repair group head or successor's previous link, reclaim storage, or
 special-case a null predecessor. Keep valid partial effects; missing predecessor
 backing is a stop, not permission to overwrite unrelated state.
 
-#### Loading the main menu
+##### Loading the main menu
 
 Reset menu storage, then read `MENU` sections in this exact order through F03:
 `GAME`, `KINGDOM`, `VIEW`, `ORDERS`, `ADVISORS`, `WORLD`, `CHEAT`, `EDITOR`, `PEDIA`.
@@ -1027,7 +1113,7 @@ this menu and the command callback. Binding occurs after presentation callbacks.
 Rebuilding removes the previously inserted hotseat exit item from the linked
 model; session setup owns any later insertion.
 
-#### Materialization and command resolution
+##### Materialization and command resolution
 
 Group/item positions are one-based among visible entries, including separators.
 Position-to-ID lookup returns absent when no match; target-to-position counts
@@ -1074,7 +1160,7 @@ is visitation count rather than nesting depth; nested menus therefore preserve
 that unusual group numbering. Native ID generation, parser grammar and packing
 are validation-adapter details in Appendix B.
 
-### Original multiplayer-window placement
+#### Original multiplayer-window placement
 
 Each multiplayer window chooses base width/height 520×335 for layout mode zero,
 otherwise 800×460, with separate live mode reads for width, height and font.
@@ -1086,7 +1172,7 @@ y similarly. Write the saved rectangle using captured x/y and dimensions, then
 move using the live saved-rectangle reference. P01 owns default map/overview
 rectangles; P02/P06 own status/city layouts.
 
-### Original §11. Conformance cases and limits
+#### Original §11. Conformance cases and limits
 
 | Case | Required distinction |
 | --- | --- |
@@ -1113,7 +1199,7 @@ fonts/widgets, full loaded-game controllers, callback-driven destruction,
 network/deferred delivery and timer/media integration remain separate runtime
 validation obligations. Appendix C records the bounded checks performed here.
 
-### Original §2. Message pumps, polling and waits
+#### Original §2. Message pumps, polling and waits
 
 These operations have different delivery sets; they are not interchangeable:
 
@@ -1142,7 +1228,7 @@ instead sample the corresponding synchronous key state and test its down bit.
 Left/right-button-active queries sample asynchronous state and test the entire
 high byte, not merely the usual down bit.
 
-#### Mouse-release polling
+##### Mouse-release polling
 
 Inputs choose left/right release, a particular window or all windows, whether to
 remove messages, and whether to wait. Keep separate client and nonclient message
@@ -1158,7 +1244,7 @@ return result, initially zero. Without removal, the same message can be observed
 forever, even after a match. A safe polling profile may reject that combination;
 it must not describe a bounded timeout as original behavior.
 
-#### Waits
+##### Waits
 
 `waitWithMessages(ticks)` computes signed duration=`wrap(ticks*50)/3`, captures
 native millisecond time, then executes at least once: media pump; capture time;
@@ -1172,7 +1258,7 @@ zero times. Game ticks are unsigned wrapping `milliseconds*6`, then unsigned
 division by 100. This absolute-deadline comparison differs from elapsed-time
 comparison around wrap. P04's eight-tick button activation uses this wait.
 
-### Original §10. Timer scheduling and native service boundaries
+#### Original §10. Timer scheduling and native service boundaries
 
 The timer manager has sixteen ordinarily allocatable slots, identified 1..16.
 Each stores a callback and signed remaining count. Initialization clears these
@@ -1243,7 +1329,7 @@ safe policy. Tracking a popup converts caller x/y from client to screen using an
 initialized point, then tracks on the **live** backend window; conversion failure
 retains whatever point was supplied/written, rather than replacing it with zero.
 
-### Original post-load window placement
+#### Original post-load window placement
 
 When saved main-window state is zero, arrange windows (§7), then restore/move,
 compose title and update the primary map. For enabled secondary maps in ascending
@@ -1253,7 +1339,7 @@ city; restore overview, clear suppression, move/update; restore status, clear
 suppression, move/update; restore/move/title/update primary; initialize/move/title/
 update enabled secondaries; update overview once more.
 
-### Original command input and native state
+#### Original command input and native state
 
 Nominal inputs are initialized game/window/menu/control state, backed acyclic
 collections, complete resources, valid unit/city identities, fitting strings,
@@ -1270,7 +1356,7 @@ character; ordered menu groups/items and presentation state; current event
 window, per-window press latches and callbacks; control order, selection,
 default buttons and focus; timer callbacks/counts and media activity.
 
-### Original arrange-windows sequence
+#### Original arrange-windows sequence
 
 Arrange Windows executes: maximize main; calculate city default rectangle,
 restore/move city and hide it; calculate/restore overview, clear its redraw
@@ -1279,9 +1365,9 @@ move/update; center the two multiplayer windows in order; close/reset enabled
 secondary maps 1..7, clearing each enabled state before reset; calculate primary
 map default, restore/move/update it; prepare effect presentation (§2).
 
-### Original §8. Map keyboard and character controllers
+#### Original §8. Map keyboard and character controllers
 
-#### Key-press entry and routing
+##### Key-press entry and routing
 
 Use the full translated key, including modifiers; do not strip them before
 matching. If input-enabled is zero return. For nonzero game mode with city
@@ -1349,7 +1435,7 @@ nonzero result ensures the captured coordinates are visible in primary map.
 Selection callbacks do not change those final arguments. Extra direction indices
 are not generated by the key mapping; unsupported backing follows §1.
 
-#### Character entry and case-sensitive shortcuts
+##### Character entry and case-sensitive shortcuts
 
 Take the low input byte. Require input enabled; nonzero mode plus input-busy
 returns. If the pending deferred request is Key, log, store pending-character

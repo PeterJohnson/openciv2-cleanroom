@@ -1,5 +1,29 @@
 # U01: Unit lifecycle and stacks
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in U01 |
+| --- | --- |
+| Gameplay | Creation/deletion, logical slot reuse, stack/cargo order and selection, home links, counts and meaningful lifetime invalidation. |
+| Original files/content | F06 unit records, stack/reference fields and external token mapping. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Linked-node/object layout, allocation/free traces and notification callbacks with no admitted game event. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -33,8 +57,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 Slot/token allocation, stack traversal/repair, cascading removal and child
 publication retain their consequences and order. Independent record initialization
@@ -759,6 +784,12 @@ results here. Recorded diagnostics and all prior effects remain observable.
 
 ## 11. Worked conformance cases
 
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
+
 Each case supplies ordinary rules/map/backing and inert callbacks unless a
 specific callback is listed. Node names below are unit slots, not lifetimes.
 Assert required dependencies, changed fields, scan bounds, callback sequence, message
@@ -782,7 +813,7 @@ sequence and no random decisions or context changes at the selected boundary.
 | Reuse slot 7 at bound 2048 with military count 1950. | Reuse succeeds, bound unchanged; extension-limit checks are bypassed. |
 | Nonhuman owner, bound 2040, no holes. | Refuse extension and return −1. No local human limit popup. |
 | Single player, nonzero turn, human creates first sea unit, tutorial disabled. | No tutorial dialog, but ships-seen marker is set. |
-| First military-unit notice callback changes military count from 1 to 2. | The independent second test also shows the second-unit notice. |
+| Executable diagnostic: first military-unit notice callback changes military count from 1 to 2. | The original second test also shows the second-unit notice. A synthetic notice mutation is not a production event; real unit creation/count changes require their admitted game operation. |
 | Delete carrier slot 2; free slot 1 still stores sleep and carrier 2. | Slot 1 orders become none; its stored carrier value remains 2. |
 | Delete slots `[0,1,2]` head-to-tail, initial bound 3. | All lifetimes zero, final bound 2. No repeated tail-hole trimming. |
 | Delete notifying unit with home city 0 in network host mode. | Local refresh includes city 0; network home-city refresh message is omitted. |

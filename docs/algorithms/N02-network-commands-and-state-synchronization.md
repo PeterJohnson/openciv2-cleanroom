@@ -1,5 +1,29 @@
 # N02: Network commands and state synchronization
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in N02 |
+| --- | --- |
+| Gameplay | Authorized command effects, actor/target/reply identity, synchronization meaning and required semantic queue/barrier dependencies. |
+| Original files/content | F06 supplies serialized state definitions reused by section images; opaque imported data belongs in codecs. |
+| Original peers | Message fields/lengths, section IDs/encoded images, checksums, compression/deltas, routing, sequence rules, locks and replies; checksum encoded bytes, never native objects. |
+| Executable comparison only | Memory mirrors as live structs, global offsets, receiver pointers, allocator callbacks and per-word copy/dirty-scan implementation. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -39,8 +63,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 Message/queue dispatch, command authority, section images, checksums/deltas and
 state publication retain their specified dependencies and bytes. Independent
@@ -135,29 +160,28 @@ assertions and callbacks do not imply rollback. An error report may return.
 An application message has a kind, declared total size and sequence. Ordinary
 argument messages carry six signed wrapping scalar arguments followed by a
 payload-length scalar. Let `a..f` denote the first six and `g` the seventh.
-All seven are decoded by sequential reads and writes, even when the handler
-uses only one. With permitted overlapping input/output storage, later reads
-observe earlier stores. They are not a snapshot copy.
+Decode all seven fields according to the packet schema. Values unused by a
+handler still occupy their wire fields. A decoded immutable record is permitted;
+overlapping native source/destination copies are reference behavior, not a wire
+feature or a required alias in production.
 
 ### Construction and ownership
 
-Header initialization stores total size first, then magic and kind; it leaves
-the sequence unchanged. Specialized constructors are mapped in Appendix A.
-Generic packet construction initializes a temporary header, then chooses:
+Construct the schema's header, sequence, seven arguments and explicit logical
+payload. The producer's message/image definition determines payload extent;
+`g` and total size encode that extent and the envelope as specified in Appendices
+A–C. Encode an argument-only message with zero payload. Copy/move/borrow and
+allocation strategy are implementation choices, with safe ownership until send
+completion. A failed allocation is a failure, not an empty successful packet.
 
-1. Explicit nonzero payload length: allocate envelope plus that captured length;
-   copy that many bytes from the live supplied payload after allocation returns.
-2. Zero length and null payload: allocate an argument-only packet; payload length
-   is zero.
-3. Zero length and nonnull payload: obtain the allocator's size of that allocation,
-   resize it to add an envelope, then move the old allocation contents upward.
-   This transfers ownership and includes the reported allocation extent, not a
-   separately remembered logical payload length.
-
-Set total size to envelope plus payload extent; copy the header, then each of
-`a,b,c,d,e,f,g` in order, where `g` is that extent. There is no original null
-allocation recovery before the copies. A null/undersized destination is an
-excluded-write boundary, not a successful empty packet.
+The original generic helper inferred the extent of a nonnull zero-length payload
+from its allocator, enlarged the allocation and shifted it in place. That helper
+ABI and ownership trace are **executable reference only**. Production must not
+use allocator capacity as protocol data or send uninitialized slack. Any required
+padding/opaque image bytes come from the owning external definition. If their
+meaning or valid generated value is missing, record a finite format gap rather
+than inventing bytes or reproducing heap layout. Original header/argument store
+order and per-allocation callbacks are not protocol events.
 
 Ordinary allocated messages are sent and then freed. The full/delta/join/map
 image producers also transfer their image to this packet builder, send, free,
@@ -211,6 +235,19 @@ commodity names, order names, difficulty names, attitude names. The separately
 callable leaders and civilization-table packets are **not** part of this batch.
 Receipt copies the transmitted table without reparsing F03 rules. The oversized
 civilization-table copy is an excluded bug described in Appendix E.
+
+## Synchronization adapter boundary
+
+The section catalog, encoded images, checksums and delta/compression rules are
+wire contracts. Build those images from logical state plus required opaque codec
+data. Mirror offsets, padding and checksum coverage refer to encoded images,
+not native objects. Preserve image revisions and meaningful scan/publication
+ordering where peers observe them; choose any equivalent mirror/queue design.
+Registration locks, pointer retention, allocation callbacks and native last-error
+state do not become simulation fields. Network receipt and command dispatch are
+real boundaries; copying one header word or allocating a queue node is not.
+Validate bounded frames before exposing payloads. Diagnostic malformed/backing
+and allocator-failure traces below are not required receive algorithms.
 
 ## 3. Receive callbacks and FIFO queues
 
@@ -980,6 +1017,12 @@ list. Units additionally set local revealed and enable both sort buttons. After
 either choice, clear the prompt-open flag at ordinary completion. No response on mismatch is implied.
 
 ## 11. Conformance cases and integration obligations
+
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
 
 | Input / schedule | Required observation |
 | --- | --- |

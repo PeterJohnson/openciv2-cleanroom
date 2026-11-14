@@ -4,6 +4,7 @@
 #include "formats/city_names.hpp"
 #include "formats/city_preferences.hpp"
 #include "formats/save_records.hpp"
+#include "formats/leader_io.hpp"
 #include "formats/rules_install.hpp"
 #include "rule_fixture.hpp"
 #include "classic_rule_fixture.hpp"
@@ -105,26 +106,20 @@ TEST_CASE("F03 complete classic tables match independently authored native defin
     REQUIRE(f.opens == std::vector<std::string>(3, "scenario/RULES.TXT"));
     REQUIRE_FALSE(f.reader.is_open());
     REQUIRE(f.directories.working == "caller");
-    REQUIRE(f.retained.text.size() == 411);
-    REQUIRE(f.retained.names.advances[0] == 1);
-    REQUIRE(f.retained.names.improvements[0] == 101);
-    REQUIRE(f.retained.names.terrain[0] == 230);
-    REQUIRE(f.retained.names.governments[0] == 263);
-    REQUIRE(f.retained.names.government_titles[0] == std::array<state::TextId, 2>{264, 265});
+    REQUIRE(f.retained.text.text(f.retained.names.advances[0]) == "advances 0");
+    REQUIRE(f.retained.text.text(f.retained.names.improvements[0]) == "improvements 0");
+    REQUIRE(f.retained.text.text(f.retained.names.terrain[0]) == "terrain 0");
+    REQUIRE(f.retained.text.text(f.retained.names.governments[0]) == "governments 0");
     REQUIRE(f.retained.names.orders[0] == 777);
-    REQUIRE(f.retained.leaders[0].names == std::array<std::int16_t, 2>{284, 285});
-    REQUIRE(f.retained.leaders[0].leader_name == 285);
-    REQUIRE(f.retained.leaders[0].plural == 286);
-    REQUIRE(f.retained.leaders[0].titles[0] == std::array<std::int16_t, 2>{264, 265});
+    REQUIRE(f.retained.text.text(f.retained.leaders[0].names[0].id) == "Leader");
+    REQUIRE(f.retained.leaders[0].leader_name == f.retained.leaders[0].names[1]);
+    REQUIRE(f.retained.text.text(f.retained.leaders[0].plural.id) == "tribes 0");
+    REQUIRE(f.retained.leaders[0].titles[0][0].id == f.retained.names.government_titles[0][0]);
     REQUIRE(f.retained.leaders[0].times_used == 19);
     REQUIRE(f.retained.leaders[0].city_name_index == 23);
-    REQUIRE(formats::decode_leader(formats::encode_leader(f.retained.leaders[0])) ==
-            f.retained.leaders[0]);
     REQUIRE_FALSE(f.retained.double_movement_applied);
-    for (std::size_t i = 0; i < 62; ++i)
-        REQUIRE(f.retained.names.interface_units[i] == 168 + i);
     for (const auto& leader : f.retained.leaders)
-        REQUIRE(f.retained.text.text(state::label_magnitude(leader.leader_name)) == "Leader");
+        REQUIRE(f.retained.text.text(leader.leader_name.id) == "Leader");
 }
 TEST_CASE("F03 classic reference vocabulary is independent of names and case", "[classic][rules]") {
     REQUIRE(advance_reference("nil") == state::AdvanceReference::none);
@@ -183,7 +178,6 @@ TEST_CASE("F03 keep names consumes tokens without allocations including default 
         row.abilities = 0xffffffffU;
     }
     f.values->cosmic.values[0] = 3;
-    f.retained.names.interface_units.fill(42);
     f.retained.names.advances.fill(77);
     f.retained.names.improvements.fill(88);
     f.retained.names.units.fill(99);
@@ -215,31 +209,26 @@ TEST_CASE("F03 keep names consumes tokens without allocations including default 
     REQUIRE(f.values->units[61].attack == 1);
     REQUIRE(f.values->units[61].cost_rows == 1);
     REQUIRE(f.values->units[61].abilities == 0);
-    REQUIRE(f.retained.names.interface_units[0] == 42);
-    REQUIRE(f.retained.names.interface_units[61] == 42);
     REQUIRE(f.retained.names.advances[99] == 77);
     REQUIRE(f.retained.names.improvements[66] == 88);
     REQUIRE(f.retained.names.units[61] == 99);
     REQUIRE(f.retained.text.size() == 1);
 }
-TEST_CASE("F03 padded storage appends without truncation and retains unit tail interface names",
-          "[classic][rules]") {
+TEST_CASE(
+    "F03 blank-name interpretation does not truncate long text and resolves default unit names",
+    "[classic][rules]") {
     Fixture f("@UNITS\n,no,0,1,0,1,1,1,1,1,0,0,nil,0\n\n");
-    f.retained.names.interface_units.fill(123);
     f.select("UNITS");
     f.loader().units();
     REQUIRE(f.values->units[0].identity.name.classic == " ");
-    REQUIRE(f.retained.text.allocation(1) == " " + std::string(14, '\0'));
-    REQUIRE(f.retained.names.interface_units[0] == 1);
-    REQUIRE(f.retained.names.interface_units[1] == 123);
-    REQUIRE(f.retained.names.units[1] == 2);
+    REQUIRE(f.retained.text.text(f.retained.names.units[0]) == " ");
     REQUIRE(f.retained.text.text(f.retained.names.units[1]) == "Unit 2");
     REQUIRE(f.values->units[61].identity.name.classic == "Unit 62");
     f.bytes = "@CARAVAN\n" + repeat("A commodity name longer than ten", 16);
     f.select("CARAVAN");
     f.loader().commodities();
-    REQUIRE(f.retained.text.size() == 79);
-    REQUIRE(f.retained.text.allocation(*f.retained.text.last()).size() == 33);
+    REQUIRE(f.retained.text.text(f.retained.names.commodities[15]) ==
+            "A commodity name longer than ten");
     REQUIRE(f.values->commodities[15].name.classic == "A commodity name longer than ten");
 }
 TEST_CASE("F03 reference errors retain their ordered prefix and cannot return to parsing",
@@ -259,7 +248,6 @@ TEST_CASE("F03 reference errors retain their ordered prefix and cannot return to
         REQUIRE(f.values->advances[0].prerequisites[static_cast<std::size_t>(p)] ==
                 state::AdvanceReference::invalid);
         REQUIRE_FALSE(f.values->advances[99].enabled);
-        REQUIRE(f.retained.text.size() == 2);
     }
     Fixture f("@IMPROVE\nGood,7,8,nil\nBad,-1,2,NIL\n@ENDWONDER\nNIL,ignored\n"
               "@UNITS\nBad,NIL,2,3,4,5,6,7,8,999,9,1,NIL,101\n");
@@ -329,12 +317,10 @@ TEST_CASE("F03 leaders replace fields and repeated titles while preservation sti
     REQUIRE(leader.titles[1].male.classic == "C");
     REQUIRE(leader.titles[1].female.classic == "D");
     REQUIRE(leader.titles[6].male.classic.empty());
-    REQUIRE(f.retained.leaders[0].titles[6][0] == 0);
+    REQUIRE(f.retained.leaders[0].titles[6][0].id == 0);
     REQUIRE(f.retained.text.text(0) == "<nil>");
     REQUIRE(leader.titles[6].female.classic == "E");
-    REQUIRE(f.retained.text.text(state::label_magnitude(f.retained.leaders[0].leader_name)) ==
-            "Female");
-    REQUIRE(f.retained.text.size() == 22 + 21 * 9);
+    REQUIRE(f.retained.text.text(f.retained.leaders[0].leader_name.id) == "Female");
     const auto before = std::make_unique<state::RuleDefinitions>(*f.values);
     const auto selected = f.retained.leaders;
     f.bytes = "@LEADERS\n" + repeat("New,Other,0,7,3,New People,New Adj,1,2,3,2,King,Queen", 21);
@@ -342,46 +328,8 @@ TEST_CASE("F03 leaders replace fields and repeated titles while preservation sti
     loader.leaders(false);
     REQUIRE(*f.values == *before);
     REQUIRE(f.retained.leaders == selected);
-    REQUIRE(f.retained.text.size() == 22 + 21 * 15);
 }
-TEST_CASE("F03 leader preservation captures each field before its allocation callback",
-          "[classic][rules]") {
-    Fixture f("@LEADERS\n" + repeat("Male,Female,0,1,0,People,Adj,0,0,0,1,King,Queen", 21));
-    f.values->tribes[0].leaders[0] = {"Before", "Before"};
-    f.values->tribes[0].titles[1].male = {"Old title", "Old title"};
-    f.retained.leaders[0].names[0] = -123;
-    f.retained.leaders[0].titles[1][0] = -456;
-    unsigned calls = 0;
-    f.hooks.allocate = [&](std::string_view text, std::size_t) {
-        if (!calls++) {
-            f.values->tribes[0].leaders[0] = {"Callback", "Callback"};
-            f.retained.leaders[0].names[0] = 987;
-        }
-        if (text == "King")
-            f.values->tribes[0].titles[1].male = {"Changed", "Changed"};
-        if (text == "Queen" && calls == 6)
-            REQUIRE(f.values->tribes[0].titles[1].male.classic == "Old title");
-    };
-    f.select("LEADERS");
-    f.loader().leaders(false);
-    REQUIRE(f.values->tribes[0].leaders[0].classic == "Before");
-    REQUIRE(f.retained.leaders[0].names[0] == -123);
-    REQUIRE(f.retained.leaders[0].titles[1][0] == -456);
-    // Later callbacks are live and may change an already restored field.
-    REQUIRE(f.values->tribes[0].titles[1].male.classic == "Changed");
-    REQUIRE(calls == 126);
-    Fixture invalid("@LEADERS\nM,F,0,1,0,P,A,0,0,0,7,Outside,Array\n");
-    invalid.select("LEADERS");
-    try {
-        invalid.loader().leaders(true);
-        FAIL("Title index must be bounded before writing outside the array");
-    } catch (const RuleLoadError& error) {
-        REQUIRE(error.fault == RuleLoadFault::invalid_title_index);
-        REQUIRE(error.position == 7);
-    }
-    REQUIRE(invalid.retained.text.size() == 5);
-}
-TEST_CASE("F03 ordinary text preserves whole labels and empty pooling has no allocation",
+TEST_CASE("F03 ordinary text preserves whole labels and empty classic text resolves nil",
           "[classic][rules]") {
     Fixture f("@ORDERS\n,\n" + repeat("Order, x extra", 11) + "@DIFFICULTY\n" +
               repeat("  A,B;label\t", 6) + "@ATTITUDES\n" + repeat(";friendly, really", 9));
@@ -391,31 +339,15 @@ TEST_CASE("F03 ordinary text preserves whole labels and empty pooling has no all
     REQUIRE(f.values->orders[0].identity.name.classic.empty());
     REQUIRE(f.values->orders[0].shortcut == 0);
     REQUIRE(f.values->orders[11].shortcut == 'x');
-    REQUIRE(f.retained.text.size() == 12);
     f.select("DIFFICULTY");
     loader.difficulties();
     REQUIRE(f.values->difficulties[5].name.classic == "A,B;label");
     f.select("ATTITUDES");
     loader.attitudes();
     REQUIRE(f.values->diplomatic_attitudes[8].name.classic == ";friendly, really");
-    REQUIRE(f.retained.text.size() == 27);
-    REQUIRE(f.retained.text.allocation(1) == std::string("Order\0", 6));
+    REQUIRE(f.retained.text.text(f.retained.names.orders[2]) == "Order");
 }
-TEST_CASE("F03 allocation failure and text EOF retain only the reached publication prefix",
-          "[classic][rules]") {
-    Fixture f("@IMPROVE\n" + repeat("Building,7,8,nil", 67));
-    unsigned allocations = 0;
-    f.hooks.allocate = [&](std::string_view, std::size_t size) {
-        REQUIRE(size == 25);
-        if (++allocations == 2)
-            throw std::bad_alloc();
-    };
-    f.values->improvements[1].cost_rows = 99;
-    f.select("IMPROVE");
-    REQUIRE_THROWS_AS(f.loader().improvements(), std::bad_alloc);
-    REQUIRE(f.values->improvements[0].cost_rows == 7);
-    REQUIRE(f.values->improvements[1].cost_rows == 99);
-    REQUIRE(f.retained.text.size() == 2);
+TEST_CASE("F03 text EOF preserves already parsed values", "[classic][rules]") {
     Fixture eof("@COSMIC\n9\n");
     eof.values->cosmic.values.fill(77);
     eof.select("COSMIC");
@@ -488,49 +420,12 @@ TEST_CASE("F03 fixed rows consume blank and comment data and decode explicit cla
     REQUIRE(f.values->commodities[1].name.classic == "; commodity");
     REQUIRE(f.values->commodities[2].name.utf8 == "Caf\xc3\xa9");
     REQUIRE(f.values->commodities[2].name.classic == "Caf\xe9");
-    REQUIRE(f.retained.text.size() == 17);
     f.bytes = "@IMPROVE\n\nIgnored,1,2,nil\n";
     f.select("IMPROVE");
     reference_error([&] { f.loader().improvements(); }, -5, 0, 0, "");
     REQUIRE(f.values->improvements[0].identity.name.classic == " ");
     REQUIRE(f.values->improvements[0].cost_rows == 0);
     REQUIRE(f.values->improvements[1].identity.name.classic.empty());
-}
-TEST_CASE("F03 narrowed leader labels bind real pool ordinals through C01 and the save codec",
-          "[classic][rules][text-pool]") {
-    for (const state::TextId first : {32768U, 65536U}) {
-        Fixture f("@LEADERS\n" + repeat("Male,Female,1,7,3,People,Adj,-1,1,2", 21));
-        const auto plural_id = first == 32768 ? 32766U : 2U;
-        while (f.retained.text.size() < first)
-            f.retained.text.store(f.retained.text.size() == plural_id ? "Alias civ" : "Seed");
-        f.retained.leaders[0].times_used = 77;
-        f.select("LEADERS");
-        f.loader().leaders(true);
-        const auto& live = f.retained.leaders[0];
-        REQUIRE(live.names[0] == (first == 32768 ? -32768 : 0));
-        REQUIRE(live.names[1] == (first == 32768 ? -32767 : 1));
-        REQUIRE(live.plural == (first == 32768 ? -32766 : 2));
-        REQUIRE(live.leader_name == live.names[1]);
-        REQUIRE(live.times_used == 77);
-        REQUIRE(live.color == 7);
-        REQUIRE(live.city_style == 3);
-        REQUIRE(live.attack == -1);
-        REQUIRE(live.expand == 1);
-        REQUIRE(live.civilize == 2);
-        REQUIRE(f.retained.text.text(state::label_magnitude(live.leader_name)) == "Seed");
-        REQUIRE(f.retained.text.text(state::label_magnitude(live.plural)) == "Alias civ");
-        REQUIRE(f.values->tribes[0].plural.classic == "People"); // Decoded input, not live binding.
-        REQUIRE(formats::decode_leader(formats::encode_leader(live)) == live);
-        f.bytes = "@Alias civ\nPool selected\n@STOP\n";
-        auto provider = city_name_provider(f.reader, f.directories, ascii_text_case());
-        state::City city;
-        city.owner = state::CivilizationSlot{1};
-        auto civilizations = std::make_unique<std::array<state::Civilization, 8>>();
-        REQUIRE(city::default_name(city, *civilizations, f.retained, provider));
-        REQUIRE(std::string(city.name.text().begin(), city.name.text().end()) == "Pool selected");
-        REQUIRE(live.city_name_index == 1);
-        REQUIRE(live.times_used == 77);
-    }
 }
 TEST_CASE("Process preference lookup resolves retained pool bindings instead of decoded names",
           "[classic][rules][text-pool]") {
@@ -545,7 +440,8 @@ TEST_CASE("Process preference lookup resolves retained pool bindings instead of 
     REQUIRE(preferences.build_order[0] == 1);
     REQUIRE(f.values->improvements[1].identity.name.classic == "Cached input");
 }
-TEST_CASE("Native and classic installation agree at allocation boundaries with live dependencies",
+
+TEST_CASE("Native and classic rules produce equivalent semantic results with different text IDs",
           "[classic][rules][rules-install]") {
     rule_fixture::Input input;
     input.rules["advances"][0]["prerequisites"][0] =
@@ -576,68 +472,44 @@ TEST_CASE("Native and classic installation agree at allocation boundaries with l
     std::string bytes;
     for (const auto& section : sections)
         bytes += section;
-    using Observation =
-        std::tuple<std::string, std::size_t, std::size_t, state::AdvanceRule, std::uint16_t,
-                   state::ImprovementRule, state::UnitRule, state::Leader, state::TitlePair, bool>;
-    for (const bool replace : {false, true}) {
-        for (const bool fail : {false, true}) {
-            Fixture f(bytes);
-            *f.values = source->definitions; // Same identity namespace and initial values.
-            f.retained.double_movement_applied = true;
-            f.retained.names.orders[0] = 923;
-            f.retained.leaders[0].names = {-53, -54};
-            f.retained.leaders[0].leader_name = -54;
-            f.retained.leaders[0].times_used = 78;
-            f.retained.leaders[0].city_name_index = 79;
-            f.values->terrain[11].work = state::BaseTerrainWork{};
-            f.values->terrain[11].work->irrigation.work_turns = 87;
-            auto native = std::make_unique<state::RuleState>(f.retained);
-            std::vector<Observation> classic_trace, native_trace;
-            auto observe = [&](state::RuleState& live, std::vector<Observation>& trace) {
-                return [&live, &trace, fail](std::string_view text, std::size_t minimum) {
-                    auto& values = live.definitions;
-                    trace.emplace_back(text, minimum, live.text.size(), values.advances[0],
-                                       values.enabled_advance_count, values.improvements[0],
-                                       values.units[0], live.leaders[0],
-                                       values.governments[2].titles, live.double_movement_applied);
-                    if (text == "improvements 0") {
-                        values.advances[1].enabled = true;
-                        values.advances[1].prerequisites.fill(state::AdvanceReference::none);
-                    }
-                    if (text == "units 0")
-                        values.cosmic.values[0] = 7;
-                    if (text == "First") {
-                        values.governments[2].titles.male = {"Changed", "Changed"};
-                        live.names.government_titles[2][0] = live.names.government_titles[0][0];
-                    }
-                    if (fail && text == "LastFemale")
-                        throw std::bad_alloc();
-                };
+    for (bool replace : {false, true}) {
+        Fixture classic(bytes);
+        *classic.values = source->definitions;
+        auto native = std::make_unique<state::RuleState>(classic.retained);
+        for (unsigned i = 0; i < 70000; ++i)
+            native->text.store("Unrelated");
+        classic.loader().load("RULES", replace);
+        formats::content::RuleInstaller(source, *native).load(replace);
+        REQUIRE(native->definitions == classic.retained.definitions);
+        const auto compare = [&](const auto& a, const auto& b) {
+            for (std::size_t i = 0; i < a.size(); ++i)
+                REQUIRE(native->text.text(a[i]) == classic.retained.text.text(b[i]));
+        };
+        compare(native->names.advances, classic.retained.names.advances);
+        compare(native->names.improvements, classic.retained.names.improvements);
+        compare(native->names.units, classic.retained.names.units);
+        compare(native->names.terrain, classic.retained.names.terrain);
+        compare(native->names.governments, classic.retained.names.governments);
+        compare(native->names.commodities, classic.retained.names.commodities);
+        compare(native->names.orders, classic.retained.names.orders);
+        compare(native->names.difficulties, classic.retained.names.difficulties);
+        compare(native->names.attitudes, classic.retained.names.attitudes);
+        for (std::size_t i = 0; i < 21; ++i) {
+            const auto& a = native->leaders[i];
+            const auto& b = classic.retained.leaders[i];
+            REQUIRE(formats::stored_leader(a) == formats::stored_leader(b));
+            const auto name = [&](auto x, auto y) {
+                REQUIRE(native->text.text(x.id) == classic.retained.text.text(y.id));
+                REQUIRE(x.custom == y.custom);
             };
-            f.hooks.allocate = observe(f.retained, classic_trace);
-            formats::content::RuleInstaller install(source, *native,
-                                                    observe(*native, native_trace));
-            if (fail) {
-                REQUIRE_THROWS_AS(f.loader().load("RULES", replace), std::bad_alloc);
-                REQUIRE_THROWS_AS(install.load(replace), std::bad_alloc);
-            } else {
-                f.loader().load("RULES", replace);
-                install.load(replace);
+            name(a.leader_name, b.leader_name);
+            name(a.plural, b.plural);
+            name(a.adjective, b.adjective);
+            for (std::size_t sex = 0; sex < 2; ++sex) {
+                name(a.names[sex], b.names[sex]);
+                for (std::size_t g = 0; g < 7; ++g)
+                    name(a.titles[g][sex], b.titles[g][sex]);
             }
-            REQUIRE(native_trace == classic_trace);
-            REQUIRE(native->definitions == f.retained.definitions);
-            REQUIRE(native->names == f.retained.names);
-            REQUIRE(native->leaders == f.retained.leaders);
-            REQUIRE(native->text.size() == f.retained.text.size());
-            for (state::TextId id = 0; id < native->text.size(); ++id)
-                REQUIRE(native->text.allocation(id) == f.retained.text.allocation(id));
-            REQUIRE(native->definitions.units[0].movement == 14);
-            REQUIRE(native->definitions.units[0].hit_points == 30);
-            REQUIRE(native->definitions.improvements[0].prerequisite ==
-                    static_cast<state::AdvanceReference>(1));
-            REQUIRE(native->definitions.terrain[11].work->irrigation.work_turns == 87);
-            REQUIRE(native->leaders[0].times_used == 78);
-            REQUIRE(native->leaders[0].city_name_index == 79);
         }
     }
 }

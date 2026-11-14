@@ -1,70 +1,121 @@
 # P08: Civilopedia and technology tree
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-Target: classic Civilization II Multiplayer Gold Edition 5.4.0f, patch 3.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-This document specifies Civilopedia population, name ordering, list selection,
-history, links, rule-derived pages, descriptions and the prerequisite tree.
-[F03](F03-rules-and-configuration.md) owns the rule records, section scanner,
-line/token reader and resource search. [V03](V03-research-and-technology.md) owns
-technology knowledge and research decisions; opening a page or a tree does not
-research its topic. [P03](P03-graphics-and-asset-processing.md),
-[P04](P04-text-and-dialogs.md) and [P05](P05-input-and-command-dispatch.md) own
-sprite/palette, font/text/control and native input services used below.
+| Surface | Binding scope in P08 |
+| --- | --- |
+| Gameplay | Accurate rule facts, topic identity, prerequisite relationships and permitted knowledge. |
+| Original files/content | DESCRIBE/PEDIA grammar and topic associations; native encyclopedia schema. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Original sorting/ties, link ordinals, category/view/history state and tree drawing. |
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-## Required contract and reading guide
+## Required presentation contract
 
-Rule-derived facts, prerequisites, knowledge visibility, customized
-names/descriptions and accessible topic/link relationships. Browsing remains
-separate from researching.
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-## Implementation boundary
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-The main sections use logical values, identities and operations. Original memory,
-allocation and platform mechanics are recorded in [Appendix E](#appendix-e-original-implementation-reference). Preserve required
-state changes and externally visible results without reproducing those mechanisms.
-Exact numeric domains and file/wire encodings remain required wherever specified.
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
 
-## Native topic and classic text compatibility
+## Encyclopedia obligations
 
-[Native JSON encyclopedia topics](../content/data-format.md#7-encyclopedia)
-supply standalone prose and links with explicit rule identities. PEDIA prompt
-templates and named facts use the
-[text catalog](../content/data-format.md#61-text-and-interaction-catalogs); they
-are distinct from DESCRIBE topic descriptions. An unavailable description does
-not remove an otherwise eligible rule entry or its computed facts. This document
-continues to own category/availability, rule facts, prerequisite relationships,
-visibility and required effects. DESCRIBE/PEDIA parsing remains the classic
-adapter path; those source files are not mandatory for native content. Selected
-classic scenario descriptions must survive that path instead of being silently
-replaced by native stock prose.
+Provide discoverable descriptions and accurate rule facts for advances,
+improvements, wonders, units, terrain/resources, governments and concepts, with
+prerequisite relationships and relevant links. Use active custom rules/names
+and supported authored descriptions, including unavailable-description handling.
+Reference §§9–14 supply fact/relationship definitions, resource keys and numeric
+formulas; adopt their meaning, not their rendering or text-buffer procedures.
 
-## 1. Inputs, state and compatibility
+Search, filtering, alphabetical or other sorting, tabs, history, hyperlinks and
+tree layout are UI design choices. No original category/view state machine,
+history triple stack, selection-by-pair sorting, duplicate-name reversal, focus
+state, link ordinal or modal return sequence is required. Use stable topic/rule
+identities through sorting and navigation. A technology link always targets its
+actual technology; a display position is not a rule ID.
+
+Static rule knowledge and observer-specific possession/knowledge are distinct.
+Use W03/V03/N04 disclosure where game state is shown. Opening, navigating or
+drawing the encyclopedia does not mutate simulation or consume gameplay RNG.
+Refresh content safely when rules change; do not preserve stale counts/items
+against emptied name lists after failed loading.
+
+## Original-file input contract
+
+F03 owns section and line parsing; P04 owns substitutions. Adopt these parts of
+reference §2 and §14 as data definitions:
+
+- DESCRIBE index section names, starting item IDs, skipped improvement-zero row,
+  enabled/prerequisite predicates and terrain/resource identities. The index
+  `-2` ends a section; `-1` means description unavailable. File order identifies
+  source rows even when the resulting UI sorts differently. Category identities
+  and nominal rule ranges in §1 describe imported content, not required tabs.
+- `CONCEPT_DESCRIPTIONS` uses `@@` topic names and the documented terminating
+  marker. Keep topic text, description IDs and rule/topic associations, including
+  distinct topics with identical names.
+- Description-section markers, text assembly/substitution and PEDIA fact keys
+  retain the authored meaning. Imported link references resolve to topics, not
+  the original sorted list nodes or pixel regions.
+
+The native [encyclopedia catalog](../content/data-format.md) uses semantic
+identities. Both adapters must preserve the same facts and authored associations;
+their allocated strings, ordering and navigation state may differ. Diagnose
+malformed or unavailable content safely; no original stale scratch is an input.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. Inputs, state and compatibility
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal inputs are initialized rules, populated description indices, supported
 assets and safely terminated text. Native font/window geometry is reference input.
@@ -122,7 +173,10 @@ Category8 always dispatches the tree. Government/concept activation passes
 through view1 but goes directly to view2. Shared history state initially has
 `replaying=0`, `pendingIndex=−1`; pending category/view begin zero.
 
-## 2. Construction and resource population
+### 2. Construction and resource population
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Initialize closed1, view0, selected0, modal0, no detail links and category0.
 Native window/button construction is reference behavior. Fill all description slots with−1 in category order
@@ -130,7 +184,7 @@ Native window/button construction is reference behavior. Fill all description sl
 history count. Counts and item tables are not initialized by these explicit
 stores; canonical initial zeros come from static storage.
 
-### Index sections
+#### Index sections
 
 Population first resets all description slots to−1 and clears all old name
 lists. It does not first clear category counts or item tables. For each section
@@ -170,7 +224,7 @@ is exactly `Gls`, append space and label704 `(Shield)`. Publish the resulting
 name. This disambiguates shield grassland without adding a second item24 entry.
 Safe storage may grow with the text; original malloc/copy timing is not required.
 
-### Concepts
+#### Concepts
 
 Open `CONCEPT_DESCRIPTIONS` in `Describe`. On success reset concept count0 and
 item0. Read mode1 lines and examine the first two characters. `@@` starts a
@@ -181,7 +235,7 @@ allocation callbacks are reference implementation details.
 Any other line beginning `@` terminates; other lines are ignored. Sort a
 nonempty list. This path **does not close the stream** on completion.
 
-### Ordering and lookup
+#### Ordering and lookup
 
 Sorting is an in-place selection-by-pair algorithm, not a stable sort. For each
 position `i=0..count−2`, compare that position's text with each later position
@@ -201,7 +255,10 @@ initially empty. Keys retain their identity when item/name values are sorted.
 Terrain item lookup independently scans the canonical terrain item table in increasing
 index, using signed index<count, returning the first match or−1.
 
-## 3. Window initialization and frame
+### 3. Window initialization and frame
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Initialize the logical current category, selected topic, view and navigation
 state. Fonts, rectangles, frames, titles and native windows may differ. Preserve
@@ -209,7 +266,10 @@ rule-derived information and scenario-authored names/descriptions.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 4. Controls, opening and closing
+### 4. Controls, opening and closing
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Expose each supported category and topic, open the selected item, and close or
 return from the current interaction. P05 supplies semantic commands; changing
@@ -218,7 +278,10 @@ definitions.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 5. Lists, selection and keyboard
+### 5. Lists, selection and keyboard
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Resolve list selection to the category item identity populated in §2. Display
 sorting, scrolling and keyboard navigation may differ while preserving selected
@@ -226,7 +289,10 @@ topic and available decisions; never confuse a display ordinal with a rule ID.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 6. List rendering
+### 6. List rendering
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Display populated category names and permitted facts with their topic identities.
 Sprite arrangement, category colors, font metrics and row geometry are optional;
@@ -234,7 +300,10 @@ knowledge indications and custom names remain correct.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 7. Activation, tree navigation and history
+### 7. Activation, tree navigation and history
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Provide access to topic activation, description/detail views, prerequisite
 navigation and a usable return/history path. Selection maps through the current
@@ -243,7 +312,10 @@ simulation state. Original history-buffer/widget mechanics are reference details
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 8. Hyperlinks and description availability
+### 8. Hyperlinks and description availability
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Link creation takes receiver, item, text x/y, target kind and hit rectangle.
 Kinds0..4 mean advance, improvement, wonder, unit, terrain; other kinds return.
@@ -272,7 +344,10 @@ the original incoming description temporary unassigned: require supplied value
 or stop, rather than choosing−1. Filesystem checks and button changes retain
 their order and preceding effects.
 
-## 9. Common detail-page conventions
+### 9. Common detail-page conventions
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Resolve the selected item through the renderer's category table after relevant
 external events and control configuration. Retain that item for the page, reading
@@ -288,7 +363,10 @@ link creation. Font metrics, clipping, underlining and row placement are optiona
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 10. Terrain and resource details
+### 10. Terrain and resource details
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Read the terrain item and let base=signed(item)%11. Display its authored terrain
 or resource identity; source asset interpretation is P03. For base items0..10,
@@ -300,7 +378,7 @@ item lookup then name-key lookup; omit movement/defense rows.
 Both branches show Food64, Shields662 and Trade69 from signed rule fields,
 except **item2 shields is forced0**.
 
-### Base-terrain work and resources
+#### Base-terrain work and resources
 
 Process irrigation then mining. Effects labels are663/665 and time labels664/666.
 For each effects value, link a nonnegative signed destination terrain; otherwise
@@ -315,7 +393,7 @@ label707 (`1/3 of a point`); items0,2,1 also show Trade `+1`. These are explicit
 page claims, not a call to tile-yield calculation. Show Possible Resources670
 with a link to item+11 and, unless item2, item+22. Refresh description availability.
 
-### Special-resource comparison
+#### Special-resource comparison
 
 Capture base name, base food/shields/trade (base2 shields forced0), then special
 food/shields/trade, in that order. Produce these fact strings:
@@ -333,9 +411,12 @@ availability. Overlong text follows X01; geometry and icons are reference detail
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 11. Improvement, wonder and unit details
+### 11. Improvement, wonder and unit details
 
-### Improvements and wonders
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
+
+#### Improvements and wonders
 
 For the cached improvement ID, show prerequisite label121 and NONE14 for a
 negative signed prerequisite, otherwise link the advance. Improvement cost132
@@ -349,7 +430,7 @@ Read and display nonempty authored improvement facts, then refresh description
 availability. Source sprite selection is P03; scale, spacing and resource icons
 are reference presentation.
 
-### Improvement facts
+#### Improvement facts
 
 Construct section `PEDIAIMPROVE` followed by the signed decimal item and open it
 in `PEDIA`. Start local aggregate text empty. On success clear shared line and
@@ -367,7 +448,7 @@ different capacities. No overflow of either is part of compatibility. A dynamic
 aggregate can support longer safe custom text, or a restrictive implementation
 can omit/reject it. The original byte extents are validation facts in Appendix B.
 
-### Units
+#### Units
 
 Show the signed prerequisite as a link or NONE. Cost132 shows NONE when signed
 cost<0, otherwise cost*10. Show these raw encyclopedia statistics in order:
@@ -393,7 +474,10 @@ safe storage/rejection for overlong authored facts.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 12. Advance detail and fact selection
+### 12. Advance detail and fact selection
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Resolve and retain the selected advance. Its category then epoch identify the
 source illustration; list presentation reads epoch then category. Show NONE when
@@ -401,7 +485,7 @@ both signed prerequisites are negative. Otherwise link nonnegative prerequisite0
 then prerequisite1, separated by a comma when both exist. Do not deduplicate them;
 second-slot tests/ID reads remain live after the first link.
 
-### Dependents
+#### Dependents
 
 Scan advances0..99, improvements1..66, then units0..61, retaining index order
 within each group. Admit prerequisite equality without enabled, ownership or
@@ -414,7 +498,7 @@ wonder links otherwise; units use unit links. Show Allows122 when at least one
 dependent qualifies. Counting, two-column layout, sprite density and text trimming
 for the original renderer are in Appendix D; they do not add research effects.
 
-### Scenario checks and fixed facts
+#### Scenario checks and fixed facts
 
 If scenario and install directory strings differ, enter scenario,
 check `describe.`+extension, restore install. If absent, disable advance-detail
@@ -461,7 +545,10 @@ stream. Refresh description availability on ordinary completion.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 13. Technology-tree layout
+### 13. Technology-tree layout
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Display the selected advance and its prerequisite relationships from the active
 F03 rules, with knowledge indications for the local observer. Preserve
@@ -472,7 +559,10 @@ cost as a prerequisite definition.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 14. Description text
+### 14. Description text
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Expanded description takes a **display index**. Start section text empty, clear
 detail links and pump messages before reading the receiver's category. For
@@ -516,7 +606,10 @@ Do not replace the entire fallback with a clean `NONE`. Set edit text to the
 assembled result and show the edit control. Stream mutations, shared text
 truncation and a previously consumed boundary are visible to later readers.
 
-## 15. Conformance cases and integration boundaries
+### 15. Conformance cases and integration boundaries
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate category/index ingestion, custom names, description availability and
 text, topic/link identity, rule-derived facts, prerequisite relationships and
@@ -526,7 +619,7 @@ font, hyperlink geometry and tree-raster cases are reference tests.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Evidence identity and source navigation
+### Appendix A. Evidence identity and source navigation
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -569,14 +662,14 @@ precedence. In particular, the misleading primary name `draw_improvement` at
 `0052630d` is the wonder renderer, and the Tree action's older “categories” name
 does not mean a category overview menu.
 
-## Appendix B. Representation adapters and excluded defects
+### Appendix B. Representation adapters and excluded defects
 
 These facts aid comparison with original memory/traces. A cleanroom
 implementation need not use these addresses, layouts, fixed arrays or native
 control classes. Behavioral character limits and arithmetic already specified
 in the main text remain meaningful regardless of representation.
 
-### State, labels and native control mapping
+#### State, labels and native control mapping
 
 Canonical window address is `006a6668`; accessed prefix extent `0x1f44` does not
 prove the allocation's full class hierarchy. Relevant offsets:
@@ -628,7 +721,7 @@ scenario property in a different representation. Rule-field sign conversion is
 behavioral; original advances/improvements/units/terrains have strides16/8/20/24
 and their field layouts belong to F03's validation appendix.
 
-### Bugs and deliberate reconstruction changes
+#### Bugs and deliberate reconstruction changes
 
 | Original boundary | Treatment in this specification |
 | --- | --- |
@@ -651,7 +744,7 @@ validation adapter; it never authorizes writing into another logical object's
 state. Ordinary failures leave the completed prefix, unless a declared safe
 input policy deliberately omits a whole resource as described above.
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 The documentation pass checked eleven pinned independent source/header/evidence
 files and three pinned primary files. Original executable, LABELS, DESCRIBE and
@@ -686,7 +779,7 @@ and document presence. Complete runtime integration remains X02 work; the
 bounded checks do not establish a finished cleanroom implementation or passing
 native replay.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -697,7 +790,7 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §3. Window initialization and frame
+#### Original §3. Window initialization and frame
 
 The spacing inputs initially are horizontal spacing `m=2`, vertical gap `v=2`,
 side inset `b=8`, border thickness `p=2`, and button padding `s=2`. Keep them
@@ -742,7 +835,7 @@ scrollbar and automatic vertical scrolling over the detail rectangle. Configure 
 horizontal scrollbar over its bottom native caption-metric-height strip;
 bind both scroll callbacks and page size2. Populate the name tables last.
 
-#### Frame painting
+##### Frame painting
 
 Reset clip. Copy the window rectangle, draw p nested borders with outer colors
 from P04's prompt defaults (first light, second dark), insetting1 after each.
@@ -763,7 +856,7 @@ an add and subtract of live m). Add half of `(windowRight−left−b)` and subtr
 `asr(measuredTitleWidth,1)`. At top=p+v draw the title at offsets `(2,1)` color10,
 then `(1,0)` and `(0,0)` color26. Set clip to the detail rectangle.
 
-#### Titles and update
+##### Titles and update
 
 Setting a category title clears the shared line. Category1 or8 uses label671;
 2..7 use label `category+670`; other categories use
@@ -781,7 +874,7 @@ restoration of description text. The original computes a provisional half-width
 text rectangle from detail geometry and font heights before dispatch, but its
 children do not read that argument or assign it to the stored text rectangle.
 
-### Original §4. Controls, opening and closing
+#### Original §4. Controls, opening and closing
 
 Button instances are distinct even when their action/label is identical:
 
@@ -853,7 +946,7 @@ repeats, then flushes queued paint even for an initially empty list. Completed
 cleanup effects remain on failure; no second teardown of already completed
 members is implied by a different implementation's exception mechanism.
 
-### Original §5. Lists, selection and keyboard
+#### Original §5. Lists, selection and keyboard
 
 Preparing a category list clamps a negative selected index to0, and any selected
 index≥category count to0. Capture/copy the category count into list count;
@@ -876,7 +969,7 @@ Selection redraw renders the list for view0 except category8, which is a no-op.
 Views1 and2 also do nothing. Other view values call canonical Close. These
 helpers' incidental return values are not additional navigation actions.
 
-#### Keyboard
+##### Keyboard
 
 Ignore keys unless view0. Capture focused and uppercase the incoming character
 using the CRT mapping. Letters A..Z perform initial-letter search: start after
@@ -903,7 +996,7 @@ focused=live selected, scroll-to-selection(candidate), then set scrollbar
 position from live first/9 after redraw callbacks. Empty End consequently
 selects−1 and aligns first to−9; do not substitute an invented clamp.
 
-#### Hit testing and clicks
+##### Hit testing and clicks
 
 Hit test checks y<top, y≥bottom, x<left, x≥right in that order, returning−1,−2,
 −3,−4 respectively. Otherwise choose column1 when x≥left+trunc(width/2), else0.
@@ -922,7 +1015,7 @@ return without selection. Otherwise hit-test; accept only a nonnegative result
 below the live signed list count. Set selected=result, focused=live selected,
 and redraw. Double-click activation is the independent algorithm in §7.
 
-### Original §6. List rendering
+#### Original §6. List rendering
 
 Record canonical history first. Save clip, clip to list rectangle and fill with
 the unselected background. Use halfWidth=trunc(rectWidth/2), rowHeight=
@@ -967,7 +1060,7 @@ cell. After each column recompute its next left from the live list rectangle.
 Finally restore saved clip and show the live list-hit control. Do not restore
 saved state early after an intervening failure.
 
-### Original §7. Activation, tree navigation and history
+#### Original §7. Activation, tree navigation and history
 
 Activate captures focused **before** testing view. For view0, set selected from
 a fresh focused read, set view1, clear details and configure controls. Capture
@@ -989,7 +1082,7 @@ redraws selection and records history. The selected index remains the advance
 being explored; this is not a menu of all categories. Clicking a tree link
 returns to an advance detail page through §8.
 
-#### Recording
+##### Recording
 
 The following rules use signed history count and F01 arithmetic. The source
 uses three parallel arrays, but a cleanroom representation may use triples.
@@ -1019,7 +1112,7 @@ updates replace the last index even when the category comparison would differ;
 the outer condition is the precise gate. Negative counts do not authorize
 writes outside the history sequence.
 
-#### Back
+##### Back
 
 If count!=0, decrement it. While count!=0 and the triple **at index count**
 equals the current category, view and selected, decrement again. If the resulting
@@ -1042,7 +1135,7 @@ absent history record once Back has entered its nonempty path; it can restore
 record0. The pending/replaying fields deliberately coordinate nested redraw's
 history recording with the final record call.
 
-#### Direct item help and modal lifetime
+##### Direct item help and modal lifetime
 
 Direct help returns unless canonical closed is nonzero. Advance, improvement,
 wonder and unit help also return when network map-window update is active;
@@ -1062,7 +1155,7 @@ after return. Modal idle polls network `(1,0)` first; if modal is0 or closed is
 exactly1, clear loop and then modal0. Partial effects and a published idle
 callback remain if a later provider stops.
 
-### Original §13. Technology-tree layout
+#### Original §13. Technology-tree layout
 
 The tree is a fixed four-level expansion: selected advance plus at most2,4,8
 prerequisites. It draws repeated IDs separately and does not use a visited set,
@@ -1107,7 +1200,7 @@ If either is nonnegative, draw a continuation mark from the sprite's left at
 its vertical center to the detail rectangle's left. Then create its link.
 No fifth level is expanded. Restore clip and present at the end.
 
-#### Connectors
+##### Connectors
 
 To connect `(childX,childY)` to `(parentX,parentY)`, shift childY by+1 when
 parentY<childY, otherwise−1. Draw color10 vertical lines at childX−1 and childX+1
@@ -1122,7 +1215,7 @@ y−1 and y+1, then color122 at y. It reloads detail left between draws. Known
 technology link color106 versus unknown85 is §8's live local-human query; the
 connector color does not change with knowledge.
 
-### Original hyperlink drawing and allocation
+#### Original hyperlink drawing and allocation
 
 Repeatedly measure the shared line with the detail font. While it exceeds the
 hit rectangle's width, remove its final character. This changes shared text;
@@ -1140,7 +1233,7 @@ assign a control identity based on ordinal, bind both click and double-click to
 the selected target kind, and show it. Drawing occurs before allocation/linking;
 failed creation does not roll those effects back.
 
-### Original native hyperlink registration
+#### Original native hyperlink registration
 
 Native hyperlink class registration is attempted once: publish the registered
 flag **before** loading the hand cursor and registering the class. Failure does
@@ -1150,7 +1243,7 @@ rectangle. Clear the five callback slots on configure before creating/publishing
 the native handle. Native class/style encodings are validation adapters in
 Appendix B; other implementations need the same event/hit behavior.
 
-### Original §15. Conformance cases and integration boundaries
+#### Original §15. Conformance cases and integration boundaries
 
 Use active RULES, labels and text resources as inputs. Compare logical state,
 ordered queries/stream effects, control operations, text and drawing commands.
@@ -1192,24 +1285,24 @@ research goal. Rule reload repopulation must use §2, including cleanup and stre
 behavior. Repeated callbacks, missing fonts/assets and native failures must
 retain completed effects rather than assuming page drawing is transactional.
 
-### Original Civilopedia display domain
+#### Original Civilopedia display domain
 
 Nominal inputs are initialized rules, populated description indices, terminated
 fitting text, supported sprites, a usable window/font provider and positive
 geometry divisors.
 
-### Original Civilopedia display state
+#### Original Civilopedia display state
 
 - Window/detail/text/list rectangles, caption height, title, title icon and its
   dimensions; working width/height; title, list-hit, edit, scrollbar and buttons.
 
-### Original Civilopedia construction
+#### Original Civilopedia construction
 
 Construct the base window, the fifteen buttons in the order in §4, edit and
 scrollbar. Set closed1, view0, selected0, modal0, title control absent, link head
 absent and category0.
 
-### Original §9. Common detail-page conventions
+#### Original §9. Common detail-page conventions
 
 Rule-detail renderers save clip, clip to detail rectangle, configure controls,
 then fill region2. The original continues after configuration even if a nested
@@ -1234,7 +1327,7 @@ when this helper returns without creating the link. A displayed prerequisite
 name and its link's ID can differ after callbacks because rule IDs are read
 again just before link creation.
 
-### Original §10. Terrain and resource details
+#### Original §10. Terrain and resource details
 
 Let D be the detail rectangle, W its width, H its height, r=trunc(H/12),
 V=trunc(W/2)−100 and X=D.left+10. V and the later right-column origin are
@@ -1263,7 +1356,7 @@ food/shield/trade fields, except **item2 shields is forced0**. Beside each value
 at measured width+3 draw respectively food, shield and trade resource art;
 its y is rowY+trunc(r/2)−2−trunc(resourceContentHeight/2).
 
-#### Base-terrain work and resources
+##### Base-terrain work and resources
 
 After the yield rows, process irrigation then mining, each as an effects row
 and a time row separated by f:
@@ -1293,7 +1386,7 @@ next row link item+11. Unless item2, add another row linking item+22. Item2's
 second special is omitted consistently with population's omitted item24.
 Refresh the description button, restore clip and present.
 
-#### Special-resource comparison
+##### Special-resource comparison
 
 After the yield rows, advance y by2f and use X. Capture the base terrain's name,
 base food/shields/trade (base2 shields forced0), then special food/shields/trade,
@@ -1313,9 +1406,9 @@ strings with invented extra arguments. Finish with button refresh, clip restore
 and presentation. An overlong copied base name or formatted result is an
 excluded overwrite, regardless of where its original destination lay.
 
-### Original §11. Improvement, wonder and unit details
+#### Original §11. Improvement, wonder and unit details
 
-#### Improvements and wonders
+##### Improvements and wonders
 
 Start image at `(D.left+10,D.top+8)`. Save sprite scale, set2/1, measure and draw
 the improvement-ID sprite on the canonical target, restore scale, and select
@@ -1342,7 +1435,7 @@ Move y by2f and read facts for the cached improvement ID. If the resulting share
 line is nonempty, draw wrapped text in `(X,y,X+W−10,D.bottom)` using P04 rectangle
 text mode5. Refresh description availability, restore clip and present.
 
-#### Improvement facts
+##### Improvement facts
 
 Construct section `PEDIAIMPROVE` followed by the signed decimal item and open it
 in `PEDIA`. Start local aggregate text empty. On success clear shared line and
@@ -1360,7 +1453,7 @@ different capacities. No overflow of either is part of compatibility. A dynamic
 aggregate can support longer safe custom text, or a restrictive implementation
 can omit/reject it. The original byte extents are validation facts in Appendix B.
 
-#### Units
+##### Units
 
 Let r=trunc(H/12), X=D.left+10, V=trunc(W/2)−75. Save sprite scale and set2/1.
 Draw the unit sprite at X and
@@ -1402,7 +1495,7 @@ D.left+trunc(W/2)+trunc(W/2),D.bottom)`. Failure to open skips facts and close.
 Refresh button, restore clip, present. The source's fixed private facts buffer
 can overflow; use safe storage/rejection instead of reproducing corruption.
 
-### Original §12. Advance detail and fact selection
+#### Original §12. Advance detail and fact selection
 
 Save/clip/configure/fill as in §9. Start top=D.top+5. Resolve the selected advance
 and draw its category/epoch sprite at D.left+m,top using the current sprite scale.
@@ -1422,7 +1515,7 @@ Advance top by f. At D.left+2 compose Allows(label122) plus colon; define
 L=that x+measured label width+2. Draw the heading only if dependentCount!=0.
 The heading is still measured for L when there are no dependents.
 
-#### Dependents
+##### Dependents
 
 Scan advances0..99 again. If prerequisite0 equals the cached item, select that
 advance and capture prerequisite1 as the other prerequisite; otherwise test
@@ -1457,7 +1550,7 @@ After an **odd final unit**, compare the cached first height to **sprite62's**
 content height and advance by their maximum even in dense mode. Sprite62 is the
 extra loaded sprite slot; this read is not the previous unit's height.
 
-#### Scenario checks and fixed facts
+##### Scenario checks and fixed facts
 
 Reset left=L. If scenario and install directory strings differ, enter scenario,
 check `describe.`+extension, restore install. If absent, disable advance-detail
@@ -1505,7 +1598,7 @@ when scenario facts were overridden. The routine does not close this PEDIA
 stream. Refresh description availability, restore clip and present on ordinary
 completion.
 
-## Appendix E. Original implementation reference
+### Appendix E. Original implementation reference
 
 This appendix preserves original storage, allocation, native API and adapter
 procedures for reference validation. The main text defines required behavior.
@@ -1517,12 +1610,12 @@ appearing here. Original memory/handle traces are not a second normative algorit
 Optional providers and harmless UI failures retain X01's existing scope limits;
 this reorganization introduces no new gameplay or interoperability relaxation.
 
-### Original Civilopedia name-entry representation
+#### Original Civilopedia name-entry representation
 
 - Seven category tables, each with count and parallel description IDs, item IDs
   and name entries. A name entry has fixed key, owned text and next entry.
 
-### Original Civilopedia row allocation
+#### Original Civilopedia row allocation
 
 Appending a row performs these effects in order:
 
@@ -1547,15 +1640,15 @@ This deliberately disambiguates shield grassland without inventing a second
 item24 entry. A callback that lengthens text beyond the allocated destination
 would trigger the excluded-overwrite policy.
 
-### Original concept-name allocation
+#### Original concept-name allocation
 
 name's length is measured before allocation and its text copied afterward.
 
-### Original Civilopedia linked sorting storage
+#### Original Civilopedia linked sorting storage
 
 Keep node keys and links fixed. Thus equal names can reverse when an earlier
 
-### Original Civilopedia traversal and name lookup
+#### Original Civilopedia traversal and name lookup
 
 Traversal advances only when a next node exists; malformed shorter lists retain
 the last candidate rather than automatically ending comparisons. Count≤1

@@ -31,7 +31,7 @@ struct Fixture {
         auto& rules = *process.rules;
         rules.text.initialize();
         auto label = [&](const std::string& value) {
-            return static_cast<std::int16_t>(rules.text.store(value));
+            return state::NameReference{rules.text.store(value), false};
         };
         for (unsigned i = 0; i < 21; ++i) {
             auto& leader = rules.leaders[i];
@@ -161,9 +161,9 @@ TEST_CASE("F05 ordinary player setup publishes identity preferences and a sample
     CHECK(world.names[4].leader.bytes[8] == 0xee);
     CHECK(world.names[4].tribe.bytes[0] == 0xff);
     const auto& leader = f.process.rules->leaders[3];
-    CHECK(leader.leader_name == -leader.names[1]);
+    CHECK(leader.leader_name == state::NameReference{leader.names[1].id, true});
     CHECK(leader.female == 1);
-    CHECK(leader.plural > 0);
+    CHECK(!leader.plural.custom);
     CHECK(leader.city_style == 3);
     CHECK(leader.times_used == 9);
     CHECK(leader.city_name_index == 11);
@@ -188,12 +188,12 @@ TEST_CASE("F05 entry restores marked labels and clears only its reserved game fi
     auto& leaders = f.process.rules->leaders;
     const auto expected = leaders;
     for (auto& l : leaders) {
-        l.leader_name = -l.leader_name;
-        l.plural = -l.plural;
-        l.adjective = -l.adjective;
+        l.leader_name.custom = !l.leader_name.custom;
+        l.plural.custom = !l.plural.custom;
+        l.adjective.custom = !l.adjective.custom;
         for (auto& pair : l.titles)
             for (auto& id : pair)
-                id = -id;
+                id.custom = !id.custom;
     }
     f.runtime.world().globals.retained_0e = 0xffff;
     f.runtime.world().globals.retained_34 = 123;
@@ -416,11 +416,11 @@ TEST_CASE("F05 custom name title and portrait children retain accepted edits in 
     f.services.names = [&](bool custom, auto current) {
         REQUIRE(custom);
         auto& leader = f.process.rules->leaders[3];
-        CHECK(leader.plural < 0);
-        CHECK(leader.adjective < 0);
+        CHECK(leader.plural.custom);
+        CHECK(leader.adjective.custom);
         for (unsigned g = 0; g < 7; ++g) {
-            CHECK(leader.titles[g][0] > 0);
-            CHECK(leader.titles[g][1] < 0);
+            CHECK(!leader.titles[g][0].custom);
+            CHECK(leader.titles[g][1].custom);
         }
         if (++names == 1) {
             CHECK(current == std::array<std::string, 3>{"Female3", "Tribe3", "Adjective3"});
@@ -466,9 +466,9 @@ TEST_CASE("F05 canceling names restores markers at Gender while keeping custom t
             return 1;
         const auto& leader = f.process.rules->leaders[3];
         CHECK(leader.leader_name == leader.names[1]);
-        CHECK(leader.plural > 0);
-        CHECK(leader.adjective > 0);
-        CHECK(leader.titles[3][1] > 0);
+        CHECK(!leader.plural.custom);
+        CHECK(!leader.adjective.custom);
+        CHECK(!leader.titles[3][1].custom);
         CHECK(text(f.runtime.world().names[4].leader) == "BeforeCancel");
         return -1;
     };
@@ -523,7 +523,7 @@ TEST_CASE("F05 text-load failures stop with preceding identity and name effects 
         auto random = f.slots({});
         CHECK_FALSE(f.run(random).accepted);
         CHECK(f.runtime.world().globals.player_civ == 4);
-        CHECK(f.process.rules->leaders[3].leader_name < 0);
+        CHECK(f.process.rules->leaders[3].leader_name.custom);
         CHECK(text(f.runtime.world().names[4].leader) ==
               (title_failure ? "BeforeFailure" : "Female3"));
         CHECK(f.runtime.world().globals.civs_alive == 0);

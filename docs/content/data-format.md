@@ -41,11 +41,11 @@ Image/font/audio decoding remains in `oc2_content` under [asset-format.md](asset
 
 Keep classic parsing and its effects at the compatibility boundary: section
 lookup/fallback, encodings, name resolution, conversions, defaults, retained
-fields, partial publication and meaningful failure/callback order remain as
-specified when loading classic input. A successful conversion to JSON is not
-permission to make an in-game classic reload transactional or discard its
-`keepNames`/leader-replacement policy. The common model includes those retained
-values and effects; it is not just a snapshot of the last successfully read file.
+values and accepted game/peer effects remain as specified. Under X01/F03,
+unpublished parsing may be staged and failures handled without original partial
+memory writes. Preserve in-game `keepNames`/leader-replacement policy; staging
+does not permit discarding meaningful retained names or accepted changes. Parser
+globals, stream position objects and allocation callbacks are not live game state.
 
 Native JSON has a separate authoring contract: validate the complete selected
 pack before a new-game installation, and report invalid data without partially
@@ -408,24 +408,30 @@ Labels are `{id,text}` objects; text is a literal string. Messages have
 - Optional `defaults` is `{choice}` where choice is a declared choice ID or null.
   An omitted input initial/default choice inherits the owner-supplied value;
   null means no resource-requested selection. The operation registry specifies
-  when authored defaults may apply, including P04's original-empty-input and
-  zero-choice gates. Never overwrite a retained live value unconditionally.
+  when authored defaults may apply. P04's original-empty-input and zero-choice
+  gates belong to decoding the classic resource, not a required frontend state
+  machine. Defaults do not overwrite accepted game values or submit a command
+  merely by receiving focus.
 
 Input IDs are unique within a message, as are choice IDs. Validate parameter
-references and types in every run/initial. The registry constrains control types,
-length domains, default admission, publication on acceptance **and cancellation**,
-and classic result values. Resources can supply these permitted authored values;
-they cannot create a command, widen a mechanic's input domain or change a network
-reply. The frontend may rearrange controls but must return their identities and
-values through the same operation.
+references and types in every run/initial. The registry constrains semantic input
+types, length domains, automatic defaults, accepted effects and any actual
+cancel/protocol response. Resources cannot create a command, widen a mechanic's
+input domain or change a network reply. The frontend may redesign navigation and
+interaction, retaining choice/input identities at acceptance. The array order
+is authored order, not mandatory screen order. Widget type, modal state and
+draft publication on cancellation are not part of this file format. A cancelled
+local draft can be discarded; an already accepted game operation keeps its
+effects under its owner. This follows X01/P04's presentation policy.
 
 A message may also be a fragment: callers can append an ADVICE body to its
 MILITARY/DOMESTIC header, append dynamic eligible choices to a prompt, or build
-a PEDIA detail page from facts. Composition is an owner operation in its specified
-order, not automatic concatenation of similarly named records. Preserve actual
-reads of live substitution values, fallback, partial publication and callbacks;
-a converter cannot freeze a query result into its content file. The registry
-states which parameters/fragments are bound at which boundary.
+a PEDIA detail page from facts. Keep authored fragment meaning and any order
+needed to interpret its text, not the original sequence of buffer appends.
+Bind current query values at the semantic interaction boundary; a converter
+cannot freeze a game query result into its content file. UI appends, measurement
+and drawing create no game callbacks or partial game publications. The registry
+states meaningful parameter binding and accepted-operation boundaries.
 
 A help topic is `{id,subject,parameters,body}`, where body uses the same text
 runs and parameters as a message. Subject is exactly one of `{"globalRule":key}`,
@@ -462,7 +468,8 @@ on renaming. Science advice and other fixed interactions use their registered
 message IDs. Appendix A owns ADVICE section spelling and fallback addresses.
 
 Classic-selected resources retain F03/P04 lookup, Append/PreserveBlank, live
-substitutions, DEFAULT/LENGTH rules, fallback and partial publication. Their
+substitutions, DEFAULT/LENGTH meanings and fallback. Native parser-buffer
+publication is reference only; X01 permits staged decoding. Their
 adapters translate semantic requests to source addresses. Native consumers do not
 construct `@` keys or execute a line parser. A converter must diagnose unsupported
 used constructs, retain the classic selection or reject conversion explicitly;
@@ -591,8 +598,9 @@ A base native catalog ordinarily has an empty policy array. These are not
 permissions to reveal hidden state or bypass P08's eligibility. Appendix A maps the old DESCRIBE/
 PEDIA presence tests and verifies policy agreement when converting a scenario.
 
-P08 supplies categories, eligibility, ordering/ties, prerequisite relationships,
-knowledge visibility and current rule facts. Prose cannot override those facts
+P08 supplies topic eligibility, prerequisite relationships, knowledge visibility
+and current rule facts. Display sorting, navigation/history and tree layout are
+frontend choices; topic IDs remain stable through them. Prose cannot override those facts
 or reveal hidden state. A topic's rule identity is separate from its name;
 translations do not renumber rule entries. Native text can describe mechanics
 without copying stock prose. Classic `DESCRIBE` indices/concepts map to these
@@ -844,9 +852,9 @@ with a scenario ID via scenarioFiles; a missing associated resource uses S01's
 generic branch. A native external-world declaration can describe a briefing
 without asserting that a matching world has been bundled.
 
-Classic file/existence tests, label-tail fallback, retained stream state and
-partial publication remain on the classic path. Semantic native prevalidation
-cannot erase those effects. Where a classic resource cannot be expressed under
+Classic file/existence selection and label-tail fallback remain input meanings.
+Retained native streams and partial parser publication are reference machinery;
+prevalidation may stage a complete decoded resource under X01. Where a classic resource cannot be expressed under
 the native admission contract, report the specific gap and retain the original
 selection or reject conversion; do not silently repair it.
 
@@ -963,4 +971,5 @@ literal. `;` and end resolve to next-line continuation and end; same-line `#`/R
 continuations become explicit edges. Reject unrepresentable malformed retained-
 category cases under the declared safe profile rather than inventing a category.
 Native graph object order is immaterial, and no parser cursor is runtime state.
-EOF/partial publication of classic-selected inputs still follows P09's adapter.
+P09 defines successful classic interpretation. EOF or failed decoding may reject
+an unpublished resource safely without publishing the original partial parser.

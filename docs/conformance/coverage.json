@@ -11,7 +11,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
+          "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d",
           "function": "F01.primaryModuloFromCode",
           "originalAddress": null
         }
@@ -39,7 +39,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
+          "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d",
           "function": "F01.secondaryRangeFromCode",
           "originalAddress": null
         }
@@ -68,7 +68,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
+          "sha256": "b01c1279ba0411b2a0d5f0118cf924e3b73608eb38189c368c755a2a5249157b",
           "function": "F02.assignUnitToken",
           "originalAddress": null
         }
@@ -98,7 +98,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
+          "sha256": "b01c1279ba0411b2a0d5f0118cf924e3b73608eb38189c368c755a2a5249157b",
           "function": "F02.assignCityToken",
           "originalAddress": null
         }
@@ -126,7 +126,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
+          "sha256": "b01c1279ba0411b2a0d5f0118cf924e3b73608eb38189c368c755a2a5249157b",
           "function": "F02.reserveUnitSlot",
           "originalAddress": null
         }
@@ -156,7 +156,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
+          "sha256": "ecd6d9dae70f5017c6c7c0caac676b0f8c101b9aeab1e639069b0f0dad043916",
           "function": "W01.wrapX",
           "originalAddress": null
         }
@@ -186,7 +186,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
+          "sha256": "ecd6d9dae70f5017c6c7c0caac676b0f8c101b9aeab1e639069b0f0dad043916",
           "function": "W01.stepDistance",
           "originalAddress": null
         }
@@ -216,7 +216,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
+          "sha256": "ecd6d9dae70f5017c6c7c0caac676b0f8c101b9aeab1e639069b0f0dad043916",
           "function": "W01.weightedDistance",
           "originalAddress": null
         }
@@ -244,7 +244,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/W01-map-geometry-and-spatial-state.md",
-          "sha256": "7e8af4b0b3bc2f978d8c89203a7f9468afcf3b71c9add593b9d1c35374cc0cbd",
+          "sha256": "ecd6d9dae70f5017c6c7c0caac676b0f8c101b9aeab1e639069b0f0dad043916",
           "function": "W01.tileIndex",
           "originalAddress": null
         }
@@ -274,7 +274,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
+          "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d",
           "function": "F01.primaryCode",
           "originalAddress": null
         }
@@ -310,7 +310,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
+          "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d",
           "function": "F01.primaryModulo",
           "originalAddress": null
         }
@@ -347,7 +347,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
+          "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d",
           "function": "F01.secondaryUnit",
           "originalAddress": null
         }
@@ -382,7 +382,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F01-determinism-and-arithmetic.md",
-          "sha256": "87337b2d08366088c205be99ecfb9f6b21ea720809eb6913c585cf20dfefaef9",
+          "sha256": "186b935c4234e337c45d509f32f74c30b93347ad1aa5b22137be595cdcfe837d",
           "function": "F01.secondaryRange",
           "originalAddress": null
         }
@@ -420,7 +420,7 @@
         {
           "kind": "repository-specification",
           "path": "docs/algorithms/F02-game-state-and-invariants.md",
-          "sha256": "7dfba98fbb283f384ded68e9ddb9083c92980f6b84d688494cdb6ba965eb896e",
+          "sha256": "b01c1279ba0411b2a0d5f0118cf924e3b73608eb38189c368c755a2a5249157b",
           "function": "F02.cityCalculationEntry",
           "originalAddress": null
         }
@@ -458,21 +458,21 @@
         {
           "kind": "repository-specification-vector",
           "path": "docs/algorithms/conformance/X02-F02-fresh-game-cold.json",
-          "sha256": "eaf95f7ed8df2c9fc3b43bb950ffd9d53b89aa0fb5eced68b7a0da7f1e7e6e82",
+          "sha256": "9171ac20e1c0e781766a70f594e91e6b99956e9f6676d2c15845dd2c68cf249e",
           "originalFunction": "F02.prepareNewGame",
           "originalAddress": null
         },
         {
           "kind": "repository-specification-vector",
           "path": "docs/algorithms/conformance/X02-F02-fresh-game-used.json",
-          "sha256": "b5e1c403fcfdefdb726bdf6bc45ac934c98051f671125ade1fc3c606fa910e74",
+          "sha256": "603dfa8e8f3c9bd632dee71b6906311186fb33ce017fa6001ee5871ac0d9805a",
           "originalFunction": "F02.prepareNewGame",
           "originalAddress": null
         },
         {
           "kind": "repository-specification-vector",
           "path": "docs/algorithms/conformance/X02-F02-fresh-game-empty-scans.json",
-          "sha256": "36d632f8dfe313c6d216276b9dcd9899ea1d647b0a70ffb05e751e6b379cdafc",
+          "sha256": "cadec30f269b0351cf36c516097a70895bb9ba2c021fec9f13b106c500c53c1f",
           "originalFunction": "F02.prepareNewGame",
           "originalAddress": null
         }

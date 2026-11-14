@@ -1,5 +1,29 @@
 # N05: Transport and wire protocol
 
+## Production contract scope
+
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
+
+| Surface | Binding scope in N05 |
+| --- | --- |
+| Gameplay | Reliable delivery/failure meaning and connection/participant identity exposed to N01/N02; safe bounded input handling. |
+| Original files/content | No additional game-save format; stored addresses/preferences use their declared owners. |
+| Original peers | TCP framing/handshake/record routing, UDP discovery, protocol IDs/control records and required close/flush semantics. Socket chunking, buffering and OS APIs may differ. |
+| Executable comparison only | WinSock/window/thread/DirectPlay ABI, callback registration side effects, error integers, receive allocation shape and chunk-dependent malformed-input traces. |
+
+The algorithms below specify game values/decisions and their real dependencies,
+plus explicitly identified external data definitions. They do not prescribe
+function boundaries, object/global layout, allocation strategy or incidental
+helper/store order. Preserve retained data where an admitted game/file/peer
+consumer uses it; represent that data flow explicitly rather than emulating
+original memory. Native or synthetic callbacks do not create new game boundaries.
+Historical backing-byte/fault/trace cases are reference unless an actual external
+format or supported semantic operation consumes the value. Missing gameplay or
+format meaning is an owner gap, not permission to invent it or require arbitrary
+original bytes. This scope controls stronger historical wording below.
+
 **Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
 and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
 override conflicting procedures and examples below. Retention applies within a
@@ -41,8 +65,9 @@ and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-sig
 apply. Widths and written sequences define reference evaluation, not mandatory
 internal types or scheduling. Equivalent evaluation may omit redundant conversions
 and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+semantic publications and failure effects. Only dependencies within the binding
+scope above constrain evaluation; storage/API choices need no original-trace
+equivalence proof. External file/wire definitions remain binding at adapters.
 
 Handshake, framing, routing, queue/accept barriers, callbacks and deadline
 comparisons retain their order and failure effects. Equivalent buffer preparation
@@ -159,6 +184,25 @@ Do not treat every negative return as a new last-error assignment. Operations
 below identify stored errors. Internal send results, several provider returns,
 self-send rejection and successful StopConnections have distinct conventions.
 N01/N02 own how game callers interpret them.
+
+## Portable transport contract
+
+Implement the required framing, handshake, peer IDs, routing, delivery ordering,
+UDP discovery and game-visible connection outcomes with any suitable transport
+backend. Adapt connected/lost/message events to N01/N02; the six native callback
+setters, borrowed-buffer lifetime, numeric last-error store, timer/window handles
+and original provider object lifecycle are not public production requirements.
+Owned events and explicit errors are permitted. Keep actual authority, deadlines,
+admitted delivery order and outstanding required output.
+
+For valid frames, arbitrary TCP fragmentation/coalescing must yield the same
+records in order. A receive buffer is not a semantic event. Original malformed
+frame/oversize behavior that changes with chunk boundaries is diagnostic reference;
+validate lengths and use a documented bounded rejection/disconnect policy.
+Reject before accessing unavailable fields; do not reproduce discarded-buffer
+resynchronization or allocate a claimed impossible length. This does not change
+the admitted frame format, legal lengths or peer-visible control/handshake rules.
+Optional IPX, serial, modem and launch-lobby recipes remain optional throughout.
 
 ## 2. Initialization, slots and address production
 
@@ -764,10 +808,18 @@ Original implementation: [Appendix D](#appendix-d-original-implementation-refere
 
 ## 10. Conformance cases and integration obligations
 
-For the required TCP/IP domain, observe ordered wire records, callback identities,
-protocol-relevant callback timing, live queue
-counts, role/ID publication, error assignment and cleanup prefixes. Successful
-payload delivery alone cannot distinguish several original failure paths.
+
+> Compare the gameplay/interchange observations in the
+> [production scope](#production-contract-scope). Original memory/helper traces,
+> arbitrary native callbacks and unsafe backing-byte cases in historical lists
+> are optional reference, not additional production acceptance criteria.
+
+For the required TCP/IP domain, compare encoded records, routing/peer identity,
+connection/delivery outcomes, authority, required timing and outstanding-output
+handling. Internal queue counts, callback API identities, numeric errors and
+cleanup/allocation traces are reference only. The table below mixes those old
+diagnostics with wire cases: only actual wire definitions and game/peer effects
+are baseline obligations under the portable transport contract.
 
 Cases outside the admitted domain are optional original-reference cases; test
 safe rejection instead. Legacy-provider rows apply only to that extension.

@@ -1,60 +1,119 @@
 # P10: Audio, video and animation
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-Target: classic Civilization II Multiplayer Gold Edition 5.4.0f, patch 3.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-This document owns sound/music selection, audio queues and sample conversion,
-video media/decode/scheduling, presentation entry points and animation timelines.
-[F01](F01-determinism-and-arithmetic.md) owns arithmetic, clocks and sampling laws;
-[F03](F03-rules-and-configuration.md) owns resource/text search;
-[P01](P01-map-projection-and-interaction.md),
-[P02](P02-map-rendering-and-minimap.md),
-[P03](P03-graphics-and-asset-processing.md),
-[P04](P04-text-and-dialogs.md) and
-[P05](P05-input-and-command-dispatch.md) own geometry, renderers, graphics,
-text/dialogs and input delivery. The simulation caller owns any gameplay change
-before/after an animation. P10's pumping and callbacks can still change the
-state that caller subsequently reads. Presentation randomness may be independent
-of simulation under F01; cosmetic media choices and animation rules below are
-reference behavior under X01. Gameplay completion and network obligations remain.
+| Surface | Binding scope in P10 |
+| --- | --- |
+| Gameplay | Meaningful notices and completion/skip behavior without duplicating/omitting game effects. |
+| Original files/content | Supported authored media/resource identities, captions/substitutions and relevant file decoding. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Stock effects, device buffers, codec algorithms, frame clocks and animation sequencing. |
 
-Random choices and supplied-draw fixtures use F01’s sampling laws. Counts refer
-to semantic choices, not raw generator calls; unused original samples are
-optional. Gameplay-dependent ordering and callbacks remain required; purely
-cosmetic randomness and native traces follow the presentation policy.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+## Required presentation contract
 
-## Required contract and reading guide
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-Supported scenario sound/video requests and override lookup, meaningful
-notifications, user sound/skip choices, gameplay completion/cancellation effects
-and network/turn progress while media runs.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-## 1. State, providers and input profiles
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
+
+## Media and animation obligations
+
+Media supports the game's recognizable feel and communicates events; it does
+not own simulation. Choose new sound mixing, codecs/providers, frame clocks,
+animations, transitions, captions, volume controls and playback UI. Original
+WAV buffers, native device/MCI state, track chooser, fades, delays, credits
+scrolling and frame-by-frame sequences are reference only. Stock effects and
+cosmetic random choices may change or be disabled.
+
+Movement/combat/nuclear effects consume U02/U06/U07/W05 results. Opening, wonder,
+launch and ending flows consume F04/V07/V08 decisions. Execute required game
+effects and completion once at their semantic boundary regardless of rendering,
+skip, cancellation or device failure. A movie cannot award victory, change a
+combat result or pause N03's actual deadline. Service N02 network events and
+revalidate pending targets where required. UI-only playback callbacks are not
+gameplay callbacks.
+
+Preserve meaningful notices, participant/target identity, scenario text and
+substitution values, including the ending/history information cataloged in
+§17. Pages may be combined or presented without video. No invented advance,
+conquered civilization or stale caption is required when information is absent.
+Use a truthful omission/diagnostic for unavailable presentation content without
+changing score or continuation. Original selection of stock flavor media is
+optional; authored conditional content retains its declared interpretation.
+
+## Original-file input contract
+
+F03/P03/P04 and S02 own resource resolution, graphics, text and scenario media
+requests. Preserve explicit authored filenames, effect/track identities,
+overrides, caption text and required supported media decoding. Reference §§4,
+7–11 describe admitted media/container inputs; independent correct decoders may
+replace their provider algorithms. Original device buffers/timing are not data
+formats. §18's effect-ID-to-filename catalog remains a classic resource mapping,
+not a mandate for stock sampling, cancellation callbacks or internal table layout.
+
+Reference §§14,16–17 contain authored opening/wonder/credits/ending section keys,
+line/marker grammar and substitution meanings. Those file definitions remain
+required; section reading does not require retained global streams or the old
+playback flow. Native content has its own catalog. Diagnostics or no-video
+presentation must not silently substitute unrelated stock content for a valid
+scenario request, and must resolve the owning game interaction correctly.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. State, providers and input profiles
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal effects are backed 22,050 Hz unsigned 8-bit PCM WAVs with complete format
 metadata, valid block alignment, finite data and fitting filenames. Nominal
@@ -82,7 +141,10 @@ The following rules apply throughout:
   loops. Preserve completed valid effects and distinguish that policy from the
   original failure path. Native handles and internal allocations may differ.
 
-## 2. Effect selection and dispatch
+### 2. Effect selection and dispatch
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Preserve semantic effect identity, supported scenario overrides and requested
 loop/cancel/completion behavior. Publish last-effect/last-mode when those values
@@ -108,7 +170,10 @@ The CHEERS draw precedes all file-existence failures.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 3. Device and output-buffer lifetime
+### 3. Device and output-buffer lifetime
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Use any supported audio device/backend and buffer organization. Preserve requested
 authored content, user sound preference and required completion/cancel effects.
@@ -118,7 +183,10 @@ protocol reply.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 4. WAV stream construction
+### 4. WAV stream construction
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Decode supported nominal WAV content, including requested looping, without
 changing the authored signal or its semantic identity. A replacement audio library
@@ -128,7 +196,10 @@ authored-content failures must remain explicit.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 5. Sample conversion and mixing
+### 5. Sample conversion and mixing
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Mix/resample for the chosen output device using an implementation-selected audio
 pipeline. Original output sample equality, clipping arithmetic and mixer scratch
@@ -137,7 +208,10 @@ gameplay completion/cancellation.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 6. Filling, submission and completion
+### 6. Filling, submission and completion
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Service playback completion and cancellation exactly once at their semantic
 boundary. Native queue filling/submission and wave-device callbacks may differ.
@@ -146,7 +220,10 @@ ordering and live reads after external events.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 7. AVI audio and position clocks
+### 7. AVI audio and position clocks
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Decode and synchronize supported AVI audio/video with a replacement backend.
 Original sample clocks, stride buffering and native stream position conversions
@@ -155,7 +232,10 @@ completion/skip result; keep network service responsive.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 8. CD music and MCI transport
+### 8. CD music and MCI transport
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Honor an explicit scenario CD-track request and user music controls within the
 supported media profile. Cosmetic stock track selection, device discovery and
@@ -164,7 +244,10 @@ X01 and must not stall the game or silently substitute different scenario conten
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 9. Video state, lifetime and media setup
+### 9. Video state, lifetime and media setup
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Open the selected supported video resource and maintain a pending playback
 operation until completion, cancellation or declared failure. Native surfaces,
@@ -173,7 +256,10 @@ optional; semantic content and required caller effects remain.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 10. Seeking, decoding and playback scheduling
+### 10. Seeking, decoding and playback scheduling
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 A replacement player may schedule, decode and render frames independently of the
 original timers. Respect requested authored ranges and completion/skip semantics,
@@ -183,7 +269,10 @@ details.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 11. MCI movie services and track chooser
+### 11. MCI movie services and track chooser
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Expose semantic movie selection, playback, stop and completion. Native MCI
 wrappers, file chooser layout and original track controls may be replaced. Resolve
@@ -192,7 +281,10 @@ caller results and network processing.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 12. Timing, palette transitions and block reveals
+### 12. Timing, palette transitions and block reveals
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Fades, palette transitions, random block reveals and their delays are cosmetic.
 They may be replaced or skipped. Keep the surrounding game operation, committed
@@ -201,7 +293,10 @@ unchanged.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 13. Map, combat and nuclear animation timelines
+### 13. Map, combat and nuclear animation timelines
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Simulation callers decide movement/combat/damage; this document owns only their
 presentation boundary. Keep active/selected/moving identities and required busy
@@ -209,7 +304,7 @@ or deferred-command gates coherent through completion. Cosmetic frame counts,
 positions and waits may differ, but relevant external input/network events must
 be delivered before later simulation reads.
 
-### Moving a unit
+#### Moving a unit
 
 Set the animation gate and reset the two movement/network scratch identities to
 −1 at entry; compute destination through W01's ordered direction0..8 offsets,
@@ -218,7 +313,7 @@ semantics and reset the movement redraw identity to−1. View visibility governs
 whether sound/visual output is appropriate. Clear the gate on normal completion.
 Do not insert a second movement or change U02's already resolved destination.
 
-### Eight-frame effect
+#### Eight-frame effect
 
 The original name identifies the operation, not a required frame count. Clear
 received-interruption count and establish its busy gate. No participating visible
@@ -227,7 +322,7 @@ request and interruption/completion distinction; either ordinary completion or
 received interruption returns1 and releases the gate. N02 owns the interruption
 input. Original background restoration and trailing waits are cosmetic.
 
-### Nuclear effect
+#### Nuclear effect
 
 Invalid coordinates or a target invisible to the live human skip local visuals.
 An admitted effect establishes/releases its busy gate and preserves required
@@ -238,14 +333,17 @@ saved backgrounds are optional.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 14. Opening, wonder and spaceship launch movies
+### 14. Opening, wonder and spaceship launch movies
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Opening and wonder movies are presentation operations. Preserve selected
 supported authored content, meaningful notices and caller continuation; shortened
 or skipped media does not undo completed gameplay. Wonder presentation retains
 its caller-requested improvement help (wonder+39) when language!=0.
 
-### Spaceship launch
+#### Spaceship launch
 
 P07 owns the pending launch interaction and V07 owns the launch mutation.
 Open the supported launch media when available; finish/skip resolves its pending
@@ -257,7 +355,10 @@ behavior.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 15. Herald video and spaceship stars
+### 15. Herald video and spaceship stars
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Diplomatic herald media conveys the V05-selected audience and P07 information;
 keep supported authored content and semantic playback completion. Decorative
@@ -267,7 +368,10 @@ state or the pending interaction's network/timeout obligations.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 16. Credits
+### 16. Credits
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 [Native documents](../content/data-format.md#64-scenario-briefings-and-credits)
 supply ordered credit blocks under four identities corresponding to the classic
@@ -281,7 +385,10 @@ mutate simulation state.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 17. Ending presentations
+### 17. Ending presentations
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V08 decides whether an ending runs, winner/loser identity and subsequent score/
 retirement. Presentation must not award victory independently. P04 owns text
@@ -312,7 +419,10 @@ winner, history records or score.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 18. Initial effect-name catalog
+### 18. Initial effect-name catalog
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 The identity-to-stem mapping is behavioral input, not an internal string layout.
 Each stem receives `.WAV`; every `CHEERS` entry invokes §2's sampling law.
@@ -366,7 +476,10 @@ Repeated names are separate effect identities for cancellation and callbacks.
 | 43 | `NEWGOVT` | 88 | `FANFARE6` |  |  |
 | 44 | `CHEERS` | 89 | `FANFARE7` |  |  |
 
-## 19. Conformance cases
+### 19. Conformance cases
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate explicit scenario sound/video/track identity, override lookup,
 preferences, cancellation versus completion and required callbacks. Exercise
@@ -377,7 +490,7 @@ sample/frame/codec/buffer/geometry traces are optional reference tests.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Original adapters, repairs and excluded bugs
+### Appendix A. Original adapters, repairs and excluded bugs
 
 These details support original-program validation. They do not require the new
 implementation to use packed records, memory addresses or native Win32 handles.
@@ -431,7 +544,7 @@ fields or adjacent objects. Unknown reads, dangling publications and division
 faults are separate boundaries; no invented empty string, zero callback, zero
 pixel or successful playback continuation is implied.
 
-## Appendix B. Evidence and ownership
+### Appendix B. Evidence and ownership
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -469,7 +582,7 @@ from the C++ models. Source, binary tables and generated fixture hashes were
 retained in the working evidence; this repository does not contain original
 program code or copyrighted media.
 
-## Appendix C. Validation performed and limits
+### Appendix C. Validation performed and limits
 
 Finite native64 fixtures exercise nine unchanged independent CD-selection,
 request and notification bodies, plus both complete sample kernels with only
@@ -501,7 +614,7 @@ allocator internals and OS packaging are outside this game's algorithm scope.
 The finite tests do not establish independent whole-program conformance or certify original playback, complete gameplay
 integration, arbitrary malformed input or every legal callback interleaving.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -512,7 +625,7 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §2. Effect selection and dispatch
+#### Original §2. Effect selection and dispatch
 
 `playEffect(effect,mode,flags,extra)` first publishes last-effect and last-mode.
 If signed effect<0, cancel all streams whose narrowed identity equals the wrapped
@@ -552,7 +665,7 @@ and live next. Return 0. Mark-inactive traverses all matches and sets Inactive.
 Presence returns1 at the first identity match, regardless of Inactive/Ended,
 and0 at finite exhaustion. Neither operation invents completion delivery.
 
-### Original §3. Device and output-buffer lifetime
+#### Original §3. Device and output-buffer lifetime
 
 Default output is PCM, stereo, 22,050 samples/second, 44,100 bytes/second,
 alignment2 and8 bits/sample; initialized is0. Open-device returns0 immediately
@@ -579,7 +692,7 @@ initialized, then clears initialized unconditionally even on provider failure;
 it does not clear the shared device handle. Shutdown, when a device exists,
 cleans buffers then closes the fresh shared device.
 
-#### Buffer allocation and setup
+##### Buffer allocation and setup
 
 Compute unsigned `perBuffer=bytes/count` **before** testing initialized. If not
 initialized return 3. For indices0..count−1, allocate a node and its header+sample
@@ -626,7 +739,7 @@ this primitive. Remove-video-head first clears video-audio state; absent or
 non-AVI head returns5. Otherwise remove it and explicitly restore the returned
 cached next into shared head, returning0.
 
-### Original §4. WAV stream construction
+#### Original §4. WAV stream construction
 
 Both loaders open the file, find RIFF type `WAVE`, then `fmt `, and request the
 whole format chunk. File-open failure returns7. Missing chunks or a read count
@@ -661,7 +774,7 @@ streams. Set kind WAV, primary memory stream, secondary source file, format,
 chunk, memory metadata, Looping and narrowed effect. Refill it before appending
 to the live queue; return 0. No extra callback parameter exists on this path.
 
-#### Looping refill
+##### Looping refill
 
 Snapshot the complete buffer metadata. Let leftover=0 if cursor==base, otherwise
 end−cursor; room=capacity−leftover. If leftover nonzero, move those bytes to base
@@ -674,7 +787,7 @@ set room=cached end−destination, seek to live data offset, and repeat. No read
 failure branch or zero-data termination is invented. Enforce storage bounds and
 an explicit safe stop for nonterminating off-nominal cases.
 
-### Original §5. Sample conversion and mixing
+#### Original §5. Sample conversion and mixing
 
 The conversion parameters often named source/destination “rate” in source are
 **bytes per frame**, not sample rates. Let groups be the narrowed group count;
@@ -701,7 +814,7 @@ when source-frame size is zero requires supplied incoming sample or a stop.
 The exact narrowing domains and enormous zero-count loop are in the validation
 appendix; a safe adapter must stop before any unsupported read/write.
 
-#### Copy one stream to an output buffer
+##### Copy one stream to an output buffer
 
 First compute unsigned requested frames=`outputBytes/outputAlignment`, before
 null/Ended checks. Start copied0, remaining=requested. For nonnull, non-Ended
@@ -722,7 +835,7 @@ When remaining==0, set progress0 for Looping, otherwise add the same product;
 return 0. This last branch still dereferences a null stream when requested==0
 in the original, so a safe consumer stops instead of inventing success.
 
-#### Mix another stream
+##### Mix another stream
 
 Require a backed record. Compute extent, buffered frames, copied and requested,
 then the same cap/Ended/NeedsRefill decisions. If copied>0, mix and advance cursor
@@ -732,9 +845,9 @@ progress0 or add sourceAlignment×copied. Return 1 only for Ended and not Loopin
 otherwise0. A later live stream returning0 can keep a composite buffer active
 when an earlier stream ended.
 
-### Original §6. Filling, submission and completion
+#### Original §6. Filling, submission and completion
 
-#### Initial fill
+##### Initial fill
 
 If not initialized return 0. Clear target node End and find the first non-Inactive
 stream. If present and node not Mixed, copy it (AVI uses its ordinal×stride
@@ -750,7 +863,7 @@ stream, AVI refill runs first; **re-read kind afterward**. If now not AVI,
 Looping invokes loop refill, otherwise advance its MMIO buffer. Follow live next
 links after callbacks. Return 1 if head is empty or retained ended is true, else0.
 
-#### Submission
+##### Submission
 
 Starting from the requested node, while Mixed: cache its sample cursor and XOR128
 into each output byte, re-reading header/length as prescribed by the provider
@@ -759,7 +872,7 @@ wave error except status 33, clears Queued and leaves Mixed. Success sets Queued
 and clears Mixed. Follow live next; stop at the first non-Mixed node and return 0.
 A retry can therefore apply XOR a second time after a failed submission.
 
-#### Wave-completion callback
+##### Wave-completion callback
 
 Return 0 when not initialized. Cache node from completed header. Advance shared
 buffer-head through up to the live buffer count, stopping at Queued. If completed
@@ -789,7 +902,7 @@ After the loop invoke only the **last captured nonnull callback**, passing the
 zero-extended effect identity. Return 0. Completion is not one callback per
 removed stream, and removal alone does not deliver callbacks.
 
-### Original §7. AVI audio and position clocks
+#### Original §7. AVI audio and position clocks
 
 Attach requires a device (else3), nonnull AVI stream (else12), and returns0
 immediately if head is already AVI. Query metadata; original ignored status
@@ -814,7 +927,7 @@ on failure it clears member flags. The alternate attachment constructor stores
 stream/null and, only on success, sets Attached; failure leaves flags unchanged.
 Neither success initializes unrelated incoming bits.
 
-#### Position conversion
+##### Position conversion
 
 Request device position as sample count only when initialized. Recognized output
 types are milliseconds, samples and bytes. Unrecognized type returns0 without
@@ -828,7 +941,7 @@ instead multiplies millisecond output by that constant, returns sample output
 directly, or divides byte output by alignment. Read byte-mode alignment before
 consuming the position union. Neither query fabricates0 after an API failure.
 
-#### Preparing and playing a range
+##### Preparing and playing a range
 
 Require device (3), then AVI head (5). Restore full remembered buffer count if
 needed. Convert current time then end time to samples using the live stream for
@@ -856,7 +969,7 @@ window and count discarded messages. Traverse the cached chain removing all
 non-AVI records while retaining AVI records. Finally clear Queued and Mixed on
 all active output buffers. Other node flags are not blanket-reset.
 
-#### Refilling AVI data
+##### Refilling AVI data
 
 The simple stream refill acts only when cursor==end or cursor==base. Its available
 bound comes from **global head**, even if the passed record differs:
@@ -897,7 +1010,7 @@ The scheduled fill operation differs:
 These two refill operations must not be merged into a single policy that loses
 the different SourceReady and padding behavior.
 
-### Original §8. CD music and MCI transport
+#### Original §8. CD music and MCI transport
 
 Shared CD state starts with no device/door device, current track−1, generic-disc
 selection0, playback-active1 and track-count 0. The shared exit/playback-request
@@ -905,7 +1018,7 @@ latch starts1. Primary and “other” MCI devices have separate completion slot
 Native command numbers, selected-field records and notification encodings are
 validation adapters; the commands below name their semantics.
 
-#### Opening and querying
+##### Opening and querying
 
 Notification initialization registers a hidden media-window class, ignores
 registration failure, creates the window, publishes its result even if null,
@@ -927,7 +1040,7 @@ only if shared device nonzero: close it, then clear device and track-count.
 Original API records supply only flag-selected input fields; unused holes are
 not logical default values or additional provider inputs.
 
-#### Track playback and automatic selection
+##### Track playback and automatic selection
 
 Low-level play-track opens if no device; if still absent return 0. With an existing
 device, cache it **before** stopping through the shared device. Narrow requested
@@ -967,7 +1080,7 @@ playback-active0 before Stop, install CD-completed, play requested track, then
 store the **full** original track, playback-active1 and request 0. Callbacks see
 that temporary inactive state; the child still plays the narrowed identity.
 
-#### Controls and notification
+##### Controls and notification
 
 | Operation | Ordered behavior |
 | --- | --- |
@@ -988,7 +1101,7 @@ Stop clears its handle after provider return. Platform shutdown stops WAV,
 stops primary, scenario-closes primary, stops other, then destroys the retained
 notification window without adding a null gate or post-destruction clear.
 
-### Original §9. Video state, lifetime and media setup
+#### Original §9. Video state, lifetime and media setup
 
 Video uses shared file, video/audio streams, codec, compressed buffer/capacity,
 source dimensions, active context, cleanup-ready and running gates, frame-output
@@ -1052,7 +1165,7 @@ already seek/read with the *previous* compressed-read capacity before step 7
 publishes the new capacity. Preserve this order and error behavior; do not infer
 that allocated suggested capacity is also the read argument.
 
-#### Palette and compositing configuration
+##### Palette and compositing configuration
 
 Palette-map requires receiver and cleanup-ready. End decompression, extract
 236 colors starting at 0 from the supplied palette, and overwrite output palette
@@ -1078,7 +1191,7 @@ configuration. Double-size ignores its argument: obtain height then width,
 double both with wrap, resize, then set doubled1. It is not a toggle or a no-op
 when passed0.
 
-#### Stop and release
+##### Stop and release
 
 Stop requires receiver and cleanup-ready. If audio-enabled clear audio-started;
 set frame-ready1. If running, clear media-pump gate, output-pending and running,
@@ -1092,9 +1205,9 @@ reference** and free; clear buffer. Finally clear compressed-read capacity,
 source dimensions and active context. The cleanup-ready flag is not blanket
 cleared here. Children/provider side effects survive their original ordering.
 
-### Original §10. Seeking, decoding and playback scheduling
+#### Original §10. Seeking, decoding and playback scheduling
 
-#### Range and frame controls
+##### Range and frame controls
 
 Start-member clears looping then calls Start. Full-range reset requires receiver/
 cleanup-ready, stops if running, queries first then length from fresh stream,
@@ -1126,7 +1239,7 @@ insufficient, reloads dimensions and copies. Background-copy constructs a full
 video rectangle, offsets its source by saved y/x reads and copies the optional
 background parent into backing port.
 
-#### Decode one frame
+##### Decode one frame
 
 Return 1 for null receiver or unavailable cleanup gate. For composited mode and
 normal flags, restore the retained updated rectangle from backing before reading.
@@ -1156,7 +1269,7 @@ Frame-callback setter publishes callback then threshold. Callback invocation
 requires established input even though threshold defaults0. Finished callback
 is independently initialized absent and invoked only when nonnull.
 
-#### Start
+##### Start
 
 Require receiver/cleanup-ready; stop if already running. If doubled, end
 current decoding, publish doubled/compositing codec-control settings, temporarily
@@ -1171,7 +1284,7 @@ running1 and update-count 0. If live audio-enabled, play audio then set
 audio-started1; otherwise capture start tick. These operations can reenter
 another presentation before the parent's later live reads.
 
-#### Update context
+##### Update context
 
 Require receiver/cleanup-ready. If running with audio-enabled, query member
 Playing. If false, either Stop+finished callback or seek first+Start for looping,
@@ -1203,7 +1316,7 @@ set output-pending exactly when that decode returned0. P05's media pump drains
 wave-completion messages before this update; its general idle path can invoke
 an additional update after pumping. Keep those two opportunities distinct.
 
-### Original §11. MCI movie services and track chooser
+#### Original §11. MCI movie services and track chooser
 
 These are separate from the AVI codec player above. An MCI movie window owns a
 child-window token. Creation first destroys an existing child, captures the
@@ -1245,7 +1358,7 @@ other count shows `NOPICKMUSICNEW`, destroys the prompt and returns. Counts
 Negative signed modal result cancels. Otherwise request wrapped(choice+2),
 force=1; destroy the prompt on both normal paths.
 
-### Original §12. Timing, palette transitions and block reveals
+#### Original §12. Timing, palette transitions and block reveals
 
 Prepare-presentation discards queued input unless the network input-retention
 gate is set, pumps messages, flushes queued paint, then pumps again.
@@ -1271,7 +1384,7 @@ windows, finish-fade, restore flags again. Fade-from-gray tests mode first;
 prepare the same fade, apply step 0, update all, present all, then steps 0..10
 with the same wait. Finish and restore flags. P03 owns color interpolation.
 
-#### Random block reveal
+##### Random block reveal
 
 Input is a surface, optional rectangle, block size and mode. Copy the rectangle,
 or construct the full surface rectangle by querying height before width. Compute
@@ -1307,14 +1420,14 @@ also matter with half-open graphics rectangles. Do not silently extend coverage
 to the last pixel. Visual sampling may use its own context and need not change
 simulation randomness.
 
-### Original §14. Opening, wonder and spaceship launch movies
+#### Original §14. Opening, wonder and spaceship launch movies
 
 All these entries use §§9–10, including their shared resources and false-success
 returns. Missing art/media, failed codecs, retained flags and callbacks are
 separate from successful playback. A safe wrapper may initialize missing owned
 state, but must identify that repair rather than claim an original producer.
 
-#### Opening
+##### Opening
 
 Construct video, outer window, palette and module; query screen bottom then
 right; publish the video. Resolve `civ2\civ2art.dll`, then `civ2\video\opening.avi`.
@@ -1334,7 +1447,7 @@ nonnull, clears modal, sets finished 1 and requests effect 107 looping. Keys
 208..210 request 107, set finished 1, then clear the freshly selected modal.
 Left-click only clears modal if present: it neither sets finished nor plays107.
 
-#### Wonder
+##### Wonder
 
 Construct outer/map surface, video, background and palette, then publish active
 wonder. Setup constructs temporary sprite then port, requests heap compaction,
@@ -1366,7 +1479,7 @@ reconcile music, optionally P08 improvement help(wonder+39) when language!=0,
 destroy. Destruction clears active publication before palette/background/video/
 outer destruction. Unknown embedded flags/frame callbacks remain explicit inputs.
 
-#### Spaceship launch
+##### Spaceship launch
 
 [P07](P07-advisors-reports-and-history.md#19-spaceship-presentation) owns the
 surrounding launch controls and subsequent V07 launch mutation. Request music
@@ -1384,7 +1497,7 @@ it. After success or missing file, cache the then-live video, delete if nonnull,
 clear the report token and reconcile music. Finish selects the live active
 report and clears its video modal only if its token is nonzero.
 
-### Original §15. Herald video and spaceship stars
+#### Original §15. Herald video and spaceship stars
 
 P07 owns herald creation, art, input and sound-category selection. The table
 below supplies this document's media inputs. Each row gives leader code, sound
@@ -1442,7 +1555,7 @@ before validating full mode, and accepts only 2/3/4. Require strict
 Publish the narrowed request then invoke Update, which re-selects global herald.
 Boundary frames do not interrupt the idle animation.
 
-#### Star field
+##### Star field
 
 Initialize 80 stars in order, consuming three F01 inclusive draws each: x from
 −32000..32000, y from −24000..24000, depth from 1..100. Query surface height then
@@ -1469,7 +1582,7 @@ write 41. Present the whole report after all 80. A star can consume six replacem
 draws in one tick; collisions and existing art affect pixels. Zero depth or
 signed-division overflow faults retain prior effects and may be safely rejected.
 
-### Original §16. Credits
+#### Original §16. Credits
 
 Credits own a string sequence, scroll position, partial-redraw flag, last dirty
 rectangle and 30 cached line sprites with line identities, widths and x positions.
@@ -1527,7 +1640,7 @@ On both normal paths delete occupied cached sprites, clear their entries, reset
 timer if signed identity≥0 and release lines. This controller does not close the
 credits stream; the owning P05 menu path closes it after About returns.
 
-### Original §13. Map, combat and nuclear animation timelines
+#### Original §13. Map, combat and nuclear animation timelines
 
 The caller supplies unit/sound/frame identities and has already decided gameplay
 effects. [P01](P01-map-projection-and-interaction.md) owns view containment and
@@ -1535,7 +1648,7 @@ projection; [P02](P02-map-rendering-and-minimap.md) owns the unit/sprite rendere
 No stereo pan or distance-volume calculation is added to the sound dispatcher.
 View visibility controls whether these callers request sound at all.
 
-#### Moving a unit
+##### Moving a unit
 
 Construct eight saved-background ports, set shared animation-busy, and reset the
 two movement/network scratch identities to −1. Use W01's ordered direction table
@@ -1569,7 +1682,7 @@ is set. Otherwise pump, sample clock, poll network(1,0) for mode≥3 until signe
 wrapped elapsed≥delay; retain that sampled clock for the next interval. Clear
 busy before destroying saved ports in reverse order. No final redraw is added.
 
-#### Eight-frame effect
+##### Eight-frame effect
 
 Construct eight saved ports; set busy and clear received-interruption count.
 For each enabled participating view containing the tile, cache origin, scale
@@ -1587,7 +1700,7 @@ and restore each active saved background. After all frames waitWithMessages(10).
 Both completion paths reset sprite scale, clear busy, destroy ports in reverse
 and return 1. N02 owns delivery and the interruption count.
 
-#### Nuclear effect
+##### Nuclear effect
 
 Invalid map coordinate or invisibility to the live human returns immediately.
 Set busy; allocate/construct the temporary port; ensure views show the tile,
@@ -1605,7 +1718,7 @@ signed elapsed≥100 ms and restore saved background. Reset scale and present
 the area again. Delete the port when nonnull, then clear busy. Unknown allocation
 output stops at use; it does not suppress or reverse the U07 blast already made.
 
-### Original §17. Ending presentations
+#### Original §17. Ending presentations
 
 [V08](V08-scoring-victory-and-retirement.md) owns whether these presentations run,
 winner/loser selection and subsequent scoring/retirement. These presentations
@@ -1616,7 +1729,7 @@ right−left by bottom−top+5. Video windows are doubled, centered and filled b
 Open status class-not-registered shows `VFWNOTREGISTERED`; other errors remain
 silent. Shared receiver selection stays live across callbacks.
 
-#### Defeat and successful arrival
+##### Defeat and successful arrival
 
 Both construct outer, palette, video, resource module, font and background, then
 actor 0. Their wrappers allocate/publish the object and return on null. Destroy
@@ -1678,7 +1791,7 @@ live font height. Reveal rectangle with top12/bottom=y using4/5 and close file.
 It does not wait or clear modal. Stopping drawing here does not mean stopping
 audio/playback scheduling.
 
-#### Another civilization arrives first
+##### Another civilization arrives first
 
 Negative spaceship-ending input uses this branch. Construct inner surface,
 module, outer, palette, background and font; retain the wrapped absolute actor.
@@ -1695,7 +1808,7 @@ file and wait 360, as above. Release, hide inner/flush, restore outer initialize
 palette, hide outer/flush, close module. Destroy font, background, palette,
 outer, module and inner. There is no AVI movie or post-page modal loop here.
 
-#### Conquered civilizations
+##### Conquered civilizations
 
 Construct outer, palette, inner, port, module, moving figure, portrait and font;
 actor 0, publish singleton, figureTop0, portrait rectangle `(208,57,433,332)`,
@@ -1746,7 +1859,7 @@ restore outer initializer palette, hide outer/flush; destroy caption font.
 Normal wrapper destroys even after failed preparation: close module, clear
 singleton, destroy font, portrait, figure, module, port, inner, palette, outer.
 
-### Original §19. Conformance cases
+#### Original §19. Conformance cases
 
 Capture ordered file/device/codec calls, controlled media/animation choices,
 clock reads, media flags/queues, callbacks, pixel/palette changes and cleanup.
@@ -1783,7 +1896,7 @@ Useful cases include:
 These are acceptance requirements for future implementation fixtures. Appendix C
 separately records the finite checks actually performed for this specification.
 
-### Original audio/video state inventory
+#### Original audio/video state inventory
 
 Logical audio state consists of a device, initialized flag, remembered window/
 byte budget/buffer count, output format, an active buffer ring, spare buffers,

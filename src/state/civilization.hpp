@@ -17,12 +17,18 @@ struct CivilizationNames {
     std::array<FixedText<24>, 7> titles;
     bool operator==(const CivilizationNames&) const = default;
 };
+struct NameReference {
+    std::uint32_t id = 0;
+    bool custom = false;
+    bool operator==(const NameReference&) const = default;
+};
 struct Leader {
     std::int8_t attack = 0, expand = 0, civilize = 0;
     std::uint8_t times_used = 0, female = 0, city_name_index = 0;
-    std::int16_t color = 0, city_style = 0, leader_name = 0, plural = 0, adjective = 0;
-    std::array<std::int16_t, 2> names{};
-    std::array<std::array<std::int16_t, 2>, 7> titles{};
+    std::int16_t color = 0, city_style = 0;
+    NameReference leader_name, plural, adjective;
+    std::array<NameReference, 2> names{};
+    std::array<std::array<NameReference, 2>, 7> titles{};
     bool operator==(const Leader&) const = default;
 };
 struct Civilization {

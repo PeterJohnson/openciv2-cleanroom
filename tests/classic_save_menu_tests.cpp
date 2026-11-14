@@ -49,7 +49,7 @@ struct Fixture {
         for (std::size_t i = 0; i < 6; ++i)
             process.rules->names.difficulties[i] =
                 process.rules->text.store("Difficulty" + std::to_string(i));
-        const auto text_id = static_cast<std::int16_t>(process.rules->text.store("Default"));
+        const auto text_id = state::NameReference{process.rules->text.store("Default"), false};
         for (auto& leader : process.rules->leaders)
             leader.adjective = leader.plural = leader.leader_name = text_id;
         files.text = {"old-working", "search", "home"};

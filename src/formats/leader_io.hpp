@@ -9,9 +9,13 @@ namespace openciv::formats {
 struct LeaderScratchRecord {
     std::array<Byte, leader_record_size> bytes{};
     std::size_t backed = 0;
-    state::Leader value() const;
-    void assign(const state::Leader& leader);
+    StoredLeader value() const;
+    void assign(const StoredLeader& leader);
 };
+// F06 live export: canonical signed markers, independent of runtime text IDs.
+// Imported byte-for-byte records use encode_leader directly instead.
+StoredLeader stored_leader(const state::Leader& leader);
+
 struct LeaderLoadScratch {
     std::array<LeaderScratchRecord, 21> by_tribe;
 };
@@ -37,7 +41,7 @@ void restore_leader_names(bool scenario, state::GlobalValues& globals,
                           std::span<state::Civilization> civilizations,
                           std::span<const state::CivilizationNames> names, state::RuleState& rules,
                           const LeaderLoadScratch& scratch);
-// F06 section 5 stage 5: copy nonnegative rule labels for scenario export or an
+// F06 section 5 stage 5: copy noncustom rule names for scenario export or an
 // active scenario, adjective/plural/leader in order. Preserve bytes after NUL.
 // A field that cannot fit stops before its write; prior fields remain updated.
 void prepare_scenario_names(bool scenario_export, const state::GlobalValues& globals,

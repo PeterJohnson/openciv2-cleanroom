@@ -1,60 +1,118 @@
 # P09: Council and throne room
 
-**Required profile:** [X01 fresh-game isolation and bug repairs](X01-classic-compatibility-contract.md#fresh-game-isolation-and-supported-bug-repairs)
-and [behaviorally significant ordering](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-override conflicting procedures and examples below. Retention applies within a
-game or to explicit imported inputs, not across new games. Confirmed original-bug
-stack/backing/stop cases are optional diagnostics; use documented safe repairs.
-Only real effects and callbacks impose ordering; test adapters cannot invent them.
-Unspecified safe continuations remain explicit gaps, not required arbitrary bytes.
+## Production contract scope
 
-Target: classic Civilization II Multiplayer Gold Edition 5.4.0f, patch 3.
+Apply [X01's three compatibility surfaces](X01-classic-compatibility-contract.md#production-contract-and-comparison-surfaces) to this owner.
+The distinction is the consumer of an observation, not whether a detail appeared
+in the original executable or a historical test.
 
-This document specifies the five council opinion selectors, chapter grammar,
-presentation sequencing and throne-room qualification, composition and choices.
-[F01](F01-determinism-and-arithmetic.md) owns arithmetic/RNG;
-[F03](F03-rules-and-configuration.md) owns text/rule ingestion;
-[V03](V03-research-and-technology.md), [V04](V04-diplomacy-and-treaties.md),
-[C03](C03-city-economy-and-corruption.md), [C08](C08-buildings-and-wonders.md),
-[A01](A01-ai-strategy-and-assessment.md) and
-[V08](V08-scoring-victory-and-retirement.md) supply knowledge, treaties, city
-calculation, buildings, power ranking and score. P09 preserves the ordered calls
-and their side effects. [P03](P03-graphics-and-asset-processing.md),
-[P04](P04-text-and-dialogs.md) and [P05](P05-input-and-command-dispatch.md) own
-shared graphics/text/widget/input services; [P10](P10-audio-video-and-animation.md) owns the media operations invoked
-here. The council's era selection uses the advance-variant query owned by
-[P06](P06-city-interface.md).
+| Surface | Binding scope in P09 |
+| --- | --- |
+| Gameplay | Persistent throne progress and accepted upgrades; truthful advice using supported authored conditions. |
+| Original files/content | Council chapter grammar/conditions/captions and throne text, assets and F06 progression fields. |
+| Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
+| Executable comparison only | Council/throne staging, click geometry, modal phases and uninitialized selectors. |
 
-Random choices and supplied-draw fixtures use F01’s sampling laws. Counts refer
-to semantic choices, not raw generator calls; unused original samples are
-optional. Gameplay-dependent ordering and callbacks remain required; purely
-cosmetic randomness and native traces follow the presentation policy.
+The explicit presentation contract below selects the required definitions;
+its detailed original procedures remain reference. The table above adds no
+requirement to reproduce an original UI or private runtime representation.
 
-**Equivalence conventions:** [F01's numeric rule](F01-determinism-and-arithmetic.md#behavioral-equivalence-and-logical-ranges)
-and [X01's ordering rule](X01-classic-compatibility-contract.md#behaviorally-significant-ordering)
-apply. Widths and written sequences define reference evaluation, not mandatory
-internal types or scheduling. Equivalent evaluation may omit redundant conversions
-and reorder independent work; preserve significant arithmetic, dependencies,
-state publications and failure effects. Without an equivalence argument, use
-the reference order. External file/wire encodings remain exact.
+## Required presentation contract
 
-## Required contract and reading guide
+The product target is the same game, with a broadly familiar Civilization II
+feel and support for original configuration and scenario content. It is **not
+an exact recreation of the original interface**. Apply [X01's presentation
+policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-Council opinion selectors/priorities and their city/trade/query effects,
-meaningful advice, supported authored captions/media, throne qualification and
-persistent piece/upgrade choices.
+The requirements are the semantic obligations and external-data definitions
+explicitly adopted below. All numbered sections and appendices under
+[Original behavior reference](#original-behavior-reference) describe the old
+interface. Their imperative wording, including historical “required” and
+“conformance” lists, does not make their UI procedures mandatory. An adopted
+formula or file definition does not adopt the surrounding prompt, callback,
+storage, drawing or navigation algorithm.
 
-The numbered main sections specify required behavior under
-[X01](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
-Original rendering, geometry, widgets, cosmetic media and native traces are in
-[Appendix D](#appendix-d-original-presentation-reference); they are optional reference material.
-Main-section numbers are retained for stable citations. Required calculations
-that happen inside a presentation operation remain in the main text, including
-state mutations, visibility/choice rules and file/protocol effects. Native event
-traces do not replace semantic operation boundaries. Harmless UI failures and
-rejected off-nominal inputs follow X01's declared safe policies.
+Design screens, navigation, controls, prompts, formatting and rendering freely.
+No equivalence proof against the original UI state machine is needed. Preserve
+game rules, meaningful information, privacy, available game decisions, target
+identity, accepted game/file/network effects and actual protocol deadlines.
+Local draft edits are not committed game commands. Cancellation may discard
+them; it cannot undo an already accepted game operation unless its owner permits
+that. Keep source option identities separate from their displayed order.
 
-## 1. State and input contract
+Original allocation sizes, pool ordinals, shared scratch buffers, control IDs,
+modal flags, retained UI state and native event traces are comparison details.
+Production code must not emulate them merely to satisfy a historical snapshot.
+Optional original-comparison tools/tests remain outside production dependencies.
+File/wire/resource encodings are translated by production adapters, with safe
+storage and documented diagnostics for unsupported or invalid input.
+
+## Council and throne obligations
+
+Offer recognizable advice and throne/progress feedback with supported authored
+content. Exact council staging, opinion ordering, speaker panels, chapter
+playback, clicks, Continue pages and throne composition are reference choices.
+The council's §2 opinion predicates provide classic advice meaning when used
+with authored opinion-keyed content; they are not AI turn-planning algorithms.
+New stock explanatory prose and organization are permitted. Advice or painting
+must not initiate unrelated gameplay work.
+
+Throne progression is persistent game state. Adopt §7's initial levels (owned
+by V01), eligibility, threshold formula, one increment per check and upgrade-count
+publication, including progress when the visual preference is disabled. Keep
+the game's available piece/overlay upgrades and accepted mutation from §§9–11,
+identified by piece/overlay rather than screen location. The reference's paired
+overlay click fallback is a coordinate mapping, not an extra semantic action.
+
+An accepted eligible upgrade increments the chosen piece or sets the chosen
+overlay ownership bit exactly once. Viewing has no upgrade effect. Cancellation
+or interruption before a valid selection commits no upgrade; never consume an
+uninitialized or rejected-click selector. After a committed selection, closing
+or failing to render its presentation does not undo it. Revalidate actor/target
+and service required network work while pending. No phase0/phase1 flags, captured
+window lifetime, plaque hit rectangles or original modal loop are required.
+
+## Original-file input contract
+
+- F03/P04 text lookup, category/advice keys and substitutions remain required.
+  Reference §4 defines classic council chapter token meanings, opinion/seen
+  predicates, conditional/random continuations, frame ranges and captions.
+  Decode these into authored content; do not mirror the shared parser object.
+  The three-chapter source interpretation and same-line continuation semantics
+  remain binding for original files. Panel capture coordinates and media seeking
+  are optional playback recipes. Native council JSON expresses the same content
+  through [named conditions](../content/data-format.md#65-conditional-council-content).
+- §10's THRONE/ADDTOTHRONE resource text and terminator/concatenation rules are
+  input definitions. Separate Continue screens, selection timing and the
+  original uninitialized-selection path are not required.
+- P03 owns source asset identities, palettes and extraction; F06 owns throne
+  field encoding. Geometry in §12 is screen composition, not saved progression.
+
+## Required verification
+
+Test the adopted content definitions and semantic operations, including custom
+content, observer restrictions, changed/deleted targets, accept/cancel, real
+timeouts and remote responses where applicable. Verify that different layouts,
+navigation paths, pagination, repaint counts and skipped cosmetics leave the
+same accepted commands and gameplay outcomes. Compare resolved values and
+identities, not UI buffers or callback traces. Qualitative play review checks
+the familiar map/city/turn/advisor feel; pixel or original-navigation matching
+is not an acceptance gate. Historical checks below are reference evidence,
+not evidence that the new UI or a documented bug repair has been validated.
+
+## Original behavior reference
+
+The following record retains stable section anchors for research and existing
+citations. Only the specific semantic rules and data definitions adopted above
+are normative. Everything else is optional reference, including exact
+user-facing sequences. Historical source links and harnesses remain provenance,
+not implementation or test inputs. A missing UI design detail is a design
+choice, not a specification gap; a missing game rule or external format is a gap.
+
+### 1. State and input contract
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Nominal inputs are backed civilizations/cities/units/rules, initialized media
 and presentation providers, fitting strings and valid chapter/resource files.
@@ -85,7 +143,10 @@ branches; they are not a numerical happiness rating. Opening the council can
 recalculate trade/cities, clear a shared refresh request and consume RNG during
 chapter parsing, so it is not a pure read-only observation of simulation state.
 
-## 2. Opinion selection
+### 2. Opinion selection
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 The dispatcher snapshots the active council's variant before category dispatch
 when a council exists. Category 0 invokes military,1 science,2 economic,3 foreign,
@@ -93,7 +154,7 @@ and every other category domestic. Military/domestic do not consume the variant.
 Without an active council, science/economic/foreign require the original retained
 variant input or stop; no universal zero is established.
 
-### Military
+#### Military
 
 Scan cities in increasing ID below the live total. For existing cities whose
 signed owner equals actor, count Barracks, remember the **last** Palace city,
@@ -122,7 +183,7 @@ whose naval/land capability strictly exceeds actor's. Evaluate in this order:
 Civilization 0 has zero capability entries because population
 starts at 1; arbitrary outside indices still require established read input.
 
-### Science
+#### Science
 
 Count peers 1..7 except actor whose unsigned stored number of advances≥actor's
 fresh stored count. Inactive peers participate and equality counts. If none,
@@ -137,7 +198,7 @@ capacity. If actor knows the building's signed prerequisite and
 `trunc(cities/4)>capacity`, return 4. Finally return 5 when counted peers<
 `trunc(popcount(activeTribes)/2)`, otherwise 1.
 
-### Economic
+#### Economic
 
 Initialize taxes/upkeep/chosen-building count/city count 0 and trade capacity
 from active unit counts 48+49. Select `(advance,building,divisor)` by variant:
@@ -164,7 +225,7 @@ cost is nonzero, add count*cost to upkeep with wrap. Return the first match:
 | wrapped taxes−upkeep<6 | 6 |
 | Otherwise | 7 |
 
-### Foreign
+#### Foreign
 
 Scan peers 1..7 except actor. Separately count actor→peer Contact, Alliance and
 War, in that order. For intelligence count, use the **live local human**, not
@@ -185,7 +246,7 @@ Evaluate in order:
    count →5.
 8. War count==Contact count →6; otherwise 7.
 
-### Domestic
+#### Domestic
 
 Capture the shared “recalculate city moods for the attitude display” request and clear it before
 any city or callback; it is never restored here. Scan existing actor cities.
@@ -206,7 +267,10 @@ scienceRate+taxRate==10. Then:
 - Unhappy cities and false spendLuxury→2.
 - Otherwise, disorder count nonzero and live government==6→1; else 3.
 
-## 3. Council construction and initialization
+### 3. Council construction and initialization
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Create a council interaction with anarchy0 and publish it as active. Native
 construction order, caption offsets and uninitialized presentation-only callback
@@ -248,7 +312,10 @@ class-not-registered status. On success assign the application art palette to
 video and its presentation, install Finished callback, capture panels and
 return 1. Panel capture's early return does not turn this success into failure.
 
-## 4. Council chapter grammar
+### 4. Council chapter grammar
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 [Native council content](../content/data-format.md#65-conditional-council-content)
 represents these choices as named opinions and explicit response/chance
@@ -304,7 +371,10 @@ integer, seek that frame, copy it to parent at
 `(S+1+(S+90)*category,R+1)`, then close the rule file. In anarchy seek frame 1 and
 copy to `(S+2,R+2)`. Destroy temporary sprite then port at ordinary completion.
 
-## 5. Council playback, captions and input
+### 5. Council playback, captions and input
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Allow the player to choose an available council category and receive its selected
 opinion, authored chapter/caption content and supported media. Anarchy disables
@@ -315,7 +385,10 @@ frame timing are optional.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 6. Council geometry and controls
+### 6. Council geometry and controls
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Council window geometry, fonts, button placement and native controls may differ.
 Preserve category availability and selected advice/content from §§2–5, plus
@@ -323,7 +396,10 @@ required completion and network processing.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 7. Throne-room progress and admission
+### 7. Throne-room progress and admission
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 V01 initializes piece levels `[1,1,0,1,0,0,1,0,0,0]` and upgrade count 0.
 The first eight values are piece levels; entry 8 is seven overlay ownership
@@ -354,7 +430,10 @@ piece 7 in this admission test. If available, run the upgrade interaction;
 otherwise only destroy the receiver. View wrapper constructs, views and destroys
 without this admission test or any upgrade mutation.
 
-## 8. Throne construction, windows and viewing
+### 8. Throne construction, windows and viewing
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Retain actor and publish the active countdown interaction while it is open;
 clear that publication on normal close. Set all-complete1 and scan all eight
@@ -365,7 +444,10 @@ resolve completion/cleanup without depending on original window geometry.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 9. Throne image composition and selection art
+### 9. Throne image composition and selection art
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Display persistent piece/overlay state and supported authored content. The
 all-complete result captured by §8 gates overlay presentation and is not recomputed
@@ -376,7 +458,10 @@ rectangles and native image lifetimes are optional.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 10. Upgrade interaction and persistent mutation
+### 10. Upgrade interaction and persistent mutation
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Begin an upgrade interaction for the current actor and captured all-complete
 state. Preserve the following authored content, selection and mutation boundary;
@@ -416,7 +501,10 @@ Present the upgraded result, then allow semantic Continue with phase0 and the
 same required network service. Finish the interaction. Failure of final art or
 presentation does not roll back the committed upgrade.
 
-## 11. Throne click and key rules
+### 11. Throne click and key rules
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Resolve an action to Continue or a piece/overlay group in the published room
 for its current actor. In phase0, Continue completes that stage without selecting
@@ -440,7 +528,10 @@ piece/overlay and invoke Continue. Its semantic result must pass the rules above
 completion without an established selection cannot invent piece0 or apply a new
 cancellation rollback. Exact physical key bindings are reference details.
 
-## 12. Throne geometry tables
+### 12. Throne geometry tables
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Piece/overlay identity and persisted levels come from §§7–11. Original
 composition, choice-image and hit-region rectangles are optional reference data; a
@@ -448,7 +539,10 @@ new interface must map each offered choice to the same piece/overlay identity.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## 13. Conformance cases and input profiles
+### 13. Conformance cases and input profiles
+
+> Original behavior reference. Only the definitions adopted in the
+> [required contract](#required-presentation-contract) are binding.
 
 Validate all five opinion selectors with their real query side effects, custom
 chapter/caption interpretation, anarchy/cheat choices and network completion.
@@ -459,7 +553,7 @@ frame sequencing and native lifetime traces are optional reference validation.
 
 Original presentation procedures: [Appendix D](#appendix-d-original-presentation-reference).
 
-## Appendix A. Evidence and original entry map
+### Appendix A. Evidence and original entry map
 
 > **Validation/provenance only.** Source links, filenames and historical harnesses
 > in this section are not implementation inputs. Implement from the behavioral
@@ -508,13 +602,13 @@ original bytes resolve these inferred-name mismatches; §2 uses logical meanings
 The source's exit-named preparation service stops MCI and sets a shared latch;
 calling it here does not by itself mean the council asks the game to terminate.
 
-## Appendix B. Representation adapters and excluded bugs
+### Appendix B. Representation adapters and excluded bugs
 
 Addresses, allocation sizes, packed fields and native IDs below aid original
 trace comparison. A cleanroom implementation can use different representations.
 F01 conversions in the main algorithm remain behavioral regardless of storage.
 
-### State mapping
+#### State mapping
 
 Council receiver's accessed extent is `0x1328`: video at `114`, prompt `b3c`,
 resource owner `e30`, media stem 32 bytes at `e34`, variant `e54`, five advice words
@@ -561,7 +655,7 @@ prompt `4000`, click/key tokens`004034bd/00401fe6`; network idle is `00403585`.
 The media-open error singled out is `80040154` (class not registered). These
 values map named behavior to the original platform, not a required host toolkit.
 
-### Bugs and reconstruction policies
+#### Bugs and reconstruction policies
 
 | Boundary | Classification and permitted treatment |
 | --- | --- |
@@ -577,7 +671,7 @@ values map named behavior to the original platform, not a required host toolkit.
 | Prompt retains temporary caption-font pointer | Later unknown use needs established input or a stop. The destroyed object is not a persistent valid font just because its address remains mapped |
 | Oversized image level/geometry selector | No clamp established. Backed diagnostic reads or rejection/stop; no overflow into adjacent storage |
 
-## Appendix C. Validation record
+### Appendix C. Validation record
 
 Seventeen pinned independent files and four primary files were checked, with
 hashes recorded for seven original executable/text/resource assets.
@@ -612,7 +706,7 @@ restoration, hit delivery, sounds, timer interruption and complete cross-owner
 execution were not established by these checks. X02 distinguishes required
 semantic integration from optional native presentation comparisons.
 
-## Appendix D. Original presentation reference
+### Appendix D. Original presentation reference
 
 This appendix retains the original presentation procedures removed from the main
 specification. Geometry, pixel/sample output, native controls and cosmetic timing
@@ -623,7 +717,7 @@ Original section numbers and local § references identify the recovered procedur
 family, whether its retained fragment is in the main section or here. Historical
 native/pixel tests are reference validation, not baseline acceptance criteria.
 
-### Original §5. Council playback, captions and input
+#### Original §5. Council playback, captions and input
 
 Run selects the application art palette, fades game to gray, assigns that
 palette to main and centers the council window. Show button members 1,2,4,3,0,5
@@ -660,7 +754,7 @@ start range and increment live current chapter. There is no independent
 current chapter≥0 guard here; its indexed read needs backing if negative.
 Flush paint and clear busy 0 whether or not another chapter was started.
 
-#### Caption accumulation
+##### Caption accumulation
 
 Construct a temporary face 0 height 14 font before reading current chapter. If
 current chapter<0 or≥3, destroy font and return. For mode!=1, fill advice area
@@ -679,7 +773,7 @@ its published font reference after temporary destruction; a different object
 representation must not invent continued valid font contents at a later unknown
 read. Current chapter changes after the entry bounds check are not rechecked.
 
-### Original §6. Council geometry and controls
+#### Original §6. Council geometry and controls
 
 Shared spacing defaults are R=24, S=8, B=2 before display-metric replacements;
 read live values at the stated operations. Frame colors default to37 and18,
@@ -719,7 +813,7 @@ x=trunc((width−textWidth)/2), y=live B+1. Draw normal application font at
 x+1,y+1 color 10, then x,y color 26, both in text mode5. Label and adjective
 calls remain live.
 
-### Original §8. Throne construction, windows and viewing
+#### Original §8. Throne construction, windows and viewing
 
 Construct event window, palette, resource owner, update surface, backing port,
 interaction regions, prompt and font in that order. The region constructor
@@ -755,7 +849,7 @@ using the room font and rectangle-string mode 0, color 0. Offset the live rectan
 by−1,−1 and draw color 255, then offset back 1,1. This differs from the message
 shadow used in the upgrade sequence.
 
-### Original §9. Throne image composition and selection art
+#### Original §9. Throne image composition and selection art
 
 Composition constructs temporary image surface then sprite. It does not first
 clear the destination or load selection background 100. For each admitted part,
@@ -799,7 +893,7 @@ color 7→9. A failed choice load stops after earlier effects. Destroy temporari
 and return 1 on completion. All hit regions exist even for choices not drawn;
 input validation remains necessary.
 
-### Original §12. Throne geometry tables
+#### Original §12. Throne geometry tables
 
 All tuples below are `(x,y,width,height)` in the 640×480 source coordinate
 system. They are visual/interaction constants, independent of memory layout.
@@ -807,7 +901,7 @@ Drawing uses the extraction rectangle as stated in §9 and destination
 `(x−1,y−1)`. A hit rectangle becomes the half-open region
 `[x,x+width) × [y,y+height)`; do not apply the image destination's −1 here.
 
-#### Finished piece and overlay geometry
+##### Finished piece and overlay geometry
 
 | Piece | Level 1 | Level 2 | Level 3 | Level 4 |
 | --- | --- | --- | --- | --- |
@@ -830,7 +924,7 @@ Drawing uses the extraction rectangle as stated in §9 and destination
 | 5 | `(32,273,576,65)` | 165 |
 | 6 | `(1,139,640,342)` | 166 |
 
-#### Choice images
+##### Choice images
 
 Rows 0..7 are the eight piece choices; rows 8..14 are overlay choices 0..6.
 
@@ -852,7 +946,7 @@ Rows 0..7 are the eight piece choices; rows 8..14 are overlay choices 0..6.
 | 13 | `(72,293,456,39)` | 183 |
 | 14 | `(22,366,585,71)` | 184 |
 
-#### Interaction regions
+##### Interaction regions
 
 Install in ascending row order and stop at the first hit. Group 0..7 selects a
 piece. Group 10..16 selects overlay 0..6 before §11's fallback and ownership
@@ -897,14 +991,14 @@ that raw choice to overlay 4.
 | 32 | `(19,291,592,189)` | 1 |
 | 33 | `(212,1,179,295)` | 0 |
 
-### Original throne-upgrade scene preparation
+#### Original throne-upgrade scene preparation
 
 Create windows and compose current images; return on either failure. Allocate
 640×480 backing port and copy the whole current scene into it. Construct temporary
 message font face 1 height 24. The following operations retain earlier scene,
 resource and input effects on failure.
 
-### Original §13. Conformance cases and input profiles
+#### Original §13. Conformance cases and input profiles
 
 Compare ordered calls, mutations, random draws, selected records and retained
 prefixes, as well as final return values. Normal media availability and a
@@ -958,7 +1052,7 @@ safe stop/loop budget is allowed instead of a fabricated numeric result. Every
 out-of-bounds overwrite is excluded in either profile, even if its destination
 happens to be mapped or is another field of the same original object.
 
-### Original council object construction
+#### Original council object construction
 
 Construct base window, video, prompt with P04's council options, resource owner,
 then six buttons in member order. Set caption offset 176 and anarchy 0; publish
@@ -968,7 +1062,7 @@ is a repair; unknown consumed inputs follow §1. Destruction clears the active
 reference first, then destroys buttons 5..0, resource owner, prompt, video and
 base window in reverse construction order.
 
-### Original council initialization layout
+#### Original council initialization layout
 
 Initialization stores actor and queries P06's advance variant for that actor.
 Let R be shared application row height, S spacing and B border width. Create
@@ -977,7 +1071,7 @@ application art palette. Set caption height R, publish prompt-button font,
 set up controls, draw background and update. Calculate five advice values in
 category order 0..4, re-reading receiver actor before every child.
 
-### Original throne upgrade staging
+#### Original throne upgrade staging
 
 not an invented section terminator. Draw message in rectangle
 `(100,120,540,450)` color 0, mode 0; offset 2,2 and draw color 255. Close the stream
@@ -996,7 +1090,7 @@ handling and release. Play effect 13 `(1,0,0)`; restore backed-up scene to child
 pump messages, reveal `(8,3)`, present and flush. **Only now mutate persistent
 state**, using the current actor and selection:
 
-### Original throne post-commit staging
+#### Original throne post-commit staging
 
 Compose images again. On success play effect 13, reveal `(4,1)`, draw Continue,
 present, set phase 0, capture and run a third modal loop (same idle handling),
@@ -1004,7 +1098,7 @@ release capture, hide child and flush. Whether or not this final composition
 succeeds, restore outer initializer palette, hide outer, flush and destroy
 message font. The upgrade mutation remains if final image loading fails.
 
-### Original throne hit testing
+#### Original throne hit testing
 
 Click captures the published room and actor. Phase 0 clears child modal loop and
 returns without hit testing. In other phases query P06's interaction regions,
@@ -1013,7 +1107,7 @@ installation order, with left/top included and right/bottom excluded. A miss set
 rejection effect 94
 `(1,0,0)` and returns. A hit leaves its selected group published even if rejected.
 
-### Original throne key bindings
+#### Original throne key bindings
 
 Key input in phase 0 clears loop only for signed internal key codes 208..210.
 Other keys do nothing. In selection phase every key plays rejection effect 94;

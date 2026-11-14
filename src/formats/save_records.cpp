@@ -90,10 +90,10 @@ state::CivilizationNames decode_civilization_names(std::span<const Byte> bytes) 
 Bytes encode_civilization_names(const state::CivilizationNames& v) {
     return encode(v, civilization_names_size);
 }
-state::Leader decode_leader(std::span<const Byte> bytes) {
-    return decode<state::Leader>(bytes, leader_record_size);
+StoredLeader decode_leader(std::span<const Byte> bytes) {
+    return decode<StoredLeader>(bytes, leader_record_size);
 }
-Bytes encode_leader(const state::Leader& v) {
+Bytes encode_leader(const StoredLeader& v) {
     return encode(v, leader_record_size);
 }
 SavedLayout decode_layout(std::span<const Byte> bytes) {

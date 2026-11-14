@@ -125,7 +125,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("titles", v.titles);
 }
 template <class Visitor, class Record>
-    requires std::same_as<std::remove_cv_t<Record>, state::Leader>
+    requires std::same_as<std::remove_cv_t<Record>, StoredLeader>
 void visit_fields(Visitor& visit, Record& v) {
     visit("attack", v.attack);
     visit("expand", v.expand);
