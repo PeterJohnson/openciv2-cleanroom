@@ -124,10 +124,10 @@ def main():
         "assumedSequence": "ordinal 0 <nil>; nonempty LABELS; three POPUPS; F03 ordered tables",
         "comparisons": comparisons, "status": "matched" if passed else "mismatched",
         "limitations": [
-            "Saved sign markers are compared by magnitude, not normalized into a new save.",
+            "The Python comparison checks saved sign markers by magnitude; it does not normalize or write a save.",
             "The earlier original capture pinned RULES and the save, but not LABELS; current retained LABELS bytes are pinned here.",
             "This corroborates these 18 bindings and the zero-based ordinal sequence; it is not a new startup trace or complete pool/peer conformance.",
-            ("The optional C++ comparison runs P04 label rebuild and F03 rules on supplied files; it does not run GAME-cache construction, F06 sign transformations or session loading."
+            ("The optional C++ comparison runs P04 label rebuild, F03 rules and, for matching ordinary single-player inputs, F06 name-sign restoration; it does not run GAME-cache construction or complete session loading."
              if implementation else "The C++ RuleLoader is not executed by this observation helper.")]}
     if implementation:
         report["implementation"] = implementation

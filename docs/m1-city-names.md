@@ -99,6 +99,7 @@ The explicit resolver overload remains available for supplied backing/services.
 The native rule installer also supplies these live bindings; an all-native test
 loads rules/names, selects names through the pool, and preserves the advancing
 cursor across both leader-preserving and leader-replacing rule reloads.
-Application startup/GAME-cache construction, F06 sign-marker processing,
-session/city-creation integration, conversion receipts and broader original-game
-comparisons remain required.
+F06's [name-sign restoration](m1-stored-saves.md#ordered-leader-and-name-operations)
+now operates on the same live leader bindings. Application startup/GAME-cache
+construction, session/city-creation integration, conversion receipts and broader
+original-game comparisons remain required.

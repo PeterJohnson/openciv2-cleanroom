@@ -2,7 +2,8 @@
 
 M1 remains in progress. This slice adds the complete **stored-file view for
 version `0x2c`** and its lossless re-encoding. It does not implement F06's ordered
-session load, live save operation, rule restoration or resumed gameplay.
+session load, live save operation or resumed gameplay. Separate ordered leader
+I/O and name-restoration operations are now implemented below.
 
 ## Record and file boundary
 
@@ -59,6 +60,54 @@ count and overlong-string behavior is not implemented by this stored-view API.
 Malformed input throws `DecodeError` with a file-wide byte offset and leaves
 input and live state unchanged. Successful structural decoding is not semantic
 validation; rules and cross-record consistency still need their own checks.
+
+## Ordered leader and name operations
+
+`formats/leader_io.hpp` supplies F06 §6 stage 8 and the name phases of §§5–6.
+These are callable stages over already established world/rule state, not a
+transactional publication of a decoded save or a complete session loader.
+
+- `read_leader_items` reads each of the 21 triplets as three individual bytes,
+  cursor x/y as separate words, then one selected Leader item per player. Only
+  the triplet fields update live rule leaders. Saved records populate scratch
+  indexed by tribe; the last repeated tribe record wins. Scratch records track
+  their established byte prefix so a first short read cannot fabricate a known
+  zero remainder. Partial reads retain transferred bytes and prior state.
+- `write_leader_items` reads live triplet/cursor/leader values at each item
+  boundary. Both paths select one player in mode zero, otherwise human bits
+  0…7 in ascending order, including repeated tribes and an empty mask. Temporary
+  `player_civ` changes restore on ordinary failure and safe stops. Item services
+  may change later fields or the live mask; a selected read destination remains
+  the tribe captured before that item call.
+- `restore_leader_names` normalizes all 21 leaders, then runs the caller-selected
+  ordinary or scenario branch. Ordinary loading uses saved negative fields as
+  sign markers, not replacement rule data. Negation reduces to signed 16 bits,
+  keeps −32768 unchanged, and can toggle shared tribes repeatedly. Scenario
+  loading sets gender/portrait, compares plural bytes case-sensitively and resets
+  all title pairs only on equality. It then negates the three name labels, without
+  reselecting the leader name after changing gender or applying saved title signs.
+- `prepare_scenario_names` updates adjective, plural and leader override fields
+  in that order for scenario export or an active scenario. Nonnegative labels
+  copy through NUL, preserving tail bytes; negative labels retain custom text.
+  The declared safe boundary rejects an unbacked label or a string that cannot
+  fit its 24-byte field before writing that field, preserving earlier effects.
+  This is a safe stop, not a newly invented ordinary save-failure status.
+
+Ten authored native/WASM cases exercise item order, every truncated prefix of a
+two-player stream, repeated tribes, callbacks, selector restoration, signed
+boundaries, scenario equality/gender ordering, missing backing and fixed-text
+tails. They are specification/regression evidence, not X02 fixtures or original
+I/O traces. A [retained original-data check](conformance/reports/original-rule-labels-windows.json)
+also loads the pinned LABELS/RULES inputs, supplies the saved triplets/sign scratch
+and applies the ordinary name phase. The resulting complete 48-byte English
+leader record matches the original save exactly. This extends the earlier 18
+label-magnitude comparison; it does not execute the original again or run the
+remaining ordered load stages. The report retains the earlier LABELS-provenance
+limitation and pins the comparison executable and input bytes.
+
+Full path/rule reload orchestration, earlier/later stream blocks, passwords,
+events, census/reload/layout completion, mode adaptation and live-session
+admission remain open. No loaded-world claim follows from these isolated stages.
 
 ## Windows evidence — 2026-11-13 Pacific
 

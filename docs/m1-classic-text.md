@@ -153,8 +153,7 @@ The process overloads of city preferences and C01 naming use current pool bindin
 
 The live leader records pass through the existing 48-byte F06 codec without a
 second representation. Full application startup, GAME-cache construction, S04
-editing, F06 sign-marker processing and complete
-session reload orchestration remain open. Supplying an initialized pool alone
+editing and complete session reload orchestration remain open. Supplying an initialized pool alone
 does not claim original startup ordinal equality; the preceding labels and
 allocation sequence must also match.
 
@@ -164,8 +163,11 @@ the sequence `<nil>`, 888 labels, three popup strings and the ordered rule table
 The independently authored helper pins the input bytes and decoder. Its optional
 `oc2_rule_labels` driver now executes the C++ P04 rebuild and F03 rule loader:
 892 pre-rule strings and all 18 resulting bindings match the retained save by
-magnitude. This is not a new original startup trace. The earlier original
-capture pinned the rules and save, but not LABELS; the report identifies that limit.
+magnitude. The separate [F06 name phase](m1-stored-saves.md#ordered-leader-and-name-operations)
+now also reconstructs the complete saved leader record from the loaded rule row,
+saved triplets and saved sign markers. This is not a new original startup trace.
+The earlier original capture pinned the rules and save, but not LABELS; the report
+identifies that limit.
 
 The native read-only driver is built with testing and tools enabled:
 
@@ -175,9 +177,12 @@ build/headless-fetch/oc2_rule_labels.exe LABELS.TXT RULES.TXT original.sav 12
 
 The last argument is the independently identified tribe slot for the save's one
 leader record. It reports source hashes and all comparisons as JSON; exit 0 means
-all magnitudes match, 1 means mismatch, and 2 means invalid input or load failure.
+all performed comparisons match, 1 means mismatch, and 2 means invalid input or
+load failure.
 The driver uses uncached supplied files and does not discover installations,
-transform saved sign markers, load a live session or write the input files.
+load a live session or write input files. For matching ordinary single-player
+inputs it separately reports the F06 name-phase comparison, including all record
+bytes; it does not execute the complete ordered I/O path.
 
 Reference failures retain the specified prefix and report the module, code, row,
 position and offending line. A returning diagnostic/cleanup callback is followed

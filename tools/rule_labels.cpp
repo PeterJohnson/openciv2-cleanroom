@@ -1,10 +1,12 @@
 // Independently authored read-only comparison driver. Loads supplied original
 // data through the portable P04/F03 implementation, then compares F06 labels.
-// No original execution, sign-marker transformation or session loading.
+// No original execution or full session loading. The ordinary name phase is
+// compared separately when the supplied single-player leader labels match.
 #include "base/hash.hpp"
 #include "formats/classic_labels.hpp"
 #include "formats/classic_rules.hpp"
 #include "formats/classic_save.hpp"
+#include "formats/leader_io.hpp"
 #include "platform/native_files.hpp"
 #include <charconv>
 #include <iostream>
@@ -83,6 +85,35 @@ int main(int argc, char** argv) {
             for (std::size_t sex = 0; sex < 2; ++sex)
                 compare("titles[" + std::to_string(g) + "][" + std::to_string(sex) + "]",
                         actual.titles[g][sex], expected.titles[g][sex]);
+        if (matched && saved.globals.multiplayer == 0 && !(saved.globals.game_flags & 0xc0U)) {
+            const auto player = saved.globals.player_civ;
+            if (player < 0 || static_cast<std::size_t>(player) >= saved.civilizations.size() ||
+                saved.civilizations[static_cast<std::size_t>(player)].tribe !=
+                    static_cast<std::int16_t>(tribe))
+                throw std::invalid_argument("Supplied tribe does not match the saved player");
+            for (std::size_t i = 0; i < rules->leaders.size(); ++i) {
+                rules->leaders[i].times_used = saved.tribes[i].times_used;
+                rules->leaders[i].city_name_index = saved.tribes[i].city_name_index;
+                rules->leaders[i].female = saved.tribes[i].female;
+            }
+            formats::LeaderLoadScratch scratch;
+            scratch.by_tribe[tribe].assign(expected);
+            auto globals = saved.globals;
+            auto civilizations = saved.civilizations;
+            formats::restore_leader_names(false, globals, civilizations, saved.names, *rules,
+                                          scratch);
+            const auto restored_bytes = formats::encode_leader(rules->leaders[tribe]);
+            const auto saved_bytes = formats::encode_leader(expected);
+            const bool equal = restored_bytes == saved_bytes;
+            report["ordinaryNamePhase"]["scope"] =
+                jt::Json("supplied triplets and saved sign scratch; F06 stages 14-15 only, not "
+                         "session load");
+            report["ordinaryNamePhase"]["restoredRecordHex"] =
+                jt::Json(base::hex_bytes(restored_bytes));
+            report["ordinaryNamePhase"]["savedRecordHex"] = jt::Json(base::hex_bytes(saved_bytes));
+            report["ordinaryNamePhase"]["recordBytesEqual"] = jt::Json(equal);
+            matched = matched && equal;
+        }
         report["status"] = jt::Json(matched ? "matched" : "mismatched");
         std::cout << report.toString() << '\n';
         return matched ? 0 : 1;
