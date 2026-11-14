@@ -102,11 +102,11 @@ TEST_CASE("Versioned random contexts replay and restore without presentation cou
     const auto entry = game.checkpoint();
     CHECK(entry.version == 2);
     CHECK(random_policy_id == "oc2-mt19937-64");
-    CHECK(entry.engine == std::mt19937_64(UINT64_C(0xba8342c79a147ecb)));
+    CHECK(entry.engine->same_state(*make_mt19937_source(UINT64_C(0xba8342c79a147ecb))));
     PresentationRandom presentation(0, "session/main");
     CosmeticRandom cosmetic(0, "session/main");
-    REQUIRE(entry.engine != presentation.checkpoint().engine);
-    REQUIRE(entry.engine != cosmetic.checkpoint().engine);
+    REQUIRE_FALSE(entry.engine->same_state(*presentation.checkpoint().engine));
+    REQUIRE_FALSE(entry.engine->same_state(*cosmetic.checkpoint().engine));
     for (int i = 0; i < 50; ++i) {
         presentation.secondary_range("P07.historian", 0, 4);
         cosmetic.primary_modulo("UI.stars", 7);
@@ -152,7 +152,7 @@ TEST_CASE("Random policy v2 code projections match the standard engine reference
     // C++ [rand.predef]: default mt19937_64's 10,000th output, not game evidence.
     // The policy's domain/context hash xor this seed yields the standard seed 5489.
     GameplayRandom game(UINT64_C(0xba8342c79a147ecb) ^ UINT64_C(5489), "session/main");
-    REQUIRE(game.checkpoint().engine == std::mt19937_64{});
+    REQUIRE(game.checkpoint().engine->same_state(*make_mt19937_source(5489)));
     for (int i = 0; i < 9999; ++i)
         game.secondary_code("F01.code");
     const auto saved = game.checkpoint();

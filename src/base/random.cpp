@@ -5,7 +5,32 @@
 #include <type_traits>
 #include <utility>
 
-namespace openciv::base::detail {
+namespace openciv::base {
+RandomCheckpoint::RandomCheckpoint(unsigned version, RandomDomain domain, std::string context,
+                                   std::unique_ptr<RandomSource> engine, std::uint64_t draws,
+                                   std::optional<ControlledChoices> controlled,
+                                   std::optional<ChoiceTrace> trace)
+    : version(version), domain(domain), context(std::move(context)), engine(std::move(engine)),
+      draws(draws), controlled(std::move(controlled)), trace(std::move(trace)) {}
+RandomCheckpoint::RandomCheckpoint(const RandomCheckpoint& other)
+    : RandomCheckpoint(other.version, other.domain, other.context,
+                       other.engine ? other.engine->clone() : nullptr, other.draws,
+                       other.controlled, other.trace) {}
+RandomCheckpoint& RandomCheckpoint::operator=(const RandomCheckpoint& other) {
+    if (this != &other) {
+        auto prepared = other;
+        *this = std::move(prepared);
+    }
+    return *this;
+}
+bool RandomCheckpoint::operator==(const RandomCheckpoint& other) const {
+    const bool same_engine =
+        engine && other.engine ? engine->same_state(*other.engine) : !engine && !other.engine;
+    return version == other.version && domain == other.domain && context == other.context &&
+           same_engine && draws == other.draws && controlled == other.controlled &&
+           trace == other.trace;
+}
+namespace detail {
 namespace {
 std::string_view label(RandomDomain domain) {
     switch (domain) {
@@ -33,11 +58,19 @@ std::uint64_t append(std::uint64_t hash, std::string_view text) {
 }
 } // namespace
 RandomState::RandomState(RandomDomain domain, std::uint64_t seed, std::string context)
-    : state_{random_policy_version, domain, std::move(context), std::mt19937_64{}, 0, {}, {}} {
+    : state_{random_policy_version, domain, std::move(context), nullptr, 0, {}, {}} {
     validate_name(state_.context);
     auto hash = append(UINT64_C(14695981039346656037), label(domain));
     hash *= UINT64_C(1099511628211); // Domain/context separator: one zero byte.
-    state_.engine.seed(seed ^ append(hash, state_.context));
+    state_.engine = make_mt19937_source(seed ^ append(hash, state_.context));
+}
+RandomState::RandomState(RandomDomain domain, std::unique_ptr<RandomSource> source,
+                         std::string context)
+    : state_{random_policy_version, domain, std::move(context), std::move(source), 0, {}, {}} {
+    label(domain);
+    validate_name(state_.context);
+    if (!state_.engine || state_.engine->id().empty())
+        throw std::invalid_argument("Random source requires an owned implementation and identity");
 }
 RandomState::RandomState(RandomDomain domain, ControlledChoices choices, std::string context)
     : RandomState(domain, 0, std::move(context)) {
@@ -52,8 +85,9 @@ std::uint64_t RandomState::next(std::string_view site) {
     validate_name(site);
     if (state_.draws == std::numeric_limits<std::uint64_t>::max())
         throw std::overflow_error("Random checkpoint draw counter exhausted");
+    const auto result = state_.engine->next();
     ++state_.draws;
-    return state_.engine();
+    return result;
 }
 ChoiceResult RandomState::sample(ChoiceKey key, SamplingLaw law) {
     const bool primary =
@@ -74,6 +108,7 @@ ChoiceResult RandomState::sample(ChoiceKey key, SamplingLaw law) {
     } else if (state_.draws == std::numeric_limits<std::uint64_t>::max()) {
         throw std::overflow_error("Random checkpoint draw counter exhausted");
     }
+    std::optional<std::set<ChoiceKey>::iterator> inserted;
     if (state_.trace) {
         auto& trace = *state_.trace;
         if (consumed_.contains(event.key))
@@ -87,10 +122,17 @@ ChoiceResult RandomState::sample(ChoiceKey key, SamplingLaw law) {
             trace.events.reserve(
                 capacity == 0 ? 1 : capacity + std::min(capacity, trace.limit - capacity));
         }
-        consumed_.insert(event.key);
+        inserted = consumed_.insert(event.key).first;
     }
     if (!state_.controlled) {
-        const auto raw = state_.engine();
+        std::uint64_t raw;
+        try {
+            raw = state_.engine->next();
+        } catch (...) {
+            if (inserted)
+                consumed_.erase(*inserted);
+            throw;
+        }
         ++state_.draws;
         event.code = primary ? ChoiceCode{static_cast<std::int32_t>(raw >> 49)}
                              : ChoiceCode{static_cast<std::uint32_t>(raw >> 32)};
@@ -117,8 +159,9 @@ RandomCheckpoint RandomState::checkpoint() const {
 }
 void RandomState::restore(const RandomCheckpoint& checkpoint) {
     if (checkpoint.version != random_policy_version || checkpoint.domain != state_.domain ||
-        checkpoint.context != state_.context)
-        throw std::invalid_argument("Random checkpoint policy/domain/context mismatch");
+        checkpoint.context != state_.context || !checkpoint.engine ||
+        checkpoint.engine->id() != state_.engine->id())
+        throw std::invalid_argument("Random checkpoint policy/domain/context/source mismatch");
     // Rebuild lookup/consumption from logical records. Reject malformed state
     // without disturbing the destination or replaying any decision.
     auto prepared = checkpoint;
@@ -157,4 +200,5 @@ void RandomState::restore(const RandomCheckpoint& checkpoint) {
     swap(choices_, choices);
     swap(consumed_, consumed);
 }
-} // namespace openciv::base::detail
+} // namespace detail
+} // namespace openciv::base

@@ -1,9 +1,9 @@
 #pragma once
 #include "base/arithmetic.hpp"
 #include "base/choices.hpp"
+#include "base/random_source.hpp"
 #include <cstdint>
 #include <map>
-#include <random>
 #include <set>
 #include <string>
 #include <string_view>
@@ -19,21 +19,30 @@ struct RandomCheckpoint {
     unsigned version;
     RandomDomain domain;
     std::string context;
-    // Owned engine copy includes the complete sequence state and current position.
+    // Owned source snapshot. Copying a checkpoint clones the source state.
     // This is an in-memory checkpoint, not a portable binary representation.
-    std::mt19937_64 engine;
+    std::unique_ptr<RandomSource> engine;
     std::uint64_t draws;
     // Controlled mode does not use/advance engine. Its input and chronological
     // consumed prefix are owned, so restore cannot silently reuse a decision.
     std::optional<ControlledChoices> controlled;
     std::optional<ChoiceTrace> trace;
-    bool operator==(const RandomCheckpoint&) const = default;
+    RandomCheckpoint(unsigned version, RandomDomain domain, std::string context,
+                     std::unique_ptr<RandomSource> engine, std::uint64_t draws,
+                     std::optional<ControlledChoices> controlled = {},
+                     std::optional<ChoiceTrace> trace = {});
+    RandomCheckpoint(const RandomCheckpoint& other);
+    RandomCheckpoint& operator=(const RandomCheckpoint& other);
+    RandomCheckpoint(RandomCheckpoint&&) noexcept = default;
+    RandomCheckpoint& operator=(RandomCheckpoint&&) noexcept = default;
+    bool operator==(const RandomCheckpoint& other) const;
 };
 
 namespace detail {
 class RandomState {
 public:
     RandomState(RandomDomain domain, std::uint64_t seed, std::string context);
+    RandomState(RandomDomain domain, std::unique_ptr<RandomSource> source, std::string context);
     RandomState(RandomDomain domain, ControlledChoices choices, std::string context);
     std::uint64_t next(std::string_view site);
     ChoiceResult sample(ChoiceKey key, SamplingLaw law);
@@ -53,6 +62,10 @@ template <RandomDomain Domain> class RandomContext {
 public:
     explicit RandomContext(std::uint64_t seed, std::string context)
         : state_(Domain, seed, std::move(context)) {}
+    // Trusted owner/test injection. The source is already initialized; context
+    // naming does not seed it. Semantic tape injection remains a separate mode.
+    explicit RandomContext(std::unique_ptr<RandomSource> source, std::string context)
+        : state_(Domain, std::move(source), std::move(context)) {}
     explicit RandomContext(ControlledChoices choices, std::string context)
         : state_(Domain, std::move(choices), std::move(context)) {}
     std::int32_t primary_code(std::string_view site) {

@@ -37,6 +37,19 @@ There is no local implementation of the generator. The selected engine and its
 integer seeding overload fix the raw output sequence across conforming platforms.
 We do not use `std::default_random_engine` or standard distribution adapters.
 
+The engine is behind the owned `RandomSource` interface. Its production
+implementation delegates directly to `std::mt19937_64`; tests can inject a source
+with authored raw words. Contexts still own F01 mappings, domain boundaries,
+draw accounting and semantic traces. Injection transfers exclusive ownership of
+an already initialized source and does not apply the seed/name derivation again.
+Sources expose a stable implementation identity, clone their complete state and
+compare logical positions. They must not share mutable state, invoke game services
+or callbacks, or change the floating-point environment. A failed draw leaves the
+source unchanged; the context then retains its counter and consumed-choice prefix.
+Mock source identities are separate from the production policy identity and are
+not admitted by the X02 production replay adapter. Controlled semantic tapes
+remain the choice-level test interface; raw mocks do not replace their key/law checks.
+
 Each nonconstant draw calls the engine once. Primary codes use the top 15 output
 bits; secondary codes use the top 32. The existing F01 modulo/range mappings
 preserve the specified biases, endpoints and floating-point evaluation.
@@ -46,9 +59,11 @@ Invalid divisors, invalid sites for nonconstant draws and unsupported floating
 rounding modes fail before advancing state. Constant results do not request a
 decision site or code. Ordinary arithmetic uses the F01 mappings in `oc2_base`.
 
-A checkpoint owns `{version, domain, context, engine, draws}`, including a copy
-of the entire `std::mt19937_64` object with its state and current position. Restore
-checks version/domain/name before changing the destination. The original seed is
+A checkpoint owns `{version, domain, context, engine, draws}`, including an
+independent source clone (the entire `std::mt19937_64` state and position for the
+production source). Copying a checkpoint or context never shares mutable source
+state. Restore checks version/domain/name/source identity before changing the
+destination. The original seed is
 unnecessary for continuation. The draw counter may reach 2^64−1; another draw
 then fails before mutation. Checkpoints are logical C++ values at present, not a
 new file format or full session/pending-interaction checkpoint. Never persist the

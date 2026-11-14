@@ -66,6 +66,7 @@ EVENTS = {"root.enter": "enter", "root.return": "return", "root.exit": "snapshot
 ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake",
                    "cmake/ConformanceIdentity.cmake", "src/base/arithmetic.hpp",
                    "src/base/arithmetic.cpp", "src/base/random.hpp", "src/base/random.cpp",
+                   "src/base/random_source.hpp", "src/base/random_source.cpp",
                    "src/base/choices.hpp", "src/base/choices.cpp",
                    "src/base/hash.hpp", "src/base/hash.cpp",
                    "src/state/identities.hpp", "src/state/identities.cpp",

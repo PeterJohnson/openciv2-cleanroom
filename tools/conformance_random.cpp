@@ -82,7 +82,7 @@ void execute(std::string_view operation, std::string_view domain, const base::Sa
                : base::RandomContext<Domain>{read_choices(), "fixture"};
     if (replay) {
         auto entry = random.checkpoint();
-        entry.engine.discard(draws);
+        entry.engine->discard(draws);
         entry.draws = draws;
         random.restore(entry);
         random.record_choices(1);
@@ -116,8 +116,8 @@ void execute(std::string_view operation, std::string_view domain, const base::Sa
         // The seed+position representation is complete only if it reconstructs
         // the exact generator. Check this invariant before claiming a snapshot.
         auto reconstructed = base::RandomContext<Domain>{seed, "fixture"}.checkpoint();
-        reconstructed.engine.discard(final.draws);
-        if (reconstructed.engine != final.engine)
+        reconstructed.engine->discard(final.draws);
+        if (!reconstructed.engine->same_state(*final.engine))
             throw std::logic_error(
                 "Generator cannot be represented by its recorded origin and position");
         state = "{\"F01.randomContexts\":{" + quote(context) + ":{\"domain\":" + text(domain) +

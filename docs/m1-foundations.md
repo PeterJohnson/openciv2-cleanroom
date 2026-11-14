@@ -28,7 +28,7 @@ source, legacy harness, original executable or asset checkout is a code input.
 - F01 §5: pure millisecond-to-game-tick and tick-to-map-pattern conversions.
   The library does not read a clock or decide when to reseed a map.
 - F01 §§2,6 and the architecture: [versioned random policy](random-policy.md)
-  using `std::mt19937_64`,
+  using `std::mt19937_64` behind an owned, mockable raw-source interface,
   explicit seeds, distinct gameplay/presentation-content/cosmetic context types,
   in-memory checkpoints, keyed controlled choices and bounded semantic traces,
   repeat/restore and isolation tests. No frontend links

@@ -41,7 +41,7 @@ template <RandomDomain Domain> void domain_laws() {
     CHECK(after.domain == Domain);
     CHECK(after.context == "session");
     CHECK(after.draws == 0);
-    CHECK(after.engine == entry.engine);
+    CHECK(after.engine->same_state(*entry.engine));
     REQUIRE(after.trace->events.size() == 4);
     CHECK(after.trace->events[0] == inputs().records[1]);
     CHECK(after.trace->events[1] == inputs().records[0]);
@@ -153,7 +153,7 @@ TEST_CASE("Semantic recording preserves policy v2 and restores its bounded trace
     const auto second = observed.secondary_unit(key(701));
     CHECK(second == baseline.secondary_unit("test.code"));
     const auto end = observed.checkpoint();
-    CHECK(end.engine == baseline.checkpoint().engine);
+    CHECK(end.engine->same_state(*baseline.checkpoint().engine));
     CHECK(end.draws == baseline.checkpoint().draws);
     REQUIRE(end.trace->events.size() == 702);
     observed.restore(prefix);
