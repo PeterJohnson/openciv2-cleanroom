@@ -211,7 +211,11 @@ TEST_CASE("Session ownership retains process values and isolates virtual peers",
     populate(runtime.world());
     process.tokens.assign_unit();
     process.tokens.assign_city();
-    process.leaders[4].city_name_index = 73;
+    process.rules->leaders[4].city_name_index = 73;
+    process.rules->text.initialize();
+    const auto label = process.rules->text.store("Retained rule");
+    process.rules->names.units[3] = label;
+    process.rules->definitions.units[3].attack = 91;
     process.fallback.fertility = 99;
     runtime.world().map.allocate(world::Geometry{4, 2});
     runtime.world().map.regions[0].land = -3;
@@ -221,12 +225,16 @@ TEST_CASE("Session ownership retains process values and isolates virtual peers",
     CHECK(a.own_units().observation.runtime != b.own_units().observation.runtime);
     CHECK(b.own_units().records.empty());
     CHECK(peer_process.tokens == state::ProcessTokens{});
-    CHECK(peer_process.leaders[4].city_name_index == 0);
+    CHECK(peer_process.rules->leaders[4].city_name_index == 0);
+    CHECK(peer_process.rules->text.size() == 0);
+    CHECK(peer_process.rules->definitions.units[3].attack == 0);
     CHECK(peer_process.fallback.fertility == 0);
     // A client-session transition itself must not pretend to be F05 new-game reset.
     runtime.begin_client_session({93, 94});
     CHECK(process.tokens == state::ProcessTokens{2, 2});
-    CHECK(process.leaders[4].city_name_index == 73);
+    CHECK(process.rules->leaders[4].city_name_index == 73);
+    CHECK(process.rules->text.text(process.rules->names.units[3]) == "Retained rule");
+    CHECK(process.rules->definitions.units[3].attack == 91);
     CHECK(runtime.world().entities.units.end() == 5);
     CHECK(runtime.world().map.tiles()[0].fertility == 42);
     CHECK(runtime.world().map.regions[0].land == -3);
@@ -239,7 +247,7 @@ TEST_CASE("Session ownership retains process values and isolates virtual peers",
     CHECK(selected == state::UnitSlot{0});
     CHECK(runtime.world().entities.units.at(state::UnitSlot{4}).token == state::UnitToken{104});
     CHECK(process.tokens.assign_unit() == state::UnitToken{2});
-    CHECK(process.leaders[4].city_name_index == 73);
+    CHECK(process.rules->leaders[4].city_name_index == 73);
 }
 
 TEST_CASE("Session query and presentation consumers cannot advance gameplay contexts",

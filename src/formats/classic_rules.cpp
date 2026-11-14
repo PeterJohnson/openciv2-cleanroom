@@ -17,11 +17,17 @@ constexpr std::array<std::string_view, 100> advance_codes{
     "SE",  "Stl", "Sup", "Tac", "The", "ToG", "Tra", "Uni", "War", "Whe", "Wri", "FT",  "U1",
     "U2",  "U3",  "X1",  "X2",  "X3",  "X4",  "X5",  "X6",  "X7"};
 // Capture before a service call: preservation is field-local, not a row snapshot.
-template <class T, class Read> void leader_field(T& field, bool replace, Read read) {
-    const auto previous = field;
-    field = read();
-    if (!replace)
-        field = previous;
+template <class T, class U, class Read>
+void leader_field(T& model, U& field, bool replace, Read read) {
+    const auto previous_model = model;
+    const auto previous_field = field;
+    const auto value = read();
+    model = static_cast<T>(value);
+    field = static_cast<U>(value);
+    if (!replace) {
+        model = previous_model;
+        field = previous_field;
+    }
 }
 } // namespace
 RuleLoadError::RuleLoadError(RuleLoadFault fault, std::string section, std::string line,
@@ -53,33 +59,44 @@ TerrainResult terrain_result(std::string_view token, const TextCase& comparison)
     return found == codes.end() ? TerrainResult::invalid
                                 : static_cast<TerrainResult>(found - codes.begin());
 }
-RuleLoader::RuleLoader(TextReader& reader, RuleDefinitions& definitions, RuleLoadState& retained,
-                       TextCase comparison, RuleLoadServices services)
-    : reader_(reader), rules_(definitions), retained_(retained), comparison_(std::move(comparison)),
-      services_(std::move(services)) {
+RuleLoader::RuleLoader(TextReader& reader, RuleState& retained, TextCase comparison,
+                       RuleLoadServices services)
+    : reader_(reader), rules_(retained.definitions), retained_(retained),
+      comparison_(std::move(comparison)), services_(std::move(services)) {
     if (!comparison_.equal)
         throw std::invalid_argument("Rule loading requires a comparison service");
+    if (!retained_.text.size())
+        throw std::invalid_argument("Rule loading requires an initialized shared text pool");
 }
-RuleText RuleLoader::store(std::string text, std::size_t minimum) {
+RuleLoader::StoredText RuleLoader::store(std::string text, std::size_t minimum) {
     if (minimum && text.empty())
         text = " ";
     RuleText value{content::decode_windows1252(text, "classic rule text"), text};
-    if (!minimum && text.empty())
-        return value;
-    const auto bytes = std::max(minimum, text.size() + 1);
-    if (services_.allocate)
-        services_.allocate(text, bytes);
-    text.resize(bytes, '\0');
-    retained_.text_allocations.push_back(std::move(text));
-    return value;
+    const auto id = retained_.text.store(text, minimum, services_.allocate);
+    return {std::move(value), id};
 }
-RuleText RuleLoader::name(std::size_t minimum) {
-    return store(reader_.next_token(), minimum);
+void RuleLoader::store_into(RuleText& target, TextId& binding, std::string text,
+                            std::size_t minimum) {
+    auto stored = store(std::move(text), minimum);
+    binding = stored.id;
+    target = std::move(stored.value);
 }
-void RuleLoader::name_into(RuleText& target, std::size_t minimum, bool keep) {
+void RuleLoader::name_into(RuleText& target, TextId& binding, std::size_t minimum, bool keep) {
     auto token = reader_.next_token();
     if (!keep)
-        target = store(std::move(token), minimum);
+        store_into(target, binding, std::move(token), minimum);
+}
+void RuleLoader::leader_name(RuleText& target, std::int16_t& binding, std::size_t minimum,
+                             bool replace) {
+    auto previous_text = target;
+    const auto previous_binding = binding;
+    auto stored = store(reader_.next_token(), minimum);
+    binding = std::bit_cast<std::int16_t>(static_cast<std::uint16_t>(stored.id));
+    target = std::move(stored.value);
+    if (!replace) {
+        target = std::move(previous_text);
+        binding = previous_binding;
+    }
 }
 void RuleLoader::section(std::optional<std::string_view> filename, std::string_view name) {
     if (!reader_.open(filename, name))
@@ -141,7 +158,7 @@ void RuleLoader::advances(bool keep_names) {
         if (reader_.line().empty() || reader_.line().front() == ';')
             break;
         auto& row = rules_.advances[i];
-        name_into(row.identity.name, 20, keep_names);
+        name_into(row.identity.name, retained_.names.advances[i], 20, keep_names);
         row.ai_value = rules::signed8(reader_.next_integer());
         row.civilized_ai_modifier = rules::signed8(reader_.next_integer());
         for (int p = 0; p < 2; ++p) {
@@ -157,7 +174,8 @@ void RuleLoader::advances(bool keep_names) {
     for (; i < rules_.advances.size(); ++i) {
         auto& row = rules_.advances[i];
         if (!keep_names)
-            row.identity.name = store("Advance " + std::to_string(i + 1), 20);
+            store_into(row.identity.name, retained_.names.advances[i],
+                       "Advance " + std::to_string(i + 1), 20);
         row.ai_value = 3;
         row.civilized_ai_modifier = 0;
         row.epoch = AdvanceEpoch{};
@@ -176,7 +194,7 @@ void RuleLoader::improvements(bool keep_names) {
     for (std::size_t i = 0; i < rules_.improvements.size(); ++i) {
         reader_.next_line();
         auto& row = rules_.improvements[i];
-        name_into(row.identity.name, 25, keep_names);
+        name_into(row.identity.name, retained_.names.improvements[i], 25, keep_names);
         row.cost_rows = rules::code8(reader_.next_integer());
         row.upkeep = rules::code8(reader_.next_integer());
         row.prerequisite = advance_reference(reader_.next_token());
@@ -204,9 +222,9 @@ void RuleLoader::units(bool keep_names) {
         if (reader_.line().empty() || reader_.line().front() == ';')
             break;
         auto& row = rules_.units[i];
-        name_into(row.identity.name, 15, keep_names);
+        name_into(row.identity.name, retained_.names.units[i], 15, keep_names);
         if (!keep_names)
-            retained_.interface_unit_names[i] = retained_.text_allocations.size() - 1;
+            retained_.names.interface_units[i] = retained_.text.last();
         row.obsolete_by = advance_reference(reader_.next_token());
         row.domain = static_cast<RuleDomain>(rules::code8(reader_.next_integer()));
         row.movement = rules::normalize_movement(
@@ -228,7 +246,8 @@ void RuleLoader::units(bool keep_names) {
     for (; i < rules_.units.size(); ++i) {
         auto& row = rules_.units[i];
         if (!keep_names)
-            row.identity.name = store("Unit " + std::to_string(i + 1), 15);
+            store_into(row.identity.name, retained_.names.units[i], "Unit " + std::to_string(i + 1),
+                       15);
         auto identity = std::move(row.identity);
         row = UnitRule{};
         row.identity = std::move(identity);
@@ -241,7 +260,7 @@ void RuleLoader::terrain() {
     for (std::size_t i = 0; i < rules_.terrain.size(); ++i) {
         reader_.next_line();
         auto& row = rules_.terrain[i];
-        row.identity.name = name(15);
+        name_into(row.identity.name, retained_.names.terrain[i], 15);
         row.movement_cost = rules::code8(reader_.next_integer());
         row.defense_factor = rules::code8(reader_.next_integer());
         row.food = rules::code8(reader_.next_integer());
@@ -266,70 +285,83 @@ void RuleLoader::terrain() {
     }
 }
 void RuleLoader::governments() {
-    for (auto& row : rules_.governments) {
+    for (std::size_t i = 0; i < rules_.governments.size(); ++i) {
         reader_.next_line();
-        row.identity.name = name(15);
-        row.titles.male = name(15);
-        row.titles.female = name(15);
+        auto& row = rules_.governments[i];
+        name_into(row.identity.name, retained_.names.governments[i], 15);
+        name_into(row.titles.male, retained_.names.government_titles[i][0], 15);
+        name_into(row.titles.female, retained_.names.government_titles[i][1], 15);
     }
 }
 void RuleLoader::leaders(bool replace) {
     for (std::size_t i = 0; i < rules_.tribes.size(); ++i) {
         reader_.next_line();
         auto& row = rules_.tribes[i];
-        for (auto& leader : row.leaders)
-            leader_field(leader, replace, [&] { return name(24); });
-        leader_field(row.preferred_gender, replace,
-                     [&] { return rules::code8(std::clamp(reader_.next_integer(), 0, 1)); });
+        auto& live = retained_.leaders[i];
+        for (std::size_t sex = 0; sex < 2; ++sex)
+            leader_name(row.leaders[sex], live.names[sex], 24, replace);
+        leader_field(row.preferred_gender, live.female, replace,
+                     [&] { return std::clamp(reader_.next_integer(), 0, 1); });
         if (replace)
-            retained_.current_leader_names[i] = row.leaders[row.preferred_gender];
-        leader_field(row.preferred_color, replace,
+            live.leader_name = live.names[live.female];
+        leader_field(row.preferred_color, live.color, replace,
                      [&] { return rules::normalize_leader_color(reader_.next_integer()); });
-        leader_field(row.city_style, replace,
+        leader_field(row.city_style, live.city_style, replace,
                      [&] { return rules::normalize_leader_style(reader_.next_integer()); });
-        leader_field(row.plural, replace, [&] { return name(24); });
-        leader_field(row.adjective, replace, [&] { return name(24); });
-        for (auto& trait : row.personality)
-            leader_field(trait, replace, [&] { return rules::signed8(reader_.next_integer()); });
+        leader_name(row.plural, live.plural, 24, replace);
+        leader_name(row.adjective, live.adjective, 24, replace);
+        leader_field(row.personality[0], live.attack, replace,
+                     [&] { return rules::signed8(reader_.next_integer()); });
+        leader_field(row.personality[1], live.expand, replace,
+                     [&] { return rules::signed8(reader_.next_integer()); });
+        leader_field(row.personality[2], live.civilize, replace,
+                     [&] { return rules::signed8(reader_.next_integer()); });
         if (replace)
-            for (std::size_t g = 0; g < row.titles.size(); ++g)
+            for (std::size_t g = 0; g < row.titles.size(); ++g) {
                 row.titles[g] = rules_.governments[g].titles;
+                for (std::size_t sex = 0; sex < 2; ++sex)
+                    live.titles[g][sex] = std::bit_cast<std::int16_t>(
+                        static_cast<std::uint16_t>(retained_.names.government_titles[g][sex]));
+            }
         while (true) {
             const auto government = reader_.next_integer();
             if (government <= 0)
                 break;
             if (government > 6)
                 fail(RuleLoadFault::invalid_title_index, "LEADERS", i, government, 0);
-            auto& pair = row.titles[static_cast<std::size_t>(government)];
-            leader_field(pair.male, replace, [&] { return name(0); });
-            leader_field(pair.female, replace, [&] { return name(0); });
+            const auto g = static_cast<std::size_t>(government);
+            leader_name(row.titles[g].male, live.titles[g][0], 0, replace);
+            leader_name(row.titles[g].female, live.titles[g][1], 0, replace);
         }
     }
 }
 void RuleLoader::commodities() {
-    for (auto& row : rules_.commodities) {
+    for (std::size_t i = 0; i < rules_.commodities.size(); ++i) {
         reader_.next_line();
-        row.name = name(10);
+        name_into(rules_.commodities[i].name, retained_.names.commodities[i], 10);
     }
 }
 void RuleLoader::orders() {
-    for (auto& row : rules_.orders) {
+    for (std::size_t i = 0; i < rules_.orders.size(); ++i) {
         reader_.next_line();
-        row.identity.name = name(0);
+        auto& row = rules_.orders[i];
+        name_into(row.identity.name, retained_.names.orders[i + 1], 0);
         const auto key = reader_.next_token();
         row.shortcut = key.empty() ? 0 : static_cast<std::uint8_t>(key.front());
     }
 }
 void RuleLoader::difficulties() {
-    for (auto& row : rules_.difficulties) {
+    for (std::size_t i = 0; i < rules_.difficulties.size(); ++i) {
         reader_.next_line();
-        row.name = store(std::string(reader_.line()), 0);
+        store_into(rules_.difficulties[i].name, retained_.names.difficulties[i],
+                   std::string(reader_.line()), 0);
     }
 }
 void RuleLoader::attitudes() {
-    for (auto& row : rules_.diplomatic_attitudes) {
+    for (std::size_t i = 0; i < rules_.diplomatic_attitudes.size(); ++i) {
         reader_.next_line();
-        row.name = store(std::string(reader_.line()), 0);
+        store_into(rules_.diplomatic_attitudes[i].name, retained_.names.attitudes[i],
+                   std::string(reader_.line()), 0);
     }
 }
 } // namespace openciv::formats::classic

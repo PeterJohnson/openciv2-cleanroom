@@ -16,10 +16,12 @@ clients only a `PlayerClient`. All calls run on one cooperative mutation lane.
 
 The runtime owns `state::GameState`: the existing stable entity pools, global,
 civilization and name records, retained mood workspace and map storage. It uses
-an injected `ProcessContext` containing lifetime tokens, leader usage/name
-cursors and the shared fallback tile. That context must outlive the runtime.
-Independent virtual peers supply separate contexts. Rules/preferences, further
-retained workspaces and full classic initialization remain owning-spec work.
+an injected `ProcessContext` containing lifetime tokens, the shared fallback tile
+and a uniquely owned `RuleState` with rule definitions, a shared text pool, name
+bindings and live leaders/usage/name cursors. That context must outlive the runtime.
+The large rule tables live outside caller stacks, including on WASM. Independent
+virtual peers supply separate contexts. Preferences, further retained workspaces,
+native rule installation and full classic initialization remain owning-spec work.
 Construction defaults are not claimed as original setup behavior.
 
 After admitted work finishes and required outboxes are transferred,

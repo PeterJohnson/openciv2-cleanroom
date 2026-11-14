@@ -91,9 +91,11 @@ source receipts, unchanged files, rejection and overlay replacement. These are
 specification-derived checks, not original-game captures or independently reviewed
 X02 fixtures; C01 is not registered with X02 yet.
 
-The classic label resolver remains supplied. F02 describes IDs as pool ordinals;
-P04 owns shared pool startup and label loading before F03 rule allocations. The
-current rule-loader allocation log alone is insufficient to bind those ordinals
-to saved/live leaders. Shared pool installation, F06 sign-marker processing,
+The process overload now supplies that resolver from `RuleState`'s shared pool
+and live leaders. F03 loading publishes the signed-16 leader bindings consumed
+by C01, including absolute-label aliasing after narrowing; a dedicated test runs
+that path through a real classic provider and the existing leader record codec.
+The explicit resolver overload remains available for supplied backing/services.
+P04's full label startup, F06 sign-marker processing, native rule installation,
 session/city-creation integration, conversion receipts and broader original-game
 comparisons remain required.

@@ -1,0 +1,155 @@
+{
+  "format": "openciv2-original-rule-label-consistency/1",
+  "createdUtc": "2026-11-14T07:31:44.361572+00:00",
+  "scope": "retained-original-save-and-text-consistency; no new original execution",
+  "inputs": {
+    "labels": {
+      "path": "build/original-text-runtime/LABELS.TXT",
+      "bytes": 13279,
+      "sha256": "b614ab5e34853a10a0d05f1d0b4a1a722936c9b3cd8e1bc75452858fa5fb1fdd"
+    },
+    "rules": {
+      "path": "build/original-text-runtime/RULES.original.txt",
+      "bytes": 26906,
+      "sha256": "8a6f98b8260405091cd41d574c30bb05aa805c99a1f4357c49a73cf382fc2c03"
+    },
+    "originalSave": {
+      "path": "build/original-text-runtime/nameprobe_base.sav",
+      "bytes": 136291,
+      "sha256": "d751109faa8a8b9d9a797c7b232ac1bc66cdcbc0636a92a2916e764b2a46558d"
+    }
+  },
+  "driver": {
+    "path": "C:/Projects/openciv2-cleanroom/tools/check_original_rule_labels.py",
+    "bytes": 6253,
+    "sha256": "904f923c509267debc6ba8df79d9c8f21de3c201c8e83fdcc8408d76f31ecf83"
+  },
+  "decoder": {
+    "path": "build/headless-fetch/oc2.exe",
+    "bytes": 3079168,
+    "sha256": "4b70e22f23ec8a437ab068f00061d9d2fed5fa8ac371060c8f7ea0ac09a99b78"
+  },
+  "tribe": 12,
+  "declaredLabels": 888,
+  "nonemptyLabels": 888,
+  "nonemptyPopups": 3,
+  "preRuleStringCount": 892,
+  "assumedSequence": "ordinal 0 <nil>; nonempty LABELS; three POPUPS; F03 ordered tables",
+  "comparisons": [
+    {
+      "field": "names[0]",
+      "predictedOrdinal": 1253,
+      "stored": 1253,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "names[1]",
+      "predictedOrdinal": 1254,
+      "stored": 1254,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "plural",
+      "predictedOrdinal": 1255,
+      "stored": -1255,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "adjective",
+      "predictedOrdinal": 1256,
+      "stored": -1256,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[0][0]",
+      "predictedOrdinal": 1155,
+      "stored": -1155,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[0][1]",
+      "predictedOrdinal": 1156,
+      "stored": 1156,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[1][0]",
+      "predictedOrdinal": 1158,
+      "stored": -1158,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[1][1]",
+      "predictedOrdinal": 1159,
+      "stored": 1159,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[2][0]",
+      "predictedOrdinal": 1161,
+      "stored": -1161,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[2][1]",
+      "predictedOrdinal": 1162,
+      "stored": 1162,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[3][0]",
+      "predictedOrdinal": 1164,
+      "stored": -1164,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[3][1]",
+      "predictedOrdinal": 1165,
+      "stored": 1165,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[4][0]",
+      "predictedOrdinal": 1257,
+      "stored": -1257,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[4][1]",
+      "predictedOrdinal": 1258,
+      "stored": 1258,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[5][0]",
+      "predictedOrdinal": 1170,
+      "stored": -1170,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[5][1]",
+      "predictedOrdinal": 1171,
+      "stored": 1171,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[6][0]",
+      "predictedOrdinal": 1259,
+      "stored": -1259,
+      "magnitudeMatches": true
+    },
+    {
+      "field": "titles[6][1]",
+      "predictedOrdinal": 1260,
+      "stored": 1260,
+      "magnitudeMatches": true
+    }
+  ],
+  "status": "matched",
+  "limitations": [
+    "Saved sign markers are compared by magnitude, not normalized into a new save.",
+    "The earlier original capture pinned RULES and the save, but not LABELS; current retained LABELS bytes are pinned here.",
+    "This corroborates these 18 bindings and the zero-based ordinal sequence; it is not a new startup trace or complete pool/peer conformance.",
+    "The C++ RuleLoader is not executed by this observation helper."
+  ]
+}

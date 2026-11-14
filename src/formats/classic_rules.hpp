@@ -1,18 +1,8 @@
 #pragma once
 #include "classic_text_reader.hpp"
-#include "state/rules.hpp"
-#include <vector>
+#include "state/rule_state.hpp"
 
 namespace openciv::formats::classic {
-// Logical append-only storage, not original string IDs or signed-16 leader
-// bindings. Allocation ordinals remain stable across vector reallocations.
-// Construction defaults do not prescribe an original process/new-game reset.
-struct RuleLoadState {
-    std::vector<std::string> text_allocations; // Includes terminator and zero padding.
-    std::array<std::optional<std::size_t>, 62> interface_unit_names{};
-    std::array<state::RuleText, 21> current_leader_names;
-    bool double_movement_applied = false;
-};
 enum class RuleLoadFault { reference, missing_section, invalid_title_index };
 class RuleLoadError : public std::runtime_error {
 public:
@@ -27,7 +17,7 @@ public:
 struct RuleLoadServices {
     // Called before publishing each nonempty/padded allocation. Throwing stops
     // at that boundary. Ordinary empty text makes no allocation call.
-    std::function<void(std::string_view text, std::size_t bytes)> allocate;
+    state::TextAllocation allocate;
     // Diagnostic/cleanup hook. Returning never resumes the offending parser.
     std::function<void(const RuleLoadError&)> fatal;
 };
@@ -39,8 +29,8 @@ state::TerrainResult terrain_result(std::string_view token, const TextCase& comp
 // Presentation decoding currently admits reversible Windows-1252 text only.
 class RuleLoader {
 public:
-    RuleLoader(TextReader& reader, state::RuleDefinitions& definitions, RuleLoadState& retained,
-               TextCase comparison, RuleLoadServices services = {});
+    RuleLoader(TextReader& reader, state::RuleState& retained, TextCase comparison,
+               RuleLoadServices services = {});
     void load(std::string_view filename, bool replace_leader_data);
     // Section readers start immediately after an already selected header.
     void cosmic();
@@ -57,15 +47,23 @@ public:
     void attitudes();
 
 private:
-    state::RuleText store(std::string text, std::size_t minimum);
-    state::RuleText name(std::size_t minimum);
-    void name_into(state::RuleText& target, std::size_t minimum, bool keep);
+    struct StoredText {
+        state::RuleText value;
+        state::TextId id;
+    };
+    StoredText store(std::string text, std::size_t minimum);
+    void store_into(state::RuleText& target, state::TextId& binding, std::string text,
+                    std::size_t minimum);
+    void name_into(state::RuleText& target, state::TextId& binding, std::size_t minimum,
+                   bool keep = false);
+    void leader_name(state::RuleText& target, std::int16_t& binding, std::size_t minimum,
+                     bool replace);
     void section(std::optional<std::string_view> filename, std::string_view name);
     [[noreturn]] void fail(RuleLoadFault fault, std::string_view section, std::size_t row,
                            int position, int code);
     TextReader& reader_;
     state::RuleDefinitions& rules_;
-    RuleLoadState& retained_;
+    state::RuleState& retained_;
     TextCase comparison_;
     RuleLoadServices services_;
 };

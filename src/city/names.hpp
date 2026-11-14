@@ -1,5 +1,6 @@
 #pragma once
 #include "state/civilization.hpp"
+#include "state/rule_state.hpp"
 #include <string>
 #include <string_view>
 
@@ -23,4 +24,7 @@ bool default_name(state::City& city, std::span<const state::Civilization> civili
                   std::span<state::Leader> leaders,
                   const std::function<std::string(std::int32_t)>& resolve_plural,
                   const NameProvider& provider);
+// Process-owned rule/leader/pool binding of the same operation.
+bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
+                  state::RuleState& rules, const NameProvider& provider);
 } // namespace openciv::city

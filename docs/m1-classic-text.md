@@ -78,20 +78,57 @@ Individual advance, improvement and unit readers support `keep_names`, including
 default tails. Government definitions always change. Leader preservation consumes
 and stores the new strings, then restores each previous field individually;
 it neither selects a new current name nor installs default title pairs. Repeated
-optional title overrides use the last value. The loader has no access to leader
-usage counts or city-name cursors and does not reset them.
+optional title overrides use the last value. The loader retains each leader's
+usage count and city-name cursor.
 
-`RuleLoadState` retains append-only logical string allocations with their
-terminators and zero padding, interface unit-name allocation ordinals, selected
-leader-name values and the double-movement-applied flag. Ordinary empty strings
-do not append; padded empty names become one space. Equal strings append
-separately and minimum capacities do not truncate names. Parsed unit names update
-the interface binding; defaulted tail names append without updating it. Optional
-allocation hooks can inspect prior state or fail before the next stored string.
-These ordinals **are not original string IDs**. Original ID assignment, signed
-16-bit leader bindings/aliasing, shared editable name references and installation
-into the saved/live leader records remain separate work. The current selected
-leader names are logical values, not claims about original pointers.
+`state::RuleState` now owns the decoded definitions, shared `TextPool`, numeric
+name bindings, 21 live `Leader` records and the double-movement-applied flag.
+`ProcessContext::rules` uniquely owns that state outside the caller's stack.
+Independent processes have independent pools; client-session replacement and
+entity-scan reset retain the installed rules, labels and leader counters.
+
+The pool implements F02's ordinal identities and F03's append-only allocation
+effects. Explicit `initialize()` clears it and stores P04's `<nil>` at ordinal
+zero. Initialization is not implicit in construction or a client-session change.
+Ordinary nonempty text appends bytes plus NUL; empty text returns ID zero without
+allocating or changing the last allocation. Padded empty names become one space;
+minimum capacities zero-pad without truncating. Equal strings append separately.
+Existing text views remain valid across appends, while pool replacement invalidates
+them. An allocation hook runs before publication; an exception preserves preceding
+effects. Input bytes are owned across that callback, and the returned ordinal uses
+the pool's resulting live size.
+
+All classic name assignments publish their 32-bit bindings. Leader name, plural,
+adjective and title bindings narrow to signed 16 bits; government default title
+IDs narrow when installed in leaders. Gender selects the current leader label.
+Preservation restores each previous binding and decoded field after reading its
+replacement, while retaining allocations. Parsed unit names update the parallel
+interface binding; defaulted tail names change the rule binding without updating
+the interface binding. Order-name slot zero remains untouched.
+
+Decoded `RuleText` values describe the loaded content. Live name consumers must
+resolve numeric bindings, including sign interpretation at the owning operation;
+they cannot substitute those decoded strings after narrowing, pool replacement
+or F06 sign-marker changes. For example, an allocated ID 32769 narrows to −32767:
+C01's absolute-label lookup reads ordinal 32767, not the newly allocated string.
+Ordinary empty decoded text similarly has ID zero, whose initialized pool value
+is `<nil>`. This distinction is explicit rather than hidden by a cached string.
+The process overloads of city preferences and C01 naming use current pool bindings.
+
+The live leader records pass through the existing 48-byte F06 codec without a
+second representation. P04's full label-file startup/loading, S04 editing,
+retained native rule installation, F06 sign-marker processing and complete
+session reload orchestration remain open. Supplying an initialized pool alone
+does not claim original startup ordinal equality; the preceding labels and
+allocation sequence must also match.
+
+A [retained original-save consistency check](conformance/reports/original-rule-labels-windows.json)
+matches all 18 English leader name/plural/adjective/title label magnitudes against
+the sequence `<nil>`, 888 labels, three popup strings and the ordered rule tables.
+The independently authored helper pins the input bytes and decoder. This supports
+the zero-based ordinal interpretation for those values; it neither executes the
+C++ rule loader nor supplies a new original startup trace. The earlier original
+capture pinned the rules and save, but not LABELS; the report identifies that limit.
 
 Reference failures retain the specified prefix and report the module, code, row,
 position and offending line. A returning diagnostic/cleanup callback is followed
@@ -120,6 +157,9 @@ duplicates and stops at the first unmatched token, EOF or 32 entries. Trailing
 tokens are ignored. Missing content creates no stock list. Name reads remain
 live across file callbacks; a callback-corrupted count stops at the attempted
 out-of-bounds write after prior effects.
+The `RuleState` overload resolves current improvement label IDs through the
+shared pool. The definition-only overload remains available for direct semantic
+content inputs; it is not the process name-reference lookup.
 
 `formats::content::load_city_preferences` validates a selected resolved pack's
 `openciv2-city-preferences/1` component and its complete native rules. IDs must
@@ -152,12 +192,17 @@ marker collisions still belong to the conversion boundary.
 
 ## Evidence and remaining work
 
-Fifteen authored portable reader cases, fourteen classic rule cases and six
+Fifteen authored portable reader cases, sixteen classic rule cases and six
 preference cases cover the above contracts. The rule cases include a complete
 independently authored native/classic equivalence check with out-of-order
 sections, explicit fallback/reuse, normalization, reference failures, name/leader
 preservation across callbacks, allocation failure, tail interface bindings and
-retained special terrain work. The preference cases cover paired inputs,
+retained special terrain work. Three additional pool cases check ordinal/empty/
+padding behavior, stable text views, allocation/reset failure and live callbacks.
+Leader-boundary cases exercise IDs at 32768 and 65536 through the 48-byte codec
+and actual C01 provider, and distinguish decoded text from a narrowed live label.
+The session ownership case also checks retained and isolated rule/pool state.
+The preference cases cover paired inputs,
 first-match behavior, retained fields and live name changes.
 Two additional native CLI cases check real mounted files, source preservation,
 receipts and collision/comparison diagnostics. These are specification-derived
@@ -168,7 +213,7 @@ The [city-name providers](m1-city-names.md) now implement C01's ordered default
 naming through both paths, with shared counter/publication behavior and a native
 validation command.
 
-Original string-ID bindings, retained native rule installation, the complete
+Full label startup, retained native rule installation, the complete
 comparison profile, remaining native component admission,
 conversion tools/receipts, session wiring and owning production consumers remain
 required. The table readers are ready for those callers; they do not implement

@@ -3,8 +3,10 @@
 #include <algorithm>
 
 namespace openciv::formats::classic {
-void load_city_preferences(TextReader& reader, const state::RuleDefinitions& live_rules,
-                           state::CityPreferences& retained, const TextCase& comparison) {
+namespace {
+template <class Name>
+void load(TextReader& reader, state::CityPreferences& retained, const TextCase& comparison,
+          Name name) {
     if (!comparison.equal)
         throw std::invalid_argument("City preferences require a name comparison service");
     retained.count = 0;
@@ -17,9 +19,7 @@ void load_city_preferences(TextReader& reader, const state::RuleDefinitions& liv
         const auto token = reader.next_token();
         std::int32_t slot = 1;
         for (; slot <= 38; ++slot)
-            if (comparison.equal(
-                    token,
-                    live_rules.improvements[static_cast<std::size_t>(slot)].identity.name.classic))
+            if (comparison.equal(token, name(static_cast<std::size_t>(slot))))
                 break;
         if (slot > 38)
             break;
@@ -31,6 +31,19 @@ void load_city_preferences(TextReader& reader, const state::RuleDefinitions& liv
             break;
     }
     reader.close();
+}
+} // namespace
+void load_city_preferences(TextReader& reader, const state::RuleDefinitions& live_rules,
+                           state::CityPreferences& retained, const TextCase& comparison) {
+    load(reader, retained, comparison, [&](std::size_t slot) -> std::string_view {
+        return live_rules.improvements[slot].identity.name.classic;
+    });
+}
+void load_city_preferences(TextReader& reader, const state::RuleState& live_rules,
+                           state::CityPreferences& retained, const TextCase& comparison) {
+    load(reader, retained, comparison, [&](std::size_t slot) {
+        return live_rules.text.text(live_rules.names.improvements[slot]);
+    });
 }
 } // namespace openciv::formats::classic
 

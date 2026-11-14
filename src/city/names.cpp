@@ -43,4 +43,13 @@ bool default_name(state::City& city, std::span<const state::Civilization> civili
     provider.close();
     return published;
 }
+bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
+                  state::RuleState& rules, const NameProvider& provider) {
+    return default_name(
+        city, civilizations, rules.leaders,
+        [&](std::int32_t id) {
+            return std::string(rules.text.text(static_cast<state::TextId>(id)));
+        },
+        provider);
+}
 } // namespace openciv::city
