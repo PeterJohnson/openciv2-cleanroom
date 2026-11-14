@@ -1,6 +1,7 @@
 #pragma once
 
-#include "session/classic_save.hpp"
+#include "session/classic_stream.hpp"
+#include "formats/classic_text_reader.hpp"
 #include <filesystem>
 
 namespace openciv::io {

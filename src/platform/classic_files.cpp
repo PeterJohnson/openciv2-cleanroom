@@ -32,35 +32,70 @@ bool alias(std::string_view a, std::string_view b) {
     }
     return true;
 }
-struct NativeFile {
-    std::FILE* file = nullptr;
+class NativeFile {
+public:
     explicit NativeFile(const fs::path& path, bool output) {
 #ifdef _WIN32
-        (void)_wfopen_s(&file, path.c_str(), output ? L"wb" : L"rb");
+        (void)_wfopen_s(&file_, path.c_str(), output ? L"wb" : L"rb");
 #else
-        file = std::fopen(path.c_str(), output ? "wb" : "rb");
+        file_ = std::fopen(path.c_str(), output ? "wb" : "rb");
 #endif
     }
     ~NativeFile() {
-        if (file)
-            std::fclose(file);
+        if (file_)
+            std::fclose(file_);
     }
     NativeFile(const NativeFile&) = delete;
     NativeFile& operator=(const NativeFile&) = delete;
+    bool is_open() const noexcept { return file_ != nullptr; }
     std::FILE* get() const {
-        if (!file)
+        if (!file_)
             throw std::logic_error("Classic file service used after close");
-        return file;
+        return file_;
     }
     bool close() {
         const auto opened = get();
-        file = nullptr;
+        file_ = nullptr;
         return std::fclose(opened) == 0;
     }
+
+private:
+    std::FILE* file_ = nullptr;
+};
+class NativeInput final : public session::CoreInput {
+public:
+    explicit NativeInput(std::unique_ptr<NativeFile> file) : file_(std::move(file)) {}
+    ~NativeInput() override { close_on_destruction(); }
+
+private:
+    formats::ReadResult read_item(std::size_t size) override {
+        formats::Bytes bytes(size);
+        const auto count = std::fread(bytes.data(), 1, size, file_->get());
+        bytes.resize(count);
+        return {std::move(bytes), count == size};
+    }
+    std::optional<Byte> read_byte() override {
+        const auto value = std::fgetc(file_->get());
+        return value == EOF ? std::nullopt : std::optional{static_cast<Byte>(value)};
+    }
+    bool finish() override { return file_->close(); }
+    std::unique_ptr<NativeFile> file_;
+};
+class NativeOutput final : public session::CoreOutput {
+public:
+    explicit NativeOutput(std::unique_ptr<NativeFile> file) : file_(std::move(file)) {}
+    ~NativeOutput() override { close_on_destruction(); }
+
+private:
+    bool write_item(std::span<const Byte> bytes) override {
+        return std::fwrite(bytes.data(), 1, bytes.size(), file_->get()) == bytes.size();
+    }
+    bool finish() override { return file_->close(); }
+    std::unique_ptr<NativeFile> file_;
 };
 class NativeTextStream final : public classic::TextStream {
 public:
-    explicit NativeTextStream(std::shared_ptr<NativeFile> file) : file_(std::move(file)) {}
+    explicit NativeTextStream(std::unique_ptr<NativeFile> file) : file_(std::move(file)) {}
     classic::TextRead read() override {
         auto* file = file_->get();
         classic::TextRead result;
@@ -107,7 +142,7 @@ public:
     void close() override { (void)file_->close(); }
 
 private:
-    std::shared_ptr<NativeFile> file_;
+    std::unique_ptr<NativeFile> file_;
 };
 } // namespace
 std::string classic_path(const std::filesystem::path& path) {
@@ -184,21 +219,10 @@ std::unique_ptr<session::CoreInput> ClassicFiles::open_input(std::string_view re
     const auto path = resolve({}, requested);
     if (!path || !std::filesystem::is_regular_file(*path))
         return {};
-    auto file = std::make_shared<NativeFile>(*path, false);
-    if (!file->file)
+    auto file = std::make_unique<NativeFile>(*path, false);
+    if (!file->is_open())
         return {};
-    return std::make_unique<session::CoreInput>(session::CoreInput{
-        [file](std::size_t size) {
-            formats::Bytes bytes(size);
-            const auto count = std::fread(bytes.data(), 1, size, file->get());
-            bytes.resize(count);
-            return formats::ReadResult{std::move(bytes), count == size};
-        },
-        [file]() -> std::optional<Byte> {
-            const auto value = std::fgetc(file->get());
-            return value == EOF ? std::nullopt : std::optional{static_cast<Byte>(value)};
-        },
-        [file] { return file->close(); }});
+    return std::make_unique<NativeInput>(std::move(file));
 }
 std::unique_ptr<session::CoreOutput> ClassicFiles::open_output(std::string_view requested) const {
     const auto path = resolve({}, requested, true);
@@ -208,15 +232,10 @@ std::unique_ptr<session::CoreOutput> ClassicFiles::open_output(std::string_view 
     const auto status = std::filesystem::status(*path, error);
     if (std::filesystem::exists(status) && !std::filesystem::is_regular_file(status))
         return {};
-    auto file = std::make_shared<NativeFile>(*path, true);
-    if (!file->file)
+    auto file = std::make_unique<NativeFile>(*path, true);
+    if (!file->is_open())
         return {};
-    const formats::WriteItem write = [file](std::span<const Byte> bytes) {
-        return std::fwrite(bytes.data(), 1, bytes.size(), file->get()) == bytes.size();
-    };
-    return std::make_unique<session::CoreOutput>(session::CoreOutput{
-        write, write, [file](Byte value) { return std::fputc(value, file->get()) != EOF; },
-        [file] { return file->close(); }});
+    return std::make_unique<NativeOutput>(std::move(file));
 }
 bool ClassicFiles::remove_file(std::string_view requested) const {
     const auto path = resolve({}, requested);
@@ -232,8 +251,8 @@ formats::classic::OpenedText ClassicFiles::open_text(std::string_view directory,
     const auto path = resolve(directory, name);
     if (!path || !std::filesystem::is_regular_file(*path))
         return {};
-    auto file = std::make_shared<NativeFile>(*path, false);
-    if (!file->file)
+    auto file = std::make_unique<NativeFile>(*path, false);
+    if (!file->is_open())
         return {};
     return {classic_path(*path), std::make_unique<NativeTextStream>(std::move(file))};
 }

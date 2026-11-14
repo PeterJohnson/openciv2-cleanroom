@@ -2,6 +2,15 @@
 #include <bit>
 
 namespace openciv::session {
+void WorldSizeServices::validate() const {
+    if (!preset || !custom)
+        throw std::invalid_argument("World size requires preset and custom-size services");
+}
+void WorldParameterServices::validate() const {
+    if (!choose)
+        throw std::invalid_argument("World parameters require a choice service");
+    preferences.validate_output();
+}
 namespace {
 using Parameter = state::WorldParameter;
 void publish(SessionRuntime& runtime) {
@@ -59,34 +68,11 @@ void sample(state::WorldSetup& setup, Parameter parameter, base::GameplayRandom&
         value = random.primary_modulo({std::string(sites[index]), std::string(call), 0}, 3) - 1;
     }
 }
-// Publish before each external persistence boundary, including callbacks
-// reached after an earlier callback changes live state. F03 owns the writer.
-void save(SessionRuntime& runtime, const PreferenceFileServices& services) {
-    PreferenceFileServices files;
-    files.open_output = [&](std::string_view path) {
-        publish(runtime);
-        auto output = services.open_output(path);
-        if (output) {
-            output->item = [&, item = output->item](std::span<const formats::Byte> bytes) {
-                publish(runtime);
-                return item(bytes);
-            };
-            output->close = [&, close = output->close] {
-                publish(runtime);
-                return close();
-            };
-        }
-        return output;
-    };
-    files.remove_file = [&](std::string_view path) {
-        publish(runtime);
-        return services.remove_file(path);
-    };
-    (void)save_classic_preferences(runtime.process(), files);
-}
 } // namespace
 
-bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& services) {
+bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& supplied) {
+    const auto services = supplied;
+    services.validate();
     return complete(runtime, [&] {
         auto& setup = runtime.world().world_setup;
         auto& flags = runtime.world().globals.game_flags;
@@ -146,8 +132,10 @@ void randomize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
     });
 }
 bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,
-                                std::string_view call, const WorldParameterServices& services) {
+                                std::string_view call, const WorldParameterServices& supplied) {
+    const auto services = supplied;
     require_call(call);
+    services.validate();
     return complete(runtime, [&] {
         auto& setup = runtime.world().world_setup;
         auto& remembered = runtime.process().ordinary_preferences.world_parameters;
@@ -168,7 +156,7 @@ bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
                 sample(setup, parameter, random, call);
             }
         }
-        save(runtime, services.preferences);
+        (void)save_classic_preferences(runtime, services.preferences);
         return true;
     });
 }

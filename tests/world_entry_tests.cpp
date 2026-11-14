@@ -1,6 +1,8 @@
 // F05 section 2 composes F03/F06, F05 sections 3-5 and V03 section 2.
 // Authored rules, binary maps and controlled choices; W02, V01, balancing,
 // acceleration and presentation children are explicit supplied test services.
+#include "service_fixture.hpp"
+#include "classic_stream_fixture.hpp"
 #include "session/world_entry.hpp"
 #include "formats/classic_rules.hpp"
 #include "formats/content_pack.hpp"
@@ -28,6 +30,15 @@ struct Fixture {
     std::function<void(std::string_view)> observe;
     std::string introduced;
     Fixture() {
+        test::fail_service(services.size.custom);
+        test::fail_service(services.players.advanced);
+        test::fail_service(services.players.acceleration);
+        test::fail_service(services.players.titles);
+        test::fail_service(services.players.portrait);
+        test::fail_service(services.players.opponent_tribe);
+        test::fail_service(services.premade.choices.use_start_locations);
+        test::fail_service(services.premade.choices.ticks);
+
         state::default_ordinary_preferences(process.ordinary_preferences, {});
         process.rules->text.initialize();
         for (const auto& section : classic_rule_fixture::complete_sections())
@@ -74,17 +85,16 @@ struct Fixture {
             CHECK(path == "CIV2.DAT");
             event("save");
             saved.emplace_back();
-            auto output = std::make_unique<CoreOutput>();
-            output->item = [&](std::span<const formats::Byte> bytes) {
-                event("write:" + std::to_string(bytes.size()));
-                saved.back().insert(saved.back().end(), bytes.begin(), bytes.end());
-                return true;
-            };
-            output->close = [&] {
-                event("close-preferences");
-                return true;
-            };
-            return output;
+            return test::output_file({[&](std::span<const formats::Byte> bytes) {
+                                          event("write:" + std::to_string(bytes.size()));
+                                          saved.back().insert(saved.back().end(), bytes.begin(),
+                                                              bytes.end());
+                                          return true;
+                                      },
+                                      [&] {
+                                          event("close-preferences");
+                                          return true;
+                                      }});
         };
         services.parameters.preferences.remove_file = [&](auto) {
             event("delete");
@@ -156,13 +166,12 @@ struct Fixture {
             CHECK(path == "authored.mp");
             event("open-map");
             auto input = std::make_shared<formats::MemoryItems>(map_input);
-            return std::make_unique<CoreInput>(
-                CoreInput{[input](auto count) { return input->read(count); },
-                          {},
-                          [&] {
-                              event("close-map");
-                              return true;
-                          }});
+            return test::input_file({[input](auto count) { return input->read(count); },
+                                     {},
+                                     [&] {
+                                         event("close-map");
+                                         return true;
+                                     }});
         };
         services.premade.load_failure = [&] { event("map-failure"); };
         services.premade.choices.use_seed = [&] {
@@ -369,16 +378,14 @@ TEST_CASE("F05 preference open and write failures do not cancel accepted setup",
             f.event("save");
             if (fail_open)
                 return {};
-            return std::make_unique<CoreOutput>(CoreOutput{[&](auto) {
-                                                               f.event("failed-write");
-                                                               return false;
-                                                           },
-                                                           {},
-                                                           {},
-                                                           [&] {
-                                                               f.event("close-preferences");
-                                                               return false;
-                                                           }});
+            return test::output_file({[&](auto) {
+                                          f.event("failed-write");
+                                          return false;
+                                      },
+                                      [&] {
+                                          f.event("close-preferences");
+                                          return false;
+                                      }});
         };
         base::GameplayRandom random{choices(), "entry-test"};
         REQUIRE(f.run(random));
@@ -609,4 +616,34 @@ TEST_CASE("F05 introduction selects highest twelve eligible known advances then 
     CHECK(starting_advance_list(f.runtime.world(), *f.process.rules, 0).empty());
     CHECK_THROWS_AS(starting_advance_list(f.runtime.world(), *f.process.rules, 8),
                     std::out_of_range);
+}
+
+TEST_CASE("F05 world entry validates the selected service graph before replacing a game",
+          "[world-entry][session]") {
+    const std::array<std::function<void(WorldEntryServices&)>, 5> remove{
+        [](auto& services) { services.load_ordinary_rules = {}; },
+        [](auto& services) { services.size.custom = {}; },
+        [](auto& services) { services.players.titles = {}; },
+        [](auto& services) { services.initialize.balance_starts = {}; },
+        [](auto& services) { services.parameters.preferences.remove_file = {}; }};
+    for (const auto& missing : remove) {
+        Fixture f;
+        f.runtime.begin_client_session({1, 2});
+        const auto client = f.runtime.bind(f.runtime.add_participant(state::CivilizationSlot{1}),
+                                           ControllerKind::frontend);
+        const auto observation = client.own_units().observation;
+        f.runtime.world().globals.turn = 77;
+        f.files.game_stem = "existing";
+        const auto* world = &f.runtime.world();
+        base::GameplayRandom random{choices(), "setup"};
+        const auto before = random.checkpoint();
+        missing(f.services);
+        CHECK_THROWS_AS(f.run(random), std::invalid_argument);
+        CHECK(&f.runtime.world() == world);
+        CHECK(f.runtime.world().globals.turn == 77);
+        CHECK(f.files.game_stem == "existing");
+        CHECK(client.own_units().observation == observation);
+        CHECK(random.checkpoint() == before);
+        CHECK(f.trace.empty());
+    }
 }

@@ -1,5 +1,6 @@
 // F03 section 8/Appendix A and F06 CIV2.DAT. Independently authored bytes and
 // service outcomes, not reconstruction harnesses or original-game captures.
+#include "classic_stream_fixture.hpp"
 #include "formats/preference_io.hpp"
 #include "session/classic_preferences.hpp"
 #include "session/runtime.hpp"
@@ -60,26 +61,26 @@ struct Fixture {
             trace.push_back("open-input");
             if (!input_open)
                 return {};
-            return std::make_unique<CoreInput>(CoreInput{
-                [&](std::size_t size) {
-                    const auto index = reads++;
-                    trace.push_back("read:" + std::to_string(size));
-                    if (before_read)
-                        before_read(index);
-                    auto count = std::min(size, input.size() - position);
-                    if (short_item == index)
-                        count = std::min(count, prefix);
-                    const auto start = input.begin() + static_cast<std::ptrdiff_t>(position);
-                    position += count;
-                    return ReadResult{{start, start + static_cast<std::ptrdiff_t>(count)},
-                                      short_item != index && count == size};
-                },
-                {}, // Preference input has no byte-at-a-time operation.
-                [&] {
-                    ++closes;
-                    trace.push_back("close");
-                    return false;
-                }});
+            return test::input_file(
+                {[&](std::size_t size) {
+                     const auto index = reads++;
+                     trace.push_back("read:" + std::to_string(size));
+                     if (before_read)
+                         before_read(index);
+                     auto count = std::min(size, input.size() - position);
+                     if (short_item == index)
+                         count = std::min(count, prefix);
+                     const auto start = input.begin() + static_cast<std::ptrdiff_t>(position);
+                     position += count;
+                     return ReadResult{{start, start + static_cast<std::ptrdiff_t>(count)},
+                                       short_item != index && count == size};
+                 },
+                 {}, // Preference input has no byte-at-a-time operation.
+                 [&] {
+                     ++closes;
+                     trace.push_back("close");
+                     return false;
+                 }});
         };
         services.open_output = [&](std::string_view path) -> std::unique_ptr<CoreOutput> {
             CHECK(path == "CIV2.DAT");
@@ -87,22 +88,19 @@ struct Fixture {
             if (!output_open)
                 return {};
             output.clear();
-            return std::make_unique<CoreOutput>(
-                CoreOutput{[&](std::span<const Byte> bytes) {
-                               const auto index = writes++;
-                               trace.push_back("write:" + std::to_string(bytes.size()));
-                               output.insert(output.end(), bytes.begin(), bytes.end());
-                               if (after_write)
-                                   after_write(index);
-                               return fail_write != index;
-                           },
-                           {},
-                           {},
-                           [&] {
-                               ++closes;
-                               trace.push_back("close");
-                               return close_ok;
-                           }});
+            return test::output_file({[&](std::span<const Byte> bytes) {
+                                          const auto index = writes++;
+                                          trace.push_back("write:" + std::to_string(bytes.size()));
+                                          output.insert(output.end(), bytes.begin(), bytes.end());
+                                          if (after_write)
+                                              after_write(index);
+                                          return fail_write != index;
+                                      },
+                                      [&] {
+                                          ++closes;
+                                          trace.push_back("close");
+                                          return close_ok;
+                                      }});
         };
         services.remove_file = [&](std::string_view path) {
             CHECK(path == "CIV2.DAT");
@@ -422,4 +420,47 @@ TEST_CASE("F03 process preferences do not mutate a running world or its random c
     runtime.begin_client_session({30, 40});
     CHECK(f.process.ordinary_preferences == ordinary);
     CHECK(f.process.multiplayer_preferences == multiplayer);
+}
+
+TEST_CASE("Classic owned streams finalize once and preserve an earlier I/O exception",
+          "[preferences][classic-files]") {
+    static_assert(!std::is_copy_constructible_v<test::InputFile>);
+    static_assert(!std::is_copy_constructible_v<test::OutputFile>);
+    unsigned closes = 0;
+    {
+        auto output = test::output_file({[](auto) { return true; },
+                                         [&] {
+                                             ++closes;
+                                             return false;
+                                         }});
+        CHECK_FALSE(output->close());
+        CHECK_FALSE(output->close());
+        CHECK_THROWS_AS(output->item(Bytes{1}), std::logic_error);
+    }
+    CHECK(closes == 1);
+    closes = 0;
+    try {
+        auto input = test::input_file({[](auto) -> ReadResult { throw std::runtime_error("read"); },
+                                       {},
+                                       [&]() -> bool {
+                                           ++closes;
+                                           throw std::runtime_error("close");
+                                       }});
+        (void)input->item(72);
+        FAIL("Expected read failure");
+    } catch (const std::runtime_error& error) {
+        CHECK(std::string(error.what()) == "read");
+    }
+    CHECK(closes == 1);
+    closes = 0;
+    {
+        auto output = test::output_file({[](auto) { return true; },
+                                         [&]() -> bool {
+                                             ++closes;
+                                             throw std::runtime_error("close");
+                                         }});
+        CHECK_THROWS_AS(output->close(), std::runtime_error);
+        CHECK_FALSE(output->close());
+    }
+    CHECK(closes == 1);
 }

@@ -18,20 +18,6 @@ std::function<R(Args...)> published(SessionRuntime& runtime, std::function<R(Arg
         return service(std::forward<Args>(args)...);
     };
 }
-void save(SessionRuntime& runtime, const PreferenceFileServices& services) {
-    auto files = services;
-    files.open_output = [&](std::string_view path) {
-        publish(runtime);
-        auto output = services.open_output(path);
-        if (output) {
-            output->item = published(runtime, output->item);
-            output->close = published(runtime, output->close);
-        }
-        return output;
-    };
-    files.remove_file = published(runtime, files.remove_file);
-    (void)save_classic_preferences(runtime.process(), files);
-}
 template <class Operation> void complete(SessionRuntime& runtime, Operation operation) {
     try {
         operation();
@@ -41,15 +27,47 @@ template <class Operation> void complete(SessionRuntime& runtime, Operation oper
         throw;
     }
 }
+void validate_vote(const OptionVoteServices& services) {
+    if (!services.poll || !services.clock || !services.finish_modal)
+        throw std::invalid_argument("Option vote requires poll, clock and modal completion");
+}
+class InstalledVote {
+public:
+    InstalledVote(SessionRuntime& runtime, const MultiplayerOptionServices& services) {
+        std::weak_ptr<bool> live = live_;
+        registration_ = services.install_vote_callback([live, &runtime, vote = services.vote] {
+            const auto guard = live.lock();
+            if (guard && *guard)
+                poll_option_vote(runtime, vote);
+        });
+        if (!registration_)
+            throw std::invalid_argument("Option vote requires an owned callback registration");
+    }
+    ~InstalledVote() {
+        *live_ = false;
+        if (registration_)
+            registration_->cancel();
+    }
+    InstalledVote(const InstalledVote&) = delete;
+    InstalledVote& operator=(const InstalledVote&) = delete;
+
+private:
+    std::shared_ptr<bool> live_ = std::make_shared<bool>(true);
+    std::unique_ptr<VoteRegistration> registration_;
+};
 std::string text(std::string value) {
     value.resize(std::min(value.size(), value.find('\0')));
     return value;
 }
 } // namespace
 bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionChoices> choices,
-                            const GameOptionServices& services) {
+                            const GameOptionServices& supplied) {
     if (!choices)
         return false;
+    const auto services = supplied;
+    services.preferences.validate_output();
+    if (!services.stop_music || !services.reinitialize_music || !services.synchronize_music)
+        throw std::invalid_argument("Game options require complete music services");
     complete(runtime, [&] {
         auto& options = runtime.world().globals.game_options;
         const bool old_music = (options & 8U) != 0;
@@ -74,15 +92,19 @@ bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionCho
             if ((*choices)[i + 2])
                 options |= bits[i];
         runtime.process().ordinary_preferences.game_options = options;
-        save(runtime, services.preferences);
+        (void)save_classic_preferences(runtime, services.preferences);
     });
     return true;
 }
 bool configure_graphics_options(SessionRuntime& runtime,
                                 std::optional<GraphicsOptionChoices> choices,
-                                const GraphicsOptionServices& services) {
+                                const GraphicsOptionServices& supplied) {
     if (!choices)
         return false;
+    const auto services = supplied;
+    services.preferences.validate_output();
+    if (!services.heralds_available || !services.low_memory_notice)
+        throw std::invalid_argument("Graphics options require availability and notice services");
     complete(runtime, [&] {
         auto& options = runtime.world().globals.game_options;
         const bool old_heralds = (options & 0x200000U) != 0;
@@ -102,14 +124,16 @@ bool configure_graphics_options(SessionRuntime& runtime,
             options |= bits[i];
         }
         runtime.process().ordinary_preferences.game_options = options;
-        save(runtime, services.preferences);
+        (void)save_classic_preferences(runtime, services.preferences);
     });
     return true;
 }
 bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOptionChoices> choices,
-                               const PreferenceFileServices& services) {
+                               const PreferenceFileServices& supplied) {
     if (!choices)
         return false;
+    const auto services = supplied;
+    services.validate_output();
     complete(runtime, [&] {
         auto& messages = runtime.world().globals.message_options;
         messages = 0;
@@ -117,11 +141,13 @@ bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOpt
             if (!(*choices)[i])
                 messages |= static_cast<std::uint16_t>(1U << i);
         runtime.process().ordinary_preferences.disabled_messages = messages;
-        save(runtime, services);
+        (void)save_classic_preferences(runtime, services);
     });
     return true;
 }
-void poll_option_vote(SessionRuntime& runtime, const OptionVoteServices& services) {
+void poll_option_vote(SessionRuntime& runtime, const OptionVoteServices& supplied) {
+    const auto services = supplied;
+    validate_vote(services);
     complete(runtime, [&] {
         auto& multiplayer = runtime.world().multiplayer;
         auto& vote = multiplayer.vote;
@@ -143,9 +169,19 @@ void poll_option_vote(SessionRuntime& runtime, const OptionVoteServices& service
 MultiplayerOptionResult configure_multiplayer_options(SessionRuntime& runtime,
                                                       std::int32_t dialog_result,
                                                       MultiplayerOptionChoices choices,
-                                                      const MultiplayerOptionServices& services) {
+                                                      const MultiplayerOptionServices& supplied) {
     if (dialog_result != 0)
         return MultiplayerOptionResult::cancelled;
+    const auto services = supplied;
+    services.preferences.validate_output();
+    validate_vote(services.vote);
+    if (!services.local_player_name || !services.separator || !services.production_label ||
+        !services.movement_label || !services.broadcast_proposal || !services.broadcast_rejection ||
+        !services.broadcast_acceptance || !services.install_vote_callback ||
+        !services.show_vote_dialog || !services.send_units || !services.send_options ||
+        !services.notice || !services.redraw_status)
+        throw std::invalid_argument("Multiplayer options require complete service bindings");
+    auto activity = runtime.begin_activity();
     auto result = MultiplayerOptionResult::unchanged;
     complete(runtime, [&] {
         auto& process = runtime.process();
@@ -156,7 +192,7 @@ MultiplayerOptionResult configure_multiplayer_options(SessionRuntime& runtime,
         auto& vote = multiplayer.vote;
         preferences.clear_chat_new_game = choices[0] ? 1 : 0;
         preferences.clear_chat_boot = choices[1] ? 1 : 0;
-        save(runtime, services.preferences);
+        (void)save_classic_preferences(runtime, services.preferences);
         if (world.globals.multiplayer >= 3 && !multiplayer.network_host) {
             result = MultiplayerOptionResult::client_only;
             return;
@@ -181,8 +217,7 @@ MultiplayerOptionResult configure_multiplayer_options(SessionRuntime& runtime,
             publish(runtime);
             services.broadcast_proposal();
             publish(runtime);
-            services.install_vote_callback(
-                [&runtime, services = services.vote] { poll_option_vote(runtime, services); });
+            InstalledVote registration(runtime, services);
             publish(runtime);
             vote.popup_tick = services.vote.clock();
             publish(runtime);

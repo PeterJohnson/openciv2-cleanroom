@@ -173,7 +173,7 @@ TEST_CASE("N05 immediate and queued socket errors have different retry contracts
         CHECK(queue.send(0, Bytes{1}, services) == SendResult::queued);
         CHECK(queue.front_offset() == 0);
         services.send = [&](auto) {
-            CHECK(queue.size() == 0); // Head detached before the socket call.
+            CHECK(queue.size() == 1); // Retained until the socket supplies an outcome.
             return SocketResult{0, error};
         };
         const auto result = queue.drain_one(services);
@@ -235,4 +235,29 @@ TEST_CASE("N05 datagrams narrow size before capping and retain null payload byte
     CHECK(decoded.payload == Bytes{0x42, 0xa7, 0xa7});
     for (std::size_t size = 0; size < 4; ++size)
         CHECK_THROWS_AS(decode_datagram(std::span{retained}.first(size)), formats::DecodeError);
+}
+
+TEST_CASE("N05 send queue retains pending bytes on invalid binding and pre-send exception",
+          "[network][N05]") {
+    SendQueue queue;
+    SendServices services;
+    services.send = [](auto) { return SocketResult{5, SocketError::none}; };
+    const auto wire = encode_frame(id_tag, Bytes{1, 2, 3});
+    REQUIRE(queue.send(id_tag, Bytes{1, 2, 3}, services) == SendResult::queued);
+    REQUIRE(queue.front_offset() == 5);
+    services.send = {};
+    CHECK_THROWS_AS(queue.drain_one(services), std::invalid_argument);
+    CHECK_THROWS_AS(queue.send(id_tag, Bytes{4}, services), std::invalid_argument);
+    REQUIRE(queue.size() == 1);
+    REQUIRE(queue.front_offset() == 5);
+    services.send = [](auto) -> SocketResult { throw std::runtime_error("before send"); };
+    CHECK_THROWS_AS(queue.drain_one(services), std::runtime_error);
+    REQUIRE(queue.size() == 1);
+    REQUIRE(queue.front_offset() == 5);
+    services.send = [&](std::span<const Byte> bytes) {
+        CHECK(Bytes(bytes.begin(), bytes.end()) == Bytes(wire.begin() + 5, wire.end()));
+        return SocketResult{bytes.size(), SocketError::none};
+    };
+    CHECK(queue.drain_one(services) == DrainResult::complete);
+    CHECK(queue.size() == 0);
 }

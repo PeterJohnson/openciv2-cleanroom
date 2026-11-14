@@ -7,9 +7,27 @@
 using namespace openciv;
 using namespace openciv::session;
 namespace {
+class Registration final : public VoteRegistration {
+public:
+    Registration(std::function<void()>& installed, unsigned& cancellations)
+        : installed_(installed), cancellations_(cancellations) {}
+    void cancel() noexcept override {
+        if (!cancelled_) {
+            cancelled_ = true;
+            ++cancellations_;
+            installed_ = {};
+        }
+    }
+
+private:
+    std::function<void()>& installed_;
+    unsigned& cancellations_;
+    bool cancelled_ = false;
+};
 struct Fixture : test::ConfigurationFixture {
     MultiplayerOptionServices services;
-    std::function<void()> idle;
+    std::function<void()> idle, retained;
+    unsigned cancellations = 0;
     std::vector<std::array<std::int32_t, 3>> sent;
     std::uint32_t ticks = 0;
     Fixture() {
@@ -46,7 +64,9 @@ struct Fixture : test::ConfigurationFixture {
         services.broadcast_acceptance = [&] { trace.push_back("accepted"); };
         services.install_vote_callback = [&](std::function<void()> callback) {
             trace.push_back("install");
+            retained = callback;
             idle = std::move(callback);
+            return std::make_unique<Registration>(idle, cancellations);
         };
         services.show_vote_dialog = [&] {
             trace.push_back("modal");
@@ -181,7 +201,7 @@ TEST_CASE("N03 local modes and a one-player host apply without a vote or network
         f.runtime.world().globals.multiplayer = mode;
         multiplayer.player_count = 1;
         multiplayer.network_host = mode == 3;
-        f.services.local_player_name = {};
+        test::fail_service(f.services.local_player_name);
         CHECK(f.apply() == MultiplayerOptionResult::applied);
         CHECK(multiplayer.saved.double_production == 1);
         CHECK(multiplayer.saved.double_movement == 1);
@@ -298,7 +318,7 @@ TEST_CASE("N03 redraw can suppress later network publication after an accepted v
     f.services.redraw_status = [&](std::int32_t) {
         f.runtime.world().multiplayer.player_count = 1;
     };
-    f.services.send_units = {};
+    test::fail_service(f.services.send_units);
     CHECK(f.apply() == MultiplayerOptionResult::applied);
     CHECK(f.runtime.world().multiplayer.saved.double_movement == 1);
     CHECK(f.sent.empty());
@@ -307,21 +327,22 @@ TEST_CASE("N03 redraw can suppress later network publication after an accepted v
 
 TEST_CASE("N03 vote and publication exceptions retain completed options without invented replies",
           "[configuration][multiplayer]") {
-    SECTION("Missing modal retains pending proposal after the first preference save") {
+    SECTION("Failed modal retains pending proposal after the first preference save") {
         Fixture f;
-        f.services.show_vote_dialog = {};
-        CHECK_THROWS_AS(f.apply(), std::bad_function_call);
+        test::fail_service(f.services.show_vote_dialog);
+        CHECK_THROWS_AS(f.apply(), std::runtime_error);
         CHECK(f.process.multiplayer_preferences.double_movement == 1);
         CHECK(f.runtime.world().multiplayer.saved.double_movement == 0);
         CHECK(f.runtime.world().multiplayer.vote.pending == 2);
         CHECK(f.runtime.world().multiplayer.vote.popup_tick == 1);
         CHECK(f.written.size() == 2);
-        CHECK(static_cast<bool>(f.idle));
+        CHECK_FALSE(f.idle);
+        CHECK(f.cancellations == 1);
     }
-    SECTION("Missing send retains accepted options and transformed rules") {
+    SECTION("Failed send retains accepted options and transformed rules") {
         Fixture f;
-        f.services.send_units = {};
-        CHECK_THROWS_AS(f.apply(), std::bad_function_call);
+        test::fail_service(f.services.send_units);
+        CHECK_THROWS_AS(f.apply(), std::runtime_error);
         CHECK(f.runtime.world().multiplayer.saved.double_movement == 1);
         CHECK(f.process.rules->double_movement_applied);
         CHECK(f.process.rules->definitions.units[0].movement == 128);
@@ -433,4 +454,75 @@ TEST_CASE("N03 installed vote callback runs the real timeout path inside the sup
     CHECK(f.process.multiplayer_preferences.double_movement == 0);
     CHECK_FALSE(f.process.rules->double_movement_applied);
     CHECK(f.trace.back() == "PMCHANGENO");
+}
+
+TEST_CASE("N03 vote registrations expire on success rejection and modal exceptions",
+          "[configuration][multiplayer][vote]") {
+    for (int outcome = 0; outcome < 3; ++outcome) {
+        Fixture f;
+        const auto modal = f.services.show_vote_dialog;
+        f.services.show_vote_dialog = [&] {
+            CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error);
+            CHECK_THROWS_AS(f.runtime.end_client_session(), std::logic_error);
+            if (outcome == 2)
+                throw std::runtime_error("modal failure");
+            return outcome == 1 ? -1 : modal();
+        };
+        if (outcome == 2)
+            CHECK_THROWS_AS(f.apply(), std::runtime_error);
+        else
+            CHECK(f.apply() == (outcome == 1 ? MultiplayerOptionResult::rejected
+                                             : MultiplayerOptionResult::applied));
+        REQUIRE(f.cancellations == 1);
+        REQUIRE_FALSE(f.idle);
+        REQUIRE(f.retained);
+        const auto trace = f.trace;
+        f.retained();
+        CHECK(f.trace == trace);
+        f.runtime.prepare_new_game();
+        f.runtime.begin_client_session({31, 41});
+        const auto vote = f.runtime.world().multiplayer.vote;
+        f.retained();
+        CHECK(f.runtime.world().multiplayer.vote == vote);
+        CHECK(f.trace == trace);
+    }
+    std::function<void()> stale;
+    {
+        Fixture f;
+        REQUIRE(f.apply() == MultiplayerOptionResult::applied);
+        stale = f.retained;
+    }
+    CHECK_NOTHROW(stale()); // No runtime or service captures may be dereferenced.
+}
+TEST_CASE("N03 installation failures invalidate escaped callbacks and release the world",
+          "[configuration][multiplayer][vote]") {
+    for (const bool throws : {false, true}) {
+        Fixture f;
+        f.services.install_vote_callback =
+            [&](std::function<void()> callback) -> std::unique_ptr<VoteRegistration> {
+            f.retained = std::move(callback);
+            if (throws)
+                throw std::runtime_error("installation failed");
+            return {};
+        };
+        CHECK_THROWS(f.apply());
+        const auto trace = f.trace;
+        REQUIRE(f.retained);
+        f.retained();
+        CHECK(f.trace == trace);
+        CHECK_NOTHROW(f.runtime.prepare_new_game());
+    }
+}
+TEST_CASE("N03 missing vote wiring rejects before preferences proposal and publication",
+          "[configuration][multiplayer][vote]") {
+    Fixture f;
+    const auto preferences = f.process.multiplayer_preferences;
+    const auto world = f.runtime.world().multiplayer;
+    f.services.show_vote_dialog = {};
+    CHECK_THROWS_AS(f.apply(), std::invalid_argument);
+    CHECK(f.trace.empty());
+    CHECK(f.written.empty());
+    CHECK(f.process.multiplayer_preferences == preferences);
+    CHECK(f.runtime.world().multiplayer == world);
+    CHECK_NOTHROW(f.runtime.prepare_new_game());
 }

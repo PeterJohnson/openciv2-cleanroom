@@ -1,6 +1,7 @@
 // F05 section 3, F06 section 4, F01 clock mapping, W01 retained map fields.
 // Independently authored binary inputs and specification expectations. No
 // original executable, capture payload or historical harness is a test input.
+#include "classic_stream_fixture.hpp"
 #include "session/premade_world.hpp"
 #include "session/runtime.hpp"
 #include "session/world_setup.hpp"
@@ -69,21 +70,21 @@ struct Fixture {
             if (open_failure)
                 return {};
             position = 0;
-            return std::make_unique<CoreInput>(
-                CoreInput{[&](std::size_t count) {
-                              reads.push_back(count);
-                              event("read");
-                              const auto size = std::min(count, input.size() - position);
-                              const auto bytes = std::span{input}.subspan(position, size);
-                              formats::Bytes prefix(bytes.begin(), bytes.end());
-                              position += size;
-                              return formats::ReadResult{std::move(prefix), size == count};
-                          },
-                          {},
-                          [&] {
-                              event("close");
-                              return false;
-                          }});
+            return test::input_file(
+                {[&](std::size_t count) {
+                     reads.push_back(count);
+                     event("read");
+                     const auto size = std::min(count, input.size() - position);
+                     const auto bytes = std::span{input}.subspan(position, size);
+                     formats::Bytes prefix(bytes.begin(), bytes.end());
+                     position += size;
+                     return formats::ReadResult{std::move(prefix), size == count};
+                 },
+                 {},
+                 [&] {
+                     event("close");
+                     return false;
+                 }});
         };
         services.allocate = [&](world::StorageRequest request) {
             allocations.push_back(request);
@@ -197,8 +198,8 @@ TEST_CASE("F05 low pattern seeds use one clock sample without asking or touching
             const auto random = f.runtime.gameplay_random().checkpoint();
             f.input = raw_map(seed, 0, false);
             f.tick = tick;
-            f.services.choices.use_seed = {};
-            f.services.choices.use_start_locations = {};
+            test::fail_service(f.services.choices.use_seed);
+            test::fail_service(f.services.choices.use_start_locations);
             REQUIRE(f.load() == WorldSource::premade_cylindrical);
             CHECK(f.runtime.world().map.pattern_seed == (tick == 0 || tick == 32768 ? 1 : 32767));
             CHECK(std::count(f.trace.begin(), f.trace.end(), "ticks") == 1);
@@ -242,7 +243,7 @@ TEST_CASE("F05 hint prompt scans all x values and ignores y validity", "[premade
     f.starts.x.fill(-2);
     f.starts.y.fill(1);
     const auto starts = f.starts;
-    f.services.choices.use_start_locations = {};
+    test::fail_service(f.services.choices.use_start_locations);
     CHECK(prepare_premade_world(f.runtime, f.starts, f.services.choices) ==
           WorldSource::premade_flat);
     CHECK(f.starts == starts);
@@ -376,21 +377,21 @@ TEST_CASE("F05 returned close failure is ignored but close exceptions do not nor
     CHECK(f.trace.back() == "close");
 }
 
-TEST_CASE("F05 missing choice services retain normalization and earlier clock or hint effects",
+TEST_CASE("F05 failed choice services retain normalization and earlier clock or hint effects",
           "[premade-world][session]") {
     for (int stop = 0; stop < 3; ++stop) {
         Fixture f;
         if (stop == 0)
-            f.services.choices.use_seed = {};
+            test::fail_service(f.services.choices.use_seed);
         if (stop == 1) {
             f.seed_response = 0;
-            f.services.choices.ticks = {};
+            test::fail_service(f.services.choices.ticks);
         }
         if (stop == 2) {
             f.seed_response = 0;
-            f.services.choices.use_start_locations = {};
+            test::fail_service(f.services.choices.use_start_locations);
         }
-        CHECK_THROWS_AS(f.load(), std::bad_function_call);
+        CHECK_THROWS_AS(f.load(), std::runtime_error);
         CHECK(f.runtime.world().map.tile({0, 0}).features == 0);
         CHECK_FALSE(f.runtime.world().map.tile({0, 0}).owner);
         CHECK(f.runtime.world().globals.rules == 0x1555);
@@ -406,7 +407,7 @@ TEST_CASE("F05 second premade game replaces flat rule but retains classification
     REQUIRE(f.load() == WorldSource::premade_flat);
     f.runtime.world().globals.game_flags = 6;
     f.input = raw_map(99, 0, false);
-    f.services.choices.use_start_locations = {};
+    test::fail_service(f.services.choices.use_start_locations);
     REQUIRE(f.load() == WorldSource::premade_cylindrical);
     CHECK(f.runtime.world().globals.rules == 0x1555);
     CHECK(f.runtime.world().globals.game_flags == 6);

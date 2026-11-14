@@ -3,6 +3,24 @@
 #include <utility>
 
 namespace openciv::session {
+void WorldEntryServices::validate(NewWorldChoice choice) const {
+    if (!load_ordinary_rules || !reload_table || !stop_menu_sound || !generate_world ||
+        !accelerate || !introduce)
+        throw std::invalid_argument("World entry requires complete owning services");
+    if (choice == NewWorldChoice::premade) {
+        if (!choose_map)
+            throw std::invalid_argument("Premade world entry requires a file choice service");
+        premade.validate();
+    } else {
+        size.validate();
+    }
+    if (choice == NewWorldChoice::customize)
+        parameters.validate();
+    else
+        parameters.preferences.validate_output();
+    players.validate();
+    initialize.validate();
+}
 namespace {
 void publish(SessionRuntime& runtime) {
     if (runtime.active())
@@ -31,12 +49,14 @@ std::string starting_advance_list(const state::GameState& world, const state::Ru
 }
 bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::GameplayRandom& random,
                      std::string_view call, NewWorldChoice choice,
-                     const state::CalendarValues& calendar, const WorldEntryServices& services) {
+                     const state::CalendarValues& calendar, const WorldEntryServices& supplied) {
+    const auto services = supplied;
     if (call.empty())
         throw std::invalid_argument("World entry requires a semantic call identity");
     if (choice != NewWorldChoice::random && choice != NewWorldChoice::premade &&
         choice != NewWorldChoice::customize)
         throw std::invalid_argument("Unknown new-world menu choice");
+    services.validate(choice);
     runtime.prepare_new_game();
     // Preserve application directory/screen configuration, not loaded-game
     // descriptors, hints, leader scratch, cursor, layout or scenario paths.

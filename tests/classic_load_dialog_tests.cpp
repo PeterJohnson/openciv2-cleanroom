@@ -1,6 +1,7 @@
 // F06 section 11 accepted-file dialog; S02 sections 2/11; U01 sections 3/6.
 // Authored file/service inputs and specification expectations, not original
 // captures. S02 parsing/execution and presentation are supplied child effects.
+#include "classic_stream_fixture.hpp"
 #include "session/classic_load_dialog.hpp"
 #include "session/runtime.hpp"
 #include "session/classic_preferences.hpp"
@@ -69,24 +70,24 @@ struct Fixture {
             trace.push_back("open:" + std::string(path));
             if (!open_success)
                 return {};
-            return std::make_unique<CoreInput>(CoreInput{
-                [&](std::size_t size) {
-                    const auto length = std::min(size, bytes.size() - position);
-                    const auto start = bytes.begin() + static_cast<std::ptrdiff_t>(position);
-                    position += length;
-                    return formats::ReadResult{{start, start + static_cast<std::ptrdiff_t>(length)},
-                                               length == size};
-                },
-                [&]() -> std::optional<formats::Byte> {
-                    if (position == bytes.size())
-                        return {};
-                    return bytes[position++];
-                },
-                [&] {
-                    ++closes;
-                    trace.push_back("close");
-                    return true;
-                }});
+            return test::input_file(
+                {[&](std::size_t size) {
+                     const auto length = std::min(size, bytes.size() - position);
+                     const auto start = bytes.begin() + static_cast<std::ptrdiff_t>(position);
+                     position += length;
+                     return formats::ReadResult{
+                         {start, start + static_cast<std::ptrdiff_t>(length)}, length == size};
+                 },
+                 [&]() -> std::optional<formats::Byte> {
+                     if (position == bytes.size())
+                         return {};
+                     return bytes[position++];
+                 },
+                 [&] {
+                     ++closes;
+                     trace.push_back("close");
+                     return true;
+                 }});
         };
         services.input.flush = [&] { trace.push_back("flush"); };
         services.input.change_directory = [&](std::string_view path) {
@@ -572,8 +573,8 @@ TEST_CASE("F03 loaded preference word reaches F06 accepted-file option replaceme
     PreferenceFileServices services;
     services.open_input = [&](std::string_view path) {
         CHECK(path == "CIV2.DAT");
-        return std::make_unique<CoreInput>(
-            CoreInput{[&](std::size_t size) { return input.read(size); }, {}, [] { return true; }});
+        return test::input_file(
+            {[&](std::size_t size) { return input.read(size); }, {}, [] { return true; }});
     };
     load_classic_preferences(f.process, {1000, true}, services);
     CHECK(f.load() == CoreLoadStatus::success);

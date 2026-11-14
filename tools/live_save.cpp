@@ -6,6 +6,7 @@
 #include "platform/classic_files.hpp"
 #include "platform/native_files.hpp"
 #include "session/classic_rules.hpp"
+#include "session/classic_save.hpp"
 #include "session/runtime.hpp"
 #include <algorithm>
 #include <charconv>

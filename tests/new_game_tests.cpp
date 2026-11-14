@@ -1,5 +1,6 @@
 // F05 section 5, F02 retained state and F06 field encodings. Expectations and
 // child outcomes are independently authored, not original-program captures.
+#include "service_fixture.hpp"
 #include "session/new_game.hpp"
 #include "formats/save_records.hpp"
 #include <catch2/catch_test_macros.hpp>
@@ -342,17 +343,17 @@ TEST_CASE("F05 required creation failure retains completed prefix and skips bala
         f.random.require_choices_consumed();
     }
     Fixture f;
-    f.services.create_civilization = {};
-    CHECK_THROWS_AS(f.run(), std::bad_function_call);
+    test::fail_service(f.services.create_civilization);
+    CHECK_THROWS_AS(f.run(), std::runtime_error);
     CHECK(f.runtime.world().power_history == state::PowerHistory{});
     CHECK(f.calls.empty());
 }
 
-TEST_CASE("F05 missing balancing preserves creation and at-start mask before rates",
+TEST_CASE("F05 failed balancing preserves creation and at-start mask before rates",
           "[new-game][session]") {
     Fixture f;
-    f.services.balance_starts = {};
-    CHECK_THROWS_AS(f.run(), std::bad_function_call);
+    test::fail_service(f.services.balance_starts);
+    CHECK_THROWS_AS(f.run(), std::runtime_error);
     CHECK(f.calls == std::vector<std::int32_t>{0, 1, 2, 3, 4, 5, 6, 7});
     CHECK(f.runtime.world().globals.civs_at_start == 0x23);
     CHECK(f.runtime.world().civilizations[3].science_rate == 0xa8);

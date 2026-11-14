@@ -137,6 +137,8 @@ SendResult SendQueue::send(std::uint32_t tag, std::span<const Byte> payload, Sen
                            std::span<const Byte> padding) {
     if (payload.size() >= std::uint32_t(services.oversized_limit - 12U))
         return SendResult::oversized;
+    if (!services.send)
+        throw std::invalid_argument("Missing socket send service");
     Bytes record;
     try {
         record = encode_frame(tag, payload, padding);
@@ -173,6 +175,8 @@ SendResult SendQueue::send(std::uint32_t tag, std::span<const Byte> payload, Sen
 DrainResult SendQueue::drain_one(SendServices& services) {
     if (queue_.empty())
         return DrainResult::empty;
+    if (!services.send)
+        throw std::invalid_argument("Missing socket send service");
     const auto count = queue_.size();
     if (count > backlog_threshold_) {
         if (services.backlog)
@@ -181,19 +185,22 @@ DrainResult SendQueue::drain_one(SendServices& services) {
     } else if (count < 50) {
         backlog_threshold_ = 50;
     }
-    auto pending = std::move(queue_.front());
-    queue_.pop_front();
+    auto& pending = queue_.front();
     auto sent = attempt(std::span{pending.bytes}.subspan(pending.sent), services);
     if (sent.error == SocketError::would_block)
         sent.accepted = 0;
-    else if (sent.error == SocketError::is_connected)
+    else if (sent.error == SocketError::is_connected) {
+        queue_.pop_front();
         return DrainResult::excluded_retired_descriptor;
-    else if (sent.error != SocketError::none)
+    } else if (sent.error != SocketError::none) {
+        queue_.pop_front();
         return DrainResult::fatal;
+    }
     pending.sent += sent.accepted;
-    if (pending.sent == pending.bytes.size())
+    if (pending.sent == pending.bytes.size()) {
+        queue_.pop_front();
         return DrainResult::complete;
-    queue_.push_front(std::move(pending));
+    }
     post(services);
     return DrainResult::pending;
 }

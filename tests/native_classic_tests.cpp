@@ -1,4 +1,5 @@
 // Native F03/F06 adapter cases use independently authored files and rules.
+#include "classic_stream_fixture.hpp"
 #include "platform/classic_files.hpp"
 #include "platform/native_files.hpp"
 #include "session/classic_rules.hpp"
@@ -114,14 +115,13 @@ TEST_CASE("Native F03 preferences replace reload and delete failed output throug
     CHECK_FALSE(files.remove_file("."));
     CHECK(fs::is_directory(dir.path));
     services.open_output = [&](std::string_view path) {
-        auto output = files.open_output(path);
+        auto output = std::shared_ptr<CoreOutput>(files.open_output(path));
         REQUIRE(output);
-        const auto write = output->item;
-        output->item = [write](std::span<const Byte> value) {
-            CHECK(write(value.first(1)));
-            return false;
-        };
-        return output;
+        return test::output_file({[output](std::span<const Byte> value) {
+                                      CHECK(output->item(value.first(1)));
+                                      return false;
+                                  },
+                                  [output] { return output->close(); }});
     };
     CHECK(save_classic_preferences(process, services) == PreferenceSaveStatus::output);
     CHECK_FALSE(fs::exists(dir.path / "cIv2.dAt"));
@@ -148,6 +148,7 @@ TEST_CASE("Native F05 premade loading uses binary files without rewriting their 
     services.open = [&](std::string_view path) { return files.open_input(path); };
     services.load_failure = [&] { ++failures; };
     services.choices.use_seed = [] { return -1; };
+    test::fail_service(services.choices.ticks);
     services.choices.use_start_locations = [] { return 0; };
     REQUIRE(load_premade_world(runtime, starts, "mixed.mp", services) == WorldSource::premade_flat);
     CHECK(starts == StartingPositions{});
@@ -191,9 +192,9 @@ TEST_CASE("Native classic replacement truncates existing case alias and retains 
     io::write_new_file(dir.path / "Save.sav", Bytes(300, 0xaa));
     auto output = files.open_output("SAVE.SAV");
     REQUIRE(output);
-    REQUIRE(output->byte(0x1a));
+    REQUIRE(output->item(Bytes{0x1a}));
     REQUIRE(output->item(Bytes{0, 0xff}));
-    REQUIRE(output->text(Bytes{13, 10}));
+    REQUIRE(output->item(Bytes{13, 10}));
     REQUIRE(output->close());
     REQUIRE(io::read_file(dir.path / "Save.sav") == Bytes{0x1a, 0, 0xff, 13, 10});
     REQUIRE(std::distance(fs::directory_iterator(dir.path), fs::directory_iterator{}) == 1);
@@ -359,22 +360,19 @@ TEST_CASE("Native failed core save reports partial output without live hotseat s
     std::size_t closes = 0, items = 0;
     CoreSaveServices saving;
     saving.open = [&](std::string_view path) {
-        auto output = native.open_output(path);
+        auto output = std::shared_ptr<CoreOutput>(native.open_output(path));
         REQUIRE(output);
-        const auto write = output->item;
-        output->item = [&, write](std::span<const Byte> bytes) {
-            ++items;
-            REQUIRE(bytes.size() > 12); // Inject a real partial file write.
-            REQUIRE(write(bytes.first(11)));
-            return false;
-        };
-        const auto close = output->close;
-        output->close = [&, close] {
-            ++closes;
-            REQUIRE(world.globals.human_players == 2);
-            return close();
-        };
-        return output;
+        return test::output_file({[&, output](std::span<const Byte> bytes) {
+                                      ++items;
+                                      REQUIRE(bytes.size() > 12);
+                                      REQUIRE(output->item(bytes.first(11)));
+                                      return false;
+                                  },
+                                  [&, output] {
+                                      ++closes;
+                                      REQUIRE(world.globals.human_players == 2);
+                                      return output->close();
+                                  }});
     };
     REQUIRE(save_classic_core(runtime, files, io::classic_path(target), false, saving) ==
             CoreSaveStatus::output);

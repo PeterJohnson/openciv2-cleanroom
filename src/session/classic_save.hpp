@@ -4,12 +4,6 @@
 
 namespace openciv::session {
 enum class CoreSaveStatus { success = 0, output = 1 };
-struct CoreOutput {
-    formats::WriteItem item;
-    formats::WriteEventText text;
-    formats::WriteEventByte byte;
-    std::function<bool()> close;
-};
 struct CoreSaveServices {
     // The provider owns replacement/commit policy. A false write or close is
     // failure; providers must not reenter or mutate game state.

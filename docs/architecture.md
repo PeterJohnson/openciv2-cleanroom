@@ -251,7 +251,8 @@ explicitly.
 
 Use classes to enforce invariants, resource ownership and state transitions.
 `PlayerClient` protects authority; `SessionRuntime` owns execution;
-`ClassicSaveOperation` owns a suspended save; `SessionActivity` pins its world.
+`ClassicSaveOperation` owns a suspended save; `SessionActivity` pins its world
+and protects an active option-vote operation.
 Public client/value headers do not include mutable state or engine operation
 interfaces. Transitive include checks and portable target dependency checks
 protect these boundaries as the frontend grows.
@@ -270,6 +271,25 @@ service class when its functions share a protocol or retained state. Existing
 F05 setup bundles remain supplied-child adapters until their interactive callers
 migrate; adding a class per algorithm or replacing every callable with inheritance
 does not improve their behavioral contracts.
+
+Setup and configuration entry points copy and validate their service wiring before
+changing state. World entry validates the entire selected setup branch before
+replacing the old game or revoking its clients. Missing bindings are composition
+errors; failures raised by a bound child still retain the specified completed
+prefix. Tests supply throwing children explicitly to distinguish those cases.
+
+`CoreInput` and `CoreOutput` are noncopyable file interfaces. Their shared close
+state ensures finalization is attempted once, including a throwing close;
+implementations release resources in their destructors. Explicit close reports
+failure, while destructor cleanup preserves an earlier exception. Codecs continue
+to accept individual read/write functions. Vote callbacks have an owned
+registration: modal completion or failure cancels it and invalidates escaped
+callback copies before the runtime can start another game.
+
+Transport send exceptions mean no bytes were accepted. The send queue retains
+its bytes and offset until it receives a result; an adapter that accepted bytes
+must report that outcome rather than throw. These ownership rules do not alter
+wire bytes, response deadlines or the different immediate/queued error results.
 
 ## 3. State and deterministic execution
 

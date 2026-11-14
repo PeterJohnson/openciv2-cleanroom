@@ -104,25 +104,8 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
     auto output = services.open(retained.opened_path);
     if (!output)
         return CoreSaveStatus::output;
-    bool closed = false;
-    const auto close = [&] {
-        closed = true;
-        return output->close();
-    };
-    try {
-        if (!output->item || !output->close)
-            throw std::invalid_argument("Core output requires write and close services");
-        const bool written = output->item(bytes);
-        const bool finalized = close();
-        return written && finalized ? CoreSaveStatus::success : CoreSaveStatus::output;
-    } catch (...) {
-        if (!closed && output->close) {
-            try {
-                (void)close();
-            } catch (...) { /* Preserve the original failure. */
-            }
-        }
-        throw;
-    }
+    const bool written = output->item(bytes);
+    const bool finalized = output->close();
+    return written && finalized ? CoreSaveStatus::success : CoreSaveStatus::output;
 }
 } // namespace openciv::session

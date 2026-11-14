@@ -142,10 +142,10 @@ TEST_CASE("F03 accepted options survive reported save failures while exceptions 
     }
     SECTION("A required audio stop retains its partial word without a save") {
         Fixture f;
-        f.game.reinitialize_music = {};
+        test::fail_service(f.game.reinitialize_music);
         GameOptionChoices choices{};
         choices.fill(true);
-        CHECK_THROWS_AS(configure_game_options(f.runtime, choices, f.game), std::bad_function_call);
+        CHECK_THROWS_AS(configure_game_options(f.runtime, choices, f.game), std::runtime_error);
         CHECK(f.runtime.world().globals.game_options == 0x18);
         CHECK(f.process.ordinary_preferences.game_options == 0xdeadbeefU);
         CHECK(f.trace.empty());
@@ -159,7 +159,8 @@ TEST_CASE("F03 graphics checkboxes replace only the six graphics bits",
     for (std::size_t selected = 0; selected < bits.size(); ++selected) {
         Fixture f;
         f.runtime.world().globals.game_options = 0xffffffffU;
-        f.graphics.heralds_available = {}; // Already enabled: no new availability query.
+        test::fail_service(
+            f.graphics.heralds_available); // Already enabled: no new availability query.
         GraphicsOptionChoices choices{};
         choices[selected] = true;
         CHECK(configure_graphics_options(f.runtime, choices, f.graphics));
@@ -198,11 +199,10 @@ TEST_CASE("F03 interrupted herald warning retains only preceding assignments",
     Fixture f;
     f.runtime.world().globals.game_options = 0x1f0010;
     f.graphics.heralds_available = [] { return false; };
-    f.graphics.low_memory_notice = {};
+    test::fail_service(f.graphics.low_memory_notice);
     GraphicsOptionChoices choices{};
     choices.fill(true);
-    CHECK_THROWS_AS(configure_graphics_options(f.runtime, choices, f.graphics),
-                    std::bad_function_call);
+    CHECK_THROWS_AS(configure_graphics_options(f.runtime, choices, f.graphics), std::runtime_error);
     CHECK(f.runtime.world().globals.game_options == 0x60010);
     CHECK(f.process.ordinary_preferences.game_options == 0xdeadbeefU);
     CHECK(f.written.empty());
@@ -321,4 +321,38 @@ TEST_CASE("F03 doubling publishes its flag and full table before redraw or a red
     });
     CHECK(rules->double_movement_applied);
     CHECK(rules->definitions.units[0].movement == 17);
+}
+
+TEST_CASE("F03 missing configuration wiring rejects before state audio and persistence effects",
+          "[configuration][session]") {
+    Fixture f;
+    const auto globals = f.runtime.world().globals;
+    const auto preferences = f.process.ordinary_preferences;
+    f.game.reinitialize_music = {};
+    CHECK_THROWS_AS(configure_game_options(f.runtime, GameOptionChoices{}, f.game),
+                    std::invalid_argument);
+    f.graphics.low_memory_notice = {};
+    CHECK_THROWS_AS(configure_graphics_options(f.runtime, GraphicsOptionChoices{}, f.graphics),
+                    std::invalid_argument);
+    f.preferences.remove_file = {};
+    CHECK_THROWS_AS(configure_message_options(f.runtime, MessageOptionChoices{}, f.preferences),
+                    std::invalid_argument);
+    CHECK(f.runtime.world().globals == globals);
+    CHECK(f.process.ordinary_preferences == preferences);
+    CHECK(f.trace.empty());
+}
+
+TEST_CASE("F03 validated operation wiring remains stable across child calls",
+          "[configuration][session]") {
+    Fixture f;
+    f.game.stop_music = [&] {
+        f.game.preferences.remove_file = {};
+        f.game.synchronize_music = {};
+    };
+    CHECK(configure_game_options(f.runtime, GameOptionChoices{}, f.game));
+    CHECK(f.written.size() == 2);
+    f.trace.clear();
+    CHECK_THROWS_AS(configure_game_options(f.runtime, GameOptionChoices{}, f.game),
+                    std::invalid_argument);
+    CHECK(f.trace.empty());
 }

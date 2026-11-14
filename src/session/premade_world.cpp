@@ -3,6 +3,15 @@
 #include <algorithm>
 
 namespace openciv::session {
+void PremadeWorldChoices::validate() const {
+    if (!use_seed || !use_start_locations || !ticks)
+        throw std::invalid_argument("Premade world requires seed, starts and clock services");
+}
+void PremadeWorldServices::validate() const {
+    if (!open || !load_failure)
+        throw std::invalid_argument("Premade world requires input and failure services");
+    choices.validate();
+}
 namespace {
 void publish(SessionRuntime& runtime) {
     if (runtime.active())
@@ -39,7 +48,9 @@ void normalize(world::MapStorage& map) {
 }
 } // namespace
 WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPositions& starts,
-                                  const PremadeWorldChoices& choices) {
+                                  const PremadeWorldChoices& supplied) {
+    const auto choices = supplied;
+    choices.validate();
     return complete(runtime, [&] {
         auto& map = runtime.world().map;
         normalize(map);
@@ -69,11 +80,13 @@ WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPosi
 std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
                                               formats::StartingPositions& starts,
                                               std::optional<std::string> selected_path,
-                                              const PremadeWorldServices& services) {
+                                              const PremadeWorldServices& supplied) {
     if (!selected_path)
         return {};
+    const auto services = supplied;
     if (selected_path->find('\0') != std::string::npos)
         throw std::invalid_argument("Premade map path must not contain NUL");
+    services.validate();
     if (runtime.has_pending_commands())
         throw std::logic_error("Premade load requires settled session commands");
     return complete(runtime, [&]() -> std::optional<WorldSource> {
@@ -84,14 +97,6 @@ std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
             services.load_failure();
             return {};
         }
-        bool closed = false;
-        const auto close = [&] {
-            if (!closed) {
-                closed = true;
-                publish(runtime);
-                (void)input->close();
-            }
-        };
         bool loaded = false;
         try {
             const formats::ReadItem read = [&](std::size_t count) {
@@ -116,9 +121,10 @@ std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
             };
             loaded = formats::read_map_items(read, formats::MapStream::raw, runtime.world().map,
                                              starts, allocate);
-            close();
+            publish(runtime);
+            (void)input->close();
         } catch (...) {
-            close();
+            publish(runtime);
             throw;
         }
         if (!loaded) {

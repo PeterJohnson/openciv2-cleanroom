@@ -18,6 +18,7 @@ struct WorldSizeServices {
     std::function<CustomSizeResponse(std::string_view width_default,
                                      std::string_view height_default)>
         custom;
+    void validate() const;
 };
 // F05 section 3. Clears status flags; retains partial dimensions on failure;
 // classifies area and doubles working width on every normal helper exit.
@@ -32,6 +33,7 @@ struct WorldParameterServices {
     // positive row stops at consumption with all earlier effects retained.
     std::function<WorldParameterChoice(state::WorldParameter, std::int16_t remembered)> choose;
     PreferenceFileServices preferences;
+    void validate() const;
 };
 // F05 section 2: five choices L,F,T,C,A, leaving preferences unchanged.
 void randomize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,

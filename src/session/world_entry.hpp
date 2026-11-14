@@ -27,6 +27,7 @@ struct WorldEntryServices {
     // Required P03/P04 presentation resolves current leader/civilization names.
     // Advance text is owned classic bytes with ", " after every listed name.
     std::function<void(state::CivilizationSlot, std::string advances)> introduce;
+    void validate(NewWorldChoice choice) const;
 };
 // F05 section 2 / V03 section 2: highest at most twelve known advances,
 // displayed ascending, excluding zero and both-No definitions. The extra
@@ -35,7 +36,8 @@ struct WorldEntryServices {
 std::string starting_advance_list(const state::GameState& world, const state::RuleState& rules,
                                   std::int32_t civilization);
 // F05 section 2, after a new-world menu choice and before application admission.
-// First prepares an isolated new game, revoking old clients and discarding all
+// Validates selected-branch services before effects, then prepares an isolated
+// new game, revoking old clients and discarding all
 // previous world/rule/file scratch. Composes size/map, parameter, player and initialization
 // operations. False returns with current-attempt effects retained. A failed
 // size/map selection does not consume discarded parameter draws.

@@ -1,6 +1,7 @@
 // F05 section 4 / Appendix A, F03 preferences and F01 sampling. Expectations
 // are authored from the contracts; original UI/file comparisons are identified
 // separately in docs/m1-original-player-setup-observations.md.
+#include "service_fixture.hpp"
 #include "session/player_setup.hpp"
 #include "formats/content_pack.hpp"
 #include "session/runtime.hpp"
@@ -27,6 +28,11 @@ struct Fixture {
     PlayerSetupServices services;
     std::vector<std::string> visits;
     Fixture() {
+        test::fail_service(services.advanced);
+        test::fail_service(services.acceleration);
+        test::fail_service(services.titles);
+        test::fail_service(services.portrait);
+
         state::default_ordinary_preferences(process.ordinary_preferences, {});
         auto& rules = *process.rules;
         rules.text.initialize();

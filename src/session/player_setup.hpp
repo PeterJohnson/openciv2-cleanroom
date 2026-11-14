@@ -55,6 +55,7 @@ struct PlayerSetupServices {
     // the offered tribe slots. Slots are visited ascending, after roster draws.
     std::function<SetupNumericChoice(state::CivilizationSlot, std::span<const SetupTribeOption>)>
         opponent_tribe;
+    void validate() const;
 };
 struct PlayerSetupResult {
     bool accepted = false, pick_opponents = false;

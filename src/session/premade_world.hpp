@@ -9,6 +9,7 @@ struct PremadeWorldChoices {
     std::function<std::int32_t()> use_seed, use_start_locations;
     // F01 game ticks, not milliseconds or a gameplay random draw.
     std::function<std::uint32_t()> ticks;
+    void validate() const;
 };
 // F05 section 3 after a successful F06 read. Normalizes the live map, applies
 // the two conditional choices and finally the current stored topology rule.
@@ -21,6 +22,7 @@ struct PremadeWorldServices {
     world::AllocationCheck allocate;
     std::function<void()> load_failure;
     PremadeWorldChoices choices;
+    void validate() const;
 };
 // F05 section 3 / F06 section 4 accepted-file path. nullopt path means cancel;
 // nullopt result means cancel or returned input failure (which reports notice).

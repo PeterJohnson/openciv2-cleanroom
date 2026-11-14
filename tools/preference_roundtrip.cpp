@@ -6,6 +6,28 @@
 #include "platform/native_files.hpp"
 #include <iostream>
 
+namespace {
+// Owns the observed native stream; counters outlive this synchronous read.
+class ObservedInput final : public openciv::session::CoreInput {
+public:
+    ObservedInput(std::unique_ptr<CoreInput> input, bool& complete, std::size_t& items)
+        : input_(std::move(input)), complete_(complete), items_(items) {}
+    ~ObservedInput() override { close_on_destruction(); }
+
+private:
+    openciv::formats::ReadResult read_item(std::size_t size) override {
+        auto result = input_->item(size);
+        complete_ = complete_ && result.complete;
+        ++items_;
+        return result;
+    }
+    std::optional<openciv::formats::Byte> read_byte() override { return input_->byte(); }
+    bool finish() override { return input_->close(); }
+    std::unique_ptr<CoreInput> input_;
+    bool& complete_;
+    std::size_t& items_;
+};
+} // namespace
 int main(int argc, char** argv) {
     using namespace openciv;
     try {
@@ -26,14 +48,7 @@ int main(int argc, char** argv) {
             auto input = files.open_input(io::classic_path(path));
             if (!input)
                 throw std::runtime_error("Comparison input could not be reopened");
-            const auto read = input->item;
-            input->item = [&, read](std::size_t size) {
-                auto item = read(size);
-                complete = complete && item.complete;
-                ++items;
-                return item;
-            };
-            return input;
+            return std::make_unique<ObservedInput>(std::move(input), complete, items);
         };
         state::ProcessContext process;
         session::load_classic_preferences(process, {}, services);

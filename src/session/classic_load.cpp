@@ -92,19 +92,12 @@ CoreLoadStatus load_classic_core(SessionRuntime& runtime, ClassicFileState& reta
         runtime.publish();
         return CoreLoadStatus::input;
     }
-    bool closed = false;
     const auto close = [&] {
-        if (!closed) {
-            closed = true;
-            if (runtime.active())
-                runtime.publish();
-            if (input->close)
-                (void)input->close();
-        }
+        if (runtime.active())
+            runtime.publish();
+        (void)input->close();
     };
     try {
-        if (!input->item || !input->byte || !input->close)
-            throw std::invalid_argument("Opened core input has incomplete service bindings");
         const auto flush = [&] {
             runtime.publish();
             services.flush();
@@ -179,7 +172,6 @@ CoreLoadStatus load_classic_core(SessionRuntime& runtime, ClassicFileState& reta
         runtime.publish();
         return status;
     } catch (...) {
-        close();
         if (runtime.active())
             runtime.publish();
         throw;

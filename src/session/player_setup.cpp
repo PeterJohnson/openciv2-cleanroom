@@ -5,6 +5,11 @@
 #include <utility>
 
 namespace openciv::session {
+void PlayerSetupServices::validate() const {
+    if (!difficulty || !rules || !gender || !opponents || !barbarians || !advanced ||
+        !acceleration || !tribe || !names || !titles || !portrait || !city_style || !opponent_tribe)
+        throw std::invalid_argument("Player setup requires complete choice services");
+}
 namespace {
 void publish(SessionRuntime& runtime) {
     if (runtime.active())
@@ -60,7 +65,9 @@ enum class Step { difficulty, opponents, barbarians, rules, gender, tribe, names
 PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& random,
                                  std::string_view call, WorldSource source,
                                  const state::CalendarValues& calendar,
-                                 const PlayerSetupServices& services) {
+                                 const PlayerSetupServices& supplied) {
+    const auto services = supplied;
+    services.validate();
     if (call.empty())
         throw std::invalid_argument("Player setup requires a semantic call identity");
     auto& world = runtime.world();

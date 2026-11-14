@@ -1,5 +1,6 @@
 // Independently authored F06 core ordering cases. Most tests supply explicit
 // F03 child effects; one integration case runs the real classic rule parsers.
+#include "classic_stream_fixture.hpp"
 #include "session/classic_load.hpp"
 #include "session/classic_save.hpp"
 #include "session/runtime.hpp"
@@ -131,32 +132,32 @@ struct Fixture {
         files.remembered_subdirectory = "retained";
         services.open = [&](std::string_view path) {
             trace.push_back("open:" + std::string(path));
-            return std::make_unique<CoreInput>(CoreInput{
-                [&](std::size_t n) {
-                    if (before_item)
-                        before_item(items.size());
-                    const auto index = items.size();
-                    items.emplace_back(position, n);
-                    auto count = std::min(n, bytes.size() - position);
-                    const bool failed = fail_item == index;
-                    if (failed)
-                        count = std::min(count, fail_prefix);
-                    Bytes prefix(bytes.begin() + static_cast<std::ptrdiff_t>(position),
-                                 bytes.begin() + static_cast<std::ptrdiff_t>(position + count));
-                    position += count;
-                    return ReadResult{std::move(prefix), !failed && count == n};
-                },
-                [&]() -> std::optional<Byte> {
-                    ++chars;
-                    if (position == bytes.size())
-                        return {};
-                    return bytes[position++];
-                },
-                [&] {
-                    ++closes;
-                    trace.push_back("close");
-                    return false; // The original ignores close failure.
-                }});
+            return test::input_file(
+                {[&](std::size_t n) {
+                     if (before_item)
+                         before_item(items.size());
+                     const auto index = items.size();
+                     items.emplace_back(position, n);
+                     auto count = std::min(n, bytes.size() - position);
+                     const bool failed = fail_item == index;
+                     if (failed)
+                         count = std::min(count, fail_prefix);
+                     Bytes prefix(bytes.begin() + static_cast<std::ptrdiff_t>(position),
+                                  bytes.begin() + static_cast<std::ptrdiff_t>(position + count));
+                     position += count;
+                     return ReadResult{std::move(prefix), !failed && count == n};
+                 },
+                 [&]() -> std::optional<Byte> {
+                     ++chars;
+                     if (position == bytes.size())
+                         return {};
+                     return bytes[position++];
+                 },
+                 [&] {
+                     ++closes;
+                     trace.push_back("close");
+                     return false; // The original ignores close failure.
+                 }});
         };
         services.flush = [&] { trace.push_back("flush"); };
         services.change_directory = [&](std::string_view directory) {
@@ -347,16 +348,18 @@ TEST_CASE("F06 core multiplayer adapts only after close and preserves loaded mod
         f.runtime.world().globals.multiplayer = entry;
         const auto open = f.services.open;
         f.services.open = [&](std::string_view path) {
-            auto stream = open(path);
-            stream->close = [&] {
-                ++f.closes;
-                REQUIRE(f.runtime.world().globals.multiplayer == 3);
-                REQUIRE(f.runtime.world().globals.human_players == 0);
-                REQUIRE(f.runtime.world().multiplayer.saved.double_movement == 1);
-                REQUIRE(f.runtime.world().layout.valid == 1);
-                return false;
-            };
-            return stream;
+            auto stream = std::shared_ptr<CoreInput>(open(path));
+            return test::input_file(
+                {[stream](auto size) { return stream->item(size); },
+                 [stream] { return stream->byte(); },
+                 [&, stream] {
+                     REQUIRE(f.runtime.world().globals.multiplayer == 3);
+                     REQUIRE(f.runtime.world().globals.human_players == 0);
+                     REQUIRE(f.runtime.world().multiplayer.saved.double_movement == 1);
+                     REQUIRE(f.runtime.world().layout.valid == 1);
+                     (void)stream->close();
+                     return false;
+                 }});
         };
         REQUIRE(f.load() == CoreLoadStatus::success);
         REQUIRE(f.runtime.world().globals.multiplayer == (entry == 0 ? 3 : 1));
@@ -559,15 +562,10 @@ TEST_CASE("F06 loaded world edits save and reload through ordered core services"
     CoreSaveServices saving;
     saving.open = [&](std::string_view path) {
         REQUIRE(path == "C:\\home\\edited.SAV");
-        return std::make_unique<CoreOutput>(CoreOutput{write, write,
-                                                       [&](Byte byte) {
-                                                           output.push_back(byte);
-                                                           return true;
-                                                       },
-                                                       [&] {
-                                                           ++closed;
-                                                           return true;
-                                                       }});
+        return test::output_file({write, [&] {
+                                      ++closed;
+                                      return true;
+                                  }});
     };
     REQUIRE(save_classic_core(f.runtime, f.files, "C:\\home\\edited", false, saving) ==
             CoreSaveStatus::success);

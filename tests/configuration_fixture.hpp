@@ -1,4 +1,5 @@
 #pragma once
+#include "classic_stream_fixture.hpp"
 
 #include "session/configuration.hpp"
 #include "session/runtime.hpp"
@@ -30,23 +31,20 @@ struct ConfigurationFixture {
                 after_open();
             if (fail_open)
                 return {};
-            return std::make_unique<session::CoreOutput>(
-                session::CoreOutput{[&](std::span<const formats::Byte> bytes) {
-                                        const auto index = written.size();
-                                        trace.push_back("write:" + std::to_string(bytes.size()));
-                                        written.emplace_back(bytes.begin(), bytes.end());
-                                        if (after_write)
-                                            after_write(index);
-                                        return fail_item != index;
-                                    },
-                                    {},
-                                    {},
-                                    [&] {
-                                        trace.push_back("close");
-                                        if (after_close)
-                                            after_close();
-                                        return true;
-                                    }});
+            return test::output_file({[&](std::span<const formats::Byte> bytes) {
+                                          const auto index = written.size();
+                                          trace.push_back("write:" + std::to_string(bytes.size()));
+                                          written.emplace_back(bytes.begin(), bytes.end());
+                                          if (after_write)
+                                              after_write(index);
+                                          return fail_item != index;
+                                      },
+                                      [&] {
+                                          trace.push_back("close");
+                                          if (after_close)
+                                              after_close();
+                                          return true;
+                                      }});
         };
         preferences.remove_file = [&](std::string_view path) {
             CHECK(path == "CIV2.DAT");

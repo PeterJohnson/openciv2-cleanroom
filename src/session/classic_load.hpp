@@ -1,5 +1,6 @@
 #pragma once
 
+#include "session/classic_stream.hpp"
 #include "formats/classic_text_reader.hpp"
 #include "formats/event_io.hpp"
 #include "formats/leader_io.hpp"
@@ -22,11 +23,6 @@ struct ClassicFileState {
     formats::SavedLayout packed_layout;
     state::Rectangle current_screen;
     formats::LeaderLoadScratch leaders;
-};
-struct CoreInput {
-    formats::ReadItem item;
-    formats::ReadEventByte byte;
-    std::function<bool()> close; // Failure is ignored, but the call occurs once.
 };
 struct CoreLoadServices {
     std::function<std::unique_ptr<CoreInput>(std::string_view)> open;

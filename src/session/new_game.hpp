@@ -9,6 +9,7 @@ struct NewGameServices {
     std::function<std::int32_t(std::int32_t)> create_civilization;
     // F05 section 8, after all creation attempts and the at-start mask copy.
     std::function<void()> balance_starts;
+    void validate() const;
 };
 // F05 section 5: the complete inner new-game initialization parent, after W02.
 // Requires prepare_new_game before this attempt's content/map/wizard. Retained

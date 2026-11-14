@@ -1,4 +1,5 @@
 #pragma once
+#include "classic_stream_fixture.hpp"
 #include "session/classic_save.hpp"
 #include "session/runtime.hpp"
 #include "formats/classic_save.hpp"
@@ -65,27 +66,25 @@ struct ClassicSaveFixture {
                 observe();
             if (fail_open)
                 return {};
-            return std::make_unique<session::CoreOutput>(session::CoreOutput{
-                [&](std::span<const formats::Byte> value) {
-                    ++writes;
-                    if (observe)
-                        observe();
-                    if (throw_write)
-                        throw std::runtime_error("write failure");
-                    const auto count = std::min(value.size(), write_limit);
-                    bytes.insert(bytes.end(), value.begin(), value.begin() + count);
-                    return !fail_write && count == value.size();
-                },
-                {},
-                {},
-                [&] {
-                    ++closes;
-                    if (observe)
-                        observe();
-                    if (throw_close)
-                        throw std::runtime_error("close failure");
-                    return !fail_close;
-                }});
+            return test::output_file({[&](std::span<const formats::Byte> value) {
+                                          ++writes;
+                                          if (observe)
+                                              observe();
+                                          if (throw_write)
+                                              throw std::runtime_error("write failure");
+                                          const auto count = std::min(value.size(), write_limit);
+                                          bytes.insert(bytes.end(), value.begin(),
+                                                       value.begin() + count);
+                                          return !fail_write && count == value.size();
+                                      },
+                                      [&] {
+                                          ++closes;
+                                          if (observe)
+                                              observe();
+                                          if (throw_close)
+                                              throw std::runtime_error("close failure");
+                                          return !fail_close;
+                                      }});
         };
     }
     session::CoreSaveStatus save(bool scenario = false,

@@ -2,6 +2,10 @@
 #include <bit>
 
 namespace openciv::session {
+void NewGameServices::validate() const {
+    if (!create_civilization || !balance_starts)
+        throw std::invalid_argument("New game requires creation and balancing services");
+}
 namespace {
 void publish(SessionRuntime& runtime) {
     if (runtime.active())
@@ -9,9 +13,11 @@ void publish(SessionRuntime& runtime) {
 }
 } // namespace
 void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
-                         std::string_view call, const NewGameServices& services) {
+                         std::string_view call, const NewGameServices& supplied) {
+    const auto services = supplied;
     if (call.empty())
         throw std::invalid_argument("New-game initialization requires a semantic call identity");
+    services.validate();
     auto& world = runtime.world();
     auto& process = runtime.process();
     auto& globals = world.globals;

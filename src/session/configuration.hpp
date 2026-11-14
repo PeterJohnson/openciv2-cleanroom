@@ -27,7 +27,8 @@ struct GraphicsOptionServices {
 };
 // nullopt is cancellation: no changes or service calls. Accepted changes use
 // real F03 preference saving and ignore its returned failure without rollback.
-// Required child exceptions stop with prior effects retained. No command, native
+// Missing bindings reject before effects; bound child exceptions retain prior
+// effects. Wiring is copied for the call. No command, native
 // widget or audio implementation is fabricated by these application ports.
 bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionChoices> choices,
                             const GameOptionServices& services);
@@ -47,6 +48,18 @@ struct OptionVoteServices {
 // live gate order and the fresh completion tick. Does not dispatch N02 replies.
 void poll_option_vote(SessionRuntime& runtime, const OptionVoteServices& services);
 
+// Owned registration in the modal/event adapter. Cancellation disconnects its
+// callback and is idempotent; the operation also invalidates retained copies.
+class VoteRegistration {
+public:
+    virtual ~VoteRegistration() = default;
+    VoteRegistration(const VoteRegistration&) = delete;
+    VoteRegistration& operator=(const VoteRegistration&) = delete;
+    virtual void cancel() noexcept = 0;
+
+protected:
+    VoteRegistration() = default;
+};
 // Clear chat on new game, clear chat on boot, double production, double movement.
 using MultiplayerOptionChoices = std::array<bool, 4>;
 struct MultiplayerOptionServices {
@@ -57,9 +70,9 @@ struct MultiplayerOptionServices {
     std::function<std::string(bool)> production_label, movement_label;
     // Proposal consumes text_parameters[0/1]. N02 owns the actual wire dispatch.
     std::function<void()> broadcast_proposal, broadcast_rejection, broadcast_acceptance;
-    // The retained callback owns its service functions. The installing modal
-    // owner must keep runtime alive while that callback can still be delivered.
-    std::function<void(std::function<void()>)> install_vote_callback;
+    // Returns an owned registration, cancelled on modal completion or exception.
+    // Retained callback copies become inert before the operation returns.
+    std::function<std::unique_ptr<VoteRegistration>(std::function<void()>)> install_vote_callback;
     std::function<std::int32_t()> show_vote_dialog;
     std::function<void()> send_units;
     std::function<void(std::int32_t production, std::int32_t movement, std::int32_t simultaneous)>
@@ -72,6 +85,9 @@ enum class MultiplayerOptionResult { cancelled, client_only, unchanged, rejected
 // preferences save before host/changed/vote gates; double options do not get a
 // second save. Uses real double-movement rules and the shared vote callback.
 // Initial dialog construction, N02 transport and P04 modal execution are children.
+// Accepted changes require a live, settled runtime. The world is pinned until
+// completion; services and runtime outlive this synchronous owning operation.
+// Required bindings are checked before effects, including persistence/proposals.
 MultiplayerOptionResult configure_multiplayer_options(SessionRuntime& runtime,
                                                       std::int32_t dialog_result,
                                                       MultiplayerOptionChoices choices,

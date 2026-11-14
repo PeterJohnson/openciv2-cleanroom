@@ -1,6 +1,7 @@
 // F05 sections 2-3, F01 cyclic arithmetic/sampling and F06 preference fields.
 // Expectations are independently authored from the contract. The explicitly
 // named Windows observation case also cites original UI/file evidence.
+#include "service_fixture.hpp"
 #include "configuration_fixture.hpp"
 #include "session/world_setup.hpp"
 #include <limits>
@@ -28,6 +29,8 @@ struct Fixture : test::ConfigurationFixture {
     WorldParameterServices parameters;
     std::vector<Parameter> visits;
     Fixture() {
+        test::fail_service(size.custom);
+
         process.ordinary_preferences.map_size = 2;
         process.ordinary_preferences.world_parameters = {0, 0, 0, -1, 1};
         runtime.world().world_setup = {31, 37, {11, 12, 13, 14, 15}};
@@ -382,7 +385,7 @@ TEST_CASE("F05 preference write failures retain accepted choices and follow real
     }
 }
 
-TEST_CASE("F05 missing services and exceptional saves preserve reached world and preference state",
+TEST_CASE("F05 child failures and exceptional saves preserve reached world and preference state",
           "[world-setup][session]") {
     Fixture f;
     auto random = f.no_choices();
@@ -399,9 +402,9 @@ TEST_CASE("F05 missing services and exceptional saves preserve reached world and
           std::array<std::int16_t, 5>{1, 1, 0, -1, 1});
     CHECK(f.trace.empty());
     f.parameters.choose = [](auto, auto) -> WorldParameterChoice { return 0; };
-    f.parameters.preferences = {};
+    test::fail_service(f.parameters.preferences.open_output);
     CHECK_THROWS_AS(customize_world_parameters(f.runtime, random, "second", f.parameters),
-                    std::bad_function_call);
+                    std::runtime_error);
     CHECK(f.runtime.world().world_setup.parameters ==
           std::array<std::int32_t, 5>{-1, -1, -1, -1, -1});
     CHECK(f.process.ordinary_preferences.world_parameters ==
@@ -459,6 +462,7 @@ TEST_CASE("F05 empty parameter identity rejects before mutation and inactive set
     CHECK(runtime.world().world_setup == before);
     CHECK(random.checkpoint().trace->events.empty());
     WorldSizeServices size;
+    test::fail_service(size.custom);
     size.preset = [](auto) -> WorldSizeChoice { return 1; };
     CHECK(select_world_size(runtime, size));
     randomize_world_parameters(runtime, random, "world/one");

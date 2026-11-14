@@ -86,6 +86,8 @@ struct SocketResult {
 struct SendServices {
     // Live library-wide capacity, not a value captured by each queued record.
     std::uint32_t chunk_capacity = 8192, oversized_limit = 50000;
+    // Required. Exceptions mean no bytes were accepted; after accepting bytes,
+    // return a SocketResult. A throwing call leaves queued bytes/offset intact.
     std::function<SocketResult(std::span<const Byte>)> send;
     std::function<void()> post_write;
     std::function<void(std::size_t)> backlog;
