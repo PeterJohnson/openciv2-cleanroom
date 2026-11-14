@@ -224,7 +224,8 @@ It does not observe private random outcomes or cancellation-time world state.
 
 After F06's map read succeeds:
 
-1. For every tile, clear improvements, city-radius claims, visibility and region;
+1. For every tile, clear improvements, the entire city-radius metadata byte
+   (both the claimant and the low five retained bits), visibility and region;
    set occupant owner Unowned and fertility zero. Clear remembered maps for
    civilizations 1…7. Retain terrain/river data and the map header.
 2. If the pattern seed is below 2, replace it from the clock. Otherwise ask
@@ -245,6 +246,13 @@ finalization. It does not select civilizations or use the start hints itself.
 An unreadable or failed map read reports failure and returns to setup. Reads,
 allocation and prior normalization are not rolled back. Port-added header/tile
 validation is listed in Appendix B rather than imposed as original behavior.
+
+An [independent original-game observation](../m1-original-premade-observations.md)
+resolves the radius-byte scope: an authored map with `0xff` in every radius
+byte saved all 4,000 bytes as zero after ordinary premade setup, before the
+first human action and with no cities. This is a whole-entry-path observation;
+attribution to preparation also relies on W02's retained-map contract, which
+preserves radius metadata. It does not change W01's narrower claimant setter.
 
 ## 4. Player, tribe and opponent choices
 

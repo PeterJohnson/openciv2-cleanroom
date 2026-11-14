@@ -3,6 +3,7 @@
 #include "platform/native_files.hpp"
 #include "session/classic_rules.hpp"
 #include "session/classic_preferences.hpp"
+#include "session/premade_world.hpp"
 #include "formats/preference_io.hpp"
 #include "session/runtime.hpp"
 #include "formats/classic_save.hpp"
@@ -95,6 +96,42 @@ TEST_CASE("Native F03 preferences replace reload and delete failed output throug
     CHECK(save_classic_preferences(process, services) == PreferenceSaveStatus::output);
     CHECK_FALSE(fs::exists(dir.path / "cIv2.dAt"));
     CHECK(fs::is_directory(dir.path));
+}
+
+TEST_CASE("Native F05 premade loading uses binary files without rewriting their retained payload",
+          "[io][classic-files][premade-world]") {
+    TemporaryDirectory dir;
+    io::ClassicFiles files(dir.path);
+    RawMapFile source;
+    source.header = {4, 2, 4, 1, 7, 1, 1};
+    source.tiles.resize(4, decode_tile(Bytes{0xc2, 0xff, 0xe7, 61, 0xff, 0x39}));
+    source.starts.x[20] = 300;
+    source.starts.y[20] = -7;
+    source.trailing = {0, 0x1a, 0xff, 13, 10};
+    const auto bytes = encode_raw_map(source);
+    io::write_new_file(dir.path / "MiXeD.Mp", bytes);
+    state::ProcessContext process;
+    SessionRuntime runtime{process, base::RuntimeId{94}};
+    StartingPositions starts;
+    PremadeWorldServices services;
+    unsigned failures = 0;
+    services.open = [&](std::string_view path) { return files.open_input(path); };
+    services.load_failure = [&] { ++failures; };
+    services.choices.use_seed = [] { return -1; };
+    services.choices.use_start_locations = [] { return 0; };
+    REQUIRE(load_premade_world(runtime, starts, "mixed.mp", services) == WorldSource::premade_flat);
+    CHECK(starts == StartingPositions{});
+    CHECK(runtime.world().world_setup.width == 4);
+    CHECK(runtime.world().globals.rules == 0x8000);
+    for (const auto& tile : runtime.world().map.tiles())
+        CHECK(encode_tile(tile) == Bytes{0xc2, 0, 0, 0, 0, 0xf0});
+    CHECK(io::read_file(dir.path / "MiXeD.Mp") == bytes);
+    io::write_new_file(dir.path / "short.mp", std::span{bytes}.first(100));
+    CHECK_FALSE(load_premade_world(runtime, starts, "short.mp", services));
+    CHECK(failures == 1);
+    CHECK(runtime.world().map.tile({0, 0}).features == 0xff);
+    CHECK(runtime.world().map.tile({0, 0}).owner == 0);
+    CHECK(io::read_file(dir.path / "short.mp") == Bytes(bytes.begin(), bytes.begin() + 100));
 }
 TEST_CASE("Native classic input preserves short prefixes binary controls and independent cursors",
           "[io][classic-files]") {

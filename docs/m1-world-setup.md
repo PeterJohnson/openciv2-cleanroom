@@ -46,9 +46,10 @@ failure directly. It does not enter the automatic alternative.
 `GameState::world_setup` retains working dimensions and five parameters separately
 from the currently allocated map. The size helper consumes its current width as
 U and leaves W; it neither halves nor resets it at entry nor reallocates map storage.
-The future outer setup/map-admission composition must supply the retained working
-dimensions at that boundary. This increment does not claim that F06 map load
-already synchronizes them. Construction zeroes are not original setup defaults.
+The outer setup composition must supply the retained working dimensions at that
+boundary. The [premade path](m1-premade-world.md) now synchronizes them at its real
+F06 allocation boundary; other load/menu callers remain separate work.
+Construction zeroes are not original setup defaults.
 
 Services see live state after preceding writes. Active sessions publish before
 each interaction and file callback, and at normal or exceptional completion;
@@ -77,8 +78,9 @@ Pinned clang-format 20.1.8 formatted 249 owned files. Local ignored final logs
 are `build/world-setup-{native,sqlite,wasm}-final-build.log` and
 `build/world-setup-{native,sqlite,wasm}-final-ctest.log`.
 
-Premade-map preparation and its real F06 reader, outer new-session/menu lifecycle,
-the player/rules wizard, W02 generation, V01 creation, F05 placement/balancing/
+The [premade path](m1-premade-world.md) now composes its real F06 reader and
+preparation. Outer new-session/menu lifecycle, the player/rules wizard,
+W02 generation, V01 creation, F05 placement/balancing/
 acceleration, application interaction binding and X02 setup registration remain
 required work. The [inner initializer](m1-new-game.md) is already implemented
 with required creation/balancing children. M1 remains incomplete.

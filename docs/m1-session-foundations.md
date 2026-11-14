@@ -161,3 +161,8 @@ custom size selection, partial cancellation effects, both parameter draw orders,
 normalized preferences and real preference persistence. Required interaction
 services and retained setup state remain separate from allocated map storage;
 the complete outer setup/map admission and player wizard are still pending.
+
+The [premade-world path](m1-premade-world.md) now joins accepted binary input,
+F06 partial map publication, retained setup dimensions and F05 normalization/
+seed/start-location choices. Outer chooser/menu composition and W02 finalization
+remain separate from this implemented path.
