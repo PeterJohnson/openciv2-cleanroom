@@ -50,7 +50,7 @@ struct Fixture {
         runtime.begin_client_session({10, 20});
         auto& world = runtime.world();
         world.map.allocate(world::Geometry{8, 6});
-        world.globals.multiplayer = 3;
+        world.globals.multiplayer = state::GameMode::tcp;
         world.turn_loop_active = true;
         world.entities.units.set_end(2);
         for (unsigned i = 0; i < 2; ++i) {

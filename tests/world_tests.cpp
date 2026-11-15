@@ -117,20 +117,11 @@ TEST_CASE("W01 allocation and release preserve separately owned spatial state", 
     map.stored_topology = 1;
     map.regions[5] = {2, 3, 4, 8, {9, 10}};
     map.remembered_barbarian = {42};
-    std::vector<StorageRequest> requests;
-    map.allocate(Geometry{8, 4}, [&](auto request) {
-        CHECK_FALSE(map.allocated());
-        CHECK(map.geometry().area() == 16);
-        requests.push_back(request);
-    });
-    REQUIRE(requests.size() == 12);
-    CHECK(requests.front() == StorageRequest{StorageKind::tiles, 0, 16});
+    map.allocate(Geometry{8, 4});
     for (unsigned civ = 1; civ < 8; ++civ) {
-        CHECK(requests[civ] == StorageRequest{StorageKind::remembered, civ, 16});
         CHECK(std::ranges::all_of(map.remembered_layer(civ), [](auto v) { return v == 0; }));
     }
     for (unsigned grid = 0; grid < 4; ++grid) {
-        CHECK(requests[8 + grid] == StorageRequest{StorageKind::coarse, grid, 2});
         CHECK_THROWS_AS(map.coarse(grid, {0, 0}), std::logic_error);
     }
     REQUIRE(map.allocated());
@@ -143,17 +134,7 @@ TEST_CASE("W01 allocation and release preserve separately owned spatial state", 
     CHECK_FALSE(map.owner({-1, 0}));
     map.tile({2, 1}).region = 9;
     CHECK(map.tile({3, 1}).region == 9);
-    requests.clear();
-    map.release([&](auto request) {
-        CHECK(map.allocated());
-        requests.push_back(request);
-    });
-    REQUIRE(requests.size() == 12);
-    for (unsigned i = 0; i < 4; ++i)
-        CHECK(requests[i] == StorageRequest{StorageKind::coarse, 3 - i, 2});
-    CHECK(requests[4] == StorageRequest{StorageKind::tiles, 0, 16});
-    for (unsigned civ = 1; civ < 8; ++civ)
-        CHECK(requests[4 + civ] == StorageRequest{StorageKind::remembered, civ, 16});
+    map.release();
     CHECK_FALSE(map.allocated());
     CHECK(map.geometry().area() == 16);
     CHECK(map.pattern_seed == 24);
@@ -162,44 +143,10 @@ TEST_CASE("W01 allocation and release preserve separately owned spatial state", 
     CHECK(map.remembered(0, {0, 0}) == 42);
     CHECK(map.tile({100, 50}).fertility == 15);
     CHECK_THROWS_AS(map.tile({0, 0}), std::logic_error);
-    map.release([](auto) { FAIL("Unallocated release must do nothing"); });
+    map.release();
     map.allocate(Geometry{4, 2});
     CHECK(fallback.fertility == 15);
     CHECK(map.pattern_seed == 24);
-}
-
-TEST_CASE("W01 allocation failures retain their published prefix without unsafe access",
-          "[world][W01]") {
-    // W01 §2: caller failure contract propagates, with no invented rollback.
-    Tile fallback;
-    MapStorage map{fallback};
-    REQUIRE_THROWS_AS(map.allocate(Geometry{4, 2},
-                                   [](auto request) {
-                                       if (request.kind == StorageKind::remembered &&
-                                           request.index == 2)
-                                           throw std::bad_alloc{};
-                                   }),
-                      std::bad_alloc);
-    CHECK_FALSE(map.allocated());
-    CHECK(map.tiles().size() == 4);
-    CHECK(map.remembered_layer(1).size() == 4);
-    CHECK_THROWS_AS(map.remembered_layer(2), std::logic_error);
-    map.tile({0, 0}).region = 42;
-    map.release();
-    CHECK(map.tile({0, 0}).region == 42);
-    const auto old_tiles = map.tiles();
-    map.allocate(Geometry{4, 2});
-    CHECK(old_tiles[0].region == 42); // allocation does not free the preceding map
-    CHECK(map.tile({0, 0}).region == 0);
-    REQUIRE_THROWS_AS(map.allocate(Geometry{8, 4}, [](auto) { throw std::bad_alloc{}; }),
-                      std::bad_alloc);
-    CHECK(map.allocated());
-    CHECK(map.geometry().area() == 16); // dimensions published before first allocation
-    CHECK(map.tiles().size() == 4);
-    CHECK_THROWS_AS(map.tile({7, 3}), std::out_of_range);
-    CHECK_THROWS_AS(std::as_const(map).tile({7, 3}), std::out_of_range);
-    map.release();
-    CHECK(old_tiles[0].region == 42); // replaced backing remains owned until destruction
 }
 
 TEST_CASE("W01 remembered and coarse layers use backed direct indices", "[world][W01]") {

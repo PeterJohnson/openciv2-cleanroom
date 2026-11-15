@@ -14,7 +14,7 @@ struct CustomSizeResponse {
 };
 struct WorldSizeServices {
     // Ordinary 0=Small, 2=Large, other nonnegative=Normal; negative=cancel.
-    std::function<WorldSizeChoice(std::int16_t remembered_preset)> preset;
+    std::function<WorldSizeChoice(state::WorldSize remembered_preset)> preset;
     std::function<CustomSizeResponse(std::string_view width_default,
                                      std::string_view height_default)>
         custom;

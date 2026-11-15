@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // Authored F06 sections 5, 6, 9 / F01 section 1 expectations, not original captures.
 #include "formats/multiplayer_io.hpp"
 #include "session/runtime.hpp"
@@ -26,7 +27,7 @@ base::ControlledChoices choices(std::string_view call, std::size_t count = 255) 
 }
 state::MultiplayerState incoming() {
     state::MultiplayerState result;
-    result.saved = decode_multiplayer(Bytes(multiplayer_record_size, 0xa5));
+    result.saved = formats::to_live(decode_multiplayer(Bytes(multiplayer_record_size, 0xa5)));
     result.passwords.pending.fill(true);
     result.passwords.present.fill(true);
     result.local_human = 300;
@@ -44,7 +45,6 @@ state::MultiplayerValues saved() {
     result.encoded_passwords[0] = 0;
     result.encoded_passwords[7 * 32] = 0;
     state::encode_passwords(result.encoded_passwords);
-    result.retained_472.fill(0xa6);
     return result;
 }
 } // namespace
@@ -197,12 +197,13 @@ TEST_CASE("F06 successful-load mode adaptation keeps entry-zero asymmetry and un
             const auto before = runtime;
             runtime.resume_civ = 3;
             state::GlobalValues globals;
-            globals.multiplayer = loaded;
+            globals.multiplayer = static_cast<state::GameMode>(loaded);
             globals.civs_alive = 0x0b;
             globals.human_players = 0;
             globals.player_civ = 5;
-            state::MultiplayerPreferences preferences{1, 2, 3, 4};
-            state::adapt_loaded_mode(entry, globals, runtime, preferences);
+            state::MultiplayerPreferences preferences{true, true, true, true};
+            state::adapt_loaded_mode(static_cast<state::GameMode>(entry), globals, runtime,
+                                     preferences);
             auto expected = before;
             expected.resume_civ = 3;
             if (entry != loaded) {
@@ -211,10 +212,10 @@ TEST_CASE("F06 successful-load mode adaptation keeps entry-zero asymmetry and un
                     expected.saved.double_production = expected.saved.double_movement = 0;
             }
             REQUIRE(runtime == expected);
-            REQUIRE(globals.multiplayer == (entry == 0 ? loaded : entry));
+            REQUIRE(static_cast<unsigned>(globals.multiplayer) == (entry == 0 ? loaded : entry));
             REQUIRE(globals.human_players == (entry == loaded ? 0 : 8));
             REQUIRE(globals.player_civ == 5);
-            REQUIRE(preferences.simultaneous == (entry == loaded ? 4 : 0));
+            REQUIRE(preferences.simultaneous == (entry == loaded));
             REQUIRE(preferences.kill_on_retirement == 1);
         }
     struct Case {
@@ -233,11 +234,11 @@ TEST_CASE("F06 successful-load mode adaptation keeps entry-zero asymmetry and un
         auto runtime = incoming();
         runtime.resume_civ = test.resume;
         state::GlobalValues globals;
-        globals.multiplayer = 3;
+        globals.multiplayer = state::GameMode::tcp;
         globals.human_players = test.humans;
         globals.civs_alive = test.alive;
         state::MultiplayerPreferences preferences;
-        state::adapt_loaded_mode(0, globals, runtime, preferences);
+        state::adapt_loaded_mode(state::GameMode::single_player, globals, runtime, preferences);
         REQUIRE(globals.human_players == test.expected);
     }
 }

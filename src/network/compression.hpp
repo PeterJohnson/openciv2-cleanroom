@@ -9,7 +9,6 @@ enum class CodecStop {
     output_capacity,
     truncated_input,
     rejected_token,
-    allocation_failed,
     backing_limit
 };
 struct CodecResult {

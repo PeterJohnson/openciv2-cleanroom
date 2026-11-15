@@ -16,8 +16,7 @@ void validate_map_input(const MapInput& input, bool embedded) {
         if (grid.size() != count)
             throw std::invalid_argument("Coarse map does not match its dimensions");
 }
-void install_map(const MapInput& input, MapStorage& map, bool embedded,
-                 const AllocationCheck& allocation) {
+void install_map(const MapInput& input, MapStorage& map, bool embedded) {
     validate_map_input(input, embedded);
     Tile fallback;
     MapStorage staged(fallback);
@@ -25,13 +24,7 @@ void install_map(const MapInput& input, MapStorage& map, bool embedded,
     staged.pattern_seed = input.seed;
     staged.regions = map.regions;
     staged.remembered_barbarian = map.remembered_barbarian;
-    const auto revision = map.storage_revision();
-    staged.allocate(Geometry(input.width, input.height), [&](StorageRequest request) {
-        if (allocation)
-            allocation(request);
-        if (map.storage_revision() != revision)
-            throw std::out_of_range("Map resource callback changed the installation target");
-    });
+    staged.allocate(Geometry(input.width, input.height));
     std::copy(input.tiles.begin(), input.tiles.end(), staged.tiles().begin());
     if (embedded) {
         for (unsigned i = 0; i < 7; ++i)

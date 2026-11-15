@@ -1,4 +1,5 @@
 #include "session/classic_preferences.hpp"
+#include "formats/state_conversion.hpp"
 #include "session/runtime.hpp"
 #include "formats/preference_io.hpp"
 
@@ -51,11 +52,16 @@ PreferenceLoadStatus load_classic_preferences(state::ProcessContext& process,
         const auto second = input->item(formats::multiplayer_preferences_size);
         if (!input->close())
             return PreferenceLoadStatus::input;
-        ordinary = formats::decode_ordinary_preference_item(first, ordinary);
-        multiplayer = formats::decode_multiplayer_preference_item(second, multiplayer);
-        if (!first.complete)
+        if (first.prefix.size() > formats::ordinary_preferences_size ||
+            second.prefix.size() > formats::multiplayer_preferences_size)
+            throw std::invalid_argument("Preference item exceeds its stored field size");
+        if (first.complete)
+            ordinary = formats::to_live(formats::decode_ordinary_preferences(first.prefix));
+        else
             state::default_ordinary_preferences(ordinary, defaults);
-        if (!second.complete)
+        if (second.complete)
+            multiplayer = formats::to_live(formats::decode_multiplayer_preferences(second.prefix));
+        else
             state::default_multiplayer_preferences(multiplayer);
         if (first.complete && second.complete)
             status = PreferenceLoadStatus::success;

@@ -8,26 +8,12 @@ namespace {
 std::string_view terminated(std::string_view text) {
     return text.substr(0, text.find('\0'));
 }
-bool allowed(const EventServices& services, EventAllocationKind kind, std::size_t bytes) {
-    return !services.allocate || services.allocate({kind, bytes});
-}
-void check_member(const EventCollection& collection, const std::shared_ptr<const Event>& event) {
-    if (!collection.contains(event))
-        throw std::out_of_range("Event callback invalidated the selected event");
-}
-bool duplicate(EventString& target, const EventString& source, const EventServices& services) {
-    return create_event_string(target, source.value(), services);
-}
-bool copy(const EventCollection& source, EventCollection& destination,
-          const EventServices& services) {
+void copy(const EventCollection& source, EventCollection& destination) {
     if (&source == &destination)
         throw std::invalid_argument("Event self-copy has no admitted finite traversal");
     for (std::size_t i = 0; i < source.size(); ++i) {
         const auto from = source.at(i);
-        auto to = destination.append(services);
-        if (!to)
-            return false;
-        check_member(source, from);
+        const auto to = destination.append();
         to->values = from->values;
         to->strings = from->strings;
     }
@@ -40,19 +26,10 @@ bool copy(const EventCollection& source, EventCollection& destination,
                 field = event_other_begin - 1;
                 continue;
             }
-            if (!from->strings[field].present())
-                continue;
-            // Keep the supplied identity alive through resource callbacks.
-            const auto reference = from->strings[field];
-            EventString replacement;
-            if (!duplicate(replacement, reference, services))
-                return false;
-            check_member(source, from);
-            check_member(destination, to);
-            to->set_string(field, std::move(replacement));
+            if (from->strings[field].present())
+                to->set_string(field, EventString(from->strings[field].value()));
         }
     }
-    return true;
 }
 } // namespace
 EventString::EventString(std::string_view text)
@@ -80,47 +57,23 @@ std::shared_ptr<const Event> EventCollection::find(EventId identity) const noexc
             return event;
     return {};
 }
-std::shared_ptr<Event> EventCollection::append(const EventServices& services) {
-    const auto before = revision_;
-    if (!allowed(services, EventAllocationKind::event, 0))
-        return {};
-    if (before != revision_)
-        throw std::out_of_range("Event allocation callback changed the captured list tail");
+std::shared_ptr<Event> EventCollection::append() {
     if (next_identity_ == std::numeric_limits<std::uint64_t>::max())
         throw std::overflow_error("Event logical identities exhausted");
-    try {
-        auto event = std::make_shared<Event>();
-        event->identity_ = static_cast<EventId>(next_identity_);
-        entries_.push_back(event);
-        ++next_identity_;
-        ++revision_;
-        return event;
-    } catch (const std::bad_alloc&) {
-        return {};
-    }
+    auto event = std::make_shared<Event>();
+    event->identity_ = static_cast<EventId>(next_identity_);
+    entries_.push_back(event);
+    ++next_identity_;
+    return event;
 }
 void EventCollection::reset() {
     entries_.clear();
-    ++revision_;
 }
-bool create_event_string(EventString& target, std::string_view text, const EventServices& services,
-                         std::size_t minimum) {
-    const std::string input(terminated(text));
-    const auto length = std::max(minimum, input.size() + 1);
-    if (allowed(services, EventAllocationKind::string, length)) {
-        try {
-            target = EventString(input);
-            return true;
-        } catch (const std::bad_alloc&) {
-        }
-    }
-    if (services.report)
-        services.report(-9, 3);
-    return false;
+void create_event_string(EventString& target, std::string_view text) {
+    target = EventString(text);
 }
-bool copy_events(const EventCollection& source, EventCollection& destination,
-                 const EventServices& services) {
-    return copy(source, destination, services);
+void copy_events(const EventCollection& source, EventCollection& destination) {
+    copy(source, destination);
 }
 std::shared_ptr<Event> EventCollection::find(EventId identity) noexcept {
     for (const auto& event : entries_)
@@ -128,50 +81,26 @@ std::shared_ptr<Event> EventCollection::find(EventId identity) noexcept {
             return event;
     return {};
 }
-bool EventCollection::compact(const EventServices& services) {
-    const auto revision = revision_;
+void EventCollection::compact() {
     EventCollection replacement;
-    auto admission = services;
-    admission.allocate = [&](EventAllocation request) {
-        const auto result = allowed(services, request.kind, request.bytes);
-        if (revision_ != revision)
-            throw std::logic_error("Event resource admission changed the source collection");
-        return result;
-    };
-    if (!copy(*this, replacement, admission))
-        return false;
+    copy(*this, replacement);
     for (std::size_t i = 0; i < entries_.size(); ++i)
         entries_[i]->strings = std::move(replacement.entries_[i]->strings);
-    ++revision_;
-    return true;
 }
-void install_events(const EventCatalog& input, EventCollection& collection,
-                    const EventServices& services) {
-    const auto revision = collection.revision_;
-    auto resources = services;
-    resources.allocate = [&](EventAllocation request) {
-        const bool result = allowed(services, request.kind, request.bytes);
-        if (collection.revision_ != revision)
-            throw std::logic_error("Event resource admission changed the installation target");
-        return result;
-    };
+void install_events(const EventCatalog& input, EventCollection& collection) {
     EventCollection replacement;
     replacement.next_identity_ = collection.next_identity_;
     for (const auto& source : input) {
-        const auto event = replacement.append(resources);
-        if (!event)
-            throw std::bad_alloc();
+        const auto event = replacement.append();
         event->values = source.values;
         for (std::size_t field = 0; field < source.strings.size(); ++field)
-            if (source.strings[field] &&
-                !create_event_string(event->strings[field], *source.strings[field], resources))
-                throw std::bad_alloc();
+            if (source.strings[field])
+                event->strings[field] = EventString(*source.strings[field]);
     }
     collection.entries_ = std::move(replacement.entries_);
     collection.next_identity_ = replacement.next_identity_;
-    ++collection.revision_;
 }
-bool compact_events(EventCollection& collection, const EventServices& services) {
-    return collection.compact(services);
+void compact_events(EventCollection& collection) {
+    collection.compact();
 }
 } // namespace openciv::state

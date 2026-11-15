@@ -251,7 +251,7 @@ TEST_CASE("F03 double movement preserves byte laws across all movement codes and
         rules->definitions.units[1].domain = state::RuleDomain::air;
         rules->definitions.units[2].domain = state::RuleDomain::sea;
         rules->definitions.units[3].domain = static_cast<state::RuleDomain>(255);
-        rules::apply_double_movement(1, 1, *rules, redraw);
+        rules::apply_double_movement(state::GameMode::hotseat, true, *rules, redraw);
         const auto doubled = (code * 2) % 256;
         CHECK(rules->double_movement_applied);
         CHECK(rules->definitions.units[0].movement == doubled);
@@ -259,7 +259,7 @@ TEST_CASE("F03 double movement preserves byte laws across all movement codes and
         CHECK(rules->definitions.units[1].movement == code);
         CHECK(rules->definitions.units[2].movement == code);
         CHECK(rules->definitions.units[3].movement == code);
-        rules::apply_double_movement(3, 0, *rules, redraw);
+        rules::apply_double_movement(state::GameMode::tcp, false, *rules, redraw);
         const auto signed_code =
             doubled < 128 ? static_cast<int>(doubled) : static_cast<int>(doubled) - 256;
         const auto halved = (signed_code / 2 + 256) % 256;
@@ -280,7 +280,7 @@ TEST_CASE("F03 removal divides the signed current byte and never restores a reme
     const std::array<std::uint8_t, 8> expected{0, 0, 63, 192, 193, 255, 255, 0};
     for (std::size_t i = 0; i < input.size(); ++i)
         rules->definitions.units[i].movement = input[i];
-    rules::apply_double_movement(2, 0, *rules, [](std::int32_t) {});
+    rules::apply_double_movement(state::GameMode::email, false, *rules, [](std::int32_t) {});
     for (std::size_t i = 0; i < expected.size(); ++i)
         CHECK(rules->definitions.units[i].movement == expected[i]);
 }
@@ -290,14 +290,14 @@ TEST_CASE("F03 single-player and repeated doubling requests leave all state alon
     auto rules = std::make_unique<state::RuleState>();
     rules->definitions.units[0].movement = 200;
     rules->double_movement_applied = true;
-    rules::apply_double_movement(0, 0, *rules, {});
+    rules::apply_double_movement(state::GameMode::single_player, false, *rules, {});
     CHECK(rules->double_movement_applied);
     CHECK(rules->definitions.units[0].movement == 200);
-    rules::apply_double_movement(3, -1, *rules, {});
+    rules::apply_double_movement(state::GameMode::tcp, true, *rules, {});
     CHECK(rules->definitions.units[0].movement == 200);
     rules->double_movement_applied = false;
-    rules::apply_double_movement(0, 1, *rules, {});
-    rules::apply_double_movement(3, 0, *rules, {});
+    rules::apply_double_movement(state::GameMode::single_player, true, *rules, {});
+    rules::apply_double_movement(state::GameMode::tcp, false, *rules, {});
     CHECK_FALSE(rules->double_movement_applied);
     CHECK(rules->definitions.units[0].movement == 200);
 }
@@ -307,11 +307,12 @@ TEST_CASE("F03 doubling publishes its flag and full table before redraw or a red
     auto rules = std::make_unique<state::RuleState>();
     rules->definitions.units[0].movement = 64;
     rules->definitions.units[61].movement = 127;
-    CHECK_THROWS_AS(rules::apply_double_movement(3, 1, *rules, {}), std::bad_function_call);
+    CHECK_THROWS_AS(rules::apply_double_movement(state::GameMode::tcp, true, *rules, {}),
+                    std::bad_function_call);
     CHECK(rules->double_movement_applied);
     CHECK(rules->definitions.units[0].movement == 128);
     CHECK(rules->definitions.units[61].movement == 254);
-    rules::apply_double_movement(3, 0, *rules, [&](std::int32_t argument) {
+    rules::apply_double_movement(state::GameMode::tcp, false, *rules, [&](std::int32_t argument) {
         CHECK(argument == 1);
         CHECK_FALSE(rules->double_movement_applied);
         CHECK(rules->definitions.units[0].movement == 192);

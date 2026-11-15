@@ -42,16 +42,16 @@ void reset_passwords(MultiplayerState& state, base::GameplayRandom& random, std:
     }
     encode_passwords(bytes);
 }
-void adapt_loaded_mode(std::uint8_t entry_mode, GlobalValues& globals, MultiplayerState& state,
+void adapt_loaded_mode(GameMode entry_mode, GlobalValues& globals, MultiplayerState& state,
                        MultiplayerPreferences& preferences) noexcept {
     if (entry_mode == globals.multiplayer)
         return;
-    state.saved.open_game = 1;
-    if (entry_mode == 0) {
-        state.saved.double_production = 0;
-        state.saved.double_movement = 0;
+    state.saved.open_game = true;
+    if (entry_mode == state::GameMode::single_player) {
+        state.saved.double_production = false;
+        state.saved.double_movement = false;
     }
-    preferences.simultaneous = 0;
+    preferences.simultaneous = false;
     if (globals.human_players == 0) {
         // F01 section 1: variable 32-bit shift counts reduce modulo 32.
         const auto resume_bit = 1U << (static_cast<std::uint32_t>(state.resume_civ) & 31U);
@@ -65,7 +65,7 @@ void adapt_loaded_mode(std::uint8_t entry_mode, GlobalValues& globals, Multiplay
                 }
         }
     }
-    if (entry_mode != 0)
+    if (entry_mode != state::GameMode::single_player)
         globals.multiplayer = entry_mode;
 }
 } // namespace openciv::state

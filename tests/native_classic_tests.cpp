@@ -98,8 +98,8 @@ TEST_CASE("Native F03 preferences replace reload and delete failed output throug
                                     [&](std::string_view path) { return files.remove_file(path); }};
     load_classic_preferences(process, {1000, true}, services);
     CHECK(process.ordinary_preferences.game_options == 0x3f3258U);
-    process.ordinary_preferences.text.bytes.fill(0xff);
-    process.multiplayer_preferences.game_name.bytes.fill(0xfe);
+    process.ordinary_preferences.text = std::string(32, static_cast<char>(0xff));
+    process.multiplayer_preferences.game_name = std::string(32, static_cast<char>(0xfe));
     io::write_new_file(dir.path / "cIv2.dAt", Bytes(999, 0xaa));
     REQUIRE(save_classic_preferences(process, services) == PreferenceSaveStatus::success);
     const auto bytes = io::read_file(dir.path / "cIv2.dAt");
@@ -344,7 +344,7 @@ TEST_CASE("Native failed core save reports partial output without live hotseat s
     SessionRuntime runtime(process, base::RuntimeId{74});
     runtime.begin_client_session({10, 20});
     auto& world = runtime.world();
-    world.globals.multiplayer = 1;
+    world.globals.multiplayer = state::GameMode::hotseat;
     world.globals.human_players = 2;
     world.multiplayer.hotseat_participants = 6;
     world.multiplayer.local_human = 3;

@@ -14,9 +14,8 @@ namespace {
 const state::CalendarValues& calendar() {
     return formats::content::builtin_gameplay()->values.calendar;
 }
-std::string text(const state::FixedText<24>& value) {
-    const auto bytes = value.text();
-    return {reinterpret_cast<const char*>(bytes.data()), bytes.size()};
+const std::string& text(const std::string& value) {
+    return value;
 }
 base::Choice choice(std::string site, unsigned ordinal, std::int32_t modulus, std::int32_t code) {
     return base::make_choice({"F05.setup." + site, "wizard/" + std::to_string(ordinal), 0},
@@ -129,8 +128,6 @@ TEST_CASE("F05 ordinary player setup publishes identity preferences and a sample
     Fixture f;
     auto& world = f.runtime.world();
     auto& globals = world.globals;
-    globals.retained_0e = 0x1234;
-    globals.retained_34 = 3456;
     globals.turn = 71;
     globals.year = 1900;
     globals.first_launch_turn = 21;
@@ -138,17 +135,16 @@ TEST_CASE("F05 ordinary player setup publishes identity preferences and a sample
     world.scenario.year_increment = -7;
     const auto scenario = world.scenario;
     world.civilizations[4].flags = 0xabcd;
-    world.names[4].tribe.bytes.fill(0xff); // Ordinary Name must not read this.
-    world.names[4].leader.bytes.fill(0xee);
+    world.names[4].tribe =
+        std::string(24, static_cast<char>(0xff)); // Ordinary Name must not read this.
+    world.names[4].leader = std::string(24, static_cast<char>(0xee));
     auto random = f.slots();
     const auto result = f.run(random);
     CHECK(result.accepted);
     CHECK_FALSE(result.pick_opponents);
     CHECK(result.acceleration == 0);
-    CHECK(globals.retained_0e == 0);
-    CHECK(globals.retained_34 == 3456);
     CHECK(globals.rules == 0x3f);
-    CHECK(globals.difficulty == 2);
+    CHECK(static_cast<int>(globals.difficulty) == 2);
     CHECK(globals.num_enemies == 2);
     CHECK(globals.barbarian_activity == 1);
     CHECK(globals.player_civ == 4);
@@ -164,8 +160,8 @@ TEST_CASE("F05 ordinary player setup publishes identity preferences and a sample
     CHECK(world.civilizations[4].flags == 0xabcd);
     CHECK(world.names[4].city_style == 2);
     CHECK(text(world.names[4].leader) == "Female3");
-    CHECK(world.names[4].leader.bytes[8] == 0xee);
-    CHECK(world.names[4].tribe.bytes[0] == 0xff);
+    CHECK(world.names[4].leader == "Female3");
+    CHECK(static_cast<unsigned char>(world.names[4].tribe[0]) == 0xff);
     const auto& leader = f.process.rules->leaders[3];
     CHECK(leader.leader_name == state::NameReference{leader.names[1].id, true});
     CHECK(leader.female == 1);
@@ -174,12 +170,12 @@ TEST_CASE("F05 ordinary player setup publishes identity preferences and a sample
     CHECK(leader.times_used == 9);
     CHECK(leader.city_name_index == 11);
     const auto& p = f.process.ordinary_preferences;
-    CHECK(p.difficulty == 2);
+    CHECK(static_cast<int>(p.difficulty) == 2);
     CHECK(p.opponents == 4);
     CHECK(p.barbarians == 1);
-    CHECK(p.gender == 1);
+    CHECK(static_cast<int>(p.gender) == 1);
     CHECK(p.tribe == 3);
-    CHECK(p.rules_choice == 0);
+    CHECK(static_cast<int>(p.rules_choice) == 0);
     CHECK(world.pending_leader_overrides ==
           std::array<std::int8_t, 8>{-1, -1, -1, -1, -1, -1, -1, -1});
     CHECK(f.visits == std::vector<std::string>{"difficulty", "opponents", "barbarians", "rules",
@@ -201,10 +197,7 @@ TEST_CASE("F05 entry restores marked labels and clears only its reserved game fi
             for (auto& id : pair)
                 id.custom = !id.custom;
     }
-    f.runtime.world().globals.retained_0e = 0xffff;
-    f.runtime.world().globals.retained_34 = 123;
     auto globals = f.runtime.world().globals;
-    globals.retained_0e = 0;
     f.services.difficulty = [&](auto) {
         CHECK(leaders == expected);
         return -42;
@@ -222,7 +215,8 @@ TEST_CASE("F05 early cancellations return to their specified stage without undoi
         Fixture f;
         unsigned difficulties = 0;
         f.services.difficulty = [&](auto remembered) {
-            CHECK(remembered == (difficulties == 0 ? 0 : 5));
+            CHECK(remembered ==
+                  (difficulties == 0 ? state::Difficulty::chieftain : state::Difficulty::deity));
             return ++difficulties == 1 ? 5 : -1;
         };
         if (std::string_view(cancel) == "opponents")
@@ -234,7 +228,7 @@ TEST_CASE("F05 early cancellations return to their specified stage without undoi
         auto random = f.slots({});
         CHECK_FALSE(f.run(random).accepted);
         CHECK(difficulties == 2);
-        CHECK(f.runtime.world().globals.difficulty == 5);
+        CHECK(static_cast<int>(f.runtime.world().globals.difficulty) == 5);
         if (std::string_view(cancel) != "opponents") {
             CHECK(f.runtime.world().globals.num_enemies == 2);
             CHECK(f.process.ordinary_preferences.opponents == 4);
@@ -333,7 +327,7 @@ TEST_CASE("F05 advanced checks map every rule combination and preserve premade p
                 CHECK(p.rules == (source == WorldSource::generated
                                       ? active
                                       : (active & 0x7fffU) | (old_flat ? 0x8000U : 0)));
-                CHECK(p.rules_choice == 1);
+                CHECK(static_cast<int>(p.rules_choice) == 1);
                 CHECK(p.accelerated_start == 0);
             }
 }
@@ -349,7 +343,8 @@ TEST_CASE("F05 acceleration cancel then Standard retains negative local and reme
     f.custom_rules({false, false, true, true, true, false});
     unsigned rules = 0;
     f.services.rules = [&](auto remembered) {
-        CHECK(remembered == (rules == 0 ? 0 : 1));
+        CHECK(remembered ==
+              (rules == 0 ? state::RuleSelection::standard : state::RuleSelection::advanced));
         return ++rules == 1 ? 1 : 0;
     };
     f.services.acceleration = [&](auto years, auto remembered) {
@@ -364,7 +359,7 @@ TEST_CASE("F05 acceleration cancel then Standard retains negative local and reme
     CHECK(result.pick_opponents);
     CHECK(result.acceleration == -7);
     CHECK(p.accelerated_start == 2);
-    CHECK(p.rules_choice == 0);
+    CHECK(static_cast<int>(p.rules_choice) == 0);
     CHECK(p.rules == 0xbf);
     CHECK(f.runtime.world().globals.rules == 0x3f);
     CHECK(f.visits[f.visits.size() - 2] == "opponent:2");
@@ -507,7 +502,7 @@ TEST_CASE("F05 tribe and city-style cancellation return to Gender without roster
         CHECK_FALSE(f.run(random).accepted);
         CHECK(genders == 2);
         CHECK(f.runtime.world().globals.civs_alive == 0);
-        CHECK(f.process.ordinary_preferences.gender == 1);
+        CHECK(static_cast<int>(f.process.ordinary_preferences.gender) == 1);
         CHECK(f.process.ordinary_preferences.tribe == (cancel_style ? 3 : 0));
         random.require_choices_consumed();
     }
@@ -549,7 +544,7 @@ TEST_CASE("F05 names accept exact classic byte limits and retain reached copies 
     auto random = f.slots({});
     CHECK_THROWS_AS(f.run(random), std::out_of_range);
     CHECK(text(f.runtime.world().names[4].leader) == maximum);
-    CHECK(f.runtime.world().names[4].leader.bytes[23] == 0);
+    CHECK(f.runtime.world().names[4].leader.size() == 23);
     CHECK(text(f.runtime.world().names[4].tribe) == "Tribe3");
     f.services.names = [](auto, auto current) {
         current[0] = std::string{"a\0b", 3};

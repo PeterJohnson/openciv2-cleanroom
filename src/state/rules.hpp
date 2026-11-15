@@ -1,4 +1,5 @@
 #pragma once
+#include "state/choices.hpp"
 #include <array>
 #include <cstdint>
 #include <optional>
@@ -119,7 +120,8 @@ struct TribeRule {
     std::string id;
     RuleText plural, adjective;
     std::array<RuleText, 2> leaders;
-    std::uint8_t preferred_gender = 0, preferred_color = 1, city_style = 0;
+    Gender preferred_gender = Gender::male;
+    std::uint8_t preferred_color = 1, city_style = 0;
     std::array<std::int8_t, 3> personality{};
     std::array<TitlePair, 7> titles;
     bool operator==(const TribeRule&) const = default;

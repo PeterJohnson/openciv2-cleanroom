@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // F06 section 11 accepted-file dialog; S02 sections 2/11; U01 sections 3/6.
 // Authored file/service inputs and specification expectations, not original
 // captures. S02 parsing/execution and presentation are supplied child effects.
@@ -283,13 +284,6 @@ TEST_CASE("F06 scenario replacement loads owned events and publishes before its 
     const auto old = events.collection.append();
     REQUIRE(old);
     f.files.text.extension = "GER";
-    std::size_t allocations = 0;
-    f.services.input.events.allocate = [&](state::EventAllocation) {
-        CHECK_FALSE(events.loaded);
-        ++allocations;
-        f.trace.push_back("allocate");
-        return true;
-    };
     f.services.scenario_loaded = [&] {
         CHECK(events.loaded);
         REQUIRE(events.collection.size() == 1);
@@ -303,10 +297,8 @@ TEST_CASE("F06 scenario replacement loads owned events and publishes before its 
     };
     CHECK(f.load() == CoreLoadStatus::success);
     CHECK(f.after_close() == std::vector<std::string>{"flush", "probe:C:\\home\\EVENTS.GER",
-                                                      "parse", "allocate", "allocate", "sound:on",
-                                                      "scenario-loaded", "music", "title",
-                                                      "cd:C:\\home"});
-    CHECK(allocations == 2);
+                                                      "parse", "sound:on", "scenario-loaded",
+                                                      "music", "title", "cd:C:\\home"});
 }
 
 TEST_CASE("F06 unavailable or failed replacement events leave no stale list",
@@ -345,7 +337,7 @@ TEST_CASE("F06 persisted events survive the wrapper without replacement or a sce
         CHECK(f.after_close() == std::vector<std::string>{"flush", "sound:on", "scenario-loaded",
                                                           "music", "cd:C:\\home"});
         REQUIRE(f.runtime.world().events.collection.size() == 1);
-        CHECK(f.runtime.world().events.collection.at(0)->values == event.record);
+        CHECK(f.runtime.world().events.collection.at(0)->values == to_live(event.record));
     }
 }
 
@@ -447,7 +439,7 @@ TEST_CASE("F06 completed load retains the selected alternative without drawing a
     save.globals.human_players = 2;
     save.multiplayer.emplace();
     f.bytes = formats::encode_stored_save(save);
-    f.runtime.world().globals.multiplayer = 3;
+    f.runtime.world().globals.multiplayer = state::GameMode::tcp;
     f.entries = {"last.ALT", "first.ALT"};
     f.choice(32767);
     CHECK(f.load("C:\\home\\campaign\\start.scn") == CoreLoadStatus::success);
@@ -520,7 +512,8 @@ TEST_CASE("F03 loaded preference word reaches F06 accepted-file option replaceme
     state::OrdinaryPreferences remembered;
     remembered.game_options = 0x8120; // Includes saved cheat and grid; sound/music off.
     auto bytes = formats::encode_ordinary_preferences(remembered);
-    const auto multiplayer = formats::encode_multiplayer_preferences({});
+    const auto multiplayer =
+        formats::encode_multiplayer_preferences(state::MultiplayerPreferences{});
     bytes.insert(bytes.end(), multiplayer.begin(), multiplayer.end());
     formats::MemoryItems input(bytes);
     PreferenceFileServices services;

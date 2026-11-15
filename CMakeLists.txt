@@ -73,7 +73,7 @@ target_link_libraries(oc2_game PUBLIC oc2_base PRIVATE oc2_options)
 # F06 explicit classic encodings and item-level adapters, independent of host I/O.
 include(cmake/Json.cmake)
 add_library(oc2_formats src/formats/classic_records.cpp src/formats/classic_io.cpp
-  src/formats/save_records.cpp src/formats/classic_save.cpp src/formats/content_json.cpp
+  src/formats/state_conversion.cpp src/formats/save_records.cpp src/formats/classic_save.cpp src/formats/content_json.cpp
   src/formats/content_reader.cpp src/formats/content_source.cpp src/formats/gameplay.cpp
   src/formats/content_pack.cpp src/formats/builtin_gameplay.cpp src/formats/classic_text.cpp src/formats/rules.cpp)
 target_sources(oc2_formats PRIVATE src/formats/classic_text_reader.cpp src/formats/city_preferences.cpp src/formats/classic_city_preferences.cpp)

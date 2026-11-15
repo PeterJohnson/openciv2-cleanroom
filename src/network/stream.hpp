@@ -27,14 +27,11 @@ struct FrameView {
 struct ReceiveCallbacks {
     std::function<void(FrameView)> frame;
     std::function<void(std::uint32_t)> oversized;
-    // Allocation fault injection, not an application reentry point.
-    std::function<bool(std::size_t)> allocate;
 };
 enum class ReceiveStop {
     exhausted,
     oversized,
     zero_total,
-    allocation_failed,
     malformed,
     backing_limit,
     reset_in_callback,
@@ -47,7 +44,7 @@ struct ReceiveResult {
 // N05 §5. Caller owns dispatch and read boundaries. Rejected frames discard the
 // rest of this feed, never an inferred number of future socket bytes. Ordinary
 // receive callbacks may reset/close this object; the object itself must outlive
-// feed. Direct recursive feed and allocation-hook reentry are not admitted.
+// feed. Direct recursive feed are not admitted.
 class FrameReceiver {
 public:
     std::uint32_t oversized_limit = 50000;
@@ -92,7 +89,7 @@ struct SendServices {
     std::function<void()> post_write;
     std::function<void(std::size_t)> backlog;
 };
-enum class SendResult { immediate, queued, oversized, allocation_failed, is_connected, fatal };
+enum class SendResult { immediate, queued, oversized, is_connected, fatal };
 enum class DrainResult { empty, complete, pending, fatal, excluded_retired_descriptor };
 class SendQueue {
 public:

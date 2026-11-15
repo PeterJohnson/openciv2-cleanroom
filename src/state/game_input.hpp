@@ -10,7 +10,8 @@ struct LoadedContent {
     std::optional<LabelCatalog> labels;
 };
 struct TribeInput {
-    std::uint8_t times_used = 0, city_name_index = 0, female = 0;
+    std::uint8_t times_used = 0, city_name_index = 0;
+    bool female = false;
 };
 struct LeaderCustomization {
     bool plural = false, adjective = false;

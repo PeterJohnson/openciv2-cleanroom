@@ -24,7 +24,7 @@ TEST_CASE("S02 copy separates duplicated aliases while text after a hole retains
     a->set_string(4, a->strings[0]);
     a->set_string(6, a->strings[0]);
     a->set_string(34, state::EventString(std::string(300, 'W')));
-    REQUIRE(state::copy_events(source, destination));
+    CHECK_NOTHROW(state::copy_events(source, destination));
     const auto b = destination.at(0);
     REQUIRE(b->values.actions == a->values.actions);
     REQUIRE(b->values.who_civ == -2);
@@ -39,7 +39,7 @@ TEST_CASE("S02 copy separates duplicated aliases while text after a hole retains
     REQUIRE(b->strings[6].value() == "!hared");
     a->strings[0].value() = std::string("A\0tail", 6);
     state::EventCollection terminated_copy;
-    REQUIRE(state::copy_events(source, terminated_copy));
+    CHECK_NOTHROW(state::copy_events(source, terminated_copy));
     REQUIRE(terminated_copy.at(0)->strings[0].value() == "A");
     REQUIRE_THROWS_AS(state::copy_events(source, source), std::invalid_argument);
     REQUIRE(source.size() == 1);
@@ -51,7 +51,7 @@ TEST_CASE("S02 copy into a nonempty destination rewrites strings starting at its
     const auto old = add(destination, "Destination");
     old->values.turn = 99;
     old->set_string(1, state::EventString("Retained absent source field"));
-    REQUIRE(state::copy_events(source, destination));
+    CHECK_NOTHROW(state::copy_events(source, destination));
     REQUIRE(destination.size() == 2);
     REQUIRE(destination.at(0) == old);
     REQUIRE(old->values.turn == 99);
@@ -68,7 +68,7 @@ TEST_CASE("S02 compaction preserves stable event IDs and required aliases in one
     original->set_string(6, original->strings[0]);
     const auto id = original->identity();
     const auto original_string = original->strings[0];
-    REQUIRE(state::compact_events(events));
+    CHECK_NOTHROW(state::compact_events(events));
     const auto replacement = events.find(id);
     REQUIRE(replacement);
     CHECK(replacement->values == original->values);
@@ -79,18 +79,6 @@ TEST_CASE("S02 compaction preserves stable event IDs and required aliases in one
     static_assert(
         std::is_same_v<decltype(std::as_const(events).at(0)), std::shared_ptr<const state::Event>>);
     static_assert(!std::is_copy_assignable_v<state::Event>);
-}
-TEST_CASE("S02 compaction resource rejection retains the original collection", "[events]") {
-    state::EventCollection events;
-    auto original = add(events);
-    const state::EventServices services{[](state::EventAllocation request) {
-                                            return request.kind !=
-                                                   state::EventAllocationKind::string;
-                                        },
-                                        {}};
-    CHECK_FALSE(state::compact_events(events, services));
-    CHECK(events.at(0) == original);
-    CHECK(events.find(original->identity()) == original);
 }
 TEST_CASE("F06 stored event bits round trip while live exports derive presence from strings",
           "[formats][event-io]") {
@@ -125,7 +113,7 @@ TEST_CASE("F06 stored event bits round trip while live exports derive presence f
         decode_event_record(std::span<const Byte>(exported).subspan(8, event_record_size));
     CHECK(record.unit_name == 1);
     CHECK(record.retained == input.record.retained);
-    REQUIRE(state::compact_events(f.runtime.world().events.collection));
+    CHECK_NOTHROW(state::compact_events(f.runtime.world().events.collection));
     CHECK(f.files.event_bytes.at(events.at(0)->identity()).event.lock() == events.at(0));
 }
 
@@ -156,18 +144,7 @@ TEST_CASE("F06 opaque imported event bytes cannot attach to a different event wi
         decode_event_record(std::span<const Byte>(output).subspan(8, event_record_size)).retained ==
         std::array<Byte, 40>{});
 }
-TEST_CASE("S02 compaction rejects collection mutation from resource admission", "[events]") {
-    state::EventCollection events;
-    add(events);
-    const state::EventServices services{[&](state::EventAllocation) {
-                                            events.reset();
-                                            return true;
-                                        },
-                                        {}};
-    CHECK_THROWS_AS(state::compact_events(events, services), std::logic_error);
-}
-
-TEST_CASE("Owned event installation preserves the old collection on allocation failure",
+TEST_CASE("Owned event installation installs independent strings and fresh event identities",
           "[events]") {
     state::EventCollection collection;
     const auto original = collection.append();
@@ -175,13 +152,6 @@ TEST_CASE("Owned event installation preserves the old collection on allocation f
     state::EventCatalog input(1);
     input[0].values.turn = 27;
     input[0].strings[0] = "owned source";
-    state::EventServices reject{[](state::EventAllocation allocation) {
-                                    return allocation.kind != state::EventAllocationKind::string;
-                                },
-                                {}};
-    CHECK_THROWS_AS(state::install_events(input, collection, reject), std::bad_alloc);
-    CHECK(collection.at(0) == original);
-    CHECK(original->values.turn == 19);
     state::install_events(input, collection);
     CHECK(collection.at(0)->identity() != original->identity());
     input[0].strings[0] = "edited input";

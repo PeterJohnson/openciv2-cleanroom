@@ -29,8 +29,10 @@ struct ProcessContext {
 // Logical world and retained workspace ownership. File records are decoded
 // separately; constructing this object performs no F05/F06 transformations.
 // The supplying process context must outlive the world.
+struct WorldLifetime {};
 struct GameState {
     explicit GameState(ProcessContext& process) : map(process.fallback) {}
+    const std::shared_ptr<const WorldLifetime> lifetime = std::make_shared<WorldLifetime>();
     EntityPools entities;
     UnitStackState unit_stacks;
     UnitDeletionState unit_deletion;
@@ -40,7 +42,7 @@ struct GameState {
     bool turn_loop_active = false;
     // F05 section 5 / U04: logical View=0, Move units=1; retain other values
     // until an owning operation writes them. Not a serialized game field.
-    std::int32_t movement_mode = 0;
+    MovementMode movement_mode = MovementMode::view;
     // F05 clears the eight presentation color-record flag sets independently
     // of civilization flags. Native palette records are not game-state inputs.
     std::array<std::uint32_t, 8> civilization_color_flags{};

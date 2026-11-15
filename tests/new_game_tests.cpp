@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // F05 section 5, F02 retained state and F06 field encodings. Expectations and
 // child outcomes are independently authored, not original-program captures.
 #include "service_fixture.hpp"
@@ -22,23 +23,24 @@ struct Fixture {
     explicit Fixture(std::vector<base::Choice> choices = {history()})
         : random(base::ControlledChoices{std::move(choices)}, "setup") {
         auto& world = runtime.world();
-        world.globals = formats::decode_globals(formats::Bytes(formats::global_record_size, 0xa5));
-        world.globals.difficulty = 2;
+        world.globals = formats::to_live(
+            formats::decode_globals(formats::Bytes(formats::global_record_size, 0xa5)));
+        world.globals.difficulty = state::Difficulty::prince;
         world.globals.player_civ = 3;
         world.globals.human_players = 2;
         world.globals.civs_alive = 0x23;
-        world.scenario = formats::decode_scenario_parameters(
-            formats::Bytes(formats::scenario_parameters_size, 0x71));
-        world.eliminations = formats::decode_elimination_history(
-            formats::Bytes(formats::elimination_record_size, 0x72));
+        world.scenario = formats::to_live(formats::decode_scenario_parameters(
+            formats::Bytes(formats::scenario_parameters_size, 0x71)));
+        world.eliminations = formats::to_live(formats::decode_elimination_history(
+            formats::Bytes(formats::elimination_record_size, 0x72)));
         world.civilization_color_flags.fill(0x81234567U);
         world.unit_totals.fill(-1);
-        world.movement_mode = -19;
+        world.movement_mode = static_cast<state::MovementMode>(-19);
         for (auto& row : world.power_history)
             row.fill(123);
         for (std::size_t i = 0; i < world.civilizations.size(); ++i)
-            world.civilizations[i] = formats::decode_civilization(formats::Bytes(
-                formats::civilization_record_size, static_cast<formats::Byte>(0xa5 + i)));
+            world.civilizations[i] = formats::to_live(formats::decode_civilization(formats::Bytes(
+                formats::civilization_record_size, static_cast<formats::Byte>(0xa5 + i))));
         for (std::size_t i = 0; i < process.rules->leaders.size(); ++i) {
             auto& leader = process.rules->leaders[i];
             leader.attack = -12;
@@ -86,18 +88,13 @@ TEST_CASE("F05 inner reset clears specified fields and preserves retained civili
     CHECK(world.scenario.maximum_turns == 0);
     CHECK(world.scenario.objective_civ == 0);
     CHECK(world.scenario.victory_thresholds == std::array<std::int16_t, 4>{});
-    CHECK(world.scenario.name.bytes[0] == 0);
-    CHECK(std::all_of(world.scenario.name.bytes.begin() + 1, world.scenario.name.bytes.end(),
-                      [](auto byte) { return byte == 0x71; }));
+    CHECK(world.scenario.name.empty());
     CHECK(world.eliminations.count == 0);
     CHECK(world.eliminations.turns == std::array<std::int16_t, 12>{});
     CHECK(world.eliminations.killers == std::array<std::uint8_t, 12>{});
     for (std::size_t i = 0; i < 12; ++i) {
         CHECK(world.eliminations.portraits[i] == 0x72);
-        CHECK(world.eliminations.names[i].bytes[0] == 0);
-        CHECK(std::all_of(world.eliminations.names[i].bytes.begin() + 1,
-                          world.eliminations.names[i].bytes.end(),
-                          [](auto byte) { return byte == 0x72; }));
+        CHECK(world.eliminations.names[i].empty());
     }
     CHECK(world.civilization_color_flags == std::array<std::uint32_t, 8>{});
     for (std::size_t i = 0; i < leaders.size(); ++i) {
@@ -113,7 +110,7 @@ TEST_CASE("F05 inner reset clears specified fields and preserves retained civili
     CHECK(world.globals.message_options == 0xf123);
     CHECK(world.globals.transient_flags == 0);
     CHECK(world.globals.shown_event_flags == 0);
-    CHECK(world.movement_mode == 1);
+    CHECK(world.movement_mode == state::MovementMode::move_units);
     CHECK(world.globals.active_unit.value == 0);
     CHECK(world.globals.turn_civ == 0);
     CHECK(world.globals.view_civ == -1);
@@ -122,7 +119,6 @@ TEST_CASE("F05 inner reset clears specified fields and preserves retained civili
     CHECK(world.globals.global_warmings == 0);
     CHECK(world.globals.warming_pollution == 0);
     CHECK(world.globals.polluted_tiles == 0);
-    CHECK(world.globals.retained_34 == 0);
     CHECK(world.globals.first_discoverer == std::array<std::uint8_t, 100>{});
     CHECK(world.globals.advance_known_by == std::array<std::uint8_t, 100>{});
     CHECK(std::all_of(world.globals.wonder_city.begin(), world.globals.wonder_city.end(),
@@ -139,7 +135,8 @@ TEST_CASE("F05 inner reset clears specified fields and preserves retained civili
                                 static_cast<formats::Byte>(0xa5 + slot));
         for (const auto [start, end] :
              {std::pair{0x00a, 0x00c}, std::pair{0x066, 0x074}, std::pair{0x192, 0x312},
-              std::pair{0x400, 0x401}, std::pair{0x402, 0x414}})
+              std::pair{0x400, 0x401}, std::pair{0x402, 0x414}, std::pair{0x01b, 0x01c},
+              std::pair{0x065, 0x066}, std::pair{0x3fd, 0x3fe}, std::pair{0x401, 0x402}})
             std::fill(expected.begin() + start, expected.begin() + end, 0);
         if (slot == 3) {
             expected[0x13] = 5;
@@ -149,7 +146,6 @@ TEST_CASE("F05 inner reset clears specified fields and preserves retained civili
     }
     CHECK(world.globals.rules == globals.rules);
     CHECK(world.globals.game_flags == globals.game_flags);
-    CHECK(world.globals.retained_0e == globals.retained_0e);
     CHECK(world.globals.moving_unit == globals.moving_unit);
     CHECK(world.globals.multiplayer == globals.multiplayer);
     CHECK(world.globals.saved_current_civ == globals.saved_current_civ);
@@ -170,9 +166,9 @@ TEST_CASE(
     const auto unit = formats::decode_unit(formats::Bytes(formats::unit_record_size, 0xa3));
     const auto city = formats::decode_city(formats::Bytes(formats::city_record_size, 0xa4));
     for (auto& record : world.entities.units.storage())
-        record = unit;
+        record = formats::to_live(unit);
     for (auto& record : world.entities.cities.storage())
-        record = city;
+        record = formats::to_live(city);
     world.entities.units.set_end(2048);
     world.entities.cities.set_end(256);
     world.unit_stacks.suppression = 77;
@@ -187,10 +183,10 @@ TEST_CASE(
     CHECK(world.globals.unit_end == 0);
     CHECK(world.globals.city_end == 0);
     CHECK(std::all_of(world.entities.units.storage().begin(), world.entities.units.storage().end(),
-                      [&](const auto& record) { return record == unit; }));
+                      [&](const auto& record) { return record == formats::to_live(unit); }));
     CHECK(std::all_of(world.entities.cities.storage().begin(),
                       world.entities.cities.storage().end(),
-                      [&](const auto& record) { return record == city; }));
+                      [&](const auto& record) { return record == formats::to_live(city); }));
     CHECK(f.process.tokens == tokens);
     CHECK(world.unit_stacks.suppression == 77);
     CHECK(world.unit_deletion.active);
@@ -222,7 +218,7 @@ TEST_CASE("F05 all civilization attempts precede balancing and final live human 
         CHECK(world.civilizations[3].science_rate == 0xa8);
         world.globals.civs_alive = 3;
         world.globals.human_players = 0x50;
-        world.globals.difficulty = 0;
+        world.globals.difficulty = state::Difficulty::chieftain;
         f.process.ordinary_preferences.science = 7;
         f.process.ordinary_preferences.tax = -100;
         f.calls.push_back(8);
@@ -247,7 +243,8 @@ TEST_CASE("F05 difficulty options clear cheat and distinguish tutorial from advi
     for (const auto difficulty : {0, 1, 5, 255})
         for (const auto preference : {0U, 0x100U, 0x200U, 0xffffffffU}) {
             Fixture f;
-            f.runtime.world().globals.difficulty = static_cast<std::uint8_t>(difficulty);
+            f.runtime.world().globals.difficulty =
+                static_cast<state::Difficulty>(static_cast<std::uint8_t>(difficulty));
             f.process.ordinary_preferences.game_options = preference;
             f.run();
             const auto expected =
@@ -285,7 +282,7 @@ TEST_CASE("F05 human-mask cardinality controls rates but gold follows actual hum
         Fixture f;
         auto& world = f.runtime.world();
         world.globals.human_players = static_cast<std::uint8_t>(mask);
-        world.globals.difficulty = 0;
+        world.globals.difficulty = state::Difficulty::chieftain;
         f.run();
         const bool single = mask == 1 || mask == 2;
         for (std::size_t slot = 0; slot < 8; ++slot) {
@@ -462,9 +459,7 @@ TEST_CASE("F05 inner initialization retains the finalized map and process fallba
     map.remembered(3, {2, 2}) = 0x84;
     map.coarse_grid(0)[0] = 0xa7;
     f.process.fallback = tile;
-    const auto revision = map.storage_revision();
     f.run();
-    CHECK(map.storage_revision() == revision);
     CHECK(map.geometry().width() == 10);
     CHECK(map.geometry().height() == 6);
     CHECK(std::all_of(map.tiles().begin(), map.tiles().end(),

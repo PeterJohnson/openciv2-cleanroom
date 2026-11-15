@@ -17,8 +17,6 @@ void publish(SessionRuntime& runtime) {
 }
 void restore_names(state::RuleState& rules) {
     for (auto& leader : rules.leaders) {
-        if (leader.female >= leader.names.size())
-            throw std::out_of_range("Setup leader gender has no name backing");
         leader.leader_name = leader.names[leader.female];
         leader.plural.custom = false;
         leader.adjective.custom = false;
@@ -27,22 +25,14 @@ void restore_names(state::RuleState& rules) {
                 id.custom = false;
     }
 }
-void copy(state::FixedText<24>& target, std::string_view text) {
-    if (text.size() > 23 || text.find('\0') != text.npos)
-        throw std::out_of_range("Setup name is outside the terminated 23-byte domain");
-    std::copy(text.begin(), text.end(), target.bytes.begin());
-    target.bytes[text.size()] = 0; // Retain bytes after the new terminator.
+void copy(std::string& target, std::string_view text) {
+    if (text.size() > 23 || text.find('\0') != std::string_view::npos)
+        throw std::out_of_range("Setup name exceeds its admitted domain");
+    target = text;
 }
-void customize(state::FixedText<24>& target, state::NameReference& label,
-               const state::TextPool& pool) {
+void customize(std::string& target, state::NameReference& label, const state::TextPool& pool) {
     copy(target, pool.text(label.id));
     label.custom = true;
-}
-std::string text(const state::FixedText<24>& value) {
-    if (!value.terminated())
-        throw std::out_of_range("Setup name has no terminated backing");
-    const auto bytes = value.text();
-    return {reinterpret_cast<const char*>(bytes.data()), bytes.size()};
 }
 std::vector<SetupTribeOption> tribes(const state::RuleState& rules,
                                      std::optional<std::int16_t> color = {}) {
@@ -90,7 +80,6 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
     };
     auto run = [&] {
         restore_names(rules);
-        globals.retained_0e = 0;
         auto step = Step::difficulty;
         std::int32_t gender = 0, selected_tribe = 0, human = 0;
         bool custom = false;
@@ -101,8 +90,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 row(choice, 5);
                 if (choice < 0)
                     return;
-                globals.difficulty = static_cast<std::uint8_t>(choice);
-                preferences.difficulty = static_cast<std::int16_t>(choice);
+                globals.difficulty = static_cast<state::Difficulty>(choice);
+                preferences.difficulty = static_cast<state::Difficulty>(choice);
                 step = Step::opponents;
                 break;
             }
@@ -133,7 +122,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                     globals.barbarian_activity = static_cast<std::uint8_t>(*ordinary);
                     preferences.barbarians = static_cast<std::int16_t>(*ordinary);
                 } else {
-                    const auto level = globals.difficulty;
+                    const auto level = static_cast<int>(globals.difficulty);
                     row(level, 5);
                     const auto activity = level < 2   ? sample(1, 2) + level
                                           : level < 5 ? sample(1, 3) + 1
@@ -148,7 +137,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 row(choice, 1);
                 if (choice < 0)
                     return;
-                preferences.rules_choice = static_cast<std::int16_t>(choice);
+                preferences.rules_choice = static_cast<state::RuleSelection>(choice);
                 if (choice == 0) {
                     globals.rules = 0x003f;
                     step = Step::gender;
@@ -200,7 +189,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                     step = Step::difficulty;
                     break;
                 }
-                preferences.gender = static_cast<std::int16_t>(gender);
+                preferences.gender = static_cast<state::Gender>(gender);
                 step = Step::tribe;
                 break;
             case Step::tribe: {
@@ -224,7 +213,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 auto& civ = world.civilizations[static_cast<std::size_t>(human)];
                 civ.tribe = static_cast<std::int16_t>(selected_tribe);
                 civ.leader_portrait = static_cast<std::uint8_t>(selected_tribe + 21 * gender);
-                leader.female = static_cast<std::uint8_t>(gender);
+                leader.female = gender != 0;
                 leader.leader_name = leader.names[static_cast<std::size_t>(gender)];
                 auto& names = world.names[static_cast<std::size_t>(human)];
                 customize(names.leader, leader.leader_name, rules.text);
@@ -240,10 +229,10 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
             }
             case Step::names: {
                 auto& names = world.names[static_cast<std::size_t>(human)];
-                std::array<std::string, 3> current{text(names.leader), {}, {}};
+                std::array<std::string, 3> current{names.leader, {}, {}};
                 if (custom) {
-                    current[1] = text(names.tribe);
-                    current[2] = text(names.adjective);
+                    current[1] = names.tribe;
+                    current[2] = names.adjective;
                 }
                 const auto response = invoke(services.names, custom, current);
                 if (response.action == SetupNameAction::unavailable)
@@ -262,7 +251,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 if (response.action == SetupNameAction::titles) {
                     std::array<std::string, 7> titles;
                     for (std::size_t g = 0; g < titles.size(); ++g)
-                        titles[g] = text(names.titles[g]);
+                        titles[g] = names.titles[g];
                     const auto edited = invoke(services.titles, titles);
                     if (edited.status == SetupTitleResponse::Status::unavailable)
                         return;

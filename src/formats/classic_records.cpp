@@ -1,4 +1,5 @@
 #include "formats/classic_records.hpp"
+#include "formats/state_conversion.hpp"
 
 namespace openciv::formats {
 namespace {
@@ -12,9 +13,9 @@ template <class Range> void read_bytes(ByteReader& reader, Range& target) {
         byte = reader.u8();
 }
 } // namespace
-state::Unit decode_unit(std::span<const Byte> bytes) {
+StoredUnit decode_unit(std::span<const Byte> bytes) {
     auto r = record(bytes, unit_record_size);
-    state::Unit v;
+    StoredUnit v;
     v.x = r.i16();
     v.y = r.i16();
     v.flags = r.u16();
@@ -40,7 +41,7 @@ state::Unit decode_unit(std::span<const Byte> bytes) {
     v.retained_word = r.u16();
     return v;
 }
-Bytes encode_unit(const state::Unit& v) {
+Bytes encode_unit(const StoredUnit& v) {
     if (v.home && static_cast<std::uint16_t>(*v.home) >= 255)
         throw std::invalid_argument("Unit home city outside classic encoding");
     ByteWriter w;
@@ -67,9 +68,9 @@ Bytes encode_unit(const state::Unit& v) {
     w.u16(v.retained_word);
     return std::move(w.bytes);
 }
-state::City decode_city(std::span<const Byte> bytes) {
+StoredCity decode_city(std::span<const Byte> bytes) {
     auto r = record(bytes, city_record_size);
-    state::City v;
+    StoredCity v;
     v.x = r.i16();
     v.y = r.i16();
     v.flags = r.u32();
@@ -107,7 +108,7 @@ state::City decode_city(std::span<const Byte> bytes) {
     v.token = state::CityToken{r.u32()};
     return v;
 }
-Bytes encode_city(const state::City& v) {
+Bytes encode_city(const StoredCity& v) {
     ByteWriter w;
     w.i16(v.x);
     w.i16(v.y);
@@ -217,5 +218,11 @@ Bytes encode_map_header(const MapHeader& v) {
     w.i16(v.coarse_width);
     w.i16(v.coarse_height);
     return std::move(w.bytes);
+}
+Bytes encode_unit(const state::Unit& value) {
+    return encode_unit(to_stored(value));
+}
+Bytes encode_city(const state::City& value) {
+    return encode_city(to_stored(value));
 }
 } // namespace openciv::formats

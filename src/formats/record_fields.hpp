@@ -9,7 +9,7 @@ namespace openciv::formats {
 // projections share these lists; byte packing remains in the codecs.
 // Unit/city/tile lists expose logical values, not host or wire layouts.
 template <class Visitor, class Record>
-    requires std::same_as<std::remove_cv_t<Record>, state::GlobalValues>
+    requires std::same_as<std::remove_cv_t<Record>, StoredGlobals>
 void visit_fields(Visitor& visit, Record& v) {
     visit("rules", v.rules);
     visit("game_options", v.game_options);
@@ -54,7 +54,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("civ_by_rank", v.civ_by_rank);
 }
 template <class Visitor, class Record>
-    requires std::same_as<std::remove_cv_t<Record>, state::Civilization>
+    requires std::same_as<std::remove_cv_t<Record>, StoredCivilization>
 void visit_fields(Visitor& visit, Record& v) {
     visit("flags", v.flags);
     visit("gold", v.gold);
@@ -116,7 +116,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("standing_goals", v.standing_goals);
 }
 template <class Visitor, class Record>
-    requires std::same_as<std::remove_cv_t<Record>, state::CivilizationNames>
+    requires std::same_as<std::remove_cv_t<Record>, StoredCivilizationNames>
 void visit_fields(Visitor& visit, Record& v) {
     visit("city_style", v.city_style);
     visit("leader", v.leader);
@@ -275,7 +275,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("bottom", v.bottom);
 }
 template <class Visitor, class Record>
-    requires std::same_as<std::remove_cv_t<Record>, state::Unit>
+    requires std::same_as<std::remove_cv_t<Record>, StoredUnit>
 void visit_fields(Visitor& visit, Record& v) {
     visit("x", v.x);
     visit("y", v.y);
@@ -300,7 +300,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("retained_word", v.retained_word);
 }
 template <class Visitor, class Record>
-    requires std::same_as<std::remove_cv_t<Record>, state::City>
+    requires std::same_as<std::remove_cv_t<Record>, StoredCity>
 void visit_fields(Visitor& visit, Record& v) {
     visit("x", v.x);
     visit("y", v.y);

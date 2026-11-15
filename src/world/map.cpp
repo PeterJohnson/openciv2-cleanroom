@@ -42,55 +42,36 @@ void MapStorage::swap_storage(MapStorage& other) noexcept {
     swap(stored_topology, other.stored_topology);
     swap(regions, other.regions);
     swap(remembered_barbarian, other.remembered_barbarian);
-    ++storage_revision_;
-    ++other.storage_revision_;
 }
-void MapStorage::allocate(Geometry shape, const AllocationCheck& check) {
-    ++storage_revision_;
+void MapStorage::allocate(Geometry shape) {
     geometry_ = shape;
-    if (check)
-        check({StorageKind::tiles, 0, shape.area()});
     replace(tiles_, shape.area()); // Tile defaults are exactly the W01 Ocean initialization.
     for (unsigned civ = 1; civ < 8; ++civ) {
-        if (check)
-            check({StorageKind::remembered, civ, shape.area()});
         replace(remembered_[civ], shape.area());
     }
     const auto coarse_area = static_cast<std::size_t>(shape.coarse_width()) *
                              static_cast<std::size_t>(shape.coarse_height());
     for (unsigned grid = 0; grid < 4; ++grid) {
-        if (check)
-            check({StorageKind::coarse, grid, coarse_area});
         replace(coarse_[grid], coarse_area); // nullopt: unknown, never implicit zero.
     }
     allocated_ = true;
 }
-void MapStorage::release(const ReleaseObserver& observer) {
+void MapStorage::release() {
     if (!allocated_)
         return;
-    ++storage_revision_;
     for (unsigned i = 4; i > 0; --i) {
         auto& grid = coarse_[i - 1];
         if (grid) {
-            const auto count = grid->size();
             grid.reset();
-            if (observer)
-                observer({StorageKind::coarse, i - 1, count});
         }
     }
     if (tiles_) {
-        const auto count = tiles_->size();
         tiles_.reset();
-        if (observer)
-            observer({StorageKind::tiles, 0, count});
     }
     for (unsigned civ = 1; civ < 8; ++civ) {
         auto& layer = remembered_[civ];
         if (layer) {
-            const auto count = layer->size();
             layer.reset();
-            if (observer)
-                observer({StorageKind::remembered, civ, count});
         }
     }
     allocated_ = false;

@@ -41,7 +41,7 @@ jt::Json world_summary(const state::GameState& world) {
     jt::Json result;
     result["turn"] = jt::Json(world.globals.turn);
     result["year"] = jt::Json(world.globals.year);
-    result["mode"] = jt::Json(world.globals.multiplayer);
+    result["mode"] = jt::Json(static_cast<unsigned>(world.globals.multiplayer));
     result["playerCiv"] = jt::Json(world.globals.player_civ);
     result["localHuman"] = jt::Json(world.multiplayer.local_human);
     result["gameFlags"] = jt::Json(world.globals.game_flags);

@@ -86,8 +86,6 @@ TEST_CASE("U01 basic deletion performs bookkeeping without loss accounting", "[u
     unit.damage = 9;
     unit.destination_x = 57;
     unit.destination_y = -12;
-    unit.retained_byte = 0xab;
-    unit.retained_word = 0xcdef;
     auto expected = unit;
     expected.token = state::UnitToken{0};
     expected.x = expected.y = -200;
@@ -191,7 +189,7 @@ TEST_CASE("U01 deletion wakes all scanned sleepers without clearing carrier or a
 TEST_CASE("U01 deletion early returns precede activity authority and backing effects",
           "[unit][deletion]") {
     Fixture f;
-    f.world.globals.multiplayer = 3;
+    f.world.globals.multiplayer = state::GameMode::tcp;
     f.world.unit_deletion.active = true;
     f.world.unit_deletion.reply = 83;
     f.unit(0).next.value = 3000;
@@ -212,7 +210,7 @@ TEST_CASE("U01 deletion notifications distinguish home zero from positive home",
           "[unit][deletion]") {
     Fixture f;
     f.live(0);
-    f.world.globals.multiplayer = 3;
+    f.world.globals.multiplayer = state::GameMode::tcp;
     f.world.multiplayer.network_host = true;
     SECTION("home zero") {
         f.unit(0).home = state::CitySlot{0};
@@ -249,8 +247,8 @@ TEST_CASE("U01 deletion captures selectors but reads elimination rules counters 
         f.civ().city_count = 0;
         f.civ().units_active[3] = 0;
     };
-    f.on_destroyed = [&] { f.world.globals.multiplayer = 3; };
-    f.on_sync = [&] { f.world.globals.multiplayer = 0; };
+    f.on_destroyed = [&] { f.world.globals.multiplayer = state::GameMode::tcp; };
+    f.on_sync = [&] { f.world.globals.multiplayer = state::GameMode::single_player; };
     f.operation().erase(0, true);
     CHECK(f.calls == std::vector<std::string>{"removed:2,2", "refresh:200", "destroyed:1,-1",
                                               "sync", "unit:2,2", "home:200", "flush:5000"});

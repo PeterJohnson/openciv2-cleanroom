@@ -107,12 +107,14 @@ CoreLoadStatus ClassicLoadOperation::load(std::string_view path,
             return CoreLoadStatus::input;
         std::unique_ptr<state::GameInput> loaded;
         std::vector<std::array<Byte, 40>> event_bytes;
+        std::unique_ptr<StoredSave> imported;
         try {
-            auto stored = decode_stored_save(bytes);
+            imported = std::make_unique<StoredSave>(decode_stored_save(bytes));
+            const auto& stored = *imported;
             if (stored.events)
                 for (const auto& event : stored.events->entries)
                     event_bytes.push_back(event.record.retained);
-            loaded = std::make_unique<state::GameInput>(game_input(std::move(stored)));
+            loaded = std::make_unique<state::GameInput>(game_input(stored));
             validate_game_input(*loaded);
         } catch (const DecodeError&) {
             return CoreLoadStatus::data;
@@ -133,8 +135,24 @@ CoreLoadStatus ClassicLoadOperation::load(std::string_view path,
         rules::RuleInstaller(*content.rules, rules).load(true);
         if (services.content_installed)
             services.content_installed();
-        install_game(*loaded, runtime, *content.rules, retained.current_screen,
-                     services.allocate_map, services.events, reset_call);
+        install_game(*loaded, runtime, *content.rules, retained.current_screen, reset_call);
+        auto& opaque = retained.record_bytes;
+        opaque = {};
+        opaque.lifetime = runtime.world().lifetime;
+        opaque.globals = imported->globals;
+        std::copy(imported->civilizations.begin(), imported->civilizations.end(),
+                  opaque.civilizations.begin());
+        opaque.multiplayer = imported->multiplayer;
+        for (std::size_t i = 0; i < imported->units.size(); ++i) {
+            const auto token = runtime.world().entities.units.storage()[i].token;
+            if (state::occupied(token))
+                opaque.units.emplace(token, imported->units[i]);
+        }
+        for (std::size_t i = 0; i < imported->cities.size(); ++i) {
+            const auto token = runtime.world().entities.cities.storage()[i].token;
+            if (state::occupied(token))
+                opaque.cities.emplace(token, imported->cities[i]);
+        }
         retained.event_bytes.clear();
         for (std::size_t i = 0; i < event_bytes.size(); ++i) {
             const auto event = runtime.world().events.collection.at(i);

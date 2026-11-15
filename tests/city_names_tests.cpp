@@ -44,8 +44,8 @@ struct World {
     std::string plural = "tribes 0";
     World() {
         city.owner = state::CivilizationSlot{1};
-        city.name.bytes.fill(0xa5);
-        city.name.bytes[0] = 0;
+        city.name = std::string(24, static_cast<char>(0xa5));
+        city.name.clear();
         leaders[0].plural = state::NameReference{123, true};
     }
     bool run(const city::NameCatalog& provider) {
@@ -58,7 +58,7 @@ struct World {
             provider);
     }
     std::string name() const {
-        const auto bytes = city.name.text();
+        const auto bytes = city.name;
         return {bytes.begin(), bytes.end()};
     }
 };
@@ -169,14 +169,13 @@ TEST_CASE("C01 successful publication truncates classic bytes clears tail and ke
     World world;
     REQUIRE(world.run(provider));
     REQUIRE(world.name() == std::string("12345678901234\xe9"));
-    REQUIRE(world.city.name.bytes[15] == 0);
+    REQUIRE(world.city.name.size() == 15);
     const auto first = world.city.name;
     REQUIRE(world.run(provider));
     REQUIRE(world.city.name == first);
     REQUIRE(world.run(provider));
     REQUIRE(world.name() == "X");
-    for (std::size_t i = 1; i < 16; ++i)
-        REQUIRE(world.city.name.bytes[i] == 0);
+    REQUIRE(world.city.name == "X");
     TextInput text;
     text.files["scenario/CITY.TXT"] = "@tribes 0\n12345678901234\xe9 tail\n@STOP\n";
     auto reader = text.reader();

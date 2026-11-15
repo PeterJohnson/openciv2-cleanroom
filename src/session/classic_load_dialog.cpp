@@ -118,7 +118,7 @@ load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
             if (services.input.exists(files.scenario_directory, "EVENTS." + files.text.extension)) {
                 publish(runtime);
                 if (auto catalog = services.load_events()) {
-                    state::install_events(*catalog, events.collection, services.input.events);
+                    state::install_events(*catalog, events.collection);
                     events.loaded = true;
                 }
             }

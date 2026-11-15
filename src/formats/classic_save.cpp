@@ -8,12 +8,12 @@ bool has_event_tag(std::span<const Byte> bytes) {
     return bytes.size() >= event_tag.size() &&
            std::equal(event_tag.begin(), event_tag.end(), bytes.begin());
 }
-std::size_t leader_count(const state::GlobalValues& globals) {
+std::size_t leader_count(const StoredGlobals& globals) {
     return globals.multiplayer == 0
                ? 1U
                : static_cast<std::size_t>(std::popcount(globals.human_players));
 }
-bool has_scenario(const state::GlobalValues& globals) {
+bool has_scenario(const StoredGlobals& globals) {
     return (globals.game_flags & 0xc0) != 0;
 }
 std::size_t count(std::int16_t value, std::size_t limit, const char* label) {

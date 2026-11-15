@@ -44,21 +44,23 @@ UnitOperation::UnitOperation(state::GameState& world, state::RuleState& rules,
                           ? 3
                           : 1;
     std::fill(request_.arguments.begin() + used, request_.arguments.end(), 0);
-    remote_ = world.globals.multiplayer >= 3 && !world.multiplayer.network_host;
+    remote_ = world.globals.multiplayer >= state::GameMode::tcp && !world.multiplayer.network_host;
     if (remote_ && (!channel_ || !services_.ticks || !services_.timed_out))
         throw std::invalid_argument(
             "Remote unit operation requires channel, clock and timeout service");
-    if (stack_ && notify && world.globals.multiplayer >= 3 && !services_.placement.synchronize)
+    if (stack_ && notify && world.globals.multiplayer >= state::GameMode::tcp &&
+        !services_.placement.synchronize)
         throw std::invalid_argument("Stack relocation requires synchronization notification");
     if (!remote_) {
         const auto& deletion = services_.deletion;
         if (request.operation == UnitOperationKind::erase &&
             (!deletion.check_destroyed ||
-             (notify && (!deletion.removed_unit || !deletion.refresh_home ||
-                         (world.globals.multiplayer >= 3 && !deletion.synchronize)))))
+             (notify &&
+              (!deletion.removed_unit || !deletion.refresh_home ||
+               (world.globals.multiplayer >= state::GameMode::tcp && !deletion.synchronize)))))
             throw std::invalid_argument("Unit deletion requires complete local children");
         if (request.operation != UnitOperationKind::erase && notify &&
-            world.globals.multiplayer >= 3 && !services_.placement.synchronize)
+            world.globals.multiplayer >= state::GameMode::tcp && !services_.placement.synchronize)
             throw std::invalid_argument("Placement requires synchronization notification");
     }
 }
@@ -116,7 +118,7 @@ std::optional<UnitOperationResult> UnitOperation::complete_child(UnitOperationRe
         timed_out_ = false;
         return {}; // Preserve the captured successor across the suspended child.
     }
-    if (stack_ && notify_ && world_.globals.multiplayer >= 3) {
+    if (stack_ && notify_ && world_.globals.multiplayer >= state::GameMode::tcp) {
         if (!services_.placement.synchronize)
             throw std::invalid_argument("Stack relocation requires synchronization notification");
         services_.placement.synchronize();
@@ -165,7 +167,8 @@ std::optional<UnitOperationResult> UnitOperation::poll() {
             if (request_.arguments[0] < 0)
                 return complete_child({});
             saved_next_ = traversal.next(request_.arguments[0]);
-            remote_ = world.globals.multiplayer >= 3 && !world.multiplayer.network_host;
+            remote_ = world.globals.multiplayer >= state::GameMode::tcp &&
+                      !world.multiplayer.network_host;
             if (remote_ && (!channel_ || !services_.ticks || !services_.timed_out))
                 throw std::invalid_argument(
                     "Remote stack child requires channel, clock and timeout service");

@@ -249,7 +249,7 @@ void RuleLoader::leaders() {
         auto& row = rules_.tribes[i];
         for (auto& leader : row.leaders)
             name_into(leader, true);
-        row.preferred_gender = static_cast<std::uint8_t>(std::clamp(reader_.next_integer(), 0, 1));
+        row.preferred_gender = static_cast<state::Gender>(std::clamp(reader_.next_integer(), 0, 1));
         row.preferred_color = rules::normalize_leader_color(reader_.next_integer());
         row.city_style = rules::normalize_leader_style(reader_.next_integer());
         name_into(row.plural, true);
@@ -266,7 +266,7 @@ void RuleLoader::leaders() {
             name_into(titles.male, false);
             name_into(titles.female, false);
             output_.title_overrides[i].push_back(
-                {static_cast<std::uint8_t>(government), std::move(titles)});
+                {static_cast<state::Government>(government), std::move(titles)});
         }
     }
 }

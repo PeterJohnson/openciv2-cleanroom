@@ -152,7 +152,8 @@ void RuleInstaller::leaders(bool replace) {
         for (std::size_t sex = 0; sex < 2; ++sex)
             leader_name(row.leaders[sex], live.names[sex], source.leaders[sex], true, replace);
         if (replace) {
-            row.preferred_gender = live.female = source.preferred_gender;
+            row.preferred_gender = source.preferred_gender;
+            live.female = source.preferred_gender == state::Gender::female;
             live.leader_name = live.names[live.female];
             row.preferred_color = source.preferred_color;
             live.color = source.preferred_color;
@@ -174,7 +175,7 @@ void RuleInstaller::leaders(bool replace) {
             }
         }
         for (const auto& override : input_.title_overrides[i]) {
-            const auto g = override.government;
+            const auto g = static_cast<std::size_t>(override.government);
             if (g == 0 || g >= row.titles.size())
                 throw std::invalid_argument("Rule title override requires government 1..6");
             leader_name(row.titles[g].male, live.titles[g][0], override.titles.male, false,

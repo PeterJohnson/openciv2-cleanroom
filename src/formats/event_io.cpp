@@ -1,4 +1,5 @@
 #include "formats/event_io.hpp"
+#include "formats/state_conversion.hpp"
 #include <limits>
 
 namespace openciv::formats {
@@ -6,7 +7,7 @@ namespace {
 constexpr std::array<Byte, 4> tag{'E', 'V', 'N', 'T'};
 EventRecord wire_record(const state::Event& event) {
     EventRecord record;
-    static_cast<state::EventValues&>(record) = event.values;
+    static_cast<StoredEventValues&>(record) = to_stored(event.values);
     const auto markers = event_markers(record);
     for (std::size_t i = 0; i < markers.size(); ++i)
         *markers[i] = event.strings[i].present() ? 1 : 0;

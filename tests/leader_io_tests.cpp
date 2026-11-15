@@ -24,7 +24,7 @@ TEST_CASE("F06 leader selection preserves repeated-tribe customization toggles",
 TEST_CASE("F06 leader export never substitutes the live player selector", "[leader-names]") {
     state::ProcessContext process;
     state::GameState world(process);
-    world.globals.multiplayer = 3;
+    world.globals.multiplayer = state::GameMode::tcp;
     world.globals.human_players = 6;
     world.globals.player_civ = 7;
     std::size_t calls = 0;

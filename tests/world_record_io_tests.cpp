@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 #include "state/game.hpp"
 #include <catch2/catch_test_macros.hpp>
 using namespace openciv;
@@ -9,7 +10,8 @@ struct Records {
 std::unique_ptr<Records> incoming() {
     auto result = std::make_unique<Records>();
     for (auto& civ : result->civs)
-        civ = formats::decode_civilization(formats::Bytes(formats::civilization_record_size, 0xa5));
+        civ = formats::to_live(
+            formats::decode_civilization(formats::Bytes(formats::civilization_record_size, 0xa5)));
     return result;
 }
 } // namespace

@@ -96,10 +96,7 @@ TEST_CASE("N05 receiver admission and callback reset preserve bounded failure ef
     const auto good = encode_frame(0, Bytes{1});
     FrameReceiver receiver;
     ReceiveCallbacks callbacks;
-    callbacks.allocate = [](auto) { return false; };
-    CHECK(receiver.feed(good, callbacks).stop == ReceiveStop::allocation_failed);
     CHECK_FALSE(receiver.incomplete());
-    callbacks.allocate = {};
     auto malformed = good;
     put(malformed, 8, 60); // More payload than total-12.
     CHECK(receiver.feed(malformed, callbacks).stop == ReceiveStop::malformed);

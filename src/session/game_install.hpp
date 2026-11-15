@@ -7,7 +7,6 @@ namespace openciv::session {
 void validate_game_input(const state::GameInput& input);
 void install_game(const state::GameInput& input, SessionRuntime& runtime,
                   const state::RuleInput& rules, const state::Rectangle& screen,
-                  const world::AllocationCheck& allocate, const state::EventServices& events,
                   std::string_view password_reset_call);
 void restore_leader_names(const state::GameInput& input, state::GameState& world,
                           state::RuleState& rules);

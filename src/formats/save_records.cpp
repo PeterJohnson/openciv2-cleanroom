@@ -1,4 +1,5 @@
 #include "formats/record_fields.hpp"
+#include "formats/state_conversion.hpp"
 #include <concepts>
 #include <string_view>
 
@@ -72,22 +73,22 @@ template <class T> Bytes encode(const T& value, std::size_t size) {
 }
 } // namespace
 
-state::GlobalValues decode_globals(std::span<const Byte> bytes) {
-    return decode<state::GlobalValues>(bytes, global_record_size);
+StoredGlobals decode_globals(std::span<const Byte> bytes) {
+    return decode<StoredGlobals>(bytes, global_record_size);
 }
-Bytes encode_globals(const state::GlobalValues& v) {
+Bytes encode_globals(const StoredGlobals& v) {
     return encode(v, global_record_size);
 }
-state::Civilization decode_civilization(std::span<const Byte> bytes) {
-    return decode<state::Civilization>(bytes, civilization_record_size);
+StoredCivilization decode_civilization(std::span<const Byte> bytes) {
+    return decode<StoredCivilization>(bytes, civilization_record_size);
 }
-Bytes encode_civilization(const state::Civilization& v) {
+Bytes encode_civilization(const StoredCivilization& v) {
     return encode(v, civilization_record_size);
 }
-state::CivilizationNames decode_civilization_names(std::span<const Byte> bytes) {
-    return decode<state::CivilizationNames>(bytes, civilization_names_size);
+StoredCivilizationNames decode_civilization_names(std::span<const Byte> bytes) {
+    return decode<StoredCivilizationNames>(bytes, civilization_names_size);
 }
-Bytes encode_civilization_names(const state::CivilizationNames& v) {
+Bytes encode_civilization_names(const StoredCivilizationNames& v) {
     return encode(v, civilization_names_size);
 }
 StoredLeader decode_leader(std::span<const Byte> bytes) {
@@ -146,5 +147,26 @@ std::array<std::uint32_t*, state::event_string_count> event_markers(EventRecord&
                            &v.money_receiver_name, &v.wave_file};
     std::copy(other.begin(), other.end(), result.begin() + state::event_other_begin);
     return result;
+}
+Bytes encode_globals(const state::GlobalValues& value) {
+    return encode_globals(to_stored(value));
+}
+Bytes encode_civilization(const state::Civilization& value) {
+    return encode_civilization(to_stored(value));
+}
+Bytes encode_civilization_names(const state::CivilizationNames& value) {
+    return encode_civilization_names(to_stored(value));
+}
+Bytes encode_map_view(const state::MapView& value) {
+    return encode_map_view(to_stored(value));
+}
+Bytes encode_scenario_parameters(const state::ScenarioParameters& value) {
+    return encode_scenario_parameters(to_stored(value));
+}
+Bytes encode_elimination_history(const state::EliminationHistory& value) {
+    return encode_elimination_history(to_stored(value));
+}
+Bytes encode_multiplayer(const state::MultiplayerValues& value) {
+    return encode_multiplayer(to_stored(value));
 }
 } // namespace openciv::formats

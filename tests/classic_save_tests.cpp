@@ -52,7 +52,7 @@ TEST_CASE(
     REQUIRE(stored.layout.rectangles[0] == SavedRectangle{10, 20, 650, 500});
     REQUIRE(stored.power_history[149][7] == 81);
     REQUIRE(stored.views[7].zoom == -7);
-    REQUIRE(stored.eliminations.names[11].bytes[23] == 91);
+    REQUIRE(to_live(stored.eliminations.names[11]) == "Last leader");
     REQUIRE(f.process.tokens == state::ProcessTokens{100, 200});
     REQUIRE(f.runtime.gameplay_random().checkpoint() == gameplay);
     REQUIRE(f.runtime.presentation_random().checkpoint() == presentation);
@@ -74,7 +74,7 @@ TEST_CASE("F06 scenario save rebuilds knowledge and flags before names and omits
     w.civilizations[1].advances[11] = 2; // Raw Future Technology bit must be ignored.
     w.scenario.technology_paradigm = -11;
     f.process.rules->leaders[0].plural = state::NameReference{1, true};
-    w.names[1].tribe.bytes[0] = 'X';
+    w.names[1].tribe = "X";
     REQUIRE(f.save(true) == CoreSaveStatus::success);
     REQUIRE(f.path == "C:\\saves\\Name.SCN");
     const auto stored = decode_stored_save(f.bytes);
@@ -162,7 +162,7 @@ TEST_CASE("F06 hotseat export values never replace live masks or selectors",
     for (bool fail : {false, true}) {
         Fixture f;
         auto& w = f.runtime.world();
-        w.globals.multiplayer = 1;
+        w.globals.multiplayer = state::GameMode::hotseat;
         w.globals.human_players = 2;
         f.fail_close = fail;
         f.observe = [&] {
@@ -190,7 +190,7 @@ TEST_CASE("F06 preparation errors open no output and accepted save effects survi
     const auto layout = f.runtime.world().layout;
     CHECK(f.save(true) == CoreSaveStatus::output);
     CHECK((f.runtime.world().globals.game_flags & 0x40) != 0);
-    CHECK(f.runtime.world().names[1].leader.bytes[0] == 'L');
+    CHECK(f.runtime.world().names[1].leader[0] == 'L');
     CHECK(f.runtime.world().layout == layout);
     CHECK(f.closes == 1);
 }

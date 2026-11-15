@@ -9,6 +9,6 @@ namespace openciv::rules {
 // A changed multiplayer request publishes the retained flag before the table,
 // then invokes required redrawStatus(1). Single-player and repeated requests
 // leave both flag and table untouched. Existing unit movement is never changed.
-void apply_double_movement(std::uint8_t mode, std::int16_t requested, state::RuleState& rules,
+void apply_double_movement(state::GameMode mode, bool enabled, state::RuleState& rules,
                            const std::function<void(std::int32_t)>& redraw_status);
 } // namespace openciv::rules

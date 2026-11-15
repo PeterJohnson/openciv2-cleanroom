@@ -104,9 +104,9 @@ TEST_CASE("F03 conversion captures installation operands before lossy normalizat
     CHECK(operands.movement_points[1] == 0);
     CHECK(operands.definitions.advances[2].prerequisites[0] == state::AdvanceReference::never);
     REQUIRE(operands.title_overrides[0].size() == 2);
-    CHECK(operands.title_overrides[0][0].government == 1);
+    CHECK(operands.title_overrides[0][0].government == state::Government::despotism);
     CHECK(operands.title_overrides[0][0].titles.male.classic == "First");
-    CHECK(operands.title_overrides[0][1].government == 1);
+    CHECK(operands.title_overrides[0][1].government == state::Government::despotism);
     CHECK(operands.title_overrides[0][1].titles.male.classic == "Last");
     CHECK(captured.values->tribes[0].titles[1].male.classic == "Last");
     CHECK(captured.values->tribes[0].titles[2] == captured.values->governments[2].titles);
@@ -364,7 +364,7 @@ TEST_CASE("F03 leaders replace fields and repeated titles while preservation sti
     f.select("LEADERS");
     loader.leaders(true);
     const auto& leader = f.values->tribes[0];
-    REQUIRE(leader.preferred_gender == 1);
+    REQUIRE(leader.preferred_gender == state::Gender::female);
     REQUIRE(leader.preferred_color == 2);
     REQUIRE(leader.city_style == 2);
     REQUIRE(leader.personality == std::array<std::int8_t, 3>{127, 2, -1});

@@ -1,4 +1,5 @@
 #pragma once
+#include "formats/record_compatibility.hpp"
 
 #include "session/classic_stream.hpp"
 #include "session/runtime.hpp"
@@ -24,6 +25,7 @@ struct ClassicFileState {
     formats::SavedLayout packed_layout;
     state::Rectangle current_screen;
     formats::EventCompatibility event_bytes;
+    formats::RecordCompatibility record_bytes;
 };
 struct CoreLoadServices {
     std::function<std::unique_ptr<CoreInput>(std::string_view)> open;
@@ -35,8 +37,6 @@ struct CoreLoadServices {
     std::function<state::LoadedContent()> load_content;
     std::function<void()> content_installed;
     void validate() const;
-    world::AllocationCheck allocate_map;
-    state::EventServices events;
 };
 // One guarded load lifetime. The runtime, file context and captured services must
 // outlive it. Parsing completes before any live rule/world installation.

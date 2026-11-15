@@ -45,18 +45,6 @@ struct RegionSummary {
     bool operator==(const RegionSummary&) const = default;
 };
 
-enum class StorageKind { tiles, remembered, coarse };
-struct StorageRequest {
-    StorageKind kind;
-    unsigned index;
-    std::size_t count;
-    bool operator==(const StorageRequest&) const = default;
-};
-// Allocator service boundary. A supplied failure propagates without rolling back
-// already installed buffers. No callback is invoked between individual tiles.
-using AllocationCheck = std::function<void(StorageRequest)>;
-using ReleaseObserver = std::function<void(StorageRequest)>;
-
 enum class TileField { features, terrain, revelation, fertility, owner, region, claimant };
 struct TileMutation {
     TileField field;
@@ -88,8 +76,8 @@ public:
     MapStorage(const MapStorage&) = delete;
     MapStorage& operator=(const MapStorage&) = delete;
 
-    void allocate(Geometry geometry, const AllocationCheck& check = {});
-    void release(const ReleaseObserver& observer = {});
+    void allocate(Geometry geometry);
+    void release();
     // Exchange owned storage after successful preparation; fallback bindings stay local.
     void swap_storage(MapStorage& other) noexcept;
     bool allocated() const noexcept { return allocated_; }
@@ -108,7 +96,6 @@ public:
     // revision detects replacement/release across an external service call.
     std::span<std::optional<std::uint8_t>> coarse_grid(unsigned grid);
     std::span<const std::optional<std::uint8_t>> coarse_grid(unsigned grid) const;
-    std::uint64_t storage_revision() const noexcept { return storage_revision_; }
 
     std::optional<std::uint8_t> owner(Position position) const;
     std::optional<std::uint8_t> city_owner(Position position) const;
@@ -146,7 +133,6 @@ private:
     Tile& fallback_;
     std::optional<Geometry> geometry_;
     bool allocated_ = false;
-    std::uint64_t storage_revision_ = 0;
     Buffer<Tile> tiles_;
     std::array<Buffer<std::uint8_t>, 8> remembered_;
     std::array<Buffer<std::optional<std::uint8_t>>, 4> coarse_;

@@ -93,19 +93,9 @@ ReceiveResult FrameReceiver::feed(std::span<const Byte> input, ReceiveCallbacks&
                 return discard(ReceiveStop::malformed);
             if (total_ > backing_limit)
                 return discard(ReceiveStop::backing_limit);
-            try {
-                if (callbacks.allocate) {
-                    const auto epoch = epoch_;
-                    const bool allocated = callbacks.allocate(total_);
-                    if (epoch != epoch_)
-                        return {result.delivered, ReceiveStop::reset_in_callback};
-                    if (!allocated)
-                        return discard(ReceiveStop::allocation_failed);
-                }
-                frame_.resize(total_);
-            } catch (const std::bad_alloc&) {
-                return discard(ReceiveStop::allocation_failed);
-            }
+
+            frame_.resize(total_);
+
             std::copy(header_.begin(), header_.end(), frame_.begin());
             header_used_ = 0;
             received_ = 4;
@@ -140,11 +130,9 @@ SendResult SendQueue::send(std::uint32_t tag, std::span<const Byte> payload, Sen
     if (!services.send)
         throw std::invalid_argument("Missing socket send service");
     Bytes record;
-    try {
-        record = encode_frame(tag, payload, padding);
-    } catch (const std::bad_alloc&) {
-        return SendResult::allocation_failed;
-    }
+
+    record = encode_frame(tag, payload, padding);
+
     if (!queue_.empty()) {
         queue_.push_back({std::move(record), 0});
         post(services);

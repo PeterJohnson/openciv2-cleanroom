@@ -20,7 +20,7 @@ state::Civilization& UnitDeletion::civilization(std::int32_t owner) {
 void UnitDeletion::erase(std::int32_t slot, bool notify) {
     if (slot < 0 || !state::occupied(stacks_.backed_unit(slot).token))
         return;
-    if (world_.globals.multiplayer >= 3 && !world_.multiplayer.network_host)
+    if (world_.globals.multiplayer >= state::GameMode::tcp && !world_.multiplayer.network_host)
         throw std::logic_error("Local deletion requires authority; route through UnitOperation");
     world_.unit_deletion.active = true;
     auto& unit = stacks_.backed_unit(slot);
@@ -60,7 +60,7 @@ void UnitDeletion::erase(std::int32_t slot, bool notify) {
     if (role(type) == 5 && civilization(owner).city_count == 0 &&
         civilization(owner).units_active.at(type) == 0)
         services_.check_destroyed(owner, -1);
-    if (world_.globals.multiplayer >= 3 && notify) {
+    if (world_.globals.multiplayer >= state::GameMode::tcp && notify) {
         services_.synchronize(position, home);
     }
     world_.unit_deletion.active = false;

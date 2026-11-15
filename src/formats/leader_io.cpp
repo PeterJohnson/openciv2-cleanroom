@@ -19,7 +19,7 @@ std::size_t tribe(std::int32_t civ, std::span<const state::Civilization> civiliz
     return static_cast<std::size_t>(selected);
 }
 template <class Record> bool selected_records(const state::GlobalValues& globals, Record record) {
-    if (globals.multiplayer == 0)
+    if (globals.multiplayer == state::GameMode::single_player)
         return record(globals.player_civ);
     for (unsigned civ = 0; civ < 8; ++civ)
         if ((globals.human_players & (1U << civ)) && !record(static_cast<std::int32_t>(civ)))

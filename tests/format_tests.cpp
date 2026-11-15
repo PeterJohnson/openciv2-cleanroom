@@ -1,3 +1,5 @@
+#include "formats/state_conversion.hpp"
+#include "formats/preference_io.hpp"
 #include "formats/classic_io.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <limits>
@@ -241,4 +243,67 @@ TEST_CASE("F06 game header accepts arbitrary separator and distinguishes version
         CHECK(game_version_status(version) == VersionStatus::unsupported_old);
     for (auto version : std::array<std::uint16_t, 2>{0x2d, 0xffff})
         CHECK(game_version_status(version) == VersionStatus::newer);
+}
+
+TEST_CASE("Classic stored preference bits are separate from semantic live options",
+          "[formats][preferences]") {
+    formats::StoredMultiplayerPreferences stored;
+    stored.open_game = -32768;
+    stored.double_movement = 17;
+    stored.clear_chat_boot = -1;
+    stored.game_name.bytes = {'G', 0, 'X'};
+    stored.legacy_settings[0].fill(0xa5);
+    const auto bytes = formats::encode_multiplayer_preferences(stored);
+    CHECK(formats::encode_multiplayer_preferences(formats::decode_multiplayer_preferences(bytes)) ==
+          bytes);
+    const auto live = formats::to_live(stored);
+    CHECK(live.open_game);
+    CHECK(live.double_movement);
+    CHECK(live.clear_chat_boot);
+    CHECK(live.game_name == "G");
+    const auto exported = formats::to_stored(live);
+    CHECK(exported.open_game == 1);
+    CHECK(exported.double_movement == 1);
+    CHECK(exported.game_name.bytes[2] == 0);
+    CHECK(exported.legacy_settings[0] == std::array<std::uint8_t, 24>{});
+}
+TEST_CASE("Live text is unconstrained by classic storage and export never truncates",
+          "[formats][state]") {
+    state::City city;
+    city.name = "A much longer city name";
+    CHECK(city.name == "A much longer city name");
+    CHECK_THROWS_AS(formats::encode_city(city), std::invalid_argument);
+    city.name = "Short";
+    const auto stored = formats::decode_city(formats::encode_city(city));
+    CHECK(formats::to_live(stored).name == "Short");
+    city.name = std::string("A\0B", 3);
+    CHECK_THROWS_AS(formats::encode_city(city), std::invalid_argument);
+    state::CivilizationNames names;
+    names.leader = std::string(40, 'L');
+    CHECK_THROWS_AS(formats::encode_civilization_names(names), std::invalid_argument);
+    state::ScenarioParameters scenario;
+    scenario.name = std::string(81, 'S');
+    CHECK_THROWS_AS(formats::encode_scenario_parameters(scenario), std::invalid_argument);
+}
+TEST_CASE("Named setup choices and live flags convert at classic boundaries", "[formats][state]") {
+    state::OrdinaryPreferences preferences;
+    preferences.difficulty = state::Difficulty::deity;
+    preferences.gender = state::Gender::female;
+    preferences.map_size = state::WorldSize::large;
+    preferences.rules_choice = state::RuleSelection::advanced;
+    const auto stored = formats::to_stored(preferences);
+    CHECK(stored.difficulty == 5);
+    CHECK(stored.gender == 1);
+    CHECK(stored.map_size == 2);
+    CHECK(stored.rules_choice == 1);
+    CHECK(formats::to_live(stored) == preferences);
+    state::Civilization civilization;
+    civilization.government = state::Government::democracy;
+    CHECK(formats::to_stored(civilization).government == 6);
+    CHECK(formats::to_live(formats::to_stored(civilization)) == civilization);
+    formats::SavedMapView view{-32768, 19, 4, 5, 6};
+    const auto live = formats::to_live(view);
+    CHECK(live.open);
+    CHECK(live.track_moves);
+    CHECK(formats::to_stored(live) == formats::SavedMapView{1, 1, 4, 5, 6});
 }

@@ -141,3 +141,44 @@ TEST_CASE("F06 input finalization failure does not install decoded state", "[ses
     CHECK(f.runtime.gameplay_random().checkpoint() == random);
     CHECK(std::find(f.trace.begin(), f.trace.end(), "content") == f.trace.end());
 }
+
+TEST_CASE("Classic opaque bytes follow loaded world and entity lifetimes",
+          "[session][core-load][core-save]") {
+    Fixture f;
+    auto original = saved();
+    original.globals.retained_34 = 812;
+    original.civilizations[1].retained_65 = 91;
+    original.units[0].retained_word = 0xabcd;
+    original.cities[0].retained_byte = 79;
+    f.bytes = encode_stored_save(original);
+    REQUIRE(f.load() == CoreLoadStatus::success);
+    Bytes bytes;
+    CoreSaveServices output;
+    output.open = [&](std::string_view) {
+        bytes.clear();
+        return test::output_file({[&](std::span<const Byte> data) {
+                                      bytes.insert(bytes.end(), data.begin(), data.end());
+                                      return true;
+                                  },
+                                  [] { return true; }});
+    };
+    const auto exported = [&] {
+        REQUIRE(save_classic_core(f.runtime, f.files, "C:\\save.sav", false, output) ==
+                CoreSaveStatus::success);
+        return decode_stored_save(bytes);
+    };
+    auto stored = exported();
+    CHECK(stored.globals.retained_34 == 812);
+    CHECK(stored.civilizations[1].retained_65 == 91);
+    CHECK(stored.units[0].retained_word == 0xabcd);
+    CHECK(stored.cities[0].retained_byte == 79);
+    // New occupants of the same slots do not inherit their predecessors' bytes.
+    f.runtime.world().entities.units.storage()[0].token = state::UnitToken{9000};
+    f.runtime.world().entities.cities.storage()[0].token = state::CityToken{9001};
+    stored = exported();
+    CHECK(stored.units[0].retained_word == 0);
+    CHECK(stored.cities[0].retained_byte == 0);
+    const auto lifetime = f.files.record_bytes.lifetime;
+    f.runtime.prepare_new_game();
+    CHECK(lifetime.expired());
+}

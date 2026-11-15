@@ -2,19 +2,19 @@
 #include <stdexcept>
 
 namespace openciv::session {
-void select_classic_extension(bool scenario, std::uint8_t mode, std::string& extension) {
+void select_classic_extension(bool scenario, state::GameMode mode, std::string& extension) {
     if (scenario)
         extension = ".SCN";
-    else if (mode == 0)
+    else if (mode == state::GameMode::single_player)
         extension = ".SAV";
-    else if (mode == 1)
+    else if (mode == state::GameMode::hotseat)
         extension = ".HOT";
-    else if (mode == 2)
+    else if (mode == state::GameMode::email)
         extension = ".EML";
-    else if (mode <= 6)
+    else if (mode >= state::GameMode::tcp && mode <= state::GameMode::serial)
         extension = ".NET";
 }
-std::vector<FileType> classic_file_types(std::uint8_t mode, bool scenario, bool raw_map,
+std::vector<FileType> classic_file_types(state::GameMode mode, bool scenario, bool raw_map,
                                          bool current_only, const FileLabel& label) {
     if (!label)
         throw std::invalid_argument("File types require label resolution");
@@ -27,22 +27,22 @@ std::vector<FileType> classic_file_types(std::uint8_t mode, bool scenario, bool 
     else if (raw_map)
         append(261, "mp");
     else {
-        if (mode == 0)
+        if (mode == state::GameMode::single_player)
             append(238, "sav");
-        else if (mode == 1)
+        else if (mode == state::GameMode::hotseat)
             append(855, "hot");
-        else if (mode == 2)
+        else if (mode == state::GameMode::email)
             append(858, "eml");
-        else if (mode <= 6)
+        else if (mode >= state::GameMode::tcp && mode <= state::GameMode::serial)
             append(861, "net");
         else
             throw std::invalid_argument("Unsupported file-choice mode");
         if (!current_only) {
-            if (mode != 0)
+            if (mode != state::GameMode::single_player)
                 append(238, "sav");
-            if (mode < 3)
+            if (mode < state::GameMode::tcp)
                 append(861, "net");
-            if (mode != 1)
+            if (mode != state::GameMode::hotseat)
                 append(855, "hot");
         }
     }

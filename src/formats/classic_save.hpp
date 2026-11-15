@@ -38,14 +38,14 @@ struct StoredEvents {
 // F06 §6 session-load operation is a separate integration boundary.
 struct StoredSave {
     GameHeader header;
-    state::GlobalValues globals;
-    std::array<state::CivilizationNames, 8> names;
+    StoredGlobals globals;
+    std::array<StoredCivilizationNames, 8> names;
     // Keep the large fixed population off the small WASM stack. Copies own
     // independent records; encoding enforces exactly eight civilization slots.
-    std::vector<state::Civilization> civilizations = std::vector<state::Civilization>(8);
+    std::vector<StoredCivilization> civilizations = std::vector<StoredCivilization>(8);
     StoredMap map;
-    std::vector<state::Unit> units;
-    std::vector<state::City> cities;
+    std::vector<StoredUnit> units;
+    std::vector<StoredCity> cities;
     std::array<TribeUsage, 21> tribes;
     std::int16_t cursor_x = 0, cursor_y = 0;
     // File order, including repeated tribes. No last-tribe-wins load transform.

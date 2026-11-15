@@ -141,7 +141,7 @@ MultiplayerOptionOperation::MultiplayerOptionOperation(SessionRuntime& runtime,
     const auto& multiplayer = world.multiplayer;
     const bool changed = multiplayer.saved.double_production != (choices[2] ? 1 : 0) ||
                          multiplayer.saved.double_movement != (choices[3] ? 1 : 0);
-    if (changed && world.globals.multiplayer >= 3 && multiplayer.network_host &&
+    if (changed && world.globals.multiplayer >= state::GameMode::tcp && multiplayer.network_host &&
         multiplayer.player_count > 1 && !channel_)
         throw std::invalid_argument("Multiplayer proposal requires a vote channel");
     activity_.emplace(runtime_.begin_activity());
@@ -210,7 +210,7 @@ void MultiplayerOptionOperation::apply() {
     rules::apply_double_movement(world.globals.multiplayer, live.double_movement,
                                  *runtime_.process().rules,
                                  published(runtime_, services_.redraw_status));
-    if (world.globals.multiplayer >= 3 && world.multiplayer.player_count > 1) {
+    if (world.globals.multiplayer >= state::GameMode::tcp && world.multiplayer.player_count > 1) {
         publish(runtime_);
         services_.send_units();
         publish(runtime_);
@@ -253,7 +253,7 @@ std::optional<MultiplayerOptionResult> MultiplayerOptionOperation::poll() {
             (void)save_classic_preferences(runtime_, services_.preferences);
             if (cancelled())
                 return result_;
-            if (world.globals.multiplayer >= 3 && !multiplayer.network_host) {
+            if (world.globals.multiplayer >= state::GameMode::tcp && !multiplayer.network_host) {
                 finish(MultiplayerOptionResult::client_only);
                 return result_;
             }
@@ -265,7 +265,7 @@ std::optional<MultiplayerOptionResult> MultiplayerOptionOperation::poll() {
                 finish(MultiplayerOptionResult::unchanged);
                 return result_;
             }
-            if (world.globals.multiplayer >= 3 && multiplayer.player_count > 1) {
+            if (world.globals.multiplayer >= state::GameMode::tcp && multiplayer.player_count > 1) {
                 if (!channel_)
                     throw std::invalid_argument("Multiplayer proposal requires a vote channel");
                 auto& parameters = process.text_parameters.strings;
@@ -304,7 +304,7 @@ std::optional<MultiplayerOptionResult> MultiplayerOptionOperation::poll() {
             return result_;
         vote.pending = progress.pending;
         vote.status = progress.status;
-        if (multiplayer.handoff == 0) {
+        if (!multiplayer.handoff) {
             publish(runtime_);
             const auto now = services_.clock();
             if (cancelled())

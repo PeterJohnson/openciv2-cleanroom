@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // Independently authored F03/F06 native preference comparison driver. Reads
 // original data only; never executes or links original game/reconstruction code.
 #include "session/classic_preferences.hpp"
@@ -55,9 +56,14 @@ int main(int argc, char** argv) {
         if (status != session::PreferenceLoadStatus::success || !complete || items != 2)
             throw std::runtime_error(
                 "Comparison requires two successful item reads and finalization");
-        auto encoded = formats::encode_ordinary_preferences(process.ordinary_preferences);
-        const auto multiplayer =
-            formats::encode_multiplayer_preferences(process.multiplayer_preferences);
+        const auto raw_ordinary = formats::decode_ordinary_preferences(std::span(bytes).first(72));
+        const auto raw_multiplayer =
+            formats::decode_multiplayer_preferences(std::span(bytes).subspan(72, 444));
+        if (process.ordinary_preferences != formats::to_live(raw_ordinary) ||
+            process.multiplayer_preferences != formats::to_live(raw_multiplayer))
+            throw std::runtime_error("Preference admission differs from decoded values");
+        auto encoded = formats::encode_ordinary_preferences(raw_ordinary);
+        const auto multiplayer = formats::encode_multiplayer_preferences(raw_multiplayer);
         encoded.insert(encoded.end(), multiplayer.begin(), multiplayer.end());
         if (!std::equal(encoded.begin(), encoded.end(), bytes.begin(), bytes.begin() + size))
             throw std::runtime_error("Loaded and re-encoded preference items differ");

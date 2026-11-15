@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // F05 sections 2-3, F01 cyclic arithmetic/sampling and F06 preference fields.
 // Expectations are independently authored from the contract. The explicitly
 // named Windows observation case also cites original UI/file evidence.
@@ -31,11 +32,11 @@ struct Fixture : test::ConfigurationFixture {
     Fixture() {
         test::fail_service(size.custom);
 
-        process.ordinary_preferences.map_size = 2;
+        process.ordinary_preferences.map_size = state::WorldSize::large;
         process.ordinary_preferences.world_parameters = {0, 0, 0, -1, 1};
         runtime.world().world_setup = {31, 37, {11, 12, 13, 14, 15}};
         runtime.world().globals.game_flags = 0xffff;
-        size.preset = [](std::int16_t) -> WorldSizeChoice { return 1; };
+        size.preset = [](state::WorldSize) -> WorldSizeChoice { return 1; };
         parameters.preferences = preferences;
         parameters.choose = [&](Parameter parameter, std::int16_t) -> WorldParameterChoice {
             visits.push_back(parameter);
@@ -61,8 +62,8 @@ TEST_CASE("F05 size presets classify area clear status and remember ordinary cho
     for (const auto e : {Expected{0, 80, 50, 8}, Expected{1, 100, 80, 0}, Expected{2, 150, 120, 4},
                          Expected{7, 100, 80, 0}}) {
         Fixture f;
-        f.size.preset = [&](std::int16_t remembered) -> WorldSizeChoice {
-            CHECK(remembered == 2);
+        f.size.preset = [&](state::WorldSize remembered) -> WorldSizeChoice {
+            CHECK(remembered == state::WorldSize::large);
             CHECK(f.runtime.world().globals.game_flags == 0);
             return e.choice;
         };
@@ -70,7 +71,7 @@ TEST_CASE("F05 size presets classify area clear status and remember ordinary cho
         CHECK(f.runtime.world().world_setup.width == e.width);
         CHECK(f.runtime.world().world_setup.height == e.height);
         CHECK(f.runtime.world().globals.game_flags == e.flags);
-        CHECK(f.process.ordinary_preferences.map_size == e.choice);
+        CHECK(static_cast<int>(f.process.ordinary_preferences.map_size) == e.choice);
         CHECK(f.trace.empty());
         CHECK(f.runtime.world().world_setup.parameters ==
               std::array<std::int32_t, 5>{11, 12, 13, 14, 15});
@@ -101,7 +102,7 @@ TEST_CASE("F05 custom sizes reduce decimal input before limits and classify exac
         CHECK(f.runtime.world().world_setup.width == e.w);
         CHECK(f.runtime.world().world_setup.height == e.h);
         CHECK(f.runtime.world().globals.game_flags == e.flags);
-        CHECK(f.process.ordinary_preferences.map_size == 2);
+        CHECK(static_cast<int>(f.process.ordinary_preferences.map_size) == 2);
     }
 }
 
@@ -144,7 +145,7 @@ TEST_CASE("F05 custom cancel reopens presets and subsequent size cancel retains 
     Fixture f;
     unsigned presets = 0, customs = 0;
     f.size.preset = [&](auto remembered) -> WorldSizeChoice {
-        CHECK(remembered == 2);
+        CHECK(remembered == state::WorldSize::large);
         if (++presets == 1)
             return CustomWorldSize{};
         CHECK(f.runtime.world().world_setup.width == 19);
@@ -163,7 +164,7 @@ TEST_CASE("F05 custom cancel reopens presets and subsequent size cancel retains 
     CHECK(customs == 2);
     CHECK(f.runtime.world().world_setup.width == 38);
     CHECK(f.runtime.world().globals.game_flags == 8);
-    CHECK(f.process.ordinary_preferences.map_size == 2);
+    CHECK(static_cast<int>(f.process.ordinary_preferences.map_size) == 2);
     f.size.preset = [](auto) -> WorldSizeChoice { return -1; };
     CHECK_FALSE(select_world_size(f.runtime, f.size));
     CHECK(f.runtime.world().world_setup.width == 76);
@@ -213,7 +214,8 @@ TEST_CASE("F05 ordinary parameters persist normalized values matching the Window
           std::array<std::int16_t, 5>{1, -1, -1, 1, 0});
     CHECK(f.trace == std::vector<std::string>{"open", "write:72", "write:444", "close"});
     REQUIRE(f.written.size() == 2);
-    CHECK(formats::decode_ordinary_preferences(f.written[0]) == f.process.ordinary_preferences);
+    CHECK(formats::to_live(formats::decode_ordinary_preferences(f.written[0])) ==
+          f.process.ordinary_preferences);
     CHECK(formats::decode_ordinary_preferences(f.written[0]).map_size == 2);
     CHECK(formats::Bytes(f.written[0].begin() + 0x1a, f.written[0].begin() + 0x24) ==
           formats::Bytes{1, 0, 255, 255, 255, 255, 1, 0, 0, 0});
@@ -245,7 +247,8 @@ TEST_CASE("F05 randomized land form uses zero or the current land mass for all r
             auto random = f.controlled({mass, form, 32767, 32766, 32765});
             randomize_world_parameters(f.runtime, random, "world/one");
             random.require_choices_consumed();
-            CHECK(f.runtime.world().world_setup.parameters[1] == expected[mass][form]);
+            CHECK(f.runtime.world().world_setup.parameters[1] ==
+                  expected[static_cast<std::size_t>(mass)][static_cast<std::size_t>(form)]);
             CHECK(f.runtime.world().world_setup.parameters[2] == 0);
             CHECK(f.runtime.world().world_setup.parameters[3] == -1);
             CHECK(f.runtime.world().world_setup.parameters[4] == 1);
@@ -380,7 +383,7 @@ TEST_CASE("F05 preference write failures retain accepted choices and follow real
             CHECK(f.trace == std::vector<std::string>{"open"});
         else {
             CHECK(f.trace.back() == "delete");
-            CHECK(f.written.size() == failure + 1);
+            CHECK(f.written.size() == static_cast<std::size_t>(failure + 1));
         }
     }
 }

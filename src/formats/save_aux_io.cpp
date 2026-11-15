@@ -1,4 +1,5 @@
 #include "formats/save_aux_io.hpp"
+#include "formats/state_conversion.hpp"
 #include "base/arithmetic.hpp"
 #include <algorithm>
 #include <bit>
@@ -54,7 +55,7 @@ void pack_layout(const state::Layout& layout, SavedLayout& packed) {
     }
 }
 void unpack_layout(const SavedLayout& packed, state::Layout& layout) {
-    layout.valid = packed.valid;
+    layout.valid = packed.valid != 0;
     for (std::size_t i = 0; i < layout.rectangles.size(); ++i) {
         const auto& from = packed.rectangles[i];
         auto& to = layout.rectangles[i];
@@ -75,10 +76,12 @@ bool write_history_layout_items(const WriteItem& write, const state::PowerHistor
     pack_layout(snapshot, packed);
     if (!write(encode_layout(packed)))
         return false;
-    for (const auto& view : views)
-        for (const auto* field : fields(view))
+    for (const auto& view : views) {
+        auto stored = to_stored(view);
+        for (const auto* field : fields(stored))
             if (!write(word(*field)))
                 return false;
+    }
     return true;
 }
 bool write_scenario_history_items(const WriteItem& write, bool scenario_export,

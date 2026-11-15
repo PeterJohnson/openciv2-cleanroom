@@ -74,7 +74,7 @@ private:
     void attach_body(std::int32_t slot, world::Position position);
     state::Unit& record(std::int32_t slot);
     void step();
-    void diagnose(StackDiagnostic diagnostic) noexcept;
+    void diagnose(StackDiagnostic diagnostic);
     std::int32_t end_of_chain(std::int32_t slot, bool backward);
     void cut(std::int32_t slot, std::int32_t neighbor, bool backward);
     state::UnitPool& units_;

@@ -698,3 +698,14 @@ TEST_CASE(
     CHECK(duplicate[0].result == replies[0].result);
     CHECK(duplicate[0].status == replies[0].status);
 }
+
+TEST_CASE("Allocation exhaustion escapes command recovery", "[session][commands]") {
+    state::ProcessContext process;
+    SessionRuntime runtime(process, RuntimeId{1});
+    runtime.register_command(
+        definition("test.action", [](auto&, auto) -> OperationStep { throw std::bad_alloc{}; }));
+    runtime.begin_client_session({1, 2});
+    auto local = client(runtime);
+    local.submit(request(1));
+    CHECK_THROWS_AS(runtime.advance_one(), std::bad_alloc);
+}

@@ -31,12 +31,12 @@ StackOperations::OperationState StackOperations::state(PlacementOperation operat
     throw std::invalid_argument("Unknown unit placement operation");
 }
 void StackOperations::begin(PlacementOperation operation) {
-    if (world_.globals.multiplayer >= 3 && !world_.multiplayer.network_host)
+    if (world_.globals.multiplayer >= state::GameMode::tcp && !world_.multiplayer.network_host)
         throw std::logic_error("Local placement requires authority; route through UnitOperation");
     state(operation).active = true;
 }
 void StackOperations::synchronize(bool sync) {
-    if (world_.globals.multiplayer >= 3 && sync) {
+    if (world_.globals.multiplayer >= state::GameMode::tcp && sync) {
         services_.synchronize();
     }
 }

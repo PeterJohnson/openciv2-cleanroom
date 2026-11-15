@@ -86,7 +86,7 @@ bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& supplie
             const auto choice = services.preset(remembered);
             if (const auto* preset = std::get_if<std::int32_t>(&choice)) {
                 if (*preset >= 0) {
-                    remembered = narrow(*preset);
+                    remembered = static_cast<state::WorldSize>(narrow(*preset));
                     setup.width = *preset == 0 ? 40 : (*preset == 2 ? 75 : 50);
                     setup.height = *preset == 0 ? 50 : (*preset == 2 ? 120 : 80);
                     success = true;

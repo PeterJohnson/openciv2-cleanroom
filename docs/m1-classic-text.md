@@ -191,8 +191,8 @@ marker collisions still belong to the conversion boundary.
 
 ## Process preferences and CIV2.DAT
 
-F03 section 8 preference initialization and persistence now operate on complete
-ordinary and multiplayer records in `ProcessContext`. They are distinct from
+F03 section 8 preference initialization and persistence operate on semantic
+ordinary and multiplayer values in `ProcessContext`. They are distinct from
 live world options and saved multiplayer state. Existing core-load consumers use
 the same multiplayer fields; the accepted-file load caller reads
 `ordinary_preferences.game_options`. Client-session transitions retain both
@@ -200,18 +200,22 @@ records, and preference input alone changes no world options or random context.
 
 Ordinary defaults use the supplied startup screen width and renderer animation
 availability, including the width-greater-than-999 boundary and herald gate.
-They assign the documented settings while retaining the preference text's tail.
-Multiplayer defaults preserve the tails of emptied strings and three legacy
-24-byte settings, write only `60` and its terminator into the custom timer,
-and clear the remembered settings table. The logical startup inputs do not
-emulate the original native memory API or prescribe renderer allocations.
+They assign the documented settings and empty the preference text. Multiplayer
+defaults empty the name/address strings and set custom timer text to `60`.
+Live text is owned `std::string`, binary settings are `bool`, and established
+choice meanings use named enums. Unknown legacy settings and padding are stored
+codec concerns. The logical startup inputs do not emulate the original native
+memory API or prescribe renderer allocations.
 
 `formats/preference_io.hpp` implements every field of F06's 72-byte ordinary
 item and 444-byte multiplayer item. Pure codecs decode owned transferred prefixes
-against explicit prior values. Successful items retain arbitrary scalar bits and
-unterminated fixed strings. Short items retain their transferred bytes before
-fallback, including unassigned tails; the second item starts at the actual cursor.
-Trailing file bytes are ignored.
+against explicit prior values. Successful stored items retain arbitrary scalar
+bits and unterminated fixed strings. Stored prefix helpers retain untransferred
+bytes from the supplied prior record. Live conversion uses text through the first
+NUL and interprets nonzero binary flags as true. Live export writes 0/1 flags,
+zero-filled text tails and legacy settings, and rejects oversized or embedded-NUL
+text without truncation. The second item starts at the actual cursor. Trailing
+file bytes are ignored.
 
 `session/classic_preferences.hpp` snapshots preferences, defaults and service
 wiring, reads both items and closes before installing either result. Missing
@@ -233,8 +237,9 @@ case exercises actual replacement, reload and failed-output deletion; three CLI
 cases check complete/trailing input, truncated rejection, source preservation and
 no-overwrite output. These are specification-derived inputs and expectations.
 
-The native comparison driver uses actual F03 preference input and re-encodes both
-records. It requires at least 516 input bytes so defaults cannot be mistaken for
+The native comparison driver separately checks lossless stored re-encoding and
+the semantic values installed by F03 preference input. It requires at least
+516 input bytes so defaults cannot be mistaken for
 a successful original-file round trip. Its optional output is a separate new
 516-byte file; ignored trailing input is reported separately:
 

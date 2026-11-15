@@ -19,14 +19,12 @@ SaveNotice describe_save(SessionRuntime& runtime, bool scenario, const SaveMenuS
     const auto mode = world.globals.multiplayer;
     const auto civ = world.multiplayer.local_human;
     const auto year = world.globals.year;
-    const auto difficulty = world.globals.difficulty;
+    const auto difficulty = static_cast<std::size_t>(world.globals.difficulty);
     if (scenario) {
-        if (!world.scenario.name.terminated())
-            throw std::invalid_argument("Unterminated scenario name");
-        const auto bytes = world.scenario.name.text();
+        const auto bytes = world.scenario.name;
         return {"SCENOK", {std::string(bytes.begin(), bytes.end())}};
     }
-    if (mode == 2)
+    if (mode == state::GameMode::email)
         return {"EMAILSAVED", {}};
     const auto& rules = *runtime.process().rules;
     const std::string difficulty_name(rules.text.text(rules.names.difficulties.at(difficulty)));
@@ -62,7 +60,7 @@ FileChoiceRequest ClassicSaveOperation::prepare_request() {
             c = '_';
     suggestion += year < 0 ? 'b' : 'a';
     suggestion += std::to_string(std::abs(static_cast<int>(year)));
-    if (mode == 2 && !scenario_) {
+    if (mode == state::GameMode::email && !scenario_) {
         const auto date = services_.local_time();
         suggestion += " " + std::to_string(date.month) + "-" + std::to_string(date.day) + "-" +
                       std::to_string(date.year) + " " + std::to_string(date.hour) + "-" +

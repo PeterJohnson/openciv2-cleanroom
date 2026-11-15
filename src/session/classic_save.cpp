@@ -69,25 +69,29 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
         prepare_scenario_names(scenario_export, globals, world.civilizations, world.names,
                                *runtime.process().rules);
         auto exported = globals;
-        if (exported.multiplayer == 1)
+        if (exported.multiplayer == state::GameMode::hotseat)
             exported.human_players = world.multiplayer.hotseat_participants;
         bytes = encode_game_header();
         const WriteItem append = [&](std::span<const Byte> value) {
             bytes.insert(bytes.end(), value.begin(), value.end());
             return true;
         };
-        write_persistent_items(append, exported, world.names, world.civilizations);
+        if (retained.record_bytes.lifetime.lock() != world.lifetime)
+            retained.record_bytes = {};
+        write_persistent_items(append, exported, world.names, world.civilizations,
+                               retained.record_bytes);
         write_map_items(append, MapStream::embedded, world.map, retained.starts);
         write_map_summary_items(append, world.map);
-        write_entity_items(append, world.entities);
+        write_entity_items(append, world.entities, retained.record_bytes);
         write_leader_items(append, exported, world.civilizations, runtime.process().rules->leaders,
                            retained.cursor);
         write_history_layout_items(append, world.power_history, retained.current_screen,
                                    retained.packed_layout, world.layout, world.views);
         write_scenario_history_items(append, scenario_export, exported, world.scenario,
                                      world.eliminations);
-        if (exported.multiplayer != 0)
-            write_multiplayer_item(append, world.multiplayer, world.multiplayer.network_turn_civ);
+        if (exported.multiplayer != state::GameMode::single_player)
+            write_multiplayer_item(append, world.multiplayer, world.multiplayer.network_turn_civ,
+                                   retained.record_bytes);
         if (world.events.loaded && !scenario_export)
             write_event_items(
                 append, append,

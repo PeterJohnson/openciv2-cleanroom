@@ -11,6 +11,5 @@ struct MapInput {
     std::array<RegionSummary, 64> regions{};
 };
 void validate_map_input(const MapInput& input, bool embedded);
-void install_map(const MapInput& input, MapStorage& map, bool embedded,
-                 const AllocationCheck& allocation = {});
+void install_map(const MapInput& input, MapStorage& map, bool embedded);
 } // namespace openciv::world

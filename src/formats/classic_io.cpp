@@ -1,4 +1,5 @@
 #include "formats/classic_io.hpp"
+#include "formats/state_conversion.hpp"
 
 namespace openciv::formats {
 namespace {
@@ -92,10 +93,25 @@ bool write_map_items(const WriteItem& write, MapStream kind, const world::MapSto
     }
     return write(encode_records(map.tiles(), encode_tile));
 }
-bool write_entity_items(const WriteItem& write, const state::EntityPools& pools) {
-    if (pools.units.end() != 0 && !write(encode_records(pools.units.scanned(), encode_unit)))
+bool write_entity_items(const WriteItem& write, const state::EntityPools& pools,
+                        const RecordCompatibility& compatibility) {
+    if (pools.units.end() != 0 &&
+        !write(encode_records(pools.units.scanned(), [&](const auto& value) {
+            auto record = to_stored(value);
+            const auto found = compatibility.units.find(value.token);
+            if (found != compatibility.units.end())
+                preserve_opaque(record, found->second);
+            return encode_unit(record);
+        })))
         return false;
-    return pools.cities.end() == 0 || write(encode_records(pools.cities.scanned(), encode_city));
+    return pools.cities.end() == 0 ||
+           write(encode_records(pools.cities.scanned(), [&](const auto& value) {
+               auto record = to_stored(value);
+               const auto found = compatibility.cities.find(value.token);
+               if (found != compatibility.cities.end())
+                   preserve_opaque(record, found->second);
+               return encode_city(record);
+           }));
 }
 VersionStatus game_version_status(std::uint16_t version) noexcept {
     if (version > 0x2c)

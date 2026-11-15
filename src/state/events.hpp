@@ -26,9 +26,11 @@ struct EventValues {
     std::int32_t create_owner_civ = 0;
     std::int32_t create_unit_type = 0;
     std::array<std::int32_t, 20> create_locations{};
-    std::int32_t create_location_count = 0, create_veteran = 0;
+    std::int32_t create_location_count = 0;
+    bool create_veteran = false;
     std::int32_t auxiliary_scalar = 0;
-    std::int32_t money_receiver_civ = 0, money_amount = 0, negotiation_flag = 0;
+    std::int32_t money_receiver_civ = 0, money_amount = 0;
+    bool negotiation_flag = false;
     std::int32_t cd_track = 0, terrain_type = 0;
     std::array<std::int32_t, 8> terrain_rectangle{};
     std::int32_t destroy_civ = 0, give_tech = 0, give_tech_civ = 0;
@@ -72,18 +74,6 @@ private:
     friend class EventCollection;
     EventId identity_{0};
 };
-enum class EventAllocationKind { event, string };
-struct EventAllocation {
-    EventAllocationKind kind;
-    std::size_t bytes; // String backing including NUL; zero for a logical event.
-};
-struct EventServices {
-    // Optional deterministic resource outcomes. Real allocation failure also
-    // fails safely. Resource callbacks must not mutate the source collection or
-    // act as gameplay reentry points; original allocation traces are not an API.
-    std::function<bool(EventAllocation)> allocate;
-    std::function<void(std::int32_t code, std::int32_t category)> report;
-};
 class EventCollection {
 public:
     EventCollection() = default;
@@ -96,32 +86,28 @@ public:
     bool contains(const std::shared_ptr<const Event>& event) const noexcept;
     std::shared_ptr<Event> find(EventId identity) noexcept;
     std::shared_ptr<const Event> find(EventId identity) const noexcept;
-    bool compact(const EventServices& services);
-    std::shared_ptr<Event> append(const EventServices& services = {});
+    void compact();
+    std::shared_ptr<Event> append();
     void reset(); // Does not change the separate events-loaded indicator.
 private:
-    friend void install_events(const EventCatalog&, EventCollection&, const EventServices&);
+    friend void install_events(const EventCatalog&, EventCollection&);
     std::vector<std::shared_ptr<Event>> entries_;
-    std::uint64_t next_identity_ = 1, revision_ = 0;
+    std::uint64_t next_identity_ = 1;
 };
 // Prepare a replacement before publishing. Source formats supply owned data;
 // fresh event identities remain monotonic within the destination collection.
-void install_events(const EventCatalog& input, EventCollection& collection,
-                    const EventServices& services = {});
+void install_events(const EventCatalog& input, EventCollection& collection);
 struct EventState {
     EventCollection collection;
     bool loaded = false;
 };
 // S02 section 2: append payloads first, then duplicate strings from the two
 // heads. Nonempty destinations and text holes retain the specified aliasing.
-// Self-copy rejects before edits; a callback-invalidated node stops safely.
-bool copy_events(const EventCollection& source, EventCollection& destination,
-                 const EventServices& services = {});
+// Self-copy rejects before edits.
+void copy_events(const EventCollection& source, EventCollection& destination);
 // Detach copied string identities once, preserving text-hole aliases and event IDs.
-// Replacement is prepared before publication; failure retains the collection.
-bool compact_events(EventCollection& collection, const EventServices& services = {});
-// Fresh string identity, through first NUL. Failure reports F06 -9/category 3
-// and leaves the target alone. minimum is capacity, never a truncation length.
-bool create_event_string(EventString& target, std::string_view text,
-                         const EventServices& services = {}, std::size_t minimum = 1);
+// Replacement is prepared before publication. Allocation failure propagates.
+void compact_events(EventCollection& collection);
+// Fresh string identity, through first NUL. Allocation failure propagates.
+void create_event_string(EventString& target, std::string_view text);
 } // namespace openciv::state

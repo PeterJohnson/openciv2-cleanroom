@@ -40,13 +40,10 @@ struct SavedLayout {
     std::array<SavedRectangle, 13> rectangles;
     bool operator==(const SavedLayout&) const = default;
 };
-using SavedMapView = state::MapView;
-using ScenarioParameters = state::ScenarioParameters;
-using EliminationHistory = state::EliminationHistory;
-using MultiplayerRecord = state::MultiplayerValues;
+
 // Serialized presence words are retained bits, never pointers/IDs/offsets.
 // Strings live separately in StoredEvent; this record alone executes nothing.
-struct EventRecord : state::EventValues {
+struct EventRecord : StoredEventValues {
     std::uint32_t unit_name = 0, city_name = 0, who_name = 0, whom_name = 0;
     std::array<std::uint32_t, 20> text{};
     std::uint32_t move_owner_name = 0, move_unit_name = 0;
@@ -58,9 +55,9 @@ struct EventRecord : state::EventValues {
     bool operator==(const EventRecord&) const = default;
 };
 std::array<std::uint32_t*, state::event_string_count> event_markers(EventRecord& values);
-state::GlobalValues decode_globals(std::span<const Byte> bytes);
-state::Civilization decode_civilization(std::span<const Byte> bytes);
-state::CivilizationNames decode_civilization_names(std::span<const Byte> bytes);
+StoredGlobals decode_globals(std::span<const Byte> bytes);
+StoredCivilization decode_civilization(std::span<const Byte> bytes);
+StoredCivilizationNames decode_civilization_names(std::span<const Byte> bytes);
 StoredLeader decode_leader(std::span<const Byte> bytes);
 SavedLayout decode_layout(std::span<const Byte> bytes);
 SavedMapView decode_map_view(std::span<const Byte> bytes);
@@ -68,9 +65,9 @@ ScenarioParameters decode_scenario_parameters(std::span<const Byte> bytes);
 EliminationHistory decode_elimination_history(std::span<const Byte> bytes);
 MultiplayerRecord decode_multiplayer(std::span<const Byte> bytes);
 EventRecord decode_event_record(std::span<const Byte> bytes);
-Bytes encode_globals(const state::GlobalValues& value);
-Bytes encode_civilization(const state::Civilization& value);
-Bytes encode_civilization_names(const state::CivilizationNames& value);
+Bytes encode_globals(const StoredGlobals& value);
+Bytes encode_civilization(const StoredCivilization& value);
+Bytes encode_civilization_names(const StoredCivilizationNames& value);
 Bytes encode_leader(const StoredLeader& value);
 Bytes encode_layout(const SavedLayout& value);
 Bytes encode_map_view(const SavedMapView& value);
@@ -78,4 +75,11 @@ Bytes encode_scenario_parameters(const ScenarioParameters& value);
 Bytes encode_elimination_history(const EliminationHistory& value);
 Bytes encode_multiplayer(const MultiplayerRecord& value);
 Bytes encode_event_record(const EventRecord& value);
+Bytes encode_globals(const state::GlobalValues& value);
+Bytes encode_civilization(const state::Civilization& value);
+Bytes encode_civilization_names(const state::CivilizationNames& value);
+Bytes encode_map_view(const state::MapView& value);
+Bytes encode_scenario_parameters(const state::ScenarioParameters& value);
+Bytes encode_elimination_history(const state::EliminationHistory& value);
+Bytes encode_multiplayer(const state::MultiplayerValues& value);
 } // namespace openciv::formats

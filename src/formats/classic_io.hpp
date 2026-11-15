@@ -1,4 +1,5 @@
 #pragma once
+#include "formats/record_compatibility.hpp"
 
 #include "formats/classic_records.hpp"
 #include <functional>
@@ -46,7 +47,8 @@ enum class MapStream { raw, embedded };
 bool write_map_items(const WriteItem& write, MapStream kind, const world::MapStorage& map,
                      const StartingPositions& starts);
 
-bool write_entity_items(const WriteItem& write, const state::EntityPools& pools);
+bool write_entity_items(const WriteItem& write, const state::EntityPools& pools,
+                        const RecordCompatibility& compatibility = {});
 
 enum class VersionStatus { supported, unsupported_old, newer };
 VersionStatus game_version_status(std::uint16_t version) noexcept;

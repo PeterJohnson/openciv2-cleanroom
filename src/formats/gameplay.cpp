@@ -234,6 +234,8 @@ std::shared_ptr<const GameplayBundle> load_gameplay(std::span<const Byte> manife
         Source source;
         try {
             source = resolve(file.path);
+        } catch (const std::bad_alloc&) {
+            throw;
         } catch (const std::exception& e) {
             throw Error("source-error", file.path, e.what());
         }

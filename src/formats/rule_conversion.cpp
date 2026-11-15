@@ -235,7 +235,8 @@ RuleConversion convert_rules(const Source& source, const classic::TextCase& comp
         row["adjective"] = v.adjective.utf8;
         row["leaderNames"]["male"] = v.leaders[0].utf8;
         row["leaderNames"]["female"] = v.leaders[1].utf8;
-        row["preferredLeaderGender"] = v.preferred_gender ? "female" : "male";
+        row["preferredLeaderGender"] =
+            v.preferred_gender == state::Gender::female ? "female" : "male";
         row["preferredColor"] = int(v.preferred_color);
         row["cityStyle"] = int(v.city_style);
         row["personality"]["aggression"] = int(v.personality[0]);
@@ -244,7 +245,7 @@ RuleConversion convert_rules(const Source& source, const classic::TextCase& comp
         row["governmentTitles"] = array();
         for (const auto& title : operands.title_overrides[i]) {
             jt::Json entry;
-            entry["government"] = id("governments", title.government);
+            entry["government"] = id("governments", static_cast<std::size_t>(title.government));
             entry["male"] = title.titles.male.utf8;
             entry["female"] = title.titles.female.utf8;
             row["governmentTitles"].getArray().push_back(std::move(entry));

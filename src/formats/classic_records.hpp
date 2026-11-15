@@ -1,7 +1,7 @@
 #pragma once
 
 #include "formats/bytes.hpp"
-#include "state/records.hpp"
+#include "formats/stored_records.hpp"
 #include "world/map.hpp"
 
 namespace openciv::formats {
@@ -18,14 +18,16 @@ struct MapHeader {
     std::int16_t coarse_width = 0, coarse_height = 0;
     bool operator==(const MapHeader&) const = default;
 };
-state::Unit decode_unit(std::span<const Byte> bytes);
-state::City decode_city(std::span<const Byte> bytes);
+StoredUnit decode_unit(std::span<const Byte> bytes);
+StoredCity decode_city(std::span<const Byte> bytes);
 world::Tile decode_tile(std::span<const Byte> bytes);
 world::RegionSummary decode_region(std::span<const Byte> bytes);
 MapHeader decode_map_header(std::span<const Byte> bytes);
-Bytes encode_unit(const state::Unit& value);
-Bytes encode_city(const state::City& value);
+Bytes encode_unit(const StoredUnit& value);
+Bytes encode_city(const StoredCity& value);
 Bytes encode_tile(const world::Tile& value);
 Bytes encode_region(const world::RegionSummary& value);
 Bytes encode_map_header(const MapHeader& value);
+Bytes encode_unit(const state::Unit& value);
+Bytes encode_city(const state::City& value);
 } // namespace openciv::formats

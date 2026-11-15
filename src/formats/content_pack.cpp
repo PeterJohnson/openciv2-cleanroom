@@ -191,6 +191,8 @@ public:
         Source source;
         try {
             source = owner.mount->files(directory, path);
+        } catch (const std::bad_alloc&) {
+            throw;
         } catch (const std::exception& error) {
             throw Error("source-error", owner.receipt.pack.id + "/" + location, error.what());
         }

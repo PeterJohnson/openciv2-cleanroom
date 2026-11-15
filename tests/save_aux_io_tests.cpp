@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 #include "classic_load_fixture.hpp"
 #include "formats/game_input.hpp"
 #include "formats/save_aux_io.hpp"
@@ -32,7 +33,10 @@ TEST_CASE("F06 owned restoration input retains map history scenario and layout f
     CHECK(input.map.regions == original.map.regions);
     CHECK(input.map.coarse == original.map.coarse);
     CHECK(input.power_history == original.power_history);
-    CHECK(input.views == original.views);
-    CHECK(input.scenario == original.scenario);
-    CHECK(input.eliminations == original.eliminations);
+    for (std::size_t i = 0; i < input.views.size(); ++i)
+        CHECK(input.views[i] == to_live(original.views[i]));
+    REQUIRE(input.scenario);
+    REQUIRE(original.scenario);
+    CHECK(*input.scenario == to_live(*original.scenario));
+    CHECK(input.eliminations == to_live(original.eliminations));
 }

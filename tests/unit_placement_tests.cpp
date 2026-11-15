@@ -19,7 +19,7 @@ struct Fixture {
     Fixture() {
         world.map.allocate(world::Geometry{8, 6});
         world.multiplayer.network_host = true;
-        world.globals.multiplayer = 3;
+        world.globals.multiplayer = state::GameMode::tcp;
         world.turn_loop_active = true;
         services.synchronize = [&] {
             calls.push_back("sync");
@@ -101,7 +101,7 @@ TEST_CASE("U01 relocate in place moves a middle member to front and synchronizes
         CHECK(f.world.unit_stacks.relocate_active);
         CHECK_FALSE(f.world.unit_stacks.detach_active);
         CHECK_FALSE(f.world.unit_stacks.attach_active);
-        f.world.globals.multiplayer = 0;
+        f.world.globals.multiplayer = state::GameMode::single_player;
     };
     f.on_flush = [&] { CHECK(f.world.unit_stacks.relocate_active); };
     f.operations().relocate_in_place(2, true);
@@ -131,7 +131,7 @@ TEST_CASE("U01 direct placement keeps activity through synchronization and flush
     }
     f.on_sync = [&] {
         CHECK(f.active(operation));
-        f.world.globals.multiplayer = 0;
+        f.world.globals.multiplayer = state::GameMode::single_player;
     };
     f.on_flush = [&] { CHECK(f.active(operation)); };
     auto stacks = f.operations();

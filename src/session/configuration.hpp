@@ -42,7 +42,8 @@ bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOpt
 using MultiplayerOptionChoices = std::array<bool, 4>;
 struct OptionProposal {
     std::string sender, description;
-    std::int32_t production = 0, movement = 0, expected_votes = 0;
+    bool production = false, movement = false;
+    std::int32_t expected_votes = 0;
 };
 struct OptionVoteProgress {
     std::int32_t pending = 0, status = 0;
@@ -67,8 +68,7 @@ struct MultiplayerOptionServices {
     std::function<std::string(bool)> production_label, movement_label;
     std::function<void()> broadcast_rejection, broadcast_acceptance;
     std::function<void()> send_units;
-    std::function<void(std::int32_t production, std::int32_t movement, std::int32_t simultaneous)>
-        send_options;
+    std::function<void(bool production, bool movement, bool simultaneous)> send_options;
     std::function<void(std::string_view)> notice;
     std::function<void(std::int32_t)> redraw_status;
 };

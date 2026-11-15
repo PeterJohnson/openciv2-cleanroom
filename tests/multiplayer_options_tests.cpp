@@ -38,12 +38,12 @@ struct Fixture : test::ConfigurationFixture {
     std::uint32_t tick = 100;
     Fixture() {
         auto& multiplayer = runtime.world().multiplayer;
-        runtime.world().globals.multiplayer = 3;
+        runtime.world().globals.multiplayer = state::GameMode::tcp;
         multiplayer.network_host = true;
         multiplayer.player_count = 3;
-        multiplayer.saved.simultaneous = -32768;
-        process.multiplayer_preferences.double_production = 17;
-        process.multiplayer_preferences.double_movement = -19;
+        multiplayer.saved.simultaneous = true;
+        process.multiplayer_preferences.double_production = true;
+        process.multiplayer_preferences.double_movement = true;
         process.rules->definitions.units[0].movement = 64;
         process.rules->definitions.units[1].movement = 3;
         process.rules->definitions.units[1].domain = state::RuleDomain::air;
@@ -114,8 +114,8 @@ TEST_CASE("N03 a proposal yields and remains unapplied while replies are pending
     REQUIRE(f.written.size() == 2);
     const auto saved = formats::decode_multiplayer_preferences(f.written[1]);
     CHECK(saved.clear_chat_new_game == 1);
-    CHECK(saved.double_production == 17);
-    CHECK(saved.double_movement == -19);
+    CHECK(saved.double_production == 1);
+    CHECK(saved.double_movement == 1);
     CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error);
     f.services.send_units = {}; // The operation retains its validated bindings.
     f.channel.progress = {0, 0};
@@ -125,7 +125,7 @@ TEST_CASE("N03 a proposal yields and remains unapplied while replies are pending
     CHECK(f.process.rules->definitions.units[0].movement == 128);
     CHECK(f.process.rules->definitions.units[1].movement == 3);
     CHECK(f.process.rules->definitions.units[61].movement == 254);
-    CHECK(f.sent == std::vector<std::array<std::int32_t, 3>>{{1, 1, -32768}});
+    CHECK(f.sent == std::vector<std::array<std::int32_t, 3>>{{1, 1, 1}});
     CHECK(f.trace.back() == "PMCHANGEYES");
     CHECK(f.runtime.gameplay_random().checkpoint() == random);
     CHECK(op->poll() == MultiplayerOptionResult::applied);
@@ -138,8 +138,8 @@ TEST_CASE("N03 network clients save chat without changing host options",
     Fixture f;
     f.runtime.world().multiplayer.network_host = false;
     CHECK(f.apply() == MultiplayerOptionResult::client_only);
-    CHECK(f.process.multiplayer_preferences.double_production == 17);
-    CHECK(f.process.multiplayer_preferences.double_movement == -19);
+    CHECK(f.process.multiplayer_preferences.double_production);
+    CHECK(f.process.multiplayer_preferences.double_movement);
     CHECK(f.written.size() == 2);
     CHECK(f.channel.begins == 0);
     CHECK_FALSE(f.process.rules->double_movement_applied);
@@ -155,7 +155,8 @@ TEST_CASE("N03 unchanged values and local modes skip the vote", "[configuration]
     SECTION("Local or lone host") {
         for (const auto mode : {0, 1, 2, 3}) {
             Fixture f;
-            f.runtime.world().globals.multiplayer = static_cast<std::uint8_t>(mode);
+            f.runtime.world().globals.multiplayer =
+                static_cast<state::GameMode>(static_cast<std::uint8_t>(mode));
             f.runtime.world().multiplayer.player_count = 1;
             MultiplayerOptionOperation op(f.runtime, 0, {true, false, true, true}, f.services);
             CHECK(op.poll() == MultiplayerOptionResult::applied);
@@ -181,11 +182,11 @@ TEST_CASE("N03 rejected or timed out proposals restore the current authoritative
         REQUIRE_FALSE(op->poll());
         f.channel.progress = reply;
         f.tick += 2401;
-        f.runtime.world().multiplayer.saved.double_production = -7;
-        f.runtime.world().multiplayer.saved.double_movement = 2;
+        f.runtime.world().multiplayer.saved.double_production = false;
+        f.runtime.world().multiplayer.saved.double_movement = true;
         CHECK(op->poll() == MultiplayerOptionResult::rejected);
-        CHECK(f.process.multiplayer_preferences.double_production == -7);
-        CHECK(f.process.multiplayer_preferences.double_movement == 2);
+        CHECK_FALSE(f.process.multiplayer_preferences.double_production);
+        CHECK(f.process.multiplayer_preferences.double_movement);
         CHECK_FALSE(f.process.rules->double_movement_applied);
         CHECK(f.trace.back() == "PMCHANGENO");
         CHECK(f.sent.empty());
@@ -258,18 +259,18 @@ TEST_CASE("N03 proposal text and publication tails observe specified live child 
     }
     SECTION("Selected tail finishes after a mode change") {
         Fixture f;
-        f.runtime.world().globals.multiplayer = 1;
+        f.runtime.world().globals.multiplayer = state::GameMode::hotseat;
         f.runtime.world().multiplayer.player_count = 1;
         f.services.redraw_status = [&](auto) {
-            f.runtime.world().globals.multiplayer = 3;
+            f.runtime.world().globals.multiplayer = state::GameMode::tcp;
             f.runtime.world().multiplayer.player_count = 2;
         };
         f.services.send_units = [&] {
-            f.runtime.world().globals.multiplayer = 0;
-            f.runtime.world().multiplayer.saved.double_movement = -4;
+            f.runtime.world().globals.multiplayer = state::GameMode::single_player;
+            f.runtime.world().multiplayer.saved.double_movement = false;
         };
         CHECK(f.apply() == MultiplayerOptionResult::applied);
-        CHECK(f.sent[0][1] == -4);
+        CHECK(f.sent[0][1] == 0);
         CHECK(f.trace.back() == "PMCHANGEYES");
     }
     SECTION("Redraw suppresses publication") {

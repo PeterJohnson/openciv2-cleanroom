@@ -12,7 +12,7 @@ NATIVE_CONTENT = {f'formats/{stem}.{suffix}' for stem in ('rules', 'city_names',
                   for suffix in ('hpp', 'cpp')}
 CLASSIC_LOADERS = {'formats/classic_text_reader.hpp', 'formats/classic_rules.hpp',
                    'formats/classic_city_names.hpp', 'formats/classic_city_preferences.hpp'}
-PLAYER_STATE = {'state/identities.hpp', 'state/unit_types.hpp'}
+PLAYER_STATE = {'state/identities.hpp', 'state/unit_types.hpp', 'state/choices.hpp'}
 PLAYER_SESSION = {'session/client.hpp', 'session/command_types.hpp',
                   'session/classic_file_choice.hpp'}
 

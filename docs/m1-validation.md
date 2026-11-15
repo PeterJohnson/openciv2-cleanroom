@@ -10,7 +10,28 @@ Full W02/V01/balancing/AI and graphical setup integration remain M3/M4 work;
 supplied-child foundation tests do not establish those mechanics. Historical test
 counts below describe their recorded revisions, not current review verification.
 
-The subsequent interface review fixes five remaining issues and the deferred
+The semantic-state follow-up removes simulated event/map/network allocation hooks
+and recoverable allocation-failure results. Real `std::bad_alloc` propagates to
+the application boundary. Classic codecs now own separate stored record types;
+live values use strings, binary flags and named choices for difficulty, gender,
+world size, rule selection, government, game/movement mode and network protocol.
+Explicit conversions retain lossless stored round trips while live exports use
+canonical flag words and text padding. Oversized text is rejected at export
+without truncation. Opaque save fields remain adapter-owned and follow world,
+entity and event lifetimes; replacing a world or reusing a slot drops stale data.
+Unknown legacy preference fields remain in raw records rather than live state.
+Regression coverage includes these boundaries, allocation-error propagation,
+and loading preferences when previous live strings exceed classic field widths.
+
+Validation of this follow-up: 532/532 Linux native CTests (519 Catch2 cases),
+532/532 ASan/UBSan CTests with LeakSanitizer disabled for this host, 8/8 Emscripten
+CTests (506 portable cases, 208,930 assertions), 121 Python tests, and a rebuilt
+SDL desktop smoke test. All 57 native conformance vectors pass and the
+source-bound report is refreshed. Pinned clang-format 20.1.8, include boundaries
+and conformance metadata pass. These are implementation checks; they add no new
+original-game, Windows or macOS observations.
+
+The earlier interface review fixes five remaining issues and the deferred
 new-world content inconsistency: nested setup/configuration lifetime guards,
 unit operations inside command continuations, staged preference loading, owned
 scenario event catalogs, asynchronous option votes, and one shared content

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 #include "state/civilization.hpp"
 
@@ -10,7 +11,7 @@ struct EliminationHistory {
     std::int16_t count = 0;
     std::array<std::int16_t, 12> turns{};
     std::array<std::uint8_t, 12> killers{}, portraits{};
-    std::array<FixedText<24>, 12> names;
+    std::array<std::string, 12> names;
     bool operator==(const EliminationHistory&) const = default;
 };
 } // namespace openciv::state

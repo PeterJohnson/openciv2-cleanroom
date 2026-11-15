@@ -52,7 +52,7 @@ struct ClassicSaveFixture {
         w.map.regions[0].land = 91; // Deliberately stale: saving must not rebuild it.
         w.power_history[149][7] = 81;
         w.views[7].zoom = -7;
-        w.eliminations.names[11].bytes[23] = 91;
+        w.eliminations.names[11] = "Last leader";
         w.multiplayer.local_human = 2;
         w.multiplayer.network_turn_civ = 5;
         w.multiplayer.saved.resume_civ = 6;

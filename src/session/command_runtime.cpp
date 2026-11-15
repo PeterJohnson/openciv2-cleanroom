@@ -130,6 +130,8 @@ CommandUpdate submit(RuntimeState& state, CommandActor actor, CommandRequest req
     Admission admission;
     try {
         admission = definition.admit(actor, request, *state.world);
+    } catch (const std::bad_alloc&) {
+        throw;
     } catch (...) {
         return rejected(id, "admission_exception");
     }
@@ -365,6 +367,8 @@ bool SessionRuntime::advance_one() {
         finish(*state_, record, CommandStatus::failed, {},
                "random_choice_" + std::string(base::choice_failure_code(error.failure())));
         return true;
+    } catch (const std::bad_alloc&) {
+        throw;
     } catch (...) {
         finish(*state_, record, CommandStatus::failed, {}, "operation_exception");
         return true;

@@ -4,7 +4,7 @@
 
 namespace openciv::state {
 struct LeaderTitleOverride {
-    std::uint8_t government = 0;
+    Government government = Government::anarchy;
     state::TitlePair titles;
 };
 struct RuleInput {

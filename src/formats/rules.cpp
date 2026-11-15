@@ -355,7 +355,8 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
         auto leaders = r.at("leaderNames");
         leaders.fields({"male", "female"});
         target.leaders = {text(leaders.at("male"), true), text(leaders.at("female"), true)};
-        target.preferred_gender = named(r.at("preferredLeaderGender"), {"male", "female"});
+        target.preferred_gender =
+            static_cast<state::Gender>(named(r.at("preferredLeaderGender"), {"male", "female"}));
         target.preferred_color = rules::normalize_leader_color(r.at("preferredColor").integer());
         target.city_style = rules::normalize_leader_style(r.at("cityStyle").integer());
         auto personality = r.at("personality");
@@ -371,7 +372,7 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
             if (!government)
                 title.error("Anarchy titles cannot be overridden");
             out->input.title_overrides[i].push_back(
-                {static_cast<std::uint8_t>(government),
+                {static_cast<state::Government>(government),
                  {text(title.at("male"), false), text(title.at("female"), false)}});
         }
     }

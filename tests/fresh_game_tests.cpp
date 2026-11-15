@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // X01 fresh-game isolation, F02 section 2 and the admitted session contract.
 // These are implementation foundation tests, not original-game captures.
 #include "session/runtime.hpp"
@@ -12,31 +13,35 @@ namespace {
 void poison(state::GameState& world, state::ProcessContext& process) {
     const auto unit = formats::decode_unit(formats::Bytes(formats::unit_record_size, 0xa5));
     const auto city = formats::decode_city(formats::Bytes(formats::city_record_size, 0x5a));
-    std::fill(world.entities.units.storage().begin(), world.entities.units.storage().end(), unit);
-    std::fill(world.entities.cities.storage().begin(), world.entities.cities.storage().end(), city);
+    std::fill(world.entities.units.storage().begin(), world.entities.units.storage().end(),
+              formats::to_live(unit));
+    std::fill(world.entities.cities.storage().begin(), world.entities.cities.storage().end(),
+              formats::to_live(city));
     world.entities.units.set_end(2);
     world.entities.cities.set_end(1);
     world.unit_stacks = {9, true, true, true, true, true, 11, 12, 13, 14};
     world.unit_deletion = {true, -2};
     world.unit_totals.fill(123);
     world.turn_loop_active = true;
-    world.movement_mode = 99;
+    world.movement_mode = static_cast<state::MovementMode>(99);
     world.civilization_color_flags.fill(0xffffffffU);
-    world.globals = formats::decode_globals(formats::Bytes(formats::global_record_size, 0xa5));
+    world.globals = formats::to_live(
+        formats::decode_globals(formats::Bytes(formats::global_record_size, 0xa5)));
     world.world_setup = {40, 50, {1, -1, 2, -2, 3}};
     for (auto& civ : world.civilizations)
-        civ = formats::decode_civilization(formats::Bytes(formats::civilization_record_size, 0xa5));
+        civ = formats::to_live(
+            formats::decode_civilization(formats::Bytes(formats::civilization_record_size, 0xa5)));
     for (auto& names : world.names) {
         names.city_style = 2;
-        names.leader.bytes.fill(7);
-        names.tribe.bytes.fill(8);
-        names.adjective.bytes.fill(9);
+        names.leader = std::string(24, static_cast<char>(7));
+        names.tribe = std::string(24, static_cast<char>(8));
+        names.adjective = std::string(24, static_cast<char>(9));
         for (auto& title : names.titles)
-            title.bytes.fill(10);
+            title = std::string(24, static_cast<char>(10));
     }
     world.pending_leader_overrides.fill(7);
-    world.multiplayer.saved =
-        formats::decode_multiplayer(formats::Bytes(formats::multiplayer_record_size, 0xa5));
+    world.multiplayer.saved = formats::to_live(
+        formats::decode_multiplayer(formats::Bytes(formats::multiplayer_record_size, 0xa5)));
     world.multiplayer.passwords.pending.fill(true);
     world.multiplayer.passwords.present.fill(true);
     world.multiplayer.local_human = world.multiplayer.resume_civ = 7;
@@ -49,13 +54,13 @@ void poison(state::GameState& world, state::ProcessContext& process) {
     world.events.collection.append()->set_string(0, state::EventString{"previous event"});
     for (auto& row : world.power_history)
         row.fill(91);
-    world.eliminations =
-        formats::decode_elimination_history(formats::Bytes(formats::elimination_record_size, 0x5a));
-    world.scenario = formats::decode_scenario_parameters(
-        formats::Bytes(formats::scenario_parameters_size, 0xa5));
+    world.eliminations = formats::to_live(formats::decode_elimination_history(
+        formats::Bytes(formats::elimination_record_size, 0x5a)));
+    world.scenario = formats::to_live(formats::decode_scenario_parameters(
+        formats::Bytes(formats::scenario_parameters_size, 0xa5)));
     world.layout.valid = 1;
     world.layout.rectangles.fill({1, 2, 3, 4});
-    world.views.fill({1, 2, 3, 4, 5});
+    world.views.fill({true, true, 3, 4, 5});
     world.mood = {state::CitySlot{2}, 40, -20};
     world.map.allocate(world::Geometry{8, 6});
     for (auto& tile : world.map.tiles()) {
@@ -135,10 +140,10 @@ TEST_CASE(
         runtime.bind(runtime.add_participant(state::CivilizationSlot{1}), ControllerKind::scripted);
     const auto identity = client.identity();
     poison(runtime.world(), process);
-    process.ordinary_preferences = formats::decode_ordinary_preferences(
-        formats::Bytes(formats::ordinary_preferences_size, 0xa5));
-    process.multiplayer_preferences = formats::decode_multiplayer_preferences(
-        formats::Bytes(formats::multiplayer_preferences_size, 0x5a));
+    process.ordinary_preferences = formats::to_live(formats::decode_ordinary_preferences(
+        formats::Bytes(formats::ordinary_preferences_size, 0xa5)));
+    process.multiplayer_preferences = formats::to_live(formats::decode_multiplayer_preferences(
+        formats::Bytes(formats::multiplayer_preferences_size, 0x5a)));
     process.tokens = {4294967295U, 0};
     const auto ordinary = process.ordinary_preferences;
     const auto multiplayer = process.multiplayer_preferences;
@@ -193,7 +198,7 @@ TEST_CASE(
     CHECK(world.unit_deletion.reply == 0);
     CHECK(world.unit_totals == cold.unit_totals);
     CHECK_FALSE(world.turn_loop_active);
-    CHECK(world.movement_mode == 0);
+    CHECK(world.movement_mode == state::MovementMode::view);
     CHECK(world.civilization_color_flags == cold.civilization_color_flags);
     CHECK(world.globals == cold.globals);
     CHECK(world.world_setup == cold.world_setup);
@@ -216,7 +221,6 @@ TEST_CASE(
     CHECK(world.map.stored_topology == 0);
     CHECK(world.map.regions == cold.map.regions);
     CHECK(world.map.remembered_barbarian.empty());
-    CHECK(world.map.storage_revision() == 0);
     runtime.begin_client_session({13, 17});
     const auto new_client =
         runtime.bind(runtime.add_participant(state::CivilizationSlot{1}), ControllerKind::scripted);

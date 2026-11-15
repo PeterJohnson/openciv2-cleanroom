@@ -44,7 +44,6 @@ struct Fixture {
     std::uint32_t tick = 0x12345678U;
     std::vector<std::string> trace;
     std::vector<std::size_t> reads;
-    std::vector<world::StorageRequest> allocations;
     std::function<void(std::string_view)> observe;
     Fixture() {
         auto& map = runtime.world().map;
@@ -87,10 +86,6 @@ struct Fixture {
                      return true;
                  }});
         };
-        services.allocate = [&](world::StorageRequest request) {
-            allocations.push_back(request);
-            event("allocate");
-        };
         services.load_failure = [&] { event("failure"); };
         services.choices.use_seed = [&] {
             event("seed");
@@ -130,11 +125,8 @@ TEST_CASE("F05 premade loading composes F06 normalization and retained rule topo
     REQUIRE(f.load() == WorldSource::premade_flat);
     auto& map = f.runtime.world().map;
     CHECK(f.position == f.input.size()); // Trailing bytes are accepted by the stored codec.
-    REQUIRE(f.allocations.size() == 12);
-    CHECK(f.allocations.front() == world::StorageRequest{world::StorageKind::tiles, 0, 4});
-    CHECK(f.allocations.back() == world::StorageRequest{world::StorageKind::coarse, 3, 1});
     CHECK(std::find(f.trace.begin(), f.trace.end(), "close") <
-          std::find(f.trace.begin(), f.trace.end(), "allocate"));
+          std::find(f.trace.begin(), f.trace.end(), "seed"));
     CHECK(f.trace[f.trace.size() - 2] == "seed");
     CHECK(f.trace.back() == "hints");
     CHECK(map.geometry().width() == 4);
@@ -176,7 +168,6 @@ TEST_CASE("F05 preparation clears seven remembered layers while retaining other 
                   static_cast<std::uint8_t>(civ));
     for (unsigned grid = 0; grid < 4; ++grid)
         map.coarse_grid(grid)[0] = static_cast<std::uint8_t>(grid + 10);
-    const auto revision = map.storage_revision();
     const auto setup = f.runtime.world().world_setup;
     CHECK(prepare_premade_world(f.runtime, f.starts, f.services.choices) ==
           WorldSource::premade_flat);
@@ -185,7 +176,6 @@ TEST_CASE("F05 preparation clears seven remembered layers while retaining other 
                           [](auto byte) { return byte == 0; }));
     for (unsigned grid = 0; grid < 4; ++grid)
         CHECK(map.coarse_grid(grid)[0] == grid + 10);
-    CHECK(map.storage_revision() == revision);
     CHECK(map.remembered_barbarian == formats::Bytes{7, 8, 9});
     CHECK(f.runtime.world().world_setup == setup);
 }
@@ -309,29 +299,8 @@ TEST_CASE("F05 truncated raw maps leave the previous world and starts intact",
         CHECK(tiles(f.runtime.world().map) == before);
         CHECK(f.starts == starts);
         CHECK(f.runtime.world().world_setup == setup);
-        CHECK(f.allocations.empty());
         CHECK(std::count(f.trace.begin(), f.trace.end(), "close") == 1);
         CHECK(f.trace.back() == "failure");
-    }
-}
-TEST_CASE("F05 failed map preparation keeps the previously installed map",
-          "[premade-world][session]") {
-    for (std::size_t stop = 0; stop < 12; ++stop) {
-        Fixture f;
-        const auto before = tiles(f.runtime.world().map);
-        const auto starts = f.starts;
-        const auto setup = f.runtime.world().world_setup;
-        std::size_t calls = 0;
-        f.services.allocate = [&](auto) {
-            if (calls++ == stop)
-                throw std::bad_alloc();
-        };
-        CHECK_THROWS_AS(f.load(), std::bad_alloc);
-        CHECK(calls == stop + 1);
-        CHECK(tiles(f.runtime.world().map) == before);
-        CHECK(f.starts == starts);
-        CHECK(f.runtime.world().world_setup == setup);
-        CHECK(std::count(f.trace.begin(), f.trace.end(), "close") == 1);
     }
 }
 TEST_CASE("F05 close exceptions precede installation and are never retried",
@@ -345,7 +314,6 @@ TEST_CASE("F05 close exceptions precede installation and are never retried",
     CHECK_THROWS_AS(f.load(), std::runtime_error);
     CHECK(std::count(f.trace.begin(), f.trace.end(), "close") == 1);
     CHECK(tiles(f.runtime.world().map) == before);
-    CHECK(f.allocations.empty());
 }
 
 TEST_CASE("F05 failed choice services retain normalization and earlier clock or hint effects",
@@ -413,21 +381,6 @@ TEST_CASE("F05 map I/O allocation choices and failure notices publish before ext
     f.open_failure = true;
     CHECK_FALSE(f.load());
     CHECK(client.own_units().records[0].x == next);
-}
-
-TEST_CASE("F05 malformed item and allocation reentry stop safely with closed input",
-          "[premade-world][session]") {
-    Fixture f;
-    f.input[0] = 3;
-    CHECK_FALSE(f.load());
-    CHECK(f.trace == std::vector<std::string>{"open", "read", "close", "failure"});
-    CHECK(f.runtime.world().world_setup.width == 99);
-    f.input = raw_map();
-    f.trace.clear();
-    f.services.allocate = [&](auto) { f.runtime.world().map.allocate({8, 4}); };
-    CHECK_THROWS_AS(f.load(), std::out_of_range);
-    CHECK(f.trace.back() == "close");
-    CHECK(f.runtime.world().world_setup.width == 99);
 }
 
 TEST_CASE("F05 premade parameters are sampled only after successful loading",

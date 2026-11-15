@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 #include "state/identities.hpp"
 #include "state/unit_types.hpp"
@@ -20,16 +21,6 @@ template <class Slot> struct SlotLink {
     }
     bool operator==(const SlotLink&) const = default;
 };
-// Classic byte strings are not UTF-8. Keep the terminator and all retained tail
-// bytes independently of any presentation conversion performed by the client.
-template <std::size_t N> struct FixedText {
-    std::array<std::uint8_t, N> bytes{};
-    std::span<const std::uint8_t> text() const noexcept {
-        return {bytes.begin(), std::find(bytes.begin(), bytes.end(), std::uint8_t{0})};
-    }
-    bool terminated() const noexcept { return text().size() < N; }
-    bool operator==(const FixedText&) const = default;
-};
 
 struct Unit {
     UnitToken token{0};
@@ -43,8 +34,6 @@ struct Unit {
     std::optional<CitySlot> home;
     std::int16_t destination_x = 0, destination_y = 0;
     SlotLink<UnitSlot> previous, next;
-    std::uint8_t retained_byte = 0;
-    std::uint16_t retained_word = 0;
     bool operator==(const Unit&) const = default;
 };
 struct City {
@@ -57,7 +46,7 @@ struct City {
     std::array<std::uint8_t, 8> remembered_size{};
     std::uint32_t specialist_kinds = 0;
     std::int16_t food_box = 0, shield_box = 0, base_trade = 0;
-    FixedText<16> name;
+    std::string name;
     std::uint32_t worked_tiles = 0; // Includes specialist count and retained bits.
     std::array<std::uint8_t, 5> improvements{};
     std::int8_t production = 0;
@@ -66,7 +55,6 @@ struct City {
     std::array<SlotLink<CitySlot>, 3> route_partners{};
     std::int16_t science = 0, tax = 0, trade = 0;
     std::uint8_t total_food = 0, total_shields = 0, happy = 0, unhappy = 0;
-    std::uint8_t retained_byte = 0;
     bool operator==(const City&) const = default;
 };
 

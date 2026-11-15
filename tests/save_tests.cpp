@@ -60,16 +60,22 @@ void exact_record(std::size_t size, Decode decode, Encode encode) {
 
 TEST_CASE("F06 civilization and global codecs retain every byte with exact lengths",
           "[formats][F06]") {
-    exact_record(330, decode_globals, encode_globals);
-    exact_record(1428, decode_civilization, encode_civilization);
-    exact_record(242, decode_civilization_names, encode_civilization_names);
-    exact_record(48, decode_leader, encode_leader);
-    exact_record(106, decode_layout, encode_layout);
-    exact_record(10, decode_map_view, encode_map_view);
-    exact_record(100, decode_scenario_parameters, encode_scenario_parameters);
-    exact_record(338, decode_elimination_history, encode_elimination_history);
-    exact_record(1172, decode_multiplayer, encode_multiplayer);
-    exact_record(444, decode_event_record, encode_event_record);
+    exact_record(330, decode_globals, [](const auto& value) { return encode_globals(value); });
+    exact_record(1428, decode_civilization,
+                 [](const auto& value) { return encode_civilization(value); });
+    exact_record(242, decode_civilization_names,
+                 [](const auto& value) { return encode_civilization_names(value); });
+    exact_record(48, decode_leader, [](const auto& value) { return encode_leader(value); });
+    exact_record(106, decode_layout, [](const auto& value) { return encode_layout(value); });
+    exact_record(10, decode_map_view, [](const auto& value) { return encode_map_view(value); });
+    exact_record(100, decode_scenario_parameters,
+                 [](const auto& value) { return encode_scenario_parameters(value); });
+    exact_record(338, decode_elimination_history,
+                 [](const auto& value) { return encode_elimination_history(value); });
+    exact_record(1172, decode_multiplayer,
+                 [](const auto& value) { return encode_multiplayer(value); });
+    exact_record(444, decode_event_record,
+                 [](const auto& value) { return encode_event_record(value); });
 }
 
 TEST_CASE("F02 civilization directed relationships census and goals preserve signed domains",

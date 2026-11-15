@@ -22,7 +22,7 @@ struct Fixture : test::ClassicSaveFixture {
             process.rules->names.difficulties[i] =
                 process.rules->text.store("Difficulty" + std::to_string(i));
         runtime.world().globals.year = -3980;
-        runtime.world().globals.difficulty = 3;
+        runtime.world().globals.difficulty = state::Difficulty::king;
         process.text_parameters.line = "unrelated shared line";
         process.text_parameters.strings.fill("unrelated shared string");
         ui.output = services;
@@ -62,23 +62,27 @@ struct Fixture : test::ClassicSaveFixture {
 TEST_CASE("F06 file types describe supported formats without native buffers",
           "[session][file-choice]") {
     for (std::uint8_t mode = 0; mode < 7; ++mode) {
-        const auto types = classic_file_types(mode, false, false, true, label);
+        const auto types =
+            classic_file_types(static_cast<state::GameMode>(mode), false, false, true, label);
         const auto pattern = mode == 0   ? "*.sav"
                              : mode == 1 ? "*.hot"
                              : mode == 2 ? "*.eml"
                                          : "*.net";
         REQUIRE(types.size() == 1);
         CHECK(types[0].pattern == pattern);
-        const auto alternatives = classic_file_types(mode, false, false, false, label);
+        const auto alternatives =
+            classic_file_types(static_cast<state::GameMode>(mode), false, false, false, label);
         CHECK(alternatives.front() == types.front());
         CHECK(std::any_of(alternatives.begin(), alternatives.end(),
                           [](const auto& t) { return t.pattern == "*.sav"; }));
     }
-    CHECK(classic_file_types(255, true, false, false, label) ==
+    CHECK(classic_file_types(static_cast<state::GameMode>(255), true, false, false, label) ==
           std::vector<FileType>{{"Label415", "*.scn"}});
-    CHECK(classic_file_types(255, false, true, false, label) ==
+    CHECK(classic_file_types(static_cast<state::GameMode>(255), false, true, false, label) ==
           std::vector<FileType>{{"Label261", "*.mp"}});
-    CHECK_THROWS_AS(classic_file_types(255, false, false, true, label), std::invalid_argument);
+    CHECK_THROWS_AS(
+        classic_file_types(static_cast<state::GameMode>(255), false, false, true, label),
+        std::invalid_argument);
 }
 TEST_CASE("F06 chooser publishes only accepted valid paths without a native length limit",
           "[session][file-choice]") {
@@ -123,7 +127,8 @@ TEST_CASE("F06 cancellation and chooser failure never save or publish draft path
     for (auto mode : {0, 1, 2, 3})
         for (bool failure : {false, true}) {
             Fixture f;
-            f.runtime.world().globals.multiplayer = static_cast<std::uint8_t>(mode);
+            f.runtime.world().globals.multiplayer =
+                static_cast<state::GameMode>(static_cast<std::uint8_t>(mode));
             const auto before = f.runtime.world().globals;
             f.choice = {failure ? FileChoiceStatus::failed : FileChoiceStatus::cancelled,
                         "draft.sav", "Chooser failed"};
@@ -145,14 +150,14 @@ TEST_CASE("F06 save notices distinguish scenario email and output failure",
           "[session][save-menu]") {
     SECTION("scenario") {
         Fixture f;
-        f.runtime.world().scenario.name.bytes[0] = 'X';
+        f.runtime.world().scenario.name = "X";
         CHECK(f.menu_save(true) == SaveMenuResult::saved);
         CHECK(f.notices[0].key == "SCENOK");
         CHECK(f.notices[0].arguments[0] == "X");
     }
     SECTION("email") {
         Fixture f;
-        f.runtime.world().globals.multiplayer = 2;
+        f.runtime.world().globals.multiplayer = state::GameMode::email;
         CHECK(f.menu_save() == SaveMenuResult::saved);
         CHECK(f.notices[0].key == "EMAILSAVED");
         CHECK(f.notices[0].arguments[0] == "chosen.sav");

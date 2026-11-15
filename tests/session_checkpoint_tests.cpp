@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // M1-01: authored projection/operation codecs, not installed game commands.
 #include "session/runtime.hpp"
 #include "base/hash.hpp"
@@ -49,7 +50,7 @@ void fresh_except_treasury(const state::GameState& game, const state::ProcessCon
           s.relocate_reply == 0 && s.bottom_reply == 0);
     admit(!game.unit_deletion.active && game.unit_deletion.reply == 0 &&
           game.unit_totals == cold->unit_totals && !game.turn_loop_active &&
-          game.movement_mode == 0 &&
+          game.movement_mode == state::MovementMode::view &&
           game.civilization_color_flags == cold->civilization_color_flags);
     admit(game.globals == cold->globals && game.world_setup == cold->world_setup &&
           game.names == cold->names &&
@@ -60,9 +61,8 @@ void fresh_except_treasury(const state::GameState& game, const state::ProcessCon
           game.power_history == cold->power_history && game.eliminations == cold->eliminations &&
           game.scenario == cold->scenario && game.layout == cold->layout &&
           game.views == cold->views && game.mood == cold->mood);
-    admit(!game.map.allocated() && game.map.storage_revision() == 0 && game.map.pattern_seed == 0 &&
-          game.map.stored_topology == 0 && game.map.regions == cold->map.regions &&
-          game.map.remembered_barbarian.empty());
+    admit(!game.map.allocated() && game.map.pattern_seed == 0 && game.map.stored_topology == 0 &&
+          game.map.regions == cold->map.regions && game.map.remembered_barbarian.empty());
     admit(process.fallback == cold_process->fallback &&
           process.text_parameters.numbers == cold_process->text_parameters.numbers &&
           process.text_parameters.strings == cold_process->text_parameters.strings &&
@@ -76,30 +76,31 @@ void fresh_except_treasury(const state::GameState& game, const state::ProcessCon
           labels.popups == cold_process->rules->labels.popups);
 }
 CheckpointProfile profile() {
-    return {"test.local-foundation/1",
-            [](const state::GameState& world, const state::ProcessContext& process) {
-                fresh_except_treasury(world, process);
-                CheckpointBytes out{'F', 'N', 'D', 1};
-                u32(out, std::bit_cast<std::uint32_t>(world.civilizations[1].gold));
-                u32(out, process.tokens.next_unit);
-                u32(out, process.tokens.next_city);
-                append(out, formats::encode_ordinary_preferences(process.ordinary_preferences));
-                append(out,
-                       formats::encode_multiplayer_preferences(process.multiplayer_preferences));
-                return out;
-            },
-            [](std::span<const std::uint8_t> data, state::GameState& world,
-               state::ProcessContext& process) {
-                admit(data.size() == 16 + formats::ordinary_preferences_size +
-                                         formats::multiplayer_preferences_size &&
-                      data[0] == 'F' && data[1] == 'N' && data[2] == 'D' && data[3] == 1);
-                world.civilizations[1].gold = std::bit_cast<std::int32_t>(read32(data, 4));
-                process.tokens = {read32(data, 8), read32(data, 12)};
-                process.ordinary_preferences = formats::decode_ordinary_preferences(
-                    data.subspan(16, formats::ordinary_preferences_size));
-                process.multiplayer_preferences = formats::decode_multiplayer_preferences(
-                    data.subspan(16 + formats::ordinary_preferences_size));
-            }};
+    return {
+        "test.local-foundation/1",
+        [](const state::GameState& world, const state::ProcessContext& process) {
+            fresh_except_treasury(world, process);
+            CheckpointBytes out{'F', 'N', 'D', 1};
+            u32(out, std::bit_cast<std::uint32_t>(world.civilizations[1].gold));
+            u32(out, process.tokens.next_unit);
+            u32(out, process.tokens.next_city);
+            append(out, formats::encode_ordinary_preferences(process.ordinary_preferences));
+            append(out, formats::encode_multiplayer_preferences(process.multiplayer_preferences));
+            return out;
+        },
+        [](std::span<const std::uint8_t> data, state::GameState& world,
+           state::ProcessContext& process) {
+            admit(data.size() == 16 + formats::ordinary_preferences_size +
+                                     formats::multiplayer_preferences_size &&
+                  data[0] == 'F' && data[1] == 'N' && data[2] == 'D' && data[3] == 1);
+            world.civilizations[1].gold = std::bit_cast<std::int32_t>(read32(data, 4));
+            process.tokens = {read32(data, 8), read32(data, 12)};
+            process.ordinary_preferences = formats::to_live(formats::decode_ordinary_preferences(
+                data.subspan(16, formats::ordinary_preferences_size)));
+            process.multiplayer_preferences =
+                formats::to_live(formats::decode_multiplayer_preferences(
+                    data.subspan(16 + formats::ordinary_preferences_size)));
+        }};
 }
 base::ChoiceKey point(std::string call) {
     return {"test.checkpoint", std::move(call), 0};
@@ -230,9 +231,9 @@ TEST_CASE("M1 checkpoint idle profile restores separate process and all preferen
     Fixture source, destination(2, false);
     source.process.tokens = {UINT32_MAX, 0};
     source.process.ordinary_preferences =
-        formats::decode_ordinary_preferences(formats::Bytes(72, 0xa5));
+        formats::to_live(formats::decode_ordinary_preferences(formats::Bytes(72, 0xa5)));
     source.process.multiplayer_preferences =
-        formats::decode_multiplayer_preferences(formats::Bytes(444, 0x5a));
+        formats::to_live(formats::decode_multiplayer_preferences(formats::Bytes(444, 0x5a)));
     source.runtime.world().civilizations[1].gold = INT32_MIN;
     source.runtime.gameplay_random() = base::GameplayRandom(11, "test/custom-gameplay");
     source.runtime.presentation_random() = base::PresentationRandom(13, "test/custom-presentation");
@@ -398,7 +399,7 @@ TEST_CASE("M1 checkpoint rejects unsupported world categories and session work",
         [](auto& f) { f.runtime.world().unit_deletion.reply = -2; },
         [](auto& f) { f.runtime.world().unit_totals[2] = 1; },
         [](auto& f) { f.runtime.world().turn_loop_active = true; },
-        [](auto& f) { f.runtime.world().movement_mode = 1; },
+        [](auto& f) { f.runtime.world().movement_mode = state::MovementMode::move_units; },
         [](auto& f) { f.runtime.world().civilization_color_flags[2] = 1; },
         [](auto& f) { f.runtime.world().pending_leader_overrides[2] = 0; },
         [](auto& f) { f.runtime.world().mood.happy = 1; },

@@ -38,7 +38,9 @@ struct PlayerSetupServices {
     // Ordinary rows or a negative cancellation. Nominal positive domains:
     // difficulty 0..5, opponents 0..4 (6 - row opponents), barbarians 0..3,
     // rules 0=standard/1=custom, gender 0..1, acceleration 0..2, style 0..3.
-    std::function<std::int32_t(std::int16_t remembered)> difficulty, rules, gender;
+    std::function<std::int32_t(state::Difficulty remembered)> difficulty;
+    std::function<std::int32_t(state::RuleSelection remembered)> rules;
+    std::function<std::int32_t(state::Gender remembered)> gender;
     std::function<SetupNumericChoice(std::int16_t remembered)> opponents, barbarians;
     std::function<SetupAdvancedResponse(SetupAdvancedChoices defaults)> advanced;
     std::function<std::int32_t(std::array<std::uint32_t, 3> years, std::int16_t remembered)>

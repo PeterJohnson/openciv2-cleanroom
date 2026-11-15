@@ -1,4 +1,5 @@
 #include "formats/preference_io.hpp"
+#include "formats/state_conversion.hpp"
 
 namespace openciv::formats {
 namespace {
@@ -30,9 +31,9 @@ Record decode_item(const ReadResult& incoming, std::size_t size, const Record& p
     return decode(bytes);
 }
 } // namespace
-state::OrdinaryPreferences decode_ordinary_preferences(std::span<const Byte> bytes) {
+StoredOrdinaryPreferences decode_ordinary_preferences(std::span<const Byte> bytes) {
     auto r = record(bytes, ordinary_preferences_size);
-    state::OrdinaryPreferences p;
+    StoredOrdinaryPreferences p;
     p.rules = r.u16();
     p.default_level = r.i16();
     p.difficulty = r.i16();
@@ -52,7 +53,7 @@ state::OrdinaryPreferences decode_ordinary_preferences(std::span<const Byte> byt
     p.accelerated_start = r.i16();
     return p;
 }
-Bytes encode_ordinary_preferences(const state::OrdinaryPreferences& p) {
+Bytes encode_ordinary_preferences(const StoredOrdinaryPreferences& p) {
     ByteWriter w;
     w.u16(p.rules);
     w.i16(p.default_level);
@@ -73,9 +74,9 @@ Bytes encode_ordinary_preferences(const state::OrdinaryPreferences& p) {
     w.i16(p.accelerated_start);
     return std::move(w.bytes);
 }
-state::MultiplayerPreferences decode_multiplayer_preferences(std::span<const Byte> bytes) {
+StoredMultiplayerPreferences decode_multiplayer_preferences(std::span<const Byte> bytes) {
     auto r = record(bytes, multiplayer_preferences_size);
-    state::MultiplayerPreferences p;
+    StoredMultiplayerPreferences p;
     p.main_menu = r.i16();
     p.type = r.i16();
     p.hotseat_menu = r.i16();
@@ -106,7 +107,7 @@ state::MultiplayerPreferences decode_multiplayer_preferences(std::span<const Byt
     p.legacy_setting_5 = r.i16();
     return p;
 }
-Bytes encode_multiplayer_preferences(const state::MultiplayerPreferences& p) {
+Bytes encode_multiplayer_preferences(const StoredMultiplayerPreferences& p) {
     ByteWriter w;
     w.i16(p.main_menu);
     w.i16(p.type);
@@ -138,15 +139,25 @@ Bytes encode_multiplayer_preferences(const state::MultiplayerPreferences& p) {
     w.i16(p.legacy_setting_5);
     return std::move(w.bytes);
 }
-state::OrdinaryPreferences
-decode_ordinary_preference_item(const ReadResult& item, const state::OrdinaryPreferences& prior) {
-    return decode_item(item, ordinary_preferences_size, prior, encode_ordinary_preferences,
-                       decode_ordinary_preferences);
+StoredOrdinaryPreferences decode_ordinary_preference_item(const ReadResult& item,
+                                                          const StoredOrdinaryPreferences& prior) {
+    return decode_item(
+        item, ordinary_preferences_size, prior,
+        [](const auto& value) { return encode_ordinary_preferences(value); },
+        decode_ordinary_preferences);
 }
-state::MultiplayerPreferences
+StoredMultiplayerPreferences
 decode_multiplayer_preference_item(const ReadResult& item,
-                                   const state::MultiplayerPreferences& prior) {
-    return decode_item(item, multiplayer_preferences_size, prior, encode_multiplayer_preferences,
-                       decode_multiplayer_preferences);
+                                   const StoredMultiplayerPreferences& prior) {
+    return decode_item(
+        item, multiplayer_preferences_size, prior,
+        [](const auto& value) { return encode_multiplayer_preferences(value); },
+        decode_multiplayer_preferences);
+}
+Bytes encode_ordinary_preferences(const state::OrdinaryPreferences& value) {
+    return encode_ordinary_preferences(to_stored(value));
+}
+Bytes encode_multiplayer_preferences(const state::MultiplayerPreferences& value) {
+    return encode_multiplayer_preferences(to_stored(value));
 }
 } // namespace openciv::formats

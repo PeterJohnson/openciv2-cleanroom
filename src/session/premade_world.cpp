@@ -122,7 +122,7 @@ std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
             if (closed && decoded) {
                 const auto selected_starts = decoded->starts;
                 const auto data = formats::map_input(std::move(*decoded));
-                world::install_map(data, runtime.world().map, false, services.allocate);
+                world::install_map(data, runtime.world().map, false);
                 starts = selected_starts;
                 runtime.world().world_setup.width = static_cast<std::int16_t>(data.width);
                 runtime.world().world_setup.height = static_cast<std::int16_t>(data.height);

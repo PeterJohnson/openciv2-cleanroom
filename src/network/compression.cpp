@@ -158,19 +158,16 @@ CodecResult decode_word_runs(std::span<const Byte> input, std::span<Byte> output
 namespace {
 CodecResult compress(RunCode code, Bytes& image) {
     admit_size(image.size());
-    try {
-        Bytes encoded(image.size());
-        std::size_t length = 0;
-        const auto result = encode_runs(code, image, encoded, length);
-        if (!result.complete())
-            return {result.stop == CodecStop::output_capacity ? CodecStop::no_gain : result.stop,
-                    result.written};
-        encoded.resize(length);
-        image.swap(encoded);
-        return result;
-    } catch (const std::bad_alloc&) {
-        return {CodecStop::allocation_failed};
-    }
+
+    Bytes encoded(image.size());
+    std::size_t length = 0;
+    const auto result = encode_runs(code, image, encoded, length);
+    if (!result.complete())
+        return {result.stop == CodecStop::output_capacity ? CodecStop::no_gain : result.stop,
+                result.written};
+    encoded.resize(length);
+    image.swap(encoded);
+    return result;
 }
 } // namespace
 CodecResult compress_byte_image(Bytes& image) {
@@ -195,29 +192,26 @@ CodecResult expand_byte_image(Bytes& image, std::size_t limit) {
         size += count;
         position += payload;
     }
-    try {
-        Bytes decoded(size);
-        position = 0;
-        std::size_t written = 0;
-        while (image.size() - position > 1) {
-            const auto code = image[position++];
-            const auto count = code & 127;
-            if (code >= 128) {
-                if (count)
-                    std::copy_n(image.data() + position, count, decoded.data() + written);
-                position += count;
-            } else {
-                if (count)
-                    std::fill_n(decoded.data() + written, count, image[position]);
-                ++position;
-            }
-            written += count;
+
+    Bytes decoded(size);
+    position = 0;
+    std::size_t written = 0;
+    while (image.size() - position > 1) {
+        const auto code = image[position++];
+        const auto count = code & 127;
+        if (code >= 128) {
+            if (count)
+                std::copy_n(image.data() + position, count, decoded.data() + written);
+            position += count;
+        } else {
+            if (count)
+                std::fill_n(decoded.data() + written, count, image[position]);
+            ++position;
         }
-        image.swap(decoded);
-        return {CodecStop::complete, size};
-    } catch (const std::bad_alloc&) {
-        return {CodecStop::allocation_failed};
+        written += count;
     }
+    image.swap(decoded);
+    return {CodecStop::complete, size};
 }
 CodecResult expand_shared_image(Bytes& image, std::uint32_t full_receipt_count, bool compressed,
                                 std::size_t limit) {
@@ -231,15 +225,12 @@ CodecResult expand_shared_image(Bytes& image, std::uint32_t full_receipt_count, 
         return checked;
     if (measured > limit)
         return {CodecStop::backing_limit};
-    try {
-        Bytes decoded(measured);
-        std::size_t length = 0;
-        const auto result = decode_word_runs(image, decoded, length);
-        if (result.complete())
-            image.swap(decoded);
-        return result;
-    } catch (const std::bad_alloc&) {
-        return {CodecStop::allocation_failed};
-    }
+
+    Bytes decoded(measured);
+    std::size_t length = 0;
+    const auto result = decode_word_runs(image, decoded, length);
+    if (result.complete())
+        image.swap(decoded);
+    return result;
 }
 } // namespace openciv::network

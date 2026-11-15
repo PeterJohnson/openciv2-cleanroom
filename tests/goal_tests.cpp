@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // A01 section 2 / Appendix A and W01 section 4. Independently
 // authored specification cases; supplied U04 results are not original captures.
 #include "ai/goals.hpp"
@@ -398,12 +399,14 @@ TEST_CASE("A01 shared goal writes retain unrelated civilization bytes and round 
           "[ai][goals]") {
     Fixture f;
     auto& civ = f.civ();
-    civ = formats::decode_civilization(formats::Bytes(formats::civilization_record_size, 0xa5));
+    civ = formats::to_live(
+        formats::decode_civilization(formats::Bytes(formats::civilization_record_size, 0xa5)));
+    const auto before = formats::encode_civilization(civ);
     reset_standing_goals(civ);
     f.operations().add_standing(1, {32768, -32769}, 511, 383);
     const auto encoded = formats::encode_civilization(civ);
     for (std::size_t i = 0; i < 0x534; ++i)
-        CHECK(encoded[i] == 0xa5);
+        CHECK(encoded[i] == before[i]);
     CHECK(civ.standing_goals[0] == Goal{-32768, 32767, -1, 127});
-    CHECK(formats::decode_civilization(encoded) == civ);
+    CHECK(formats::to_live(formats::decode_civilization(encoded)) == civ);
 }

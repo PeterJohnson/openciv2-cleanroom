@@ -23,9 +23,7 @@ void populate(state::GameState& world) {
     for (std::size_t i = 0; i < 5; ++i) {
         cities[i].token = state::CityToken{static_cast<std::uint32_t>(200 + i)};
         cities[i].owner = i % 2 ? second : first;
-        cities[i].name.bytes.fill(0xee);
-        cities[i].name.bytes[0] = static_cast<std::uint8_t>('A' + i);
-        cities[i].name.bytes[1] = 0;
+        cities[i].name = std::string(1, static_cast<char>('A' + i));
     }
     cities[2].token = state::CityToken{0};
     world.globals.human_players = 2;
@@ -93,7 +91,7 @@ TEST_CASE("Session clients receive stable owned projections without mutating sta
     CHECK(runtime.presentation_random().checkpoint() == presentation);
     // Returned values remain their original observation after publication.
     runtime.world().entities.units.at(state::UnitSlot{0}).damage = 9;
-    runtime.world().entities.cities.at(state::CitySlot{0}).name.bytes[0] = 'Z';
+    runtime.world().entities.cities.at(state::CitySlot{0}).name[0] = 'Z';
     runtime.publish();
     CHECK(units.records[0].damage == 0);
     CHECK(cities.records[0].name == std::vector<std::uint8_t>{'A'});

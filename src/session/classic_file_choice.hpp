@@ -1,4 +1,5 @@
 #pragma once
+#include "state/choices.hpp"
 #include <cstdint>
 #include <functional>
 #include <optional>
@@ -8,13 +9,13 @@
 
 namespace openciv::session {
 using FileLabel = std::function<std::string(std::size_t)>;
-void select_classic_extension(bool scenario, std::uint8_t mode, std::string& extension);
+void select_classic_extension(bool scenario, state::GameMode mode, std::string& extension);
 struct FileType {
     std::string description, pattern;
     bool operator==(const FileType&) const = default;
 };
 // F06 semantic file types. Native filter encoding belongs to a platform adapter.
-std::vector<FileType> classic_file_types(std::uint8_t mode, bool scenario, bool raw_map,
+std::vector<FileType> classic_file_types(state::GameMode mode, bool scenario, bool raw_map,
                                          bool current_only, const FileLabel& label);
 struct FileChoiceRequest {
     bool save = false, require_existing = false;

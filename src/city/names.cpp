@@ -27,11 +27,9 @@ bool default_name(state::City& city, std::span<const state::Civilization> civili
         if (result.outcome == NameOutcome::unavailable)
             break;
         if (result.outcome == NameOutcome::selected) {
-            city.name.bytes.fill(0);
             const auto end = result.bytes.find('\0');
             const auto count = std::min<std::size_t>(15, std::min(result.bytes.size(), end));
-            for (std::size_t i = 0; i < count; ++i)
-                city.name.bytes[i] = static_cast<std::uint8_t>(result.bytes[i]);
+            city.name = result.bytes.substr(0, count);
             published = true;
             break;
         }

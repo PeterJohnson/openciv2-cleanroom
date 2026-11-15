@@ -31,7 +31,7 @@ LiveRecords<OwnCity> project_own_cities(const state::EntityPools& pools,
     for (std::size_t i = 0; i < cities.size(); ++i) {
         const auto& city = cities[i];
         if (state::occupied(city.token) && city.owner == observation.observer) {
-            const auto name = city.name.text();
+            const auto name = city.name;
             result.records.push_back({static_cast<state::CitySlot>(i),
                                       city.token,
                                       city.x,

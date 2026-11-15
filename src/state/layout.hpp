@@ -11,13 +11,14 @@ struct Rectangle {
     bool operator==(const Rectangle&) const = default;
 };
 struct Layout {
-    std::int16_t valid = 0;
+    bool valid = false;
     // Saved screen, main frame, eight maps, minimap, status, city window.
     std::array<Rectangle, 13> rectangles;
     bool operator==(const Layout&) const = default;
 };
 struct MapView {
-    std::int16_t open = 0, track_moves = 0, x = 0, y = 0, zoom = 0;
+    bool open = false, track_moves = false;
+    std::int16_t x = 0, y = 0, zoom = 0;
     bool operator==(const MapView&) const = default;
 };
 } // namespace openciv::state

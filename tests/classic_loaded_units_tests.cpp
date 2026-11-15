@@ -16,7 +16,7 @@ struct Fixture {
     unit::StackOperationServices placement;
     Fixture() {
         world.map.allocate(world::Geometry{8, 6});
-        world.globals.multiplayer = 3;
+        world.globals.multiplayer = state::GameMode::tcp;
         world.civilizations[1].military_count = 3;
         world.civilizations[1].units_active[3] = 3;
         world.unit_totals[1] = 3;

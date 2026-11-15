@@ -18,7 +18,7 @@ const state::CalendarValues& classic() {
 }
 state::GlobalValues ordinary(std::uint8_t difficulty = 2, std::uint16_t flags = 0) {
     state::GlobalValues globals;
-    globals.difficulty = difficulty;
+    globals.difficulty = static_cast<state::Difficulty>(difficulty);
     globals.game_flags = flags;
     globals.first_launch_turn = -1;
     return globals;

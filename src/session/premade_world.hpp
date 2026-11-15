@@ -19,7 +19,6 @@ WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPosi
                                   const PremadeWorldChoices& choices);
 struct PremadeWorldServices {
     std::function<std::unique_ptr<CoreInput>(std::string_view)> open;
-    world::AllocationCheck allocate;
     std::function<void()> load_failure;
     PremadeWorldChoices choices;
     void validate() const;

@@ -39,13 +39,9 @@ state::Unit& LocalStacks::record(std::int32_t slot) {
         return units_.storage()[static_cast<std::size_t>(slot)];
     throw std::out_of_range("Unit stack index is outside the owned pool: " + std::to_string(slot));
 }
-void LocalStacks::diagnose(StackDiagnostic diagnostic) noexcept {
-    if (services_.diagnostics) {
-        try {
-            services_.diagnostics->push_back(diagnostic);
-        } catch (...) { /* Optional diagnostics cannot interrupt gameplay repair. */
-        }
-    }
+void LocalStacks::diagnose(StackDiagnostic diagnostic) {
+    if (services_.diagnostics)
+        services_.diagnostics->push_back(diagnostic);
 }
 void LocalStacks::step() {
     if (budget_.steps == 0)

@@ -1,3 +1,4 @@
+#include "formats/state_conversion.hpp"
 // F03 section 8/Appendix A and F06 CIV2.DAT. Independently authored bytes and
 // service outcomes, not reconstruction harnesses or original-game captures.
 #include "classic_stream_fixture.hpp"
@@ -11,6 +12,13 @@ using namespace openciv;
 using namespace openciv::formats;
 using namespace openciv::session;
 namespace {
+state::OrdinaryPreferences ordinary(const Bytes& bytes) {
+    return to_live(decode_ordinary_preferences(bytes));
+}
+state::MultiplayerPreferences multiplayer(const Bytes& bytes) {
+    return to_live(decode_multiplayer_preferences(bytes));
+}
+
 void word(Bytes& bytes, std::size_t at, std::uint16_t value) {
     bytes.at(at) = static_cast<Byte>(value);
     bytes.at(at + 1) = static_cast<Byte>(value >> 8);
@@ -19,7 +27,7 @@ void dword(Bytes& bytes, std::size_t at, std::uint32_t value) {
     word(bytes, at, static_cast<std::uint16_t>(value));
     word(bytes, at + 2, static_cast<std::uint16_t>(value >> 16));
 }
-Bytes ordinary_defaults(bool large, bool animation, const Bytes& prior) {
+Bytes ordinary_defaults(bool large, bool animation, const Bytes&) {
     Bytes expected(72, 0);
     word(expected, 0, 0x3f);
     word(expected, 2, large ? 2 : 0);
@@ -28,18 +36,12 @@ Bytes ordinary_defaults(bool large, bool animation, const Bytes& prior) {
     dword(expected, 14, animation ? 0x3f3258U : 0x1f3258U);
     word(expected, 22, 1);
     word(expected, 24, 2);
-    std::copy(prior.begin() + 37, prior.begin() + 68, expected.begin() + 37);
     return expected;
 }
-Bytes multiplayer_defaults(const Bytes& prior) {
+Bytes multiplayer_defaults(const Bytes&) {
     Bytes expected(444, 0);
-    for (const auto at : {0x18, 0x38, 0x58, 0x78})
-        std::copy(prior.begin() + at + 1, prior.begin() + at + 32, expected.begin() + at + 1);
     expected[0x9a] = '6';
     expected[0x9b] = '0';
-    std::copy(prior.begin() + 0x9d, prior.begin() + 0xa0, expected.begin() + 0x9d);
-    for (const auto at : {0xca, 0xe2, 0xfa})
-        std::copy(prior.begin() + at + 1, prior.begin() + at + 24, expected.begin() + at + 1);
     return expected;
 }
 struct Fixture {
@@ -54,8 +56,8 @@ struct Fixture {
     std::size_t prefix = 0;
     std::function<void(std::size_t)> before_read, after_write;
     Fixture() {
-        process.ordinary_preferences = decode_ordinary_preferences(Bytes(72, 0x11));
-        process.multiplayer_preferences = decode_multiplayer_preferences(Bytes(444, 0x22));
+        process.ordinary_preferences = ordinary(Bytes(72, 0x11));
+        process.multiplayer_preferences = multiplayer(Bytes(444, 0x22));
         services.open_input = [&](std::string_view path) -> std::unique_ptr<CoreInput> {
             CHECK(path == "CIV2.DAT");
             trace.push_back("open-input");
@@ -203,18 +205,18 @@ TEST_CASE("F06 multiplayer preference codec binds scalars rectangles and retaine
     CHECK(encode_multiplayer_preferences(p) == bytes);
 }
 
-TEST_CASE("F03 preference defaults retain unassigned string tails and obey startup gates",
+TEST_CASE("F03 live preference defaults clear text and obey startup gates",
           "[preferences][state]") {
     for (const auto width : {-1, 999, 1000})
         for (const auto animation : {false, true}) {
             const Bytes prior(72, 0xa5);
-            auto p = decode_ordinary_preferences(prior);
+            auto p = ordinary(prior);
             state::default_ordinary_preferences(p, {width, animation});
             CHECK(encode_ordinary_preferences(p) ==
                   ordinary_defaults(width > 999, animation, prior));
         }
     const Bytes prior(444, 0xa5);
-    auto p = decode_multiplayer_preferences(prior);
+    auto p = multiplayer(prior);
     state::default_multiplayer_preferences(p);
     CHECK(encode_multiplayer_preferences(p) == multiplayer_defaults(prior));
 }
@@ -277,9 +279,9 @@ TEST_CASE("F03 preference fallback stages both items against entry snapshots",
             f.defaults.animations_available = false;
         } else {
             CHECK(f.position == 40);
-            CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) == Bytes(72, 0x11));
-            CHECK(f.process.ordinary_preferences.text.bytes[1] == 0x11);
-            CHECK(f.process.ordinary_preferences.text.bytes[4] == 0x11);
+            CHECK(f.process.ordinary_preferences == ordinary(Bytes(72, 0x11)));
+            CHECK(f.process.ordinary_preferences.text[1] == 0x11);
+            CHECK(f.process.ordinary_preferences.text[4] == 0x11);
         }
     };
     f.load();
@@ -287,7 +289,7 @@ TEST_CASE("F03 preference fallback stages both items against entry snapshots",
     std::fill_n(partial.begin(), 40, 0x33);
     CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) ==
           ordinary_defaults(true, true, partial));
-    CHECK(encode_multiplayer_preferences(f.process.multiplayer_preferences) == Bytes(444, 0x44));
+    CHECK(f.process.multiplayer_preferences == multiplayer(Bytes(444, 0x44)));
     CHECK(f.position == 484);
     CHECK(f.trace == std::vector<std::string>{"open-input", "read:72", "read:444", "close"});
 }
@@ -298,7 +300,7 @@ TEST_CASE("F03 multiplayer fallback preserves failed bytes in unassigned tails",
     f.short_item = 1;
     f.prefix = 208;
     f.load();
-    CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) == Bytes(72, 0x88));
+    CHECK(f.process.ordinary_preferences == ordinary(Bytes(72, 0x88)));
     Bytes partial(444, 0x22);
     std::fill_n(partial.begin(), 208, 0x88);
     CHECK(encode_multiplayer_preferences(f.process.multiplayer_preferences) ==
@@ -312,10 +314,10 @@ TEST_CASE("F03 successful preference input keeps arbitrary values and ignores tr
     Fixture f;
     f.input.insert(f.input.end(), 23, 0x33);
     f.load();
-    CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) == Bytes(72, 0x88));
-    CHECK(encode_multiplayer_preferences(f.process.multiplayer_preferences) == Bytes(444, 0x88));
-    CHECK_FALSE(f.process.ordinary_preferences.text.terminated());
-    CHECK_FALSE(f.process.multiplayer_preferences.custom_timer.terminated());
+    CHECK(f.process.ordinary_preferences == ordinary(Bytes(72, 0x88)));
+    CHECK(f.process.multiplayer_preferences == multiplayer(Bytes(444, 0x88)));
+    CHECK(f.process.ordinary_preferences.text.size() == 32);
+    CHECK(f.process.multiplayer_preferences.custom_timer.size() == 6);
     CHECK(f.position == 516);
     CHECK(f.closes == 1);
 }
@@ -367,9 +369,8 @@ TEST_CASE("F03 exceptional preference services close once without installing a p
                 throw std::runtime_error("supplied read stop");
         };
         CHECK_THROWS_AS(f.load(), std::runtime_error);
-        CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) == Bytes(72, 0x11));
-        CHECK(encode_multiplayer_preferences(f.process.multiplayer_preferences) ==
-              Bytes(444, 0x22));
+        CHECK(f.process.ordinary_preferences == ordinary(Bytes(72, 0x11)));
+        CHECK(f.process.multiplayer_preferences == multiplayer(Bytes(444, 0x22)));
         CHECK(f.closes == 1);
     }
     SECTION("Write exception is not an ordinary failed-item return") {
@@ -388,11 +389,11 @@ TEST_CASE("F03 process preferences do not mutate a running world or its random c
     SessionRuntime runtime(f.process, base::RuntimeId{78});
     runtime.begin_client_session({10, 20});
     runtime.world().globals.game_options = 0x1234;
-    runtime.world().multiplayer.saved.simultaneous = 17;
+    runtime.world().multiplayer.saved.simultaneous = true;
     const auto random = runtime.gameplay_random().checkpoint();
     f.load();
     CHECK(runtime.world().globals.game_options == 0x1234);
-    CHECK(runtime.world().multiplayer.saved.simultaneous == 17);
+    CHECK(runtime.world().multiplayer.saved.simultaneous);
     CHECK(runtime.gameplay_random().checkpoint() == random);
     const auto ordinary = f.process.ordinary_preferences;
     const auto multiplayer = f.process.multiplayer_preferences;
@@ -455,4 +456,20 @@ TEST_CASE("F03 preference finalization failure leaves installed values unchanged
     CHECK(f.process.ordinary_preferences == ordinary);
     CHECK(f.process.multiplayer_preferences == multiplayer);
     CHECK(f.closes == 1);
+}
+
+TEST_CASE("Preference loading does not require the prior live text to fit a classic export",
+          "[preferences][session]") {
+    for (const bool short_input : {false, true}) {
+        Fixture f;
+        f.process.ordinary_preferences.text = std::string(100, 'P');
+        f.process.multiplayer_preferences.game_name = std::string(100, 'G');
+        if (short_input)
+            f.input.clear();
+        CHECK(f.load() ==
+              (short_input ? PreferenceLoadStatus::defaults : PreferenceLoadStatus::success));
+        CHECK(f.process.ordinary_preferences.text.size() == (short_input ? 0 : 32));
+        CHECK(f.process.multiplayer_preferences.game_name.size() == (short_input ? 0 : 32));
+        CHECK(f.closes == 1);
+    }
 }

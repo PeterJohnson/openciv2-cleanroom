@@ -28,7 +28,7 @@ void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
         world.eliminations.turns.fill(0);
         world.eliminations.killers.fill(0);
         for (auto& name : world.eliminations.names)
-            name.bytes[0] = 0;
+            name.clear();
         world.civilization_color_flags.fill(0);
         for (auto& leader : process.rules->leaders) {
             leader.times_used = 0;
@@ -39,13 +39,13 @@ void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
         globals.year = -4000;
         globals.first_launch_turn = -1;
         globals.game_options = process.ordinary_preferences.game_options & ~0x8000U;
-        if (globals.difficulty == 0)
+        if (globals.difficulty == state::Difficulty::chieftain)
             globals.game_options |= 0x300U;
         else
             globals.game_options &= ~0x100U;
         globals.transient_flags = globals.shown_event_flags = 0;
         globals.message_options = process.ordinary_preferences.disabled_messages;
-        world.movement_mode = 1;
+        world.movement_mode = state::MovementMode::move_units;
         world.entities.units.set_end(0);
         world.entities.cities.set_end(0);
         globals.unit_end = globals.city_end = 0;
@@ -55,7 +55,6 @@ void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
         globals.reveal_map = 0;
         globals.warming_counter = globals.global_warmings = 0;
         globals.warming_pollution = globals.polluted_tiles = 0;
-        globals.retained_34 = 0;
         globals.first_discoverer.fill(0);
         globals.advance_known_by.fill(0);
         globals.wonder_city.fill(-1);
@@ -112,7 +111,7 @@ void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
                     world.civilizations[slot].tax_rate = 4;
                 }
         }
-        if (globals.difficulty == 0)
+        if (globals.difficulty == state::Difficulty::chieftain)
             for (std::size_t slot = 1; slot < 8; ++slot)
                 if (globals.human_players & (1U << slot))
                     world.civilizations[slot].gold = 50;

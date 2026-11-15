@@ -249,6 +249,20 @@ whose state and dependencies are explicit operands. Neither needs an artificial
 object identity. Keep format records separate from live state and encode fields
 explicitly.
 
+Live text uses owned `std::string` values; binary flags use `bool`, and choices
+with specified meanings use named enums. Counts, bitmasks, indices, sentinels and
+specified wrapping arithmetic retain their distinct semantics. Classic field
+widths, terminators, padding and noncanonical flag words belong to stored codec
+types. Explicit conversions normalize nonzero flags to true and export them as
+0/1, omit text padding and reject unrepresentable text instead of truncating it.
+Lossless stored decode/re-encode remains separate from a live import/export.
+
+Resource exhaustion is fatal at the application boundary. Ordinary C++ allocation
+failure propagates; command/content recovery must not convert `std::bad_alloc`
+into a recoverable game result. Production interfaces have no simulated allocation
+admission or release callbacks. Real I/O, malformed-input and admitted interaction
+failures retain their own error contracts.
+
 Different content formats converge on common owned domain data before gameplay
 behavior begins. Keep classic and native loaders in separate headers and source
 files; neither loader depends on the other. Use a format-specific runtime service
@@ -276,8 +290,11 @@ owns derived values, password randomness, entity lifetimes, name restoration and
 mode adaptation. Raw maps similarly converge on `world::MapInput`. Decoding and
 file close complete before installation; short files do not publish record prefixes.
 Map allocation is staged before replacing existing storage. Live exports preserve
-opaque event bytes in adapter-owned metadata tied to event lifetime, while stored
-codec round trips retain the complete admitted representation.
+opaque imported fields in adapter-owned metadata tied to world, entity and event
+lifetimes. Reusing a slot or replacing a world cannot inherit old opaque bytes.
+Stored codec round trips retain the complete admitted representation. Unknown
+legacy preference settings stay in stored records; live preference exports use
+canonical zero-filled legacy fields and text tails.
 
 `ClassicRuleContext` is an input source, returning owned `LoadedContent` once.
 The installer reuses its `RuleInput` for final name-preserving updates. There is

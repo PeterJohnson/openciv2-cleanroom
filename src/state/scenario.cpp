@@ -3,7 +3,7 @@
 namespace openciv::state {
 void reset_scenario_parameters(ScenarioParameters& parameters) {
     parameters.flags = 0;
-    parameters.name.bytes[0] = 0;
+    parameters.name.clear();
     parameters.technology_paradigm = 10;
     parameters.year_increment = 0;
     parameters.start_year = 0;

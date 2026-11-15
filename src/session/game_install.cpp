@@ -15,22 +15,9 @@ std::size_t tribe(std::int32_t civ, std::span<const state::Civilization> civiliz
         throw std::out_of_range("Leader selection has no tribe backing");
     return static_cast<std::size_t>(selected);
 }
-std::string_view fixed_text(const state::FixedText<24>& text) {
-    if (!text.terminated())
-        throw std::out_of_range("Civilization name has no backed terminator");
-    const auto bytes = text.text();
-    return {reinterpret_cast<const char*>(bytes.data()), bytes.size()};
-}
-void copy_label(state::FixedText<24>& target, state::NameReference name,
-                const state::TextPool& pool) {
-    if (name.custom)
-        return;
-    const auto bytes = pool.text(name.id);
-    if (bytes.size() >= target.bytes.size())
-        throw std::out_of_range("Rule label does not fit the saved civilization name field");
-    for (std::size_t i = 0; i < bytes.size(); ++i)
-        target.bytes[i] = static_cast<std::uint8_t>(bytes[i]);
-    target.bytes[bytes.size()] = 0;
+void copy_label(std::string& target, state::NameReference name, const state::TextPool& pool) {
+    if (!name.custom)
+        target = pool.text(name.id);
 }
 } // namespace
 void validate_game_input(const state::GameInput& input) {
@@ -42,9 +29,6 @@ void validate_game_input(const state::GameInput& input) {
         input.cities.size() != static_cast<std::size_t>(input.globals.city_end) ||
         input.cities.size() > state::city_backing_capacity)
         throw std::invalid_argument("Restoration input has inconsistent population bounds");
-    for (const auto& value : input.tribes)
-        if (value.female >= 2)
-            throw std::invalid_argument("Invalid leader gender");
     for (std::size_t civ = 0; civ < 8; ++civ)
         (void)tribe(static_cast<std::int32_t>(civ), input.civilizations, 21);
     const bool scenario = (input.globals.game_flags & 0xc0U) != 0;
@@ -55,7 +39,7 @@ void validate_game_input(const state::GameInput& input) {
             if (!input.leaders[tribe(civ, input.civilizations, 21)])
                 throw std::invalid_argument("Missing selected leader customization");
         };
-        if (input.globals.multiplayer == 0)
+        if (input.globals.multiplayer == state::GameMode::single_player)
             selected(input.globals.player_civ);
         else
             for (unsigned civ = 0; civ < 8; ++civ)
@@ -64,8 +48,8 @@ void validate_game_input(const state::GameInput& input) {
     }
     if (scenario)
         for (const auto& names : input.names)
-            if (!names.tribe.terminated())
-                throw std::invalid_argument("Unterminated scenario tribe name");
+            if (names.tribe.find('\0') != std::string::npos)
+                throw std::invalid_argument("Scenario tribe name contains NUL");
 }
 void restore_leader_names(const state::GameInput& input, state::GameState& world,
                           state::RuleState& rules) {
@@ -88,7 +72,7 @@ void restore_leader_names(const state::GameInput& input, state::GameState& world
                 for (std::size_t sex = 0; sex < 2; ++sex)
                     live.titles[g][sex].custom ^= saved.titles[g][sex];
         };
-        if (world.globals.multiplayer == 0)
+        if (world.globals.multiplayer == state::GameMode::single_player)
             restore(world.globals.player_civ);
         else
             for (unsigned civ = 0; civ < 8; ++civ)
@@ -100,10 +84,10 @@ void restore_leader_names(const state::GameInput& input, state::GameState& world
         const auto selected =
             tribe(static_cast<std::int32_t>(civ), world.civilizations, rules.leaders.size());
         auto& live = rules.leaders[selected];
-        live.female = (world.civilizations[civ].flags & 0x200U) ? 1 : 0;
+        live.female = (world.civilizations[civ].flags & 0x200U) != 0;
         world.civilizations[civ].leader_portrait =
             static_cast<std::uint8_t>(selected + 21 * live.female);
-        if (fixed_text(world.names[civ].tribe) == rules.text.text(live.plural.id))
+        if (world.names[civ].tribe == rules.text.text(live.plural.id))
             for (std::size_t g = 0; g < 7; ++g)
                 for (std::size_t sex = 0; sex < 2; ++sex)
                     live.titles[g][sex] = {rules.names.government_titles[g][sex], false};
@@ -114,19 +98,18 @@ void restore_leader_names(const state::GameInput& input, state::GameState& world
 }
 void install_game(const state::GameInput& input, SessionRuntime& runtime,
                   const state::RuleInput& rules_input, const state::Rectangle& screen,
-                  const world::AllocationCheck& allocate, const state::EventServices& events,
                   std::string_view password_reset_call) {
     validate_game_input(input);
     auto& world = runtime.world();
     auto& process = runtime.process();
     const auto entry_mode = world.globals.multiplayer;
-    world::install_map(input.map, world.map, true, allocate);
+    world::install_map(input.map, world.map, true);
     auto& globals = world.globals;
     globals = input.globals;
     globals.num_enemies =
         static_cast<std::uint8_t>(std::popcount(globals.civs_alive) - 1 - (globals.civs_alive & 1));
     const bool scenario = (globals.game_flags & 0xc0U) != 0;
-    if (globals.multiplayer != 0)
+    if (globals.multiplayer != state::GameMode::single_player)
         globals.game_options &= ~0x8000U;
     if (scenario)
         globals.game_flags |= 0x80U;
@@ -163,12 +146,12 @@ void install_game(const state::GameInput& input, SessionRuntime& runtime,
     multiplayer.local_human = globals.saved_current_civ;
     if (!input.multiplayer) {
         state::reset_passwords(multiplayer, runtime.gameplay_random(), password_reset_call);
-        saved.open_game = 1;
+        saved.open_game = true;
         saved.kill_on_retirement = preferences.kill_on_retirement;
         saved.show_human_starts = preferences.show_human_starts;
         saved.chat_from_start = preferences.chat_from_start;
-        saved.double_production = saved.double_movement = 0;
-        preferences.simultaneous = 0;
+        saved.double_production = saved.double_movement = false;
+        preferences.simultaneous = false;
         saved.resume_civ = static_cast<std::uint8_t>(multiplayer.local_human);
     } else {
         saved = *input.multiplayer;
@@ -185,7 +168,7 @@ void install_game(const state::GameInput& input, SessionRuntime& runtime,
     }
     multiplayer.resume_civ = saved.resume_civ;
     if (input.events)
-        state::install_events(*input.events, world.events.collection, events);
+        state::install_events(*input.events, world.events.collection);
     else
         world.events.collection.reset();
     world.events.loaded = input.events.has_value();

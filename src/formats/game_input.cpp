@@ -1,4 +1,5 @@
 #include "formats/game_input.hpp"
+#include "formats/state_conversion.hpp"
 #include "formats/save_aux_io.hpp"
 
 namespace openciv::formats {
@@ -14,9 +15,11 @@ world::MapInput map_input(RawMapFile map) {
 }
 state::GameInput game_input(StoredSave save) {
     state::GameInput result;
-    result.globals = save.globals;
-    result.names = save.names;
-    result.civilizations = std::move(save.civilizations);
+    result.globals = to_live(save.globals);
+    for (std::size_t i = 0; i < result.names.size(); ++i)
+        result.names[i] = to_live(save.names[i]);
+    for (const auto& value : save.civilizations)
+        result.civilizations.push_back(to_live(value));
     result.map.width = save.map.header.width;
     result.map.height = save.map.header.height;
     result.map.topology = save.map.header.topology;
@@ -25,8 +28,10 @@ state::GameInput game_input(StoredSave save) {
     result.map.remembered = std::move(save.map.remembered);
     result.map.coarse = std::move(save.map.coarse);
     result.map.regions = save.map.regions;
-    result.units = std::move(save.units);
-    result.cities = std::move(save.cities);
+    for (const auto& value : save.units)
+        result.units.push_back(to_live(value));
+    for (const auto& value : save.cities)
+        result.cities.push_back(to_live(value));
     // Older records omit occupancy tokens; every scanned record is occupied.
     // Installation always replaces these source markers with fresh live identities.
     if (save.header.version < 0x29) {
@@ -37,7 +42,7 @@ state::GameInput game_input(StoredSave save) {
     }
     for (std::size_t i = 0; i < result.tribes.size(); ++i)
         result.tribes[i] = {save.tribes[i].times_used, save.tribes[i].city_name_index,
-                            save.tribes[i].female};
+                            save.tribes[i].female != 0};
     std::size_t index = 0;
     const auto leader = [&](std::size_t civ) {
         const auto tribe = result.civilizations.at(civ).tribe;
@@ -62,15 +67,18 @@ state::GameInput game_input(StoredSave save) {
     result.cursor_y = save.cursor_y;
     result.power_history = save.power_history;
     unpack_layout(save.layout, result.layout);
-    result.views = save.views;
-    result.scenario = save.scenario;
-    result.eliminations = save.eliminations;
-    result.multiplayer = save.multiplayer;
+    for (std::size_t i = 0; i < result.views.size(); ++i)
+        result.views[i] = to_live(save.views[i]);
+    if (save.scenario)
+        result.scenario = to_live(*save.scenario);
+    result.eliminations = to_live(save.eliminations);
+    if (save.multiplayer)
+        result.multiplayer = to_live(*save.multiplayer);
     if (save.events) {
         result.events.emplace();
         for (auto& event : save.events->entries) {
             state::EventInput input;
-            input.values = event.record;
+            input.values = to_live(event.record);
             std::size_t field = 0;
             const auto strings = [&](auto& values) {
                 for (auto& value : values) {
