@@ -1,5 +1,6 @@
+module openciv.formats.gameplay;
+
 import std;
-import openciv.formats.gameplay;
 import openciv.base.hash;
 import openciv.formats.content_reader;
 

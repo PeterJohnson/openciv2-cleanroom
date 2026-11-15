@@ -1,5 +1,6 @@
+module openciv.session.classic_save_menu;
+
 import std;
-import openciv.session.classic_save_menu;
 import openciv.session.runtime;
 
 namespace openciv::session {

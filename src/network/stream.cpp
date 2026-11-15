@@ -1,5 +1,6 @@
+module openciv.network.stream;
+
 import std;
-import openciv.network.stream;
 
 namespace openciv::network {
 namespace {

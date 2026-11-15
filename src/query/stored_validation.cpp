@@ -1,5 +1,6 @@
+module openciv.query.stored_validation;
+
 import std;
-import openciv.query.stored_validation;
 
 namespace openciv::query::detail {
 namespace {

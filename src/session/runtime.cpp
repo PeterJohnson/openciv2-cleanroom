@@ -1,7 +1,8 @@
+module openciv.session.runtime;
+
 import std;
-import openciv.session.runtime;
 import openciv.query.live;
-import openciv.session.runtime_internal;
+import :state;
 
 namespace openciv::session {
 namespace {
@@ -29,15 +30,11 @@ void revoke_participant(detail::RuntimeState& state, ParticipantId participant) 
     }
 }
 } // namespace
-AccessError::AccessError(AccessFailure failure)
-    : std::runtime_error(failure == AccessFailure::session_ended ? "Client session has ended"
-                                                                 : "Client binding was revoked"),
-      failure_(failure) {}
-PlayerClient::PlayerClient(std::weak_ptr<detail::RuntimeState> state,
-                           std::weak_ptr<detail::Lease> lease)
+detail::RuntimeClientConnection::RuntimeClientConnection(std::weak_ptr<detail::RuntimeState> state,
+                                                         std::weak_ptr<detail::Lease> lease)
     : state_(std::move(state)), lease_(std::move(lease)) {}
 std::shared_ptr<detail::Lease>
-PlayerClient::checked(const std::shared_ptr<detail::RuntimeState>& state) const {
+detail::RuntimeClientConnection::checked(const std::shared_ptr<detail::RuntimeState>& state) const {
     if (!state || !state->active)
         throw AccessError(AccessFailure::session_ended);
     auto lease = lease_.lock();
@@ -45,18 +42,18 @@ PlayerClient::checked(const std::shared_ptr<detail::RuntimeState>& state) const 
         throw AccessError(AccessFailure::revoked);
     return lease;
 }
-ClientIdentity PlayerClient::identity() const {
+ClientIdentity detail::RuntimeClientConnection::identity() const {
     const auto state = state_.lock();
     return checked(state)->identity;
 }
-query::LiveRecords<query::OwnUnit> PlayerClient::own_units() const {
+query::LiveRecords<query::OwnUnit> detail::RuntimeClientConnection::own_units() const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     return query::project_own_units(
         state->world->entities,
         {state->identity, state->session, state->revision, lease->identity.observer});
 }
-query::LiveRecords<query::OwnCity> PlayerClient::own_cities() const {
+query::LiveRecords<query::OwnCity> detail::RuntimeClientConnection::own_cities() const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     return query::project_own_cities(
@@ -187,7 +184,7 @@ PlayerClient SessionRuntime::bind(ParticipantId participant, ControllerKind kind
         {}});
     detail::restore_pending_updates(*state_, *lease);
     state_->leases.emplace(controller, lease);
-    return PlayerClient{state_, lease};
+    return detail::RuntimeClientConnection::bind(state_, std::move(lease));
 }
 void SessionRuntime::revoke(ControllerId controller) {
     const auto found = state_->leases.find(controller);

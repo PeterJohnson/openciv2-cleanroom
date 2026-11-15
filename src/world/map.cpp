@@ -1,5 +1,6 @@
+module openciv.world.map;
+
 import std;
-import openciv.world.map;
 import openciv.base.arithmetic;
 
 namespace openciv::world {

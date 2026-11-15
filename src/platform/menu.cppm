@@ -1,10 +1,13 @@
+module;
+#include <SDL3/SDL_video.h>
+
 export module openciv.platform.menu;
 
 import std;
 export import openciv.viewmodel.menu;
 
-export extern "C++" {
-    struct SDL_Window;
+export {
+    using ::SDL_Window;
 
     namespace openciv::platform {
 

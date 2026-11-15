@@ -1,6 +1,8 @@
+module;
 #include <SDL3/SDL.h>
+module openciv.application;
+
 import std;
-import openciv.application;
 
 namespace openciv {
 namespace {

@@ -1,5 +1,6 @@
+module openciv.session.configuration;
+
 import std;
-import openciv.session.configuration;
 import openciv.session.runtime;
 import openciv.rules.double_movement;
 

@@ -1,8 +1,10 @@
+module;
 #include <SDL3/SDL.h>
+module openciv.ui.interface;
+
 import std;
 import imgui_internal;
 import openciv.ui.imgui_backends;
-import openciv.ui.interface;
 import openciv.ui.fonts;
 
 namespace openciv::ui {

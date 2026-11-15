@@ -1,5 +1,6 @@
+module openciv.query.output;
+
 import std;
-import openciv.query.output;
 import openciv.base.hash;
 
 namespace openciv::query {

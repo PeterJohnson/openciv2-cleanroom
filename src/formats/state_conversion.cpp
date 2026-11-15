@@ -1,5 +1,6 @@
+module openciv.formats.state_conversion;
+
 import std;
-import openciv.formats.state_conversion;
 import openciv.formats.record_compatibility;
 
 namespace openciv::formats {
@@ -620,28 +621,5 @@ StoredEventValues to_stored(const state::EventValues& value) {
     result.give_tech = value.give_tech;
     result.give_tech_civ = value.give_tech_civ;
     return result;
-}
-void preserve_opaque(StoredUnit& output, const StoredUnit& imported) {
-    output.retained_byte = imported.retained_byte;
-    output.retained_word = imported.retained_word;
-}
-void preserve_opaque(StoredCity& output, const StoredCity& imported) {
-    output.retained_byte = imported.retained_byte;
-}
-void preserve_opaque(StoredGlobals& output, const StoredGlobals& imported) {
-    output.retained_0e = imported.retained_0e;
-    output.retained_34 = imported.retained_34;
-}
-void preserve_opaque(StoredCivilization& output, const StoredCivilization& imported) {
-    output.retained_1b = imported.retained_1b;
-    output.retained_65 = imported.retained_65;
-    output.retained_3fd = imported.retained_3fd;
-    output.retained_401 = imported.retained_401;
-}
-void preserve_opaque(MultiplayerRecord& output, const MultiplayerRecord& imported) {
-    output.retained_142 = imported.retained_142;
-    output.retained_465 = imported.retained_465;
-    output.retained_472 = imported.retained_472;
-    output.player_setup = imported.player_setup;
 }
 } // namespace openciv::formats

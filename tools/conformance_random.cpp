@@ -1,5 +1,6 @@
+module openciv.tools.conformance_random;
+
 import std;
-import openciv.tools.conformance_random;
 import openciv.tools.conformance_io;
 import openciv.base.random;
 

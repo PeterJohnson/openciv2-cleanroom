@@ -1,5 +1,6 @@
+module openciv.formats.preference_io;
+
 import std;
-import openciv.formats.preference_io;
 import openciv.formats.state_conversion;
 
 namespace openciv::formats {

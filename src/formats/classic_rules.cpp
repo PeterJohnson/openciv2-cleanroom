@@ -1,5 +1,6 @@
+module openciv.formats.classic_rules;
+
 import std;
-import openciv.formats.classic_rules;
 import openciv.formats.classic_text;
 import openciv.rules.normalization;
 

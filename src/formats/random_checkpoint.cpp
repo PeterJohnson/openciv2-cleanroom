@@ -1,7 +1,9 @@
+module;
 #include <cstdint>
 
+module openciv.formats.random_checkpoint;
+
 import std;
-import openciv.formats.random_checkpoint;
 import openciv.base.hash;
 import openciv.formats.content_reader;
 

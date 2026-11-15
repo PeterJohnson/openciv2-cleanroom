@@ -1,5 +1,6 @@
+module openciv.session.classic_load_dialog;
+
 import std;
-import openciv.session.classic_load_dialog;
 import openciv.session.runtime;
 
 namespace openciv::session {

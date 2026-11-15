@@ -3,22 +3,23 @@ cmake_policy(VERSION 4.5)
 set(oc2_conformance_sources
   CMakeLists.txt dependencies.json cmake/Toolchain.cmake
   cmake/ConformanceIdentity.cmake cmake/Modules.cmake
-  src/base/arithmetic.cppm src/base/arithmetic.cpp
-  src/base/random.cppm src/base/random.cpp
-  src/base/random_source.cppm src/base/random_source.cpp
-  src/base/choices.cppm src/base/choices.cpp
-  src/base/hash.cppm src/base/hash.cpp
-  src/state/identities.cppm src/state/identities.cpp
-  src/state/records.cppm src/state/records.cpp
-  src/world/geometry.cppm src/world/geometry.cpp src/world/map.cppm src/world/map.cpp
+  src/base/arithmetic.cppm
+  src/base/random_policy.cppm src/base/random.cppm src/base/random.cpp
+  src/base/random_source.cppm
+  src/base/choices.cppm
+  src/base/hash.cppm
+  src/state/identities.cppm
+  src/state/records.cppm
+  src/world/geometry.cppm src/world/map.cppm src/world/map.cpp
   tools/conformance_adapter.cpp tools/conformance_io.cppm
   tools/conformance_random.cppm tools/conformance_random.cpp
   tools/conformance_script.cppm tools/conformance_script.cpp
   tools/conformance_session.cppm tools/conformance_session.cpp
-  src/base/session_ids.cppm src/query/fields.cppm src/query/live.cppm src/query/live.cpp
-  src/query/live_records.cppm src/session/client.cppm src/session/command_types.cppm
-  src/session/runtime.cppm src/session/runtime.cpp src/session/runtime_internal.cppm
-  src/session/command_runtime.cpp src/session/commands.cppm src/session/commands.cpp)
+  src/base/session_ids.cppm src/query/fields.cppm src/query/live.cppm
+  src/query/live_records.cppm src/session/client.cppm
+  src/session/client_types.cppm src/session/client_connection.cppm src/session/command_types.cppm
+  src/session/runtime.cppm src/session/runtime.cpp src/session/runtime_state.cppm
+  src/session/command_runtime.cpp src/session/commands.cppm)
 
 if(CMAKE_SCRIPT_MODE_FILE)
   set(oc2_conformance_root "${OC2_SOURCE_DIR}")

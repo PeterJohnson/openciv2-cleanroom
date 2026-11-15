@@ -1,5 +1,6 @@
+module openciv.network.compression;
+
 import std;
-import openciv.network.compression;
 
 namespace openciv::network {
 namespace {

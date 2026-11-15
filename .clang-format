@@ -10,6 +10,8 @@ BreakBeforeBraces: Attach
 PointerAlignment: Left
 DerivePointerAlignment: false
 NamespaceIndentation: None
+# Keep required C/C++ ABI linkage blocks flat.
+IndentExternBlock: NoIndent
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false

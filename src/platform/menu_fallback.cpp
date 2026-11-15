@@ -1,5 +1,6 @@
+module openciv.platform.menu;
+
 import std;
-import openciv.platform.menu;
 
 namespace openciv::platform {
 namespace {

@@ -2,7 +2,7 @@
 
 import std;
 import openciv.tests.service_callbacks;
-import openciv.unit.stack_operations;
+import openciv.unit.stacks;
 
 // Independently authored U01 sections 2–4, 9–11 placement/authority cases.
 // Incoming messages are supplied effects, not original-peer execution evidence.

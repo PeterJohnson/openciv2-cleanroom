@@ -20,10 +20,9 @@ export import openciv.session.unit_operations;
 export import openciv.session.world_entry;
 export import openciv.session.world_setup;
 export import openciv.unit.deletion;
-export import openciv.unit.stack_operations;
 export import openciv.unit.stacks;
 
-export extern "C++" {
+export {
     // Test-owned callable storage; production dependencies borrow these bindings.
 
     namespace openciv::formats::classic {

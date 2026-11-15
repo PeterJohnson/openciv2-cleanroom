@@ -1,6 +1,8 @@
+module;
 #include <cstdint>
+module openciv.base.random;
+
 import std;
-import openciv.base.random;
 
 namespace openciv::base {
 RandomCheckpoint::RandomCheckpoint(unsigned version, RandomDomain domain, std::string context,

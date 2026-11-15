@@ -1,5 +1,6 @@
+module openciv.tools.content_command;
+
 import std;
-import openciv.tools.content_command;
 import openciv.formats.content_pack;
 import openciv.formats.city_preferences;
 import openciv.formats.city_names;

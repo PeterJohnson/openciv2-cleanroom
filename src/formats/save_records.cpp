@@ -1,3 +1,5 @@
+module openciv.formats.save_records;
+
 import std;
 import openciv.formats.record_fields;
 import openciv.formats.state_conversion;

@@ -12,10 +12,8 @@ export {
     using ::ImGui_ImplSDLRenderer3_RenderDrawData;
     using ::ImGui_ImplSDLRenderer3_Shutdown;
 }
-export extern "C++" {
-    namespace openciv::ui {
-    inline void check_imgui_version() {
-        IMGUI_CHECKVERSION();
-    }
-    } // namespace openciv::ui
+export namespace openciv::ui {
+inline void check_imgui_version() {
+    IMGUI_CHECKVERSION();
 }
+} // namespace openciv::ui

@@ -1,7 +1,9 @@
+module;
 #include <sqlite3.h>
 
+module openciv.analysis.sqlite_export;
+
 import std;
-import openciv.analysis.sqlite_export;
 import openciv.base.cancellation;
 
 namespace openciv::analysis {

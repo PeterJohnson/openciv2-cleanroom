@@ -3,30 +3,49 @@
 Owned C++ interfaces live in `.cppm` files. The module name mirrors the path:
 `src/formats/classic_rules.cppm` provides `openciv.formats.classic_rules`.
 Test fixtures and tool interfaces use `openciv.tests.*` and `openciv.tools.*`.
-Implementation files import their interfaces and use `import std` for standard
-library declarations. There is no parallel set of owned C++ headers.
+All owned C++ code uses `import std`; there is no parallel set of owned C++
+headers. Each declaration belongs to one named module. Export public declarations
+with `export namespace` or `export { ... }`, and import a dependency's defining
+module instead of redeclaring its types.
 
-Interfaces use `export extern "C++"` declaration blocks, the
-[Clang ABI-preserving module style](https://releases.llvm.org/20.1.0/tools/clang/docs/StandardCPlusPlusModules.html#export-extern-c-style).
-Declarations live directly in the module interface; these are not wrappers around
-old headers. Global-module attachment preserves type identity for the existing
-cross-interface forward declarations and ordinary implementation translation
-units. A type still has one definition. Imports control visibility and CMake
-orders the compiled interfaces. Do not redeclare a type owned by a dependency's
-named module; import its defining interface instead.
+Prefer one `.cppm` for a small, cohesive module. Put its public declarations first
+and definitions afterwards. A single-unit module may place implementation details
+after `module :private;`; such a module must have no other module units. Keep
+separate `.cpp` implementation units for larger algorithms, platform-specific
+implementations, or dependencies that should stay out of the interface. These
+units begin with `module openciv.<owner>;`, which implicitly imports the primary
+interface. Merely importing the interface from an ordinary translation unit does
+not give definitions the correct module ownership. Multi-unit modules must not
+use a private module fragment.
 
 Keep module boundaries aligned with architectural APIs. Classic and native
 format adapters remain separate; client/value interfaces do not expose engine
-state. `export import` retains dependencies forming an interface's public API;
-implementation-only dependencies belong in `.cpp` files. Do not introduce an
-umbrella module that bypasses these boundaries. `tools/check_boundaries.py`
-follows transitive imports and includes and rejects portable filesystem access,
-including when the standard library is imported as a whole.
+state. `export import` exposes dependencies forming an interface's public API;
+plain `import` supplies implementation dependencies without re-exporting names.
+Extract shared values into a lower-level module when both sides need them. Keep
+mutually dependent classes in one module when they share an invariant, as with
+`LocalStacks` and `StackOperations`. Do not work around cycles with foreign
+forward declarations, linkage blocks, or an engine-wide umbrella export.
+
+Shared runtime implementation details live in the internal partition
+`openciv.session.runtime:state`, listed in a private CMake module file set. Its
+implementation units use `import :state;`. The partition can import the primary
+interface; the primary interface must not import the partition back. A client's
+copyable handle owns a noncopyable connection interface, whose runtime
+implementation retains weak session/lease references and validates authority on
+every operation. Neither the handle nor its connection contract imports engine
+state. Only the public handle may import the internal connection contract at the
+player boundary; frontend code must use the handle.
+
+`tools/check_boundaries.py` rejects module import cycles and follows transitive
+imports (including relative partitions) and includes across architecture
+boundaries. It also rejects portable filesystem access when the standard library
+is imported as a whole.
 
 `cmake/Modules.cmake` explicitly assigns interfaces to existing libraries and
-private executable fixture/tool file sets. Add new interfaces there. All owned
-C++ targets scan imports; upstream dependency source builds retain their own
-settings. CMake 4.5 manages the standard-library module and matching BMI variants.
+private implementation partitions and executable fixture/tool file sets. Add new
+interfaces there. All owned C++ targets scan imports; upstream dependency source
+builds retain their own settings. CMake 4.5 manages the standard-library module and matching BMI variants.
 emsdk 7's Clang 24 defaults to reduced BMIs and crashes while generating imported
 aggregate destructors in `leader_io_tests` and `save_aux_io_tests`. Web builds use
 `-fno-modules-reduced-bmi` for full interfaces, including the standard library;
@@ -37,17 +56,27 @@ consistent; never copy BMIs between build trees or toolchains.
 ## Textual boundaries
 
 Macros are not exported by modules. Include the required macro headers at the
-use site, before imports (or in an interface's global module fragment). This
-includes Catch2/Test Engine macros and C standard-library macros such as
+use site. In any named module unit, textual dependency headers belong in the
+global module fragment (`module;` before the headers, then the module declaration).
+This includes Catch2/Test Engine macros and C standard-library macros such as
 `FE_TONEAREST`. SDL and SQLite remain C APIs with textual headers. Do not replace
 C/Objective-C declarations or preprocessor configuration with module imports.
+
+Do not wrap owned declarations in `extern "C++"`: that attaches them to the global
+module and defeats named-module ownership. Keep linkage specifications only at
+real foreign ABI boundaries. Prefer including the foreign header in the global
+module fragment and exporting a `using` declaration when its type is public;
+never invent a second module-owned declaration of that foreign type. Any required
+`extern "C"` or `extern "C++"` block has unindented contents, enforced by
+`IndentExternBlock: NoIndent` in `.clang-format`.
 
 The macOS adapter uses a narrow C ABI in `platform/menu_macos_bridge.h` between
 an Objective-C AppKit implementation and the C++ menu implementation. ARC owns
 the Cocoa objects; the C++ RAII handle restores the previous menus on destruction.
 No C++ objects or standard-library types cross this bridge. Generated gameplay
 and conformance data use textual literal fragments; gameplay consumers import
-the module that owns the embedded data. Generated font C++ also uses imports.
+the module that owns the embedded data. Generated font C++ is an implementation
+unit of `openciv.ui.font_data`.
 
 ## Dependencies
 

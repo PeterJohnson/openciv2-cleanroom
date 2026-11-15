@@ -1,5 +1,6 @@
+module openciv.query.stored;
+
 import std;
-import openciv.query.stored;
 import openciv.query.fields;
 import openciv.query.stored_validation;
 import openciv.base.hash;

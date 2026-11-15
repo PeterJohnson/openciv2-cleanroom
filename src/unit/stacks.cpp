@@ -1,5 +1,6 @@
+module openciv.unit.stacks;
+
 import std;
-import openciv.unit.stacks;
 
 namespace openciv::unit {
 namespace {

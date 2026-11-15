@@ -239,8 +239,14 @@ Keep public interfaces small and use C++23 named modules with `import std`.
 Use RAII and owned values; introduce virtual interfaces at external service
 boundaries, not for every algorithm. Avoid a general ECS, plugin framework,
 or global service locator. Source-level import/include and CMake dependency
-checks enforce the graphical boundary. Modules follow existing interface boundaries;
-do not replace selective player-facing APIs with a single engine-wide export.
+checks enforce the graphical boundary. Modules own their declarations and definitions;
+implementation units declare their owning module. Prefer a single `.cppm` for a
+small cohesive module, retaining separate implementation units where size or
+private dependencies justify them. Extract shared value dependencies or give
+mutually dependent classes one owner to keep the import graph acyclic. Do not
+use `extern "C++"` as an ownership escape hatch; linkage blocks are reserved for
+foreign ABI boundaries and their contents are not indented. Do not replace
+selective player-facing APIs with a single engine-wide export.
 See [module conventions](modules.md) for declaration ownership, CMake file sets,
 macro/C boundaries, and dependency modules.
 
@@ -328,8 +334,13 @@ it does not admit a second owner workflow. Commands already protect their world
 while pending. Their unit children take `OperationContext` and do not attempt
 standalone workflow admission.
 Public client/value modules do not import mutable state or engine operation
-interfaces. Transitive include checks and portable target dependency checks
-protect these boundaries as the frontend grows.
+interfaces. `PlayerClient` delegates through a noncopyable internal connection
+contract. The runtime implementation checks weak session/lease references on
+every operation; copying a handle neither extends the session lifetime nor
+preserves revoked authority. Shared runtime implementation state belongs to an
+internal module partition, not a public interface. Transitive import/include
+checks and portable target dependency checks protect these boundaries as the
+frontend grows.
 
 Use noncopyable virtual interfaces for cohesive providers with implementation
 identity. `FileStorage` supplies binary input, replacement output and removal;

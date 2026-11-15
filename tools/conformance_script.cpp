@@ -1,5 +1,6 @@
+module openciv.tools.conformance_script;
+
 import std;
-import openciv.tools.conformance_script;
 import openciv.tools.conformance_io;
 import openciv.state.records;
 

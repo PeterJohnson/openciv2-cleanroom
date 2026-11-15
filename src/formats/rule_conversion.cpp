@@ -1,5 +1,6 @@
+module openciv.formats.content_conversion;
+
 import std;
-import openciv.formats.content_conversion;
 import openciv.formats.classic_rules;
 import openciv.formats.classic_text;
 import openciv.rules.rules_install;

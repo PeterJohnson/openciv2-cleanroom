@@ -497,7 +497,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/base/arithmetic.cpp"
+      "implementation": "src/base/arithmetic.cppm"
     },
     {
       "id": "F01.secondaryRangeFromCode",
@@ -537,7 +537,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/base/arithmetic.cpp"
+      "implementation": "src/base/arithmetic.cppm"
     },
     {
       "id": "F02.assignUnitToken",
@@ -578,7 +578,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/identities.cpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "F02.assignCityToken",
@@ -619,7 +619,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/identities.cpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "F02.reserveUnitSlot",
@@ -664,7 +664,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/identities.cpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "W01.wrapX",
@@ -706,7 +706,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cpp"
+      "implementation": "src/world/geometry.cppm"
     },
     {
       "id": "W01.stepDistance",
@@ -751,7 +751,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cpp"
+      "implementation": "src/world/geometry.cppm"
     },
     {
       "id": "W01.weightedDistance",
@@ -796,7 +796,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cpp"
+      "implementation": "src/world/geometry.cppm"
     },
     {
       "id": "W01.tileIndex",
@@ -838,7 +838,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cpp"
+      "implementation": "src/world/geometry.cppm"
     },
     {
       "id": "F01.primaryCode",
@@ -1117,7 +1117,7 @@
       "eventSchema": "shared-workspace-script-v1",
       "eventIdentity": "Call enter/return: <call>/enter or /return. Provider: <call>/pipeline/request or /return. Actions: <call>/action/<escaped-id>. Escape ~ as ~0 and / as ~1. Final root/exit, or root/prefix then root/stop. See tools/conformance_script.py for typed payload validation.",
       "eventOrder": "Synchronous call nesting and the complete listed provider/action order; no independent pairs. Prefix stops omit unfinished returns.",
-      "implementation": "src/state/records.cpp"
+      "implementation": "src/state/records.cppm"
     },
     {
       "id": "F02.prepareNewGame",

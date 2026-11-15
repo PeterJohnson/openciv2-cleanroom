@@ -1,5 +1,6 @@
+module openciv.session.game_install;
+
 import std;
-import openciv.session.game_install;
 import openciv.rules.rules_install;
 import openciv.base.arithmetic;
 

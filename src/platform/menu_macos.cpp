@@ -1,7 +1,9 @@
+module;
 #include "platform/menu_macos_bridge.h"
 
+module openciv.platform.menu;
+
 import std;
-import openciv.platform.menu;
 
 namespace openciv::platform {
 namespace {

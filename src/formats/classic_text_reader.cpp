@@ -1,5 +1,6 @@
+module openciv.formats.classic_text_reader;
+
 import std;
-import openciv.formats.classic_text_reader;
 import openciv.base.arithmetic;
 import openciv.base.text_comparison;
 

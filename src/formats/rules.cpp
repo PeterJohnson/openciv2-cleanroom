@@ -1,5 +1,6 @@
+module openciv.formats.rules;
+
 import std;
-import openciv.formats.rules;
 import openciv.formats.classic_text;
 import openciv.formats.content_reader;
 import openciv.rules.normalization;

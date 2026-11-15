@@ -1,5 +1,7 @@
+module openciv.session.runtime;
+
 import std;
-import openciv.session.runtime_internal;
+import :state;
 import openciv.base.hash;
 import openciv.formats.content_reader;
 import openciv.formats.random_checkpoint;

@@ -5,8 +5,8 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 INCLUDE = re.compile(r'^\s*#\s*include\s*[<"]([^>"\n]+)[>"]', re.MULTILINE)
-IMPORT = re.compile(r'^\s*(?:export\s+)?import\s+([\w.]+)\s*;', re.MULTILINE)
-MODULE = re.compile(r'^\s*export\s+module\s+([\w.]+)\s*;', re.MULTILINE)
+IMPORT = re.compile(r'^\s*(?:export\s+)?import\s+([\w.:]+)\s*;', re.MULTILINE)
+MODULE = re.compile(r'^\s*(?:export\s+)?module\s+([\w.:]+)\s*;', re.MULTILINE)
 PORTABLE = ('base', 'state', 'world', 'unit', 'city', 'civilization', 'rules',
             'turn', 'ai', 'formats', 'query', 'network', 'session', 'viewmodel')
 GAME = {'base', 'state', 'world', 'unit', 'city', 'civilization', 'rules', 'turn', 'ai'}
@@ -15,7 +15,7 @@ NATIVE_CONTENT = {f'formats/{stem}.{suffix}' for stem in ('rules', 'city_names',
 CLASSIC_LOADERS = {'formats/classic_text_reader.cppm', 'formats/classic_rules.cppm',
                    'formats/classic_city_names.cppm', 'formats/classic_city_preferences.cppm'}
 PLAYER_STATE = {'state/identities.cppm', 'state/unit_types.cppm', 'state/choices.cppm'}
-PLAYER_SESSION = {'session/client.cppm', 'session/command_types.cppm',
+PLAYER_SESSION = {'session/client.cppm', 'session/client_types.cppm', 'session/command_types.cppm',
                   'session/classic_file_choice.cppm'}
 
 
@@ -38,10 +38,35 @@ def check(root=ROOT):
                            if p.is_file()), None)
             yield name, target
         for name in IMPORT.findall(text):
+            if name.startswith(':'):
+                owner = MODULE.search(text)
+                if not owner:
+                    errors.add(f'{origin}: partition import outside a module unit: {name}')
+                    continue
+                name = owner[1].split(':')[0] + name
             target = modules.get(name)
             if name.startswith('openciv.') and not target:
                 errors.add(f'{origin}: unresolved module import {name}')
             yield name, target
+
+    visited = set()
+    active = []
+
+    def visit_module(name):
+        if name in active:
+            errors.add('module import cycle: ' + ' -> '.join(active[active.index(name):] + [name]))
+            return
+        if name in visited:
+            return
+        visited.add(name)
+        active.append(name)
+        for imported, target in dependencies(modules[name], name):
+            if imported in modules:
+                visit_module(imported)
+        active.pop()
+
+    for name in modules:
+        visit_module(name)
 
     def visit(path, origin, player, portable, seen):
         if path in seen:
@@ -61,7 +86,10 @@ def check(root=ROOT):
                     forbidden |= relative in CLASSIC_LOADERS
                 if player:
                     forbidden |= (relative.startswith('state/') and relative not in PLAYER_STATE)
-                    forbidden |= (relative.startswith('session/') and relative not in PLAYER_SESSION)
+                    client_bridge = (relative == 'session/client_connection.cppm' and
+                                     path.relative_to(source).as_posix() == 'session/client.cppm')
+                    forbidden |= (relative.startswith('session/') and relative not in PLAYER_SESSION
+                                  and not client_bridge)
                     forbidden |= relative.startswith(('world/', 'unit/', 'city/', 'formats/', 'network/'))
                     forbidden |= relative == 'query/live.cppm'
                 if forbidden:

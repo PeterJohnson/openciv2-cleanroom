@@ -1,6 +1,7 @@
 # Named interfaces mirror the architecture boundaries; CMake orders imports.
 function(oc2_modules target visibility)
-  target_sources(${target} ${visibility} FILE_SET CXX_MODULES FILES ${ARGN})
+  string(TOLOWER "${visibility}" scope)
+  target_sources(${target} ${visibility} FILE_SET ${scope}_modules TYPE CXX_MODULES FILES ${ARGN})
   set_target_properties(${target} PROPERTIES CXX_SCAN_FOR_MODULES ON)
 endfunction()
 
@@ -11,6 +12,7 @@ if(TARGET oc2_base)
     src/base/cancellation.cppm
     src/base/choices.cppm
     src/base/hash.cppm
+    src/base/random_policy.cppm
     src/base/random.cppm
     src/base/random_source.cppm
     src/base/session_ids.cppm
@@ -51,10 +53,10 @@ if(TARGET oc2_game)
     src/state/text_parameters.cppm
     src/state/text_pool.cppm
     src/state/unit_types.cppm
+    src/state/world_lifetime.cppm
     src/state/world_setup.cppm
     src/turn/calendar.cppm
     src/unit/deletion.cppm
-    src/unit/stack_operations.cppm
     src/unit/stacks.cppm
     src/world/geometry.cppm
     src/world/map.cppm
@@ -133,6 +135,8 @@ if(TARGET oc2_session)
     src/session/classic_save.cppm
     src/session/classic_save_menu.cppm
     src/session/classic_stream.cppm
+    src/session/client_types.cppm
+    src/session/client_connection.cppm
     src/session/client.cppm
     src/session/command_types.cppm
     src/session/commands.cppm
@@ -143,13 +147,13 @@ if(TARGET oc2_session)
     src/session/player_setup.cppm
     src/session/premade_world.cppm
     src/session/runtime.cppm
-    src/session/runtime_internal.cppm
     src/session/setup_calendar.cppm
     src/session/text_configuration.cppm
     src/session/unit_operations.cppm
     src/session/world_entry.cppm
     src/session/world_setup.cppm
   )
+  oc2_modules(oc2_session PRIVATE src/session/runtime_state.cppm)
 endif()
 
 if(TARGET oc2_viewmodel)

@@ -5,7 +5,7 @@ export import openciv.tests.service_callbacks;
 export import openciv.formats.classic_rules;
 export import openciv.rules.rules_install;
 
-export extern "C++" {
+export {
     // Authored F03 table inputs shared by parser and ordered-load integration tests.
 
     namespace classic_rule_fixture {

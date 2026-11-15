@@ -96,7 +96,7 @@ class RegistryTests(unittest.TestCase):
             conformance.validate(self.root)
 
     def test_implementation_change_invalidates_recorded_execution(self):
-        path = self.root / "src/base/arithmetic.cpp"
+        path = self.root / "src/base/arithmetic.cppm"
         path.write_bytes(path.read_bytes() + b"\n// changed implementation\n")
         with self.assertRaisesRegex(ValueError, "execution report implementation changed"):
             conformance.validate(self.root)

@@ -1,9 +1,11 @@
+module;
 #include <SDL3/SDL.h>
 #include <windows.h>
 #include <commctrl.h>
 
+module openciv.platform.menu;
+
 import std;
-import openciv.platform.menu;
 
 namespace openciv::platform {
 namespace {

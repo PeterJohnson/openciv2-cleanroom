@@ -1,5 +1,6 @@
+module openciv.session.unit_operations;
+
 import std;
-import openciv.session.unit_operations;
 import openciv.base.arithmetic;
 
 namespace openciv::session {

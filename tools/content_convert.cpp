@@ -1,5 +1,6 @@
+module openciv.tools.content_command;
+
 import std;
-import openciv.tools.content_command;
 import openciv.formats.content_conversion;
 import openciv.platform.content_files;
 import openciv.platform.native_files;

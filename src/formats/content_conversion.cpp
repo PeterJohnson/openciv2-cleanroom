@@ -1,5 +1,6 @@
+module openciv.formats.content_conversion;
+
 import std;
-import openciv.formats.content_conversion;
 import openciv.formats.rules;
 import openciv.formats.city_preferences;
 import openciv.formats.city_names;

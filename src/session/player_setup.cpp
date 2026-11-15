@@ -1,5 +1,6 @@
+module openciv.session.player_setup;
+
 import std;
-import openciv.session.player_setup;
 import openciv.session.setup_calendar;
 
 namespace openciv::session {

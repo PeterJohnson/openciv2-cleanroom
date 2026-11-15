@@ -1,3 +1,4 @@
+module;
 #ifdef _WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -8,8 +9,9 @@
 #include <unistd.h>
 #endif
 
+module openciv.platform.native_files;
+
 import std;
-import openciv.platform.native_files;
 import openciv.base.cancellation;
 
 namespace openciv::io {

@@ -88,6 +88,72 @@ class BoundaryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'unresolved module import'):
                 check_boundaries.check(root)
 
+    def test_module_cycles_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_sources(root, {
+                'base/a.cppm': 'export module openciv.base.a;\nimport openciv.base.b;\n',
+                'base/b.cppm': 'export module openciv.base.b;\nimport openciv.base.a;\n',
+            })
+            with self.assertRaisesRegex(ValueError, 'module import cycle:'):
+                check_boundaries.check(root)
+
+    def test_internal_partition_can_import_its_primary_interface(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_sources(root, {
+                'session/runtime.cppm': 'export module openciv.session.runtime;\n',
+                'session/runtime_state.cppm': ('module openciv.session.runtime:state;\n'
+                                               'import openciv.session.runtime;\n'),
+                'session/runtime.cpp': 'module openciv.session.runtime;\nimport :state;\n',
+            })
+            check_boundaries.check(root)
+            (root / 'src/session/runtime.cppm').write_text(
+                'export module openciv.session.runtime;\nimport :state;\n')
+            with self.assertRaisesRegex(ValueError, 'module import cycle:'):
+                check_boundaries.check(root)
+
+    def test_partition_dependencies_preserve_boundaries(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_sources(root, {
+                'base/a.cppm': 'export module openciv.base.a;\n',
+                'base/a.cpp': 'module openciv.base.a;\nimport :impl;\n',
+                'base/impl.cppm': 'module openciv.base.a:impl;\n#include <filesystem>\n',
+            })
+            with self.assertRaisesRegex(ValueError, 'forbidden platform include'):
+                check_boundaries.check(root)
+
+    def test_client_connection_is_only_accessible_through_client_handle(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_sources(root, {
+                'session/client.cppm': ('export module openciv.session.client;\n'
+                                       'import openciv.session.client_connection;\n'),
+                'session/client_connection.cppm':
+                    'export module openciv.session.client_connection;\n',
+                'viewmodel/a.cppm': ('export module openciv.viewmodel.a;\n'
+                                    'import openciv.session.client;\n'),
+            })
+            check_boundaries.check(root)
+            (root / 'src/viewmodel/a.cppm').write_text(
+                'export module openciv.viewmodel.a;\nimport openciv.session.client_connection;\n')
+            with self.assertRaisesRegex(ValueError, 'forbidden include/import'):
+                check_boundaries.check(root)
+            (root / 'src/viewmodel/a.cppm').unlink()
+            (root / 'src/session/client_connection.cppm').write_text(
+                'export module openciv.session.client_connection;\nimport openciv.state.game;\n')
+            self.write_sources(root, {'state/game.cppm': 'export module openciv.state.game;\n'})
+            with self.assertRaisesRegex(ValueError, 'forbidden include/import'):
+                check_boundaries.check(root)
+
+    @staticmethod
+    def write_sources(root, sources):
+        for name, text in sources.items():
+            path = root / 'src' / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text)
+
     def check_forbidden_chain(self, origin, forbidden, *, aliased_root=False):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

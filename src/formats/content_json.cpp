@@ -1,5 +1,6 @@
+module openciv.formats.content_json;
+
 import std;
-import openciv.formats.content_json;
 
 namespace openciv::formats::content {
 namespace {

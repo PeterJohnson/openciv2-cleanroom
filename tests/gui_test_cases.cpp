@@ -1,7 +1,9 @@
+module;
 #include <imgui_te_context.h>
 
+module openciv.tests.gui_fixture;
+
 import std;
-import openciv.tests.gui_fixture;
 
 using namespace openciv;
 

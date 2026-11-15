@@ -1,5 +1,6 @@
+module openciv.session.world_setup;
+
 import std;
-import openciv.session.world_setup;
 
 namespace openciv::session {
 void WorldParameterDependencies::validate() const {

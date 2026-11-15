@@ -1,5 +1,6 @@
+module openciv.rules.rules_install;
+
 import std;
-import openciv.rules.rules_install;
 import openciv.rules.normalization;
 
 namespace openciv::rules {

@@ -1,10 +1,12 @@
+module;
 #include <cstdio>
 #ifndef _WIN32
 #include <sys/types.h>
 #endif
 
+module openciv.platform.classic_files;
+
 import std;
-import openciv.platform.classic_files;
 
 namespace openciv::io {
 namespace {

@@ -4,7 +4,7 @@ import std;
 export import openciv.rules.rules_install;
 export import openciv.formats.rules;
 
-export extern "C++" {
+export {
     // Independently authored complete identities, not stock rules or engine outputs.
     // Collection counts and row fields follow data-format.md section 4 / Appendix B.
 

@@ -107,7 +107,7 @@ class ConformanceRunnerTests(unittest.TestCase):
         command, _, _ = self.identity_adapter()
         report = self.root / "report.json"
         def change_during_execution(*_):
-            path = self.root / "src/base/arithmetic.cpp"
+            path = self.root / "src/base/arithmetic.cppm"
             path.write_bytes(path.read_bytes() + b"\n")
             return {"path": str(self.path), "status": "passed"}
         argv = ["run_conformance.py", "--root", str(self.root), "--report", str(report),

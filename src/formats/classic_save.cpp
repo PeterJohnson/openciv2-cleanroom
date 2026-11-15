@@ -1,5 +1,6 @@
+module openciv.formats.classic_save;
+
 import std;
-import openciv.formats.classic_save;
 
 namespace openciv::formats {
 namespace {

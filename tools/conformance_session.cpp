@@ -1,5 +1,6 @@
+module openciv.tools.conformance_session;
+
 import std;
-import openciv.tools.conformance_session;
 import openciv.tools.conformance_io;
 import openciv.session.runtime;
 

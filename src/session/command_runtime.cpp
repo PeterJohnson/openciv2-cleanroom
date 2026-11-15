@@ -1,5 +1,7 @@
+module openciv.session.runtime;
+
 import std;
-import openciv.session.runtime_internal;
+import :state;
 
 namespace openciv::session {
 namespace {
@@ -229,7 +231,7 @@ void restore_pending_updates(RuntimeState& state, Lease& lease) {
 }
 } // namespace detail
 
-std::vector<CommandDescriptor> PlayerClient::commands() const {
+std::vector<CommandDescriptor> detail::RuntimeClientConnection::commands() const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     std::vector<CommandDescriptor> result;
@@ -238,7 +240,7 @@ std::vector<CommandDescriptor> PlayerClient::commands() const {
             result.push_back(definition.descriptor);
     return result;
 }
-CommandUpdate PlayerClient::submit(CommandRequest request) const {
+CommandUpdate detail::RuntimeClientConnection::submit(CommandRequest request) const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     const auto& identity = lease->identity;
@@ -246,7 +248,7 @@ CommandUpdate PlayerClient::submit(CommandRequest request) const {
         *state, {identity.participant, identity.observer, identity.controller, identity.access, {}},
         std::move(request), correlation(*state), lease);
 }
-std::vector<CommandUpdate> PlayerClient::updates() const {
+std::vector<CommandUpdate> detail::RuntimeClientConnection::updates() const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     std::vector<CommandUpdate> result;
@@ -257,13 +259,14 @@ std::vector<CommandUpdate> PlayerClient::updates() const {
     }
     return result;
 }
-std::optional<CommandUpdate> PlayerClient::result(CommandId command) const {
+std::optional<CommandUpdate> detail::RuntimeClientConnection::result(CommandId command) const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     const auto record = state->commands.find(command);
     return record == state->commands.end() ? std::nullopt : visible(*lease, record->second);
 }
-InputReceipt PlayerClient::reply(InteractionId interaction, std::int32_t choice) const {
+InputReceipt detail::RuntimeClientConnection::reply(InteractionId interaction,
+                                                    std::int32_t choice) const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     for (auto& [id, record] : state->commands) {
@@ -286,7 +289,7 @@ InputReceipt PlayerClient::reply(InteractionId interaction, std::int32_t choice)
     }
     return {false, "interaction_not_available"};
 }
-InputReceipt PlayerClient::cancel(CommandId command) const {
+InputReceipt detail::RuntimeClientConnection::cancel(CommandId command) const {
     const auto state = state_.lock();
     const auto lease = checked(state);
     const auto found = state->commands.find(command);

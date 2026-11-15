@@ -1,5 +1,6 @@
+module openciv.session.classic_load;
+
 import std;
-import openciv.session.classic_load;
 import openciv.session.classic_file_choice;
 import openciv.session.game_install;
 import openciv.formats.game_input;

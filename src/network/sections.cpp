@@ -1,5 +1,6 @@
+module openciv.network.sections;
+
 import std;
-import openciv.network.sections;
 
 namespace openciv::network {
 namespace {
