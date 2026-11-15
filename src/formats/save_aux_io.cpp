@@ -1,8 +1,7 @@
-#include "formats/save_aux_io.hpp"
-#include "formats/state_conversion.hpp"
-#include "base/arithmetic.hpp"
-#include <algorithm>
-#include <bit>
+import std;
+import openciv.formats.save_aux_io;
+import openciv.formats.state_conversion;
+import openciv.base.arithmetic;
 
 namespace openciv::formats {
 namespace {

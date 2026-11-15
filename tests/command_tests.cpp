@@ -1,8 +1,12 @@
+#include <cstdint>
+
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.session.runtime;
+
 // Architecture §§4–5 foundation scenarios. Fake operations are test-only;
 // they establish continuation/authority contracts, not classic gameplay rules.
-#include "session/runtime.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <array>
 
 using namespace openciv;
 using namespace openciv::session;

@@ -1,10 +1,9 @@
+#include <SDL3/SDL.h>
 #define SDL_MAIN_USE_CALLBACKS 1
 #include <SDL3/SDL_main.h>
-#include "application.hpp"
 
-#include <exception>
-#include <string_view>
-#include <utility>
+import std;
+import openciv.application;
 
 namespace {
 SDL_AppResult failure(const char* message) {

@@ -1,10 +1,12 @@
+import std;
+import openciv.formats.content_conversion;
+import openciv.formats.classic_rules;
+import openciv.formats.classic_text;
+import openciv.rules.rules_install;
+import openciv.formats.rules;
+import openciv.base.hash;
+
 // M1-02, F03 tables and data-format.md section 4 / Appendix B.
-#include "content_conversion.hpp"
-#include "classic_rules.hpp"
-#include "classic_text.hpp"
-#include "rules/rules_install.hpp"
-#include "rules.hpp"
-#include "base/hash.hpp"
 
 namespace openciv::formats::content {
 namespace {

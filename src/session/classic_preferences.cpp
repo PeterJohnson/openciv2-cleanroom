@@ -1,7 +1,8 @@
-#include "session/classic_preferences.hpp"
-#include "formats/state_conversion.hpp"
-#include "session/runtime.hpp"
-#include "formats/preference_io.hpp"
+import std;
+import openciv.session.classic_preferences;
+import openciv.formats.state_conversion;
+import openciv.session.runtime;
+import openciv.formats.preference_io;
 
 namespace openciv::session {
 namespace {

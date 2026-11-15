@@ -1,5 +1,6 @@
-#include "formats/world_record_io.hpp"
-#include "formats/state_conversion.hpp"
+import std;
+import openciv.formats.world_record_io;
+import openciv.formats.state_conversion;
 
 namespace openciv::formats {
 namespace {

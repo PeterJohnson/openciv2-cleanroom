@@ -1,5 +1,6 @@
-#include "session/setup_calendar.hpp"
-#include "turn/calendar.hpp"
+import std;
+import openciv.session.setup_calendar;
+import openciv.turn.calendar;
 
 namespace openciv::session {
 std::array<std::uint32_t, 3> prepare_acceleration_years(SessionRuntime& runtime,

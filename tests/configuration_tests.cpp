@@ -1,8 +1,12 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.configuration_fixture;
+import openciv.rules.double_movement;
+
 // F03 section 8/Appendix A, F06 option encodings and P10 owning audio boundary.
 // Independently authored specification expectations; audio children are supplied.
-#include "configuration_fixture.hpp"
-#include "rules/double_movement.hpp"
 
 using namespace openciv;
 using namespace openciv::session;

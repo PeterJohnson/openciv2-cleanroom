@@ -1,4 +1,6 @@
-#include "classic_city_preferences.hpp"
+import std;
+import openciv.formats.classic_city_preferences;
+
 namespace openciv::formats::classic {
 namespace {
 state::CityPreferenceUpdate load(TextReader& reader, const std::array<std::string, 38>& names,

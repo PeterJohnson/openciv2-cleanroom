@@ -1,5 +1,7 @@
-#include "classic_city_names.hpp"
-#include "classic_text.hpp"
+import std;
+import openciv.formats.classic_city_names;
+import openciv.formats.classic_text;
+
 namespace openciv::formats::classic {
 state::CityNameLists read_city_names(TextReader& reader, const TextCase& comparison) {
     if (!comparison.equal)

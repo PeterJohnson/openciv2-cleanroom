@@ -1,5 +1,5 @@
-#include "session/new_game.hpp"
-#include <bit>
+import std;
+import openciv.session.new_game;
 
 namespace openciv::session {
 void NewGameDependencies::validate() const {

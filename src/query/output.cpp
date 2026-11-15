@@ -1,6 +1,6 @@
-#include "query/output.hpp"
-#include "base/hash.hpp"
-#include <map>
+import std;
+import openciv.query.output;
+import openciv.base.hash;
 
 namespace openciv::query {
 namespace {

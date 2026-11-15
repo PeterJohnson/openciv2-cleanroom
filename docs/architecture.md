@@ -235,11 +235,14 @@ first real operations arrive. Native menu sources currently compile into
 | `oc2_export_sqlite` | Optional native analysis adapter: writes immutable query records to a versioned SQLite snapshot. Depends on `oc2_query` and SQLite; no dependency on it from game, formats, session or query libraries. |
 | `oc2_net_bridge` | Separate native browser transport bridge; built only when requested. No game simulation. |
 
-Keep public interfaces small and use ordinary C++23 headers and source files.
+Keep public interfaces small and use C++23 named modules with `import std`.
 Use RAII and owned values; introduce virtual interfaces at external service
 boundaries, not for every algorithm. Avoid a general ECS, plugin framework,
-global service locator, or C++ modules requirement in the initial implementation.
-Source-level include and CMake dependency checks enforce the graphical boundary.
+or global service locator. Source-level import/include and CMake dependency
+checks enforce the graphical boundary. Modules follow existing interface boundaries;
+do not replace selective player-facing APIs with a single engine-wide export.
+See [module conventions](modules.md) for declaration ownership, CMake file sets,
+macro/C boundaries, and dependency modules.
 
 ### C++ interface choices
 
@@ -264,7 +267,7 @@ admission or release callbacks. Real I/O, malformed-input and admitted interacti
 failures retain their own error contracts.
 
 Different content formats converge on common owned domain data before gameplay
-behavior begins. Keep classic and native loaders in separate headers and source
+behavior begins. Keep classic and native loaders in separate module interfaces and source
 files; neither loader depends on the other. Use a format-specific runtime service
 only when a required ongoing interaction cannot be represented as data. Codec
 syntax, scanner state, file cleanup and provenance do not belong in gameplay
@@ -324,7 +327,7 @@ guard for synchronous configuration/setup, including before client admission;
 it does not admit a second owner workflow. Commands already protect their world
 while pending. Their unit children take `OperationContext` and do not attempt
 standalone workflow admission.
-Public client/value headers do not include mutable state or engine operation
+Public client/value modules do not import mutable state or engine operation
 interfaces. Transitive include checks and portable target dependency checks
 protect these boundaries as the frontend grows.
 
@@ -1039,10 +1042,10 @@ classic resource-name lookup without depending on host case sensitivity.
 
 Require CMake 4.5 or newer and use target-based CMake with `cxx_std_23`,
 extensions disabled, and separate build directories per native or Emscripten
-toolchain. Enable Objective-C++ only for the
-macOS adapter, also in C++23 mode. Header-based targets leave module scanning
-disabled; enable it per target when introducing modules after cross-platform
-validation. C++23 library facilities must be available on every pinned platform;
+toolchain. Enable Objective-C only for the AppKit adapter, which communicates
+with the C++ menu implementation through a narrow C ABI. Enable C++ module
+scanning for all owned targets, including tools and tests. Use the pinned
+standard-library module sources, headers and runtime as one matching set. C++23 library facilities must be available on every pinned platform;
 language-mode support alone does not establish standard-library support.
 Commit portable presets for debug, release, sanitizers, headless,
 and web; keep machine paths in untracked user presets. Record exact dependency

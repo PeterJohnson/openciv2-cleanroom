@@ -1,6 +1,7 @@
-#include "viewmodel/menu.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <set>
+
+import std;
+import openciv.viewmodel.menu;
 
 using namespace openciv;
 

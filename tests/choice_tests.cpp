@@ -1,10 +1,14 @@
+#include <cfenv>
+
+#include <cstdint>
+
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.base.random;
+
 // F01 §§2–4,6 and X02 §§2,5–6; specification vectors and policy regression
 // checks. These authored choices are not original-game observations.
-#include "base/random.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <array>
-#include <cfenv>
-#include <functional>
 
 using namespace openciv::base;
 namespace {

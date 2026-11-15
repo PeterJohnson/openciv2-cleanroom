@@ -1,5 +1,5 @@
-#include "viewmodel/menu.hpp"
-#include <array>
+import std;
+import openciv.viewmodel.menu;
 
 namespace openciv {
 namespace {

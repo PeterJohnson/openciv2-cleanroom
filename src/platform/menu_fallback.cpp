@@ -1,4 +1,5 @@
-#include "platform/menu.hpp"
+import std;
+import openciv.platform.menu;
 
 namespace openciv::platform {
 namespace {

@@ -1,9 +1,9 @@
-#include "formats/state_conversion.hpp"
-#include "formats/preference_io.hpp"
-#include "formats/classic_io.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <numeric>
+
+import std;
+import openciv.formats.state_conversion;
+import openciv.formats.preference_io;
+import openciv.formats.classic_io;
 
 using namespace openciv;
 using namespace openciv::formats;

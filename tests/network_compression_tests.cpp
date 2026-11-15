@@ -1,7 +1,11 @@
-// Specification-derived N02 bounded codec vectors, not executable trace tests.
-#include "network/compression.hpp"
-#include "network/sections.hpp"
 #include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.network.compression;
+import openciv.network.sections;
+
+// Specification-derived N02 bounded codec vectors, not executable trace tests.
+
 using namespace openciv;
 using namespace openciv::network;
 using formats::Byte;

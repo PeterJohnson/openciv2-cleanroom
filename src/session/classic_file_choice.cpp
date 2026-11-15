@@ -1,5 +1,5 @@
-#include "classic_file_choice.hpp"
-#include <stdexcept>
+import std;
+import openciv.session.classic_file_choice;
 
 namespace openciv::session {
 void select_classic_extension(bool scenario, state::GameMode mode, std::string& extension) {

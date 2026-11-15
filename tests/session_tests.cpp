@@ -1,8 +1,10 @@
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.session.runtime;
+
 // Architecture §§3–5 session/query contracts and F02 §§2–3 lifetimes. These
 // are authored foundation tests, not original turn-loop/setup conformance.
-#include "session/runtime.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <type_traits>
 
 using namespace openciv;
 using namespace openciv::session;

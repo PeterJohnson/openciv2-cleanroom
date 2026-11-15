@@ -1,8 +1,7 @@
-#include "base/arithmetic.hpp"
-#include <algorithm>
 #include <cfenv>
-#include <limits>
-#include <stdexcept>
+
+import std;
+import openciv.base.arithmetic;
 
 namespace openciv::base {
 namespace {

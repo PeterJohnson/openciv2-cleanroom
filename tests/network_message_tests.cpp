@@ -1,11 +1,13 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.network.messages;
+import openciv.network.sections;
+import openciv.network.stream;
+
 // Specification-derived vectors: N02 sections 2, 5-6 and Appendices A/C;
 // envelope composition uses N05 sections 4-5. No original capture is inferred.
-#include "network/messages.hpp"
-#include "network/sections.hpp"
-#include "network/stream.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <limits>
 
 using namespace openciv;
 using namespace openciv::network;

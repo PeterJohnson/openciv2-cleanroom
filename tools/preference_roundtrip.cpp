@@ -1,11 +1,12 @@
-#include "formats/state_conversion.hpp"
+import std;
+import openciv.formats.state_conversion;
+import openciv.session.classic_preferences;
+import openciv.formats.preference_io;
+import openciv.platform.classic_files;
+import openciv.platform.native_files;
+
 // Independently authored F03/F06 native preference comparison driver. Reads
 // original data only; never executes or links original game/reconstruction code.
-#include "session/classic_preferences.hpp"
-#include "formats/preference_io.hpp"
-#include "platform/classic_files.hpp"
-#include "platform/native_files.hpp"
-#include <iostream>
 
 namespace {
 // Owns the observed native stream; counters outlive this synchronous read.

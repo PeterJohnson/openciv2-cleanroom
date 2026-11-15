@@ -83,28 +83,21 @@ See [content resolution commands](m1-content-runtime.md#pack-inheritance-and-mou
 CI installs CMake **4.5.0** and enforces the versions in `dependencies.json`
 with `OC2_VERIFY_TOOLCHAIN=ON`. The toolchain action downloads Kitware's release
 binaries directly; availability does not depend on the Python package release.
-Linux uses Clang 20.1.8; Windows uses clang-cl
-20.1.8 with Visual Studio 2022's SDK/libraries and the Ninja generator. This
-module experiment branch uses Homebrew LLVM 20.1.8 on macOS with the Xcode 16.4
-SDK; main uses AppleClang 17.0.0.17000013. The experiment uses emsdk 7.0.0 /
-Clang 24.0.0 for WebAssembly; main retains emsdk 4.0.23 / Clang 22.0.0. Runner labels are
-`ubuntu-24.04`, `windows-2022`, and `macos-15`, not moving `*-latest` aliases.
-The experiment branch runs Linux native builds, metadata checks, sanitizers,
-and the Linux standard-library module probe inside `ubuntu:26.04` containers,
-with libstdc++ 15 supplied by the distribution's `g++` development package.
-WebAssembly retains the Ubuntu 24.04 host and emsdk's own standard library.
-Hosted images/OS libraries may still change; compiler drift fails configuration
-instead of silently redefining the baseline. Historical platform results are
-recorded in [the M1 build matrix](m1-build-matrix.md). The C++23/CMake main baseline
-passed [all 12 CI jobs](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43685032207)
-at `2044ada`. Normal developer builds use
-CMake 4.5+ and compatible C++23 compilers; strict verification is opt-in outside CI.
+Linux uses Clang 20.1.8 in an `ubuntu:26.04` container, with the distribution's
+libstdc++ module sources. Windows uses clang-cl 20.1.8 with Visual Studio 2022's
+SDK/libraries. macOS uses Homebrew LLVM 20.1.8, its matching libc++ module sources,
+headers and runtime, and the Xcode 16.4 SDK. WebAssembly uses emsdk 7.0.0 /
+Clang 24.0.0 and the SDK's libc++ modules. Runner labels remain `ubuntu-24.04`,
+`windows-2022`, and `macos-15`; the web job uses the host and emsdk directly.
+Compiler drift fails strict CI configuration. Developer builds may use other
+compatible C++23/module toolchains with CMake 4.5+ and Ninja.
 
-C++ and the macOS Objective-C++ adapter require C++23 with extensions disabled.
-The production targets use headers and keep C++ module scanning disabled. On
-this experiment branch, `BUILD_TESTING=ON` also builds the
-[`openciv.base.arithmetic` module and interoperability test](modules-experiment.md)
-with scanning enabled on those targets.
+All owned C++ targets use named modules and `import std`, including tools-only
+builds and tests. CMake scans imports and builds the standard-library module.
+The project enables emsdk's `CMAKE_CXX_MODULE_STD` opt-in before toolchain loading.
+The AppKit adapter is Objective-C behind a C ABI; it does not consume C++ BMIs.
+See [module conventions and toolchain setup](modules.md) and the
+[completed feasibility experiment](modules-experiment.md).
 WebAssembly targets reserve a 1 MiB stack for save-decoding temporaries and
 diagnostic calls; Debug builds enable stack-overflow checks.
 

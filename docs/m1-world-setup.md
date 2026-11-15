@@ -2,7 +2,7 @@
 
 Status: F05 section 3's generated-size and customized-parameter helpers, and
 section 2's five-draw parameter path and post-selection dispatch, are implemented
-in `session/world_setup.hpp`. The owning size/dialog/file interactions are explicit
+in `session/world_setup.cppm`. The owning size/dialog/file interactions are explicit
 services. This increment does not generate terrain or complete the player wizard.
 
 ## Implemented behavior

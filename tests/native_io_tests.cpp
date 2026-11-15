@@ -1,9 +1,10 @@
-#include "platform/native_files.hpp"
-#include "platform/content_files.hpp"
-#include "base/cancellation.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
-#include <chrono>
+
+import std;
+import openciv.platform.native_files;
+import openciv.platform.content_files;
+import openciv.base.cancellation;
 
 using namespace openciv;
 namespace {

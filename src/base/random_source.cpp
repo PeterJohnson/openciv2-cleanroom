@@ -1,8 +1,6 @@
-#include "base/random_source.hpp"
-#include "base/random.hpp"
-#include <random>
-#include <limits>
-#include <stdexcept>
+import std;
+import openciv.base.random_source;
+import openciv.base.random;
 
 namespace openciv::base {
 namespace {

@@ -1,11 +1,11 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.unit.deletion;
+
 // Independently authored U01 sections 6, 9–11 / Appendix A expectations.
 // V01 and transport are supplied children; these cases do not implement them.
-#include "unit/deletion.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <map>
-#include <string>
 
 using namespace openciv;
 using namespace openciv::unit;

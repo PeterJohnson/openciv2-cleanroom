@@ -1,7 +1,7 @@
-#include "session/runtime.hpp"
-#include "query/live.hpp"
-#include "session/runtime_internal.hpp"
-#include <limits>
+import std;
+import openciv.session.runtime;
+import openciv.query.live;
+import openciv.session.runtime_internal;
 
 namespace openciv::session {
 namespace {

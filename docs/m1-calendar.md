@@ -1,6 +1,6 @@
 # F04 calendar and F05 acceleration labels
 
-`turn/calendar.hpp` implements F04 section 5 using the selected decoded
+`turn/calendar.cppm` implements F04 section 5 using the selected decoded
 `CalendarValues`. It reads the four six-period profiles from the existing
 gameplay JSON model; the game library has no JSON parser or implicit default
 bundle. Both the shipped classic bundle and explicitly authored custom bundles
@@ -14,7 +14,7 @@ Significant arithmetic uses explicit signed-32 modular operations. The result
 is not narrowed to a saved year. Turn/year, scenario values and random contexts
 are not modified by this calculation. Map dimensions are not an input.
 
-`session/setup_calendar.hpp` supplies F05's acceleration labels. It sets the
+`session/setup_calendar.cppm` supplies F05's acceleration labels. It sets the
 first-launch marker to Absent, invokes the real calendar at turns 0, 21 and 41,
 and returns their magnitudes. Incoming scenario/calendar settings survive.
 Magnitudes use an unsigned domain so custom calendars can display the magnitude

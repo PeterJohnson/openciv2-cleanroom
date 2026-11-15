@@ -1,12 +1,15 @@
-#include "service_callbacks.hpp"
-#include "formats/state_conversion.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.formats.state_conversion;
+import openciv.tests.service_fixture;
+import openciv.tests.configuration_fixture;
+import openciv.session.world_setup;
+
 // F05 sections 2-3, F01 cyclic arithmetic/sampling and F06 preference fields.
 // Expectations are independently authored from the contract. The explicitly
 // named Windows observation case also cites original UI/file evidence.
-#include "service_fixture.hpp"
-#include "configuration_fixture.hpp"
-#include "session/world_setup.hpp"
-#include <limits>
 
 using namespace openciv;
 using namespace openciv::session;

@@ -1,5 +1,5 @@
-#include "session/commands.hpp"
-#include <set>
+import std;
+import openciv.session.commands;
 
 namespace openciv::session {
 namespace {

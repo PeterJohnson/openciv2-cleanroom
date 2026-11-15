@@ -1,11 +1,12 @@
-#include "application.hpp"
+#include <SDL3/SDL.h>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
-#include <imgui.h>
+
+import std;
+import imgui;
+import openciv.application;
+
 #include <imgui_internal.h> // Observe the pinned library's processed input trail.
-#include <thread>
-#include <memory>
-#include <string_view>
 
 using namespace openciv;
 

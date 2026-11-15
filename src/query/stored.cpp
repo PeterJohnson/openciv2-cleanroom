@@ -1,8 +1,8 @@
-#include "query/stored.hpp"
-#include "query/fields.hpp"
-#include "query/stored_validation.hpp"
-#include "base/hash.hpp"
-#include <map>
+import std;
+import openciv.query.stored;
+import openciv.query.fields;
+import openciv.query.stored_validation;
+import openciv.base.hash;
 
 namespace openciv::query {
 namespace {

@@ -1,15 +1,14 @@
-#include <cstdint>
-#include <limits>
-#include <stdexcept>
+
+import std;
 
 import openciv.base.arithmetic;
 
 using openciv::base::WrappingI32;
-WrappingI32 header_add(WrappingI32 left, WrappingI32 right);
+WrappingI32 consumer_add(WrappingI32 left, WrappingI32 right);
 
 // F01 §§1, 4–5: exercise the existing specification-derived arithmetic cases
 // through the module. Test constexpr functions, templates/operators, compiled functions,
-// exception identity and interoperability with an ordinary header consumer.
+// exception identity and interoperability between separate importing translation units.
 constexpr auto maximum = std::numeric_limits<std::int32_t>::max();
 constexpr auto minimum = std::numeric_limits<std::int32_t>::min();
 static_assert(openciv::base::add32(maximum, 1) == minimum);
@@ -18,7 +17,7 @@ static_assert(openciv::base::map_pattern_seed_from_ticks(0) == 1);
 
 int main() {
     using namespace openciv::base;
-    if (static_cast<std::int32_t>(header_add(WrappingI32{maximum}, WrappingI32{1})) != minimum)
+    if (static_cast<std::int32_t>(consumer_add(WrappingI32{maximum}, WrappingI32{1})) != minimum)
         return 1;
     if (divide32(-7, 3) != -2 || remainder32(-7, 3) != -1)
         return 2;

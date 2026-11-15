@@ -1,9 +1,12 @@
-#include "service_callbacks.hpp"
-// F06 semantic file choice and P04 presentation independence.
-#include "classic_save_fixture.hpp"
-#include "session/classic_save_menu.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <utility>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.classic_save_fixture;
+import openciv.session.classic_save_menu;
+
+// F06 semantic file choice and P04 presentation independence.
+
 using namespace openciv;
 using namespace openciv::session;
 namespace {

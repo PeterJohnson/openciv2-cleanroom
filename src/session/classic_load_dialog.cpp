@@ -1,6 +1,6 @@
-#include "session/classic_load_dialog.hpp"
-#include "session/runtime.hpp"
-#include <utility>
+import std;
+import openciv.session.classic_load_dialog;
+import openciv.session.runtime;
 
 namespace openciv::session {
 namespace {

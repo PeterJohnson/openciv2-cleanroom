@@ -1,11 +1,13 @@
-#include "service_callbacks.hpp"
-#include "formats/state_conversion.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.formats.state_conversion;
+import openciv.ai.goals;
+import openciv.formats.save_records;
+
 // A01 section 2 / Appendix A and W01 section 4. Independently
 // authored specification cases; supplied U04 results are not original captures.
-#include "ai/goals.hpp"
-#include "formats/save_records.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 using namespace openciv;
 using namespace openciv::ai;

@@ -1,8 +1,6 @@
-#include "session/player_setup.hpp"
-#include "session/setup_calendar.hpp"
-#include <algorithm>
-#include <bit>
-#include <utility>
+import std;
+import openciv.session.player_setup;
+import openciv.session.setup_calendar;
 
 namespace openciv::session {
 namespace {

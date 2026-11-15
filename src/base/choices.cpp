@@ -1,7 +1,6 @@
-#include "base/choices.hpp"
-#include "base/arithmetic.hpp"
-#include <bit>
-#include <utility>
+import std;
+import openciv.base.choices;
+import openciv.base.arithmetic;
 
 namespace openciv::base {
 namespace {

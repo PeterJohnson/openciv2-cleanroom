@@ -1,9 +1,8 @@
-#include "base/random.hpp"
+#include <cstdint>
 #include <catch2/catch_test_macros.hpp>
-#include <array>
-#include <random>
-#include <stdexcept>
-#include <vector>
+
+import std;
+import openciv.base.random;
 
 using namespace openciv::base;
 namespace {

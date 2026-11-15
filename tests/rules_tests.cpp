@@ -1,10 +1,11 @@
-// F03 sections 3-7 and native data-format.md section 4 / Appendix B.
-#include "rule_fixture.hpp"
-#include "formats/classic_text.hpp"
-#include "rules/normalization.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <algorithm>
-#include <limits>
+
+import std;
+import openciv.tests.rule_fixture;
+import openciv.formats.classic_text;
+import openciv.rules.normalization;
+
+// F03 sections 3-7 and native data-format.md section 4 / Appendix B.
 
 using namespace openciv;
 using namespace formats::content;

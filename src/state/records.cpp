@@ -1,5 +1,6 @@
-#include "state/records.hpp"
-#include "base/arithmetic.hpp"
+import std;
+import openciv.state.records;
+import openciv.base.arithmetic;
 
 namespace openciv::state {
 std::optional<UnitSlot> reserve_unit_slot(UnitPool& pool, CivilizationSlot owner,

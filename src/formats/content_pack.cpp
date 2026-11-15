@@ -1,10 +1,9 @@
+import std;
+import openciv.formats.content_pack;
+import openciv.formats.content_reader;
+import openciv.base.hash;
+
 // Native data-format.md sections 2, 3 and 9; gameplay-format.md section 1.
-#include "content_pack.hpp"
-#include "content_reader.hpp"
-#include "base/hash.hpp"
-#include <algorithm>
-#include <set>
-#include <tuple>
 
 namespace openciv::formats::content {
 namespace {

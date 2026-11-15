@@ -1,13 +1,14 @@
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.formats.builtin_gameplay_data;
+import openciv.turn.calendar;
+import openciv.session.setup_calendar;
+import openciv.formats.content_pack;
+import openciv.base.hash;
+
 // F04 section 5, F05 section 4, gameplay-format section 2. Expectations are
 // authored from the contracts; these are not original-program captures.
-#include "turn/calendar.hpp"
-#include "session/setup_calendar.hpp"
-#include "formats/content_pack.hpp"
-#include "base/hash.hpp"
-#include "builtin_gameplay_data.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <map>
 
 using namespace openciv;
 namespace {

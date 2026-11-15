@@ -1,11 +1,11 @@
-#include "session/classic_save.hpp"
-#include "session/classic_file_choice.hpp"
-#include "session/runtime.hpp"
-#include "session/game_install.hpp"
-#include "civilization/knowledge.hpp"
-#include "formats/multiplayer_io.hpp"
-#include "formats/world_record_io.hpp"
-#include <bit>
+import std;
+import openciv.session.classic_save;
+import openciv.session.classic_file_choice;
+import openciv.session.runtime;
+import openciv.session.game_install;
+import openciv.civilization.knowledge;
+import openciv.formats.multiplayer_io;
+import openciv.formats.world_record_io;
 
 namespace openciv::session {
 namespace {

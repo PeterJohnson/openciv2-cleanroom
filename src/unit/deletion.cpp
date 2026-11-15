@@ -1,7 +1,6 @@
-#include "unit/deletion.hpp"
-#include "base/arithmetic.hpp"
-#include <bit>
-#include <utility>
+import std;
+import openciv.unit.deletion;
+import openciv.base.arithmetic;
 
 namespace openciv::unit {
 UnitDeletion::UnitDeletion(state::GameState& world, const state::RuleDefinitions& rules,

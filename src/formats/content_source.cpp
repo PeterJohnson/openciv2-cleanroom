@@ -1,6 +1,6 @@
-#include "content_source.hpp"
-#include "content_json.hpp"
-#include <algorithm>
+import std;
+import openciv.formats.content_source;
+import openciv.formats.content_json;
 
 namespace openciv::formats::content {
 void validate_relative_path(std::string_view path) {

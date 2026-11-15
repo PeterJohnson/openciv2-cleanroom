@@ -1,7 +1,5 @@
-#include "unit/stacks.hpp"
-#include <bit>
-#include <string>
-#include <utility>
+import std;
+import openciv.unit.stacks;
 
 namespace openciv::unit {
 namespace {

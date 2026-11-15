@@ -1,4 +1,5 @@
-#include "query/live.hpp"
+import std;
+import openciv.query.live;
 
 namespace openciv::query {
 namespace {

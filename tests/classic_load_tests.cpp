@@ -1,8 +1,13 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.classic_load_fixture;
+import openciv.session.classic_save;
+import openciv.formats.game_input;
+
 // Authored F06 bytes and semantic restoration expectations.
-#include "classic_load_fixture.hpp"
-#include "session/classic_save.hpp"
-#include "formats/game_input.hpp"
+
 using namespace openciv;
 using namespace openciv::formats;
 using namespace openciv::session;

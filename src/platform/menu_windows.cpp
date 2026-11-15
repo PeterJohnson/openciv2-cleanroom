@@ -1,11 +1,9 @@
-#include "platform/menu.hpp"
-
 #include <SDL3/SDL.h>
 #include <windows.h>
 #include <commctrl.h>
-#include <stdexcept>
-#include <string>
-#include <type_traits>
+
+import std;
+import openciv.platform.menu;
 
 namespace openciv::platform {
 namespace {

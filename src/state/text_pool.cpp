@@ -1,6 +1,5 @@
-#include "text_pool.hpp"
-#include <limits>
-#include <stdexcept>
+import std;
+import openciv.state.text_pool;
 
 namespace openciv::state {
 void TextPool::initialize() {

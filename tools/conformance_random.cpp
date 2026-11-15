@@ -1,13 +1,9 @@
+import std;
+import openciv.tools.conformance_random;
+import openciv.tools.conformance_io;
+import openciv.base.random;
+
 // X02 §§2,5–6: test-only sampler adapter. No expected operation result enters here.
-#include "conformance_random.hpp"
-#include "conformance_io.hpp"
-#include "base/random.hpp"
-#include <bit>
-#include <iomanip>
-#include <iostream>
-#include <locale>
-#include <sstream>
-#include <type_traits>
 
 namespace openciv::conformance {
 namespace {

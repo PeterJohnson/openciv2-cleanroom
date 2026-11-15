@@ -1,5 +1,5 @@
-#include "session/world_setup.hpp"
-#include <bit>
+import std;
+import openciv.session.world_setup;
 
 namespace openciv::session {
 void WorldParameterDependencies::validate() const {

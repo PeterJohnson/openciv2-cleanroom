@@ -1,8 +1,9 @@
-#include "session/classic_load.hpp"
-#include "session/classic_file_choice.hpp"
-#include "session/game_install.hpp"
-#include "formats/game_input.hpp"
-#include "rules/rules_install.hpp"
+import std;
+import openciv.session.classic_load;
+import openciv.session.classic_file_choice;
+import openciv.session.game_install;
+import openciv.formats.game_input;
+import openciv.rules.rules_install;
 
 namespace openciv::session {
 namespace {

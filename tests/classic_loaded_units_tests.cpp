@@ -1,8 +1,11 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.session.classic_loaded_units;
+
 // F06 section 11 step 5, composed with real U01 sections 3/6 mechanics.
 // Independently authored state; supplied V01 child effects are not V01 evidence.
-#include "session/classic_loaded_units.hpp"
-#include <catch2/catch_test_macros.hpp>
 
 using namespace openciv;
 namespace {

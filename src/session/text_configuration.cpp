@@ -1,5 +1,6 @@
-#include "session/text_configuration.hpp"
-#include "base/arithmetic.hpp"
+import std;
+import openciv.session.text_configuration;
+import openciv.base.arithmetic;
 
 namespace openciv::session {
 void initialize_text(std::int32_t language, formats::classic::TextDirectories& directories,

@@ -1,7 +1,7 @@
-#include "state/records.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <utility>
+
+import std;
+import openciv.state.records;
 
 using namespace openciv::state;
 

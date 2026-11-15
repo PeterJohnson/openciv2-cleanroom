@@ -1,7 +1,5 @@
-#include "state/events.hpp"
-#include <algorithm>
-#include <limits>
-#include <stdexcept>
+import std;
+import openciv.state.events;
 
 namespace openciv::state {
 namespace {

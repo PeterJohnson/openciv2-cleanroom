@@ -1,10 +1,9 @@
+import std;
+import openciv.formats.gameplay;
+import openciv.base.hash;
+import openciv.formats.content_reader;
+
 // Native gameplay-format.md sections 1-7 and the six version-1 component schemas.
-#include "gameplay.hpp"
-#include "base/hash.hpp"
-#include "content_reader.hpp"
-#include <limits>
-#include <numeric>
-#include <set>
 
 namespace openciv::formats::content {
 namespace {

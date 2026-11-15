@@ -1,7 +1,11 @@
-#include "formats/state_conversion.hpp"
-#include "classic_load_fixture.hpp"
-#include "formats/game_input.hpp"
-#include "formats/save_aux_io.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.formats.state_conversion;
+import openciv.tests.classic_load_fixture;
+import openciv.formats.game_input;
+import openciv.formats.save_aux_io;
+
 using namespace openciv;
 using namespace openciv::formats;
 TEST_CASE("F06 layout export snapshots the screen without changing live geometry",

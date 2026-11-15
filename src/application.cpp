@@ -1,7 +1,6 @@
-#include "application.hpp"
-
-#include <stdexcept>
-#include <utility>
+#include <SDL3/SDL.h>
+import std;
+import openciv.application;
 
 namespace openciv {
 namespace {

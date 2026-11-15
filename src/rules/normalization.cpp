@@ -1,7 +1,5 @@
-#include "normalization.hpp"
-#include <algorithm>
-#include <bitset>
-#include <stdexcept>
+import std;
+import openciv.rules.normalization;
 
 namespace openciv::rules {
 std::uint8_t normalize_cosmic_value(state::CosmicParameter parameter, std::int32_t input) {

@@ -1,14 +1,9 @@
-#include "ui/interface.hpp"
-#include "ui/fonts.hpp"
-
-#include <imgui.h>
-#include <imgui_internal.h> // Narrow F10 bridge; tested against our pinned release.
-#include <imgui_impl_sdl3.h>
-#include <imgui_impl_sdlrenderer3.h>
-#include <algorithm>
-#include <array>
-#include <stdexcept>
-#include <string>
+#include <SDL3/SDL.h>
+import std;
+import imgui_internal;
+import openciv.ui.imgui_backends;
+import openciv.ui.interface;
+import openciv.ui.fonts;
 
 namespace openciv::ui {
 namespace {
@@ -55,7 +50,7 @@ void world(SDL_Renderer* renderer, const Shell& shell) {
 
 Interface::Interface(SDL_Window* window, SDL_Renderer* renderer, bool native_menu)
     : window_(window), renderer_(renderer), native_menu_(native_menu) {
-    IMGUI_CHECKVERSION();
+    check_imgui_version();
     context_ = ImGui::CreateContext();
     if (!context_)
         throw std::runtime_error("Cannot create Dear ImGui context");

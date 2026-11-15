@@ -1,5 +1,5 @@
-#include "content_reader.hpp"
-#include <algorithm>
+import std;
+import openciv.formats.content_reader;
 
 namespace openciv::formats::content::detail {
 namespace {

@@ -1,15 +1,13 @@
-#include "base/arithmetic.hpp"
-#include "base/callback_ref.hpp"
-#include "base/cancellation.hpp"
-#include "base/random.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <array>
-#include <bit>
 #include <cfenv>
-#include <limits>
-#include <memory>
-#include <stdexcept>
-#include <type_traits>
+
+#include <cstdint>
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.base.arithmetic;
+import openciv.base.callback_ref;
+import openciv.base.cancellation;
+import openciv.base.random;
 
 using namespace openciv::base;
 namespace {

@@ -1,6 +1,6 @@
-#include "content_command.hpp"
-#include "platform/content_files.hpp"
-#include <iostream>
+import std;
+import openciv.tools.content_command;
+import openciv.platform.content_files;
 
 int run_content_command(std::span<const std::string> arguments) {
     namespace content = openciv::formats::content;

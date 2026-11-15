@@ -1,7 +1,6 @@
-#include "ai/goals.hpp"
-#include "base/arithmetic.hpp"
-#include <bit>
-#include <utility>
+import std;
+import openciv.ai.goals;
+import openciv.base.arithmetic;
 
 namespace openciv::ai {
 namespace {

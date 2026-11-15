@@ -1,9 +1,5 @@
-#include "base/hash.hpp"
-#include <algorithm>
-#include <array>
-#include <bit>
-#include <limits>
-#include <stdexcept>
+import std;
+import openciv.base.hash;
 
 namespace openciv::base {
 namespace {

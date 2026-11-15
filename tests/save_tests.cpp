@@ -1,6 +1,7 @@
-#include "formats/classic_save.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <numeric>
+
+import std;
+import openciv.formats.classic_save;
 
 using namespace openciv;
 using namespace openciv::formats;

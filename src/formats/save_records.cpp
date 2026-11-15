@@ -1,7 +1,6 @@
-#include "formats/record_fields.hpp"
-#include "formats/state_conversion.hpp"
-#include <concepts>
-#include <string_view>
+import std;
+import openciv.formats.record_fields;
+import openciv.formats.state_conversion;
 
 namespace openciv::formats {
 namespace {

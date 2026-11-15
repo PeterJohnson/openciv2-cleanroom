@@ -1,9 +1,9 @@
-#include "formats/random_checkpoint.hpp"
-#include "base/hash.hpp"
-#include "formats/content_reader.hpp"
-#include <bit>
-#include <charconv>
-#include <type_traits>
+#include <cstdint>
+
+import std;
+import openciv.formats.random_checkpoint;
+import openciv.base.hash;
+import openciv.formats.content_reader;
 
 namespace openciv::formats {
 namespace {

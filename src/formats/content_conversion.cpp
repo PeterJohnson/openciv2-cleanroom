@@ -1,12 +1,13 @@
-#include "formats/content_conversion.hpp"
-#include "formats/rules.hpp"
-#include "formats/city_preferences.hpp"
-#include "formats/city_names.hpp"
-#include "formats/classic_city_names.hpp"
-#include "formats/classic_city_preferences.hpp"
-#include "rules/city_preferences.hpp"
-#include "formats/classic_text.hpp"
-#include "base/hash.hpp"
+import std;
+import openciv.formats.content_conversion;
+import openciv.formats.rules;
+import openciv.formats.city_preferences;
+import openciv.formats.city_names;
+import openciv.formats.classic_city_names;
+import openciv.formats.classic_city_preferences;
+import openciv.rules.city_preferences;
+import openciv.formats.classic_text;
+import openciv.base.hash;
 
 namespace openciv::formats::content {
 namespace {

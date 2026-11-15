@@ -1,7 +1,7 @@
-#include "session/world_entry.hpp"
-#include "civilization/knowledge.hpp"
-#include "rules/rules_install.hpp"
-#include <utility>
+import std;
+import openciv.session.world_entry;
+import openciv.civilization.knowledge;
+import openciv.rules.rules_install;
 
 namespace openciv::session {
 void WorldEntryDependencies::validate(NewWorldChoice choice) const {

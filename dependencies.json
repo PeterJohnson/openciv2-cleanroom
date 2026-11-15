@@ -62,6 +62,11 @@
         "third_party/jart-json/double-conversion/strtod.cc": "923f15ce6bff38b9aaa1f3bced157c468978ac9443fbb781f0826daeae5cd4ee",
         "third_party/jart-json/double-conversion/LICENSE": "4af93c12062c58058378de2397dc1c92bbff9ddfb1d583a01c84127557ce97ca"
       }
+    },
+    "imgui_module": {
+      "version": "9cf21888dc3e139b9b371b7bfeda91148da718a1",
+      "url": "https://codeload.github.com/stripe2933/imgui-module/tar.gz/9cf21888dc3e139b9b371b7bfeda91148da718a1",
+      "sha256": "213d5a36edc03f310eeee06369bf323c8b5f5d221f5a282a7d3e9bbb68e0ebb5"
     }
   },
   "tools": {

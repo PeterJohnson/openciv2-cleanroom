@@ -1,5 +1,6 @@
-#include "formats/classic_records.hpp"
-#include "formats/state_conversion.hpp"
+import std;
+import openciv.formats.classic_records;
+import openciv.formats.state_conversion;
 
 namespace openciv::formats {
 namespace {

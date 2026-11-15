@@ -14,10 +14,10 @@ No reconstruction code or historical source-derived execution harness is used.
 
 | Interface | Implemented behavior |
 | --- | --- |
-| `network/stream.hpp` | Little-endian 12-byte headers, 64-byte sender rounding, exact supplied padding; incremental fragmented/coalesced receive; header-fragment-dependent oversize callbacks and discard of only the current receive; reset/close callback boundary; owned partial-send FIFO with live chunk capacity, immediate/drain retry differences and backlog thresholds; UDP header, u16 length narrowing and retained null-payload bytes. |
-| `network/messages.hpp` | Owned 16-byte message and 44-byte argument envelopes, sequence-preserving header initialization, directed/broadcast send sequencing, failure retention and live post-callback broadcast-size comparison. |
-| `network/sections.hpp` | Twenty-byte section prefixes, exact raw-image decoding/encoding, checksum width quirks, all 24 nominal section extents, registration, mirror allocation/invalidation, full/delta/join/map-header raw-image construction and specified old/new checksum ordering; sequential incoming block copies and checksum updates that preserve earlier blocks on failure. |
-| `network/compression.hpp` | Bounded byte/word run-length codecs; logical-input-only tail handling; safe word-run chunks through 32766; validated decoded sizes; owned image replacement on success; semantic statuses and full-state receipt-count codec selection. |
+| `network/stream.cppm` | Little-endian 12-byte headers, 64-byte sender rounding, exact supplied padding; incremental fragmented/coalesced receive; header-fragment-dependent oversize callbacks and discard of only the current receive; reset/close callback boundary; owned partial-send FIFO with live chunk capacity, immediate/drain retry differences and backlog thresholds; UDP header, u16 length narrowing and retained null-payload bytes. |
+| `network/messages.cppm` | Owned 16-byte message and 44-byte argument envelopes, sequence-preserving header initialization, directed/broadcast send sequencing, failure retention and live post-callback broadcast-size comparison. |
+| `network/sections.cppm` | Twenty-byte section prefixes, exact raw-image decoding/encoding, checksum width quirks, all 24 nominal section extents, registration, mirror allocation/invalidation, full/delta/join/map-header raw-image construction and specified old/new checksum ordering; sequential incoming block copies and checksum updates that preserve earlier blocks on failure. |
+| `network/compression.cppm` | Bounded byte/word run-length codecs; logical-input-only tail handling; safe word-run chunks through 32766; validated decoded sizes; owned image replacement on success; semantic statuses and full-state receipt-count codec selection. |
 
 Input admission is explicit. Frames require at least 12 bytes and a payload that
 fits the frame. The configurable 8 MiB receive backing limit is a safe profile,

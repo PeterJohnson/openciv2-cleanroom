@@ -1,12 +1,14 @@
-#include "service_callbacks.hpp"
-#include "formats/state_conversion.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.formats.state_conversion;
+import openciv.tests.service_fixture;
+import openciv.session.new_game;
+import openciv.formats.save_records;
+
 // F05 section 5, F02 retained state and F06 field encodings. Expectations and
 // child outcomes are independently authored, not original-program captures.
-#include "service_fixture.hpp"
-#include "session/new_game.hpp"
-#include "formats/save_records.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 using namespace openciv;
 using namespace openciv::session;

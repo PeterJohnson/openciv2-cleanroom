@@ -64,31 +64,31 @@ TARGET = {"game": "Civilization II Multiplayer Gold Edition", "version": "5.4.0f
           "originalImageSha256": "edd3cead9eb76eeb49cb29a23029e7717807b626a1c88addf4c3432a21120c5c"}
 EVENTS = {"root.enter": "enter", "root.return": "return", "root.exit": "snapshot"}
 ADAPTER_SOURCES = ("CMakeLists.txt", "dependencies.json", "cmake/Toolchain.cmake",
-                   "cmake/ConformanceIdentity.cmake", "src/base/arithmetic.hpp",
-                   "src/base/arithmetic.cpp", "src/base/random.hpp", "src/base/random.cpp",
-                   "src/base/random_source.hpp", "src/base/random_source.cpp",
-                   "src/base/choices.hpp", "src/base/choices.cpp",
-                   "src/base/hash.hpp", "src/base/hash.cpp",
-                   "src/state/identities.hpp", "src/state/identities.cpp",
-                   "src/state/records.hpp", "src/state/records.cpp",
-                   "src/world/geometry.hpp", "src/world/geometry.cpp",
-                   "src/world/map.hpp", "src/world/map.cpp",
-                   "tools/conformance_adapter.cpp", "tools/conformance_io.hpp",
-                   "tools/conformance_random.hpp", "tools/conformance_random.cpp",
-                   "tools/conformance_script.hpp", "tools/conformance_script.cpp",
-                   "tools/conformance_session.hpp", "tools/conformance_session.cpp",
-                   "src/base/session_ids.hpp", "src/query/fields.hpp",
-                   "src/query/live.hpp", "src/query/live.cpp",
-                   "src/query/live_records.hpp", "src/session/client.hpp",
-                   "src/session/command_types.hpp",
-                   "src/session/runtime.hpp", "src/session/runtime.cpp",
-                   "src/session/runtime_internal.hpp", "src/session/command_runtime.cpp",
-                   "src/session/commands.hpp", "src/session/commands.cpp")
+                   "cmake/ConformanceIdentity.cmake", "cmake/Modules.cmake", "src/base/arithmetic.cppm",
+                   "src/base/arithmetic.cpp", "src/base/random.cppm", "src/base/random.cpp",
+                   "src/base/random_source.cppm", "src/base/random_source.cpp",
+                   "src/base/choices.cppm", "src/base/choices.cpp",
+                   "src/base/hash.cppm", "src/base/hash.cpp",
+                   "src/state/identities.cppm", "src/state/identities.cpp",
+                   "src/state/records.cppm", "src/state/records.cpp",
+                   "src/world/geometry.cppm", "src/world/geometry.cpp",
+                   "src/world/map.cppm", "src/world/map.cpp",
+                   "tools/conformance_adapter.cpp", "tools/conformance_io.cppm",
+                   "tools/conformance_random.cppm", "tools/conformance_random.cpp",
+                   "tools/conformance_script.cppm", "tools/conformance_script.cpp",
+                   "tools/conformance_session.cppm", "tools/conformance_session.cpp",
+                   "src/base/session_ids.cppm", "src/query/fields.cppm",
+                   "src/query/live.cppm", "src/query/live.cpp",
+                   "src/query/live_records.cppm", "src/session/client.cppm",
+                   "src/session/command_types.cppm",
+                   "src/session/runtime.cppm", "src/session/runtime.cpp",
+                   "src/session/runtime_internal.cppm", "src/session/command_runtime.cpp",
+                   "src/session/commands.cppm", "src/session/commands.cpp")
 # Include every state declaration and constructor dependency of the fresh-world
 # boundary. Broader than a leaf adapter's inputs; never report a stale reset.
 ADAPTER_SOURCES = tuple(dict.fromkeys((*ADAPTER_SOURCES, *sorted(
     path.relative_to(ROOT).as_posix() for path in (ROOT / "src/state").iterdir()
-    if path.suffix in (".hpp", ".cpp")))))
+    if path.suffix in (".cppm", ".cpp")))))
 RUNNER_SOURCES = ("tools/run_conformance.py", "tools/check_conformance.py",
                   "tools/conformance_values.py", "tools/conformance_random.py",
                   "tools/conformance_script.py", "tools/conformance_session.py",

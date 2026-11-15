@@ -1,11 +1,8 @@
-#include "session/runtime_internal.hpp"
-#include "base/hash.hpp"
-#include "formats/content_reader.hpp"
-#include "formats/random_checkpoint.hpp"
-#include <algorithm>
-#include <charconv>
-#include <set>
-#include <type_traits>
+import std;
+import openciv.session.runtime_internal;
+import openciv.base.hash;
+import openciv.formats.content_reader;
+import openciv.formats.random_checkpoint;
 
 namespace openciv::session {
 namespace {

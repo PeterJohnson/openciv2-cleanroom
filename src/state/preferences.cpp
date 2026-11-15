@@ -1,4 +1,5 @@
-#include "state/preferences.hpp"
+import std;
+import openciv.state.preferences;
 
 namespace openciv::state {
 void default_ordinary_preferences(OrdinaryPreferences& p, const PreferenceDefaults& defaults) {

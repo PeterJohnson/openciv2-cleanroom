@@ -60,7 +60,7 @@ and Emscripten builds.
 
 ## Wrapping integer expressions
 
-`openciv::base::WrappingI32` in `base/arithmetic.hpp` owns a signed 32-bit value
+`openciv::base::WrappingI32` in `base/arithmetic.cppm` owns a signed 32-bit value
 and defaults to zero. Explicit construction from an integer reduces modulo
 2^32 and takes the signed view, including for wider inputs. Floating-point and
 boolean construction are rejected. Explicit casts to `std::int32_t` and
@@ -89,7 +89,7 @@ Its object representation is not a file or wire encoding.
 
 ## F02 identity and reservation boundary
 
-`state/identities.hpp` defines distinct civilization/unit/city slots and unit/city
+`state/identities.cppm` defines distinct civilization/unit/city slots and unit/city
 lifetime tokens. Zero tokens mean free records; any nonzero token is occupied,
 including values with the high bit set. `ProcessTokens` owns separate u32 counters
 starting at 1. Assignment returns the current counter and increments modulo 2^32,
@@ -131,7 +131,7 @@ creation/deletion policy, civilization/global records and session load remain op
 
 ## W01 geometry and map boundary
 
-`world/geometry.hpp` provides rectangular lookup, canonical row-order coordinates,
+`world/geometry.cppm` provides rectangular lookup, canonical row-order coordinates,
 single-correction horizontal/coarse wrapping, step and weighted distances,
 sign-based direction selection, half-open spans/rectangles and ordered neighbors.
 It accepts positive even signed-16 widths, positive signed-16 heights and an area
@@ -145,7 +145,7 @@ geometry call, independently of a stored file header. Neighborhood tables are
 explicit mutable inputs; order, duplicates, altered offsets and center positions
 are retained. None of these operations accepts a random context or clock service.
 
-`world/map.hpp` owns contiguous C++ tile records, remembered-improvement layers
+`world/map.cppm` owns contiguous C++ tile records, remembered-improvement layers
 1..7, four coarse grids and separately retained region summaries/seed/header
 topology. Codecs must encode logical fields explicitly. Civilization-0 memory
 and the shared mutable fallback are supplied separately; allocation/release

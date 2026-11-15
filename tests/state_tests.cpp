@@ -1,9 +1,9 @@
-#include "state/identities.hpp"
+#include <cstdint>
+
 #include <catch2/catch_test_macros.hpp>
-#include <array>
-#include <limits>
-#include <stdexcept>
-#include <type_traits>
+
+import std;
+import openciv.state.identities;
 
 using namespace openciv::state;
 

@@ -1,6 +1,6 @@
-#include "session/unit_operations.hpp"
-#include "base/arithmetic.hpp"
-#include <algorithm>
+import std;
+import openciv.session.unit_operations;
+import openciv.base.arithmetic;
 
 namespace openciv::session {
 UnitOperation::UnitOperation(SessionRuntime& runtime, UnitRequest request, bool notify,

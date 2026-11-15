@@ -1,8 +1,8 @@
-#include "base/arithmetic.hpp"
+#include <cstdint>
 #include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <stdexcept>
-#include <type_traits>
+
+import std;
+import openciv.base.arithmetic;
 
 using namespace openciv::base;
 namespace {

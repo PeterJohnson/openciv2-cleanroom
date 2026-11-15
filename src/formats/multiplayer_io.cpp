@@ -1,5 +1,6 @@
-#include "formats/multiplayer_io.hpp"
-#include "formats/state_conversion.hpp"
+import std;
+import openciv.formats.multiplayer_io;
+import openciv.formats.state_conversion;
 
 namespace openciv::formats {
 bool write_multiplayer_item(const WriteItem& write, const state::MultiplayerState& state,

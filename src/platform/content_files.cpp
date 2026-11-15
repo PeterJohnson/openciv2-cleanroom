@@ -1,5 +1,5 @@
-#include "content_files.hpp"
-#include <fstream>
+import std;
+import openciv.platform.content_files;
 
 namespace openciv::io {
 ContentDirectory::ContentDirectory(const std::filesystem::path& root)

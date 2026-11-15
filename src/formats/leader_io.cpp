@@ -1,6 +1,5 @@
-#include "leader_io.hpp"
-#include <algorithm>
-#include <bit>
+import std;
+import openciv.formats.leader_io;
 
 namespace openciv::formats {
 namespace {

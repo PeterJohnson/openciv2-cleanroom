@@ -1,10 +1,9 @@
+import std;
+import openciv.network.messages;
+import openciv.network.stream;
+
 // Read-only checker for independently captured N05 wire records. This is not a
 // socket backend, original-program driver, or N01 application admission check.
-#include "network/messages.hpp"
-#include "network/stream.hpp"
-#include <fstream>
-#include <iostream>
-#include <iterator>
 
 int main(int argc, char** argv) {
     using namespace openciv;

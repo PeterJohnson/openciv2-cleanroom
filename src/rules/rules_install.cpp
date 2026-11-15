@@ -1,5 +1,6 @@
-#include "rules_install.hpp"
-#include "rules/normalization.hpp"
+import std;
+import openciv.rules.rules_install;
+import openciv.rules.normalization;
 
 namespace openciv::rules {
 using namespace state;

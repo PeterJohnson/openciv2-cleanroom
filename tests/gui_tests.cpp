@@ -1,14 +1,12 @@
+#include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include "gui_fixture.hpp"
-#include "ui/interface.hpp"
+#include <imgui_te_engine.h>
 #include <imgui_te_exporters.h>
-#include <chrono>
-#include <cmath>
-#include <filesystem>
-#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <string>
+
+import std;
+import imgui_internal;
+import openciv.tests.gui_fixture;
+import openciv.ui.interface;
 
 namespace {
 void require(bool success, const char* operation) {

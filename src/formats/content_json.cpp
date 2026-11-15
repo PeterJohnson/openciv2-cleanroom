@@ -1,7 +1,5 @@
-#include "content_json.hpp"
-#include <algorithm>
-#include <charconv>
-#include <set>
+import std;
+import openciv.formats.content_json;
 
 namespace openciv::formats::content {
 namespace {

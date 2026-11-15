@@ -1,5 +1,5 @@
-#include "civilization/knowledge.hpp"
-#include <stdexcept>
+import std;
+import openciv.civilization.knowledge;
 
 namespace openciv::civilization {
 bool knows_advance(std::span<const state::Civilization> civilizations, std::int32_t civilization,

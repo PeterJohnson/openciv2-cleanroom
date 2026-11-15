@@ -1,7 +1,9 @@
-// Independently authored expectations from U01 sections 2–4, 9–11 and Appendix A.
-#include "unit/stacks.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <map>
+
+import std;
+import openciv.unit.stacks;
+
+// Independently authored expectations from U01 sections 2–4, 9–11 and Appendix A.
 
 using namespace openciv;
 using namespace openciv::unit;

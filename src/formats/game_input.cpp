@@ -1,6 +1,7 @@
-#include "formats/game_input.hpp"
-#include "formats/state_conversion.hpp"
-#include "formats/save_aux_io.hpp"
+import std;
+import openciv.formats.game_input;
+import openciv.formats.state_conversion;
+import openciv.formats.save_aux_io;
 
 namespace openciv::formats {
 world::MapInput map_input(RawMapFile map) {

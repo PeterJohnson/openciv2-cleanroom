@@ -1,6 +1,5 @@
-#include "platform/native_files.hpp"
-#include <fstream>
-#include <iterator>
+import std;
+import openciv.platform.native_files;
 
 namespace openciv::io {
 formats::Bytes read_file(const std::filesystem::path& path) {

@@ -1,4 +1,5 @@
-#include "session/classic_rules.hpp"
+import std;
+import openciv.session.classic_rules;
 
 namespace openciv::session {
 namespace classic = formats::classic;

@@ -1,7 +1,7 @@
-#include "session/premade_world.hpp"
-#include "session/runtime.hpp"
-#include "formats/game_input.hpp"
-#include <algorithm>
+import std;
+import openciv.session.premade_world;
+import openciv.session.runtime;
+import openciv.formats.game_input;
 
 namespace openciv::session {
 void PremadeWorldChoices::validate() const {

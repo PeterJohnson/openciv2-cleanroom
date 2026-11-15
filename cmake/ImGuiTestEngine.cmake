@@ -6,6 +6,7 @@ set(engine_dir "${imgui_test_engine_SOURCE_DIR}/imgui_test_engine")
 # instrumented copy, including the same dimming patch and SDL backends as the
 # game. Never link this library into openciv2 or oc2_frontend.
 get_target_property(imgui_sources oc2_imgui SOURCES)
+list(FILTER imgui_sources EXCLUDE REGEX "\\.cppm$")
 add_library(oc2_imgui_testing STATIC ${imgui_sources}
   ${engine_dir}/imgui_capture_tool.cpp
   ${engine_dir}/imgui_te_context.cpp
@@ -15,6 +16,7 @@ add_library(oc2_imgui_testing STATIC ${imgui_sources}
   ${engine_dir}/imgui_te_perftool.cpp
   ${engine_dir}/imgui_te_ui.cpp
   ${engine_dir}/imgui_te_utils.cpp)
+oc2_imgui_modules(oc2_imgui_testing)
 target_include_directories(oc2_imgui_testing SYSTEM PUBLIC
   ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends ${engine_dir})
 target_compile_definitions(oc2_imgui_testing PUBLIC

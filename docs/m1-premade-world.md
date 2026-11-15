@@ -1,7 +1,7 @@
 # F05 premade-world preparation
 
 Status: the accepted-file premade path now composes the real F06 raw-map reader
-with F05 section 3 preparation in `session/premade_world.hpp`. It returns Premade
+with F05 section 3 preparation in `session/premade_world.cppm`. It returns Premade
 Cylindrical or Premade Flat for the later setup wizard; the shared source type
 also includes Generated. The native chooser and outer menu remain separate
 interactions.

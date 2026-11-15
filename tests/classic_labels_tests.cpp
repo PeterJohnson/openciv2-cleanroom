@@ -1,11 +1,11 @@
-#include "service_callbacks.hpp"
-// Authored P04 section 2 / Appendix B and F03 section 2 expectations.
-#include "formats/classic_labels.hpp"
-#include "session/text_configuration.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <map>
-#include <new>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.formats.classic_labels;
+import openciv.session.text_configuration;
+
+// Authored P04 section 2 / Appendix B and F03 section 2 expectations.
 
 using namespace openciv;
 using namespace openciv::formats::classic;

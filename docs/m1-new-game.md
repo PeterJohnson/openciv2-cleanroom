@@ -8,7 +8,7 @@ map/setup data; it must not be used as a standalone boundary between games.
 The fresh-game equivalence tests supersede earlier second-game retention claims.
 
 Status: the section 5 initialization parent is implemented in
-`session/new_game.hpp`, with required civilization-creation and start-balancing
+`session/new_game.cppm`, with required civilization-creation and start-balancing
 children. This is not a complete setup wizard, generated world or playable
 starting position. The [M1 audit](m1-validation.md) retains those obligations.
 

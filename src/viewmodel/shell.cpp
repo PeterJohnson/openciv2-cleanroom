@@ -1,4 +1,5 @@
-#include "viewmodel/shell.hpp"
+import std;
+import openciv.viewmodel.shell;
 
 namespace openciv {
 

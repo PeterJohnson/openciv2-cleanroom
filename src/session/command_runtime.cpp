@@ -1,6 +1,5 @@
-#include "session/runtime_internal.hpp"
-#include <limits>
-#include <set>
+import std;
+import openciv.session.runtime_internal;
 
 namespace openciv::session {
 namespace {

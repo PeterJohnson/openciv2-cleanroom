@@ -1,8 +1,7 @@
-#include "classic_text.hpp"
-#include "error.hpp"
-#include <algorithm>
-#include <array>
-#include <cstdint>
+
+import std;
+import openciv.formats.classic_text;
+import openciv.formats.error;
 
 namespace openciv::formats {
 namespace {

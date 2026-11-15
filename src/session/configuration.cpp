@@ -1,7 +1,7 @@
-#include "session/configuration.hpp"
-#include "session/runtime.hpp"
-#include "rules/double_movement.hpp"
-#include <utility>
+import std;
+import openciv.session.configuration;
+import openciv.session.runtime;
+import openciv.rules.double_movement;
 
 namespace openciv::session {
 namespace {

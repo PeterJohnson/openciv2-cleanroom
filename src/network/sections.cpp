@@ -1,5 +1,5 @@
-#include "network/sections.hpp"
-#include <limits>
+import std;
+import openciv.network.sections;
 
 namespace openciv::network {
 namespace {

@@ -1,5 +1,5 @@
-#include "formats/classic_save.hpp"
-#include <limits>
+import std;
+import openciv.formats.classic_save;
 
 namespace openciv::formats {
 namespace {

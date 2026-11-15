@@ -1,7 +1,10 @@
-#include "platform/classic_files.hpp"
-#include <algorithm>
 #include <cstdio>
-#include <limits>
+#ifndef _WIN32
+#include <sys/types.h>
+#endif
+
+import std;
+import openciv.platform.classic_files;
 
 namespace openciv::io {
 namespace {

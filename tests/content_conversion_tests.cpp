@@ -1,16 +1,19 @@
-// M1-02/F03 section 8: authored classic input, native admission and retained effects.
-#include "rule_fixture.hpp"
-#include "classic_rule_fixture.hpp"
-#include "formats/content_conversion.hpp"
-#include "formats/city_preferences.hpp"
-#include "formats/classic_city_preferences.hpp"
-#include "formats/city_names.hpp"
-#include "formats/classic_city_names.hpp"
-#include "rules/rules_install.hpp"
-#include "formats/classic_rules.hpp"
-#include "rules/city_preferences.hpp"
-#include "base/hash.hpp"
 #include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.rule_fixture;
+import openciv.tests.classic_rule_fixture;
+import openciv.formats.content_conversion;
+import openciv.formats.city_preferences;
+import openciv.formats.classic_city_preferences;
+import openciv.formats.city_names;
+import openciv.formats.classic_city_names;
+import openciv.rules.rules_install;
+import openciv.formats.classic_rules;
+import openciv.rules.city_preferences;
+import openciv.base.hash;
+
+// M1-02/F03 section 8: authored classic input, native admission and retained effects.
 
 using namespace openciv;
 namespace content = formats::content;

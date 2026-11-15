@@ -1,10 +1,10 @@
+import std;
+import openciv.tools.conformance_session;
+import openciv.tools.conformance_io;
+import openciv.session.runtime;
+
 // X02 sections 3/6, F02 section 2 and X01 fresh-game isolation. Test-only
 // projection over the real runtime boundary. Expectations never enter here.
-#include "conformance_session.hpp"
-#include "conformance_io.hpp"
-#include "session/runtime.hpp"
-#include <bit>
-#include <optional>
 
 namespace openciv::conformance {
 namespace {

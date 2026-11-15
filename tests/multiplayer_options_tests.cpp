@@ -1,8 +1,12 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.configuration_fixture;
+
 // F03 section 8, N03 section 11 and F01 wrapping ticks. Independently authored
 // channel outcomes exercise the session operation, not original-peer transport.
-#include "configuration_fixture.hpp"
-#include <limits>
+
 using namespace openciv;
 using namespace openciv::session;
 namespace {

@@ -1,7 +1,11 @@
-// F06 production save boundary and V03 knowledge; authored semantic/codec vectors.
-#include "classic_save_fixture.hpp"
-#include "civilization/knowledge.hpp"
 #include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.classic_save_fixture;
+import openciv.civilization.knowledge;
+
+// F06 production save boundary and V03 knowledge; authored semantic/codec vectors.
+
 using namespace openciv;
 using namespace openciv::formats;
 using namespace openciv::session;

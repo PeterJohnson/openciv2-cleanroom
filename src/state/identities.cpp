@@ -1,5 +1,5 @@
-#include "state/identities.hpp"
-#include <stdexcept>
+import std;
+import openciv.state.identities;
 
 namespace openciv::state {
 UnitToken ProcessTokens::assign_unit() noexcept {

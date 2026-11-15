@@ -1,12 +1,14 @@
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.formats.city_names;
+import openciv.city.names;
+import openciv.formats.classic_city_names;
+import openciv.rules.rules_install;
+import openciv.tests.rule_fixture;
+
 // C01 default naming and data-format.md section 5 / Appendix B.
 // Authored catalog inputs and expected outcomes, not original-game captures.
-#include "formats/city_names.hpp"
-#include "city/names.hpp"
-#include "formats/classic_city_names.hpp"
-#include "rules/rules_install.hpp"
-#include "rule_fixture.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <map>
 
 using namespace openciv;
 namespace classic = formats::classic;

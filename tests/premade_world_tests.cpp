@@ -1,14 +1,16 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.classic_stream_fixture;
+import openciv.session.premade_world;
+import openciv.formats.game_input;
+import openciv.session.runtime;
+import openciv.session.world_setup;
+
 // F05 section 3, F06 section 4, F01 clock mapping, W01 retained map fields.
 // Independently authored binary inputs and specification expectations. No
 // original executable, capture payload or historical harness is a test input.
-#include "classic_stream_fixture.hpp"
-#include "session/premade_world.hpp"
-#include "formats/game_input.hpp"
-#include "session/runtime.hpp"
-#include "session/world_setup.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 using namespace openciv;
 using namespace openciv::session;

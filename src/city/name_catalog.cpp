@@ -1,5 +1,5 @@
-#include "name_catalog.hpp"
-#include <algorithm>
+import std;
+import openciv.city.name_catalog;
 
 namespace openciv::city {
 NameCatalog::NameCatalog(std::vector<state::CityNameLists> layers, base::NameComparison comparison)

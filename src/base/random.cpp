@@ -1,9 +1,6 @@
-#include "base/random.hpp"
-#include <algorithm>
-#include <limits>
-#include <stdexcept>
-#include <type_traits>
-#include <utility>
+#include <cstdint>
+import std;
+import openciv.base.random;
 
 namespace openciv::base {
 RandomCheckpoint::RandomCheckpoint(unsigned version, RandomDomain domain, std::string context,

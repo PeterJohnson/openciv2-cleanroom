@@ -1,7 +1,7 @@
-#include "classic_rules.hpp"
-#include "classic_text.hpp"
-#include "rules/normalization.hpp"
-#include <algorithm>
+import std;
+import openciv.formats.classic_rules;
+import openciv.formats.classic_text;
+import openciv.rules.normalization;
 
 namespace openciv::formats::classic {
 using namespace state;

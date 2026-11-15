@@ -1,10 +1,11 @@
+import std;
+import openciv.formats.classic_save;
+import openciv.formats.save_aux_io;
+import openciv.platform.native_files;
+
 // Native comparison driver for externally supplied original files.
 // Also checks isolated ordered auxiliary I/O against the stored record view.
 // No complete session load, original execution or semantic validity is claimed.
-#include "formats/classic_save.hpp"
-#include "formats/save_aux_io.hpp"
-#include "platform/native_files.hpp"
-#include <iostream>
 
 int main(int argc, char** argv) {
     try {

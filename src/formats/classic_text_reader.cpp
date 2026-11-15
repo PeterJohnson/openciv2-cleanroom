@@ -1,8 +1,7 @@
-#include "classic_text_reader.hpp"
-#include "base/arithmetic.hpp"
-#include "base/text_comparison.hpp"
-#include <algorithm>
-#include <utility>
+import std;
+import openciv.formats.classic_text_reader;
+import openciv.base.arithmetic;
+import openciv.base.text_comparison;
 
 namespace openciv::formats::classic {
 namespace {

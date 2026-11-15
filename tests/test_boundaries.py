@@ -50,6 +50,44 @@ class BoundaryTests(unittest.TestCase):
     def test_classic_parser_cannot_depend_on_native_content(self):
         self.check_forbidden_chain('formats/classic_rules.hpp', 'formats/content_json.hpp')
 
+    def test_module_imports_preserve_transitive_boundaries(self):
+        for origin, forbidden in (
+            ('viewmodel/map', 'state/game'),
+            ('rules/install', 'formats/rules'),
+            ('formats/city_names', 'formats/classic_text_reader'),
+            ('formats/classic_rules', 'formats/content_json'),
+        ):
+            with self.subTest(origin=origin), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for name, imports in ((origin, ['base/helper']), ('base/helper', [forbidden]),
+                                      (forbidden, [])):
+                    path = root / 'src' / (name + '.cppm')
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    text = 'export module openciv.' + name.replace('/', '.') + ';\n'
+                    text += ''.join('export import openciv.' + i.replace('/', '.') + ';\n'
+                                    for i in imports)
+                    path.write_text(text)
+                with self.assertRaisesRegex(ValueError, 'forbidden include/import'):
+                    check_boundaries.check(root)
+
+    def test_import_std_does_not_allow_portable_filesystem_access(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / 'src/base/example.cpp'
+            path.parent.mkdir(parents=True)
+            path.write_text('import std;\nstd::filesystem::path file;\n')
+            with self.assertRaisesRegex(ValueError, 'forbidden platform API'):
+                check_boundaries.check(root)
+
+    def test_unresolved_owned_import_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            path = root / 'src/base/example.cpp'
+            path.parent.mkdir(parents=True)
+            path.write_text('import openciv.missing;\n')
+            with self.assertRaisesRegex(ValueError, 'unresolved module import'):
+                check_boundaries.check(root)
+
     def check_forbidden_chain(self, origin, forbidden, *, aliased_root=False):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

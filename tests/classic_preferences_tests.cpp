@@ -1,13 +1,15 @@
-#include "service_callbacks.hpp"
-#include "formats/state_conversion.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.formats.state_conversion;
+import openciv.tests.classic_stream_fixture;
+import openciv.formats.preference_io;
+import openciv.session.classic_preferences;
+import openciv.session.runtime;
+
 // F03 section 8/Appendix A and F06 CIV2.DAT. Independently authored bytes and
 // service outcomes, not reconstruction harnesses or original-game captures.
-#include "classic_stream_fixture.hpp"
-#include "formats/preference_io.hpp"
-#include "session/classic_preferences.hpp"
-#include "session/runtime.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 using namespace openciv;
 using namespace openciv::formats;

@@ -1,13 +1,15 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.service_fixture;
+import openciv.session.player_setup;
+import openciv.formats.content_pack;
+import openciv.session.runtime;
+
 // F05 section 4 / Appendix A, F03 preferences and F01 sampling. Expectations
 // are authored from the contracts; original UI/file comparisons are identified
 // separately in docs/m1-original-player-setup-observations.md.
-#include "service_fixture.hpp"
-#include "session/player_setup.hpp"
-#include "formats/content_pack.hpp"
-#include "session/runtime.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <deque>
 
 using namespace openciv;
 using namespace openciv::session;

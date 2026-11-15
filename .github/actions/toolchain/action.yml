@@ -39,7 +39,7 @@ runs:
       with:
         version: ${{ steps.pins.outputs.llvm }}
         directory: ${{ runner.temp }}/oc2-llvm
-    - name: Install macOS LLVM for the module experiment
+    - name: Install macOS LLVM and libc++ modules
       if: runner.os == 'macOS' && inputs.web != 'true'
       shell: bash
       run: |

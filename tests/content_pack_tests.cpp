@@ -1,10 +1,12 @@
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.formats.builtin_gameplay_data;
+import openciv.formats.content_pack;
+import openciv.base.hash;
+
 // Authored manifest/selection expectations from data-format.md sections 2-3.
 // Minimal component envelopes deliberately test resolution, not body validation.
-#include "formats/content_pack.hpp"
-#include "base/hash.hpp"
-#include "builtin_gameplay_data.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 namespace {
 using namespace openciv;

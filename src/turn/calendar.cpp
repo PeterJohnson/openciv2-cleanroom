@@ -1,6 +1,6 @@
-#include "turn/calendar.hpp"
-#include "base/arithmetic.hpp"
-#include <algorithm>
+import std;
+import openciv.turn.calendar;
+import openciv.base.arithmetic;
 
 namespace openciv::turn {
 std::int32_t calendar_year(std::int32_t input_turn, const state::GlobalValues& globals,

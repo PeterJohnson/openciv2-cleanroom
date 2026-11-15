@@ -1,5 +1,5 @@
-#include "query/stored_validation.hpp"
-#include <map>
+import std;
+import openciv.query.stored_validation;
 
 namespace openciv::query::detail {
 namespace {

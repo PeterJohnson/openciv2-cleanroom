@@ -1,5 +1,5 @@
-#include "network/messages.hpp"
-#include <limits>
+import std;
+import openciv.network.messages;
 
 namespace openciv::network {
 namespace {

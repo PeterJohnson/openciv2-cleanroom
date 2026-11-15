@@ -1,8 +1,9 @@
-#include "formats/event_io.hpp"
-#include "classic_load_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <type_traits>
+
+import std;
+import openciv.formats.event_io;
+import openciv.tests.classic_load_fixture;
+
 using namespace openciv;
 using namespace openciv::formats;
 namespace {

@@ -10,6 +10,8 @@ BreakBeforeBraces: Attach
 PointerAlignment: Left
 DerivePointerAlignment: false
 NamespaceIndentation: None
+# Module linkage blocks should not indent the entire public interface.
+IndentExternBlock: NoIndent
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false

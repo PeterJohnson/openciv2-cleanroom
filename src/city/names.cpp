@@ -1,5 +1,5 @@
-#include "names.hpp"
-#include <algorithm>
+import std;
+import openciv.city.names;
 
 namespace openciv::city {
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,

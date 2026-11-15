@@ -1,6 +1,5 @@
-#include "unit/stack_operations.hpp"
-#include <bit>
-#include <utility>
+import std;
+import openciv.unit.stack_operations;
 
 namespace openciv::unit {
 namespace {

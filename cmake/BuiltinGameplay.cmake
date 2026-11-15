@@ -5,7 +5,7 @@ set(oc2_builtin_ledger "${PROJECT_SOURCE_DIR}/docs/content/gameplay-defaults.jso
 file(READ "${oc2_builtin_ledger}" ledger)
 file(READ "${oc2_builtin_root}/gameplay.json" manifest)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${oc2_builtin_ledger}")
-set(oc2_builtin_header "#pragma once\n#include <array>\n#include <string_view>\n#include <utility>\ninline constexpr std::array<std::pair<std::string_view, std::string_view>, 7> builtin_gameplay_files{{\n")
+set(oc2_builtin_header "inline constexpr std::array<std::pair<std::string_view, std::string_view>, 7> builtin_gameplay_files{{\n")
 foreach(name gameplay calendar spaceship governments difficulty combat scoring)
   set(path "${oc2_builtin_root}/${name}.json")
   if(name STREQUAL "gameplay")
@@ -22,6 +22,6 @@ foreach(name gameplay calendar spaceship governments difficulty combat scoring)
   string(APPEND oc2_builtin_header "{\"${name}.json\", R\"oc2builtin(${contents})oc2builtin\"},\n")
 endforeach()
 string(APPEND oc2_builtin_header "}};\n")
-file(CONFIGURE OUTPUT "${PROJECT_BINARY_DIR}/generated/builtin_gameplay_data.hpp"
+file(CONFIGURE OUTPUT "${PROJECT_BINARY_DIR}/generated/builtin_gameplay_data.inc"
   CONTENT "${oc2_builtin_header}" @ONLY NEWLINE_STYLE UNIX)
 target_include_directories(oc2_formats PRIVATE "${PROJECT_BINARY_DIR}/generated")

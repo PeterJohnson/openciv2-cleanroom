@@ -1,6 +1,6 @@
 # F05 new-world entry composition
 
-`session/world_entry.hpp` implements the section 2 parent after selection of
+`session/world_entry.cppm` implements the section 2 parent after selection of
 Random World, Premade World or Customize World. It first prepares a fresh game:
 replace old world/workspace state, clear mutable rules/text and file scratch,
 revoke previous clients, and retain only preferences/configuration/identity

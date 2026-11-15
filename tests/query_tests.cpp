@@ -1,8 +1,8 @@
-#include "query/output.hpp"
-#include "base/hash.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <limits>
-#include <sstream>
+
+import std;
+import openciv.query.output;
+import openciv.base.hash;
 
 using namespace openciv;
 using namespace openciv::formats;

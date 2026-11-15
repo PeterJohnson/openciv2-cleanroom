@@ -1,13 +1,14 @@
-#include "platform/native_files.hpp"
-#include "content_command.hpp"
-#include "query/output.hpp"
-#include "base/cancellation.hpp"
-#ifdef OC2_ENABLE_SQLITE_EXPORT
-#include "analysis/sqlite_export.hpp"
-#endif
-#include <cctype>
 #include <csignal>
-#include <iostream>
+
+import std;
+import openciv.platform.native_files;
+import openciv.tools.content_command;
+import openciv.query.output;
+import openciv.base.cancellation;
+
+#ifdef OC2_ENABLE_SQLITE_EXPORT
+import openciv.analysis.sqlite_export;
+#endif
 
 namespace {
 using namespace openciv;

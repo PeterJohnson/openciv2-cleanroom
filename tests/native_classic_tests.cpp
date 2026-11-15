@@ -1,22 +1,25 @@
-#include "service_callbacks.hpp"
-// Native F03/F06 adapter cases use independently authored files and rules.
-#include "classic_stream_fixture.hpp"
-#include "platform/classic_files.hpp"
-#include "platform/native_files.hpp"
-#include "session/classic_rules.hpp"
-#include "session/classic_preferences.hpp"
-#include "session/premade_world.hpp"
-#include "formats/preference_io.hpp"
-#include "session/runtime.hpp"
-#include "formats/classic_save.hpp"
-#include "classic_rule_fixture.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <chrono>
 #ifdef _WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
+
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.classic_stream_fixture;
+import openciv.platform.classic_files;
+import openciv.platform.native_files;
+import openciv.session.classic_rules;
+import openciv.session.classic_preferences;
+import openciv.session.premade_world;
+import openciv.formats.preference_io;
+import openciv.session.runtime;
+import openciv.formats.classic_save;
+import openciv.tests.classic_rule_fixture;
+
+// Native F03/F06 adapter cases use independently authored files and rules.
 
 using namespace openciv;
 using namespace openciv::formats;

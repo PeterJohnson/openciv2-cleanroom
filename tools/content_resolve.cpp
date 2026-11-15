@@ -1,11 +1,11 @@
-#include "content_command.hpp"
-#include "formats/content_pack.hpp"
-#include "formats/city_preferences.hpp"
-#include "formats/city_names.hpp"
-#include "formats/rules.hpp"
-#include "rules/rules_install.hpp"
-#include "platform/content_files.hpp"
-#include <iostream>
+import std;
+import openciv.tools.content_command;
+import openciv.formats.content_pack;
+import openciv.formats.city_preferences;
+import openciv.formats.city_names;
+import openciv.formats.rules;
+import openciv.rules.rules_install;
+import openciv.platform.content_files;
 
 namespace {
 namespace content = openciv::formats::content;

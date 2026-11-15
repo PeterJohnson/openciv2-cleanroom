@@ -1,11 +1,13 @@
-#include "formats/state_conversion.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.formats.state_conversion;
+import openciv.session.runtime;
+import openciv.formats.preference_io;
+import openciv.formats.save_records;
+
 // X01 fresh-game isolation, F02 section 2 and the admitted session contract.
 // These are implementation foundation tests, not original-game captures.
-#include "session/runtime.hpp"
-#include "formats/preference_io.hpp"
-#include "formats/save_records.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 using namespace openciv;
 using namespace openciv::session;

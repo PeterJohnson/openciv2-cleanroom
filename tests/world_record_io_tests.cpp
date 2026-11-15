@@ -1,8 +1,12 @@
-#include "formats/state_conversion.hpp"
-#include "state/game.hpp"
 #include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.formats.state_conversion;
+import openciv.state.game;
+import openciv.formats.save_records;
+
 using namespace openciv;
-#include "formats/save_records.hpp"
+
 namespace {
 struct Records {
     std::array<state::Civilization, 8> civs;

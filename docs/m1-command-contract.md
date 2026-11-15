@@ -158,9 +158,9 @@ and are not original-program observations.
 
 ## Post-M1 integration interfaces
 
-Player code includes `session/client.hpp` and `session/command_types.hpp`;
-`query/live_records.hpp` contains owned observations without exposing entity pools.
-The engine retains `runtime.hpp`, operation definitions and mutable contexts.
+Player code imports `session/client.cppm` and `session/command_types.cppm`;
+`query/live_records.cppm` contains owned observations without exposing entity pools.
+The engine retains `runtime.cppm`, operation definitions and mutable contexts.
 `tools/check_boundaries.py` follows transitive includes, and CMake rejects graphical
 or platform dependencies in portable targets.
 

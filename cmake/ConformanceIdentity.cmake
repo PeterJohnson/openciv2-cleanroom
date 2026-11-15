@@ -2,23 +2,23 @@ cmake_policy(VERSION 4.5)
 # Keep this compiled-input set in sync with run_conformance.ADAPTER_SOURCES.
 set(oc2_conformance_sources
   CMakeLists.txt dependencies.json cmake/Toolchain.cmake
-  cmake/ConformanceIdentity.cmake
-  src/base/arithmetic.hpp src/base/arithmetic.cpp
-  src/base/random.hpp src/base/random.cpp
-  src/base/random_source.hpp src/base/random_source.cpp
-  src/base/choices.hpp src/base/choices.cpp
-  src/base/hash.hpp src/base/hash.cpp
-  src/state/identities.hpp src/state/identities.cpp
-  src/state/records.hpp src/state/records.cpp
-  src/world/geometry.hpp src/world/geometry.cpp src/world/map.hpp src/world/map.cpp
-  tools/conformance_adapter.cpp tools/conformance_io.hpp
-  tools/conformance_random.hpp tools/conformance_random.cpp
-  tools/conformance_script.hpp tools/conformance_script.cpp
-  tools/conformance_session.hpp tools/conformance_session.cpp
-  src/base/session_ids.hpp src/query/fields.hpp src/query/live.hpp src/query/live.cpp
-  src/query/live_records.hpp src/session/client.hpp src/session/command_types.hpp
-  src/session/runtime.hpp src/session/runtime.cpp src/session/runtime_internal.hpp
-  src/session/command_runtime.cpp src/session/commands.hpp src/session/commands.cpp)
+  cmake/ConformanceIdentity.cmake cmake/Modules.cmake
+  src/base/arithmetic.cppm src/base/arithmetic.cpp
+  src/base/random.cppm src/base/random.cpp
+  src/base/random_source.cppm src/base/random_source.cpp
+  src/base/choices.cppm src/base/choices.cpp
+  src/base/hash.cppm src/base/hash.cpp
+  src/state/identities.cppm src/state/identities.cpp
+  src/state/records.cppm src/state/records.cpp
+  src/world/geometry.cppm src/world/geometry.cpp src/world/map.cppm src/world/map.cpp
+  tools/conformance_adapter.cpp tools/conformance_io.cppm
+  tools/conformance_random.cppm tools/conformance_random.cpp
+  tools/conformance_script.cppm tools/conformance_script.cpp
+  tools/conformance_session.cppm tools/conformance_session.cpp
+  src/base/session_ids.cppm src/query/fields.cppm src/query/live.cppm src/query/live.cpp
+  src/query/live_records.cppm src/session/client.cppm src/session/command_types.cppm
+  src/session/runtime.cppm src/session/runtime.cpp src/session/runtime_internal.cppm
+  src/session/command_runtime.cpp src/session/commands.cppm src/session/commands.cpp)
 
 if(CMAKE_SCRIPT_MODE_FILE)
   set(oc2_conformance_root "${OC2_SOURCE_DIR}")
@@ -26,7 +26,7 @@ else()
   set(oc2_conformance_root "${PROJECT_SOURCE_DIR}")
 endif()
 file(GLOB oc2_state_sources RELATIVE "${oc2_conformance_root}"
-  "${oc2_conformance_root}/src/state/*.hpp" "${oc2_conformance_root}/src/state/*.cpp")
+  "${oc2_conformance_root}/src/state/*.cppm" "${oc2_conformance_root}/src/state/*.cpp")
 list(SORT oc2_state_sources)
 list(APPEND oc2_conformance_sources ${oc2_state_sources})
 list(REMOVE_DUPLICATES oc2_conformance_sources)

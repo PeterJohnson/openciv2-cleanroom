@@ -1,8 +1,11 @@
-#include "service_callbacks.hpp"
-#include "session/classic_rules.hpp"
-#include "rules/rules_install.hpp"
-#include "classic_rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.session.classic_rules;
+import openciv.rules.rules_install;
+import openciv.tests.classic_rule_fixture;
+
 using namespace openciv;
 using namespace openciv::session;
 namespace classic = formats::classic;

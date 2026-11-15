@@ -1,4 +1,5 @@
-#include "state/scenario.hpp"
+import std;
+import openciv.state.scenario;
 
 namespace openciv::state {
 void reset_scenario_parameters(ScenarioParameters& parameters) {

@@ -1,5 +1,5 @@
-#include "session/classic_loaded_units.hpp"
-#include <utility>
+import std;
+import openciv.session.classic_loaded_units;
 
 namespace openciv::session {
 void cleanup_classic_loaded_units(state::GameState& world, const state::RuleDefinitions& rules,

@@ -32,7 +32,7 @@ original reports remain historical and are not relabeled as evidence for this bu
 
 ## Classic reader
 
-`formats/classic_text_reader.hpp` implements F03 §2/9 and the required retained
+`formats/classic_text_reader.cppm` implements F03 §2/9 and the required retained
 state in Appendix A:
 
 - Reads contain at most 254 text-mode bytes. The owned memory adapter translates
@@ -88,7 +88,7 @@ to `session::initialize_text`, independently of any label source.
 
 ## Classic rule tables
 
-`formats/classic_rules.hpp` implements F03 §§3–7/9 and the declared Appendix A
+`formats/classic_rules.cppm` implements F03 §§3–7/9 and the declared Appendix A
 reference vocabulary. `RuleLoader::load` requests COSMIC, CIVILIZE, IMPROVE,
 ENDWONDER, UNITS, TERRAIN, GOVERNMENTS, LEADERS, CARAVAN, ORDERS, DIFFICULTY and
 ATTITUDES in that order. The first three opens use an owned explicit filename;
@@ -207,7 +207,7 @@ choice meanings use named enums. Unknown legacy settings and padding are stored
 codec concerns. The logical startup inputs do not emulate the original native
 memory API or prescribe renderer allocations.
 
-`formats/preference_io.hpp` implements every field of F06's 72-byte ordinary
+`formats/preference_io.cppm` implements every field of F06's 72-byte ordinary
 item and 444-byte multiplayer item. Pure codecs decode owned transferred prefixes
 against explicit prior values. Successful stored items retain arbitrary scalar
 bits and unterminated fixed strings. Stored prefix helpers retain untransferred
@@ -217,7 +217,7 @@ zero-filled text tails and legacy settings, and rejects oversized or embedded-NU
 text without truncation. The second item starts at the actual cursor. Trailing
 file bytes are ignored.
 
-`session/classic_preferences.hpp` snapshots preferences and defaults, borrows a
+`session/classic_preferences.cppm` snapshots preferences and defaults, borrows a
 `FileStorage` provider, reads both items and closes before installing either result. Missing
 files default both records. Short items use their own fallback; close failure
 returns `PreferenceLoadStatus::input` with installed preferences unchanged.
@@ -272,7 +272,7 @@ Logs are retained locally in ignored
 
 ## Accepted in-game configuration
 
-`session/configuration.hpp` applies F03 section 8's accepted game, graphics and
+`session/configuration.cppm` applies F03 section 8's accepted game, graphics and
 message choices to live session state and persists them through the real
 two-item preference writer. Cancellation leaves both records alone. Game options
 clear their eleven controlled bits, apply sound/music choices and the specified
@@ -283,7 +283,7 @@ resource warning. Message choices replace the entire disabled-message word,
 clearing unknown bits. Required child exceptions retain preceding effects;
 reported preference-save failures do not roll back accepted options.
 
-`rules/double_movement.hpp` implements the actual F03 table transformation.
+`rules/double_movement.cppm` implements the actual F03 table transformation.
 It visits all 62 unit types and changes land movement, preserving byte wrapping
 when doubling and dividing the signed current byte with truncation toward zero
 when removing doubling.

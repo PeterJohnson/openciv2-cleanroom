@@ -1,8 +1,11 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.network.stream;
+
 // Specification-derived vectors: N05 sections 4-6. These are authored fake
 // streams/services, not original-program captures or a historical harness.
-#include "network/stream.hpp"
-#include <catch2/catch_test_macros.hpp>
 
 using namespace openciv;
 using namespace openciv::network;

@@ -1,10 +1,9 @@
-// Independently authored F03 section 2/9 and Appendix A inputs and expectations.
-#include "formats/classic_text_reader.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <algorithm>
-#include <limits>
-#include <map>
-#include <vector>
+
+import std;
+import openciv.formats.classic_text_reader;
+
+// Independently authored F03 section 2/9 and Appendix A inputs and expectations.
 
 using namespace openciv::formats::classic;
 namespace {

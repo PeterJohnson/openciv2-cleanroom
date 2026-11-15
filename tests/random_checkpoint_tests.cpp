@@ -1,9 +1,12 @@
-// M1-01's RNG component; this does not establish whole-session persistence.
-#include "formats/random_checkpoint.hpp"
-#include "formats/content_json.hpp"
+#include <cstdint>
+
 #include <catch2/catch_test_macros.hpp>
-#include <array>
-#include <functional>
+
+import std;
+import openciv.formats.random_checkpoint;
+import openciv.formats.content_json;
+
+// M1-01's RNG component; this does not establish whole-session persistence.
 
 using namespace openciv;
 using namespace openciv::base;

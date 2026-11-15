@@ -1,6 +1,9 @@
-# Foundational module experiment
+# Foundational module experiment (historical)
 
-This branch tests C++23 named modules after the header-based main baseline
+This records the experiment before the [full module migration](modules.md).
+The tested experiment was merged into main at `7bfdad7`.
+
+The experiment tested C++23 named modules after the header-based main baseline
 `2044ada` passed [all 12 CI jobs](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43685032207).
 It is a feasibility experiment, not a project-wide module migration.
 

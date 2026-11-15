@@ -1,7 +1,6 @@
-#include "classic_save_menu.hpp"
-#include "session/runtime.hpp"
-#include <cstdlib>
-#include <utility>
+import std;
+import openciv.session.classic_save_menu;
+import openciv.session.runtime;
 
 namespace openciv::session {
 namespace {

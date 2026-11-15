@@ -1,19 +1,19 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.formats.classic_rules;
+import openciv.formats.city_names;
+import openciv.formats.classic_city_preferences;
+import openciv.rules.city_preferences;
+import openciv.formats.save_records;
+import openciv.formats.leader_io;
+import openciv.rules.rules_install;
+import openciv.tests.rule_fixture;
+import openciv.tests.classic_rule_fixture;
+
 // Independently authored F03 sections 2-7,9/10 and Appendix A expectations.
 // These are specification tests, not captures from the original executable.
-#include "formats/classic_rules.hpp"
-#include "formats/city_names.hpp"
-#include "formats/classic_city_preferences.hpp"
-#include "rules/city_preferences.hpp"
-#include "formats/save_records.hpp"
-#include "formats/leader_io.hpp"
-#include "rules/rules_install.hpp"
-#include "rule_fixture.hpp"
-#include "classic_rule_fixture.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
-#include <tuple>
-#include <map>
 
 using namespace openciv;
 using namespace openciv::formats::classic;

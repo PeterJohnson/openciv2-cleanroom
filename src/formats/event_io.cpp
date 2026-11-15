@@ -1,6 +1,6 @@
-#include "formats/event_io.hpp"
-#include "formats/state_conversion.hpp"
-#include <limits>
+import std;
+import openciv.formats.event_io;
+import openciv.formats.state_conversion;
 
 namespace openciv::formats {
 namespace {

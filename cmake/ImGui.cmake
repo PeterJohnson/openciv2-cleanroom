@@ -1,6 +1,7 @@
 include(cmake/Dependencies.cmake)
 # Compile the upstream core and official SDL3 backends; no upstream CMake target.
 oc2_fetch_dependency(imgui)
+oc2_fetch_dependency(imgui_module)
 # 1.93.0's dimming code requires six indices, but AddRectFilled adds an AA
 # fringe at fractional framebuffer scales (e.g. Wayland at 1.65x). Generate a
 # narrowly patched translation unit: the multicolor rectangle always emits
@@ -35,3 +36,14 @@ endif()
 if(EMSCRIPTEN)
   target_compile_options(oc2_imgui PRIVATE -fexceptions)
 endif()
+
+# Upstream-recommended module bindings, pinned to the same ImGui API version.
+# Each instrumented/non-instrumented target owns matching BMIs.
+function(oc2_imgui_modules target)
+  target_sources(${target} PUBLIC FILE_SET CXX_MODULES
+    BASE_DIRS "${imgui_module_SOURCE_DIR}/generated" FILES
+    "${imgui_module_SOURCE_DIR}/generated/imgui.cppm"
+    "${imgui_module_SOURCE_DIR}/generated/imgui_internal.cppm"
+    "${imgui_module_SOURCE_DIR}/generated/backends/imgui_impl_sdl3.cppm")
+endfunction()
+oc2_imgui_modules(oc2_imgui)

@@ -1,4 +1,5 @@
-#include "state/civilization.hpp"
+import std;
+import openciv.state.civilization;
 
 namespace openciv::state {
 void rebuild_loaded_unit_census(std::span<Civilization, 8> civilizations,

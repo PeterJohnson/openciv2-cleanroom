@@ -1,5 +1,6 @@
-#include "formats/state_conversion.hpp"
-#include "formats/record_compatibility.hpp"
+import std;
+import openciv.formats.state_conversion;
+import openciv.formats.record_compatibility;
 
 namespace openciv::formats {
 state::Unit to_live(const StoredUnit& value) {

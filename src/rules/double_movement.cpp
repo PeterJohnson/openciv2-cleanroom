@@ -1,5 +1,5 @@
-#include "rules/double_movement.hpp"
-#include <bit>
+import std;
+import openciv.rules.double_movement;
 
 namespace openciv::rules {
 void apply_double_movement(state::GameMode mode, bool enabled, state::RuleState& rules,

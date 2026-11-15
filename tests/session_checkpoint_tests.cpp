@@ -1,13 +1,15 @@
-#include "formats/state_conversion.hpp"
-// M1-01: authored projection/operation codecs, not installed game commands.
-#include "session/runtime.hpp"
-#include "base/hash.hpp"
-#include "formats/content_json.hpp"
-#include "formats/preference_io.hpp"
+#include <cstdint>
+
 #include <catch2/catch_test_macros.hpp>
-#include <algorithm>
-#include <bit>
-#include <tuple>
+
+import std;
+import openciv.formats.state_conversion;
+import openciv.session.runtime;
+import openciv.base.hash;
+import openciv.formats.content_json;
+import openciv.formats.preference_io;
+
+// M1-01: authored projection/operation codecs, not installed game commands.
 
 using namespace openciv;
 using namespace openciv::session;

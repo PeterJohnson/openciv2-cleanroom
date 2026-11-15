@@ -1,8 +1,7 @@
-#include "session/game_install.hpp"
-#include "rules/rules_install.hpp"
-#include "base/arithmetic.hpp"
-#include <algorithm>
-#include <bit>
+import std;
+import openciv.session.game_install;
+import openciv.rules.rules_install;
+import openciv.base.arithmetic;
 
 namespace openciv::session {
 namespace {

@@ -1,10 +1,11 @@
-#include "formats/state_conversion.hpp"
-// Authored F06 sections 5, 6, 9 / F01 section 1 expectations, not original captures.
-#include "formats/multiplayer_io.hpp"
-#include "session/runtime.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <algorithm>
-#include <bit>
+
+import std;
+import openciv.formats.state_conversion;
+import openciv.formats.multiplayer_io;
+import openciv.session.runtime;
+
+// Authored F06 sections 5, 6, 9 / F01 section 1 expectations, not original captures.
 
 using namespace openciv;
 using namespace openciv::formats;

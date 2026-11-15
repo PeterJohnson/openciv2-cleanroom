@@ -1,9 +1,8 @@
-#include "analysis/sqlite_export.hpp"
-#include "base/cancellation.hpp"
 #include <sqlite3.h>
-#include <limits>
-#include <map>
-#include <memory>
+
+import std;
+import openciv.analysis.sqlite_export;
+import openciv.base.cancellation;
 
 namespace openciv::analysis {
 namespace {

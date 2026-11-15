@@ -895,7 +895,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.hpp"
+      "implementation": "src/base/random.cppm"
     },
     {
       "id": "F01.primaryModulo",
@@ -953,7 +953,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.hpp"
+      "implementation": "src/base/random.cppm"
     },
     {
       "id": "F01.secondaryUnit",
@@ -1010,7 +1010,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.hpp"
+      "implementation": "src/base/random.cppm"
     },
     {
       "id": "F01.secondaryRange",
@@ -1069,7 +1069,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.hpp"
+      "implementation": "src/base/random.cppm"
     },
     {
       "id": "F02.cityCalculationEntry",
@@ -1209,7 +1209,7 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": "src/state/identities.hpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "F02.nextCityToken",
@@ -1221,7 +1221,7 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": "src/state/identities.hpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "F02.unitEnd",
@@ -1233,7 +1233,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Exclusive unit scan bound, 0..2048; reservation increments only on successful extension.",
-      "implementation": "src/state/identities.hpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "F02.unitTokenScan",
@@ -1247,7 +1247,7 @@
       ],
       "initialValue": null,
       "publication": "Read-only token-field view for reservation. All and only entry-scanned slots are supplied. No other unit fields or slots are read or written. Extension does not initialize the new slot.",
-      "implementation": "src/state/identities.hpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "F02.militaryCounts",
@@ -1259,7 +1259,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Recorded signed cyclic military counts, not a recomputed census. Reservation preserves all eight values.",
-      "implementation": "src/state/identities.hpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "F02.effectiveHumanSet",
@@ -1271,7 +1271,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Effective human set at entry, separate from controller assignments or the persistent roster. Reservation preserves it.",
-      "implementation": "src/state/identities.hpp"
+      "implementation": "src/state/identities.cppm"
     },
     {
       "id": "W01.width",
@@ -1283,7 +1283,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
-      "implementation": "src/world/geometry.hpp"
+      "implementation": "src/world/geometry.cppm"
     },
     {
       "id": "W01.height",
@@ -1295,7 +1295,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
-      "implementation": "src/world/geometry.hpp"
+      "implementation": "src/world/geometry.cppm"
     },
     {
       "id": "W01.flat",
@@ -1307,7 +1307,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
-      "implementation": "src/world/geometry.hpp"
+      "implementation": "src/world/geometry.cppm"
     },
     {
       "id": "F01.randomContexts",
@@ -1319,7 +1319,7 @@
       "crossReferences": [],
       "initialValue": "Explicit fixture context; no implicit reseed or policy fallback. Omitted in controlled-choice mode.",
       "publication": "Snapshot only after actual sampling; adapter reconstructs and verifies the final engine against its declared origin and position. Harness trace is separate.",
-      "implementation": "src/base/random.hpp"
+      "implementation": "src/base/random.cppm"
     },
     {
       "id": "F02.workspaceCity",
@@ -1333,7 +1333,7 @@
         "F02.happyCount",
         "F02.unhappyCount"
       ],
-      "implementation": "src/state/records.hpp"
+      "implementation": "src/state/records.cppm"
     },
     {
       "id": "F02.happyCount",
@@ -1347,7 +1347,7 @@
         "F02.workspaceCity",
         "F02.unhappyCount"
       ],
-      "implementation": "src/state/records.hpp"
+      "implementation": "src/state/records.cppm"
     },
     {
       "id": "F02.unhappyCount",
@@ -1361,7 +1361,7 @@
         "F02.workspaceCity",
         "F02.happyCount"
       ],
-      "implementation": "src/state/records.hpp"
+      "implementation": "src/state/records.cppm"
     },
     {
       "id": "F02.cityEnd",

@@ -1,5 +1,5 @@
-#include "network/stream.hpp"
-#include <limits>
+import std;
+import openciv.network.stream;
 
 namespace openciv::network {
 namespace {

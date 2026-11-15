@@ -1,10 +1,12 @@
-// F03 section 8 and data-format.md section 5 / Appendix B; authored inputs.
-#include "rule_fixture.hpp"
-#include "formats/city_preferences.hpp"
-#include "formats/classic_city_preferences.hpp"
-#include "rules/city_preferences.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <algorithm>
+
+import std;
+import openciv.tests.rule_fixture;
+import openciv.formats.city_preferences;
+import openciv.formats.classic_city_preferences;
+import openciv.rules.city_preferences;
+
+// F03 section 8 and data-format.md section 5 / Appendix B; authored inputs.
 
 using namespace openciv;
 namespace classic = formats::classic;

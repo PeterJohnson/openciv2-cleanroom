@@ -1,6 +1,5 @@
-#include "world/map_input.hpp"
-#include <stdexcept>
-#include <algorithm>
+import std;
+import openciv.world.map_input;
 
 namespace openciv::world {
 void validate_map_input(const MapInput& input, bool embedded) {

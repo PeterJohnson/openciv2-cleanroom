@@ -1,16 +1,18 @@
-#include "service_callbacks.hpp"
-#include "formats/state_conversion.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.formats.state_conversion;
+import openciv.tests.classic_stream_fixture;
+import openciv.session.classic_load_dialog;
+import openciv.session.runtime;
+import openciv.session.classic_preferences;
+import openciv.formats.preference_io;
+import openciv.formats.classic_save;
+
 // F06 section 11 accepted-file dialog; S02 sections 2/11; U01 sections 3/6.
 // Authored file/service inputs and specification expectations, not original
 // captures. S02 parsing/execution and presentation are supplied child effects.
-#include "classic_stream_fixture.hpp"
-#include "session/classic_load_dialog.hpp"
-#include "session/runtime.hpp"
-#include "session/classic_preferences.hpp"
-#include "formats/preference_io.hpp"
-#include "formats/classic_save.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 using namespace openciv;
 using namespace openciv::session;

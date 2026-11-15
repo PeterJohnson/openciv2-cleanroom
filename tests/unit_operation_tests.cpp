@@ -1,7 +1,9 @@
-#include "service_callbacks.hpp"
-#include "session/unit_operations.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <deque>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.session.unit_operations;
+
 using namespace openciv;
 using namespace openciv::session;
 namespace {

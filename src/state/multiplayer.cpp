@@ -1,4 +1,5 @@
-#include "state/multiplayer.hpp"
+import std;
+import openciv.state.multiplayer;
 
 namespace openciv::state {
 void encode_passwords(std::array<std::uint8_t, 256>& bytes) noexcept {

@@ -1,7 +1,10 @@
-// F02 logical text ownership; no original allocation trace requirements.
-#include "state/text_pool.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <stdexcept>
+
+import std;
+import openciv.state.text_pool;
+
+// F02 logical text ownership; no original allocation trace requirements.
+
 using openciv::state::TextPool;
 TEST_CASE("Text references resolve owned values across appends", "[text-pool]") {
     TextPool pool;

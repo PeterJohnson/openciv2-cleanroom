@@ -1,5 +1,6 @@
-#include "content_pack.hpp"
-#include "builtin_gameplay_data.hpp"
+import std;
+import openciv.formats.builtin_gameplay_data;
+import openciv.formats.content_pack;
 
 namespace openciv::formats::content {
 std::shared_ptr<const GameplayBundle> builtin_gameplay() {

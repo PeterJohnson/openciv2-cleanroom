@@ -1,4 +1,5 @@
-#include "formats/classic_labels.hpp"
+import std;
+import openciv.formats.classic_labels;
 
 namespace openciv::formats::classic {
 state::LabelCatalog load_labels(TextReader& reader, TextDirectories& directories,

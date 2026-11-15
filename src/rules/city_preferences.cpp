@@ -1,6 +1,5 @@
-#include "city_preferences.hpp"
-#include <algorithm>
-#include <stdexcept>
+import std;
+import openciv.rules.city_preferences;
 
 namespace openciv::rules {
 void apply_city_preferences(const state::CityPreferenceUpdate& update,

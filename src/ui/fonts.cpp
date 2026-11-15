@@ -1,9 +1,7 @@
-#include "ui/fonts.hpp"
-#include "ui/font_data.hpp"
-#include <imgui.h>
-#include <cstdio>
-#include <stdexcept>
-#include <string_view>
+import std;
+import imgui;
+import openciv.ui.fonts;
+import openciv.ui.font_data;
 
 namespace openciv::ui {
 

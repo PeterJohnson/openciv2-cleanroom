@@ -1,6 +1,5 @@
-#include "network/compression.hpp"
-#include <limits>
-#include <new>
+import std;
+import openciv.network.compression;
 
 namespace openciv::network {
 namespace {

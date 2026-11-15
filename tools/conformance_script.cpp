@@ -1,10 +1,10 @@
+import std;
+import openciv.tools.conformance_script;
+import openciv.tools.conformance_io;
+import openciv.state.records;
+
 // F02 §9 shared-workspace dispatch, with C03's pipeline explicitly supplied.
 // X02 §4 scripts drive only this genuine child boundary and registered reentry.
-#include "conformance_script.hpp"
-#include "conformance_io.hpp"
-#include "state/records.hpp"
-#include <set>
-#include <vector>
 
 namespace openciv::conformance {
 namespace {

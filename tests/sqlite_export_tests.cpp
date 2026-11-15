@@ -1,7 +1,9 @@
-#include "analysis/sqlite_export.hpp"
-#include "base/cancellation.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers.hpp>
+
+import std;
+import openciv.analysis.sqlite_export;
+import openciv.base.cancellation;
 
 using namespace openciv;
 TEST_CASE("SQLite export cancellation and failure discard analysis without changing source",

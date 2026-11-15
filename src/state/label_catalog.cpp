@@ -1,5 +1,5 @@
-#include "state/label_catalog.hpp"
-#include <map>
+import std;
+import openciv.state.label_catalog;
 
 namespace openciv::state {
 void install_labels(const LabelCatalog& input, TextPool& pool, Labels& labels) {

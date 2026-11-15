@@ -1,8 +1,8 @@
-#include "content_command.hpp"
-#include "formats/content_conversion.hpp"
-#include "platform/content_files.hpp"
-#include "platform/native_files.hpp"
-#include <iostream>
+import std;
+import openciv.tools.content_command;
+import openciv.formats.content_conversion;
+import openciv.platform.content_files;
+import openciv.platform.native_files;
 
 namespace {
 namespace content = openciv::formats::content;

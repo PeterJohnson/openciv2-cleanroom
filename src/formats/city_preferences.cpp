@@ -1,6 +1,6 @@
-#include "city_preferences.hpp"
-#include "content_reader.hpp"
-#include <algorithm>
+import std;
+import openciv.formats.city_preferences;
+import openciv.formats.content_reader;
 
 namespace openciv::formats::content {
 std::shared_ptr<const CityPreferenceContent>

@@ -1,9 +1,13 @@
-// F02/F03 logical text and F06 storage separation.
-#include "rules/rules_install.hpp"
-#include "formats/leader_io.hpp"
-#include "session/game_install.hpp"
-#include "rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.rules.rules_install;
+import openciv.formats.leader_io;
+import openciv.session.game_install;
+import openciv.tests.rule_fixture;
+
+// F02/F03 logical text and F06 storage separation.
+
 using namespace openciv;
 using namespace openciv::formats::content;
 using openciv::rules::RuleInstaller;

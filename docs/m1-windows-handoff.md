@@ -9,7 +9,7 @@ The remainder of this handoff preserves the earlier stopping-point evidence.
 
 ## Implemented record boundary
 
-`state/records.hpp` defines complete logical unit/city payloads and heap-backed
+`state/records.cppm` defines complete logical unit/city payloads and heap-backed
 stable pools: 2048 unit slots and 256 backed city slots, with the ordinary city
 creation limit separately named as 255. Scan bounds, holes, retained payload,
 slot references and lifetime tokens remain independent. Deletion finalization

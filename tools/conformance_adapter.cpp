@@ -1,19 +1,15 @@
+#include "conformance_identity.hpp"
+
+import std;
+import openciv.base.arithmetic;
+import openciv.tools.conformance_random;
+import openciv.tools.conformance_script;
+import openciv.tools.conformance_session;
+import openciv.state.identities;
+import openciv.world.geometry;
+
 // Test-only X02 adapter for registered F01/F02/W01 foundation operations. No fixture
 // expectations enter this process. Python owns fixture validation and comparison.
-#include "base/arithmetic.hpp"
-#include "conformance_identity.hpp"
-#include "conformance_random.hpp"
-#include "conformance_script.hpp"
-#include "conformance_session.hpp"
-#include "state/identities.hpp"
-#include "world/geometry.hpp"
-#include <array>
-#include <charconv>
-#include <functional>
-#include <iostream>
-#include <stdexcept>
-#include <string>
-#include <string_view>
 
 namespace {
 template <class T> T number(std::string_view input) {

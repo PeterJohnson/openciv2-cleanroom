@@ -1,4 +1,6 @@
 import std;
+
+import std;
 import openciv.base.arithmetic;
 
 // Standard-library module integration, including the F01 §1 arithmetic type.

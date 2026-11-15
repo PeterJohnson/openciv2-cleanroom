@@ -1,7 +1,7 @@
-#include "city_names.hpp"
-#include "classic_text.hpp"
-#include "content_reader.hpp"
-#include <algorithm>
+import std;
+import openciv.formats.city_names;
+import openciv.formats.classic_text;
+import openciv.formats.content_reader;
 
 namespace openciv::formats::content {
 namespace {

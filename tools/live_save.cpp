@@ -1,18 +1,17 @@
+#include <json.h>
+
+import std;
+import openciv.base.hash;
+import openciv.formats.classic_save;
+import openciv.platform.classic_files;
+import openciv.platform.native_files;
+import openciv.session.classic_rules;
+import openciv.session.classic_save;
+import openciv.session.runtime;
+
 // Independently authored F03/F06 interoperability driver. Real native services,
 // explicit headless resource callbacks and a declared optional fixture edit.
 // It does not perform post-load admission, gameplay or original execution.
-#include "base/hash.hpp"
-#include "formats/classic_save.hpp"
-#include "platform/classic_files.hpp"
-#include "platform/native_files.hpp"
-#include "session/classic_rules.hpp"
-#include "session/classic_save.hpp"
-#include "session/runtime.hpp"
-#include <algorithm>
-#include <charconv>
-#include <iostream>
-#include <map>
-#include <json.h>
 
 namespace {
 using namespace openciv;

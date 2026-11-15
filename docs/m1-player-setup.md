@@ -1,6 +1,6 @@
 # F05 player and rules setup
 
-`session/player_setup.hpp` implements the section 4 wizard through accepted
+`session/player_setup.cppm` implements the section 4 wizard through accepted
 city style and opponent overrides. The engine owns ordered mutations and retry
 destinations; injected services supply modal responses and the P03/P04 portrait
 child. The caller supplies the selected validated calendar and gameplay random

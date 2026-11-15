@@ -1,10 +1,8 @@
+import std;
+import openciv.formats.classic_io;
+
 // Native comparison driver for externally supplied original maps. This is not
 // the inspection CLI or evidence that the original program opened an export.
-#include "formats/classic_io.hpp"
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <iterator>
 
 int main(int argc, char** argv) {
     try {

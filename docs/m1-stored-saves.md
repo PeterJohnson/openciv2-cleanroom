@@ -9,12 +9,12 @@ admission, browser persistence and resumed gameplay remain open.
 
 ## Record and file boundary
 
-`state/civilization.hpp` supplies F02 §4 logical civilization/global values,
+`state/civilization.cppm` supplies F02 §4 logical civilization/global values,
 directed relationships, retained censuses, goals, names and leaders. Their
 construction defaults do not claim original initialization behavior. They have
 no packed host layout, database dependency or implicit repair operations.
 
-`formats/save_records.hpp` and `classic_save.hpp` implement F06 §§2–4,8:
+`formats/save_records.cppm` and `classic_save.cppm` implement F06 §§2–4,8:
 
 - All current fixed records, including global/civilization/name/leader records,
   window layout, map views, scenario parameters, elimination history,
@@ -140,7 +140,7 @@ traces are replaced by explicit admission and installation checks.
 
 ## Composed live save
 
-`session/classic_save.hpp` implements F06's production save boundary. It prepares
+`session/classic_save.cppm` implements F06's production save boundary. It prepares
 an owned byte image before opening output. Accepted preparation updates the
 saved-current civilization and scenario knowledge/flags/names. Temporary
 hotseat masks, selected-player and resume values stay in the export context.
@@ -177,7 +177,7 @@ exercise real labels/rules files and load-edit-save-reload on disk.
 
 ## Save-menu caller and file-choice boundary
 
-`session/classic_file_choice.hpp` exchanges semantic file types, a suggested path,
+`session/classic_file_choice.cppm` exchanges semantic file types, a suggested path,
 title, extension and open/save requirements. Results distinguish accepted paths,
 cancellation and failure with an owned diagnostic. Only accepted valid paths are
 published. Native flags, handles, NUL-separated filters, capacities, return-byte
@@ -185,7 +185,7 @@ conventions and extended-error queries are absent from the portable API.
 `FileChooser` is an owned virtual service with nonblocking begin/poll/cancel
 operations. M2 supplies ImGui and browser adapters for its semantic requests.
 
-`session/classic_save_menu.hpp` invokes the real writer only after acceptance.
+`session/classic_save_menu.cppm` invokes the real writer only after acceptance.
 It supplies a familiar ruler/year suggestion and scenario/email notices as a UI
 choice, not a compatibility gate. Cancellation exits in every mode without saving
 or publishing draft paths; N04 owns any mandatory email-turn save flow. Active

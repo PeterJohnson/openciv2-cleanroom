@@ -1,10 +1,10 @@
+import std;
+import openciv.formats.rules;
+import openciv.formats.classic_text;
+import openciv.formats.content_reader;
+import openciv.rules.normalization;
+
 // data-format.md sections 2,4 and appendices A/B; F03 sections 3-7.
-#include "rules.hpp"
-#include "classic_text.hpp"
-#include "content_reader.hpp"
-#include "rules/normalization.hpp"
-#include <algorithm>
-#include <set>
 
 namespace openciv::formats::content {
 namespace {

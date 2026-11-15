@@ -1,17 +1,19 @@
-#include "service_callbacks.hpp"
+#include <catch2/catch_test_macros.hpp>
+
+import std;
+import openciv.tests.service_callbacks;
+import openciv.tests.service_fixture;
+import openciv.tests.classic_stream_fixture;
+import openciv.session.world_entry;
+import openciv.formats.classic_rules;
+import openciv.rules.rules_install;
+import openciv.formats.content_pack;
+import openciv.formats.preference_io;
+import openciv.tests.classic_rule_fixture;
+
 // F05 section 2 composes F03/F06, F05 sections 3-5 and V03 section 2.
 // Authored rules, binary maps and controlled choices; W02, V01, balancing,
 // acceleration and presentation children are explicit supplied test services.
-#include "service_fixture.hpp"
-#include "classic_stream_fixture.hpp"
-#include "session/world_entry.hpp"
-#include "formats/classic_rules.hpp"
-#include "rules/rules_install.hpp"
-#include "formats/content_pack.hpp"
-#include "formats/preference_io.hpp"
-#include "classic_rule_fixture.hpp"
-#include <catch2/catch_test_macros.hpp>
-#include <algorithm>
 
 using namespace openciv;
 using namespace openciv::session;

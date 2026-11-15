@@ -1,5 +1,7 @@
-#include "gui_fixture.hpp"
 #include <imgui_te_context.h>
+
+import std;
+import openciv.tests.gui_fixture;
 
 using namespace openciv;
 

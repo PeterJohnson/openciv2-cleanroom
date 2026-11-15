@@ -1,7 +1,6 @@
-#include "world/geometry.hpp"
-#include "base/arithmetic.hpp"
-#include <algorithm>
-#include <stdexcept>
+import std;
+import openciv.world.geometry;
+import openciv.base.arithmetic;
 
 namespace openciv::world {
 namespace {

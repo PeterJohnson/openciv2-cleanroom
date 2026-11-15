@@ -1,7 +1,3 @@
-#include "platform/native_files.hpp"
-#include "base/cancellation.hpp"
-#include <atomic>
-#include <system_error>
 #ifdef _WIN32
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
@@ -11,6 +7,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #endif
+
+import std;
+import openciv.platform.native_files;
+import openciv.base.cancellation;
 
 namespace openciv::io {
 namespace {
