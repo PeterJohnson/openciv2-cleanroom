@@ -28,12 +28,25 @@ the experiment uses Homebrew LLVM 20.1.8 on macOS, including Objective-C++, with
 the Xcode 16.4 SDK. Strict compiler version verification remains enabled in CI.
 This macOS toolchain change is confined to the experiment branch.
 
-See [CMake's module support matrix](https://cmake.org/cmake/help/v4.5/manual/cmake-cxxmodules.7.html).
+See [CMake's module support matrix](https://cmake.org/cmake/help/latest/manual/cmake-cxxmodules.7.html).
 Named modules and `import std` have different toolchain requirements. Standard
-library module testing will follow only after the named module passes on every
-platform; no unsupported platform is silently skipped.
+library module testing followed the named-module success on every platform;
+no unsupported platform is silently skipped.
 
 ## Evidence
 
-Local Linux and Node/WebAssembly module tests pass. Hosted platform results are
-pending the branch's CI run.
+Local validation passed 537 native CTests, 123 Python tests, all 57 conformance
+fixtures, and the Node/WebAssembly module test. All 12 jobs, including the
+named-module test on all four platforms, passed in
+[CI at `8dfb62e`](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43685834331).
+
+`OC2_TEST_IMPORT_STD=ON` adds a consumer that imports `std` and the foundation
+module, uses standard containers/algorithms/strings, and catches an exception
+from the header-based library. A separate **Standard library module probe**
+workflow runs this on all four platforms with the same compiler/stdlib defaults.
+Its failures are separate from the named-module build matrix. The option defaults
+OFF; unsupported toolchains fail the probe instead of skipping it.
+
+The local `import std` consumer passes with Clang 20.1.8 and libstdc++ 16.
+The default emsdk 4.0.23 configuration fails with an empty
+`CMAKE_CXX_STDLIB_MODULES_JSON`. Hosted probe results are pending.

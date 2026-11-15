@@ -1,0 +1,67 @@
+name: Standard library module probe
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+
+jobs:
+  import-std:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: linux
+          - os: windows-2022
+            platform: windows
+          - os: macos-15
+            platform: macos
+          - os: ubuntu-24.04
+            platform: web
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/toolchain
+        id: pins
+        with:
+          web: ${{ matrix.platform == 'web' && 'true' || 'false' }}
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+        with:
+          arch: x64
+      - uses: mymindstorm/setup-emsdk@v14
+        if: matrix.platform == 'web'
+        with:
+          version: ${{ steps.pins.outputs.emsdk }}
+          actions-cache-folder: emsdk-cache
+      - name: Configure standard library module probe
+        shell: bash
+        run: |
+          args=(-G Ninja -DCMAKE_BUILD_TYPE=Debug -DOC2_VERIFY_TOOLCHAIN=ON
+            -DOC2_FETCH_DEPENDENCIES=ON -DOC2_BUILD_GUI=OFF -DOC2_BUILD_TOOLS=OFF
+            -DOC2_TEST_IMPORT_STD=ON)
+          if [ '${{ matrix.platform }}' = web ]; then
+            emcmake cmake -S . -B build/import-std "${args[@]}"
+          else
+            if [ "$RUNNER_OS" = Windows ]; then
+              args+=("-DCMAKE_C_COMPILER=$LLVM_PATH/bin/clang-cl.exe" "-DCMAKE_CXX_COMPILER=$LLVM_PATH/bin/clang-cl.exe")
+            elif [ "$RUNNER_OS" = macOS ]; then
+              args+=("-DCMAKE_C_COMPILER=$LLVM_PATH/bin/clang" "-DCMAKE_CXX_COMPILER=$LLVM_PATH/bin/clang++"
+                "-DCMAKE_OSX_SYSROOT=$(xcrun --show-sdk-path)")
+            else
+              args+=(-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++)
+            fi
+            cmake -S . -B build/import-std "${args[@]}"
+          fi
+      - run: cmake --build build/import-std --target oc2_module_std_tests --parallel 4
+      - run: ctest --test-dir build/import-std -R '^module_std$' --output-on-failure --output-junit std-results.xml
+      - name: Standard library module evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-std-${{ matrix.platform }}
+          path: |
+            build/import-std/build-identity.txt
+            build/import-std/std-results.xml
+            build/import-std/Testing/Temporary/LastTest.log
+            build/import-std/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: ignore
