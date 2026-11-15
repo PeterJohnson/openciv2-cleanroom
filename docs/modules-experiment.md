@@ -62,6 +62,10 @@ CI result does not establish a compiler limitation. A local emsdk 4.0.23 retry
 with explicit metadata also fails: the SDK's `lib/libc++.modules.json` points
 to absent `share/libc++/v1/std.cppm` and `std.compat.cppm` sources.
 
+The Linux probe now uses an `ubuntu:26.04` container on the Ubuntu 24.04 hosted
+runner, with the distribution's `g++` development package supplying libstdc++ 15
+and its module sources. Clang remains pinned to 20.1.8.
+
 The macOS probe now explicitly selects Homebrew's installed module metadata
 under `lib/c++`, along with its matching libc++ headers and runtime. This uses
 the layout and linkage tested by [Homebrew's LLVM formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/l/llvm%4020.rb).

@@ -11,6 +11,7 @@ jobs:
         include:
           - os: ubuntu-24.04
             platform: linux
+            container: ubuntu:26.04
           - os: windows-2022
             platform: windows
           - os: macos-15
@@ -18,7 +19,17 @@ jobs:
           - os: ubuntu-24.04
             platform: web
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    defaults:
+      run:
+        shell: bash
     steps:
+      - name: Prepare Ubuntu container
+        if: matrix.container != ''
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates curl g++ git ninja-build python3 xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
       - uses: ./.github/actions/toolchain
         id: pins
