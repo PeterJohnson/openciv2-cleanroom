@@ -48,7 +48,7 @@ def check(root=ROOT):
             return
         seen.add(path)
         if portable and re.search(r'\bstd\s*::\s*filesystem\b', path.read_text(encoding='utf-8')):
-            errors.add(f'{origin}: forbidden platform API std::filesystem through {path.relative_to(source)}')
+            errors.add(f'{origin}: forbidden platform API std::filesystem through {path.relative_to(source).as_posix()}')
         for name, target in dependencies(path, origin):
             if target and target.is_relative_to(source):
                 relative = target.relative_to(source).as_posix().replace('.hpp', '.cppm')
@@ -65,7 +65,7 @@ def check(root=ROOT):
                     forbidden |= relative.startswith(('world/', 'unit/', 'city/', 'formats/', 'network/'))
                     forbidden |= relative == 'query/live.cppm'
                 if forbidden:
-                    errors.add(f'{origin}: forbidden include/import through {path.relative_to(source)}: {target.relative_to(source)}')
+                    errors.add(f'{origin}: forbidden include/import through {path.relative_to(source).as_posix()}: {target.relative_to(source).as_posix()}')
                 else:
                     visit(target, origin, player, portable, seen)
             elif portable and (name.startswith(('SDL', 'imgui', 'backends/imgui')) or

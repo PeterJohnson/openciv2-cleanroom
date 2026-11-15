@@ -1,6 +1,4 @@
-
 import std;
-
 import openciv.base.arithmetic;
 
 using openciv::base::WrappingI32;
