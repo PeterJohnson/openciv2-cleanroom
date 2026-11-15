@@ -60,8 +60,8 @@ std::int32_t goal_priority_at(const state::Civilization& civilization, world::Po
     return result;
 }
 SharedGoals::SharedGoals(state::GameState& world, const state::RuleDefinitions& rules,
-                         GoalServices services)
-    : world_(world), rules_(rules), services_(std::move(services)) {}
+                         const UnitMovementQueries& services)
+    : world_(world), rules_(rules), queries_(services) {}
 state::Civilization& SharedGoals::civilization(std::int32_t slot) {
     return world_.civilizations.at(static_cast<std::size_t>(slot));
 }
@@ -80,7 +80,7 @@ void SharedGoals::add_current(std::int32_t civ, world::Position position, std::i
             if (!state::occupied(unit.token) || static_cast<std::uint8_t>(unit.owner) != civ)
                 continue;
             const auto slot = static_cast<state::UnitSlot>(i);
-            if (!services_.awake_with_moves(slot))
+            if (!queries_.can_act(slot))
                 continue;
             const auto& rule = rules_.units.at(static_cast<std::size_t>(unit.type));
             if (byte(static_cast<std::uint8_t>(rule.role)) != role)
@@ -90,7 +90,7 @@ void SharedGoals::add_current(std::int32_t civ, world::Position position, std::i
                 continue;
             const auto distance = world_.map.geometry().weighted_distance(
                 position, {unit.x, unit.y}, (world_.globals.rules & 0x8000U) != 0);
-            const auto moves = services_.moves_left(slot);
+            const auto moves = queries_.remaining_moves(slot);
             if (base::multiply32(2, distance) <= moves) {
                 unit.orders = state::UnitOrder::go_to;
                 unit.destination_x = short_value(position.x);

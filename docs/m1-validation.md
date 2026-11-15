@@ -10,6 +10,29 @@ Full W02/V01/balancing/AI and graphical setup integration remain M3/M4 work;
 supplied-child foundation tests do not establish those mechanics. Historical test
 counts below describe their recorded revisions, not current review verification.
 
+The service-lifetime follow-up replaces all 24 `Services` structs with focused
+noncopyable provider interfaces, borrowed dependency descriptors, direct callback
+views or passive diagnostic output. File load/save/preferences share `FileStorage`;
+setup interactions, music/countdown control, option broadcasts, movement queries,
+deletion effects and socket transport have explicit provider identities.
+`CallbackRef` accepts callable lvalues or function pointers and copies no captures.
+The synchronous save adapter supplies its chooser separately from the asynchronous
+operation's owned chooser. Suspended operations document which dependencies are
+borrowed and retain ownership of their channels and request/result values.
+Regression checks cover move-only callable views, unchanged provider identity
+across repeated and decorated preference saves, stateful music providers and
+option broadcasters across suspended votes. Compile-time checks enforce
+noncopyable providers and trivially copyable dependency descriptors.
+Direct parameter setup also checks missing dependencies before any effects.
+
+Validation of the service-lifetime follow-up: 536/536 Linux native CTests
+(523 Catch2 cases), 536/536 ASan/UBSan CTests with LeakSanitizer disabled for
+this host, 8/8 Emscripten CTests (510 portable cases, 208,961 assertions),
+121 Python tests, and a rebuilt SDL desktop smoke test. All 57 native conformance
+vectors pass and the source-bound report is refreshed. Pinned clang-format
+20.1.8, include boundaries and conformance metadata pass. These checks add no
+new original-game, Windows or macOS observations.
+
 The semantic-state follow-up removes simulated event/map/network allocation hooks
 and recoverable allocation-failure results. Real `std::bad_alloc` propagates to
 the application boundary. Classic codecs now own separate stored record types;

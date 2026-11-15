@@ -22,10 +22,8 @@ struct StackDiagnostic {
     std::int32_t neighbor = -1;
     bool operator==(const StackDiagnostic&) const = default;
 };
-struct StackServices {
-    // Optional passive output, consumed after the operation; no diagnostic reentry.
-    std::vector<StackDiagnostic>* diagnostics = nullptr;
-};
+// Optional passive output, consumed after the operation; no diagnostic reentry.
+using StackDiagnostics = std::vector<StackDiagnostic>*;
 // Repair's placement children use sync=false. LocalStacks defaults to its local
 // bodies; StackOperations supplies the real independently gated operations.
 struct RepairPlacement {
@@ -54,7 +52,7 @@ struct StackBudget {
 class LocalStacks {
 public:
     LocalStacks(state::UnitPool& units, world::MapStorage& map, state::UnitStackState& retained,
-                StackBudget& budget, StackServices services, RepairPlacement placement = {});
+                StackBudget& budget, StackDiagnostics services, RepairPlacement placement = {});
     std::int32_t raw_forward_count(std::int32_t slot);
     std::int32_t validate(std::int32_t slot);
     std::int32_t next(std::int32_t slot);
@@ -81,7 +79,7 @@ private:
     world::MapStorage& map_;
     state::UnitStackState& retained_;
     StackBudget& budget_;
-    StackServices services_;
+    StackDiagnostics diagnostics_;
     RepairPlacement placement_;
     std::size_t depth_ = 0;
 };

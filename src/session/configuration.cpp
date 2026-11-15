@@ -9,13 +9,10 @@ void publish(SessionRuntime& runtime) {
     if (runtime.active())
         runtime.publish();
 }
-template <typename R, typename... Args>
-std::function<R(Args...)> published(SessionRuntime& runtime, std::function<R(Args...)> service) {
-    if (!service)
-        return {};
-    return [&runtime, service = std::move(service)](Args... args) -> R {
+template <class Callback> auto published(SessionRuntime& runtime, Callback service) {
+    return [&runtime, service](auto&&... args) -> decltype(auto) {
         publish(runtime);
-        return service(std::forward<Args>(args)...);
+        return service(std::forward<decltype(args)>(args)...);
     };
 }
 template <class Operation> void complete(SessionRuntime& runtime, Operation operation) {
@@ -33,12 +30,13 @@ std::string text(std::string value) {
 }
 } // namespace
 bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionChoices> choices,
-                            const GameOptionServices& supplied) {
+                            const GameOptionDependencies& supplied) {
     if (!choices)
         return false;
-    const auto services = supplied;
-    services.preferences.validate_output();
-    if (!services.stop_music || !services.reinitialize_music || !services.synchronize_music)
+    const auto& services = supplied;
+    if (!services.preferences)
+        throw std::invalid_argument("Preference storage is required");
+    if (!services.music)
         throw std::invalid_argument("Game options require complete music services");
     auto pin = runtime.pin_world();
     complete(runtime, [&] {
@@ -51,13 +49,13 @@ bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionCho
             options |= 8U;
             if (!old_music) {
                 publish(runtime);
-                services.reinitialize_music();
+                services.music->reinitialize();
             }
             publish(runtime);
-            services.synchronize_music();
+            services.music->synchronize();
         } else {
             publish(runtime);
-            services.stop_music();
+            services.music->stop();
         }
         constexpr std::array<std::uint32_t, 9> bits{0x4000, 0x2000, 0x1000, 0x800, 0x400,
                                                     0x200,  0x100,  0x80,   0x40};
@@ -65,17 +63,18 @@ bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionCho
             if ((*choices)[i + 2])
                 options |= bits[i];
         runtime.process().ordinary_preferences.game_options = options;
-        (void)save_classic_preferences(runtime, services.preferences);
+        (void)save_classic_preferences(runtime, *services.preferences);
     });
     return true;
 }
 bool configure_graphics_options(SessionRuntime& runtime,
                                 std::optional<GraphicsOptionChoices> choices,
-                                const GraphicsOptionServices& supplied) {
+                                const GraphicsOptionDependencies& supplied) {
     if (!choices)
         return false;
-    const auto services = supplied;
-    services.preferences.validate_output();
+    const auto& services = supplied;
+    if (!services.preferences)
+        throw std::invalid_argument("Preference storage is required");
     if (!services.heralds_available || !services.low_memory_notice)
         throw std::invalid_argument("Graphics options require availability and notice services");
     auto pin = runtime.pin_world();
@@ -98,16 +97,15 @@ bool configure_graphics_options(SessionRuntime& runtime,
             options |= bits[i];
         }
         runtime.process().ordinary_preferences.game_options = options;
-        (void)save_classic_preferences(runtime, services.preferences);
+        (void)save_classic_preferences(runtime, *services.preferences);
     });
     return true;
 }
 bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOptionChoices> choices,
-                               const PreferenceFileServices& supplied) {
+                               const FileStorage& supplied) {
     if (!choices)
         return false;
-    const auto services = supplied;
-    services.validate_output();
+    const auto& services = supplied;
     auto pin = runtime.pin_world();
     complete(runtime, [&] {
         auto& messages = runtime.world().globals.message_options;
@@ -123,19 +121,18 @@ bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOpt
 MultiplayerOptionOperation::MultiplayerOptionOperation(SessionRuntime& runtime,
                                                        std::int32_t dialog_result,
                                                        MultiplayerOptionChoices choices,
-                                                       MultiplayerOptionServices services,
+                                                       MultiplayerOptionDependencies services,
                                                        std::unique_ptr<OptionVoteChannel> channel)
-    : runtime_(runtime), choices_(choices), services_(std::move(services)),
-      channel_(std::move(channel)) {
+    : runtime_(runtime), choices_(choices), services_(services), channel_(std::move(channel)) {
     if (dialog_result != 0) {
         finish(MultiplayerOptionResult::cancelled);
         return;
     }
     const auto& s = services_;
-    s.preferences.validate_output();
+    if (!s.preferences)
+        throw std::invalid_argument("Preference storage is required");
     if (!s.clock || !s.local_player_name || !s.separator || !s.production_label ||
-        !s.movement_label || !s.broadcast_rejection || !s.broadcast_acceptance || !s.send_units ||
-        !s.send_options || !s.notice || !s.redraw_status)
+        !s.movement_label || !s.broadcaster || !s.notice || !s.redraw_status)
         throw std::invalid_argument("Multiplayer options require complete service bindings");
     const auto& world = runtime_.world();
     const auto& multiplayer = world.multiplayer;
@@ -166,7 +163,7 @@ void MultiplayerOptionOperation::reject() {
     preferences.double_production = live.double_production;
     preferences.double_movement = live.double_movement;
     publish(runtime_);
-    services_.broadcast_rejection();
+    services_.broadcaster->rejected();
     publish(runtime_);
     services_.notice("PMCHANGENO");
     finish(MultiplayerOptionResult::rejected);
@@ -212,11 +209,12 @@ void MultiplayerOptionOperation::apply() {
                                  published(runtime_, services_.redraw_status));
     if (world.globals.multiplayer >= state::GameMode::tcp && world.multiplayer.player_count > 1) {
         publish(runtime_);
-        services_.send_units();
+        services_.broadcaster->units();
         publish(runtime_);
-        services_.send_options(live.double_production, live.double_movement, live.simultaneous);
+        services_.broadcaster->options(live.double_production, live.double_movement,
+                                       live.simultaneous);
         publish(runtime_);
-        services_.broadcast_acceptance();
+        services_.broadcaster->accepted();
         publish(runtime_);
         services_.notice("PMCHANGEYES");
     }
@@ -250,7 +248,7 @@ std::optional<MultiplayerOptionResult> MultiplayerOptionOperation::poll() {
             started_ = true;
             preferences.clear_chat_new_game = choices_[0] ? 1 : 0;
             preferences.clear_chat_boot = choices_[1] ? 1 : 0;
-            (void)save_classic_preferences(runtime_, services_.preferences);
+            (void)save_classic_preferences(runtime_, *services_.preferences);
             if (cancelled())
                 return result_;
             if (world.globals.multiplayer >= state::GameMode::tcp && !multiplayer.network_host) {

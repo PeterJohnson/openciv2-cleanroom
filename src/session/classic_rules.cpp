@@ -3,9 +3,13 @@
 namespace openciv::session {
 namespace classic = formats::classic;
 ClassicRuleContext::ClassicRuleContext(ClassicFileState& files, classic::TextWorkspace& workspace,
-                                       classic::TextFiles text_files, RuleContextServices services)
-    : files_(files), services_(std::move(services)),
-      reader_(workspace, files.text, std::move(text_files), services_.comparison) {
+                                       classic::TextFiles text_files,
+                                       RuleContextDependencies services)
+    : files_(files), services_(services),
+      reader_(workspace, files.text, std::move(text_files),
+              services_.comparison
+                  ? *services_.comparison
+                  : throw std::invalid_argument("Content comparison policy is required")) {
     if (!services_.exists)
         throw std::invalid_argument("Content source requires resource lookup");
 }
@@ -31,7 +35,7 @@ state::LoadedContent ClassicRuleContext::load() {
     } search{files_.text.search, previous};
     files_.text.search = services_.exists(scenario, resource) ? scenario : files_.text.home;
     result.rules = std::make_unique<state::RuleInput>();
-    classic::RuleLoader(reader_, *result.rules, services_.comparison, services_.rules)
+    classic::RuleLoader(reader_, *result.rules, *services_.comparison, services_.rules)
         .load("RULES");
     reader_.close();
     return result;

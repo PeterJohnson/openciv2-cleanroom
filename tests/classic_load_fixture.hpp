@@ -1,4 +1,5 @@
 #pragma once
+#include "service_callbacks.hpp"
 #include "classic_stream_fixture.hpp"
 #include "session/classic_load.hpp"
 #include "formats/classic_save.hpp"
@@ -99,7 +100,7 @@ struct Fixture {
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{71}};
     ClassicFileState files;
-    CoreLoadServices services;
+    CoreLoadCallbacks services;
     Bytes bytes = encode_stored_save(saved());
     std::size_t position = 0, chars = 0, closes = 0;
     std::vector<std::pair<std::size_t, std::size_t>> items;

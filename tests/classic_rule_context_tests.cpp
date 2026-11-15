@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 #include "session/classic_rules.hpp"
 #include "rules/rules_install.hpp"
 #include "classic_rule_fixture.hpp"
@@ -14,6 +15,7 @@ struct Fixture {
     std::vector<std::string> trace;
     std::function<void()> sprites_hook;
     bool scenario = true;
+    RuleContextCallbacks services;
     std::unique_ptr<ClassicRuleContext> context;
     Fixture() {
         files.text = {"home", "old", "home", "TXT"};
@@ -32,7 +34,6 @@ struct Fixture {
                         std::make_unique<classic::MemoryTextStream>(body)};
             },
             {}};
-        RuleContextServices services;
         services.comparison = classic::ascii_text_case();
         services.exists = [&](std::string_view dir, std::string_view name) {
             REQUIRE(dir == "scenario");

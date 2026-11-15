@@ -34,31 +34,40 @@ struct SetupTitleResponse {
     enum class Status { accept, cancel, unavailable } status = Status::cancel;
     std::array<std::string, 7> titles;
 };
-struct PlayerSetupServices {
+class PlayerSetupInteraction {
+public:
+    PlayerSetupInteraction() = default;
+    virtual ~PlayerSetupInteraction() = default;
+    PlayerSetupInteraction(const PlayerSetupInteraction&) = delete;
+    PlayerSetupInteraction& operator=(const PlayerSetupInteraction&) = delete;
     // Ordinary rows or a negative cancellation. Nominal positive domains:
     // difficulty 0..5, opponents 0..4 (6 - row opponents), barbarians 0..3,
     // rules 0=standard/1=custom, gender 0..1, acceleration 0..2, style 0..3.
-    std::function<std::int32_t(state::Difficulty remembered)> difficulty;
-    std::function<std::int32_t(state::RuleSelection remembered)> rules;
-    std::function<std::int32_t(state::Gender remembered)> gender;
-    std::function<SetupNumericChoice(std::int16_t remembered)> opponents, barbarians;
-    std::function<SetupAdvancedResponse(SetupAdvancedChoices defaults)> advanced;
-    std::function<std::int32_t(std::array<std::uint32_t, 3> years, std::int16_t remembered)>
-        acceleration;
-    std::function<SetupTribeChoice(std::span<const SetupTribeOption>, std::int16_t remembered)>
-        tribe;
-    std::function<SetupNameResponse(bool custom, std::array<std::string, 3> current)> names;
-    std::function<SetupTitleResponse(std::array<std::string, 7> current)> titles;
+    virtual std::int32_t choose_difficulty(state::Difficulty remembered) const = 0;
+    virtual std::int32_t choose_rules(state::RuleSelection remembered) const = 0;
+    virtual std::int32_t choose_gender(state::Gender remembered) const = 0;
+    virtual SetupNumericChoice choose_opponents(std::int16_t remembered) const = 0;
+    virtual SetupNumericChoice choose_barbarians(std::int16_t remembered) const = 0;
+    virtual SetupAdvancedResponse choose_advanced(SetupAdvancedChoices defaults) const = 0;
+    virtual std::int32_t choose_acceleration(std::array<std::uint32_t, 3> years,
+                                             std::int16_t remembered) const = 0;
+    virtual SetupTribeChoice choose_tribe(std::span<const SetupTribeOption> options,
+                                          std::int16_t remembered) const = 0;
+    virtual SetupNameResponse choose_names(bool custom,
+                                           std::array<std::string, 3> current) const = 0;
+    virtual SetupTitleResponse choose_titles(std::array<std::string, 7> current) const = 0;
     // Required P03/P04 child, reached only by the corresponding custom-name
     // action. Its accepted portrait effects survive returning to the name loop.
-    std::function<void(state::CivilizationSlot)> portrait;
-    std::function<std::int32_t(std::int16_t tribe_style, std::int16_t current_override)> city_style;
+    virtual void choose_portrait(state::CivilizationSlot civilization) const = 0;
+    virtual std::int32_t choose_city_style(std::int16_t tribe_style,
+                                           std::int16_t current_override) const = 0;
     // Random is a distinct choice; an ordinary nonnegative result is one of
     // the offered tribe slots. Slots are visited ascending, after roster draws.
-    std::function<SetupNumericChoice(state::CivilizationSlot, std::span<const SetupTribeOption>)>
-        opponent_tribe;
-    void validate() const;
+    virtual SetupNumericChoice
+    choose_opponent_tribe(state::CivilizationSlot civilization,
+                          std::span<const SetupTribeOption> options) const = 0;
 };
+
 struct PlayerSetupResult {
     bool accepted = false, pick_opponents = false;
     std::int32_t acceleration = 0;
@@ -73,5 +82,5 @@ struct PlayerSetupResult {
 PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& random,
                                  std::string_view call, WorldSource source,
                                  const state::CalendarValues& calendar,
-                                 const PlayerSetupServices& services);
+                                 const PlayerSetupInteraction& services);
 } // namespace openciv::session

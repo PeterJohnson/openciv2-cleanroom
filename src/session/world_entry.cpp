@@ -4,7 +4,7 @@
 #include <utility>
 
 namespace openciv::session {
-void WorldEntryServices::validate(NewWorldChoice choice) const {
+void WorldEntryDependencies::validate(NewWorldChoice choice) const {
     if (!load_content || !stop_menu_sound || !generate_world || !accelerate || !introduce)
         throw std::invalid_argument("World entry requires complete owning services");
     if (choice == NewWorldChoice::premade) {
@@ -12,13 +12,15 @@ void WorldEntryServices::validate(NewWorldChoice choice) const {
             throw std::invalid_argument("Premade world entry requires a file choice service");
         premade.validate();
     } else {
-        size.validate();
+        if (!size)
+            throw std::invalid_argument("World size interaction is required");
     }
     if (choice == NewWorldChoice::customize)
         parameters.validate();
-    else
-        parameters.preferences.validate_output();
-    players.validate();
+    else if (!parameters.preferences)
+        throw std::invalid_argument("Preference storage is required");
+    if (!players)
+        throw std::invalid_argument("Player setup interaction is required");
     initialize.validate();
 }
 namespace {
@@ -49,8 +51,9 @@ std::string starting_advance_list(const state::GameState& world, const state::Ru
 }
 bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::GameplayRandom& random,
                      std::string_view call, NewWorldChoice choice,
-                     const state::CalendarValues& calendar, const WorldEntryServices& supplied) {
-    const auto services = supplied;
+                     const state::CalendarValues& calendar,
+                     const WorldEntryDependencies& supplied) {
+    const auto& services = supplied;
     if (call.empty())
         throw std::invalid_argument("World entry requires a semantic call identity");
     if (choice != NewWorldChoice::random && choice != NewWorldChoice::premade &&
@@ -90,18 +93,18 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
             if (loaded)
                 source = *loaded;
         } else {
-            selected = select_world_size(runtime, services.size);
+            selected = select_world_size(runtime, *services.size);
         }
         if (!select_world_parameters(runtime, random, std::string(call) + "/parameters",
                                      choice == NewWorldChoice::customize, selected,
                                      services.parameters))
             return false;
         const auto players = select_players(runtime, random, std::string(call) + "/players", source,
-                                            calendar, services.players);
+                                            calendar, *services.players);
         if (!players.accepted)
             return false;
         publish(runtime);
-        (void)save_classic_preferences(runtime.process(), services.parameters.preferences);
+        (void)save_classic_preferences(runtime.process(), *services.parameters.preferences);
         installer.advances(true);
         installer.units(true);
         installer.improvements(true);

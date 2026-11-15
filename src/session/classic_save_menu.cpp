@@ -14,7 +14,8 @@ std::string extension_name(const ClassicFileState& files) {
         throw std::invalid_argument("Invalid save extension");
     return files.extension.substr(1);
 }
-SaveNotice describe_save(SessionRuntime& runtime, bool scenario, const SaveMenuServices& services) {
+SaveNotice describe_save(SessionRuntime& runtime, bool scenario,
+                         const SaveMenuDependencies& services) {
     const auto& world = runtime.world();
     const auto mode = world.globals.multiplayer;
     const auto civ = world.multiplayer.local_human;
@@ -36,10 +37,10 @@ SaveNotice describe_save(SessionRuntime& runtime, bool scenario, const SaveMenuS
 } // namespace
 ClassicSaveOperation::ClassicSaveOperation(SessionRuntime& runtime, ClassicFileState& files,
                                            ClassicSaveMenuState& menu, bool scenario,
-                                           SaveMenuServices services,
+                                           SaveMenuDependencies services,
                                            std::unique_ptr<FileChooser> chooser)
-    : runtime_(runtime), files_(files), menu_(menu), scenario_(scenario),
-      services_(std::move(services)), chooser_(std::move(chooser)) {}
+    : runtime_(runtime), files_(files), menu_(menu), scenario_(scenario), services_(services),
+      chooser_(std::move(chooser)) {}
 ClassicSaveOperation::~ClassicSaveOperation() {
     abandon();
 }
@@ -95,7 +96,7 @@ SaveMenuResult ClassicSaveOperation::accept(FileChoiceResult choice) {
     if (notice.key == "EMAILSAVED")
         notice.arguments[0] = choice.path;
     const auto status =
-        save_classic_core(runtime_, files_, choice.path, scenario_, services_.output);
+        save_classic_core(runtime_, files_, choice.path, scenario_, *services_.output);
     if (status != CoreSaveStatus::success) {
         services_.notice({"SAVEERROR", {services_.error_text()}});
         return SaveMenuResult::failed;
@@ -111,7 +112,7 @@ void ClassicSaveOperation::finish(SaveMenuResult result) {
     const bool restart = std::exchange(stopped_, false);
     try {
         if (restart)
-            services_.start_countdown(true);
+            services_.countdown->start(true);
     } catch (...) {
         activity_.reset();
         throw;
@@ -145,13 +146,12 @@ std::optional<SaveMenuResult> ClassicSaveOperation::advance() {
                 return result_;
             }
             const auto& s = services_;
-            if (!chooser_ || !s.stop_countdown || !s.start_countdown || !s.local_time ||
-                !s.lowercase || !s.label || !s.ruler_name || !s.ruler_title ||
-                !s.civilization_plural || !s.format_year || !s.error_text || !s.notice ||
-                !s.output.open)
+            if (!chooser_ || !s.countdown || !s.local_time || !s.lowercase || !s.label ||
+                !s.ruler_name || !s.ruler_title || !s.civilization_plural || !s.format_year ||
+                !s.error_text || !s.notice || !s.output)
                 throw std::invalid_argument("Save workflow requires timer/file/text services");
             activity_.emplace(runtime_.begin_activity());
-            s.stop_countdown(true);
+            s.countdown->stop(true);
             stopped_ = true;
             started_ = true;
             chooser_->begin(prepare_request());
@@ -184,7 +184,7 @@ namespace {
 // implement FileChooser and drive ClassicSaveOperation from their event loop.
 class ImmediateChooser final : public FileChooser {
 public:
-    explicit ImmediateChooser(FileChoiceServices services) : services_(std::move(services)) {}
+    explicit ImmediateChooser(FileChoiceCallback services) : services_(services) {}
     void begin(FileChoiceRequest request) override {
         result_ = choose_classic_file(request, services_);
     }
@@ -192,15 +192,15 @@ public:
     void cancel() noexcept override { result_.reset(); }
 
 private:
-    FileChoiceServices services_;
+    FileChoiceCallback services_;
     std::optional<FileChoiceResult> result_;
 };
 } // namespace
 SaveMenuResult save_classic_menu(SessionRuntime& runtime, ClassicFileState& files,
                                  ClassicSaveMenuState& menu, bool scenario,
-                                 const SaveMenuServices& services) {
+                                 const SaveMenuDependencies& services, FileChoiceCallback chooser) {
     ClassicSaveOperation operation(runtime, files, menu, scenario, services,
-                                   std::make_unique<ImmediateChooser>(services.chooser));
+                                   std::make_unique<ImmediateChooser>(chooser));
     if (const auto result = operation.advance())
         return *result;
     return operation.advance().value(); // This adapter always has an immediate result.

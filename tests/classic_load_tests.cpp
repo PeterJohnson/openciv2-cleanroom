@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Authored F06 bytes and semantic restoration expectations.
 #include "classic_load_fixture.hpp"
 #include "session/classic_save.hpp"
@@ -59,7 +60,6 @@ TEST_CASE("F06 load validates services and pins the world through all callbacks"
     f.before_item = [&](std::size_t) {
         CHECK(f.runtime.world().globals.turn == 0);
         CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error);
-        f.services.load_content = {}; // Operation owns its wiring snapshot.
     };
     f.services.flush = [&] { CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error); };
     CHECK(f.load() == CoreLoadStatus::success);
@@ -106,7 +106,7 @@ TEST_CASE("F06 live edit exports and reloads through owned restoration data",
     f.runtime.world().globals.turn = 77;
     f.runtime.world().entities.cities.at(state::CitySlot{0}).food_box = 1234;
     Bytes bytes;
-    CoreSaveServices output;
+    CoreSaveCallbacks output;
     output.open = [&](std::string_view) {
         return test::output_file({[&](std::span<const Byte> data) {
                                       bytes.insert(bytes.end(), data.begin(), data.end());
@@ -153,7 +153,7 @@ TEST_CASE("Classic opaque bytes follow loaded world and entity lifetimes",
     f.bytes = encode_stored_save(original);
     REQUIRE(f.load() == CoreLoadStatus::success);
     Bytes bytes;
-    CoreSaveServices output;
+    CoreSaveCallbacks output;
     output.open = [&](std::string_view) {
         bytes.clear();
         return test::output_file({[&](std::span<const Byte> data) {

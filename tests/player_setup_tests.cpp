@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // F05 section 4 / Appendix A, F03 preferences and F01 sampling. Expectations
 // are authored from the contracts; original UI/file comparisons are identified
 // separately in docs/m1-original-player-setup-observations.md.
@@ -24,7 +25,7 @@ base::Choice choice(std::string site, unsigned ordinal, std::int32_t modulus, st
 struct Fixture {
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{98}};
-    PlayerSetupServices services;
+    PlayerSetupCallbacks services;
     std::vector<std::string> visits;
     Fixture() {
         test::fail_service(services.advanced);

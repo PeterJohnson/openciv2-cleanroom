@@ -5,11 +5,6 @@
 #include <utility>
 
 namespace openciv::session {
-void PlayerSetupServices::validate() const {
-    if (!difficulty || !rules || !gender || !opponents || !barbarians || !advanced ||
-        !acceleration || !tribe || !names || !titles || !portrait || !city_style || !opponent_tribe)
-        throw std::invalid_argument("Player setup requires complete choice services");
-}
 namespace {
 void publish(SessionRuntime& runtime) {
     if (runtime.active())
@@ -55,9 +50,8 @@ enum class Step { difficulty, opponents, barbarians, rules, gender, tribe, names
 PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& random,
                                  std::string_view call, WorldSource source,
                                  const state::CalendarValues& calendar,
-                                 const PlayerSetupServices& supplied) {
-    const auto services = supplied;
-    services.validate();
+                                 const PlayerSetupInteraction& supplied) {
+    const auto& services = supplied;
     if (call.empty())
         throw std::invalid_argument("Player setup requires a semantic call identity");
     auto pin = runtime.pin_world();
@@ -76,7 +70,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
     };
     auto invoke = [&]<typename F, typename... Args>(const F& service, Args&&... args) {
         publish(runtime);
-        return service(std::forward<Args>(args)...);
+        return (services.*service)(std::forward<Args>(args)...);
     };
     auto run = [&] {
         restore_names(rules);
@@ -86,7 +80,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
         while (true) {
             switch (step) {
             case Step::difficulty: {
-                const auto choice = invoke(services.difficulty, preferences.difficulty);
+                const auto choice =
+                    invoke(&PlayerSetupInteraction::choose_difficulty, preferences.difficulty);
                 row(choice, 5);
                 if (choice < 0)
                     return;
@@ -96,7 +91,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 break;
             }
             case Step::opponents: {
-                const auto choice = invoke(services.opponents, preferences.opponents);
+                const auto choice =
+                    invoke(&PlayerSetupInteraction::choose_opponents, preferences.opponents);
                 if (const auto* ordinary = std::get_if<std::int32_t>(&choice)) {
                     row(*ordinary, 4);
                     if (*ordinary < 0) {
@@ -112,7 +108,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 break;
             }
             case Step::barbarians: {
-                const auto choice = invoke(services.barbarians, preferences.barbarians);
+                const auto choice =
+                    invoke(&PlayerSetupInteraction::choose_barbarians, preferences.barbarians);
                 if (const auto* ordinary = std::get_if<std::int32_t>(&choice)) {
                     row(*ordinary, 3);
                     if (*ordinary < 0) {
@@ -133,7 +130,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 break;
             }
             case Step::rules: {
-                const auto choice = invoke(services.rules, preferences.rules_choice);
+                const auto choice =
+                    invoke(&PlayerSetupInteraction::choose_rules, preferences.rules_choice);
                 row(choice, 1);
                 if (choice < 0)
                     return;
@@ -153,7 +151,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                                                     preferences.accelerated_start != 0,
                                                     (remembered_rules & 0x80U) != 0,
                                                     (remembered_rules & 0x100U) != 0};
-                const auto checks = invoke(services.advanced, defaults).checks;
+                const auto checks =
+                    invoke(&PlayerSetupInteraction::choose_advanced, defaults).checks;
                 globals.rules = 0x002f;
                 if (!checks[0])
                     globals.rules |= 0x0010U;
@@ -171,8 +170,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                                                                      (remembered_rules & 0x8000U));
                 if (result.acceleration != 0) {
                     const auto years = prepare_acceleration_years(runtime, calendar);
-                    result.acceleration =
-                        invoke(services.acceleration, years, preferences.accelerated_start);
+                    result.acceleration = invoke(&PlayerSetupInteraction::choose_acceleration,
+                                                 years, preferences.accelerated_start);
                     row(result.acceleration, 2);
                     if (result.acceleration < 0)
                         break; // Repeat Rules without replacing its entry-time locals.
@@ -183,7 +182,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
             }
             case Step::gender:
                 restore_names(rules);
-                gender = invoke(services.gender, preferences.gender);
+                gender = invoke(&PlayerSetupInteraction::choose_gender, preferences.gender);
                 row(gender, 1);
                 if (gender < 0) {
                     step = Step::difficulty;
@@ -194,7 +193,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                 break;
             case Step::tribe: {
                 const auto choices = tribes(rules);
-                const auto choice = invoke(services.tribe, choices, preferences.tribe);
+                const auto choice =
+                    invoke(&PlayerSetupInteraction::choose_tribe, choices, preferences.tribe);
                 row(choice.tribe, 20);
                 if (choice.tribe < 0) {
                     step = Step::gender;
@@ -234,7 +234,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                     current[1] = names.tribe;
                     current[2] = names.adjective;
                 }
-                const auto response = invoke(services.names, custom, current);
+                const auto response =
+                    invoke(&PlayerSetupInteraction::choose_names, custom, current);
                 if (response.action == SetupNameAction::unavailable)
                     return;
                 if (response.action == SetupNameAction::cancel) {
@@ -252,14 +253,14 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                     std::array<std::string, 7> titles;
                     for (std::size_t g = 0; g < titles.size(); ++g)
                         titles[g] = names.titles[g];
-                    const auto edited = invoke(services.titles, titles);
+                    const auto edited = invoke(&PlayerSetupInteraction::choose_titles, titles);
                     if (edited.status == SetupTitleResponse::Status::unavailable)
                         return;
                     if (edited.status == SetupTitleResponse::Status::accept)
                         for (std::size_t g = 0; g < titles.size(); ++g)
                             copy(names.titles[g], edited.titles[g]);
                 } else if (response.action == SetupNameAction::portrait) {
-                    invoke(services.portrait,
+                    invoke(&PlayerSetupInteraction::choose_portrait,
                            state::CivilizationSlot{static_cast<std::uint8_t>(human)});
                 } else {
                     step = Step::city_style;
@@ -269,7 +270,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
             case Step::city_style: {
                 auto& names = world.names[static_cast<std::size_t>(human)];
                 const auto style =
-                    invoke(services.city_style,
+                    invoke(&PlayerSetupInteraction::choose_city_style,
                            rules.leaders[static_cast<std::size_t>(selected_tribe)].city_style,
                            names.city_style);
                 row(style, 3);
@@ -294,8 +295,8 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
                         if ((globals.civs_alive & bit) == 0 || (globals.human_players & bit) != 0)
                             continue;
                         const auto choices = tribes(rules, slot);
-                        const auto choice =
-                            invoke(services.opponent_tribe, state::CivilizationSlot{slot}, choices);
+                        const auto choice = invoke(&PlayerSetupInteraction::choose_opponent_tribe,
+                                                   state::CivilizationSlot{slot}, choices);
                         if (const auto* selected = std::get_if<std::int32_t>(&choice)) {
                             if (*selected < 0) {
                                 cancelled = true;

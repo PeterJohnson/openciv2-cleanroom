@@ -1,7 +1,8 @@
 #pragma once
+#include "base/callback_ref.hpp"
 #include "formats/record_compatibility.hpp"
 
-#include "session/classic_stream.hpp"
+#include "session/file_storage.hpp"
 #include "session/runtime.hpp"
 #include "state/game_input.hpp"
 #include "formats/classic_text_reader.hpp"
@@ -27,15 +28,16 @@ struct ClassicFileState {
     formats::EventCompatibility event_bytes;
     formats::RecordCompatibility record_bytes;
 };
-struct CoreLoadServices {
-    std::function<std::unique_ptr<CoreInput>(std::string_view)> open;
-    std::function<void()> flush;
-    std::function<void(std::string_view)> change_directory;
-    std::function<bool(std::string_view directory, std::string_view name)> exists;
-    formats::classic::TextCase comparison;
+// Borrowed providers and callable owners must outlive the consuming operation.
+struct CoreLoadDependencies {
+    const FileStorage* storage = nullptr;
+    base::CallbackRef<void()> flush;
+    base::CallbackRef<void(std::string_view)> change_directory;
+    base::CallbackRef<bool(std::string_view directory, std::string_view name)> exists;
+    const formats::classic::TextCase* comparison = nullptr;
     // One factory returns owned, format-independent inputs; no open/reload/close protocol.
-    std::function<state::LoadedContent()> load_content;
-    std::function<void()> content_installed;
+    base::CallbackRef<state::LoadedContent()> load_content;
+    base::CallbackRef<void()> content_installed;
     void validate() const;
 };
 // One guarded load lifetime. The runtime, file context and captured services must
@@ -43,7 +45,7 @@ struct CoreLoadServices {
 class ClassicLoadOperation {
 public:
     ClassicLoadOperation(SessionRuntime& runtime, ClassicFileState& retained,
-                         CoreLoadServices services);
+                         CoreLoadDependencies services);
     ClassicLoadOperation(const ClassicLoadOperation&) = delete;
     ClassicLoadOperation& operator=(const ClassicLoadOperation&) = delete;
     CoreLoadStatus load(std::string_view path, std::string_view password_reset_call);
@@ -51,11 +53,12 @@ public:
 private:
     SessionRuntime& runtime_;
     ClassicFileState& retained_;
-    CoreLoadServices services_;
+    CoreLoadDependencies services_;
     SessionActivity activity_;
     bool started_ = false;
 };
 CoreLoadStatus load_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
-                                 std::string_view requested_path, const CoreLoadServices& services,
+                                 std::string_view requested_path,
+                                 const CoreLoadDependencies& services,
                                  std::string_view password_reset_call);
 } // namespace openciv::session

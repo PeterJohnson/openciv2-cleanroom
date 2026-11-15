@@ -13,7 +13,7 @@ struct Fixture {
     state::UnitStackState retained;
     StackBudget budget{50000000, 64};
     std::vector<StackDiagnostic> reports;
-    LocalStacks stacks{units, map, retained, budget, {&reports}};
+    LocalStacks stacks{units, map, retained, budget, &reports};
     Fixture() { map.allocate(world::Geometry{8, 6}); }
     state::Unit& unit(std::size_t slot) { return units.storage()[slot]; }
     void live(std::size_t slot, world::Position p = {2, 2}, unsigned owner = 1) {

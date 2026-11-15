@@ -10,7 +10,7 @@ namespace openciv::session {
 // Real U01 deletion runs with notify=false, including required V01 checks.
 // Placement children inside validation recheck live authority independently.
 void cleanup_classic_loaded_units(state::GameState& world, const state::RuleDefinitions& rules,
-                                  unit::StackBudget& budget, unit::StackServices stacks,
-                                  unit::StackOperationServices placement,
-                                  unit::DeletionServices deletion);
+                                  unit::StackBudget& budget, unit::StackDiagnostics stacks,
+                                  unit::StackSynchronization placement,
+                                  const unit::UnitDeletionEffects& deletion);
 } // namespace openciv::session

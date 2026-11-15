@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // F05 section 2 composes F03/F06, F05 sections 3-5 and V03 section 2.
 // Authored rules, binary maps and controlled choices; W02, V01, balancing,
 // acceleration and presentation children are explicit supplied test services.
@@ -20,7 +21,7 @@ struct Fixture {
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{99}};
     ClassicFileState files;
-    WorldEntryServices services;
+    WorldEntryCallbacks services;
     classic::TextWorkspace workspace;
     classic::TextDirectories directories{"home", "home", "home"};
     std::string rules_text;
@@ -607,12 +608,12 @@ TEST_CASE("F05 introduction selects highest twelve eligible known advances then 
 
 TEST_CASE("F05 world entry validates the selected service graph before replacing a game",
           "[world-entry][session]") {
-    const std::array<std::function<void(WorldEntryServices&)>, 5> remove{
+    const std::array<std::function<void(WorldEntryDependencies&)>, 5> remove{
         [](auto& services) { services.load_content = {}; },
-        [](auto& services) { services.size.custom = {}; },
-        [](auto& services) { services.players.titles = {}; },
+        [](auto& services) { services.size = nullptr; },
+        [](auto& services) { services.players = nullptr; },
         [](auto& services) { services.initialize.balance_starts = {}; },
-        [](auto& services) { services.parameters.preferences.remove_file = {}; }};
+        [](auto& services) { services.parameters.preferences = nullptr; }};
     for (const auto& missing : remove) {
         Fixture f;
         f.runtime.begin_client_session({1, 2});
@@ -624,8 +625,12 @@ TEST_CASE("F05 world entry validates the selected service graph before replacing
         const auto* world = &f.runtime.world();
         base::GameplayRandom random{choices(), "setup"};
         const auto before = random.checkpoint();
-        missing(f.services);
-        CHECK_THROWS_AS(f.run(random), std::invalid_argument);
+        WorldEntryDependencies dependencies = f.services;
+        missing(dependencies);
+        CHECK_THROWS_AS(enter_new_world(f.runtime, f.files, random, "entry", NewWorldChoice::random,
+                                        formats::content::builtin_gameplay()->values.calendar,
+                                        dependencies),
+                        std::invalid_argument);
         CHECK(&f.runtime.world() == world);
         CHECK(f.runtime.world().globals.turn == 77);
         CHECK(f.files.game_stem == "existing");

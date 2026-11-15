@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 #include "session/unit_operations.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <deque>
@@ -43,7 +44,7 @@ struct Fixture {
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{199}};
     ChannelState channel;
-    UnitOperationServices services;
+    UnitOperationCallbacks services;
     std::uint32_t tick = 100;
     unsigned timeouts = 0, synchronizations = 0;
     Fixture() {
@@ -241,7 +242,7 @@ TEST_CASE("U01 remote primitive arguments reach the channel before local record 
 namespace {
 class CommandUnit final : public Continuation {
 public:
-    CommandUnit(UnitOperationServices services, std::unique_ptr<UnitRequestChannel> channel)
+    CommandUnit(UnitOperationCallbacks services, std::unique_ptr<UnitRequestChannel> channel)
         : services_(std::move(services)), channel_(std::move(channel)) {}
     OperationStep resume(OperationContext& context, OperationInput input) override {
         if (!child_)
@@ -256,7 +257,7 @@ public:
     }
 
 private:
-    UnitOperationServices services_;
+    UnitOperationCallbacks services_;
     std::unique_ptr<UnitRequestChannel> channel_;
     std::unique_ptr<UnitOperation> child_;
 };

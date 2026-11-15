@@ -8,8 +8,8 @@ void PremadeWorldChoices::validate() const {
     if (!use_seed || !use_start_locations || !ticks)
         throw std::invalid_argument("Premade world requires seed, starts and clock services");
 }
-void PremadeWorldServices::validate() const {
-    if (!open || !load_failure)
+void PremadeWorldDependencies::validate() const {
+    if (!storage || !load_failure)
         throw std::invalid_argument("Premade world requires input and failure services");
     choices.validate();
 }
@@ -50,7 +50,7 @@ void normalize(world::MapStorage& map) {
 } // namespace
 WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPositions& starts,
                                   const PremadeWorldChoices& supplied) {
-    const auto choices = supplied;
+    const auto& choices = supplied;
     choices.validate();
     auto pin = runtime.pin_world();
     return complete(runtime, [&] {
@@ -82,10 +82,10 @@ WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPosi
 std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
                                               formats::StartingPositions& starts,
                                               std::optional<std::string> selected_path,
-                                              const PremadeWorldServices& supplied) {
+                                              const PremadeWorldDependencies& supplied) {
     if (!selected_path)
         return {};
-    const auto services = supplied;
+    const auto& services = supplied;
     if (selected_path->find('\0') != std::string::npos)
         throw std::invalid_argument("Premade map path must not contain NUL");
     services.validate();
@@ -94,7 +94,7 @@ std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
     auto pin = runtime.pin_world();
     return complete(runtime, [&]() -> std::optional<WorldSource> {
         publish(runtime);
-        auto input = services.open(*selected_path);
+        auto input = services.storage->read(*selected_path);
         if (!input) {
             publish(runtime);
             services.load_failure();

@@ -119,12 +119,13 @@ also belong to the installer.
 
 ## Composed core load
 
-`ClassicLoadOperation` copies and validates its services and acquires a
+`ClassicLoadOperation` retains and validates borrowed dependency handles and acquires a
 `SessionActivity`. It reads bounded owned bytes, validates the supported header,
 closes input once, decodes and admits the input, and asks one content factory for
 `LoadedContent`. `RuleInstaller` installs that content and reuses the same input
 for final name-preserving table updates. Parsing does not keep a reader open
-across gameplay installation.
+across gameplay installation. Storage, comparison and callback owners outlive
+the operation; a dependency copy never clones their implementation state.
 
 Malformed or truncated input and close failure leave the previous world, rules,
 tokens and RNG unchanged. Semantic installation children retain completed effects

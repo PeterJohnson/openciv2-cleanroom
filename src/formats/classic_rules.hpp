@@ -1,4 +1,5 @@
 #pragma once
+#include "base/callback_ref.hpp"
 #include "classic_text_reader.hpp"
 #include "state/rule_input.hpp"
 #include <vector>
@@ -15,20 +16,19 @@ public:
     int position, code;
     static constexpr int module = 3;
 };
-struct RuleLoadServices {
-    // Diagnostic/cleanup hook. Returning never resumes the offending parser.
-    std::function<void(const RuleLoadError&)> fatal;
-};
+// Diagnostic/cleanup hook. Returning never resumes the offending parser.
+using RuleFailureObserver = base::CallbackRef<void(const RuleLoadError&)>;
 state::AdvanceReference advance_reference(std::string_view token) noexcept;
 state::TerrainResult terrain_result(std::string_view token, const TextCase& comparison);
 
 // F03 sections 2-7,9 and Appendix A. Decode into unpublished common inputs.
 // Parsing never changes live state or assigns native identity IDs.
 // Presentation decoding currently admits reversible Windows-1252 text only.
+// A supplied failure observer is borrowed and must outlive the loader.
 class RuleLoader {
 public:
     RuleLoader(TextReader& reader, state::RuleInput& output, TextCase comparison,
-               RuleLoadServices services = {});
+               RuleFailureObserver services = {});
     RuleLoader(const RuleLoader&) = delete;
     RuleLoader& operator=(const RuleLoader&) = delete;
     void load(std::string_view filename);
@@ -56,6 +56,6 @@ private:
     state::RuleDefinitions& rules_;
     state::RuleInput& output_;
     TextCase comparison_;
-    RuleLoadServices services_;
+    RuleFailureObserver on_failure_;
 };
 } // namespace openciv::formats::classic

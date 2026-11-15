@@ -2,14 +2,11 @@
 #include <bit>
 
 namespace openciv::session {
-void WorldSizeServices::validate() const {
-    if (!preset || !custom)
-        throw std::invalid_argument("World size requires preset and custom-size services");
-}
-void WorldParameterServices::validate() const {
+void WorldParameterDependencies::validate() const {
     if (!choose)
         throw std::invalid_argument("World parameters require a choice service");
-    preferences.validate_output();
+    if (!preferences)
+        throw std::invalid_argument("Preference storage is required");
 }
 namespace {
 using Parameter = state::WorldParameter;
@@ -70,9 +67,8 @@ void sample(state::WorldSetup& setup, Parameter parameter, base::GameplayRandom&
 }
 } // namespace
 
-bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& supplied) {
-    const auto services = supplied;
-    services.validate();
+bool select_world_size(SessionRuntime& runtime, const WorldSizeInteraction& supplied) {
+    const auto& services = supplied;
     auto pin = runtime.pin_world();
     return complete(runtime, [&] {
         auto& setup = runtime.world().world_setup;
@@ -83,7 +79,7 @@ bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& supplie
         bool done = false;
         while (!done) {
             publish(runtime);
-            const auto choice = services.preset(remembered);
+            const auto choice = services.choose_preset(remembered);
             if (const auto* preset = std::get_if<std::int32_t>(&choice)) {
                 if (*preset >= 0) {
                     remembered = static_cast<state::WorldSize>(narrow(*preset));
@@ -96,7 +92,7 @@ bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& supplie
             }
             for (;;) {
                 publish(runtime);
-                const auto custom = services.custom("50", "80");
+                const auto custom = services.choose_custom("50", "80");
                 if (custom.status == CustomSizeStatus::unavailable) {
                     done = true;
                     break;
@@ -134,8 +130,8 @@ void randomize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
     });
 }
 bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,
-                                std::string_view call, const WorldParameterServices& supplied) {
-    const auto services = supplied;
+                                std::string_view call, const WorldParameterDependencies& supplied) {
+    const auto& services = supplied;
     require_call(call);
     services.validate();
     auto pin = runtime.pin_world();
@@ -159,13 +155,13 @@ bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
                 sample(setup, parameter, random, call);
             }
         }
-        (void)save_classic_preferences(runtime, services.preferences);
+        (void)save_classic_preferences(runtime, *services.preferences);
         return true;
     });
 }
 bool select_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,
                              std::string_view call, bool customize, bool world_selected,
-                             const WorldParameterServices& services) {
+                             const WorldParameterDependencies& services) {
     if (!world_selected)
         return false;
     if (customize)

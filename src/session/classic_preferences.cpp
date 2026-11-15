@@ -29,21 +29,15 @@ private:
     std::unique_ptr<CoreOutput> output_;
 };
 } // namespace
-void PreferenceFileServices::validate_output() const {
-    if (!open_output || !remove_file)
-        throw std::invalid_argument("Preference saving requires open and removal services");
-}
 PreferenceLoadStatus load_classic_preferences(state::ProcessContext& process,
                                               const state::PreferenceDefaults& supplied_defaults,
-                                              const PreferenceFileServices& supplied) {
-    const auto services = supplied;
+                                              const FileStorage& supplied) {
+    const auto& services = supplied;
     const auto defaults = supplied_defaults;
-    if (!services.open_input)
-        throw std::invalid_argument("Preference loading requires an input service");
     auto ordinary = process.ordinary_preferences;
     auto multiplayer = process.multiplayer_preferences;
     auto status = PreferenceLoadStatus::defaults;
-    auto input = services.open_input("CIV2.DAT");
+    auto input = services.read("CIV2.DAT");
     if (!input) {
         state::default_ordinary_preferences(ordinary, defaults);
         state::default_multiplayer_preferences(multiplayer);
@@ -71,41 +65,47 @@ PreferenceLoadStatus load_classic_preferences(state::ProcessContext& process,
     return status;
 }
 PreferenceSaveStatus save_classic_preferences(const state::ProcessContext& process,
-                                              const PreferenceFileServices& supplied) {
-    const auto services = supplied;
-    services.validate_output();
+                                              const FileStorage& supplied) {
+    const auto& services = supplied;
     // Snapshot configuration before external I/O; write callbacks are not edits.
     const auto ordinary = formats::encode_ordinary_preferences(process.ordinary_preferences);
     const auto multiplayer =
         formats::encode_multiplayer_preferences(process.multiplayer_preferences);
-    auto output = services.open_output("CIV2.DAT");
+    auto output = services.replace("CIV2.DAT");
     if (!output)
         return PreferenceSaveStatus::output;
     const bool written = output->item(ordinary) && output->item(multiplayer);
     const bool finalized = output->close();
     if (!written || !finalized) {
-        (void)services.remove_file("CIV2.DAT");
+        (void)services.remove("CIV2.DAT");
         return PreferenceSaveStatus::output;
     }
     return PreferenceSaveStatus::success;
 }
-PreferenceSaveStatus save_classic_preferences(SessionRuntime& runtime,
-                                              const PreferenceFileServices& supplied) {
-    const auto services = supplied;
-    services.validate_output();
-    auto files = services;
-    files.open_output = [&runtime, open = services.open_output](
-                            std::string_view path) -> std::unique_ptr<CoreOutput> {
-        publish(runtime);
-        auto output = open(path);
-        if (!output)
-            return {};
-        return std::make_unique<PublishedOutput>(runtime, std::move(output));
-    };
-    files.remove_file = [&runtime, remove = services.remove_file](std::string_view path) {
-        publish(runtime);
-        return remove(path);
-    };
-    return save_classic_preferences(runtime.process(), files);
+PreferenceSaveStatus save_classic_preferences(SessionRuntime& runtime, const FileStorage& storage) {
+    class PublishedStorage final : public FileStorage {
+    public:
+        PublishedStorage(SessionRuntime& runtime, const FileStorage& storage)
+            : runtime_(runtime), storage_(storage) {}
+        std::unique_ptr<CoreInput> read(std::string_view path) const override {
+            return storage_.read(path);
+        }
+        std::unique_ptr<CoreOutput> replace(std::string_view path) const override {
+            publish(runtime_);
+            auto output = storage_.replace(path);
+            if (!output)
+                return {};
+            return std::make_unique<PublishedOutput>(runtime_, std::move(output));
+        }
+        bool remove(std::string_view path) const override {
+            publish(runtime_);
+            return storage_.remove(path);
+        }
+
+    private:
+        SessionRuntime& runtime_;
+        const FileStorage& storage_;
+    } published(runtime, storage);
+    return save_classic_preferences(runtime.process(), published);
 }
 } // namespace openciv::session

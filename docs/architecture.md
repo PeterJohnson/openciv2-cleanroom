@@ -304,8 +304,9 @@ New-world setup uses the same `LoadedContent` factory and installer, including
 final name-preserving table updates from that one parsed input. Scenario event
 sources return `EventCatalog`; shared installation prepares the replacement
 before publishing it. No event parser receives a mutable live collection.
-Preference loading snapshots its operands, reads and closes both items, and only
-then installs the values/defaults. Close failure leaves prior preferences intact.
+Preference loading snapshots its data operands, borrows the storage provider,
+reads and closes both items, and only then installs the values/defaults. Close
+failure leaves prior preferences intact.
 
 Events contain semantic values and owned string identities. Only the codec has
 serialized presence words. Collection-controlled IDs and const access protect
@@ -327,26 +328,43 @@ Public client/value headers do not include mutable state or engine operation
 interfaces. Transitive include checks and portable target dependency checks
 protect these boundaries as the frontend grows.
 
-Use virtual interfaces for a cohesive service with implementation identity and a
-lifecycle, such as `RandomSource`, `Continuation`, `TextStream` and `FileChooser`.
-Required methods are part of the interface, and ownership is explicit. The file
-chooser is owned by its workflow; asynchronous results must not retain stack
-references to an earlier call.
+Use noncopyable virtual interfaces for cohesive providers with implementation
+identity. `FileStorage` supplies binary input, replacement output and removal;
+the native filesystem implements it directly. `UnitMovementQueries`,
+`UnitDeletionEffects`, `SocketTransport`, `MusicControl`, `CountdownControl`,
+`OptionBroadcaster` and the setup interaction interfaces retain their own identity
+across calls. Required operations are methods, not nullable callback slots.
+Borrow a provider by reference, or by a validated pointer when a selected branch
+needs it. Do not clone a provider to freeze its wiring.
 
-Use `std::function` for individual injected policies, notifications and registered
-operation factories when captured configuration is useful. A callback bundle is
-appropriate for a local composition adapter, but must validate required bindings
-before effects and document capture lifetimes. Promote a bundle to an owned
-service class when its functions share a protocol or retained state. Existing
-F05 setup bundles remain supplied-child adapters until their interactive callers
-migrate; adding a class per algorithm or replacing every callable with inheritance
-does not improve their behavioral contracts.
+Use `base::CallbackRef` for an individual borrowed policy or notification.
+It binds a callable lvalue or a function pointer, owns no capture, and preserves
+callable identity when copied. Callback owners must outlive every invocation;
+do not replace their bindings while a dependent operation is active. Small
+`*Dependencies` records group borrowed providers, policies and callbacks. They
+contain no owning `std::function` targets, including in nested records. A copied
+dependency descriptor copies handles only. Avoid one-field service wrappers:
+label/failure observers, immediate file choice and stack synchronization use
+direct callback parameters. Passive stack diagnostics use an optional output
+pointer. Captured callable state is never an accidental per-invocation snapshot.
 
-Setup and configuration entry points copy and validate their service wiring before
-changing state. World entry validates the entire selected setup branch before
-replacing the old game or revoking its clients. Missing bindings are composition
-errors; failures raised by a bound child still retain the specified completed
-prefix. Tests supply throwing children explicitly to distinguish those cases.
+Use owning `std::function` where ownership is intended, such as registered
+operation factories, self-contained comparison policies and callbacks owned by
+an implementation. Tests may use concrete programmable providers and owned
+callback fixtures; those fixtures must remain alive for their consumers.
+
+Suspended operations own their chooser/channel and request/result values, and
+retain explicitly borrowed provider/callback handles. The owners of those
+dependencies outlive the operation, including cancellation/destruction. An
+operation must not retain a stack-local callback owner from an earlier call.
+The immediate save adapter supplies its chooser separately; the asynchronous
+save operation has one owned `FileChooser` and no redundant chooser callback.
+
+Setup and configuration validate selected dependency handles before changing
+state. World entry validates the selected branch before replacing the old game
+or revoking clients. Missing handles are composition errors; a failure raised
+by an implemented child retains its specified completed prefix. Snapshot data
+when a coherent input/export is required, independently of provider lifetimes.
 
 `CoreInput` and `CoreOutput` are noncopyable file interfaces. Their shared close
 state ensures finalization is attempted once, including a throwing close;

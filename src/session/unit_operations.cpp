@@ -4,7 +4,7 @@
 
 namespace openciv::session {
 UnitOperation::UnitOperation(SessionRuntime& runtime, UnitRequest request, bool notify,
-                             unit::StackBudget budget, UnitOperationServices services,
+                             unit::StackBudget budget, UnitOperationDependencies services,
                              std::unique_ptr<UnitRequestChannel> channel)
     : UnitOperation(
           runtime.world(), *runtime.process().rules, [&runtime] { runtime.publish(); }, request,
@@ -12,17 +12,16 @@ UnitOperation::UnitOperation(SessionRuntime& runtime, UnitRequest request, bool 
     activity_.emplace(runtime.begin_activity());
 }
 UnitOperation::UnitOperation(OperationContext& context, UnitRequest request, bool notify,
-                             unit::StackBudget budget, UnitOperationServices services,
+                             unit::StackBudget budget, UnitOperationDependencies services,
                              std::unique_ptr<UnitRequestChannel> channel)
     : UnitOperation(context.world, *context.process.rules, context.publish, request, notify, budget,
                     std::move(services), std::move(channel)) {}
 UnitOperation::UnitOperation(state::GameState& world, state::RuleState& rules,
                              std::function<void()> publish, UnitRequest request, bool notify,
-                             unit::StackBudget budget, UnitOperationServices services,
+                             unit::StackBudget budget, UnitOperationDependencies services,
                              std::unique_ptr<UnitRequestChannel> channel)
     : world_(world), rules_(rules), publish_(std::move(publish)), request_(request),
-      notify_(notify), budget_(budget), services_(std::move(services)),
-      channel_(std::move(channel)) {
+      notify_(notify), budget_(budget), services_(services), channel_(std::move(channel)) {
     if (!publish_)
         throw std::invalid_argument("Unit operation requires publication");
     switch (request.operation) {
@@ -49,18 +48,13 @@ UnitOperation::UnitOperation(state::GameState& world, state::RuleState& rules,
         throw std::invalid_argument(
             "Remote unit operation requires channel, clock and timeout service");
     if (stack_ && notify && world.globals.multiplayer >= state::GameMode::tcp &&
-        !services_.placement.synchronize)
+        !services_.placement)
         throw std::invalid_argument("Stack relocation requires synchronization notification");
     if (!remote_) {
-        const auto& deletion = services_.deletion;
-        if (request.operation == UnitOperationKind::erase &&
-            (!deletion.check_destroyed ||
-             (notify &&
-              (!deletion.removed_unit || !deletion.refresh_home ||
-               (world.globals.multiplayer >= state::GameMode::tcp && !deletion.synchronize)))))
-            throw std::invalid_argument("Unit deletion requires complete local children");
+        if (request.operation == UnitOperationKind::erase && !services_.deletion)
+            throw std::invalid_argument("Unit deletion requires its effect provider");
         if (request.operation != UnitOperationKind::erase && notify &&
-            world.globals.multiplayer >= state::GameMode::tcp && !services_.placement.synchronize)
+            world.globals.multiplayer >= state::GameMode::tcp && !services_.placement)
             throw std::invalid_argument("Placement requires synchronization notification");
     }
 }
@@ -119,9 +113,9 @@ std::optional<UnitOperationResult> UnitOperation::complete_child(UnitOperationRe
         return {}; // Preserve the captured successor across the suspended child.
     }
     if (stack_ && notify_ && world_.globals.multiplayer >= state::GameMode::tcp) {
-        if (!services_.placement.synchronize)
+        if (!services_.placement)
             throw std::invalid_argument("Stack relocation requires synchronization notification");
-        services_.placement.synchronize();
+        services_.placement();
         publish_();
     }
     result.timed_out = any_timeout_;
@@ -207,7 +201,7 @@ std::optional<UnitOperationResult> UnitOperation::poll() {
                     break;
                 case UnitOperationKind::erase:
                     unit::UnitDeletion(world, rules_.definitions, budget_, services_.stacks,
-                                       services_.deletion)
+                                       *services_.deletion)
                         .erase(slot, notify_);
                     break;
                 case UnitOperationKind::relocate_stack:

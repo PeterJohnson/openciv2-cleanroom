@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // F06 semantic file choice and P04 presentation independence.
 #include "classic_save_fixture.hpp"
 #include "session/classic_save_menu.hpp"
@@ -11,7 +12,7 @@ std::string label(std::size_t index) {
 }
 struct Fixture : test::ClassicSaveFixture {
     ClassicSaveMenuState menu{true, "previous.sav"};
-    SaveMenuServices ui;
+    SaveMenuCallbacks ui;
     FileChoiceResult choice{FileChoiceStatus::accepted, "chosen.sav", {}};
     std::vector<FileChoiceRequest> requests;
     std::vector<SaveNotice> notices;
@@ -55,7 +56,7 @@ struct Fixture : test::ClassicSaveFixture {
         };
     }
     SaveMenuResult menu_save(bool scenario = false) {
-        return save_classic_menu(runtime, files, menu, scenario, ui);
+        return save_classic_menu(runtime, files, menu, scenario, ui, ui.chooser);
     }
 };
 } // namespace
@@ -91,19 +92,20 @@ TEST_CASE("F06 chooser publishes only accepted valid paths without a native leng
     for (const auto status :
          {FileChoiceStatus::accepted, FileChoiceStatus::cancelled, FileChoiceStatus::failed}) {
         const std::string path(700, 'a');
-        const auto result =
-            choose_classic_file(request, {[&](const auto& actual) {
-                                    CHECK(actual.initial_path == "suggested.sav");
-                                    return FileChoiceResult{status, path, "diagnostic"};
-                                }});
+        auto choose = [&](const FileChoiceRequest& actual) {
+            CHECK(actual.initial_path == "suggested.sav");
+            return FileChoiceResult{status, path, "diagnostic"};
+        };
+        const auto result = choose_classic_file(request, choose);
         CHECK(result.status == status);
         CHECK(result.path == (status == FileChoiceStatus::accepted ? path : ""));
     }
-    for (const auto& path : {std::string{}, std::string("bad\0name", 8)})
-        CHECK(choose_classic_file(request, {[&](const auto&) {
-                                      return FileChoiceResult{FileChoiceStatus::accepted, path, {}};
-                                  }})
-                  .status == FileChoiceStatus::failed);
+    for (const auto& path : {std::string{}, std::string("bad\0name", 8)}) {
+        auto choose = [&](const FileChoiceRequest&) {
+            return FileChoiceResult{FileChoiceStatus::accepted, path, {}};
+        };
+        CHECK(choose_classic_file(request, choose).status == FileChoiceStatus::failed);
+    }
 }
 TEST_CASE("F06 save UI supplies owned semantic notice arguments", "[session][save-menu]") {
     Fixture f;
@@ -198,7 +200,7 @@ TEST_CASE("F06 save UI restarts countdown after exceptional external work",
 TEST_CASE("F06 inactive save UI requires no presentation services", "[session][save-menu]") {
     Fixture f;
     f.menu.session_active = false;
-    CHECK(save_classic_menu(f.runtime, f.files, f.menu, false, {}) == SaveMenuResult::inactive);
+    CHECK(save_classic_menu(f.runtime, f.files, f.menu, false, {}, {}) == SaveMenuResult::inactive);
     CHECK(f.stops == 0);
     CHECK(f.opens == 0);
 }

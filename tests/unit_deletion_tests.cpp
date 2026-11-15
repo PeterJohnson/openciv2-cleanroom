@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Independently authored U01 sections 6, 9–11 / Appendix A expectations.
 // V01 and transport are supplied children; these cases do not implement them.
 #include "unit/deletion.hpp"
@@ -15,7 +16,7 @@ struct Fixture {
     StackBudget budget{100000, 64};
     std::vector<std::string> calls;
     std::function<void()> on_removed, on_refresh, on_destroyed, on_sync;
-    DeletionServices services;
+    DeletionCallbacks services;
     Fixture() {
         world.map.allocate(world::Geometry{8, 6});
         world.map.tile({2, 2}).features = 0x15;

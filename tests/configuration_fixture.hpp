@@ -1,4 +1,5 @@
 #pragma once
+#include "service_callbacks.hpp"
 #include "classic_stream_fixture.hpp"
 
 #include "session/configuration.hpp"
@@ -12,7 +13,7 @@ namespace openciv::test {
 struct ConfigurationFixture {
     state::ProcessContext process;
     session::SessionRuntime runtime{process, base::RuntimeId{79}};
-    session::PreferenceFileServices preferences;
+    session::PreferenceFileCallbacks preferences;
     std::vector<std::string> trace;
     std::vector<formats::Bytes> written;
     bool fail_open = false;

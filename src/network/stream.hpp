@@ -1,4 +1,5 @@
 #pragma once
+#include "base/callback_ref.hpp"
 
 #include "formats/bytes.hpp"
 #include <array>
@@ -80,14 +81,24 @@ struct SocketResult {
     std::size_t accepted = 0;
     SocketError error = SocketError::none;
 };
-struct SendServices {
-    // Live library-wide capacity, not a value captured by each queued record.
+class SocketTransport {
+public:
+    SocketTransport() = default;
+    virtual ~SocketTransport() = default;
+    SocketTransport(const SocketTransport&) = delete;
+    SocketTransport& operator=(const SocketTransport&) = delete;
+    // Exceptions mean no bytes were accepted. Accepted bytes require a result.
+    virtual SocketResult transmit(std::span<const Byte> bytes) const = 0;
+};
+struct SendLimits {
     std::uint32_t chunk_capacity = 8192, oversized_limit = 50000;
-    // Required. Exceptions mean no bytes were accepted; after accepting bytes,
-    // return a SocketResult. A throwing call leaves queued bytes/offset intact.
-    std::function<SocketResult(std::span<const Byte>)> send;
-    std::function<void()> post_write;
-    std::function<void(std::size_t)> backlog;
+};
+struct SendDependencies {
+    const SocketTransport& transport;
+    // Borrow current library-wide limits across queued records.
+    const SendLimits& limits;
+    base::CallbackRef<void()> post_write;
+    base::CallbackRef<void(std::size_t)> backlog;
 };
 enum class SendResult { immediate, queued, oversized, is_connected, fatal };
 enum class DrainResult { empty, complete, pending, fatal, excluded_retired_descriptor };
@@ -95,10 +106,11 @@ class SendQueue {
 public:
     // N05 §4; socket service calls do not reenter this queue. Event posting may
     // observe it after publication. All queued bytes, including padding, are owned.
-    SendResult send(std::uint32_t tag, std::span<const Byte> payload, SendServices& services,
-                    std::span<const Byte> padding = {});
-    DrainResult drain_one(SendServices& services);
-    DrainResult write_event(SendServices& services, const std::function<void()>& close_handler);
+    SendResult send(std::uint32_t tag, std::span<const Byte> payload,
+                    const SendDependencies& services, std::span<const Byte> padding = {});
+    DrainResult drain_one(const SendDependencies& services);
+    DrainResult write_event(const SendDependencies& services,
+                            const std::function<void()>& close_handler);
     std::size_t size() const noexcept { return queue_.size(); }
     std::size_t front_offset() const noexcept { return queue_.empty() ? 0 : queue_.front().sent; }
     std::size_t backlog_threshold() const noexcept { return backlog_threshold_; }

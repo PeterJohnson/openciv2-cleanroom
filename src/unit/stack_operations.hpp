@@ -1,21 +1,20 @@
 #pragma once
+#include "base/callback_ref.hpp"
 
 #include "state/game.hpp"
 #include "unit/stacks.hpp"
 
 namespace openciv::unit {
 enum class PlacementOperation { detach, attach, relocate, bottom };
-struct StackOperationServices {
-    // Semantic completion notification. Transport scheduling belongs to the session.
-    std::function<void()> synchronize;
-};
+// Semantic completion notification. Transport scheduling belongs to the session.
+using StackSynchronization = base::CallbackRef<void()>;
 // U01 sections 2–4, 9: independently gated placement, including the children
 // reached from repairing traversals. Local/host authority is required; remote
 // requests use session::UnitOperation. No terrain revelation or move cost is added.
 class StackOperations {
 public:
-    StackOperations(state::GameState& world, StackBudget& budget, StackServices stack_services,
-                    StackOperationServices services);
+    StackOperations(state::GameState& world, StackBudget& budget, StackDiagnostics stack_services,
+                    StackSynchronization services);
     StackOperations(const StackOperations&) = delete;
     StackOperations& operator=(const StackOperations&) = delete;
     StackOperations(StackOperations&&) = delete;
@@ -47,7 +46,7 @@ private:
     void synchronize(bool sync);
     void finish(PlacementOperation operation, bool sync);
     state::GameState& world_;
-    StackOperationServices services_;
+    StackSynchronization synchronize_;
     LocalStacks local_;
 };
 } // namespace openciv::unit

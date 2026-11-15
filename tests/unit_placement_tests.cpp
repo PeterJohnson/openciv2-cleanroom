@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Independently authored U01 sections 2–4, 9–11 placement/authority cases.
 // Incoming messages are supplied effects, not original-peer execution evidence.
 #include "unit/stack_operations.hpp"
@@ -12,7 +13,7 @@ struct Fixture {
     state::ProcessContext process;
     state::GameState world{process};
     StackBudget budget{100000, 64};
-    StackOperationServices services;
+    StackOperationCallbacks services;
     std::vector<std::string> calls;
     std::vector<StackDiagnostic> reports;
     std::function<void()> on_sync, on_flush;
@@ -78,7 +79,7 @@ struct Fixture {
         }
         throw std::logic_error("bad test selector");
     }
-    StackOperations operations() { return StackOperations(world, budget, {&reports}, services); }
+    StackOperations operations() { return StackOperations(world, budget, &reports, services); }
     std::vector<std::int32_t> order(std::int32_t head) {
         std::vector<std::int32_t> result;
         for (auto current = head; current >= 0 && result.size() < 20;

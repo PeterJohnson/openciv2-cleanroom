@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 #include "formats/state_conversion.hpp"
 // F05 sections 2-3, F01 cyclic arithmetic/sampling and F06 preference fields.
 // Expectations are independently authored from the contract. The explicitly
@@ -26,8 +27,8 @@ std::vector<base::Choice> choices(std::array<std::int32_t, 5> codes,
     return result;
 }
 struct Fixture : test::ConfigurationFixture {
-    WorldSizeServices size;
-    WorldParameterServices parameters;
+    WorldSizeCallbacks size;
+    WorldParameterCallbacks parameters;
     std::vector<Parameter> visits;
     Fixture() {
         test::fail_service(size.custom);
@@ -51,6 +52,28 @@ struct Fixture : test::ConfigurationFixture {
     }
 };
 } // namespace
+
+TEST_CASE("F05 custom parameters reject missing dependencies before effects",
+          "[world-setup][session]") {
+    for (const bool missing_storage : {false, true}) {
+        Fixture f;
+        auto random = f.no_choices();
+        WorldParameterDependencies dependencies = f.parameters;
+        if (missing_storage)
+            dependencies.preferences = nullptr;
+        else
+            dependencies.choose = {};
+        const auto parameters = f.runtime.world().world_setup.parameters;
+        const auto remembered = f.process.ordinary_preferences.world_parameters;
+        CHECK_THROWS_AS(customize_world_parameters(f.runtime, random, "world/one", dependencies),
+                        std::invalid_argument);
+        CHECK(f.runtime.world().world_setup.parameters == parameters);
+        CHECK(f.process.ordinary_preferences.world_parameters == remembered);
+        CHECK(f.visits.empty());
+        CHECK(f.trace.empty());
+        CHECK(random.checkpoint().draws == 0);
+    }
+}
 
 TEST_CASE("F05 size presets classify area clear status and remember ordinary choices",
           "[world-setup][session]") {
@@ -464,7 +487,7 @@ TEST_CASE("F05 empty parameter identity rejects before mutation and inactive set
     CHECK_THROWS_AS(customize_world_parameters(runtime, random, "", {}), std::invalid_argument);
     CHECK(runtime.world().world_setup == before);
     CHECK(random.checkpoint().trace->events.empty());
-    WorldSizeServices size;
+    WorldSizeCallbacks size;
     test::fail_service(size.custom);
     size.preset = [](auto) -> WorldSizeChoice { return 1; };
     CHECK(select_world_size(runtime, size));

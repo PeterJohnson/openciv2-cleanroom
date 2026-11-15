@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // F05 section 3, F06 section 4, F01 clock mapping, W01 retained map fields.
 // Independently authored binary inputs and specification expectations. No
 // original executable, capture payload or historical harness is a test input.
@@ -36,7 +37,7 @@ struct Fixture {
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{93}};
     formats::StartingPositions starts;
-    PremadeWorldServices services;
+    PremadeWorldCallbacks services;
     formats::Bytes input = raw_map();
     std::size_t position = 0;
     bool open_failure = false;

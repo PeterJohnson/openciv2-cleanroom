@@ -8,7 +8,7 @@ namespace openciv::session {
 namespace {
 using namespace formats;
 void paths(ClassicFileState& retained, const std::string& request,
-           const CoreLoadServices& services) {
+           const CoreLoadDependencies& services) {
     const auto separator = request.rfind('\\');
     if (separator == std::string::npos)
         throw std::out_of_range("Core load requires an established final backslash");
@@ -22,7 +22,7 @@ void paths(ClassicFileState& retained, const std::string& request,
     retained.loaded_filename = request.substr(separator + 1);
     const auto home = retained.text.home;
     if (request.size() >= home.size() &&
-        services.comparison.equal(request.substr(0, home.size()), home) &&
+        services.comparison->equal(request.substr(0, home.size()), home) &&
         separator > home.size()) {
         auto relative = request.substr(home.size(), separator - home.size());
         if (!relative.empty() && relative.front() == '\\')
@@ -34,13 +34,14 @@ void paths(ClassicFileState& retained, const std::string& request,
     services.change_directory(retained.text.working);
 }
 } // namespace
-void CoreLoadServices::validate() const {
-    if (!open || !flush || !change_directory || !exists || !comparison.equal || !load_content)
+void CoreLoadDependencies::validate() const {
+    if (!storage || !flush || !change_directory || !exists || !comparison || !comparison->equal ||
+        !load_content)
         throw std::invalid_argument("Core load requires complete file/path/content bindings");
 }
 ClassicLoadOperation::ClassicLoadOperation(SessionRuntime& runtime, ClassicFileState& retained,
-                                           CoreLoadServices services)
-    : runtime_(runtime), retained_(retained), services_(std::move(services)), activity_([&] {
+                                           CoreLoadDependencies services)
+    : runtime_(runtime), retained_(retained), services_(services), activity_([&] {
           services_.validate();
           (void)runtime_.gameplay_random();
           return runtime_.begin_activity();
@@ -60,7 +61,7 @@ CoreLoadStatus ClassicLoadOperation::load(std::string_view path,
     retained.opened_path = request;
     if (request.find('.') == std::string::npos)
         retained.opened_path += retained.extension;
-    auto input = services.open(retained.opened_path);
+    auto input = services.storage->read(retained.opened_path);
     if (!input)
         return CoreLoadStatus::input;
     try {
@@ -171,7 +172,7 @@ CoreLoadStatus ClassicLoadOperation::load(std::string_view path,
     }
 }
 CoreLoadStatus load_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
-                                 std::string_view path, const CoreLoadServices& services,
+                                 std::string_view path, const CoreLoadDependencies& services,
                                  std::string_view password_reset_call) {
     ClassicLoadOperation operation(runtime, retained, services);
     return operation.load(path, password_reset_call);

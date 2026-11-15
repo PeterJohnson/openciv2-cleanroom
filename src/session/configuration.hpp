@@ -1,6 +1,8 @@
 #pragma once
+#include "base/callback_ref.hpp"
 
 #include "session/classic_preferences.hpp"
+#include "session/runtime.hpp"
 
 namespace openciv::session {
 class SessionRuntime;
@@ -14,29 +16,39 @@ using GameOptionChoices = std::array<bool, 11>;
 // production penalty, zoom-to-city. Checked message choices mean enabled.
 using GraphicsOptionChoices = std::array<bool, 6>;
 using MessageOptionChoices = std::array<bool, 11>;
-struct GameOptionServices {
-    PreferenceFileServices preferences;
-    // Required P10 owning operations. Reinitialization includes its specified
-    // stop/close/open/layout sequence; synchronization is a separate child.
-    std::function<void()> stop_music, reinitialize_music, synchronize_music;
+class MusicControl {
+public:
+    MusicControl() = default;
+    virtual ~MusicControl() = default;
+    MusicControl(const MusicControl&) = delete;
+    MusicControl& operator=(const MusicControl&) = delete;
+    // P10 reinitialization includes its stop/close/open/layout sequence;
+    // synchronization is a separate child operation.
+    virtual void stop() const = 0;
+    virtual void reinitialize() const = 0;
+    virtual void synchronize() const = 0;
 };
-struct GraphicsOptionServices {
-    PreferenceFileServices preferences;
-    std::function<bool()> heralds_available;
-    std::function<void()> low_memory_notice;
+struct GameOptionDependencies {
+    const FileStorage* preferences = nullptr;
+    const MusicControl* music = nullptr;
+};
+struct GraphicsOptionDependencies {
+    const FileStorage* preferences = nullptr;
+    base::CallbackRef<bool()> heralds_available;
+    base::CallbackRef<void()> low_memory_notice;
 };
 // nullopt is cancellation: no changes or service calls. Accepted changes use
 // real F03 preference saving and ignore its returned failure without rollback.
 // Missing bindings reject before effects; bound child exceptions retain prior
-// effects. Wiring is copied for the call. No command, native
+// effects. Providers and callback targets are borrowed for the call. No command, native
 // widget or audio implementation is fabricated by these application ports.
 bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionChoices> choices,
-                            const GameOptionServices& services);
+                            const GameOptionDependencies& services);
 bool configure_graphics_options(SessionRuntime& runtime,
                                 std::optional<GraphicsOptionChoices> choices,
-                                const GraphicsOptionServices& services);
+                                const GraphicsOptionDependencies& services);
 bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOptionChoices> choices,
-                               const PreferenceFileServices& services);
+                               const FileStorage& services);
 
 // Clear chat on new game, clear chat on boot, double production, double movement.
 using MultiplayerOptionChoices = std::array<bool, 4>;
@@ -60,26 +72,37 @@ public:
     virtual OptionVoteProgress poll() = 0;
     virtual void cancel() noexcept = 0;
 };
-struct MultiplayerOptionServices {
-    PreferenceFileServices preferences;
-    std::function<std::uint32_t()> clock;
+class OptionBroadcaster {
+public:
+    OptionBroadcaster() = default;
+    virtual ~OptionBroadcaster() = default;
+    OptionBroadcaster(const OptionBroadcaster&) = delete;
+    OptionBroadcaster& operator=(const OptionBroadcaster&) = delete;
+    virtual void rejected() const = 0;
+    virtual void accepted() const = 0;
+    virtual void units() const = 0;
+    virtual void options(bool production, bool movement, bool simultaneous) const = 0;
+};
+struct MultiplayerOptionDependencies {
+    const FileStorage* preferences = nullptr;
+    base::CallbackRef<std::uint32_t()> clock;
     // N01 owns local player/name mapping; a civilization is not a player slot.
-    std::function<std::string()> local_player_name, separator;
-    std::function<std::string(bool)> production_label, movement_label;
-    std::function<void()> broadcast_rejection, broadcast_acceptance;
-    std::function<void()> send_units;
-    std::function<void(bool production, bool movement, bool simultaneous)> send_options;
-    std::function<void(std::string_view)> notice;
-    std::function<void(std::int32_t)> redraw_status;
+    base::CallbackRef<std::string()> local_player_name, separator;
+    base::CallbackRef<std::string(bool)> production_label, movement_label;
+    const OptionBroadcaster* broadcaster = nullptr;
+    base::CallbackRef<void(std::string_view)> notice;
+    base::CallbackRef<void(std::int32_t)> redraw_status;
 };
 enum class MultiplayerOptionResult { cancelled, client_only, unchanged, rejected, applied, failed };
 // F03/N03 accepted-dialog boundary. Chat preferences save before host/change
 // gates. The operation owns pending vote lifetime and always yields after begin.
-// The caller polls from its normal scheduler; no nested presentation loop is needed.
+// Providers and callback owners outlive the operation. The owned channel is cancelled
+// on completion; polling uses the normal scheduler without a nested presentation loop.
 class MultiplayerOptionOperation {
 public:
     MultiplayerOptionOperation(SessionRuntime& runtime, std::int32_t dialog_result,
-                               MultiplayerOptionChoices choices, MultiplayerOptionServices services,
+                               MultiplayerOptionChoices choices,
+                               MultiplayerOptionDependencies services,
                                std::unique_ptr<OptionVoteChannel> channel = {});
     ~MultiplayerOptionOperation();
     MultiplayerOptionOperation(const MultiplayerOptionOperation&) = delete;
@@ -95,7 +118,7 @@ private:
     void cancel_now();
     SessionRuntime& runtime_;
     MultiplayerOptionChoices choices_;
-    MultiplayerOptionServices services_;
+    MultiplayerOptionDependencies services_;
     std::unique_ptr<OptionVoteChannel> channel_;
     std::optional<SessionActivity> activity_;
     std::optional<OptionProposal> proposal_;

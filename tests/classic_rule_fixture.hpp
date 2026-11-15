@@ -1,4 +1,5 @@
 #pragma once
+#include "service_callbacks.hpp"
 #include "formats/classic_rules.hpp"
 #include "rules/rules_install.hpp"
 // Authored F03 table inputs shared by parser and ordered-load integration tests.
@@ -62,8 +63,8 @@ class InstalledRules {
 public:
     InstalledRules(openciv::formats::classic::TextReader& reader, openciv::state::RuleState& live,
                    openciv::formats::classic::TextCase comparison,
-                   openciv::formats::classic::RuleLoadServices services = {})
-        : decoder_(reader, *input_, std::move(comparison), std::move(services)),
+                   openciv::formats::classic::RuleLoadCallbacks services = {})
+        : hooks_(std::move(services)), decoder_(reader, *input_, std::move(comparison), hooks_),
           installer_(*input_, live) {}
     void load(std::string_view filename, bool replace) {
         decoder_.load(filename);
@@ -121,6 +122,7 @@ public:
 private:
     std::unique_ptr<openciv::state::RuleInput> input_ =
         std::make_unique<openciv::state::RuleInput>();
+    openciv::formats::classic::RuleLoadCallbacks hooks_;
     openciv::formats::classic::RuleLoader decoder_;
     openciv::rules::RuleInstaller installer_;
 };

@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Authored P04 section 2 / Appendix B and F03 section 2 expectations.
 #include "formats/classic_labels.hpp"
 #include "session/text_configuration.hpp"
@@ -17,7 +18,7 @@ struct Fixture {
     std::map<std::string, std::string> files;
     std::vector<std::string> opens;
     std::function<void(std::string_view)> on_open;
-    LabelServices hooks;
+    LabelCallbacks hooks;
     TextReader reader;
     Fixture() : reader(workspace, directories, services(), ascii_text_case()) { pool.initialize(); }
     TextFiles services() {

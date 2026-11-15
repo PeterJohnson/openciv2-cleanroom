@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // F06 section 11 step 5, composed with real U01 sections 3/6 mechanics.
 // Independently authored state; supplied V01 child effects are not V01 evidence.
 #include "session/classic_loaded_units.hpp"
@@ -12,8 +13,8 @@ struct Fixture {
     std::vector<unit::StackDiagnostic> reports;
     std::vector<std::pair<std::int32_t, std::int32_t>> checks;
     std::function<void()> check_action;
-    unit::DeletionServices deletion;
-    unit::StackOperationServices placement;
+    unit::DeletionCallbacks deletion;
+    unit::StackOperationCallbacks placement;
     Fixture() {
         world.map.allocate(world::Geometry{8, 6});
         world.globals.multiplayer = state::GameMode::tcp;
@@ -42,7 +43,7 @@ struct Fixture {
         bound(std::max(slot + 1, world.entities.units.end()));
     }
     void cleanup() {
-        session::cleanup_classic_loaded_units(world, process.rules->definitions, budget, {&reports},
+        session::cleanup_classic_loaded_units(world, process.rules->definitions, budget, &reports,
                                               placement, deletion);
     }
 };

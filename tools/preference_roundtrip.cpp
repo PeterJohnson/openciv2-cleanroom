@@ -28,6 +28,28 @@ private:
     bool& complete_;
     std::size_t& items_;
 };
+class ObservedStorage final : public openciv::session::FileStorage {
+public:
+    ObservedStorage(const openciv::io::ClassicFiles& files, std::string path, bool& complete,
+                    std::size_t& items)
+        : files_(files), path_(std::move(path)), complete_(complete), items_(items) {}
+    std::unique_ptr<openciv::session::CoreInput> read(std::string_view) const override {
+        auto input = files_.open_input(path_);
+        if (!input)
+            throw std::runtime_error("Comparison input could not be reopened");
+        return std::make_unique<ObservedInput>(std::move(input), complete_, items_);
+    }
+    std::unique_ptr<openciv::session::CoreOutput> replace(std::string_view path) const override {
+        return files_.open_output(path);
+    }
+    bool remove(std::string_view path) const override { return files_.remove_file(path); }
+
+private:
+    const openciv::io::ClassicFiles& files_;
+    std::string path_;
+    bool& complete_;
+    std::size_t& items_;
+};
 } // namespace
 int main(int argc, char** argv) {
     using namespace openciv;
@@ -42,15 +64,9 @@ int main(int argc, char** argv) {
             throw std::invalid_argument("Comparison requires two complete preference items");
         const auto path = std::filesystem::absolute(argv[1]);
         io::ClassicFiles files(path.parent_path());
-        session::PreferenceFileServices services;
         bool complete = true;
         std::size_t items = 0;
-        services.open_input = [&](std::string_view) {
-            auto input = files.open_input(io::classic_path(path));
-            if (!input)
-                throw std::runtime_error("Comparison input could not be reopened");
-            return std::make_unique<ObservedInput>(std::move(input), complete, items);
-        };
+        ObservedStorage services(files, io::classic_path(path), complete, items);
         state::ProcessContext process;
         const auto status = session::load_classic_preferences(process, {}, services);
         if (status != session::PreferenceLoadStatus::success || !complete || items != 2)

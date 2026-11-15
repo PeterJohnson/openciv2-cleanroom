@@ -2,7 +2,7 @@
 
 namespace openciv::formats::classic {
 state::LabelCatalog load_labels(TextReader& reader, TextDirectories& directories,
-                                const LabelServices& services) {
+                                const MissingLabels& services) {
     struct Cleanup {
         TextReader& reader;
         TextDirectories& directories;
@@ -39,8 +39,8 @@ state::LabelCatalog load_labels(TextReader& reader, TextDirectories& directories
             }
         }
         result.entries.resize(state::Labels::capacity, "[ERROR:LABELS.TXT]");
-    } else if (services.missing_labels) {
-        services.missing_labels();
+    } else if (services) {
+        services();
     }
     reader.close();
     directories.search = cleanup.search;

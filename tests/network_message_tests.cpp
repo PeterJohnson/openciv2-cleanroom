@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Specification-derived vectors: N02 sections 2, 5-6 and Appendices A/C;
 // envelope composition uses N05 sections 4-5. No original capture is inferred.
 #include "network/messages.hpp"
@@ -92,7 +93,7 @@ TEST_CASE("N02 message passes N05 fragmented FIFO transport without adding RNG d
           "[network][N02][N05]") {
     const auto message = encode_argument_message(21, {2, -1, 0, 0, 0, 0}, Bytes{0xfe, 1}, 7);
     SendQueue outgoing;
-    SendServices services;
+    SendCallbacks services;
     services.chunk_capacity = 13;
     Bytes wire;
     services.send = [&](auto bytes) {

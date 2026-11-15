@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // F03 section 8/Appendix A, F06 option encodings and P10 owning audio boundary.
 // Independently authored specification expectations; audio children are supplied.
 #include "configuration_fixture.hpp"
@@ -7,8 +8,8 @@ using namespace openciv;
 using namespace openciv::session;
 namespace {
 struct Fixture : test::ConfigurationFixture {
-    GameOptionServices game;
-    GraphicsOptionServices graphics;
+    GameOptionCallbacks game;
+    GraphicsOptionCallbacks graphics;
     Fixture() {
         game.preferences = graphics.preferences = preferences;
         game.stop_music = [&] { trace.push_back("stop"); };
@@ -33,7 +34,7 @@ TEST_CASE("F03 cancelled option groups do not touch world preferences randomness
     const auto random = f.runtime.gameplay_random().checkpoint();
     CHECK_FALSE(configure_game_options(f.runtime, {}, {}));
     CHECK_FALSE(configure_graphics_options(f.runtime, {}, {}));
-    CHECK_FALSE(configure_message_options(f.runtime, {}, {}));
+    CHECK_FALSE(configure_message_options(f.runtime, {}, f.preferences));
     CHECK(f.runtime.world().globals == globals);
     CHECK(f.process.ordinary_preferences == preferences);
     CHECK(f.runtime.gameplay_random().checkpoint() == random);
@@ -324,38 +325,29 @@ TEST_CASE("F03 doubling publishes its flag and full table before redraw or a red
     CHECK(rules->definitions.units[0].movement == 17);
 }
 
-TEST_CASE("F03 missing configuration wiring rejects before state audio and persistence effects",
-          "[configuration][session]") {
+TEST_CASE("F03 missing configuration providers reject before effects", "[configuration][session]") {
     Fixture f;
     const auto globals = f.runtime.world().globals;
     const auto preferences = f.process.ordinary_preferences;
-    f.game.reinitialize_music = {};
-    CHECK_THROWS_AS(configure_game_options(f.runtime, GameOptionChoices{}, f.game),
+    GameOptionDependencies game{&f.preferences, nullptr};
+    CHECK_THROWS_AS(configure_game_options(f.runtime, GameOptionChoices{}, game),
                     std::invalid_argument);
-    f.graphics.low_memory_notice = {};
-    CHECK_THROWS_AS(configure_graphics_options(f.runtime, GraphicsOptionChoices{}, f.graphics),
-                    std::invalid_argument);
-    f.preferences.remove_file = {};
-    CHECK_THROWS_AS(configure_message_options(f.runtime, MessageOptionChoices{}, f.preferences),
+    GraphicsOptionDependencies graphics{nullptr, {}, {}};
+    CHECK_THROWS_AS(configure_graphics_options(f.runtime, GraphicsOptionChoices{}, graphics),
                     std::invalid_argument);
     CHECK(f.runtime.world().globals == globals);
     CHECK(f.process.ordinary_preferences == preferences);
     CHECK(f.trace.empty());
 }
 
-TEST_CASE("F03 validated operation wiring remains stable across child calls",
+TEST_CASE("F03 configuration invokes the same music provider across calls",
           "[configuration][session]") {
     Fixture f;
-    f.game.stop_music = [&] {
-        f.game.preferences.remove_file = {};
-        f.game.synchronize_music = {};
-    };
+    std::vector<int> calls;
+    f.game.stop_music = [count = 0, &calls]() mutable { calls.push_back(++count); };
     CHECK(configure_game_options(f.runtime, GameOptionChoices{}, f.game));
-    CHECK(f.written.size() == 2);
-    f.trace.clear();
-    CHECK_THROWS_AS(configure_game_options(f.runtime, GameOptionChoices{}, f.game),
-                    std::invalid_argument);
-    CHECK(f.trace.empty());
+    CHECK(configure_game_options(f.runtime, GameOptionChoices{}, f.game));
+    CHECK(calls == std::vector<int>{1, 2});
 }
 
 TEST_CASE(
@@ -395,3 +387,28 @@ TEST_CASE("F03 configuration releases its world pin when a bound child throws",
                     std::runtime_error);
     CHECK_NOTHROW(f.runtime.prepare_new_game());
 }
+
+// Composition copies only borrowing handles; implementations keep their identity.
+static_assert(!std::is_copy_constructible_v<FileStorage>);
+static_assert(!std::is_copy_constructible_v<FileChooser>);
+static_assert(!std::is_copy_constructible_v<MusicControl>);
+static_assert(!std::is_copy_constructible_v<CountdownControl>);
+static_assert(!std::is_copy_constructible_v<OptionBroadcaster>);
+static_assert(!std::is_copy_constructible_v<WorldSizeInteraction>);
+static_assert(!std::is_copy_constructible_v<PlayerSetupInteraction>);
+static_assert(!std::is_copy_constructible_v<ai::UnitMovementQueries>);
+static_assert(!std::is_copy_constructible_v<unit::UnitDeletionEffects>);
+static_assert(!std::is_copy_constructible_v<network::SocketTransport>);
+static_assert(std::is_trivially_copyable_v<CoreLoadDependencies>);
+static_assert(std::is_trivially_copyable_v<SaveMenuDependencies>);
+static_assert(std::is_trivially_copyable_v<LoadDialogDependencies>);
+static_assert(std::is_trivially_copyable_v<RuleContextDependencies>);
+static_assert(std::is_trivially_copyable_v<GameOptionDependencies>);
+static_assert(std::is_trivially_copyable_v<GraphicsOptionDependencies>);
+static_assert(std::is_trivially_copyable_v<MultiplayerOptionDependencies>);
+static_assert(std::is_trivially_copyable_v<UnitOperationDependencies>);
+static_assert(std::is_trivially_copyable_v<WorldParameterDependencies>);
+static_assert(std::is_trivially_copyable_v<PremadeWorldDependencies>);
+static_assert(std::is_trivially_copyable_v<NewGameDependencies>);
+static_assert(std::is_trivially_copyable_v<WorldEntryDependencies>);
+static_assert(std::is_trivially_copyable_v<network::SendDependencies>);

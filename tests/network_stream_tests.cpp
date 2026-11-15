@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Specification-derived vectors: N05 sections 4-6. These are authored fake
 // streams/services, not original-program captures or a historical harness.
 #include "network/stream.hpp"
@@ -131,7 +132,7 @@ TEST_CASE("N05 receiver admission and callback reset preserve bounded failure ef
 TEST_CASE("N05 partial sends own padding and keep FIFO across live chunk changes",
           "[network][N05]") {
     SendQueue queue;
-    SendServices services;
+    SendCallbacks services;
     Bytes sent, payload(100, 0x31), padding(16, 0x99);
     const auto expected_first = encode_frame(0x01020003, payload, padding);
     const auto expected_second = encode_frame(id_tag, Bytes{6, 0});
@@ -165,7 +166,7 @@ TEST_CASE("N05 immediate and queued socket errors have different retry contracts
     for (auto error : {SocketError::would_block, SocketError::in_progress, SocketError::interrupted,
                        SocketError::no_buffers}) {
         SendQueue queue;
-        SendServices services;
+        SendCallbacks services;
         services.send = [&](auto) { return SocketResult{0, error}; };
         CHECK(queue.send(0, Bytes{1}, services) == SendResult::queued);
         CHECK(queue.front_offset() == 0);
@@ -179,7 +180,7 @@ TEST_CASE("N05 immediate and queued socket errors have different retry contracts
         CHECK(queue.size() == (error == SocketError::would_block ? 1U : 0U));
     }
     SendQueue queue;
-    SendServices services;
+    SendCallbacks services;
     services.send = [](auto) { return SocketResult{0, SocketError::is_connected}; };
     CHECK(queue.send(0, Bytes{}, services) == SendResult::is_connected);
     services.send = [](auto) { return SocketResult{0, SocketError::would_block}; };
@@ -194,7 +195,7 @@ TEST_CASE("N05 immediate and queued socket errors have different retry contracts
 TEST_CASE("N05 write event stops on partial or fatal progress and tracks backlog",
           "[network][N05]") {
     SendQueue queue;
-    SendServices services;
+    SendCallbacks services;
     services.send = [](auto) { return SocketResult{0, SocketError::would_block}; };
     for (int i = 0; i < 51; ++i)
         CHECK(queue.send(0, {}, services) == SendResult::queued);
@@ -234,18 +235,12 @@ TEST_CASE("N05 datagrams narrow size before capping and retain null payload byte
         CHECK_THROWS_AS(decode_datagram(std::span{retained}.first(size)), formats::DecodeError);
 }
 
-TEST_CASE("N05 send queue retains pending bytes on invalid binding and pre-send exception",
-          "[network][N05]") {
+TEST_CASE("N05 send queue retains pending bytes on transport exception", "[network][N05]") {
     SendQueue queue;
-    SendServices services;
+    SendCallbacks services;
     services.send = [](auto) { return SocketResult{5, SocketError::none}; };
     const auto wire = encode_frame(id_tag, Bytes{1, 2, 3});
     REQUIRE(queue.send(id_tag, Bytes{1, 2, 3}, services) == SendResult::queued);
-    REQUIRE(queue.front_offset() == 5);
-    services.send = {};
-    CHECK_THROWS_AS(queue.drain_one(services), std::invalid_argument);
-    CHECK_THROWS_AS(queue.send(id_tag, Bytes{4}, services), std::invalid_argument);
-    REQUIRE(queue.size() == 1);
     REQUIRE(queue.front_offset() == 5);
     services.send = [](auto) -> SocketResult { throw std::runtime_error("before send"); };
     CHECK_THROWS_AS(queue.drain_one(services), std::runtime_error);

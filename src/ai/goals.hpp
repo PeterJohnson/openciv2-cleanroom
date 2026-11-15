@@ -3,12 +3,17 @@
 #include "state/game.hpp"
 
 namespace openciv::ai {
-struct GoalServices {
-    // U04 owning queries, required only at the actual redirection boundary.
-    // Read-only queries on stable state. They must not mutate records/rules,
-    // dispatch events or reenter goals. Missing input may report an error.
-    std::function<bool(state::UnitSlot)> awake_with_moves;
-    std::function<std::int32_t(state::UnitSlot)> moves_left;
+// U04 read-only queries on stable state, required at the redirection boundary.
+// They must not mutate records/rules, dispatch events or reenter goals.
+// Missing input may report an error. The provider outlives SharedGoals.
+class UnitMovementQueries {
+public:
+    UnitMovementQueries() = default;
+    virtual ~UnitMovementQueries() = default;
+    UnitMovementQueries(const UnitMovementQueries&) = delete;
+    UnitMovementQueries& operator=(const UnitMovementQueries&) = delete;
+    virtual bool can_act(state::UnitSlot unit) const = 0;
+    virtual std::int32_t remaining_moves(state::UnitSlot unit) const = 0;
 };
 // A01 section 2 / Appendix A. No expiry for zero; -128 remains -128.
 void negate_goal_priority(state::CivilizationGoal& goal) noexcept;
@@ -26,7 +31,7 @@ std::int32_t goal_priority_at(const state::Civilization& civilization, world::Po
 class SharedGoals {
 public:
     SharedGoals(state::GameState& world, const state::RuleDefinitions& rules,
-                GoalServices services);
+                const UnitMovementQueries& services);
     void add_current(std::int32_t civilization, world::Position position, std::int32_t role,
                      std::int32_t priority);
     void add_standing(std::int32_t civilization, world::Position position, std::int32_t role,
@@ -39,6 +44,6 @@ private:
     state::Civilization& civilization(std::int32_t slot);
     state::GameState& world_;
     const state::RuleDefinitions& rules_;
-    GoalServices services_;
+    const UnitMovementQueries& queries_;
 };
 } // namespace openciv::ai

@@ -5,10 +5,11 @@
 
 namespace openciv::unit {
 UnitDeletion::UnitDeletion(state::GameState& world, const state::RuleDefinitions& rules,
-                           StackBudget& budget, StackServices stacks, DeletionServices services)
+                           StackBudget& budget, StackDiagnostics stacks,
+                           const UnitDeletionEffects& services)
     : world_(world), rules_(rules),
       stacks_(world.entities.units, world.map, world.unit_stacks, budget, std::move(stacks)),
-      services_(std::move(services)) {}
+      effects_(services) {}
 std::int32_t UnitDeletion::role(std::size_t type) const {
     return std::bit_cast<std::int8_t>(static_cast<std::uint8_t>(rules_.units.at(type).role));
 }
@@ -53,15 +54,15 @@ void UnitDeletion::erase(std::int32_t slot, bool notify) {
             candidate.orders = state::UnitOrder::none;
     }
     if (notify) {
-        services_.removed_unit(position);
+        effects_.unit_removed(position);
         if (home)
-            services_.refresh_home(static_cast<std::int32_t>(*home));
+            effects_.refresh_home_city(static_cast<std::int32_t>(*home));
     }
     if (role(type) == 5 && civilization(owner).city_count == 0 &&
         civilization(owner).units_active.at(type) == 0)
-        services_.check_destroyed(owner, -1);
+        effects_.check_civilization(owner, -1);
     if (world_.globals.multiplayer >= state::GameMode::tcp && notify) {
-        services_.synchronize(position, home);
+        effects_.synchronize_deletion(position, home);
     }
     world_.unit_deletion.active = false;
 }

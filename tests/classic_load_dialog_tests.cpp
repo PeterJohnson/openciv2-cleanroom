@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 #include "formats/state_conversion.hpp"
 // F06 section 11 accepted-file dialog; S02 sections 2/11; U01 sections 3/6.
 // Authored file/service inputs and specification expectations, not original
@@ -36,7 +37,7 @@ struct Fixture {
     SessionRuntime runtime{process, base::RuntimeId{77}};
     ClassicFileState files;
     ClassicLoadDialogState dialog{"prior-path", 19};
-    LoadDialogServices services;
+    LoadDialogCallbacks services;
     unit::StackBudget budget{100000, 64};
     formats::Bytes bytes = formats::encode_stored_save(saved());
     std::size_t position = 0, enumerations = 0, opens = 0, closes = 0;
@@ -516,7 +517,7 @@ TEST_CASE("F03 loaded preference word reaches F06 accepted-file option replaceme
         formats::encode_multiplayer_preferences(state::MultiplayerPreferences{});
     bytes.insert(bytes.end(), multiplayer.begin(), multiplayer.end());
     formats::MemoryItems input(bytes);
-    PreferenceFileServices services;
+    PreferenceFileCallbacks services;
     services.open_input = [&](std::string_view path) {
         CHECK(path == "CIV2.DAT");
         return test::input_file(

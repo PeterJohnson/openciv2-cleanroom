@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 #include "formats/state_conversion.hpp"
 // A01 section 2 / Appendix A and W01 section 4. Independently
 // authored specification cases; supplied U04 results are not original captures.
@@ -13,7 +14,7 @@ using Goal = state::CivilizationGoal;
 struct Fixture {
     state::ProcessContext process;
     state::GameState world{process};
-    GoalServices services;
+    GoalCallbacks services;
     explicit Fixture(bool allocate = true) {
         if (allocate)
             world.map.allocate(world::Geometry{20, 12});

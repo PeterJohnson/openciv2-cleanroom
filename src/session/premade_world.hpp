@@ -1,4 +1,5 @@
 #pragma once
+#include "base/callback_ref.hpp"
 
 #include "session/classic_load.hpp"
 
@@ -6,9 +7,9 @@ namespace openciv::session {
 enum class WorldSource { generated, premade_cylindrical, premade_flat };
 struct PremadeWorldChoices {
     // Zero discards; every nonzero result, including a negative result, keeps.
-    std::function<std::int32_t()> use_seed, use_start_locations;
+    base::CallbackRef<std::int32_t()> use_seed, use_start_locations;
     // F01 game ticks, not milliseconds or a gameplay random draw.
-    std::function<std::uint32_t()> ticks;
+    base::CallbackRef<std::uint32_t()> ticks;
     void validate() const;
 };
 // F05 section 3 after a successful F06 read. Normalizes the live map, applies
@@ -17,9 +18,10 @@ struct PremadeWorldChoices {
 // classify area, clear status flags, allocate, generate terrain or save a file.
 WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPositions& starts,
                                   const PremadeWorldChoices& choices);
-struct PremadeWorldServices {
-    std::function<std::unique_ptr<CoreInput>(std::string_view)> open;
-    std::function<void()> load_failure;
+// Borrowed providers and callable owners must outlive the consuming operation.
+struct PremadeWorldDependencies {
+    const FileStorage* storage = nullptr;
+    base::CallbackRef<void()> load_failure;
     PremadeWorldChoices choices;
     void validate() const;
 };
@@ -32,5 +34,5 @@ struct PremadeWorldServices {
 std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
                                               formats::StartingPositions& starts,
                                               std::optional<std::string> selected_path,
-                                              const PremadeWorldServices& services);
+                                              const PremadeWorldDependencies& services);
 } // namespace openciv::session

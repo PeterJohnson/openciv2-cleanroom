@@ -1,14 +1,16 @@
 #pragma once
+#include "base/callback_ref.hpp"
 
 #include "session/runtime.hpp"
 
 namespace openciv::session {
-struct NewGameServices {
+// Borrowed providers and callable owners must outlive the consuming operation.
+struct NewGameDependencies {
     // V01 shared creation, with the live turn set to zero by the parent. Invoke
     // for slots 0..7, including absent slots; returned failures are ignored.
-    std::function<std::int32_t(std::int32_t)> create_civilization;
+    base::CallbackRef<std::int32_t(std::int32_t)> create_civilization;
     // F05 section 8, after all creation attempts and the at-start mask copy.
-    std::function<void()> balance_starts;
+    base::CallbackRef<void()> balance_starts;
     void validate() const;
 };
 // F05 section 5: the complete inner new-game initialization parent, after W02.
@@ -21,5 +23,5 @@ struct NewGameServices {
 // All preceding effects survive a child exception or unavailable choice. An
 // unsupported playerCiv stops at the single-human rate assignment, not earlier.
 void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
-                         std::string_view call, const NewGameServices& services);
+                         std::string_view call, const NewGameDependencies& services);
 } // namespace openciv::session

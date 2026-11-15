@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Independently authored F03 sections 2-7,9/10 and Appendix A expectations.
 // These are specification tests, not captures from the original executable.
 #include "formats/classic_rules.hpp"
@@ -26,7 +27,7 @@ struct Fixture {
     std::unique_ptr<state::RuleState> runtime = std::make_unique<state::RuleState>();
     state::RuleDefinitions* values = &runtime->definitions;
     state::RuleState& retained = *runtime;
-    RuleLoadServices hooks;
+    RuleLoadCallbacks hooks;
     TextReader reader;
     explicit Fixture(std::string text)
         : bytes(std::move(text)), reader(workspace, directories, services(), ascii_text_case()) {

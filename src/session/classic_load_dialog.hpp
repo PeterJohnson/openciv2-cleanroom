@@ -1,4 +1,5 @@
 #pragma once
+#include "base/callback_ref.hpp"
 
 #include "session/classic_load.hpp"
 #include "session/classic_loaded_units.hpp"
@@ -9,21 +10,23 @@ struct ClassicLoadDialogState {
     // Opaque caller classification. This wrapper only clears it on core failure.
     std::int32_t loaded_file_kind = 0;
 };
-struct LoadDialogServices {
-    CoreLoadServices input;
-    std::function<void(std::int32_t index)> close_map_window;
+// Borrowed providers and callable owners must outlive the consuming operation.
+struct LoadDialogDependencies {
+    CoreLoadDependencies input;
+    base::CallbackRef<void(std::int32_t index)> close_map_window;
     // Return one owned listing of matching, unqualified filenames in service order.
-    std::function<std::vector<std::string>(std::string_view directory, std::string_view pattern)>
+    base::CallbackRef<std::vector<std::string>(std::string_view directory,
+                                               std::string_view pattern)>
         enumerate;
     // Source-specific selection/parsing returns owned data; nullopt means failure.
     // The source never receives or modifies the installed event collection.
-    std::function<std::optional<state::EventCatalog>()> load_events;
-    std::function<void()> scenario_loaded, synchronize_music, present_title;
-    std::function<void(bool enabled)> configure_sound;
-    std::function<void(CoreLoadStatus)> load_notice;
-    unit::StackServices stacks;
-    unit::StackOperationServices placement;
-    unit::DeletionServices deletion;
+    base::CallbackRef<std::optional<state::EventCatalog>()> load_events;
+    base::CallbackRef<void()> scenario_loaded, synchronize_music, present_title;
+    base::CallbackRef<void(bool enabled)> configure_sound;
+    base::CallbackRef<void(CoreLoadStatus)> load_notice;
+    unit::StackDiagnostics stacks = nullptr;
+    unit::StackSynchronization placement;
+    const unit::UnitDeletionEffects* deletion = nullptr;
 };
 // F06 section 11 accepted-file load dialog, composed with real core input,
 // shared event installation and U01 cleanup. The native chooser is a separate boundary.
@@ -36,6 +39,6 @@ struct LoadDialogServices {
 std::optional<CoreLoadStatus>
 load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
                     ClassicLoadDialogState& dialog, std::optional<std::string> selected_path,
-                    bool show_title, const LoadDialogServices& services,
+                    bool show_title, const LoadDialogDependencies& services,
                     unit::StackBudget& stack_budget, std::string_view call);
 } // namespace openciv::session

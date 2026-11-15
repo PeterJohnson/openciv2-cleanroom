@@ -95,9 +95,11 @@ int main(int argc, char** argv) {
         classic::TextWorkspace workspace;
         std::map<std::string, std::string> text_sources;
         std::size_t sprites = 0, flushes = 0;
-        RuleContextServices hooks;
-        hooks.exists = [&](auto directory, auto name) { return disk.exists(directory, name); };
-        hooks.comparison = classic::ascii_text_case();
+        auto exists = [&](std::string_view directory, std::string_view name) {
+            return disk.exists(directory, name);
+        };
+        const auto comparison = classic::ascii_text_case();
+        RuleContextDependencies hooks{exists, &comparison, {}, {}};
         ClassicRuleContext rules(
             files, workspace,
             {[&](auto directory, auto name) {
@@ -112,14 +114,11 @@ int main(int argc, char** argv) {
              },
              {}},
             hooks);
-        CoreLoadServices loading;
-        loading.open = [&](auto path) { return disk.open_input(path); };
-        loading.flush = [&] { ++flushes; };
-        loading.content_installed = [&] { ++sprites; };
-        loading.change_directory = [&](auto directory) { disk.change_directory(directory); };
-        loading.exists = hooks.exists;
-        loading.comparison = hooks.comparison;
-        loading.load_content = [&] { return rules.load(); };
+        auto flush = [&] { ++flushes; };
+        auto installed = [&] { ++sprites; };
+        auto change = [&](std::string_view directory) { disk.change_directory(directory); };
+        auto load = [&] { return rules.load(); };
+        CoreLoadDependencies loading{&disk, flush, change, exists, &comparison, load, installed};
         const auto loaded =
             load_classic_core(runtime, files, io::classic_path(input), loading, "live-driver/load");
         if (loaded != CoreLoadStatus::success)
@@ -144,8 +143,7 @@ int main(int argc, char** argv) {
         // Claim a new destination atomically, then F06 replaces that owned file.
         // After this boundary, a failed save deliberately retains its partial file.
         io::write_new_file(output, {});
-        CoreSaveServices saving{[&](auto path) { return disk.open_output(path); }};
-        if (save_classic_core(runtime, files, io::classic_path(output), false, saving) !=
+        if (save_classic_core(runtime, files, io::classic_path(output), false, disk) !=
             CoreSaveStatus::success)
             throw std::runtime_error("Core save failed; partial output retained");
         if (runtime.gameplay_random().checkpoint() != gameplay ||

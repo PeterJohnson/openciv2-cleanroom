@@ -6,15 +6,14 @@ namespace {
 std::uint32_t word(std::span<const Byte> bytes) {
     return formats::ByteReader{bytes}.u32();
 }
-void post(SendServices& services) {
+void post(const SendDependencies& services) {
     if (services.post_write)
         services.post_write();
 }
-SocketResult attempt(std::span<const Byte> bytes, SendServices& services) {
-    if (!services.send)
-        throw std::invalid_argument("Missing socket send service");
-    const auto part = bytes.first(std::min<std::size_t>(bytes.size(), services.chunk_capacity));
-    const auto result = services.send(part);
+SocketResult attempt(std::span<const Byte> bytes, const SendDependencies& services) {
+    const auto part =
+        bytes.first(std::min<std::size_t>(bytes.size(), services.limits.chunk_capacity));
+    const auto result = services.transport.transmit(part);
     if (result.error == SocketError::none && result.accepted > part.size())
         throw std::invalid_argument("Socket accepted more than its supplied span");
     return result;
@@ -123,12 +122,10 @@ ReceiveResult FrameReceiver::feed(std::span<const Byte> input, ReceiveCallbacks&
     }
     return result;
 }
-SendResult SendQueue::send(std::uint32_t tag, std::span<const Byte> payload, SendServices& services,
-                           std::span<const Byte> padding) {
-    if (payload.size() >= std::uint32_t(services.oversized_limit - 12U))
+SendResult SendQueue::send(std::uint32_t tag, std::span<const Byte> payload,
+                           const SendDependencies& services, std::span<const Byte> padding) {
+    if (payload.size() >= std::uint32_t(services.limits.oversized_limit - 12U))
         return SendResult::oversized;
-    if (!services.send)
-        throw std::invalid_argument("Missing socket send service");
     Bytes record;
 
     record = encode_frame(tag, payload, padding);
@@ -160,11 +157,9 @@ SendResult SendQueue::send(std::uint32_t tag, std::span<const Byte> payload, Sen
     post(services);
     return SendResult::queued;
 }
-DrainResult SendQueue::drain_one(SendServices& services) {
+DrainResult SendQueue::drain_one(const SendDependencies& services) {
     if (queue_.empty())
         return DrainResult::empty;
-    if (!services.send)
-        throw std::invalid_argument("Missing socket send service");
     const auto count = queue_.size();
     if (count > backlog_threshold_) {
         if (services.backlog)
@@ -192,7 +187,7 @@ DrainResult SendQueue::drain_one(SendServices& services) {
     post(services);
     return DrainResult::pending;
 }
-DrainResult SendQueue::write_event(SendServices& services,
+DrainResult SendQueue::write_event(const SendDependencies& services,
                                    const std::function<void()>& close_handler) {
     auto result = DrainResult::empty;
     while (!queue_.empty()) {

@@ -9,8 +9,8 @@ std::int16_t link(std::int32_t slot) {
 }
 } // namespace
 StackOperations::StackOperations(state::GameState& world, StackBudget& budget,
-                                 StackServices stack_services, StackOperationServices services)
-    : world_(world), services_(std::move(services)),
+                                 StackDiagnostics stack_services, StackSynchronization services)
+    : world_(world), synchronize_(services),
       local_(world.entities.units, world.map, world.unit_stacks, budget, std::move(stack_services),
              {[this](std::int32_t slot) { detach(slot, false); },
               [this](std::int32_t slot, world::Position position) {
@@ -37,7 +37,7 @@ void StackOperations::begin(PlacementOperation operation) {
 }
 void StackOperations::synchronize(bool sync) {
     if (world_.globals.multiplayer >= state::GameMode::tcp && sync) {
-        services_.synchronize();
+        synchronize_();
     }
 }
 void StackOperations::finish(PlacementOperation operation, bool sync) {

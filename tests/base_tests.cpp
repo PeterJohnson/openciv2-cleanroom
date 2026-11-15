@@ -1,4 +1,5 @@
 #include "base/arithmetic.hpp"
+#include "base/callback_ref.hpp"
 #include "base/cancellation.hpp"
 #include "base/random.hpp"
 #include <catch2/catch_test_macros.hpp>
@@ -6,6 +7,7 @@
 #include <bit>
 #include <cfenv>
 #include <limits>
+#include <memory>
 #include <stdexcept>
 #include <type_traits>
 
@@ -209,4 +211,27 @@ TEST_CASE("Sampling rejects a nondefault floating environment before advancing s
         CHECK(std::fegetround() == FE_TONEAREST);
         CHECK(secondary_range_from_code(-4, 7, UINT32_MAX) == 7);
     }
+}
+
+TEST_CASE("Borrowed callbacks preserve move-only callable identity", "[base][callbacks]") {
+    auto callable = [count = std::make_unique<int>(0)]() mutable { return ++*count; };
+    using View = openciv::base::CallbackRef<int()>;
+    static_assert(std::is_constructible_v<View, decltype(callable)&>);
+    static_assert(!std::is_constructible_v<View, decltype(callable)&&>);
+    static_assert(std::is_trivially_copyable_v<View>);
+    const View first(callable);
+    const auto second = first;
+    CHECK(first() == 1);
+    CHECK(second() == 2);
+    CHECK(callable() == 3);
+    const openciv::base::CallbackRef<void()> notification(callable);
+    notification();
+    CHECK(first() == 5);
+    View empty;
+    CHECK_FALSE(empty);
+    CHECK_THROWS_AS(empty(), std::bad_function_call);
+    std::function<int()> absent;
+    CHECK_FALSE(View(absent));
+    const View function(+[] { return 42; });
+    CHECK(function() == 42);
 }

@@ -28,9 +28,9 @@ StackResourceStop::StackResourceStop(StackStop reason)
 
 LocalStacks::LocalStacks(state::UnitPool& units, world::MapStorage& map,
                          state::UnitStackState& retained, StackBudget& budget,
-                         StackServices services, RepairPlacement placement)
-    : units_(units), map_(map), retained_(retained), budget_(budget),
-      services_(std::move(services)), placement_(std::move(placement)) {
+                         StackDiagnostics services, RepairPlacement placement)
+    : units_(units), map_(map), retained_(retained), budget_(budget), diagnostics_(services),
+      placement_(std::move(placement)) {
     if (static_cast<bool>(placement_.detach) != static_cast<bool>(placement_.attach))
         throw std::invalid_argument("Unit stack repair requires both placement children");
 }
@@ -40,8 +40,8 @@ state::Unit& LocalStacks::record(std::int32_t slot) {
     throw std::out_of_range("Unit stack index is outside the owned pool: " + std::to_string(slot));
 }
 void LocalStacks::diagnose(StackDiagnostic diagnostic) {
-    if (services_.diagnostics)
-        services_.diagnostics->push_back(diagnostic);
+    if (diagnostics_)
+        diagnostics_->push_back(diagnostic);
 }
 void LocalStacks::step() {
     if (budget_.steps == 0)

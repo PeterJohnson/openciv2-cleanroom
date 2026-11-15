@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 #include "formats/state_conversion.hpp"
 // F05 section 5, F02 retained state and F06 field encodings. Expectations and
 // child outcomes are independently authored, not original-program captures.
@@ -18,7 +19,7 @@ struct Fixture {
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{91}};
     base::GameplayRandom random;
-    NewGameServices services;
+    NewGameCallbacks services;
     std::vector<std::int32_t> calls;
     explicit Fixture(std::vector<base::Choice> choices = {history()})
         : random(base::ControlledChoices{std::move(choices)}, "setup") {

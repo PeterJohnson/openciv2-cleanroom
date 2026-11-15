@@ -1,9 +1,9 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "foundation-session-v3",
-  "createdUtc": "2026-11-15T05:03:28.243355+00:00",
-  "implementationRevision": "7fa09aa76ae252294229f0a1ed692e000612dda7",
-  "uncommittedImplementationChanges": true,
+  "createdUtc": "2026-11-15T05:50:02.987780+00:00",
+  "implementationRevision": "a10c38436c6a568740c54cac871865e28274cb7f",
+  "uncommittedImplementationChanges": false,
   "implementationSources": {
     "CMakeLists.txt": "2b26e9e79170978fbf1f1baf120ae41cb220a886c1138407e69e4c91a966ce3d",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",

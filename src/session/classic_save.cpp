@@ -43,9 +43,7 @@ void check_scans(const state::GameState& world) {
 } // namespace
 CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
                                  std::string_view requested_path, bool scenario_export,
-                                 const CoreSaveServices& services) {
-    if (!services.open)
-        throw std::invalid_argument("Core save requires an output-open binding");
+                                 const FileStorage& storage) {
     if (!runtime.active() || runtime.has_pending_commands())
         throw std::logic_error("Core save requires an active runtime with settled commands");
     const std::string request(requested_path);
@@ -106,7 +104,7 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
     }
     runtime.publish();
 
-    auto output = services.open(retained.opened_path);
+    auto output = storage.replace(retained.opened_path);
     if (!output)
         return CoreSaveStatus::output;
     const bool written = output->item(bytes);

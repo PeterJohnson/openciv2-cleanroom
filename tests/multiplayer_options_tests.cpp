@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // F03 section 8, N03 section 11 and F01 wrapping ticks. Independently authored
 // channel outcomes exercise the session operation, not original-peer transport.
 #include "configuration_fixture.hpp"
@@ -32,7 +33,7 @@ private:
     ChannelState& state_;
 };
 struct Fixture : test::ConfigurationFixture {
-    MultiplayerOptionServices services;
+    MultiplayerOptionCallbacks services;
     ChannelState channel;
     std::vector<std::array<std::int32_t, 3>> sent;
     std::uint32_t tick = 100;
@@ -117,7 +118,6 @@ TEST_CASE("N03 a proposal yields and remains unapplied while replies are pending
     CHECK(saved.double_production == 1);
     CHECK(saved.double_movement == 1);
     CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error);
-    f.services.send_units = {}; // The operation retains its validated bindings.
     f.channel.progress = {0, 0};
     CHECK(op->poll() == MultiplayerOptionResult::applied);
     CHECK(f.runtime.world().multiplayer.saved.double_production == 1);
@@ -345,4 +345,20 @@ TEST_CASE("N03 missing vote wiring rejects before persistence or proposal",
     CHECK_THROWS_AS(f.operation(), std::invalid_argument);
     CHECK(f.trace.empty());
     CHECK(f.channel.begins == 0);
+}
+
+TEST_CASE("Option operations borrow the same broadcaster across suspended votes",
+          "[configuration][multiplayer][lifetime]") {
+    Fixture f;
+    std::vector<int> calls;
+    f.services.send_units = [count = 0, &calls]() mutable { calls.push_back(++count); };
+    for (const bool enabled : {true, false}) {
+        f.channel.progress = {1, 0};
+        auto operation = f.operation({true, false, enabled, enabled});
+        CHECK_FALSE(operation->poll());
+        CHECK_FALSE(operation->poll());
+        f.channel.progress = {0, 0};
+        CHECK(operation->poll() == MultiplayerOptionResult::applied);
+    }
+    CHECK(calls == std::vector<int>{1, 2});
 }

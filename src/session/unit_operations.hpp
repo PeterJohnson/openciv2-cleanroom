@@ -1,4 +1,5 @@
 #pragma once
+#include "base/callback_ref.hpp"
 #include "session/runtime.hpp"
 #include "unit/stack_operations.hpp"
 #include "unit/deletion.hpp"
@@ -28,28 +29,30 @@ public:
     virtual UnitReply poll(bool waiting) = 0;
     virtual void cancel() noexcept = 0;
 };
-struct UnitOperationServices {
-    unit::StackServices stacks;
-    unit::StackOperationServices placement;
-    unit::DeletionServices deletion;
-    std::function<std::uint32_t()> ticks;
-    std::function<void()> timed_out;
+struct UnitOperationDependencies {
+    unit::StackDiagnostics stacks = nullptr;
+    unit::StackSynchronization placement;
+    const unit::UnitDeletionEffects* deletion = nullptr;
+    base::CallbackRef<std::uint32_t()> ticks;
+    base::CallbackRef<void()> timed_out;
 };
 struct UnitOperationResult {
     std::int32_t reply = 0;
     bool timed_out = false, cancelled = false;
 };
+// Providers and callback owners must outlive this operation. Dependency copies
+// retain their identities; only the request channel is transferred into ownership.
 // Owns local work or a suspended remote request. Standalone construction pins
 // the world; command construction borrows the continuation owner's lifetime.
 class UnitOperation {
 public:
     UnitOperation(SessionRuntime& runtime, UnitRequest request, bool notify,
-                  unit::StackBudget budget, UnitOperationServices services,
+                  unit::StackBudget budget, UnitOperationDependencies services,
                   std::unique_ptr<UnitRequestChannel> channel = {});
     // The enclosing command owns world/process/publication lifetimes until this
     // child is destroyed. Copy callbacks, never retain the stack context itself.
     UnitOperation(OperationContext& context, UnitRequest request, bool notify,
-                  unit::StackBudget budget, UnitOperationServices services,
+                  unit::StackBudget budget, UnitOperationDependencies services,
                   std::unique_ptr<UnitRequestChannel> channel = {});
     ~UnitOperation();
     UnitOperation(const UnitOperation&) = delete;
@@ -60,7 +63,7 @@ public:
 private:
     UnitOperation(state::GameState& world, state::RuleState& rules, std::function<void()> publish,
                   UnitRequest request, bool notify, unit::StackBudget budget,
-                  UnitOperationServices services, std::unique_ptr<UnitRequestChannel> channel);
+                  UnitOperationDependencies services, std::unique_ptr<UnitRequestChannel> channel);
     bool& active();
     std::int32_t& reply();
     void finish(UnitOperationResult result) noexcept;
@@ -74,7 +77,7 @@ private:
     bool stack_ = false, stack_initialized_ = false, any_timeout_ = false;
     std::int32_t saved_next_ = -1;
     unit::StackBudget budget_;
-    UnitOperationServices services_;
+    UnitOperationDependencies services_;
     std::unique_ptr<UnitRequestChannel> channel_;
     std::optional<SessionActivity> activity_;
     std::optional<UnitOperationResult> result_;

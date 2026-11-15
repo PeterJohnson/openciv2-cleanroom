@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 // Native F03/F06 adapter cases use independently authored files and rules.
 #include "classic_stream_fixture.hpp"
 #include "platform/classic_files.hpp"
@@ -93,9 +94,10 @@ TEST_CASE("Native F03 preferences replace reload and delete failed output throug
     TemporaryDirectory dir;
     io::ClassicFiles files(dir.path);
     state::ProcessContext process;
-    PreferenceFileServices services{[&](std::string_view path) { return files.open_input(path); },
-                                    [&](std::string_view path) { return files.open_output(path); },
-                                    [&](std::string_view path) { return files.remove_file(path); }};
+    PreferenceFileCallbacks services{
+        [&](std::string_view path) { return files.open_input(path); },
+        [&](std::string_view path) { return files.open_output(path); },
+        [&](std::string_view path) { return files.remove_file(path); }};
     load_classic_preferences(process, {1000, true}, services);
     CHECK(process.ordinary_preferences.game_options == 0x3f3258U);
     process.ordinary_preferences.text = std::string(32, static_cast<char>(0xff));
@@ -143,7 +145,7 @@ TEST_CASE("Native F05 premade loading uses binary files without rewriting their 
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{94}};
     StartingPositions starts;
-    PremadeWorldServices services;
+    PremadeWorldCallbacks services;
     unsigned failures = 0;
     services.open = [&](std::string_view path) { return files.open_input(path); };
     services.load_failure = [&] { ++failures; };
@@ -292,12 +294,12 @@ TEST_CASE("Native core load edit and save bind real labels rules directories and
     runtime.begin_client_session({10, 20});
     process.tokens = {100, 200};
     std::size_t sprites = 0, flushes = 0;
-    RuleContextServices hooks;
+    RuleContextCallbacks hooks;
     hooks.exists = [&](auto d, auto n) { return native.exists(d, n); };
     hooks.comparison = classic::ascii_text_case();
     ClassicRuleContext context(files, workspace,
                                {[&](auto d, auto n) { return native.open_text(d, n); }, {}}, hooks);
-    CoreLoadServices loading;
+    CoreLoadCallbacks loading;
     loading.open = [&](auto path) { return native.open_input(path); };
     loading.flush = [&] { ++flushes; };
     loading.content_installed = [&] { ++sprites; };
@@ -318,7 +320,7 @@ TEST_CASE("Native core load edit and save bind real labels rules directories and
     runtime.world().globals.turn = 17;
     runtime.world().entities.cities.at(state::CitySlot{0}).food_box = 41;
     const auto random = runtime.gameplay_random().checkpoint();
-    CoreSaveServices saving{[&](auto path) { return native.open_output(path); }};
+    CoreSaveCallbacks saving{[&](auto path) { return native.open_output(path); }};
     REQUIRE(save_classic_core(runtime, files, io::classic_path(dir.path / "Edited.SAV"), false,
                               saving) == CoreSaveStatus::success);
     const auto edited = decode_stored_save(io::read_file(dir.path / "Edited.SAV"));
@@ -353,7 +355,7 @@ TEST_CASE("Native failed core save reports partial output without live hotseat s
     world.map.coarse_grid(1)[0] = 0;
     ClassicFileState files;
     std::size_t closes = 0, items = 0;
-    CoreSaveServices saving;
+    CoreSaveCallbacks saving;
     saving.open = [&](std::string_view path) {
         auto output = std::shared_ptr<CoreOutput>(native.open_output(path));
         REQUIRE(output);

@@ -217,8 +217,8 @@ zero-filled text tails and legacy settings, and rejects oversized or embedded-NU
 text without truncation. The second item starts at the actual cursor. Trailing
 file bytes are ignored.
 
-`session/classic_preferences.hpp` snapshots preferences, defaults and service
-wiring, reads both items and closes before installing either result. Missing
+`session/classic_preferences.hpp` snapshots preferences and defaults, borrows a
+`FileStorage` provider, reads both items and closes before installing either result. Missing
 files default both records. Short items use their own fallback; close failure
 returns `PreferenceLoadStatus::input` with installed preferences unchanged.
 Exceptions close once without publishing a prefix. Saves snapshot both records,
@@ -305,9 +305,11 @@ the actual movement transformation, then evaluates the live publication gate.
 Its selected tail sends units/options and acceptance in order even if a child
 changes mode. Double options receive no second preference save.
 
-The operation pins the world across suspension, copies service wiring, rejects
-reentrant polling and releases the channel once on success, cancellation or
+The operation pins the world across suspension, retains borrowed dependency
+handles, rejects reentrant polling and releases the channel once on success, cancellation or
 failure. Cancellation during a channel call is deferred until that call returns.
+The broadcaster, storage provider and callback owners outlive the operation;
+their state is shared across calls rather than cloned into each operation.
 Ordinary game/graphics/message configuration also pins world references through
 external children, including configuration before a client session exists.
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "service_callbacks.hpp"
 #include "classic_stream_fixture.hpp"
 #include "session/classic_save.hpp"
 #include "session/runtime.hpp"
@@ -9,7 +10,7 @@ struct ClassicSaveFixture {
     state::ProcessContext process;
     session::SessionRuntime runtime{process, base::RuntimeId{72}};
     session::ClassicFileState files;
-    session::CoreSaveServices services;
+    session::CoreSaveCallbacks services;
     formats::Bytes bytes;
     std::string path;
     std::size_t opens = 0, writes = 0, closes = 0;

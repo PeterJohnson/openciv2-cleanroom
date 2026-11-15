@@ -1,4 +1,5 @@
 #pragma once
+#include "base/callback_ref.hpp"
 #include "state/choices.hpp"
 #include <cstdint>
 #include <functional>
@@ -8,7 +9,7 @@
 #include <vector>
 
 namespace openciv::session {
-using FileLabel = std::function<std::string(std::size_t)>;
+using FileLabel = base::CallbackRef<std::string(std::size_t)>;
 void select_classic_extension(bool scenario, state::GameMode mode, std::string& extension);
 struct FileType {
     std::string description, pattern;
@@ -32,17 +33,18 @@ struct FileChoiceResult {
 // native/browser presentation and is also safe after a result or begin failure.
 class FileChooser {
 public:
+    FileChooser() = default;
+    FileChooser(const FileChooser&) = delete;
+    FileChooser& operator=(const FileChooser&) = delete;
     virtual ~FileChooser() = default;
     virtual void begin(FileChoiceRequest request) = 0;
     virtual std::optional<FileChoiceResult> poll() = 0;
     virtual void cancel() noexcept = 0;
 };
 FileChoiceResult validate_file_choice(FileChoiceResult result);
-struct FileChoiceServices {
-    std::function<FileChoiceResult(const FileChoiceRequest&)> choose;
-};
+using FileChoiceCallback = base::CallbackRef<FileChoiceResult(const FileChoiceRequest&)>;
 // F06 production boundary. Only accepted paths are published; native return
 // conventions and cancelled drafts are not inputs to session orchestration.
 FileChoiceResult choose_classic_file(const FileChoiceRequest& request,
-                                     const FileChoiceServices& services);
+                                     const FileChoiceCallback& services);
 } // namespace openciv::session

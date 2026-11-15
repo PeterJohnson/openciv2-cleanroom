@@ -8,32 +8,49 @@ void publish(SessionRuntime& runtime) {
     if (runtime.active())
         runtime.publish();
 }
-template <typename R, typename... Args>
-std::function<R(Args...)> published(SessionRuntime& runtime, std::function<R(Args...)> service) {
-    if (!service)
-        return {};
-    return [&runtime, service = std::move(service)](Args... args) -> R {
-        publish(runtime);
-        return service(std::forward<Args>(args)...);
-    };
-}
+class PublishedDeletion final : public unit::UnitDeletionEffects {
+public:
+    PublishedDeletion(SessionRuntime& runtime, const unit::UnitDeletionEffects& effects)
+        : runtime_(runtime), effects_(effects) {}
+    void unit_removed(world::Position position) const override {
+        publish(runtime_);
+        effects_.unit_removed(position);
+    }
+    void refresh_home_city(std::int32_t city) const override {
+        publish(runtime_);
+        effects_.refresh_home_city(city);
+    }
+    void check_civilization(std::int32_t owner, std::int32_t killer) const override {
+        publish(runtime_);
+        effects_.check_civilization(owner, killer);
+    }
+    void synchronize_deletion(world::Position position,
+                              std::optional<state::CitySlot> home) const override {
+        publish(runtime_);
+        effects_.synchronize_deletion(position, home);
+    }
+
+private:
+    SessionRuntime& runtime_;
+    const unit::UnitDeletionEffects& effects_;
+};
 void cleanup(SessionRuntime& runtime, unit::StackBudget& budget,
-             const LoadDialogServices& services) {
-    auto stacks = services.stacks;
-    auto placement = services.placement;
-    placement.synchronize = published(runtime, placement.synchronize);
-    auto deletion = services.deletion;
-    deletion.removed_unit = published(runtime, deletion.removed_unit);
-    deletion.refresh_home = published(runtime, deletion.refresh_home);
-    deletion.check_destroyed = published(runtime, deletion.check_destroyed);
-    deletion.synchronize = published(runtime, deletion.synchronize);
+             const LoadDialogDependencies& services) {
+    auto synchronization = [&] {
+        publish(runtime);
+        services.placement();
+    };
+    unit::StackSynchronization placement;
+    if (services.placement)
+        placement = synchronization;
+    PublishedDeletion deletion(runtime, *services.deletion);
     cleanup_classic_loaded_units(runtime.world(), runtime.process().rules->definitions, budget,
-                                 std::move(stacks), std::move(placement), std::move(deletion));
+                                 services.stacks, placement, deletion);
 }
 void choose_alternative(SessionRuntime& runtime, std::string& path,
-                        const LoadDialogServices& services, const std::string& call) {
+                        const LoadDialogDependencies& services, const std::string& call) {
     publish(runtime);
-    if (services.input.comparison.uppercase_path(path).find(".SCN") == std::string::npos)
+    if (services.input.comparison->uppercase_path(path).find(".SCN") == std::string::npos)
         return;
     const auto directory = path.substr(0, path.rfind('\\'));
     publish(runtime);
@@ -61,18 +78,17 @@ void choose_alternative(SessionRuntime& runtime, std::string& path,
 std::optional<CoreLoadStatus>
 load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
                     ClassicLoadDialogState& dialog, std::optional<std::string> selected_path,
-                    bool show_title, const LoadDialogServices& supplied,
+                    bool show_title, const LoadDialogDependencies& supplied,
                     unit::StackBudget& stack_budget, std::string_view call) {
-    const auto services = supplied;
+    const auto& services = supplied;
     if (!services.input.change_directory)
         throw std::invalid_argument("Load workflow requires directory service");
     if (selected_path) {
         services.input.validate();
         if (!services.close_map_window || !services.enumerate ||
-            !services.input.comparison.uppercase_path || !services.load_events ||
+            !services.input.comparison->uppercase_path || !services.load_events ||
             !services.scenario_loaded || !services.synchronize_music || !services.configure_sound ||
-            !services.load_notice || !services.deletion.check_destroyed ||
-            (show_title && !services.present_title))
+            !services.load_notice || !services.deletion || (show_title && !services.present_title))
             throw std::invalid_argument("Load workflow requires complete semantic services");
     }
     std::optional<ClassicLoadOperation> operation;

@@ -49,10 +49,10 @@ std::vector<FileType> classic_file_types(state::GameMode mode, bool scenario, bo
     return result;
 }
 FileChoiceResult choose_classic_file(const FileChoiceRequest& request,
-                                     const FileChoiceServices& services) {
-    if (!services.choose)
+                                     const FileChoiceCallback& services) {
+    if (!services)
         throw std::invalid_argument("Missing file chooser");
-    return validate_file_choice(services.choose(request));
+    return validate_file_choice(services(request));
 }
 FileChoiceResult validate_file_choice(FileChoiceResult result) {
     if (result.status == FileChoiceStatus::accepted) {

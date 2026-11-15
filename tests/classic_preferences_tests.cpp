@@ -1,3 +1,4 @@
+#include "service_callbacks.hpp"
 #include "formats/state_conversion.hpp"
 // F03 section 8/Appendix A and F06 CIV2.DAT. Independently authored bytes and
 // service outcomes, not reconstruction harnesses or original-game captures.
@@ -47,7 +48,7 @@ Bytes multiplayer_defaults(const Bytes&) {
 struct Fixture {
     state::ProcessContext process;
     state::PreferenceDefaults defaults{1000, true};
-    PreferenceFileServices services;
+    PreferenceFileCallbacks services;
     std::vector<std::string> trace;
     Bytes input = Bytes(516, 0x88), output;
     std::size_t position = 0, reads = 0, writes = 0, closes = 0, removals = 0;
@@ -472,4 +473,22 @@ TEST_CASE("Preference loading does not require the prior live text to fit a clas
         CHECK(f.process.multiplayer_preferences.game_name.size() == (short_input ? 0 : 32));
         CHECK(f.closes == 1);
     }
+}
+
+TEST_CASE("Preference storage retains factory state through direct and published saves",
+          "[preferences][session][lifetime]") {
+    Fixture f;
+    SessionRuntime runtime(f.process, base::RuntimeId{111});
+    runtime.begin_client_session({10, 20});
+    std::vector<int> calls;
+    f.services.open_output = [count = 0,
+                              &calls](std::string_view) mutable -> std::unique_ptr<CoreOutput> {
+        calls.push_back(++count);
+        return {};
+    };
+    CHECK(save_classic_preferences(f.process, f.services) == PreferenceSaveStatus::output);
+    CHECK(save_classic_preferences(f.process, f.services) == PreferenceSaveStatus::output);
+    CHECK(save_classic_preferences(runtime, f.services) == PreferenceSaveStatus::output);
+    CHECK(save_classic_preferences(runtime, f.services) == PreferenceSaveStatus::output);
+    CHECK(calls == std::vector<int>{1, 2, 3, 4});
 }

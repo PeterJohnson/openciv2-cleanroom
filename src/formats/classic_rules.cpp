@@ -47,9 +47,9 @@ TerrainResult terrain_result(std::string_view token, const TextCase& comparison)
                                 : static_cast<TerrainResult>(found - codes.begin());
 }
 RuleLoader::RuleLoader(TextReader& reader, RuleInput& output, TextCase comparison,
-                       RuleLoadServices services)
+                       RuleFailureObserver services)
     : reader_(reader), rules_(output.definitions), output_(output),
-      comparison_(std::move(comparison)), services_(std::move(services)) {
+      comparison_(std::move(comparison)), on_failure_(services) {
     if (!comparison_.equal)
         throw std::invalid_argument("Rule loading requires a comparison service");
 }
@@ -69,8 +69,8 @@ void RuleLoader::fail(RuleLoadFault fault, std::string_view section, std::size_t
                       int code) {
     const RuleLoadError error(fault, std::string(section), std::string(reader_.line()), row,
                               position, code);
-    if (services_.fatal)
-        services_.fatal(error);
+    if (on_failure_)
+        on_failure_(error);
     throw error;
 }
 void RuleLoader::load(std::string_view filename) {
