@@ -207,20 +207,23 @@ and clear the remembered settings table. The logical startup inputs do not
 emulate the original native memory API or prescribe renderer allocations.
 
 `formats/preference_io.hpp` implements every field of F06's 72-byte ordinary
-item and 444-byte multiplayer item. Successful reads retain arbitrary scalar
-bits and unterminated fixed strings. A failed item overlays its transferred
-prefix over post-callback live state before the F03 fallback runs. The first
-failure does not rewind or skip the multiplayer attempt; bytes in unassigned
-tails can survive defaults. Trailing file bytes are ignored.
+item and 444-byte multiplayer item. Pure codecs decode owned transferred prefixes
+against explicit prior values. Successful items retain arbitrary scalar bits and
+unterminated fixed strings. Short items retain their transferred bytes before
+fallback, including unassigned tails; the second item starts at the actual cursor.
+Trailing file bytes are ignored.
 
-`session/classic_preferences.hpp` opens `CIV2.DAT` through explicit services.
-Opening failure defaults both records. Saving uses binary replacement, writes
-ordinary then live multiplayer preferences, stops at the first failed write,
-closes and deletes the partial output. Opening failure does not delete. Close
-and delete return failures are ignored; required service exceptions stop with
-prior effects retained. `io::ClassicFiles::remove_file` supplies the native
-nonrecursive file deletion, using the same case-resolution policy as input and
-output and rejecting directories.
+`session/classic_preferences.hpp` snapshots preferences, defaults and service
+wiring, reads both items and closes before installing either result. Missing
+files default both records. Short items use their own fallback; close failure
+returns `PreferenceLoadStatus::input` with installed preferences unchanged.
+Exceptions close once without publishing a prefix. Saves snapshot both records,
+require successful write and close, and attempt removal after reported output
+failure. Accepted configuration changes remain if persistence fails.
+
+The following counts describe the earlier item-oriented revision; current
+regressions assert staging, entry snapshots, cursor continuation, defaults and
+truthful finalization as well as codec fidelity.
 
 Thirteen new portable cases cover field offsets, defaults, every transferred
 prefix, invalid item-service results, live reads, cursor continuation, ignored
@@ -283,22 +286,29 @@ It preserves air/sea types and existing units' spent movement. The retained
 applied flag changes before the table, and status redraw follows the complete
 table. Single-player mode and repeated requests leave the flag and table alone.
 
-The accepted multiplayer boundary composes F03 with N03 section 11. It saves
-the two chat choices before reading host authority or processing double options.
-A changed network proposal with more than one player prepares the shared text
-arguments, initializes the signed pending count, broadcasts, installs the shared
-vote callback and enters the supplied modal operation. Negative modal results,
-status -1 or any nonzero pending count reject and restore remembered double
-settings from the live values. Acceptance installs live values and runs the real
-movement transformation. The following network/player-count gate uses live state;
-its selected tail sends units, sends all three signed option words, broadcasts
-acceptance and displays the notice. Double options receive no second save.
+`MultiplayerOptionOperation` composes F03 with N03 section 11. It saves chat
+choices before host/change gates. A changed multi-player host proposal prepares
+owned text/options, initializes the signed pending count and starts an owned
+`OptionVoteChannel`. The first poll then yields; presentation can display the
+proposal while the ordinary scheduler continues.
 
-The shared vote callback polls first, then tests handoff, signed wrapping elapsed
-time, pending count and rejection status in order. Completion ends the supplied
-modal and captures a fresh tick. Runtime player count, handoff and vote scratch
-are separate from classic saved multiplayer records. Session publication precedes
-external children, so scoped observers can see the specified partial effects.
+Each later poll performs bounded channel work and checks handoff, the signed
+wrapping 2401-tick deadline, pending count and rejection status. Completion
+captures a fresh tick. Rejection or cancellation restores remembered double
+settings from current authoritative values. Acceptance installs them and applies
+the actual movement transformation, then evaluates the live publication gate.
+Its selected tail sends units/options and acceptance in order even if a child
+changes mode. Double options receive no second preference save.
+
+The operation pins the world across suspension, copies service wiring, rejects
+reentrant polling and releases the channel once on success, cancellation or
+failure. Cancellation during a channel call is deferred until that call returns.
+Ordinary game/graphics/message configuration also pins world references through
+external children, including configuration before a client session exists.
+
+The following counts describe the historical synchronous modal implementation.
+Current vote regressions cover the same option effects plus yielding, channel
+ownership, cancellation, exception cleanup and pending-world protection.
 
 Twenty-eight authored portable cases cover checkbox mappings, audio ordering,
 save failures, required-child stops, all 256 movement bytes, signed removal,
@@ -309,9 +319,8 @@ outcomes. They are not new original-game captures or actual network/modal/audio
 integration evidence. These operations are not yet registered with X02.
 
 Application command/widget binding, P10 audio implementations, N02 option wire
-dispatch and replies, P04 modal ownership and F05 setup remain required owning
-work. The retained vote callback requires the modal owner to keep its runtime
-alive while delivery remains possible.
+dispatch and replies, presentation and full F05 setup remain required owning
+work. Runtime and injected services outlive their pending operation.
 
 Verification passes all 445 native CTests and 447 with SQLite enabled. Pinned
 WASM passes all six CTests, including 423 portable Catch2 cases and 188,953

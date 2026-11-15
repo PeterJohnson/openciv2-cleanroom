@@ -39,11 +39,16 @@ struct UnitOperationResult {
     std::int32_t reply = 0;
     bool timed_out = false, cancelled = false;
 };
-// Owns a single local operation or a suspended remote request, pinning the world.
-// Session/frontend scheduling calls poll; gameplay never spins a message loop.
+// Owns local work or a suspended remote request. Standalone construction pins
+// the world; command construction borrows the continuation owner's lifetime.
 class UnitOperation {
 public:
     UnitOperation(SessionRuntime& runtime, UnitRequest request, bool notify,
+                  unit::StackBudget budget, UnitOperationServices services,
+                  std::unique_ptr<UnitRequestChannel> channel = {});
+    // The enclosing command owns world/process/publication lifetimes until this
+    // child is destroyed. Copy callbacks, never retain the stack context itself.
+    UnitOperation(OperationContext& context, UnitRequest request, bool notify,
                   unit::StackBudget budget, UnitOperationServices services,
                   std::unique_ptr<UnitRequestChannel> channel = {});
     ~UnitOperation();
@@ -53,11 +58,16 @@ public:
     void cancel() noexcept;
 
 private:
+    UnitOperation(state::GameState& world, state::RuleState& rules, std::function<void()> publish,
+                  UnitRequest request, bool notify, unit::StackBudget budget,
+                  UnitOperationServices services, std::unique_ptr<UnitRequestChannel> channel);
     bool& active();
     std::int32_t& reply();
     void finish(UnitOperationResult result) noexcept;
     std::optional<UnitOperationResult> complete_child(UnitOperationResult result);
-    SessionRuntime& runtime_;
+    state::GameState& world_;
+    state::RuleState& rules_;
+    std::function<void()> publish_;
     UnitRequest request_;
     bool notify_, started_ = false, remote_ = false, timed_out_ = false;
     bool polling_ = false, cancel_requested_ = false;

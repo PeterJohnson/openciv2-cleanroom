@@ -10,12 +10,13 @@ struct PreferenceFileServices {
     std::function<bool(std::string_view)> remove_file;
     void validate_output() const;
 };
-// F03 section 8, F06 CIV2.DAT: exactly two independent item attempts on load;
-// each failed item gets its own defaults over its transferred prefix. No seek,
-// general validation, world-options copy or session initialization is added.
-void load_classic_preferences(state::ProcessContext& process,
-                              const state::PreferenceDefaults& defaults,
-                              const PreferenceFileServices& services);
+enum class PreferenceLoadStatus { success, defaults, input };
+// Stage both independent items against entry snapshots and close before install.
+// Short items receive their specified fallback defaults; close failure and
+// exceptions leave installed preferences unchanged. Missing files default both.
+PreferenceLoadStatus load_classic_preferences(state::ProcessContext& process,
+                                              const state::PreferenceDefaults& defaults,
+                                              const PreferenceFileServices& services);
 enum class PreferenceSaveStatus { success = 0, output = 1 };
 // F03 production preference contract: coherent configuration, truthful write
 // and close results, exactly-once close. Failed output is removed when possible;

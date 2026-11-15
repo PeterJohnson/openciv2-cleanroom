@@ -237,3 +237,65 @@ TEST_CASE("U01 remote primitive arguments reach the channel before local record 
         }
     }
 }
+
+namespace {
+class CommandUnit final : public Continuation {
+public:
+    CommandUnit(UnitOperationServices services, std::unique_ptr<UnitRequestChannel> channel)
+        : services_(std::move(services)), channel_(std::move(channel)) {}
+    OperationStep resume(OperationContext& context, OperationInput input) override {
+        if (!child_)
+            child_ = std::make_unique<UnitOperation>(
+                context, UnitRequest{UnitOperationKind::relocate, {0, 4, 2}}, false,
+                unit::StackBudget{10000, 64}, services_, std::move(channel_));
+        if (input.kind == OperationInputKind::cancel) {
+            child_->cancel();
+            return {CommandStatus::cancelled, {}, {}, {}};
+        }
+        return {child_->poll() ? CommandStatus::completed : CommandStatus::pending, {}, {}, {}};
+    }
+
+private:
+    UnitOperationServices services_;
+    std::unique_ptr<UnitRequestChannel> channel_;
+    std::unique_ptr<UnitOperation> child_;
+};
+} // namespace
+TEST_CASE("U01 unit operations compose inside real command continuations",
+          "[session][unit-operation][commands]") {
+    for (const auto route : {0, 1, 2}) {
+        Fixture f;
+        f.runtime.end_client_session();
+        CommandDefinition command;
+        command.descriptor = {1, "test.unit", "Authored unit child", AccessClass::player, {}, {}};
+        command.admit = [](const auto&, const auto&, const auto&) { return Admission{}; };
+        command.execute = [&](const auto&) {
+            return std::make_unique<CommandUnit>(f.services, std::make_unique<Channel>(f.channel));
+        };
+        f.runtime.register_command(std::move(command));
+        f.runtime.begin_client_session({10, 20});
+        f.runtime.world().multiplayer.network_host = route == 0;
+        const auto client = f.runtime.bind(f.runtime.add_participant(state::CivilizationSlot{1}),
+                                           ControllerKind::scripted);
+        const auto id = client.submit({"test.unit", {}}).correlation.command;
+        REQUIRE(f.runtime.advance_one());
+        if (route != 0) {
+            REQUIRE(client.result(id)->status == CommandStatus::pending);
+            CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error);
+            if (route == 2)
+                f.runtime.cancel_command(id);
+            else {
+                f.channel.replies.push_back({0, true});
+                REQUIRE(f.runtime.continue_command(id));
+            }
+            REQUIRE(f.runtime.advance_one());
+        }
+        CHECK(client.result(id)->status ==
+              (route == 2 ? CommandStatus::cancelled : CommandStatus::completed));
+        CHECK(f.channel.sends == (route == 0 ? 0 : 1));
+        CHECK(f.channel.cancellations == 1);
+        if (route == 0)
+            CHECK(f.runtime.world().entities.units.storage()[0].x == 4);
+        CHECK_NOTHROW(f.runtime.prepare_new_game());
+    }
+}

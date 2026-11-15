@@ -27,34 +27,6 @@ template <class Operation> void complete(SessionRuntime& runtime, Operation oper
         throw;
     }
 }
-void validate_vote(const OptionVoteServices& services) {
-    if (!services.poll || !services.clock || !services.finish_modal)
-        throw std::invalid_argument("Option vote requires poll, clock and modal completion");
-}
-class InstalledVote {
-public:
-    InstalledVote(SessionRuntime& runtime, const MultiplayerOptionServices& services) {
-        std::weak_ptr<bool> live = live_;
-        registration_ = services.install_vote_callback([live, &runtime, vote = services.vote] {
-            const auto guard = live.lock();
-            if (guard && *guard)
-                poll_option_vote(runtime, vote);
-        });
-        if (!registration_)
-            throw std::invalid_argument("Option vote requires an owned callback registration");
-    }
-    ~InstalledVote() {
-        *live_ = false;
-        if (registration_)
-            registration_->cancel();
-    }
-    InstalledVote(const InstalledVote&) = delete;
-    InstalledVote& operator=(const InstalledVote&) = delete;
-
-private:
-    std::shared_ptr<bool> live_ = std::make_shared<bool>(true);
-    std::unique_ptr<VoteRegistration> registration_;
-};
 std::string text(std::string value) {
     value.resize(std::min(value.size(), value.find('\0')));
     return value;
@@ -68,6 +40,7 @@ bool configure_game_options(SessionRuntime& runtime, std::optional<GameOptionCho
     services.preferences.validate_output();
     if (!services.stop_music || !services.reinitialize_music || !services.synchronize_music)
         throw std::invalid_argument("Game options require complete music services");
+    auto pin = runtime.pin_world();
     complete(runtime, [&] {
         auto& options = runtime.world().globals.game_options;
         const bool old_music = (options & 8U) != 0;
@@ -105,6 +78,7 @@ bool configure_graphics_options(SessionRuntime& runtime,
     services.preferences.validate_output();
     if (!services.heralds_available || !services.low_memory_notice)
         throw std::invalid_argument("Graphics options require availability and notice services");
+    auto pin = runtime.pin_world();
     complete(runtime, [&] {
         auto& options = runtime.world().globals.game_options;
         const bool old_heralds = (options & 0x200000U) != 0;
@@ -134,6 +108,7 @@ bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOpt
         return false;
     const auto services = supplied;
     services.validate_output();
+    auto pin = runtime.pin_world();
     complete(runtime, [&] {
         auto& messages = runtime.world().globals.message_options;
         messages = 0;
@@ -145,110 +120,212 @@ bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOpt
     });
     return true;
 }
-void poll_option_vote(SessionRuntime& runtime, const OptionVoteServices& supplied) {
-    const auto services = supplied;
-    validate_vote(services);
-    complete(runtime, [&] {
-        auto& multiplayer = runtime.world().multiplayer;
-        auto& vote = multiplayer.vote;
-        publish(runtime);
-        services.poll(1, 0);
-        if (multiplayer.handoff == 0) {
-            publish(runtime);
-            const auto now = services.clock();
-            if (base::signed32(now - vote.popup_tick) < 2401 && vote.pending != 0 &&
-                vote.status != -1)
-                return;
-        }
-        publish(runtime);
-        services.finish_modal();
-        publish(runtime);
-        vote.popup_tick = services.clock();
-    });
-}
-MultiplayerOptionResult configure_multiplayer_options(SessionRuntime& runtime,
-                                                      std::int32_t dialog_result,
-                                                      MultiplayerOptionChoices choices,
-                                                      const MultiplayerOptionServices& supplied) {
-    if (dialog_result != 0)
-        return MultiplayerOptionResult::cancelled;
-    const auto services = supplied;
-    services.preferences.validate_output();
-    validate_vote(services.vote);
-    if (!services.local_player_name || !services.separator || !services.production_label ||
-        !services.movement_label || !services.broadcast_proposal || !services.broadcast_rejection ||
-        !services.broadcast_acceptance || !services.install_vote_callback ||
-        !services.show_vote_dialog || !services.send_units || !services.send_options ||
-        !services.notice || !services.redraw_status)
+MultiplayerOptionOperation::MultiplayerOptionOperation(SessionRuntime& runtime,
+                                                       std::int32_t dialog_result,
+                                                       MultiplayerOptionChoices choices,
+                                                       MultiplayerOptionServices services,
+                                                       std::unique_ptr<OptionVoteChannel> channel)
+    : runtime_(runtime), choices_(choices), services_(std::move(services)),
+      channel_(std::move(channel)) {
+    if (dialog_result != 0) {
+        finish(MultiplayerOptionResult::cancelled);
+        return;
+    }
+    const auto& s = services_;
+    s.preferences.validate_output();
+    if (!s.clock || !s.local_player_name || !s.separator || !s.production_label ||
+        !s.movement_label || !s.broadcast_rejection || !s.broadcast_acceptance || !s.send_units ||
+        !s.send_options || !s.notice || !s.redraw_status)
         throw std::invalid_argument("Multiplayer options require complete service bindings");
-    auto activity = runtime.begin_activity();
-    auto result = MultiplayerOptionResult::unchanged;
-    complete(runtime, [&] {
-        auto& process = runtime.process();
+    const auto& world = runtime_.world();
+    const auto& multiplayer = world.multiplayer;
+    const bool changed = multiplayer.saved.double_production != (choices[2] ? 1 : 0) ||
+                         multiplayer.saved.double_movement != (choices[3] ? 1 : 0);
+    if (changed && world.globals.multiplayer >= 3 && multiplayer.network_host &&
+        multiplayer.player_count > 1 && !channel_)
+        throw std::invalid_argument("Multiplayer proposal requires a vote channel");
+    activity_.emplace(runtime_.begin_activity());
+}
+MultiplayerOptionOperation::~MultiplayerOptionOperation() {
+    try {
+        cancel();
+    } catch (...) {
+        finish(MultiplayerOptionResult::failed);
+    }
+}
+void MultiplayerOptionOperation::finish(MultiplayerOptionResult result) noexcept {
+    result_ = result;
+    auto channel = std::move(channel_);
+    if (channel)
+        channel->cancel();
+    activity_.reset();
+}
+void MultiplayerOptionOperation::reject() {
+    auto& preferences = runtime_.process().multiplayer_preferences;
+    const auto& live = runtime_.world().multiplayer.saved;
+    preferences.double_production = live.double_production;
+    preferences.double_movement = live.double_movement;
+    publish(runtime_);
+    services_.broadcast_rejection();
+    publish(runtime_);
+    services_.notice("PMCHANGENO");
+    finish(MultiplayerOptionResult::rejected);
+}
+void MultiplayerOptionOperation::cancel_now() {
+    if (proposal_)
+        reject();
+    else {
+        if (chosen_) {
+            const auto& live = runtime_.world().multiplayer.saved;
+            auto& preferences = runtime_.process().multiplayer_preferences;
+            preferences.double_production = live.double_production;
+            preferences.double_movement = live.double_movement;
+        }
+        finish(MultiplayerOptionResult::cancelled);
+    }
+}
+void MultiplayerOptionOperation::cancel() {
+    if (result_)
+        return;
+    if (polling_) {
+        cancel_requested_ = true;
+        return;
+    }
+    polling_ = true;
+    try {
+        cancel_now();
+    } catch (...) {
+        polling_ = false;
+        finish(MultiplayerOptionResult::failed);
+        throw;
+    }
+    polling_ = false;
+}
+void MultiplayerOptionOperation::apply() {
+    auto& world = runtime_.world();
+    auto& live = world.multiplayer.saved;
+    const auto& preferences = runtime_.process().multiplayer_preferences;
+    live.double_production = preferences.double_production;
+    live.double_movement = preferences.double_movement;
+    rules::apply_double_movement(world.globals.multiplayer, live.double_movement,
+                                 *runtime_.process().rules,
+                                 published(runtime_, services_.redraw_status));
+    if (world.globals.multiplayer >= 3 && world.multiplayer.player_count > 1) {
+        publish(runtime_);
+        services_.send_units();
+        publish(runtime_);
+        services_.send_options(live.double_production, live.double_movement, live.simultaneous);
+        publish(runtime_);
+        services_.broadcast_acceptance();
+        publish(runtime_);
+        services_.notice("PMCHANGEYES");
+    }
+    publish(runtime_);
+    finish(MultiplayerOptionResult::applied);
+}
+std::optional<MultiplayerOptionResult> MultiplayerOptionOperation::poll() {
+    if (polling_)
+        throw std::logic_error("Cannot reenter an option vote");
+    if (result_)
+        return result_;
+    polling_ = true;
+    struct Exit {
+        bool& polling;
+        ~Exit() { polling = false; }
+    } exit{polling_};
+    const auto cancelled = [&] {
+        if (!cancel_requested_)
+            return false;
+        cancel_now();
+        return true;
+    };
+    try {
+        auto& process = runtime_.process();
         auto& preferences = process.multiplayer_preferences;
-        auto& world = runtime.world();
+        auto& world = runtime_.world();
         auto& multiplayer = world.multiplayer;
         auto& live = multiplayer.saved;
         auto& vote = multiplayer.vote;
-        preferences.clear_chat_new_game = choices[0] ? 1 : 0;
-        preferences.clear_chat_boot = choices[1] ? 1 : 0;
-        (void)save_classic_preferences(runtime, services.preferences);
-        if (world.globals.multiplayer >= 3 && !multiplayer.network_host) {
-            result = MultiplayerOptionResult::client_only;
-            return;
-        }
-        preferences.double_production = choices[2] ? 1 : 0;
-        preferences.double_movement = choices[3] ? 1 : 0;
-        if (preferences.double_production == live.double_production &&
-            preferences.double_movement == live.double_movement)
-            return;
-        if (world.globals.multiplayer >= 3 && multiplayer.player_count > 1) {
-            auto& parameters = process.text_parameters.strings;
-            publish(runtime);
-            parameters[0] = text(services.local_player_name());
-            publish(runtime);
-            parameters[1] = text(services.production_label(preferences.double_production != 0));
-            publish(runtime);
-            parameters[1] += text(services.separator());
-            publish(runtime);
-            parameters[1] += text(services.movement_label(preferences.double_movement != 0));
-            vote.pending = base::subtract32(multiplayer.player_count, 1);
-            vote.status = 0;
-            publish(runtime);
-            services.broadcast_proposal();
-            publish(runtime);
-            InstalledVote registration(runtime, services);
-            publish(runtime);
-            vote.popup_tick = services.vote.clock();
-            publish(runtime);
-            const auto modal_result = services.show_vote_dialog();
-            if (modal_result < 0 || vote.status == -1 || vote.pending != 0) {
-                preferences.double_production = live.double_production;
-                preferences.double_movement = live.double_movement;
-                publish(runtime);
-                services.broadcast_rejection();
-                publish(runtime);
-                services.notice("PMCHANGENO");
-                result = MultiplayerOptionResult::rejected;
-                return;
+        if (!started_) {
+            started_ = true;
+            preferences.clear_chat_new_game = choices_[0] ? 1 : 0;
+            preferences.clear_chat_boot = choices_[1] ? 1 : 0;
+            (void)save_classic_preferences(runtime_, services_.preferences);
+            if (cancelled())
+                return result_;
+            if (world.globals.multiplayer >= 3 && !multiplayer.network_host) {
+                finish(MultiplayerOptionResult::client_only);
+                return result_;
             }
+            preferences.double_production = choices_[2] ? 1 : 0;
+            preferences.double_movement = choices_[3] ? 1 : 0;
+            chosen_ = true;
+            if (preferences.double_production == live.double_production &&
+                preferences.double_movement == live.double_movement) {
+                finish(MultiplayerOptionResult::unchanged);
+                return result_;
+            }
+            if (world.globals.multiplayer >= 3 && multiplayer.player_count > 1) {
+                if (!channel_)
+                    throw std::invalid_argument("Multiplayer proposal requires a vote channel");
+                auto& parameters = process.text_parameters.strings;
+                publish(runtime_);
+                parameters[0] = text(services_.local_player_name());
+                publish(runtime_);
+                parameters[1] =
+                    text(services_.production_label(preferences.double_production != 0));
+                publish(runtime_);
+                parameters[1] += text(services_.separator());
+                publish(runtime_);
+                parameters[1] += text(services_.movement_label(preferences.double_movement != 0));
+                if (cancelled())
+                    return result_;
+                vote.pending = base::subtract32(multiplayer.player_count, 1);
+                vote.status = 0;
+                proposal_ =
+                    OptionProposal{parameters[0], parameters[1], preferences.double_production,
+                                   preferences.double_movement, vote.pending};
+                publish(runtime_);
+                channel_->begin(*proposal_);
+                if (cancelled())
+                    return result_;
+                publish(runtime_);
+                vote.popup_tick = services_.clock();
+                if (cancelled())
+                    return result_;
+                return {}; // Presentation and network scheduling resume on a later frame.
+            }
+            apply();
+            return result_;
         }
-        live.double_production = preferences.double_production;
-        live.double_movement = preferences.double_movement;
-        rules::apply_double_movement(world.globals.multiplayer, live.double_movement,
-                                     *process.rules, published(runtime, services.redraw_status));
-        if (world.globals.multiplayer >= 3 && multiplayer.player_count > 1) {
-            publish(runtime);
-            services.send_units();
-            publish(runtime);
-            services.send_options(live.double_production, live.double_movement, live.simultaneous);
-            publish(runtime);
-            services.broadcast_acceptance();
-            publish(runtime);
-            services.notice("PMCHANGEYES");
+        publish(runtime_);
+        const auto progress = channel_->poll();
+        if (cancelled())
+            return result_;
+        vote.pending = progress.pending;
+        vote.status = progress.status;
+        if (multiplayer.handoff == 0) {
+            publish(runtime_);
+            const auto now = services_.clock();
+            if (cancelled())
+                return result_;
+            if (base::signed32(now - vote.popup_tick) < 2401 && vote.pending != 0 &&
+                vote.status != -1)
+                return {};
         }
-        result = MultiplayerOptionResult::applied;
-    });
-    return result;
+        publish(runtime_);
+        vote.popup_tick = services_.clock();
+        if (cancelled())
+            return result_;
+        if (vote.status == -1 || vote.pending != 0)
+            reject();
+        else
+            apply();
+        return result_;
+    } catch (...) {
+        publish(runtime_);
+        finish(MultiplayerOptionResult::failed);
+        throw;
+    }
 }
 } // namespace openciv::session

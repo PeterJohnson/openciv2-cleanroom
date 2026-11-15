@@ -10,6 +10,22 @@ Full W02/V01/balancing/AI and graphical setup integration remain M3/M4 work;
 supplied-child foundation tests do not establish those mechanics. Historical test
 counts below describe their recorded revisions, not current review verification.
 
+The subsequent interface review fixes five remaining issues and the deferred
+new-world content inconsistency: nested setup/configuration lifetime guards,
+unit operations inside command continuations, staged preference loading, owned
+scenario event catalogs, asynchronous option votes, and one shared content
+installation path for new games and loaded games. Regression cases cover callback
+replacement attempts, command completion/cancellation, failed finalization,
+event allocation failure, bounded vote polling, and reuse of closed content inputs.
+
+Validation: 531/531 Linux native CTests (518 Catch2 cases), 531/531 ASan/UBSan
+CTests with LeakSanitizer disabled for this host, 8/8 Emscripten CTests (505 portable
+cases, 209,132 assertions), 121 Python tests, and a rebuilt SDL desktop smoke test.
+All 57 native conformance vectors pass and the source-bound report is refreshed.
+Pinned clang-format 20.1.8, include boundaries and conformance metadata pass.
+These checks add implementation evidence, not new original-game, Windows or
+macOS observations. GUI and transport adapters remain later-milestone work.
+
 The 2026-11-14 ownership and format-boundary follow-up separates owned save/map
 inputs from installation, guards complete load lifetimes, loads rules once,
 separates label parsing from text setup, removes serialized presence words from

@@ -184,24 +184,11 @@ void install_game(const state::GameInput& input, SessionRuntime& runtime,
         state::refresh_password_flags(multiplayer);
     }
     multiplayer.resume_civ = saved.resume_civ;
-    world.events.loaded = false;
-    world.events.collection.reset();
-    if (input.events) {
-        for (const auto& source : *input.events) {
-            auto event = world.events.collection.append(events);
-            if (!event)
-                throw std::bad_alloc();
-            event->values = source.values;
-            for (std::size_t i = 0; i < source.strings.size(); ++i)
-                if (source.strings[i]) {
-                    state::EventString text;
-                    if (!state::create_event_string(text, *source.strings[i], events))
-                        throw std::bad_alloc();
-                    event->set_string(i, std::move(text));
-                }
-        }
-        world.events.loaded = true;
-    }
+    if (input.events)
+        state::install_events(*input.events, world.events.collection, events);
+    else
+        world.events.collection.reset();
+    world.events.loaded = input.events.has_value();
     restore_leader_names(input, world, *process.rules);
     state::rebuild_loaded_unit_census(world.civilizations, world.entities);
     world.mood.city.reset();

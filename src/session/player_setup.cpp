@@ -70,6 +70,7 @@ PlayerSetupResult select_players(SessionRuntime& runtime, base::GameplayRandom& 
     services.validate();
     if (call.empty())
         throw std::invalid_argument("Player setup requires a semantic call identity");
+    auto pin = runtime.pin_world();
     auto& world = runtime.world();
     auto& globals = world.globals;
     auto& rules = *runtime.process().rules;

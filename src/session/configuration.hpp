@@ -38,58 +38,68 @@ bool configure_graphics_options(SessionRuntime& runtime,
 bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOptionChoices> choices,
                                const PreferenceFileServices& services);
 
-struct OptionVoteServices {
-    std::function<void(std::int32_t, std::int32_t)> poll;
-    std::function<std::uint32_t()> clock;
-    // Required P04 child: set modal completion before ending its loop.
-    std::function<void()> finish_modal;
-};
-// N03 section 11 shared vote callback, including signed wrapping elapsed time,
-// live gate order and the fresh completion tick. Does not dispatch N02 replies.
-void poll_option_vote(SessionRuntime& runtime, const OptionVoteServices& services);
-
-// Owned registration in the modal/event adapter. Cancellation disconnects its
-// callback and is idempotent; the operation also invalidates retained copies.
-class VoteRegistration {
-public:
-    virtual ~VoteRegistration() = default;
-    VoteRegistration(const VoteRegistration&) = delete;
-    VoteRegistration& operator=(const VoteRegistration&) = delete;
-    virtual void cancel() noexcept = 0;
-
-protected:
-    VoteRegistration() = default;
-};
 // Clear chat on new game, clear chat on boot, double production, double movement.
 using MultiplayerOptionChoices = std::array<bool, 4>;
+struct OptionProposal {
+    std::string sender, description;
+    std::int32_t production = 0, movement = 0, expected_votes = 0;
+};
+struct OptionVoteProgress {
+    std::int32_t pending = 0, status = 0;
+};
+// Owned N02 vote registration/transport. Each poll does bounded, nonblocking
+// work; presentation observes the operation instead of running a modal loop.
+class OptionVoteChannel {
+public:
+    OptionVoteChannel() = default;
+    virtual ~OptionVoteChannel() = default;
+    OptionVoteChannel(const OptionVoteChannel&) = delete;
+    OptionVoteChannel& operator=(const OptionVoteChannel&) = delete;
+    virtual void begin(OptionProposal proposal) = 0;
+    virtual OptionVoteProgress poll() = 0;
+    virtual void cancel() noexcept = 0;
+};
 struct MultiplayerOptionServices {
     PreferenceFileServices preferences;
-    OptionVoteServices vote;
+    std::function<std::uint32_t()> clock;
     // N01 owns local player/name mapping; a civilization is not a player slot.
     std::function<std::string()> local_player_name, separator;
     std::function<std::string(bool)> production_label, movement_label;
-    // Proposal consumes text_parameters[0/1]. N02 owns the actual wire dispatch.
-    std::function<void()> broadcast_proposal, broadcast_rejection, broadcast_acceptance;
-    // Returns an owned registration, cancelled on modal completion or exception.
-    // Retained callback copies become inert before the operation returns.
-    std::function<std::unique_ptr<VoteRegistration>(std::function<void()>)> install_vote_callback;
-    std::function<std::int32_t()> show_vote_dialog;
+    std::function<void()> broadcast_rejection, broadcast_acceptance;
     std::function<void()> send_units;
     std::function<void(std::int32_t production, std::int32_t movement, std::int32_t simultaneous)>
         send_options;
     std::function<void(std::string_view)> notice;
     std::function<void(std::int32_t)> redraw_status;
 };
-enum class MultiplayerOptionResult { cancelled, client_only, unchanged, rejected, applied };
-// F03/N03 accepted-dialog boundary. Only result exactly zero applies. Chat
-// preferences save before host/changed/vote gates; double options do not get a
-// second save. Uses real double-movement rules and the shared vote callback.
-// Initial dialog construction, N02 transport and P04 modal execution are children.
-// Accepted changes require a live, settled runtime. The world is pinned until
-// completion; services and runtime outlive this synchronous owning operation.
-// Required bindings are checked before effects, including persistence/proposals.
-MultiplayerOptionResult configure_multiplayer_options(SessionRuntime& runtime,
-                                                      std::int32_t dialog_result,
-                                                      MultiplayerOptionChoices choices,
-                                                      const MultiplayerOptionServices& services);
+enum class MultiplayerOptionResult { cancelled, client_only, unchanged, rejected, applied, failed };
+// F03/N03 accepted-dialog boundary. Chat preferences save before host/change
+// gates. The operation owns pending vote lifetime and always yields after begin.
+// The caller polls from its normal scheduler; no nested presentation loop is needed.
+class MultiplayerOptionOperation {
+public:
+    MultiplayerOptionOperation(SessionRuntime& runtime, std::int32_t dialog_result,
+                               MultiplayerOptionChoices choices, MultiplayerOptionServices services,
+                               std::unique_ptr<OptionVoteChannel> channel = {});
+    ~MultiplayerOptionOperation();
+    MultiplayerOptionOperation(const MultiplayerOptionOperation&) = delete;
+    MultiplayerOptionOperation& operator=(const MultiplayerOptionOperation&) = delete;
+    std::optional<MultiplayerOptionResult> poll();
+    void cancel();
+    const std::optional<OptionProposal>& proposal() const noexcept { return proposal_; }
+
+private:
+    void finish(MultiplayerOptionResult result) noexcept;
+    void reject();
+    void apply();
+    void cancel_now();
+    SessionRuntime& runtime_;
+    MultiplayerOptionChoices choices_;
+    MultiplayerOptionServices services_;
+    std::unique_ptr<OptionVoteChannel> channel_;
+    std::optional<SessionActivity> activity_;
+    std::optional<OptionProposal> proposal_;
+    std::optional<MultiplayerOptionResult> result_;
+    bool started_ = false, polling_ = false, cancel_requested_ = false, chosen_ = false;
+};
 } // namespace openciv::session

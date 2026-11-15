@@ -283,6 +283,12 @@ codec round trips retain the complete admitted representation.
 The installer reuses its `RuleInput` for final name-preserving updates. There is
 no parser reload/close protocol in the load workflow. Classic label parsing
 returns `LabelCatalog`; pool installation and language/cache setup are separate.
+New-world setup uses the same `LoadedContent` factory and installer, including
+final name-preserving table updates from that one parsed input. Scenario event
+sources return `EventCatalog`; shared installation prepares the replacement
+before publishing it. No event parser receives a mutable live collection.
+Preference loading snapshots its operands, reads and closes both items, and only
+then installs the values/defaults. Close failure leaves prior preferences intact.
 
 Events contain semantic values and owned string identities. Only the codec has
 serialized presence words. Collection-controlled IDs and const access protect
@@ -295,7 +301,11 @@ Use classes to enforce invariants, resource ownership and state transitions.
 `ClassicSaveOperation` owns a suspended save; `ClassicLoadOperation` guards a
 load through its post-load callbacks; `UnitOperation` owns pending unit requests
 and whole-stack continuations; `SessionActivity` pins the world during those
-operations and an active option vote.
+operations and an active option vote. `pin_world()` supplies a nested storage
+guard for synchronous configuration/setup, including before client admission;
+it does not admit a second owner workflow. Commands already protect their world
+while pending. Their unit children take `OperationContext` and do not attempt
+standalone workflow admission.
 Public client/value headers do not include mutable state or engine operation
 interfaces. Transitive include checks and portable target dependency checks
 protect these boundaries as the frontend grows.
@@ -325,9 +335,11 @@ prefix. Tests supply throwing children explicitly to distinguish those cases.
 state ensures finalization is attempted once, including a throwing close;
 implementations release resources in their destructors. Explicit close reports
 failure, while destructor cleanup preserves an earlier exception. Codecs continue
-to accept individual read/write functions. Vote callbacks have an owned
-registration: modal completion or failure cancels it and invalidates escaped
-callback copies before the runtime can start another game.
+to accept individual read/write functions. `MultiplayerOptionOperation` owns an
+`OptionVoteChannel` and yields after proposal delivery. Each subsequent poll does
+bounded transport work and evaluates the wrapping deadline. Presentation observes
+owned proposal data; it does not own a blocking modal protocol or vote callback.
+Cancellation, failure and completion release the channel before the world guard.
 
 Local stack/deletion mechanics never wait for transport. `UnitOperation` selects
 local authority or owns a noncopyable `UnitRequestChannel`, and yields after send.

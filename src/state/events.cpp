@@ -145,6 +145,32 @@ bool EventCollection::compact(const EventServices& services) {
     ++revision_;
     return true;
 }
+void install_events(const EventCatalog& input, EventCollection& collection,
+                    const EventServices& services) {
+    const auto revision = collection.revision_;
+    auto resources = services;
+    resources.allocate = [&](EventAllocation request) {
+        const bool result = allowed(services, request.kind, request.bytes);
+        if (collection.revision_ != revision)
+            throw std::logic_error("Event resource admission changed the installation target");
+        return result;
+    };
+    EventCollection replacement;
+    replacement.next_identity_ = collection.next_identity_;
+    for (const auto& source : input) {
+        const auto event = replacement.append(resources);
+        if (!event)
+            throw std::bad_alloc();
+        event->values = source.values;
+        for (std::size_t field = 0; field < source.strings.size(); ++field)
+            if (source.strings[field] &&
+                !create_event_string(event->strings[field], *source.strings[field], resources))
+                throw std::bad_alloc();
+    }
+    collection.entries_ = std::move(replacement.entries_);
+    collection.next_identity_ = replacement.next_identity_;
+    ++collection.revision_;
+}
 bool compact_events(EventCollection& collection, const EventServices& services) {
     return collection.compact(services);
 }

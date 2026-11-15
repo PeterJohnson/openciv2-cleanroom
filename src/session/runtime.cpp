@@ -82,6 +82,9 @@ SessionActivity SessionRuntime::begin_activity() {
     detail::require_quiescent(*state_);
     return SessionActivity{state_};
 }
+SessionActivity SessionRuntime::pin_world() {
+    return SessionActivity{state_};
+}
 SessionId SessionRuntime::begin_client_session(Seeds seeds) {
     detail::require_quiescent(*state_);
     // Prepare contexts before revoking old access. A failed preparation has not

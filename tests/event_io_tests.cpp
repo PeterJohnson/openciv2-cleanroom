@@ -166,3 +166,24 @@ TEST_CASE("S02 compaction rejects collection mutation from resource admission", 
                                         {}};
     CHECK_THROWS_AS(state::compact_events(events, services), std::logic_error);
 }
+
+TEST_CASE("Owned event installation preserves the old collection on allocation failure",
+          "[events]") {
+    state::EventCollection collection;
+    const auto original = collection.append();
+    original->values.turn = 19;
+    state::EventCatalog input(1);
+    input[0].values.turn = 27;
+    input[0].strings[0] = "owned source";
+    state::EventServices reject{[](state::EventAllocation allocation) {
+                                    return allocation.kind != state::EventAllocationKind::string;
+                                },
+                                {}};
+    CHECK_THROWS_AS(state::install_events(input, collection, reject), std::bad_alloc);
+    CHECK(collection.at(0) == original);
+    CHECK(original->values.turn == 19);
+    state::install_events(input, collection);
+    CHECK(collection.at(0)->identity() != original->identity());
+    input[0].strings[0] = "edited input";
+    CHECK(collection.at(0)->strings[0].value() == "owned source");
+}

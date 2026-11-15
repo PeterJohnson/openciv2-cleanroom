@@ -5,8 +5,8 @@
 #include "state/game.hpp"
 
 namespace openciv::session {
-// Pins a live world while an owner workflow waits for external input. It does
-// not block command steps or deadlines; replacement requires cancellation first.
+// Pins world storage during a workflow or nested engine call, including setup
+// before client admission. It does not block command steps or deadlines.
 class SessionActivity {
 public:
     SessionActivity(SessionActivity&&) noexcept = default;
@@ -67,6 +67,9 @@ public:
     // must outlive it. Starting requires settled commands, then ordinary command
     // and timeout processing remains available while the workflow is pending.
     SessionActivity begin_activity();
+    // Nested storage guard, without starting a new owner workflow. Valid before
+    // client admission and inside commands; blocks replacement until scope exit.
+    SessionActivity pin_world();
     ParticipantId add_participant(state::CivilizationSlot civilization,
                                   std::optional<ConnectionId> connection = {});
     Participant participant(ParticipantId id) const;

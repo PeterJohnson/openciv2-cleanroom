@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -49,6 +50,11 @@ private:
     std::shared_ptr<std::string> text_;
 };
 inline constexpr std::size_t event_string_count = 35, event_text_begin = 4, event_other_begin = 24;
+struct EventInput {
+    EventValues values;
+    std::array<std::optional<std::string>, event_string_count> strings;
+};
+using EventCatalog = std::vector<EventInput>;
 // Field order: unit/city/who/whom; 20 text slots; move owner/unit, aggression
 // whom/who, create owner/unit/home, ancillary civ/unit, money receiver, wave.
 enum class EventId : std::uint64_t {};
@@ -94,9 +100,14 @@ public:
     std::shared_ptr<Event> append(const EventServices& services = {});
     void reset(); // Does not change the separate events-loaded indicator.
 private:
+    friend void install_events(const EventCatalog&, EventCollection&, const EventServices&);
     std::vector<std::shared_ptr<Event>> entries_;
     std::uint64_t next_identity_ = 1, revision_ = 0;
 };
+// Prepare a replacement before publishing. Source formats supply owned data;
+// fresh event identities remain monotonic within the destination collection.
+void install_events(const EventCatalog& input, EventCollection& collection,
+                    const EventServices& services = {});
 struct EventState {
     EventCollection collection;
     bool loaded = false;

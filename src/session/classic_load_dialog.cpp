@@ -69,7 +69,7 @@ load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
     if (selected_path) {
         services.input.validate();
         if (!services.close_map_window || !services.enumerate ||
-            !services.input.comparison.uppercase_path || !services.parse_events ||
+            !services.input.comparison.uppercase_path || !services.load_events ||
             !services.scenario_loaded || !services.synchronize_music || !services.configure_sound ||
             !services.load_notice || !services.deletion.check_destroyed ||
             (show_title && !services.present_title))
@@ -116,14 +116,9 @@ load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
         if (!events.loaded && (world.globals.game_flags & 0x80U)) {
             publish(runtime);
             if (services.input.exists(files.scenario_directory, "EVENTS." + files.text.extension)) {
-                events.collection.reset();
                 publish(runtime);
-                if (services.parse_events("EVENTS", "BEGINEVENTS")) {
-                    auto resources = services.input.events;
-                    resources.allocate = published(runtime, resources.allocate);
-                    resources.report = published(runtime, resources.report);
-                    if (!state::compact_events(events.collection, resources))
-                        throw std::bad_alloc();
+                if (auto catalog = services.load_events()) {
+                    state::install_events(*catalog, events.collection, services.input.events);
                     events.loaded = true;
                 }
             }

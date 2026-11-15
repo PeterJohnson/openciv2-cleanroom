@@ -32,26 +32,41 @@ void PreferenceFileServices::validate_output() const {
     if (!open_output || !remove_file)
         throw std::invalid_argument("Preference saving requires open and removal services");
 }
-void load_classic_preferences(state::ProcessContext& process,
-                              const state::PreferenceDefaults& defaults,
-                              const PreferenceFileServices& services) {
+PreferenceLoadStatus load_classic_preferences(state::ProcessContext& process,
+                                              const state::PreferenceDefaults& supplied_defaults,
+                                              const PreferenceFileServices& supplied) {
+    const auto services = supplied;
+    const auto defaults = supplied_defaults;
     if (!services.open_input)
         throw std::invalid_argument("Preference loading requires an input service");
+    auto ordinary = process.ordinary_preferences;
+    auto multiplayer = process.multiplayer_preferences;
+    auto status = PreferenceLoadStatus::defaults;
     auto input = services.open_input("CIV2.DAT");
     if (!input) {
-        state::default_ordinary_preferences(process.ordinary_preferences, defaults);
-        state::default_multiplayer_preferences(process.multiplayer_preferences);
-        return;
+        state::default_ordinary_preferences(ordinary, defaults);
+        state::default_multiplayer_preferences(multiplayer);
+    } else {
+        const auto first = input->item(formats::ordinary_preferences_size);
+        const auto second = input->item(formats::multiplayer_preferences_size);
+        if (!input->close())
+            return PreferenceLoadStatus::input;
+        ordinary = formats::decode_ordinary_preference_item(first, ordinary);
+        multiplayer = formats::decode_multiplayer_preference_item(second, multiplayer);
+        if (!first.complete)
+            state::default_ordinary_preferences(ordinary, defaults);
+        if (!second.complete)
+            state::default_multiplayer_preferences(multiplayer);
+        if (first.complete && second.complete)
+            status = PreferenceLoadStatus::success;
     }
-    const formats::ReadItem read = [&](std::size_t size) { return input->item(size); };
-    if (!formats::read_ordinary_preferences(read, process.ordinary_preferences))
-        state::default_ordinary_preferences(process.ordinary_preferences, defaults);
-    if (!formats::read_multiplayer_preferences(read, process.multiplayer_preferences))
-        state::default_multiplayer_preferences(process.multiplayer_preferences);
-    (void)input->close();
+    process.ordinary_preferences = std::move(ordinary);
+    process.multiplayer_preferences = std::move(multiplayer);
+    return status;
 }
 PreferenceSaveStatus save_classic_preferences(const state::ProcessContext& process,
-                                              const PreferenceFileServices& services) {
+                                              const PreferenceFileServices& supplied) {
+    const auto services = supplied;
     services.validate_output();
     // Snapshot configuration before external I/O; write callbacks are not edits.
     const auto ordinary = formats::encode_ordinary_preferences(process.ordinary_preferences);
@@ -69,19 +84,21 @@ PreferenceSaveStatus save_classic_preferences(const state::ProcessContext& proce
     return PreferenceSaveStatus::success;
 }
 PreferenceSaveStatus save_classic_preferences(SessionRuntime& runtime,
-                                              const PreferenceFileServices& services) {
+                                              const PreferenceFileServices& supplied) {
+    const auto services = supplied;
     services.validate_output();
     auto files = services;
-    files.open_output = [&](std::string_view path) -> std::unique_ptr<CoreOutput> {
+    files.open_output = [&runtime, open = services.open_output](
+                            std::string_view path) -> std::unique_ptr<CoreOutput> {
         publish(runtime);
-        auto output = services.open_output(path);
+        auto output = open(path);
         if (!output)
             return {};
         return std::make_unique<PublishedOutput>(runtime, std::move(output));
     };
-    files.remove_file = [&](std::string_view path) {
+    files.remove_file = [&runtime, remove = services.remove_file](std::string_view path) {
         publish(runtime);
-        return services.remove_file(path);
+        return remove(path);
     };
     return save_classic_preferences(runtime.process(), files);
 }

@@ -5,6 +5,7 @@
 #include "classic_stream_fixture.hpp"
 #include "session/world_entry.hpp"
 #include "formats/classic_rules.hpp"
+#include "rules/rules_install.hpp"
 #include "formats/content_pack.hpp"
 #include "formats/preference_io.hpp"
 #include "classic_rule_fixture.hpp"
@@ -52,28 +53,12 @@ struct Fixture {
                                },
                                {}},
             classic::ascii_text_case());
-        services.load_ordinary_rules = [&] {
+        services.load_content = [&] {
             event("rules");
-            classic_rule_fixture::InstalledRules(*reader, *process.rules,
-                                                 classic::ascii_text_case())
-                .load("RULES", true);
-        };
-        services.reload_table = [&](LoadedRuleTable table) {
-            const auto section = table == LoadedRuleTable::advances ? "CIVILIZE"
-                                 : table == LoadedRuleTable::units  ? "UNITS"
-                                                                    : "IMPROVE";
-            event(section);
-            REQUIRE(reader->open("RULES", section));
-            classic_rule_fixture::InstalledRules loader(*reader, *process.rules,
-                                                        classic::ascii_text_case());
-            // Explicit authored child policy, not inferred application wiring.
-            if (table == LoadedRuleTable::advances)
-                loader.advances(true);
-            else if (table == LoadedRuleTable::units)
-                loader.units(true);
-            else
-                loader.improvements(true);
+            auto input = std::make_unique<state::RuleInput>();
+            classic::RuleLoader(*reader, *input, classic::ascii_text_case()).load("RULES");
             reader->close();
+            return state::LoadedContent{std::move(input), {}};
         };
         services.size.preset = [&](auto) -> WorldSizeChoice {
             event("size");
@@ -228,21 +213,19 @@ TEST_CASE("F05 world entry orders real rules preferences wizard and inner initia
     base::GameplayRandom random{choices(), "entry-test"};
     REQUIRE(f.run(random));
     random.require_choices_consumed();
-    CHECK(f.trace == std::vector<std::string>{"rules",          "size",
-                                              "difficulty",     "opponents",
-                                              "barbarians",     "player-rules",
-                                              "gender",         "tribe",
-                                              "names",          "style",
-                                              "save",           "write:72",
-                                              "write:444",      "close-preferences",
-                                              "CIVILIZE",       "UNITS",
-                                              "IMPROVE",        "stop-sound",
-                                              "generate-world", "create:0",
-                                              "create:1",       "create:2",
-                                              "create:3",       "create:4",
-                                              "create:5",       "create:6",
-                                              "create:7",       "balance",
-                                              "introduce"});
+    CHECK(f.trace == std::vector<std::string>{"rules",      "size",
+                                              "difficulty", "opponents",
+                                              "barbarians", "player-rules",
+                                              "gender",     "tribe",
+                                              "names",      "style",
+                                              "save",       "write:72",
+                                              "write:444",  "close-preferences",
+                                              "stop-sound", "generate-world",
+                                              "create:0",   "create:1",
+                                              "create:2",   "create:3",
+                                              "create:4",   "create:5",
+                                              "create:6",   "create:7",
+                                              "balance",    "introduce"});
     REQUIRE(f.saved.size() == 1);
     REQUIRE(f.saved[0].size() == 516);
     const auto saved = formats::decode_ordinary_preferences(std::span{f.saved[0]}.first(72));
@@ -397,27 +380,28 @@ TEST_CASE("F05 preference open and write failures do not cancel accepted setup",
     }
 }
 
-TEST_CASE("F05 post-wizard reload failure retains saved preferences and earlier real table writes",
+TEST_CASE("F05 final table installation reuses owned source data after setup changes",
           "[world-entry][session]") {
     Fixture f;
+    unsigned sources = 0;
     f.observe = [&](auto stage) {
+        if (stage == "rules")
+            ++sources;
         if (stage == "save") {
             f.process.rules->definitions.advances[1].ai_value = 99;
             f.process.rules->definitions.units[1].attack = 77;
+            f.rules_text.clear(); // No reader/reload protocol survives source return.
         }
-        if (stage == "UNITS")
-            throw std::runtime_error("authored reload failure");
+        if (stage == "stop-sound") {
+            CHECK(f.process.rules->definitions.advances[1].ai_value == 3);
+            CHECK(f.process.rules->definitions.units[1].attack != 77);
+            CHECK_FALSE(f.reader->is_open());
+        }
     };
-    base::GameplayRandom random{choices(true, true, false), "entry-test"};
-    CHECK_THROWS_AS(f.run(random), std::runtime_error);
+    base::GameplayRandom random{choices(), "entry-test"};
+    REQUIRE(f.run(random));
+    CHECK(sources == 1);
     random.require_choices_consumed();
-    CHECK(f.trace.back() == "UNITS");
-    REQUIRE(f.saved.size() == 1);
-    CHECK(f.saved[0].size() == 516);
-    CHECK(f.process.rules->definitions.advances[1].ai_value == 3);
-    CHECK(f.process.rules->definitions.units[1].attack == 77);
-    CHECK(f.runtime.world().globals.civs_alive == 0x2b);
-    CHECK_FALSE(f.runtime.world().map.allocated());
 }
 
 TEST_CASE("F05 retained negative acceleration reaches its required child after initialization",
@@ -596,7 +580,8 @@ TEST_CASE("F05 preparation keeps an explicitly supplied runtime random context v
 TEST_CASE("F05 introduction selects highest twelve eligible known advances then reverses display",
           "[world-entry][session]") {
     Fixture f;
-    f.services.load_ordinary_rules();
+    auto content = f.services.load_content();
+    rules::RuleInstaller(*content.rules, *f.process.rules).load(true);
     auto& known = f.runtime.world().civilizations[1].advances;
     known.fill(0xff); // Includes future technology and the extra high stored bits.
     f.process.rules->definitions.advances[98].prerequisites.fill(state::AdvanceReference::never);
@@ -623,7 +608,7 @@ TEST_CASE("F05 introduction selects highest twelve eligible known advances then 
 TEST_CASE("F05 world entry validates the selected service graph before replacing a game",
           "[world-entry][session]") {
     const std::array<std::function<void(WorldEntryServices&)>, 5> remove{
-        [](auto& services) { services.load_ordinary_rules = {}; },
+        [](auto& services) { services.load_content = {}; },
         [](auto& services) { services.size.custom = {}; },
         [](auto& services) { services.players.titles = {}; },
         [](auto& services) { services.initialize.balance_starts = {}; },
@@ -648,4 +633,20 @@ TEST_CASE("F05 world entry validates the selected service graph before replacing
         CHECK(random.checkpoint() == before);
         CHECK(f.trace.empty());
     }
+}
+
+TEST_CASE("F05 new-world setup pins inactive storage across nested choice and gameplay children",
+          "[world-entry][session][lifetime]") {
+    Fixture f;
+    unsigned callbacks = 0;
+    f.observe = [&](auto) {
+        ++callbacks;
+        CHECK_FALSE(f.runtime.active());
+        CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error);
+        CHECK_THROWS_AS(f.runtime.begin_client_session({1, 2}), std::logic_error);
+    };
+    base::GameplayRandom random{choices(), "entry-test"};
+    REQUIRE(f.run(random));
+    CHECK(callbacks > 10);
+    CHECK_NOTHROW(f.runtime.prepare_new_game());
 }

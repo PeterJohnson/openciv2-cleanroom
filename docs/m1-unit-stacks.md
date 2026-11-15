@@ -40,7 +40,11 @@ member before each child request and rechecks authority when that child complete
 Each poll performs bounded work. Wrapping
 ticks determine the 3600-tick timeout; queued late replies drain across subsequent
 polls. Timeout notification precedes disabling the turn loop. Cancellation,
-failure and completion release the channel and session guard exactly once.
+failure and completion release the channel exactly once. Standalone operations
+own a session activity. Unit children constructed from `OperationContext` borrow
+the enclosing command's protected world/process lifetime instead; they can yield,
+resume and cancel inside real `Continuation` execution without competing for a
+second owner-workflow admission.
 
 N02/N03 adapters own wire encoding, state-difference application and transport
 scheduling. Local synchronization is a semantic notification to that adapter.

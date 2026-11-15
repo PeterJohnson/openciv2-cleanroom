@@ -18,6 +18,7 @@ void initialize_new_game(SessionRuntime& runtime, base::GameplayRandom& random,
     if (call.empty())
         throw std::invalid_argument("New-game initialization requires a semantic call identity");
     services.validate();
+    auto pin = runtime.pin_world();
     auto& world = runtime.world();
     auto& process = runtime.process();
     auto& globals = world.globals;

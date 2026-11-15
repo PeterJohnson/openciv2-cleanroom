@@ -356,3 +356,41 @@ TEST_CASE("F03 validated operation wiring remains stable across child calls",
                     std::invalid_argument);
     CHECK(f.trace.empty());
 }
+
+TEST_CASE(
+    "F03 configuration pins world references through external callbacks before and after admission",
+    "[configuration][session][lifetime]") {
+    for (const bool active : {false, true}) {
+        Fixture f;
+        if (!active)
+            f.runtime.end_client_session();
+        const auto original = &f.runtime.world();
+        const auto protected_callback = [&] {
+            CHECK_THROWS_AS(f.runtime.prepare_new_game(), std::logic_error);
+            CHECK_THROWS_AS(f.runtime.begin_client_session({1, 2}), std::logic_error);
+            CHECK(&f.runtime.world() == original);
+        };
+        f.game.stop_music = protected_callback;
+        f.game.reinitialize_music = protected_callback;
+        f.game.synchronize_music = protected_callback;
+        f.graphics.heralds_available = [&] {
+            protected_callback();
+            return false;
+        };
+        f.graphics.low_memory_notice = protected_callback;
+        f.after_open = f.after_close = protected_callback;
+        REQUIRE(configure_game_options(f.runtime, GameOptionChoices{false, false, true}, f.game));
+        REQUIRE(configure_graphics_options(f.runtime, GraphicsOptionChoices{false, false, true},
+                                           f.graphics));
+        REQUIRE(configure_message_options(f.runtime, MessageOptionChoices{}, f.preferences));
+        CHECK_NOTHROW(f.runtime.prepare_new_game());
+    }
+}
+TEST_CASE("F03 configuration releases its world pin when a bound child throws",
+          "[configuration][session][lifetime]") {
+    Fixture f;
+    f.game.stop_music = [] { throw std::runtime_error("authored failure"); };
+    CHECK_THROWS_AS(configure_game_options(f.runtime, GameOptionChoices{}, f.game),
+                    std::runtime_error);
+    CHECK_NOTHROW(f.runtime.prepare_new_game());
+}

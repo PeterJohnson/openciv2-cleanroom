@@ -16,10 +16,6 @@ struct LeaderCustomization {
     bool plural = false, adjective = false;
     std::array<std::array<bool, 2>, 7> titles{};
 };
-struct EventInput {
-    EventValues values;
-    std::array<std::optional<std::string>, event_string_count> strings;
-};
 // Format-independent, owned restoration operands. No I/O, live IDs or random draws.
 struct GameInput {
     GlobalValues globals;
@@ -37,6 +33,6 @@ struct GameInput {
     std::optional<ScenarioParameters> scenario;
     EliminationHistory eliminations;
     std::optional<MultiplayerValues> multiplayer;
-    std::optional<std::vector<EventInput>> events;
+    std::optional<EventCatalog> events;
 };
 } // namespace openciv::state

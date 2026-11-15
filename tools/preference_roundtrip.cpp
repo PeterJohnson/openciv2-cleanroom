@@ -51,9 +51,10 @@ int main(int argc, char** argv) {
             return std::make_unique<ObservedInput>(std::move(input), complete, items);
         };
         state::ProcessContext process;
-        session::load_classic_preferences(process, {}, services);
-        if (!complete || items != 2)
-            throw std::runtime_error("Comparison requires two successful item reads");
+        const auto status = session::load_classic_preferences(process, {}, services);
+        if (status != session::PreferenceLoadStatus::success || !complete || items != 2)
+            throw std::runtime_error(
+                "Comparison requires two successful item reads and finalization");
         auto encoded = formats::encode_ordinary_preferences(process.ordinary_preferences);
         const auto multiplayer =
             formats::encode_multiplayer_preferences(process.multiplayer_preferences);

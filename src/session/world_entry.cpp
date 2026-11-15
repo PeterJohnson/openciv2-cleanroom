@@ -1,11 +1,11 @@
 #include "session/world_entry.hpp"
 #include "civilization/knowledge.hpp"
+#include "rules/rules_install.hpp"
 #include <utility>
 
 namespace openciv::session {
 void WorldEntryServices::validate(NewWorldChoice choice) const {
-    if (!load_ordinary_rules || !reload_table || !stop_menu_sound || !generate_world ||
-        !accelerate || !introduce)
+    if (!load_content || !stop_menu_sound || !generate_world || !accelerate || !introduce)
         throw std::invalid_argument("World entry requires complete owning services");
     if (choice == NewWorldChoice::premade) {
         if (!choose_map)
@@ -58,6 +58,7 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
         throw std::invalid_argument("Unknown new-world menu choice");
     services.validate(choice);
     runtime.prepare_new_game();
+    auto pin = runtime.pin_world();
     // Preserve application directory/screen configuration, not loaded-game
     // descriptors, hints, leader scratch, cursor, layout or scenario paths.
     auto fresh_files = ClassicFileState{};
@@ -72,7 +73,14 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
         return service(std::forward<Args>(args)...);
     };
     auto run = [&] {
-        invoke(services.load_ordinary_rules);
+        auto content = invoke(services.load_content);
+        if (!content.rules)
+            throw std::invalid_argument("Content source returned no rules");
+        auto& rules = *runtime.process().rules;
+        if (content.labels)
+            state::install_labels(*content.labels, rules.text, rules.labels);
+        rules::RuleInstaller installer(*content.rules, rules);
+        installer.load(true);
         auto source = WorldSource::generated;
         bool selected;
         if (choice == NewWorldChoice::premade) {
@@ -94,9 +102,9 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
             return false;
         publish(runtime);
         (void)save_classic_preferences(runtime.process(), services.parameters.preferences);
-        for (const auto table :
-             {LoadedRuleTable::advances, LoadedRuleTable::units, LoadedRuleTable::improvements})
-            invoke(services.reload_table, table);
+        installer.advances(true);
+        installer.units(true);
+        installer.improvements(true);
         invoke(services.stop_menu_sound);
         invoke(services.generate_world, source != WorldSource::generated);
         initialize_new_game(runtime, random, std::string(call) + "/initialize",

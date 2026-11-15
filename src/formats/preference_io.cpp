@@ -21,14 +21,13 @@ void rectangle(ByteWriter& writer, const state::Rectangle& value) {
     writer.i32(value.bottom);
 }
 template <class Record, class Encode, class Decode>
-bool read(const ReadItem& input, std::size_t size, Record& target, Encode encode, Decode decode) {
-    const auto incoming = input(size);
+Record decode_item(const ReadResult& incoming, std::size_t size, const Record& prior, Encode encode,
+                   Decode decode) {
     if (incoming.prefix.size() > size || (incoming.complete && incoming.prefix.size() != size))
         throw std::invalid_argument("Preference read returned an inconsistent transferred prefix");
-    auto bytes = encode(target);
+    auto bytes = encode(prior);
     std::copy(incoming.prefix.begin(), incoming.prefix.end(), bytes.begin());
-    target = decode(bytes);
-    return incoming.complete;
+    return decode(bytes);
 }
 } // namespace
 state::OrdinaryPreferences decode_ordinary_preferences(std::span<const Byte> bytes) {
@@ -139,13 +138,15 @@ Bytes encode_multiplayer_preferences(const state::MultiplayerPreferences& p) {
     w.i16(p.legacy_setting_5);
     return std::move(w.bytes);
 }
-bool read_ordinary_preferences(const ReadItem& input, state::OrdinaryPreferences& preferences) {
-    return read(input, ordinary_preferences_size, preferences, encode_ordinary_preferences,
-                decode_ordinary_preferences);
+state::OrdinaryPreferences
+decode_ordinary_preference_item(const ReadResult& item, const state::OrdinaryPreferences& prior) {
+    return decode_item(item, ordinary_preferences_size, prior, encode_ordinary_preferences,
+                       decode_ordinary_preferences);
 }
-bool read_multiplayer_preferences(const ReadItem& input,
-                                  state::MultiplayerPreferences& preferences) {
-    return read(input, multiplayer_preferences_size, preferences, encode_multiplayer_preferences,
-                decode_multiplayer_preferences);
+state::MultiplayerPreferences
+decode_multiplayer_preference_item(const ReadResult& item,
+                                   const state::MultiplayerPreferences& prior) {
+    return decode_item(item, multiplayer_preferences_size, prior, encode_multiplayer_preferences,
+                       decode_multiplayer_preferences);
 }
 } // namespace openciv::formats

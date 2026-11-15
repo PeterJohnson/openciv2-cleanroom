@@ -79,7 +79,7 @@ struct Fixture {
                  [&] {
                      ++closes;
                      trace.push_back("close");
-                     return false;
+                     return close_ok;
                  }});
         };
         services.open_output = [&](std::string_view path) -> std::unique_ptr<CoreOutput> {
@@ -109,7 +109,7 @@ struct Fixture {
             return false; // Delete failure does not change the write status.
         };
     }
-    void load() { load_classic_preferences(process, defaults, services); }
+    PreferenceLoadStatus load() { return load_classic_preferences(process, defaults, services); }
     PreferenceSaveStatus save() { return save_classic_preferences(process, services); }
 };
 } // namespace
@@ -219,54 +219,34 @@ TEST_CASE("F03 preference defaults retain unassigned string tails and obey start
     CHECK(encode_multiplayer_preferences(p) == multiplayer_defaults(prior));
 }
 
-TEST_CASE("F06 preference reads retain every transferred prefix over post-callback state",
+TEST_CASE("F06 preference item decoding uses owned prefixes and explicit prior values",
           "[preferences][formats]") {
     for (std::size_t n = 0; n <= 72; ++n) {
-        state::OrdinaryPreferences p;
+        const auto prior = decode_ordinary_preferences(Bytes(72, 0xcc));
         Bytes expected(72, 0xcc);
         std::fill_n(expected.begin(), n, 0x77);
-        CHECK_FALSE(read_ordinary_preferences(
-            [&](std::size_t size) {
-                CHECK(size == 72);
-                p = decode_ordinary_preferences(Bytes(72, 0xcc));
-                return ReadResult{Bytes(n, 0x77), false};
-            },
-            p));
-        CHECK(encode_ordinary_preferences(p) == expected);
+        CHECK(encode_ordinary_preferences(
+                  decode_ordinary_preference_item({Bytes(n, 0x77), false}, prior)) == expected);
+        CHECK(encode_ordinary_preferences(prior) == Bytes(72, 0xcc));
     }
     for (std::size_t n = 0; n <= 444; ++n) {
-        state::MultiplayerPreferences p;
+        const auto prior = decode_multiplayer_preferences(Bytes(444, 0xcc));
         Bytes expected(444, 0xcc);
         std::fill_n(expected.begin(), n, 0x77);
-        CHECK_FALSE(read_multiplayer_preferences(
-            [&](std::size_t size) {
-                CHECK(size == 444);
-                p = decode_multiplayer_preferences(Bytes(444, 0xcc));
-                return ReadResult{Bytes(n, 0x77), false};
-            },
-            p));
-        CHECK(encode_multiplayer_preferences(p) == expected);
+        CHECK(encode_multiplayer_preferences(
+                  decode_multiplayer_preference_item({Bytes(n, 0x77), false}, prior)) == expected);
+        CHECK(encode_multiplayer_preferences(prior) == Bytes(444, 0xcc));
     }
 }
-
-TEST_CASE("F06 preference codecs reject incorrect lengths and inconsistent item services",
+TEST_CASE("F06 preference codecs reject incorrect lengths and inconsistent items",
           "[preferences][formats]") {
     for (const std::size_t size : {0U, 71U, 73U})
         CHECK_THROWS_AS(decode_ordinary_preferences(Bytes(size)), DecodeError);
     for (const std::size_t size : {0U, 443U, 445U})
         CHECK_THROWS_AS(decode_multiplayer_preferences(Bytes(size)), DecodeError);
-    for (const bool complete : {false, true}) {
-        auto p = decode_ordinary_preferences(Bytes(72, 0x11));
-        CHECK_THROWS_AS(read_ordinary_preferences(
-                            [&](std::size_t) {
-                                p.tax = -123;
-                                return ReadResult{Bytes(complete ? 71 : 73), complete};
-                            },
-                            p),
+    for (const bool complete : {false, true})
+        CHECK_THROWS_AS(decode_ordinary_preference_item({Bytes(complete ? 71 : 73), complete}, {}),
                         std::invalid_argument);
-        CHECK(p.tax == -123);
-        CHECK(p.text.bytes[0] == 0x11);
-    }
 }
 
 TEST_CASE("F03 opening failure defaults both blocks without reading or closing",
@@ -283,7 +263,7 @@ TEST_CASE("F03 opening failure defaults both blocks without reading or closing",
           multiplayer_defaults(multiplayer));
 }
 
-TEST_CASE("F03 failed ordinary item defaults then reads multiplayer at the current cursor",
+TEST_CASE("F03 preference fallback stages both items against entry snapshots",
           "[preferences][session]") {
     Fixture f;
     f.input.assign(40, 0x33);
@@ -297,8 +277,8 @@ TEST_CASE("F03 failed ordinary item defaults then reads multiplayer at the curre
             f.defaults.animations_available = false;
         } else {
             CHECK(f.position == 40);
-            CHECK(f.process.ordinary_preferences.game_options == 0x1f3258U);
-            CHECK(f.process.ordinary_preferences.text.bytes[1] == 0x33);
+            CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) == Bytes(72, 0x11));
+            CHECK(f.process.ordinary_preferences.text.bytes[1] == 0x11);
             CHECK(f.process.ordinary_preferences.text.bytes[4] == 0x11);
         }
     };
@@ -306,7 +286,7 @@ TEST_CASE("F03 failed ordinary item defaults then reads multiplayer at the curre
     Bytes partial(72, 0x11);
     std::fill_n(partial.begin(), 40, 0x33);
     CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) ==
-          ordinary_defaults(false, false, partial));
+          ordinary_defaults(true, true, partial));
     CHECK(encode_multiplayer_preferences(f.process.multiplayer_preferences) == Bytes(444, 0x44));
     CHECK(f.position == 484);
     CHECK(f.trace == std::vector<std::string>{"open-input", "read:72", "read:444", "close"});
@@ -378,16 +358,16 @@ TEST_CASE("F03 failed preference writes close before deleting without rolling ba
     CHECK(f.removals == 0);
 }
 
-TEST_CASE("F03 exceptional preference services close once and preserve their established prefix",
+TEST_CASE("F03 exceptional preference services close once without installing a prefix",
           "[preferences][session]") {
-    SECTION("Second read stops after first block publication") {
+    SECTION("Second read failure leaves both installed blocks untouched") {
         Fixture f;
         f.before_read = [](std::size_t index) {
             if (index == 1)
                 throw std::runtime_error("supplied read stop");
         };
         CHECK_THROWS_AS(f.load(), std::runtime_error);
-        CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) == Bytes(72, 0x88));
+        CHECK(encode_ordinary_preferences(f.process.ordinary_preferences) == Bytes(72, 0x11));
         CHECK(encode_multiplayer_preferences(f.process.multiplayer_preferences) ==
               Bytes(444, 0x22));
         CHECK(f.closes == 1);
@@ -463,4 +443,16 @@ TEST_CASE("Classic owned streams finalize once and preserve an earlier I/O excep
         CHECK_FALSE(output->close());
     }
     CHECK(closes == 1);
+}
+
+TEST_CASE("F03 preference finalization failure leaves installed values unchanged",
+          "[preferences][session]") {
+    Fixture f;
+    f.close_ok = false;
+    const auto ordinary = f.process.ordinary_preferences;
+    const auto multiplayer = f.process.multiplayer_preferences;
+    CHECK(f.load() == PreferenceLoadStatus::input);
+    CHECK(f.process.ordinary_preferences == ordinary);
+    CHECK(f.process.multiplayer_preferences == multiplayer);
+    CHECK(f.closes == 1);
 }

@@ -209,20 +209,18 @@ application admission remain separate integration work.
 
 ## Accepted-file load caller
 
-`load_classic_dialog` snapshots and validates service wiring before closing map
-windows or selecting an alternative. Cancelled input only restores the directory.
-Alternative selection samples the specified scaled choice from one owned directory
-listing; a second enumeration is not a gameplay dependency.
+`load_classic_dialog` keeps its guarded core-load operation alive through
+post-load event, sound, title and unit cleanup stages. For scenario text events,
+a source factory returns an optional owned `EventCatalog`. The common event
+installer prepares fresh strings/events and commits the collection on success;
+parsing and failed allocation cannot publish a partial replacement. Both saved
+and text-sourced events use this installation path. The source owns syntax and
+file selection; the session owns the loaded indicator and subsequent execution.
 
-A guarded core operation remains alive through post-load work. The wrapper
-handles replacement scenario events, preference/sound application, scenario
-notification, music/title and local unit cleanup. Bound semantic children may
-fail after completed effects; an absent required binding is rejected before any
-of those effects. The wrapper publishes the accepted path only on completion.
-
-The following dated Windows evidence records the implementation at the time of
-the observation. It does not assert that private call traces remain production
-requirements after these interface changes.
+Preference application, conditional scenario-loaded execution, audio/title
+notifications, home-directory return and real U01 cleanup keep their specified
+order. The owning S02 interpreter and N02/P10/V01 children remain separate work;
+these interfaces do not claim that those algorithms are complete.
 
 ## Windows evidence — 2026-11-13 Pacific
 

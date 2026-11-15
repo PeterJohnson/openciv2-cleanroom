@@ -12,7 +12,6 @@
 namespace openciv::session {
 class SessionRuntime;
 enum class CoreLoadStatus { success = 0, input = 1, unsupported = 2, data = 3, newer = 4 };
-enum class LoadedRuleTable { advances, improvements, units };
 // Process/operation-retained F06 values, separate from client leases and from
 // the authoritative world. The owner supplies home/text directories before use.
 struct ClassicFileState {

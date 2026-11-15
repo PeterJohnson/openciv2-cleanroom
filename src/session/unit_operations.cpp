@@ -6,9 +6,25 @@ namespace openciv::session {
 UnitOperation::UnitOperation(SessionRuntime& runtime, UnitRequest request, bool notify,
                              unit::StackBudget budget, UnitOperationServices services,
                              std::unique_ptr<UnitRequestChannel> channel)
-    : runtime_(runtime), request_(request), notify_(notify), budget_(budget),
-      services_(std::move(services)), channel_(std::move(channel)) {
-    const auto& world = runtime.world();
+    : UnitOperation(
+          runtime.world(), *runtime.process().rules, [&runtime] { runtime.publish(); }, request,
+          notify, budget, std::move(services), std::move(channel)) {
+    activity_.emplace(runtime.begin_activity());
+}
+UnitOperation::UnitOperation(OperationContext& context, UnitRequest request, bool notify,
+                             unit::StackBudget budget, UnitOperationServices services,
+                             std::unique_ptr<UnitRequestChannel> channel)
+    : UnitOperation(context.world, *context.process.rules, context.publish, request, notify, budget,
+                    std::move(services), std::move(channel)) {}
+UnitOperation::UnitOperation(state::GameState& world, state::RuleState& rules,
+                             std::function<void()> publish, UnitRequest request, bool notify,
+                             unit::StackBudget budget, UnitOperationServices services,
+                             std::unique_ptr<UnitRequestChannel> channel)
+    : world_(world), rules_(rules), publish_(std::move(publish)), request_(request),
+      notify_(notify), budget_(budget), services_(std::move(services)),
+      channel_(std::move(channel)) {
+    if (!publish_)
+        throw std::invalid_argument("Unit operation requires publication");
     switch (request.operation) {
     case UnitOperationKind::detach:
     case UnitOperationKind::attach:
@@ -45,13 +61,12 @@ UnitOperation::UnitOperation(SessionRuntime& runtime, UnitRequest request, bool 
             world.globals.multiplayer >= 3 && !services_.placement.synchronize)
             throw std::invalid_argument("Placement requires synchronization notification");
     }
-    activity_.emplace(runtime.begin_activity());
 }
 UnitOperation::~UnitOperation() {
     cancel();
 }
 bool& UnitOperation::active() {
-    auto& world = runtime_.world();
+    auto& world = world_;
     switch (request_.operation) {
     case UnitOperationKind::detach:
         return world.unit_stacks.detach_active;
@@ -69,7 +84,7 @@ bool& UnitOperation::active() {
     throw std::logic_error("Unknown operation");
 }
 std::int32_t& UnitOperation::reply() {
-    auto& world = runtime_.world();
+    auto& world = world_;
     switch (request_.operation) {
     case UnitOperationKind::detach:
         return world.unit_stacks.detach_reply;
@@ -101,11 +116,11 @@ std::optional<UnitOperationResult> UnitOperation::complete_child(UnitOperationRe
         timed_out_ = false;
         return {}; // Preserve the captured successor across the suspended child.
     }
-    if (stack_ && notify_ && runtime_.world().globals.multiplayer >= 3) {
+    if (stack_ && notify_ && world_.globals.multiplayer >= 3) {
         if (!services_.placement.synchronize)
             throw std::invalid_argument("Stack relocation requires synchronization notification");
         services_.placement.synchronize();
-        runtime_.publish();
+        publish_();
     }
     result.timed_out = any_timeout_;
     finish(result);
@@ -140,7 +155,7 @@ std::optional<UnitOperationResult> UnitOperation::poll() {
         return true;
     };
     try {
-        auto& world = runtime_.world();
+        auto& world = world_;
         if (!started_ && stack_) {
             unit::StackOperations traversal(world, budget_, services_.stacks, services_.placement);
             if (!stack_initialized_) {
@@ -188,19 +203,19 @@ std::optional<UnitOperationResult> UnitOperation::poll() {
                     placement.move_to_bottom(slot, notify_);
                     break;
                 case UnitOperationKind::erase:
-                    unit::UnitDeletion(world, runtime_.process().rules->definitions, budget_,
-                                       services_.stacks, services_.deletion)
+                    unit::UnitDeletion(world, rules_.definitions, budget_, services_.stacks,
+                                       services_.deletion)
                         .erase(slot, notify_);
                     break;
                 case UnitOperationKind::relocate_stack:
                     throw std::logic_error("Composite request was not reduced");
                 }
-                runtime_.publish();
+                publish_();
                 return complete_child({});
             }
             active() = false;
             reply() = -2;
-            runtime_.publish();
+            publish_();
             channel_->send(request_);
             if (cancelled())
                 return result_;
@@ -224,12 +239,12 @@ std::optional<UnitOperationResult> UnitOperation::poll() {
             return result_;
         if (incoming.value)
             reply() = *incoming.value;
-        runtime_.publish();
+        publish_();
         if ((reply() != -2 || timed_out_) && incoming.drained)
             return complete_child({reply(), timed_out_, false});
         return result_;
     } catch (...) {
-        runtime_.publish();
+        publish_();
         cancel();
         throw;
     }

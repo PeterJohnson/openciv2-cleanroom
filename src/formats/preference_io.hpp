@@ -11,8 +11,11 @@ state::OrdinaryPreferences decode_ordinary_preferences(std::span<const Byte> byt
 state::MultiplayerPreferences decode_multiplayer_preferences(std::span<const Byte> bytes);
 Bytes encode_ordinary_preferences(const state::OrdinaryPreferences& preferences);
 Bytes encode_multiplayer_preferences(const state::MultiplayerPreferences& preferences);
-// F06/F03: overlay transferred bytes over post-callback live state even when
-// the item fails. The caller then chooses its specified fallback defaults.
-bool read_ordinary_preferences(const ReadItem& read, state::OrdinaryPreferences& preferences);
-bool read_multiplayer_preferences(const ReadItem& read, state::MultiplayerPreferences& preferences);
+// Expand an owned transferred item against an explicit prior snapshot. A short
+// item still retains its transferred prefix; the session chooses fallback defaults.
+state::OrdinaryPreferences decode_ordinary_preference_item(const ReadResult& item,
+                                                           const state::OrdinaryPreferences& prior);
+state::MultiplayerPreferences
+decode_multiplayer_preference_item(const ReadResult& item,
+                                   const state::MultiplayerPreferences& prior);
 } // namespace openciv::formats

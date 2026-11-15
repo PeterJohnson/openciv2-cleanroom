@@ -40,7 +40,7 @@ struct Fixture {
     formats::Bytes bytes = formats::encode_stored_save(saved());
     std::size_t position = 0, enumerations = 0, opens = 0, closes = 0;
     std::vector<std::string> trace, entries;
-    std::shared_ptr<state::Event> parsed;
+    std::optional<state::EventCatalog> parsed;
     bool resource_exists = true, parse_success = true, open_success = true;
     Fixture() {
         runtime.begin_client_session({10, 20});
@@ -105,17 +105,14 @@ struct Fixture {
             return state::LoadedContent{std::move(input), {}};
         };
         services.deletion.check_destroyed = [](std::int32_t, std::int32_t) {};
-        services.parse_events = [&](std::string_view stem, std::string_view section) {
-            CHECK(stem == "EVENTS");
-            CHECK(section == "BEGINEVENTS");
+        services.load_events = [&]() -> std::optional<state::EventCatalog> {
             CHECK(runtime.world().events.collection.size() == 0);
             CHECK_FALSE(runtime.world().events.loaded);
             trace.push_back("parse");
-            parsed = runtime.world().events.collection.append();
-            REQUIRE(parsed);
-            parsed->values.turn = 42;
-            parsed->set_string(4, state::EventString{"Authored event"});
-            return parse_success;
+            parsed = state::EventCatalog(1);
+            parsed->at(0).values.turn = 42;
+            parsed->at(0).strings[4] = "Authored event";
+            return parse_success ? parsed : std::nullopt;
         };
         services.configure_sound = [&](bool enabled) {
             trace.push_back(enabled ? "sound:on" : "sound:off");
@@ -254,7 +251,7 @@ TEST_CASE("F06 ordinary load replaces options and clears an unloaded retained ev
     auto& world = f.runtime.world();
     world.events.loaded = true;
     REQUIRE(world.events.collection.append());
-    test::fail_service(f.services.parse_events);
+    test::fail_service(f.services.load_events);
     test::fail_service(f.services.scenario_loaded);
     f.services.configure_sound = [&](bool enabled) {
         CHECK(enabled);
@@ -278,7 +275,7 @@ TEST_CASE("F06 ordinary load replaces options and clears an unloaded retained ev
     CHECK(f.position == f.bytes.size());
 }
 
-TEST_CASE("F06 scenario replacement resets parses compacts and publishes before its hook",
+TEST_CASE("F06 scenario replacement loads owned events and publishes before its hook",
           "[session][load-dialog][events]") {
     Fixture f;
     f.bytes = formats::encode_stored_save(saved(true));
@@ -297,9 +294,8 @@ TEST_CASE("F06 scenario replacement resets parses compacts and publishes before 
         CHECK(events.loaded);
         REQUIRE(events.collection.size() == 1);
         CHECK_FALSE(events.collection.contains(old));
-        CHECK(events.collection.contains(f.parsed));
-        CHECK(events.collection.at(0)->identity() == f.parsed->identity());
-        CHECK(events.collection.at(0)->strings[4] == f.parsed->strings[4]);
+        REQUIRE(f.parsed);
+        f.parsed->at(0).strings[4] = "Source changed after installation";
         CHECK(events.collection.at(0)->strings[4].value() == "Authored event");
         CHECK(events.collection.at(0)->values.turn == 42);
         CHECK(f.runtime.world().globals.game_options == 0x10018);
@@ -344,7 +340,7 @@ TEST_CASE("F06 persisted events survive the wrapper without replacement or a sce
         event.record.whom_civ = 2;
         save.events->entries.push_back(event);
         f.bytes = formats::encode_stored_save(save);
-        test::fail_service(f.services.parse_events);
+        test::fail_service(f.services.load_events);
         CHECK(f.load("C:\\home\\continued.sav", false) == CoreLoadStatus::success);
         CHECK(f.after_close() == std::vector<std::string>{"flush", "sound:on", "scenario-loaded",
                                                           "music", "cd:C:\\home"});

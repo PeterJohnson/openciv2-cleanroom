@@ -52,6 +52,7 @@ WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPosi
                                   const PremadeWorldChoices& supplied) {
     const auto choices = supplied;
     choices.validate();
+    auto pin = runtime.pin_world();
     return complete(runtime, [&] {
         auto& map = runtime.world().map;
         normalize(map);
@@ -90,6 +91,7 @@ std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
     services.validate();
     if (runtime.has_pending_commands())
         throw std::logic_error("Premade load requires settled session commands");
+    auto pin = runtime.pin_world();
     return complete(runtime, [&]() -> std::optional<WorldSource> {
         publish(runtime);
         auto input = services.open(*selected_path);

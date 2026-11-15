@@ -4,13 +4,16 @@
 Random World, Premade World or Customize World. It first prepares a fresh game:
 replace old world/workspace state, clear mutable rules/text and file scratch,
 revoke previous clients, and retain only preferences/configuration/identity
-generators. Every new attempt repeats this boundary. It calls the ordinary F03 rule
-operation, composes the real size/premade-map and parameter helpers, then runs
-the player/rules wizard. Failed size/map selection skips discarded parameter
+generators. Every new attempt repeats this boundary. A nested world guard then
+protects inactive setup storage through all choice and gameplay children. One
+content factory returns owned `LoadedContent`; the shared `RuleInstaller` installs
+it into fresh rule/text state. The parent composes the real size/premade-map and
+parameter helpers, then runs the player/rules wizard. Failed size/map selection skips discarded parameter
 choices; a cancelled custom-parameter sequence also skips the automatic alternative. All reached effects survive returning failure to the menu.
 
 After player acceptance, the parent writes preferences through the real F03
-writer, reloads advances, units and improvements in that order, stops menu sound,
+writer, reinstalls advances, units and improvements from that same input in order,
+retaining names, then stops menu sound,
 calls W02 with the source's retain flag and invokes the existing inner new-game
 initializer. It then invokes acceleration for every nonzero retained choice,
 including a negative result, and presents the human introduction. Returned
@@ -65,14 +68,15 @@ are `build/world-entry-{native,sqlite,wasm}-final-build.log` and
 `build/world-entry-{native,sqlite,wasm}-final-ctest.log`.
 
 Fresh-game reset is implemented. Non-new-world menu choices, application dialogs
-and complete content installation, full W02/V01/F05 gameplay children, cooperative
+and content selection adapters, full W02/V01/F05 gameplay children, cooperative
 command adaptation and checkpoint restore remain at their owning milestones.
 Main-menu rendering has no AI lifecycle prerequisite.
-The F05 section 2 load/reload calls do not yet spell out their F03 name/leader
-preservation arguments. The parent therefore requires those operations from
-the content owner instead of inventing a classic application binding; tests
-declare replacement on full load and name retention on table reload. Resolve
-that precise call-site gap by specification clarification or independent original
-observation before claiming complete classic entry wiring in M3. M1 preserves
-the explicitly supplied-child tests; this gap does not expand the
-[finite closeout contract](m1-closeout.md).
+The earlier parser-argument uncertainty no longer requires an opaque load/reload
+service protocol. Under F05's fresh-game and selected-content contract, the full
+install populates fresh rule/leader/name state. Final table updates reuse that
+same input and retain names; they cannot reopen a changed source or import
+previous-game names. This is the shared semantic installation policy, not a claim
+about original parser flags or allocation traces. Tests change the backing source
+after its one load and verify final definitions, name retention and closed readers.
+The interactive choice adapters and full owning gameplay children still belong
+to their later milestones.

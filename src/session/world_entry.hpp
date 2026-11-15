@@ -7,10 +7,9 @@
 namespace openciv::session {
 enum class NewWorldChoice { random, premade, customize };
 struct WorldEntryServices {
-    // Required F03 operation: populate fresh rules/text state from the chosen
-    // ordinary content, including labels needed by setup. No prior-game names.
-    std::function<void()> load_ordinary_rules;
-    std::function<void(LoadedRuleTable)> reload_table;
+    // Selected source closes its readers and returns the same owned inputs used
+    // for load/resume. Installation and final name-preserving updates live here.
+    std::function<state::LoadedContent()> load_content;
     WorldSizeServices size;
     std::function<std::optional<std::string>()> choose_map;
     PremadeWorldServices premade;

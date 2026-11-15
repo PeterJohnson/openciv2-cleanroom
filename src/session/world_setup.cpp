@@ -73,6 +73,7 @@ void sample(state::WorldSetup& setup, Parameter parameter, base::GameplayRandom&
 bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& supplied) {
     const auto services = supplied;
     services.validate();
+    auto pin = runtime.pin_world();
     return complete(runtime, [&] {
         auto& setup = runtime.world().world_setup;
         auto& flags = runtime.world().globals.game_flags;
@@ -124,6 +125,7 @@ bool select_world_size(SessionRuntime& runtime, const WorldSizeServices& supplie
 void randomize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& random,
                                 std::string_view call) {
     require_call(call);
+    auto pin = runtime.pin_world();
     complete(runtime, [&] {
         for (const auto parameter : {Parameter::land_mass, Parameter::land_form,
                                      Parameter::temperature, Parameter::climate, Parameter::age})
@@ -136,6 +138,7 @@ bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
     const auto services = supplied;
     require_call(call);
     services.validate();
+    auto pin = runtime.pin_world();
     return complete(runtime, [&] {
         auto& setup = runtime.world().world_setup;
         auto& remembered = runtime.process().ordinary_preferences.world_parameters;
