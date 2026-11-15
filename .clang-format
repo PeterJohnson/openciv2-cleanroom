@@ -1,6 +1,7 @@
 # Use the clang-format version pinned in dependencies.json.
 BasedOnStyle: LLVM
-Standard: c++20
+# clang-format 20 has no c++23 selector; Latest enables its current grammar.
+Standard: Latest
 IndentWidth: 4
 ContinuationIndentWidth: 4
 AccessModifierOffset: -4

@@ -38,15 +38,21 @@ class BoundaryTests(unittest.TestCase):
     def test_domain_cannot_depend_on_format_codecs(self):
         self.check_forbidden_chain('rules/install.hpp', 'formats/rules.hpp')
 
+    def test_noncanonical_root_preserves_boundary_diagnostics(self):
+        self.check_forbidden_chain('rules/install.hpp', 'formats/rules.hpp', aliased_root=True)
+
     def test_native_content_cannot_depend_on_classic_loaders(self):
         self.check_forbidden_chain('formats/city_names.hpp', 'formats/classic_text_reader.hpp')
 
     def test_classic_parser_cannot_depend_on_native_content(self):
         self.check_forbidden_chain('formats/classic_rules.hpp', 'formats/content_json.hpp')
 
-    def check_forbidden_chain(self, origin, forbidden):
+    def check_forbidden_chain(self, origin, forbidden, *, aliased_root=False):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            if aliased_root:
+                (root / 'alias').mkdir()
+                root = root / 'alias' / '..'
             for name, text in {
                 origin: '#include "base/helper.hpp"\n',
                 'base/helper.hpp': f'#include "{forbidden}"\n',

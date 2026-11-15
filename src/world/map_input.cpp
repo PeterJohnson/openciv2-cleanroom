@@ -1,4 +1,5 @@
 #include "world/map_input.hpp"
+#include <stdexcept>
 #include <algorithm>
 
 namespace openciv::world {

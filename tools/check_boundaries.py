@@ -18,7 +18,7 @@ PLAYER_SESSION = {'session/client.hpp', 'session/command_types.hpp',
 
 
 def check(root=ROOT):
-    source = root / 'src'
+    source = (root / 'src').resolve()
     errors = set()
 
     def visit(path, origin, player, portable, seen):
@@ -28,8 +28,8 @@ def check(root=ROOT):
         for name in INCLUDE.findall(path.read_text(encoding='utf-8')):
             target = next((p.resolve() for p in (path.parent / name, source / name)
                            if p.is_file()), None)
-            if target and target.is_relative_to(source.resolve()):
-                relative = target.relative_to(source.resolve()).as_posix()
+            if target and target.is_relative_to(source):
+                relative = target.relative_to(source).as_posix()
                 forbidden = portable and relative.startswith(('platform/', 'ui/', 'application.'))
                 if origin.split('/')[0] in GAME:
                     forbidden |= relative.startswith(('formats/', 'session/', 'network/', 'query/'))
