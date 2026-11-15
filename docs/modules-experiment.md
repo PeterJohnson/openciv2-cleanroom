@@ -43,10 +43,31 @@ named-module test on all four platforms, passed in
 `OC2_TEST_IMPORT_STD=ON` adds a consumer that imports `std` and the foundation
 module, uses standard containers/algorithms/strings, and catches an exception
 from the header-based library. A separate **Standard library module probe**
-workflow runs this on all four platforms with the same compiler/stdlib defaults.
+workflow runs this on all four platforms with the same compiler pins.
 Its failures are separate from the named-module build matrix. The option defaults
 OFF; unsupported toolchains fail the probe instead of skipping it.
 
-The local `import std` consumer passes with Clang 20.1.8 and libstdc++ 16.
-The default emsdk 4.0.23 configuration fails with an empty
-`CMAKE_CXX_STDLIB_MODULES_JSON`. Hosted probe results are pending.
+The [initial hosted probe at `2ae1840`](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43686565528)
+used each platform's default standard library configuration:
+
+| Platform | Result |
+| --- | --- |
+| Windows | Compiles, links and runs with clang-cl 20.1.8 and MSVC's standard library |
+| Linux | Cannot discover `libstdc++.modules.json` with the default CI library |
+| macOS | Cannot discover `libc++.modules.json` through Clang's default search path |
+| WebAssembly | Emscripten configuration leaves `CMAKE_CXX_STDLIB_MODULES_JSON` empty |
+
+The local consumer passes with Clang 20.1.8 and libstdc++ 16, so Linux's default
+CI result does not establish a compiler limitation. A local emsdk 4.0.23 retry
+with explicit metadata also fails: the SDK's `lib/libc++.modules.json` points
+to absent `share/libc++/v1/std.cppm` and `std.compat.cppm` sources.
+
+The macOS probe now explicitly selects Homebrew's installed module metadata
+under `lib/c++`, along with its matching libc++ headers and runtime. This uses
+the layout and linkage tested by [Homebrew's LLVM formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/l/llvm%4020.rb).
+The regular named-module matrix still uses the platform's normal standard
+library configuration; it does not depend on this `import std` setup.
+
+Named modules are feasible with the experiment's macOS compiler change.
+Portable `import std` adoption additionally needs a deliberate standard-library
+and module-source distribution policy, particularly for the emsdk package.
