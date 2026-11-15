@@ -86,7 +86,8 @@ binaries directly; availability does not depend on the Python package release.
 Linux uses Clang 20.1.8; Windows uses clang-cl
 20.1.8 with Visual Studio 2022's SDK/libraries and the Ninja generator. This
 module experiment branch uses Homebrew LLVM 20.1.8 on macOS with the Xcode 16.4
-SDK; main uses AppleClang 17.0.0.17000013. WASM uses emsdk 4.0.23 / Clang 22.0.0. Runner labels are
+SDK; main uses AppleClang 17.0.0.17000013. The experiment uses emsdk 7.0.0 /
+Clang 24.0.0 for WebAssembly; main retains emsdk 4.0.23 / Clang 22.0.0. Runner labels are
 `ubuntu-24.04`, `windows-2022`, and `macos-15`, not moving `*-latest` aliases.
 The experiment branch runs Linux native builds, metadata checks, sanitizers,
 and the Linux standard-library module probe inside `ubuntu:26.04` containers,
@@ -104,6 +105,8 @@ The production targets use headers and keep C++ module scanning disabled. On
 this experiment branch, `BUILD_TESTING=ON` also builds the
 [`openciv.base.arithmetic` module and interoperability test](modules-experiment.md)
 with scanning enabled on those targets.
+WebAssembly targets reserve a 1 MiB stack for save-decoding temporaries and
+diagnostic calls; Debug builds enable stack-overflow checks.
 
 Every configure writes `build-identity.txt` with the actual compiler, CMake,
 platform, lock hash, source overrides and build options. It records

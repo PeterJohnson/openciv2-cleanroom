@@ -36,7 +36,10 @@ endif()
 
 if(EMSCRIPTEN)
   target_compile_options(oc2_options INTERFACE -fexceptions)
-  target_link_options(oc2_options INTERFACE -fexceptions -sALLOW_MEMORY_GROWTH=1 -sEXIT_RUNTIME=1)
+  # Save import temporaries and diagnostic child calls exceed emsdk's 64 KiB
+  # default stack in unoptimized builds. Keep the same budget for every client.
+  target_link_options(oc2_options INTERFACE -fexceptions -sALLOW_MEMORY_GROWTH=1 -sEXIT_RUNTIME=1
+    -sSTACK_SIZE=1048576 $<$<CONFIG:Debug>:-sSTACK_OVERFLOW_CHECK=2>)
 endif()
 
 # F01 portable arithmetic and versioned random contexts: standard library only.
@@ -274,9 +277,6 @@ if(BUILD_TESTING)
   target_link_libraries(oc2_conformance_adapter PRIVATE oc2_session oc2_options)
   include(cmake/ConformanceIdentity.cmake)
   if(EMSCRIPTEN)
-    # The scripted adapter permits 64 synchronous child entries. Reserve enough
-    # stack to reach its diagnostic guard in unoptimized Emscripten builds.
-    target_link_options(oc2_conformance_adapter PRIVATE -sSTACK_SIZE=1048576)
     # Activate emsdk first so its Node is on PATH (or provide an emulator).
     # A toolchain file alone, unlike emcmake, does not always select the runner.
     if(NOT CMAKE_CROSSCOMPILING_EMULATOR)

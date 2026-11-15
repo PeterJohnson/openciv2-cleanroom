@@ -25,6 +25,9 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             ca-certificates curl g++ git ninja-build python3 xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
+      - name: Trust the checked-out container workspace
+        if: matrix.container != ''
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -67,6 +70,9 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             ca-certificates curl g++ git ninja-build python3 sudo xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
+      - name: Trust the checked-out container workspace
+        if: matrix.container != ''
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: ./.github/actions/toolchain
       - uses: ilammy/msvc-dev-cmd@v1
         if: runner.os == 'Windows'
@@ -135,6 +141,8 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             ca-certificates curl g++ git ninja-build python3 xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
+      - name: Trust the checked-out container workspace
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: ./.github/actions/toolchain
       - run: cmake --preset sanitize -DOC2_FETCH_DEPENDENCIES=ON -DOC2_VERIFY_TOOLCHAIN=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
       - run: cmake --build --preset sanitize --parallel 4

@@ -31,6 +31,9 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             ca-certificates curl g++ git ninja-build python3 xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
+      - name: Trust the checked-out container workspace
+        if: matrix.container != ''
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: ./.github/actions/toolchain
         id: pins
         with:
@@ -51,7 +54,7 @@ jobs:
             -DOC2_FETCH_DEPENDENCIES=ON -DOC2_BUILD_GUI=OFF -DOC2_BUILD_TOOLS=OFF
             -DOC2_TEST_IMPORT_STD=ON)
           if [ '${{ matrix.platform }}' = web ]; then
-            emcmake cmake -S . -B build/import-std "${args[@]}"
+            emcmake cmake -S . -B build/import-std "${args[@]}" -DCMAKE_CXX_MODULE_STD=ON
           else
             if [ "$RUNNER_OS" = Windows ]; then
               args+=("-DCMAKE_C_COMPILER=$LLVM_PATH/bin/clang-cl.exe" "-DCMAKE_CXX_COMPILER=$LLVM_PATH/bin/clang-cl.exe")

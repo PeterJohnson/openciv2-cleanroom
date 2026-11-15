@@ -21,8 +21,8 @@ has no project imports of its own.
 
 ## Toolchains
 
-Linux retains Clang 20.1.8, Windows retains clang-cl 20.1.8 with MSVC libraries,
-and WebAssembly retains emsdk 4.0.23. CMake 4.5.0 supplies clang-cl dependency
+Linux retains Clang 20.1.8 and Windows retains clang-cl 20.1.8 with MSVC libraries.
+WebAssembly now uses emsdk 7.0.0 / Clang 24.0.0. CMake 4.5.0 supplies clang-cl dependency
 scanning. Its AppleClang compiler configuration does not provide scanning, so
 the experiment uses Homebrew LLVM 20.1.8 on macOS, including Objective-C++, with
 the Xcode 16.4 SDK. Strict compiler version verification remains enabled in CI.
@@ -79,5 +79,16 @@ passes on Linux, Windows and macOS. WebAssembly still fails before compiling
 the consumer because its standard-library module is not available in the SDK.
 
 Named modules are feasible with the experiment's macOS compiler change.
-Portable `import std` adoption additionally needs a deliberate standard-library
-and module-source distribution policy, particularly for the emsdk package.
+
+The emsdk 4.0.23 failures above predate upstream's
+[standard-library module support](https://github.com/emscripten-core/emscripten/pull/27065),
+merged in June 2026. The experiment now pins emsdk 7.0.0, whose SDK supplies
+the module sources and metadata. The WebAssembly probe enables the SDK's
+`CMAKE_CXX_MODULE_STD` toolchain opt-in. It uses the SDK directly, with no
+copied module sources, generated metadata, or standard-library patches.
+The local emsdk 7.0.0 `module_std` test passes with that setup. The SDK upgrade
+also exposed the default 64 KiB stack limit in unoptimized save decoding; all
+WebAssembly targets now share the conformance adapter's existing 1 MiB budget,
+with explicit overflow checks in Debug builds.
+All 10 local WebAssembly Debug CTests pass with emsdk 7.0.0, including the full
+portable unit suite, both module tests, metadata, and conformance checks.

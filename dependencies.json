@@ -65,7 +65,7 @@
     }
   },
   "tools": {
-    "emsdk": "4.0.23",
+    "emsdk": "7.0.0",
     "playwright": "1.58.2",
     "clang-format": "20.1.8",
     "cmake": "4.5.0"
@@ -91,7 +91,7 @@
     "web": {
       "runner": "ubuntu-24.04",
       "compilerId": "Clang",
-      "compilerVersion": "22.0.0"
+      "compilerVersion": "24.0.0"
     }
   },
   "assets": {
