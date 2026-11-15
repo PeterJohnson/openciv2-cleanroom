@@ -98,10 +98,12 @@ class FormattingTests(unittest.TestCase):
 
     def test_untracked_owned_sources_are_formatted_but_other_roots_are_not(self):
         self.write("src/new file.mm", UNFORMATTED)
+        self.write("src/module.cppm", UNFORMATTED)
         self.write("build/vendor.cpp", UNFORMATTED)
         self.assertEqual(self.format("--check").returncode, 1)
         self.assertEqual(self.format().returncode, 0)
         self.assertEqual((self.root / "src/new file.mm").read_bytes(), FORMATTED)
+        self.assertEqual((self.root / "src/module.cppm").read_bytes(), FORMATTED)
         self.assertEqual((self.root / "build/vendor.cpp").read_bytes(), UNFORMATTED)
         self.assertEqual(self.format("--check").returncode, 0)
 

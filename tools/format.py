@@ -14,7 +14,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = {"src", "include", "tests", "tools"}
-EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx",
+EXTENSIONS = {".c", ".cc", ".cpp", ".cppm", ".cxx", ".h", ".hh", ".hpp", ".hxx",
               ".m", ".mm", ".inl", ".ipp", ".tpp"}
 POLICY_FILES = {".clang-format", "dependencies.json", "tools/format.py"}
 

@@ -39,3 +39,13 @@ runs:
       with:
         version: ${{ steps.pins.outputs.llvm }}
         directory: ${{ runner.temp }}/oc2-llvm
+    - name: Install macOS LLVM for the module experiment
+      if: runner.os == 'macOS' && inputs.web != 'true'
+      shell: bash
+      run: |
+        version='${{ steps.pins.outputs.llvm }}'
+        formula="llvm@${version%%.*}"
+        brew install "$formula"
+        llvm_path="$(brew --prefix "$formula")"
+        echo "LLVM_PATH=$llvm_path" >> "$GITHUB_ENV"
+        echo "$llvm_path/bin" >> "$GITHUB_PATH"

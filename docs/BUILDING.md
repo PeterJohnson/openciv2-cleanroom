@@ -84,19 +84,22 @@ CI installs CMake **4.5.0** and enforces the versions in `dependencies.json`
 with `OC2_VERIFY_TOOLCHAIN=ON`. The toolchain action downloads Kitware's release
 binaries directly; availability does not depend on the Python package release.
 Linux uses Clang 20.1.8; Windows uses clang-cl
-20.1.8 with Visual Studio 2022's SDK/libraries and the Ninja generator; macOS selects Xcode 16.4 / AppleClang
-17.0.0.17000013; WASM uses emsdk 4.0.23 / Clang 22.0.0. Runner labels are
+20.1.8 with Visual Studio 2022's SDK/libraries and the Ninja generator. This
+module experiment branch uses Homebrew LLVM 20.1.8 on macOS with the Xcode 16.4
+SDK; main uses AppleClang 17.0.0.17000013. WASM uses emsdk 4.0.23 / Clang 22.0.0. Runner labels are
 `ubuntu-24.04`, `windows-2022`, and `macos-15`, not moving `*-latest` aliases.
 Hosted images/OS libraries may still change; compiler drift fails configuration
 instead of silently redefining the baseline. Historical platform results are
-recorded in [the M1 build matrix](m1-build-matrix.md); the C++23/CMake upgrade
-requires fresh hosted Windows/macOS results. Normal developer builds use
+recorded in [the M1 build matrix](m1-build-matrix.md). The C++23/CMake main baseline
+passed [all 12 CI jobs](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43685032207)
+at `2044ada`. Normal developer builds use
 CMake 4.5+ and compatible C++23 compilers; strict verification is opt-in outside CI.
 
 C++ and the macOS Objective-C++ adapter require C++23 with extensions disabled.
-The current targets use headers and keep C++ module scanning disabled. A future
-module migration must enable `CXX_SCAN_FOR_MODULES` on participating targets and
-validate the compiler, standard library and dependency scanner on every platform.
+The production targets use headers and keep C++ module scanning disabled. On
+this experiment branch, `BUILD_TESTING=ON` also builds the
+[`openciv.base.arithmetic` module and interoperability test](modules-experiment.md)
+with scanning enabled on those targets.
 
 Every configure writes `build-identity.txt` with the actual compiler, CMake,
 platform, lock hash, source overrides and build options. It records

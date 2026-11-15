@@ -52,13 +52,13 @@ def check(root=ROOT):
 
     for directory in PORTABLE:
         for path in (source / directory).rglob('*'):
-            if path.suffix not in ('.hpp', '.cpp'):
+            if path.suffix not in ('.hpp', '.cpp', '.cppm'):
                 continue
             relative = path.relative_to(source).as_posix()
             player = directory == 'viewmodel' or relative in PLAYER_SESSION or relative == 'query/live_records.hpp'
             visit(path, relative, player, True, set())
     for path in (source / 'ui').rglob('*'):
-        if path.suffix in ('.hpp', '.cpp'):
+        if path.suffix in ('.hpp', '.cpp', '.cppm'):
             visit(path, path.relative_to(source).as_posix(), True, False, set())
     if errors:
         raise ValueError('\n'.join(sorted(errors)))

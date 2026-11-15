@@ -79,8 +79,8 @@
     "macos": {
       "runner": "macos-15",
       "xcode": "16.4",
-      "compilerId": "AppleClang",
-      "compilerVersion": "17.0.0.17000013"
+      "compilerId": "Clang",
+      "compilerVersion": "20.1.8"
     },
     "windows": {
       "runner": "windows-2022",

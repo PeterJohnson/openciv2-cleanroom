@@ -319,6 +319,9 @@ if(BUILD_TESTING)
 endif()
 
 include(cmake/Boundaries.cmake)
+if(BUILD_TESTING)
+  include(cmake/ModuleExperiment.cmake)
+endif()
 include(cmake/Metadata.cmake)
 # Record identities after targets, platform languages and dependencies are selected.
 include(cmake/Toolchain.cmake)

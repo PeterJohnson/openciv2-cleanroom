@@ -41,6 +41,9 @@ class BoundaryTests(unittest.TestCase):
     def test_noncanonical_root_preserves_boundary_diagnostics(self):
         self.check_forbidden_chain('rules/install.hpp', 'formats/rules.hpp', aliased_root=True)
 
+    def test_module_interface_cannot_hide_platform_dependencies(self):
+        self.check_forbidden_chain('base/example.cppm', 'platform/example.hpp')
+
     def test_native_content_cannot_depend_on_classic_loaders(self):
         self.check_forbidden_chain('formats/city_names.hpp', 'formats/classic_text_reader.hpp')
 
