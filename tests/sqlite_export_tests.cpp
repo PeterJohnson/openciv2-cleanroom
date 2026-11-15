@@ -21,24 +21,25 @@ TEST_CASE("SQLite export cancellation and failure discard analysis without chang
     CHECK(std::string(expected.begin(), expected.begin() + 15) == "SQLite format 3");
     base::CancellationSource cancellation;
     std::size_t observed = 0;
-    CHECK_THROWS_AS(analysis::sqlite_snapshot(snapshot, cancellation.get_token(),
-                                              [&](std::size_t completed) {
-                                                  observed = completed;
-                                                  if (completed == 2)
-                                                      cancellation.request_stop();
-                                              }),
+    const auto cancel_after_two = [&](std::size_t completed) {
+        observed = completed;
+        if (completed == 2)
+            cancellation.request_stop();
+    };
+    CHECK_THROWS_AS(analysis::sqlite_snapshot(snapshot, cancellation.get_token(), cancel_after_two),
                     base::Cancelled);
     CHECK(observed == 2);
-    CHECK_THROWS_AS(analysis::sqlite_snapshot(
-                        snapshot, cancellation.get_token(),
-                        [](std::size_t) { FAIL("Pre-cancelled export invoked progress"); }),
-                    base::Cancelled);
-    CHECK_THROWS_WITH(analysis::sqlite_snapshot(snapshot, {},
-                                                [](std::size_t completed) {
-                                                    if (completed == 2)
-                                                        throw std::runtime_error(
-                                                            "injected export failure");
-                                                }),
+    const auto unexpected_progress = [](std::size_t) {
+        FAIL("Pre-cancelled export invoked progress");
+    };
+    CHECK_THROWS_AS(
+        analysis::sqlite_snapshot(snapshot, cancellation.get_token(), unexpected_progress),
+        base::Cancelled);
+    const auto fail_after_two = [](std::size_t completed) {
+        if (completed == 2)
+            throw std::runtime_error("injected export failure");
+    };
+    CHECK_THROWS_WITH(analysis::sqlite_snapshot(snapshot, {}, fail_after_two),
                       "injected export failure");
     CHECK(snapshot.records() == before);
     CHECK(formats::Bytes(snapshot.source_bytes().begin(), snapshot.source_bytes().end()) == bytes);

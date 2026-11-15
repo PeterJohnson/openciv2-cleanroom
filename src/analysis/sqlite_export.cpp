@@ -132,7 +132,7 @@ INSERT INTO limitations VALUES(0,'rule-dependent-validation'),(1,'loaded-state')
 } // namespace
 
 formats::Bytes sqlite_snapshot(const query::StoredSnapshot& snapshot, base::CancellationToken stop,
-                               const std::function<void(std::size_t)>& progress) {
+                               const base::CallbackRef<void(std::size_t)>& progress) {
     if (!snapshot.decoded())
         throw std::invalid_argument("SQLite export requires a decoded stored snapshot");
     const auto checkpoint = [&](std::size_t completed) {

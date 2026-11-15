@@ -27,8 +27,7 @@ struct ConfigurationFixture {
         runtime.begin_client_session({10, 20});
         process.ordinary_preferences.game_options = 0xdeadbeefU;
         process.ordinary_preferences.disabled_messages = 0x9876;
-        preferences.open_output =
-            [&](std::string_view path) -> std::unique_ptr<session::CoreOutput> {
+        preferences.open_output = [&](std::string_view path) -> std::unique_ptr<io::CoreOutput> {
             CHECK(path == "CIV2.DAT");
             trace.push_back("open");
             if (after_open)

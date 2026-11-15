@@ -2,6 +2,8 @@ export module openciv.state.records;
 import openciv.base.arithmetic;
 
 import std;
+export import openciv.base.callback_ref;
+export import openciv.state.entity_allocation;
 export import openciv.state.identities;
 export import openciv.state.unit_types;
 
@@ -138,7 +140,7 @@ struct CityMoodWorkspace {
 };
 std::int32_t city_calculation_entry(std::optional<CitySlot> city, bool full,
                                     CityMoodWorkspace& workspace,
-                                    const std::function<std::int32_t()>& pipeline = {});
+                                    const base::CallbackRef<std::int32_t()>& pipeline = {});
 } // namespace openciv::state
 
 module :private;
@@ -181,7 +183,7 @@ void renew_loaded_lifetimes(EntityPools& pools, ProcessTokens& tokens, bool lega
 }
 std::int32_t city_calculation_entry(std::optional<CitySlot> city, bool full,
                                     CityMoodWorkspace& workspace,
-                                    const std::function<std::int32_t()>& pipeline) {
+                                    const base::CallbackRef<std::int32_t()>& pipeline) {
     if (!city)
         return 0;
     if (!full)

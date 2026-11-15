@@ -16,6 +16,8 @@ export import openciv.session.configuration;
 export import openciv.session.new_game;
 export import openciv.session.player_setup;
 export import openciv.session.premade_world;
+export import openciv.session.classic_premade_world;
+export import openciv.session.classic_world_entry;
 export import openciv.session.unit_operations;
 export import openciv.session.world_entry;
 export import openciv.session.world_setup;
@@ -102,8 +104,8 @@ export {
     };
     } // namespace openciv::unit
     namespace openciv::session {
-    struct CoreLoadCallbacks final : FileStorage {
-        std::function<std::unique_ptr<CoreInput>(std::string_view)> open;
+    struct CoreLoadCallbacks final : io::FileStorage {
+        std::function<std::unique_ptr<io::CoreInput>(std::string_view)> open;
         std::function<void()> flush;
         std::function<void(std::string_view)> change_directory;
         std::function<bool(std::string_view directory, std::string_view name)> exists;
@@ -112,8 +114,10 @@ export {
         std::function<state::LoadedContent()> load_content;
         std::function<void()> content_installed;
 
-        std::unique_ptr<CoreInput> read(std::string_view path) const override { return open(path); }
-        std::unique_ptr<CoreOutput> replace(std::string_view) const override {
+        std::unique_ptr<io::CoreInput> read(std::string_view path) const override {
+            return open(path);
+        }
+        std::unique_ptr<io::CoreOutput> replace(std::string_view) const override {
             throw std::logic_error("Unexpected output");
         }
         bool remove(std::string_view) const override {
@@ -135,15 +139,20 @@ export {
     };
     } // namespace openciv::session
     namespace openciv::session {
-    struct PreferenceFileCallbacks final : FileStorage {
-        std::function<std::unique_ptr<CoreInput>(std::string_view)> open_input;
-        std::function<std::unique_ptr<CoreOutput>(std::string_view)> open_output;
+    struct PreferenceFileCallbacks final : io::FileStorage, PreferenceWriter {
+        bool write(PreferenceSnapshot values,
+                   base::CallbackRef<void()> before_io = {}) const override {
+            return ClassicPreferenceWriter(*this).write(std::move(values), before_io);
+        }
+        std::function<std::unique_ptr<io::CoreInput>(std::string_view)> open_input;
+        std::function<std::unique_ptr<io::CoreOutput>(std::string_view)> open_output;
         std::function<bool(std::string_view)> remove_file;
 
         PreferenceFileCallbacks() = default;
-        PreferenceFileCallbacks(std::function<std::unique_ptr<CoreInput>(std::string_view)> input,
-                                std::function<std::unique_ptr<CoreOutput>(std::string_view)> output,
-                                std::function<bool(std::string_view)> remove)
+        PreferenceFileCallbacks(
+            std::function<std::unique_ptr<io::CoreInput>(std::string_view)> input,
+            std::function<std::unique_ptr<io::CoreOutput>(std::string_view)> output,
+            std::function<bool(std::string_view)> remove)
             : open_input(std::move(input)), open_output(std::move(output)),
               remove_file(std::move(remove)) {}
 
@@ -154,10 +163,10 @@ export {
             remove_file = other.remove_file;
             return *this;
         }
-        std::unique_ptr<CoreInput> read(std::string_view path) const override {
+        std::unique_ptr<io::CoreInput> read(std::string_view path) const override {
             return open_input(path);
         }
-        std::unique_ptr<CoreOutput> replace(std::string_view path) const override {
+        std::unique_ptr<io::CoreOutput> replace(std::string_view path) const override {
             return open_output(path);
         }
         bool remove(std::string_view path) const override { return remove_file(path); }
@@ -247,23 +256,23 @@ export {
     };
     } // namespace openciv::session
     namespace openciv::session {
-    struct CoreSaveCallbacks final : FileStorage {
+    struct CoreSaveCallbacks final : io::FileStorage {
         // The provider owns replacement/commit policy. A false write or close is
         // failure; providers must not reenter or mutate game state.
-        std::function<std::unique_ptr<CoreOutput>(std::string_view)> open;
+        std::function<std::unique_ptr<io::CoreOutput>(std::string_view)> open;
 
         CoreSaveCallbacks() = default;
-        CoreSaveCallbacks(std::function<std::unique_ptr<CoreOutput>(std::string_view)> callback)
+        CoreSaveCallbacks(std::function<std::unique_ptr<io::CoreOutput>(std::string_view)> callback)
             : open(std::move(callback)) {}
         CoreSaveCallbacks(const CoreSaveCallbacks& other) : open(other.open) {}
         CoreSaveCallbacks& operator=(const CoreSaveCallbacks& other) {
             open = other.open;
             return *this;
         }
-        std::unique_ptr<CoreInput> read(std::string_view) const override {
+        std::unique_ptr<io::CoreInput> read(std::string_view) const override {
             throw std::logic_error("Unexpected input");
         }
-        std::unique_ptr<CoreOutput> replace(std::string_view path) const override {
+        std::unique_ptr<io::CoreOutput> replace(std::string_view path) const override {
             return open(path);
         }
         bool remove(std::string_view) const override {
@@ -335,13 +344,18 @@ export {
     };
     } // namespace openciv::session
     namespace openciv::session {
-    struct PremadeWorldCallbacks final : FileStorage {
-        std::function<std::unique_ptr<CoreInput>(std::string_view)> open;
+    struct PremadeWorldCallbacks final : io::FileStorage, PremadeWorldSource {
+        std::optional<PremadeWorldInput> load(std::string_view path) const override {
+            return ClassicPremadeWorldSource(*this).load(path);
+        }
+        std::function<std::unique_ptr<io::CoreInput>(std::string_view)> open;
         std::function<void()> load_failure;
         PremadeChoiceCallbacks choices;
 
-        std::unique_ptr<CoreInput> read(std::string_view path) const override { return open(path); }
-        std::unique_ptr<CoreOutput> replace(std::string_view) const override {
+        std::unique_ptr<io::CoreInput> read(std::string_view path) const override {
+            return open(path);
+        }
+        std::unique_ptr<io::CoreOutput> replace(std::string_view) const override {
             throw std::logic_error("Unexpected output");
         }
         bool remove(std::string_view) const override {
@@ -478,6 +492,7 @@ export {
     } // namespace openciv::session
     namespace openciv::session {
     struct WorldEntryCallbacks {
+        std::function<void()> reset_source = [] {};
         // Selected source closes its readers and returns the same owned inputs used
         // for load/resume. Installation and final name-preserving updates live here.
         std::function<state::LoadedContent()> load_content;
@@ -499,10 +514,20 @@ export {
         std::function<void(state::CivilizationSlot, std::string advances)> introduce;
 
         operator WorldEntryDependencies() const& {
-            return {load_content,    &size,          choose_map, premade,    parameters, &players,
-                    stop_menu_sound, generate_world, initialize, accelerate, introduce};
+            return {reset_source,   load_content, &size,      choose_map,
+                    premade,        parameters,   &players,   stop_menu_sound,
+                    generate_world, initialize,   accelerate, introduce};
         }
         operator WorldEntryDependencies() const&& = delete;
     };
     } // namespace openciv::session
 }
+
+export namespace openciv::network {
+struct ReceiveCallbackFixture {
+    std::function<void(FrameView)> frame;
+    std::function<void(std::uint32_t)> oversized;
+    operator ReceiveCallbacks() const& { return {frame, oversized}; }
+    operator ReceiveCallbacks() const&& = delete;
+};
+} // namespace openciv::network

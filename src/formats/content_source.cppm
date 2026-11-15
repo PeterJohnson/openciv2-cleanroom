@@ -2,6 +2,7 @@ export module openciv.formats.content_source;
 import openciv.formats.content_json;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.formats.bytes;
 
 export namespace openciv::formats::content {
@@ -10,7 +11,7 @@ struct Source {
     Bytes bytes;
 };
 // Only explicitly mounted sources; adapters enforce containment and never fetch URLs.
-using Resolver = std::function<Source(std::string_view)>;
+using Resolver = base::CallbackRef<Source(std::string_view)>;
 struct FileReceipt {
     std::string path, identity, sha256;
 };

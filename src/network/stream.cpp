@@ -53,7 +53,7 @@ void FrameReceiver::close() noexcept {
     reset();
     closed_ = true;
 }
-ReceiveResult FrameReceiver::feed(std::span<const Byte> input, ReceiveCallbacks& callbacks) {
+ReceiveResult FrameReceiver::feed(std::span<const Byte> input, const ReceiveCallbacks& callbacks) {
     if (feeding_)
         throw std::logic_error("Recursive stream feed is outside the admitted dispatch domain");
     if (closed_)
@@ -189,7 +189,7 @@ DrainResult SendQueue::drain_one(const SendDependencies& services) {
     return DrainResult::pending;
 }
 DrainResult SendQueue::write_event(const SendDependencies& services,
-                                   const std::function<void()>& close_handler) {
+                                   const base::CallbackRef<void()>& close_handler) {
     auto result = DrainResult::empty;
     while (!queue_.empty()) {
         result = drain_one(services);

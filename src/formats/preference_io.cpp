@@ -24,8 +24,8 @@ void rectangle(ByteWriter& writer, const state::Rectangle& value) {
     writer.i32(value.bottom);
 }
 template <class Record, class Encode, class Decode>
-Record decode_item(const ReadResult& incoming, std::size_t size, const Record& prior, Encode encode,
-                   Decode decode) {
+Record decode_item(const io::ReadResult& incoming, std::size_t size, const Record& prior,
+                   Encode encode, Decode decode) {
     if (incoming.prefix.size() > size || (incoming.complete && incoming.prefix.size() != size))
         throw std::invalid_argument("Preference read returned an inconsistent transferred prefix");
     auto bytes = encode(prior);
@@ -141,7 +141,7 @@ Bytes encode_multiplayer_preferences(const StoredMultiplayerPreferences& p) {
     w.i16(p.legacy_setting_5);
     return std::move(w.bytes);
 }
-StoredOrdinaryPreferences decode_ordinary_preference_item(const ReadResult& item,
+StoredOrdinaryPreferences decode_ordinary_preference_item(const io::ReadResult& item,
                                                           const StoredOrdinaryPreferences& prior) {
     return decode_item(
         item, ordinary_preferences_size, prior,
@@ -149,7 +149,7 @@ StoredOrdinaryPreferences decode_ordinary_preference_item(const ReadResult& item
         decode_ordinary_preferences);
 }
 StoredMultiplayerPreferences
-decode_multiplayer_preference_item(const ReadResult& item,
+decode_multiplayer_preference_item(const io::ReadResult& item,
                                    const StoredMultiplayerPreferences& prior) {
     return decode_item(
         item, multiplayer_preferences_size, prior,

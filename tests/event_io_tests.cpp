@@ -99,17 +99,15 @@ TEST_CASE("F06 stored event bits round trip while live exports derive presence f
     const auto& events = f.runtime.world().events.collection;
     CHECK(events.at(0)->values.actions == input.record.actions);
     Bytes exported;
-    const WriteItem append = [&](std::span<const Byte> block) {
+    const auto append = [&](std::span<const Byte> block) {
         exported.insert(exported.end(), block.begin(), block.end());
         return true;
     };
-    REQUIRE(write_event_items(
-        append, append,
-        [&](Byte byte) {
-            exported.push_back(byte);
-            return true;
-        },
-        events, f.files.event_bytes));
+    auto append_byte = [&](Byte byte) {
+        exported.push_back(byte);
+        return true;
+    };
+    REQUIRE(write_event_items(append, append, append_byte, events, f.files.event_bytes));
     const auto record =
         decode_event_record(std::span<const Byte>(exported).subspan(8, event_record_size));
     CHECK(record.unit_name == 1);
@@ -130,17 +128,15 @@ TEST_CASE("F06 opaque imported event bytes cannot attach to a different event wi
     saved.retained.fill(0x7e);
     compatibility.emplace(original->identity(), saved);
     Bytes output;
-    const WriteItem append = [&](std::span<const Byte> bytes) {
+    const auto append = [&](std::span<const Byte> bytes) {
         output.insert(output.end(), bytes.begin(), bytes.end());
         return true;
     };
-    REQUIRE(write_event_items(
-        append, append,
-        [&](Byte byte) {
-            output.push_back(byte);
-            return true;
-        },
-        fresh, compatibility));
+    auto append_byte = [&](Byte byte) {
+        output.push_back(byte);
+        return true;
+    };
+    REQUIRE(write_event_items(append, append, append_byte, fresh, compatibility));
     CHECK(
         decode_event_record(std::span<const Byte>(output).subspan(8, event_record_size)).retained ==
         std::array<Byte, 40>{});

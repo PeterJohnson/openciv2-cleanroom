@@ -50,12 +50,13 @@ TEST_CASE("Native publication never overwrites an existing or concurrent destina
     CHECK(io::read_file(target) == original);
     const auto race = directory.path / "race.sqlite";
     bool created = false;
-    CHECK_THROWS(io::write_new_file(race, formats::Bytes{8}, {}, [&](std::size_t written) {
+    auto create_competing_file = [&](std::size_t written) {
         if (written != 0 && !created) {
             created = true;
             io::write_new_file(race, original);
         }
-    }));
+    };
+    CHECK_THROWS(io::write_new_file(race, formats::Bytes{8}, {}, create_competing_file));
     CHECK(io::read_file(race) == original);
     CHECK(std::distance(std::filesystem::directory_iterator(directory.path),
                         std::filesystem::directory_iterator{}) == 2);
@@ -65,20 +66,19 @@ TEST_CASE("Native failed or cancelled staged writes publish no destination", "[i
     const auto target = directory.path / "snapshot.sqlite";
     const formats::Bytes bytes(200000, 0xff);
     base::CancellationSource cancellation;
-    CHECK_THROWS_AS(io::write_new_file(target, bytes, cancellation.get_token(),
-                                       [&](std::size_t written) {
-                                           CHECK_FALSE(std::filesystem::exists(target));
-                                           if (written != 0)
-                                               cancellation.request_stop();
-                                       }),
+    auto cancel_after_write = [&](std::size_t written) {
+        CHECK_FALSE(std::filesystem::exists(target));
+        if (written != 0)
+            cancellation.request_stop();
+    };
+    CHECK_THROWS_AS(io::write_new_file(target, bytes, cancellation.get_token(), cancel_after_write),
                     base::Cancelled);
     CHECK(std::filesystem::is_empty(directory.path));
-    CHECK_THROWS_WITH(io::write_new_file(target, bytes, {},
-                                         [&](std::size_t written) {
-                                             if (written != 0)
-                                                 throw std::runtime_error(
-                                                     "injected write-stage failure");
-                                         }),
+    auto fail_after_write = [&](std::size_t written) {
+        if (written != 0)
+            throw std::runtime_error("injected write-stage failure");
+    };
+    CHECK_THROWS_WITH(io::write_new_file(target, bytes, {}, fail_after_write),
                       "injected write-stage failure");
     CHECK(std::filesystem::is_empty(directory.path));
     CHECK_THROWS(io::write_new_file(directory.path / "missing" / "file.sqlite", bytes));

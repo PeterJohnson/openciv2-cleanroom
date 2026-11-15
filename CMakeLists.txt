@@ -60,17 +60,29 @@ else()
   target_compile_options(oc2_base PRIVATE -fno-fast-math -ffp-contract=off)
 endif()
 
+# Portable byte and file contracts, independent of records, gameplay, and sessions.
+add_library(oc2_io)
+target_compile_features(oc2_io PUBLIC cxx_std_23)
+target_include_directories(oc2_io PUBLIC src)
+target_link_libraries(oc2_io PUBLIC oc2_base PRIVATE oc2_options)
+
+# Player-facing values and presentation contracts expose no engine implementation.
+add_library(oc2_contracts)
+target_compile_features(oc2_contracts PUBLIC cxx_std_23)
+target_include_directories(oc2_contracts PUBLIC src)
+target_link_libraries(oc2_contracts PUBLIC oc2_base PRIVATE oc2_options)
+
 # Portable state/world primitives: no presentation, database, network or assets.
 add_library(oc2_game src/world/map.cpp)
 target_sources(oc2_game PRIVATE src/unit/stacks.cpp)
 target_sources(oc2_game PRIVATE src/unit/stack_operations.cpp)
 target_compile_features(oc2_game PUBLIC cxx_std_23)
 target_include_directories(oc2_game PUBLIC src)
-target_link_libraries(oc2_game PUBLIC oc2_base PRIVATE oc2_options)
+target_link_libraries(oc2_game PUBLIC oc2_base oc2_contracts PRIVATE oc2_options)
 
 # F06 explicit classic encodings and item-level adapters, independent of host I/O.
 include(cmake/Json.cmake)
-add_library(oc2_formats src/formats/classic_records.cpp
+add_library(oc2_formats src/formats/classic_io.cpp src/formats/classic_records.cpp
   src/formats/state_conversion.cpp src/formats/save_records.cpp src/formats/classic_save.cpp src/formats/content_json.cpp
   src/formats/gameplay.cpp
   src/formats/content_pack.cpp src/formats/builtin_gameplay.cpp src/formats/rules.cpp)
@@ -82,13 +94,13 @@ target_sources(oc2_formats PRIVATE src/formats/random_checkpoint.cpp)
 target_sources(oc2_formats PRIVATE src/formats/content_conversion.cpp)
 target_sources(oc2_formats PRIVATE src/formats/rule_conversion.cpp)
 target_include_directories(oc2_formats PUBLIC src)
-target_link_libraries(oc2_formats PUBLIC oc2_game oc2_json PRIVATE oc2_options)
+target_link_libraries(oc2_formats PUBLIC oc2_game oc2_json oc2_io PRIVATE oc2_options)
 include(cmake/BuiltinGameplay.cmake)
 
 # N05/N02 portable transport and application-wire primitives; no native sockets.
 add_library(oc2_network src/network/stream.cpp src/network/sections.cpp src/network/compression.cpp)
 target_include_directories(oc2_network PUBLIC src)
-target_link_libraries(oc2_network PUBLIC oc2_formats PRIVATE oc2_options)
+target_link_libraries(oc2_network PUBLIC oc2_io oc2_game PRIVATE oc2_options)
 
 # Owned, read-only projections. No host I/O, session load or presentation.
 add_library(oc2_query src/query/stored.cpp src/query/stored_validation.cpp src/query/output.cpp)
@@ -121,7 +133,7 @@ if(NOT EMSCRIPTEN)
   add_library(oc2_io_native src/platform/atomic_file.cpp)
   target_sources(oc2_io_native PRIVATE src/platform/classic_files.cpp)
   target_include_directories(oc2_io_native PUBLIC src)
-  target_link_libraries(oc2_io_native PUBLIC oc2_session PRIVATE oc2_options)
+  target_link_libraries(oc2_io_native PUBLIC oc2_io oc2_formats PRIVATE oc2_options)
 endif()
 
 if(OC2_BUILD_TOOLS)
@@ -142,7 +154,7 @@ endif()
 add_library(oc2_viewmodel)
 target_compile_features(oc2_viewmodel PUBLIC cxx_std_23)
 target_include_directories(oc2_viewmodel PUBLIC src)
-target_link_libraries(oc2_viewmodel PRIVATE oc2_options)
+target_link_libraries(oc2_viewmodel PUBLIC oc2_contracts PRIVATE oc2_options)
 
 if(OC2_BUILD_GUI)
   if(APPLE AND NOT EMSCRIPTEN)
@@ -191,6 +203,11 @@ if(OC2_BUILD_GUI)
 endif()
 
 if(BUILD_TESTING)
+  add_executable(oc2_contract_tests tests/player_contract_tests.cpp)
+  target_link_libraries(oc2_contract_tests PRIVATE oc2_contracts oc2_options)
+  set_target_properties(oc2_contract_tests PROPERTIES CXX_SCAN_FOR_MODULES ON)
+  add_test(NAME player_contracts COMMAND oc2_contract_tests)
+  set_tests_properties(player_contracts PROPERTIES LABELS "modules;headless")
   include(cmake/Catch2.cmake)
   add_executable(oc2_tests tests/viewmodel_tests.cpp tests/base_tests.cpp tests/wrapping_i32_tests.cpp tests/state_tests.cpp tests/world_tests.cpp tests/pool_tests.cpp tests/format_tests.cpp tests/save_tests.cpp tests/query_tests.cpp)
   target_sources(oc2_tests PRIVATE tests/network_stream_tests.cpp tests/network_message_tests.cpp)

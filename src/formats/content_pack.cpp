@@ -356,13 +356,12 @@ std::shared_ptr<const ResolvedPack> resolve_pack(const MountedPack& selected,
         const auto slash = selection.path.rfind('/');
         const auto directory =
             slash == std::string::npos ? std::string{} : selection.path.substr(0, slash);
-        out->gameplay.bundle = load_gameplay(
-            out->gameplay.manifest->bytes,
-            [&](std::string_view path) {
-                const auto file = loader.raw(*gameplay_owner, directory, path);
-                return Source{file->receipt.identity, file->bytes};
-            },
-            require_classic);
+        const auto resolve = [&](std::string_view path) {
+            const auto file = loader.raw(*gameplay_owner, directory, path);
+            return Source{file->receipt.identity, file->bytes};
+        };
+        out->gameplay.bundle =
+            load_gameplay(out->gameplay.manifest->bytes, resolve, require_classic);
     }
     return out;
 }

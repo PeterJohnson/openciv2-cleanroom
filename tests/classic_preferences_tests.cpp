@@ -61,7 +61,7 @@ struct Fixture {
     Fixture() {
         process.ordinary_preferences = ordinary(Bytes(72, 0x11));
         process.multiplayer_preferences = multiplayer(Bytes(444, 0x22));
-        services.open_input = [&](std::string_view path) -> std::unique_ptr<CoreInput> {
+        services.open_input = [&](std::string_view path) -> std::unique_ptr<io::CoreInput> {
             CHECK(path == "CIV2.DAT");
             trace.push_back("open-input");
             if (!input_open)
@@ -77,8 +77,8 @@ struct Fixture {
                          count = std::min(count, prefix);
                      const auto start = input.begin() + static_cast<std::ptrdiff_t>(position);
                      position += count;
-                     return ReadResult{{start, start + static_cast<std::ptrdiff_t>(count)},
-                                       short_item != index && count == size};
+                     return io::ReadResult{{start, start + static_cast<std::ptrdiff_t>(count)},
+                                           short_item != index && count == size};
                  },
                  {}, // Preference input has no byte-at-a-time operation.
                  [&] {
@@ -87,7 +87,7 @@ struct Fixture {
                      return close_ok;
                  }});
         };
-        services.open_output = [&](std::string_view path) -> std::unique_ptr<CoreOutput> {
+        services.open_output = [&](std::string_view path) -> std::unique_ptr<io::CoreOutput> {
             CHECK(path == "CIV2.DAT");
             trace.push_back("open-output");
             if (!output_open)
@@ -424,12 +424,13 @@ TEST_CASE("Classic owned streams finalize once and preserve an earlier I/O excep
     CHECK(closes == 1);
     closes = 0;
     try {
-        auto input = test::input_file({[](auto) -> ReadResult { throw std::runtime_error("read"); },
-                                       {},
-                                       [&]() -> bool {
-                                           ++closes;
-                                           throw std::runtime_error("close");
-                                       }});
+        auto input =
+            test::input_file({[](auto) -> io::ReadResult { throw std::runtime_error("read"); },
+                              {},
+                              [&]() -> bool {
+                                  ++closes;
+                                  throw std::runtime_error("close");
+                              }});
         (void)input->item(72);
         FAIL("Expected read failure");
     } catch (const std::runtime_error& error) {
@@ -484,7 +485,7 @@ TEST_CASE("Preference storage retains factory state through direct and published
     runtime.begin_client_session({10, 20});
     std::vector<int> calls;
     f.services.open_output = [count = 0,
-                              &calls](std::string_view) mutable -> std::unique_ptr<CoreOutput> {
+                              &calls](std::string_view) mutable -> std::unique_ptr<io::CoreOutput> {
         calls.push_back(++count);
         return {};
     };

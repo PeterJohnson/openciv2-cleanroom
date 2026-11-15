@@ -170,24 +170,22 @@ TEST_CASE("F06 multiplayer writes encode resume without live substitution",
         auto runtime = incoming();
         runtime.saved.resume_civ = 2;
         const auto before = runtime;
-        REQUIRE(write_multiplayer_item(
-                    [&](std::span<const Byte> bytes) {
-                        REQUIRE(bytes.size() == multiplayer_record_size);
-                        REQUIRE(bytes[0x464] == 5);
-                        REQUIRE(runtime.saved.resume_civ == 2);
-                        return complete;
-                    },
-                    runtime, 261) == complete);
+        auto write_item = [&](std::span<const Byte> bytes) {
+            REQUIRE(bytes.size() == multiplayer_record_size);
+            REQUIRE(bytes[0x464] == 5);
+            REQUIRE(runtime.saved.resume_civ == 2);
+            return complete;
+        };
+        REQUIRE(write_multiplayer_item(write_item, runtime, 261) == complete);
         auto expected = before;
         REQUIRE(runtime == expected);
     }
     auto runtime = incoming();
     const auto before_write = runtime;
-    REQUIRE_THROWS_AS(
-        write_multiplayer_item(
-            [](std::span<const Byte>) -> bool { throw std::runtime_error("Write stopped"); },
-            runtime, -1),
-        std::runtime_error);
+    auto throw_on_write = [](std::span<const Byte>) -> bool {
+        throw std::runtime_error("Write stopped");
+    };
+    REQUIRE_THROWS_AS(write_multiplayer_item(throw_on_write, runtime, -1), std::runtime_error);
     REQUIRE(runtime == before_write);
 }
 TEST_CASE("F06 successful-load mode adaptation keeps entry-zero asymmetry and unrelated state",

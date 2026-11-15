@@ -1,6 +1,7 @@
 export module openciv.city.names;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.state.civilization;
 export import openciv.state.rule_state;
 export import openciv.city.name_catalog;
@@ -12,7 +13,7 @@ export namespace openciv::city {
 // Publishes at most 15 classic bytes and a cleared tail.
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
                   std::span<state::Leader> leaders,
-                  const std::function<std::string(state::TextId)>& resolve_plural,
+                  const base::CallbackRef<std::string(state::TextId)>& resolve_plural,
                   const NameCatalog& catalog);
 // Process-owned rule/leader/pool binding of the same operation.
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
@@ -23,7 +24,7 @@ module :private;
 namespace openciv::city {
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
                   std::span<state::Leader> leaders,
-                  const std::function<std::string(state::TextId)>& resolve_plural,
+                  const base::CallbackRef<std::string(state::TextId)>& resolve_plural,
                   const NameCatalog& catalog) {
     if (!resolve_plural)
         throw std::invalid_argument("City naming requires a plural resolver");
@@ -58,11 +59,7 @@ bool default_name(state::City& city, std::span<const state::Civilization> civili
 }
 bool default_name(state::City& city, std::span<const state::Civilization> civilizations,
                   state::RuleState& rules, const NameCatalog& catalog) {
-    return default_name(
-        city, civilizations, rules.leaders,
-        [&](state::TextId id) {
-            return std::string(rules.text.text(static_cast<state::TextId>(id)));
-        },
-        catalog);
+    const auto resolve = [&](state::TextId id) { return std::string(rules.text.text(id)); };
+    return default_name(city, civilizations, rules.leaders, resolve, catalog);
 }
 } // namespace openciv::city

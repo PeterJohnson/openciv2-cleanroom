@@ -1,6 +1,8 @@
 export module openciv.session.world_entry;
 import openciv.civilization.knowledge;
 import openciv.rules.rules_install;
+export import openciv.state.game_input;
+export import openciv.session.premade_world;
 
 import std;
 export import openciv.base.callback_ref;
@@ -14,6 +16,7 @@ enum class NewWorldChoice { random, premade, customize };
 struct WorldEntryDependencies {
     // Selected source closes its readers and returns the same owned inputs used
     // for load/resume. Installation and final name-preserving updates live here.
+    base::CallbackRef<void()> reset_source;
     base::CallbackRef<state::LoadedContent()> load_content;
     const WorldSizeInteraction* size = nullptr;
     base::CallbackRef<std::optional<std::string>()> choose_map;
@@ -49,15 +52,16 @@ std::string starting_advance_list(const state::GameState& world, const state::Ru
 // supplies a unique call identity; child paths append /parameters, /players and
 // /initialize. Every retry starts fresh; within-attempt accepted effects remain
 // until the next attempt. Successful setup does not itself admit client leases.
-bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::GameplayRandom& random,
-                     std::string_view call, NewWorldChoice choice,
+bool enter_new_world(SessionRuntime& runtime, state::StartingPositions& starts,
+                     base::GameplayRandom& random, std::string_view call, NewWorldChoice choice,
                      const state::CalendarValues& calendar, const WorldEntryDependencies& services);
 } // namespace openciv::session
 
 module :private;
 namespace openciv::session {
 void WorldEntryDependencies::validate(NewWorldChoice choice) const {
-    if (!load_content || !stop_menu_sound || !generate_world || !accelerate || !introduce)
+    if (!reset_source || !load_content || !stop_menu_sound || !generate_world || !accelerate ||
+        !introduce)
         throw std::invalid_argument("World entry requires complete owning services");
     if (choice == NewWorldChoice::premade) {
         if (!choose_map)
@@ -101,8 +105,8 @@ std::string starting_advance_list(const state::GameState& world, const state::Ru
     }
     return result;
 }
-bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::GameplayRandom& random,
-                     std::string_view call, NewWorldChoice choice,
+bool enter_new_world(SessionRuntime& runtime, state::StartingPositions& starts,
+                     base::GameplayRandom& random, std::string_view call, NewWorldChoice choice,
                      const state::CalendarValues& calendar,
                      const WorldEntryDependencies& supplied) {
     const auto& services = supplied;
@@ -114,15 +118,8 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
     services.validate(choice);
     runtime.prepare_new_game();
     auto pin = runtime.pin_world();
-    // Preserve application directory/screen configuration, not loaded-game
-    // descriptors, hints, leader scratch, cursor, layout or scenario paths.
-    auto fresh_files = ClassicFileState{};
-    fresh_files.text = files.text;
-    fresh_files.text.working = fresh_files.text.search = fresh_files.text.home;
-    fresh_files.current_screen = files.current_screen;
-    fresh_files.default_game_stem = files.default_game_stem;
-    fresh_files.game_stem = fresh_files.default_game_stem;
-    files = std::move(fresh_files);
+    starts = {};
+    services.reset_source();
     auto invoke = [&]<typename F, typename... Args>(const F& service, Args&&... args) {
         publish(runtime);
         return service(std::forward<Args>(args)...);
@@ -139,8 +136,8 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
         auto source = WorldSource::generated;
         bool selected;
         if (choice == NewWorldChoice::premade) {
-            const auto loaded = load_premade_world(runtime, files.starts,
-                                                   invoke(services.choose_map), services.premade);
+            const auto loaded =
+                load_premade_world(runtime, starts, invoke(services.choose_map), services.premade);
             selected = loaded.has_value();
             if (loaded)
                 source = *loaded;
@@ -156,7 +153,8 @@ bool enter_new_world(SessionRuntime& runtime, ClassicFileState& files, base::Gam
         if (!players.accepted)
             return false;
         publish(runtime);
-        (void)save_classic_preferences(runtime.process(), *services.parameters.preferences);
+        (void)services.parameters.preferences->write(
+            {runtime.process().ordinary_preferences, runtime.process().multiplayer_preferences});
         installer.advances(true);
         installer.units(true);
         installer.improvements(true);

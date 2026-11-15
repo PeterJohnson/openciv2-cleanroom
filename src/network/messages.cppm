@@ -1,6 +1,7 @@
 export module openciv.network.messages;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.formats.bytes;
 
 export namespace openciv::network {
@@ -38,8 +39,8 @@ struct MessageSendState {
     std::int32_t last_result = 0;
 };
 using SecureSend =
-    std::function<std::int32_t(std::uint16_t, std::span<formats::Byte>, std::uint32_t)>;
-using BroadcastSend = std::function<std::int32_t(std::span<formats::Byte>, std::uint32_t)>;
+    base::CallbackRef<std::int32_t(std::uint16_t, std::span<formats::Byte>, std::uint32_t)>;
+using BroadcastSend = base::CallbackRef<std::int32_t(std::span<formats::Byte>, std::uint32_t)>;
 // Retain sequence allocation on failure. Services may change packet bytes; the
 // broadcast completion test reads its live declared size after the callback.
 bool send_directed(formats::Bytes& packet, std::uint16_t recipient, MessageSendState& state,

@@ -38,6 +38,12 @@ class BoundaryTests(unittest.TestCase):
     def test_domain_cannot_depend_on_format_codecs(self):
         self.check_forbidden_chain('rules/install.hpp', 'formats/rules.hpp')
 
+    def test_file_ports_cannot_depend_on_classic_codecs(self):
+        self.check_forbidden_chain('io/storage.hpp', 'formats/classic_io.hpp')
+
+    def test_common_world_setup_cannot_depend_on_classic_codecs(self):
+        self.check_forbidden_chain('session/world_entry.hpp', 'formats/classic_io.hpp')
+
     def test_noncanonical_root_preserves_boundary_diagnostics(self):
         self.check_forbidden_chain('rules/install.hpp', 'formats/rules.hpp', aliased_root=True)
 
@@ -144,6 +150,44 @@ class BoundaryTests(unittest.TestCase):
             (root / 'src/session/client_connection.cppm').write_text(
                 'export module openciv.session.client_connection;\nimport openciv.state.game;\n')
             self.write_sources(root, {'state/game.cppm': 'export module openciv.state.game;\n'})
+            with self.assertRaisesRegex(ValueError, 'forbidden include/import'):
+                check_boundaries.check(root)
+
+    def test_implicit_primary_import_preserves_player_boundary(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_sources(root, {
+                'session/runtime.cppm': 'export module openciv.session.runtime;\n',
+                'ui/hidden.cpp': 'module openciv.session.runtime;\n',
+            })
+            with self.assertRaisesRegex(ValueError, 'forbidden include/import'):
+                check_boundaries.check(root)
+
+    def test_implementation_must_belong_to_owner_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_sources(root, {
+                'base/a.cppm': 'export module openciv.base.a;\n',
+                'formats/a.cpp': 'module openciv.base.a;\n',
+            })
+            with self.assertRaisesRegex(ValueError, 'outside its owner directory'):
+                check_boundaries.check(root)
+            (root / 'src/formats/a.cpp').unlink()
+            self.write_sources(root, {'formats/part.cppm': 'module openciv.base.a:part;\n'})
+            with self.assertRaisesRegex(ValueError, 'outside its owner directory'):
+                check_boundaries.check(root)
+
+    def test_presentation_contracts_do_not_expose_engine_interfaces(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            import shutil
+            shutil.copytree(check_boundaries.ROOT / 'src', root / 'src')
+            self.write_sources(root, {'ui/contracts.cpp':
+                'import openciv.session.player_setup_types;\n'
+                'import openciv.session.world_setup_types;\n'
+                'import openciv.session.configuration_types;\n'})
+            check_boundaries.check(root)
+            (root / 'src/ui/contracts.cpp').write_text('import openciv.state.entity_allocation;\n')
             with self.assertRaisesRegex(ValueError, 'forbidden include/import'):
                 check_boundaries.check(root)
 

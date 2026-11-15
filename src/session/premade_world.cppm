@@ -1,13 +1,13 @@
 export module openciv.session.premade_world;
-import openciv.session.runtime;
-import openciv.formats.game_input;
+export import openciv.world.map_input;
+export import openciv.state.starting_positions;
 
 import std;
+export import openciv.session.world_setup_types;
 export import openciv.base.callback_ref;
-export import openciv.session.classic_load;
+export import openciv.session.runtime;
 
 export namespace openciv::session {
-enum class WorldSource { generated, premade_cylindrical, premade_flat };
 struct PremadeWorldChoices {
     // Zero discards; every nonzero result, including a negative result, keeps.
     base::CallbackRef<std::int32_t()> use_seed, use_start_locations;
@@ -19,11 +19,24 @@ struct PremadeWorldChoices {
 // the two conditional choices and finally the current stored topology rule.
 // Requires complete allocated tile/remembered backing. Does not rebuild regions,
 // classify area, clear status flags, allocate, generate terrain or save a file.
-WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPositions& starts,
+WorldSource prepare_premade_world(SessionRuntime& runtime, state::StartingPositions& starts,
                                   const PremadeWorldChoices& choices);
 // Borrowed providers and callable owners must outlive the consuming operation.
+struct PremadeWorldInput {
+    world::MapInput map;
+    state::StartingPositions starts;
+};
+class PremadeWorldSource {
+public:
+    PremadeWorldSource() = default;
+    virtual ~PremadeWorldSource() = default;
+    PremadeWorldSource(const PremadeWorldSource&) = delete;
+    PremadeWorldSource& operator=(const PremadeWorldSource&) = delete;
+    // Complete decoding and close before returning. nullopt means input failure.
+    virtual std::optional<PremadeWorldInput> load(std::string_view path) const = 0;
+};
 struct PremadeWorldDependencies {
-    const FileStorage* storage = nullptr;
+    const PremadeWorldSource* source = nullptr;
     base::CallbackRef<void()> load_failure;
     PremadeWorldChoices choices;
     void validate() const;
@@ -35,7 +48,7 @@ struct PremadeWorldDependencies {
 // old map; successful installation publishes setup dimensions before choices. Paths
 // are opaque to this parent except that embedded NUL is outside its domain.
 std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
-                                              formats::StartingPositions& starts,
+                                              state::StartingPositions& starts,
                                               std::optional<std::string> selected_path,
                                               const PremadeWorldDependencies& services);
 } // namespace openciv::session
@@ -47,7 +60,7 @@ void PremadeWorldChoices::validate() const {
         throw std::invalid_argument("Premade world requires seed, starts and clock services");
 }
 void PremadeWorldDependencies::validate() const {
-    if (!storage || !load_failure)
+    if (!source || !load_failure)
         throw std::invalid_argument("Premade world requires input and failure services");
     choices.validate();
 }
@@ -86,7 +99,7 @@ void normalize(world::MapStorage& map) {
     }
 }
 } // namespace
-WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPositions& starts,
+WorldSource prepare_premade_world(SessionRuntime& runtime, state::StartingPositions& starts,
                                   const PremadeWorldChoices& supplied) {
     const auto& choices = supplied;
     choices.validate();
@@ -118,7 +131,7 @@ WorldSource prepare_premade_world(SessionRuntime& runtime, formats::StartingPosi
     });
 }
 std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
-                                              formats::StartingPositions& starts,
+                                              state::StartingPositions& starts,
                                               std::optional<std::string> selected_path,
                                               const PremadeWorldDependencies& supplied) {
     if (!selected_path)
@@ -132,49 +145,16 @@ std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
     auto pin = runtime.pin_world();
     return complete(runtime, [&]() -> std::optional<WorldSource> {
         publish(runtime);
-        auto input = services.storage->read(*selected_path);
+        auto input = services.source->load(*selected_path);
         if (!input) {
             publish(runtime);
             services.load_failure();
             return {};
         }
-        bool loaded = false;
-        try {
-            formats::Bytes bytes;
-            for (;;) {
-                auto part = input->item(65536);
-                if (part.prefix.size() > 65536 || (part.complete && part.prefix.size() != 65536))
-                    throw std::invalid_argument("Inconsistent map transfer");
-                if (bytes.size() + part.prefix.size() > 256 * 1024 * 1024)
-                    throw std::length_error("Map exceeds admission limit");
-                bytes.insert(bytes.end(), part.prefix.begin(), part.prefix.end());
-                if (!part.complete)
-                    break;
-            }
-            const bool closed = input->close();
-            std::optional<formats::RawMapFile> decoded;
-            try {
-                decoded = formats::decode_raw_map(bytes);
-            } catch (const formats::DecodeError&) {
-            }
-            if (closed && decoded) {
-                const auto selected_starts = decoded->starts;
-                const auto data = formats::map_input(std::move(*decoded));
-                world::install_map(data, runtime.world().map, false);
-                starts = selected_starts;
-                runtime.world().world_setup.width = static_cast<std::int16_t>(data.width);
-                runtime.world().world_setup.height = static_cast<std::int16_t>(data.height);
-                loaded = true;
-            }
-        } catch (...) {
-            publish(runtime);
-            throw;
-        }
-        if (!loaded) {
-            publish(runtime);
-            services.load_failure();
-            return {};
-        }
+        world::install_map(input->map, runtime.world().map, false);
+        starts = input->starts;
+        runtime.world().world_setup.width = static_cast<std::int16_t>(input->map.width);
+        runtime.world().world_setup.height = static_cast<std::int16_t>(input->map.height);
         return prepare_premade_world(runtime, starts, services.choices);
     });
 }

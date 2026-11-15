@@ -62,7 +62,7 @@ struct ClassicSaveFixture {
         w.multiplayer.hotseat_participants = 6;
         files.cursor = {-2, 7};
         files.current_screen = {10, 20, 650, 500};
-        services.open = [&](std::string_view selected) -> std::unique_ptr<session::CoreOutput> {
+        services.open = [&](std::string_view selected) -> std::unique_ptr<io::CoreOutput> {
             ++opens;
             path = selected;
             if (observe)

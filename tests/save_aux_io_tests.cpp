@@ -16,18 +16,18 @@ TEST_CASE("F06 layout export snapshots the screen without changing live geometry
     const auto before = input.layout;
     SavedLayout packed;
     std::vector<Bytes> blocks;
-    REQUIRE(write_history_layout_items(
-        [&](std::span<const Byte> bytes) {
-            blocks.emplace_back(bytes.begin(), bytes.end());
-            return true;
-        },
-        input.power_history, {0, 0, 1280, 800}, packed, input.layout, input.views));
+    auto append_item = [&](std::span<const Byte> bytes) {
+        blocks.emplace_back(bytes.begin(), bytes.end());
+        return true;
+    };
+    REQUIRE(write_history_layout_items(append_item, input.power_history, {0, 0, 1280, 800}, packed,
+                                       input.layout, input.views));
     CHECK(input.layout == before);
     CHECK(decode_layout(blocks[1]).rectangles[0] == SavedRectangle{0, 0, 1280, 800});
     CHECK(blocks[0].back() == 81);
-    REQUIRE_FALSE(write_history_layout_items([](std::span<const Byte>) { return false; },
-                                             input.power_history, {}, packed, input.layout,
-                                             input.views));
+    auto reject_item = [](std::span<const Byte>) { return false; };
+    REQUIRE_FALSE(write_history_layout_items(reject_item, input.power_history, {}, packed,
+                                             input.layout, input.views));
     CHECK(input.layout == before);
 }
 TEST_CASE("F06 owned restoration input retains map history scenario and layout fields",

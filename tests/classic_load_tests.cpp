@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 import std;
+import openciv.state.entity_allocation;
 import openciv.tests.service_callbacks;
 import openciv.tests.classic_load_fixture;
 import openciv.session.classic_save;

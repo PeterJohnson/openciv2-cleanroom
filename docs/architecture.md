@@ -78,7 +78,9 @@ network output, revoke old clients and discard their queues before replacement.
 Load/resume and within-game civilization creation retain their distinct contracts.
 
 `SessionRuntime::prepare_new_game` establishes the implemented boundary;
-`enter_new_world` invokes it before rules and setup and resets classic file scratch.
+`enter_new_world` invokes it before rules and setup, then resets common start
+positions and its selected source. `enter_classic_new_world` composes the classic
+file-scratch reset at that boundary.
 The rule object keeps its address for adapters but its contents are fresh. The
 caller supplies the chosen RNG context explicitly; no hidden draw/reseed occurs.
 Cold-start and previously used runtimes must produce equivalent gameplay with the
@@ -184,7 +186,7 @@ flowchart TD
     session --> query[Read-only queries]
     session --> formats
     session --> network[Classic protocol and network sessions]
-    network --> formats
+    network --> io[Portable byte and file contracts]
     network --> game
     formats --> game
     query --> game
@@ -204,7 +206,7 @@ Use a small number of libraries with internal subsystem directories; the 65
 specifications are ownership boundaries, not a requirement for 65 libraries.
 Proposed CMake targets:
 
-Currently implemented: `oc2_base`, F02/W01 and U01 stack/deletion primitives in
+Currently implemented: `oc2_base`, `oc2_io`, `oc2_contracts`, F02/W01 and U01 stack/deletion primitives in
 `oc2_game`, stored codecs
 and gameplay content loaders in `oc2_formats`, stored/live projections in `oc2_query`, bounded N05/N02 primitives
 in `oc2_network`, initial ownership/client bindings in `oc2_session`, optional
@@ -218,10 +220,12 @@ first real operations arrive. Native menu sources currently compile into
 | Target | Responsibility and allowed dependencies |
 | --- | --- |
 | `oc2_base` | Logical IDs, explicit arithmetic, sampling policy, clocks, diagnostics, service contracts; C++ standard library only initially. |
-| `oc2_game` | Authoritative C++ runtime records and collections for F02 state, rule model, W/U/C/V mechanics, A01–A08, event execution; depends on `oc2_base`. No database dependency. |
-| `oc2_formats` | Native JSON content decoding and classic F03/text/scenario adapters into shared logical models; F06 codecs and classic encoding. Depends on `oc2_game`; no filesystem or GUI calls. |
+| `oc2_io` | Portable byte codecs and noncopyable file/storage contracts; depends on `oc2_base`, never game records or format adapters. |
+| `oc2_contracts` | Player-facing identity and choice values, setup and configuration presentation interfaces; depends on `oc2_base`. |
+| `oc2_game` | Authoritative C++ runtime records and collections for F02 state, rule model, W/U/C/V mechanics, A01–A08, event execution; depends on `oc2_base` and `oc2_contracts`. No database dependency. |
+| `oc2_formats` | Native JSON content decoding and classic F03/text/scenario adapters into shared logical models; F06 codecs and classic encoding. Depends on `oc2_game` and `oc2_io`; no filesystem or GUI calls. |
 | `oc2_query` | Read-only projections of decoded records and live state, with explicit access contexts and stable ordering; depends on `oc2_game` and `oc2_formats`. No session loading, recalculation, command dispatch, or presentation types. |
-| `oc2_network` | N01–N03/N05 protocol state machines, encoders, synchronization and authority; depends on `oc2_game` and `oc2_formats`, injected transport/time. |
+| `oc2_network` | N01–N03/N05 protocol state machines, encoders, synchronization and authority; depends on `oc2_game` and `oc2_io`, injected transport/time. |
 | `oc2_session` | Embedded `SessionRuntime`, participant/controller bindings, scoped client API, mode/authority adapters, F04/F05/N04 orchestration, setup/load flows, AI scheduling, pending interactions, command descriptors/results and P01–P10 gameplay effects; composes game/formats/network/query libraries. |
 | `oc2_viewmodel` | Observer-filtered map/dialog/report/menu models and frontend intent mapping through the session client API; uses query value types, never mutable world access. No SDL/ImGui types. |
 | `oc2_console` | Command parsing, help/completion and structured output through a participant's session binding; no SDL/ImGui or required scripting runtime. |
@@ -334,7 +338,13 @@ it does not admit a second owner workflow. Commands already protect their world
 while pending. Their unit children take `OperationContext` and do not attempt
 standalone workflow admission.
 Public client/value modules do not import mutable state or engine operation
-interfaces. `PlayerClient` delegates through a noncopyable internal connection
+interfaces. Setup and configuration requests, results, and presentation providers
+live in `player_setup_types`, `world_setup_types`, and `configuration_types`.
+Their `oc2_contracts` target is available to view models/frontend code without
+linking the engine or format libraries.
+Identity value types and capacities remain in `state.identities`; process token
+generation and slot reservation belong to `state.entity_allocation`.
+`PlayerClient` delegates through a noncopyable internal connection
 contract. The runtime implementation checks weak session/lease references on
 every operation; copying a handle neither extends the session lifetime nor
 preserves revoked authority. Shared runtime implementation state belongs to an
@@ -361,6 +371,9 @@ dependency descriptor copies handles only. Avoid one-field service wrappers:
 label/failure observers, immediate file choice and stack synchronization use
 direct callback parameters. Passive stack diagnostics use an optional output
 pointer. Captured callable state is never an accidental per-invocation snapshot.
+Synchronous codec, resolver, progress, and network callbacks use borrowed views as well.
+A local closure variable owns a temporary policy across the call; an owning test
+fixture keeps callbacks alive when a returned stream or operation retains them.
 
 Use owning `std::function` where ownership is intended, such as registered
 operation factories, self-contained comparison policies and callbacks owned by
@@ -374,17 +387,27 @@ operation must not retain a stack-local callback owner from an earlier call.
 The immediate save adapter supplies its chooser separately; the asynchronous
 save operation has one owned `FileChooser` and no redundant chooser callback.
 
+Common new-world setup consumes decoded `PremadeWorldInput`, common starting
+positions, and a `PreferenceWriter` taking an owned preference snapshot. Classic
+raw-map decoding, CIV2.DAT encoding, and path/scratch reset are separate adapters.
+Preference writers invoke the borrowed publication notification at actual I/O
+boundaries. Source reset follows runtime isolation and precedes content loading;
+selected dependencies are validated before either reset.
+
 Setup and configuration validate selected dependency handles before changing
 state. World entry validates the selected branch before replacing the old game
 or revoking clients. Missing handles are composition errors; a failure raised
 by an implemented child retains its specified completed prefix. Snapshot data
 when a coherent input/export is required, independently of provider lifetimes.
 
-`CoreInput` and `CoreOutput` are noncopyable file interfaces. Their shared close
-state ensures finalization is attempted once, including a throwing close;
+Generic byte streams and storage belong to `io.stream` and `io.storage`, in the
+small `oc2_io` target alongside byte codecs. They must not import game records,
+format adapters, or sessions. Classic/native I/O adapters depend on these ports;
+the ports never depend on their adapters. `CoreInput` and `CoreOutput` are
+noncopyable file interfaces. Their shared close state ensures finalization is attempted once, including a throwing close;
 implementations release resources in their destructors. Explicit close reports
-failure, while destructor cleanup preserves an earlier exception. Codecs continue
-to accept individual read/write functions. `MultiplayerOptionOperation` owns an
+failure, while destructor cleanup preserves an earlier exception. Codecs accept
+individual borrowed read/write callbacks. `MultiplayerOptionOperation` owns an
 `OptionVoteChannel` and yields after proposal delivery. Each subsequent poll does
 bounded transport work and evaluates the wrapping deadline. Presentation observes
 owned proposal data; it does not own a blocking modal protocol or vote callback.

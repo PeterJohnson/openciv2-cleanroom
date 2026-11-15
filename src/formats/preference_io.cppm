@@ -15,10 +15,10 @@ Bytes encode_ordinary_preferences(const StoredOrdinaryPreferences& preferences);
 Bytes encode_multiplayer_preferences(const StoredMultiplayerPreferences& preferences);
 // Expand an owned transferred item against an explicit prior snapshot. A short
 // item still retains its transferred prefix; the session chooses fallback defaults.
-StoredOrdinaryPreferences decode_ordinary_preference_item(const ReadResult& item,
+StoredOrdinaryPreferences decode_ordinary_preference_item(const io::ReadResult& item,
                                                           const StoredOrdinaryPreferences& prior);
 StoredMultiplayerPreferences
-decode_multiplayer_preference_item(const ReadResult& item,
+decode_multiplayer_preference_item(const io::ReadResult& item,
                                    const StoredMultiplayerPreferences& prior);
 Bytes encode_ordinary_preferences(const state::OrdinaryPreferences& value);
 Bytes encode_multiplayer_preferences(const state::MultiplayerPreferences& value);

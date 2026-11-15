@@ -36,13 +36,11 @@ struct BundleInput {
         raw(name, document.value.toString());
     }
     std::shared_ptr<const GameplayBundle> load(bool classic = false) {
-        return load_gameplay(
-            bytes(manifest.toString()),
-            [&](auto path) {
-                requests.emplace_back(path);
-                return Source{std::string(path), files.at(std::string(path))};
-            },
-            classic);
+        auto resolve_1 = [&](auto path) {
+            requests.emplace_back(path);
+            return Source{std::string(path), files.at(std::string(path))};
+        };
+        return load_gameplay(bytes(manifest.toString()), resolve_1, classic);
     }
     void custom() {
         manifest["mode"] = jt::Json("custom");
@@ -183,12 +181,10 @@ TEST_CASE(
     REQUIRE_THROWS_AS(input.load(), Error);
     REQUIRE(input.requests.size() == 1);
     input = BundleInput{};
-    REQUIRE_THROWS_AS(load_gameplay(bytes(input.manifest.toString()),
-                                    [&](auto path) {
-                                        return Source{"same-backing",
-                                                      input.files.at(std::string(path))};
-                                    }),
-                      Error);
+    auto resolve_2 = [&](auto path) {
+        return Source{"same-backing", input.files.at(std::string(path))};
+    };
+    REQUIRE_THROWS_AS(load_gameplay(bytes(input.manifest.toString()), resolve_2), Error);
     for (const auto path : {"", "/absolute", "C:/drive", "https://server/file", "a\\b", "a//b",
                             "./file", "a/../b", "a/", "a\nfile"}) {
         INFO(path);
@@ -234,9 +230,10 @@ TEST_CASE("Native gameplay retains exact revision metadata and rejects rounded f
     const auto position = manifest.find("\"revision\":1");
     REQUIRE(position != std::string::npos);
     manifest.replace(position, 12, "\"revision\":9007199254740993");
-    const auto result = load_gameplay(bytes(manifest), [&](auto path) {
+    auto resolve_3 = [&](auto path) {
         return Source{std::string(path), input.files.at(std::string(path))};
-    });
+    };
+    const auto result = load_gameplay(bytes(manifest), resolve_3);
     REQUIRE(result->revision == "9007199254740993");
     for (const auto number : {"1.00000000000000000000001", "1e-400", "2147483648"}) {
         auto combat = std::string(gameplay_test_files[5].second);

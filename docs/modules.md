@@ -38,9 +38,13 @@ state. Only the public handle may import the internal connection contract at the
 player boundary; frontend code must use the handle.
 
 `tools/check_boundaries.py` rejects module import cycles and follows transitive
-imports (including relative partitions) and includes across architecture
+imports (including implicit primary-interface imports and relative partitions)
+and includes across architecture
 boundaries. It also rejects portable filesystem access when the standard library
-is imported as a whole.
+is imported as a whole. Implementation units must live in their primary module's
+directory. File interfaces and common world setup have dedicated checks preventing
+dependencies on classic codecs; UI contracts are checked as player-facing roots.
+Keep shared transfer and identity values separate from codecs and mutation APIs.
 
 `cmake/Modules.cmake` explicitly assigns interfaces to existing libraries and
 private implementation partitions and executable fixture/tool file sets. Add new

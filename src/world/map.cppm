@@ -1,6 +1,7 @@
 export module openciv.world.map;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.world.geometry;
 
 export namespace openciv::world {
@@ -64,7 +65,7 @@ struct TileSyncEffect {
     TileMutation mutation;
     bool operator==(const TileSyncEffect&) const = default;
 };
-using TilePublisher = std::function<void(const TileSyncEffect&)>;
+using TilePublisher = base::CallbackRef<void(const TileSyncEffect&)>;
 
 class MapStorage {
 public:

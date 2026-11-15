@@ -41,7 +41,7 @@ TEST_CASE("N05 stream assembly survives every split and coalesced records", "[ne
         FrameReceiver receiver;
         std::vector<Bytes> frames, payloads;
         std::vector<std::uint32_t> tags;
-        ReceiveCallbacks callbacks;
+        ReceiveCallbackFixture callbacks;
         callbacks.frame = [&](FrameView frame) {
             frames.emplace_back(frame.wire.begin(), frame.wire.end());
             payloads.emplace_back(frame.payload.begin(), frame.payload.end());
@@ -58,7 +58,7 @@ TEST_CASE("N05 stream assembly survives every split and coalesced records", "[ne
     }
     FrameReceiver receiver;
     std::size_t delivered = 0;
-    ReceiveCallbacks callbacks;
+    ReceiveCallbackFixture callbacks;
     callbacks.frame = [&](FrameView) { ++delivered; };
     for (auto byte : wire)
         receiver.feed(std::span{&byte, 1}, callbacks);
@@ -77,7 +77,7 @@ TEST_CASE("N05 oversize reports depend on header fragmentation and discard one r
         receiver.oversized_limit = 76;
         std::vector<std::uint32_t> reports;
         std::size_t delivered = 0;
-        ReceiveCallbacks callbacks;
+        ReceiveCallbackFixture callbacks;
         callbacks.oversized = [&](auto size) { reports.push_back(size); };
         callbacks.frame = [&](FrameView) { ++delivered; };
         receiver.feed(std::span{combined}.first(split), callbacks);
@@ -90,7 +90,7 @@ TEST_CASE("N05 oversize reports depend on header fragmentation and discard one r
     }
     FrameReceiver receiver;
     receiver.oversized_limit = 76;
-    ReceiveCallbacks callbacks;
+    ReceiveCallbackFixture callbacks;
     callbacks.frame = [](FrameView f) { CHECK(f.payload.size() == 100); };
     CHECK(receiver.feed(oversized, callbacks).delivered == 1); // No callback, no size threshold.
 }
@@ -99,7 +99,7 @@ TEST_CASE("N05 receiver admission and callback reset preserve bounded failure ef
           "[network][N05]") {
     const auto good = encode_frame(0, Bytes{1});
     FrameReceiver receiver;
-    ReceiveCallbacks callbacks;
+    ReceiveCallbackFixture callbacks;
     CHECK_FALSE(receiver.incomplete());
     auto malformed = good;
     put(malformed, 8, 60); // More payload than total-12.
@@ -215,10 +215,11 @@ TEST_CASE("N05 write event stops on partial or fatal progress and tracks backlog
     CHECK(queue.send(0, {}, services) == SendResult::queued);
     services.send = [](auto) { return SocketResult{0, SocketError::fatal}; };
     bool closed = false;
-    CHECK(queue.write_event(services, [&] {
+    auto close_connection = [&] {
         closed = true;
         queue.clear();
-    }) == DrainResult::fatal);
+    };
+    CHECK(queue.write_event(services, close_connection) == DrainResult::fatal);
     CHECK(closed);
 }
 
@@ -255,4 +256,28 @@ TEST_CASE("N05 send queue retains pending bytes on transport exception", "[netwo
     };
     CHECK(queue.drain_one(services) == DrainResult::complete);
     CHECK(queue.size() == 0);
+}
+
+TEST_CASE("N05 frame callbacks preserve state across deliveries", "[network][N05]") {
+    FrameReceiver receiver;
+    // The state resides inside the bound callable, not an external reference.
+    struct Counter {
+        int calls = 0;
+        void operator()(FrameView) { ++calls; }
+    } counter;
+    ReceiveCallbacks callbacks{counter, {}};
+    const auto wire = encode_frame(0, Bytes{});
+    auto two = wire;
+    two.insert(two.end(), wire.begin(), wire.end());
+    CHECK(receiver.feed(two, callbacks).delivered == 2);
+    CHECK(counter.calls == 2);
+    struct Oversized {
+        int calls = 0;
+        void operator()(std::uint32_t) { ++calls; }
+    } oversized;
+    callbacks = {{}, oversized};
+    receiver.oversized_limit = 20;
+    CHECK(receiver.feed(wire, callbacks).stop == ReceiveStop::oversized);
+    CHECK(receiver.feed(wire, callbacks).stop == ReceiveStop::oversized);
+    CHECK(oversized.calls == 2);
 }

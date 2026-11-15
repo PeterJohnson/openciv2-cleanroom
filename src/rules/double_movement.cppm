@@ -1,6 +1,7 @@
 export module openciv.rules.double_movement;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.state.rule_state;
 
 export namespace openciv::rules {
@@ -10,13 +11,13 @@ export namespace openciv::rules {
 // then invokes required redrawStatus(1). Single-player and repeated requests
 // leave both flag and table untouched. Existing unit movement is never changed.
 void apply_double_movement(state::GameMode mode, bool enabled, state::RuleState& rules,
-                           const std::function<void(std::int32_t)>& redraw_status);
+                           const base::CallbackRef<void(std::int32_t)>& redraw_status);
 } // namespace openciv::rules
 
 module :private;
 namespace openciv::rules {
 void apply_double_movement(state::GameMode mode, bool enabled, state::RuleState& rules,
-                           const std::function<void(std::int32_t)>& redraw_status) {
+                           const base::CallbackRef<void(std::int32_t)>& redraw_status) {
     if (mode == state::GameMode::single_player || enabled == rules.double_movement_applied)
         return;
     rules.double_movement_applied = enabled;

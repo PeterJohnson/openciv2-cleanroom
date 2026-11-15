@@ -3,7 +3,7 @@ export module openciv.session.classic_load;
 import std;
 export import openciv.base.callback_ref;
 export import openciv.formats.record_compatibility;
-export import openciv.session.file_storage;
+export import openciv.io.storage;
 export import openciv.session.runtime;
 export import openciv.state.game_input;
 export import openciv.formats.classic_text_reader;
@@ -20,7 +20,7 @@ struct ClassicFileState {
     std::string extension = ".SAV", opened_path, scenario_directory;
     std::string default_game_stem = "GAME", game_stem = "GAME";
     std::string loaded_filename, remembered_subdirectory;
-    formats::StartingPositions starts;
+    state::StartingPositions starts;
     formats::SavedCursor cursor;
     formats::SavedLayout packed_layout;
     state::Rectangle current_screen;
@@ -29,7 +29,7 @@ struct ClassicFileState {
 };
 // Borrowed providers and callable owners must outlive the consuming operation.
 struct CoreLoadDependencies {
-    const FileStorage* storage = nullptr;
+    const io::FileStorage* storage = nullptr;
     base::CallbackRef<void()> flush;
     base::CallbackRef<void(std::string_view)> change_directory;
     base::CallbackRef<bool(std::string_view directory, std::string_view name)> exists;

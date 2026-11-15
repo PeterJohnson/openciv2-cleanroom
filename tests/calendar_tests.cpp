@@ -49,9 +49,10 @@ custom(const std::array<state::CalendarPeriod, 6>& periods) {
     manifest["id"] = jt::Json("authored.calendar");
     manifest["revision"] = jt::Json(2);
     const auto header = manifest.toString();
-    return load_gameplay(formats::Bytes(header.begin(), header.end()), [&](auto path) {
+    auto resolve_1 = [&](auto path) {
         return Source{std::string(path), files.at(std::string(path))};
-    });
+    };
+    return load_gameplay(formats::Bytes(header.begin(), header.end()), resolve_1);
 }
 } // namespace
 

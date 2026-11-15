@@ -50,8 +50,8 @@ int run_content_command(std::span<const std::string> arguments) {
         openciv::io::ContentDirectory directory(manifest.parent_path());
         const auto filename = manifest.filename().generic_u8string();
         const auto source = directory.read(std::string(filename.begin(), filename.end()));
-        const auto bundle = content::load_gameplay(
-            source.bytes, [&](auto path) { return directory.read(path); }, require_classic);
+        auto resolve_1 = [&](auto path) { return directory.read(path); };
+        const auto bundle = content::load_gameplay(source.bytes, resolve_1, require_classic);
         report["status"] = jt::Json("validated");
         report["scope"] = jt::Json("gameplay-bundle-only");
         report["id"] = jt::Json(bundle->id);

@@ -69,7 +69,7 @@ struct Fixture {
             return entries;
         };
         services.input.comparison = formats::classic::ascii_text_case();
-        services.input.open = [&](std::string_view path) -> std::unique_ptr<CoreInput> {
+        services.input.open = [&](std::string_view path) -> std::unique_ptr<io::CoreInput> {
             ++opens;
             trace.push_back("open:" + std::string(path));
             if (!open_success)
@@ -79,8 +79,8 @@ struct Fixture {
                      const auto length = std::min(size, bytes.size() - position);
                      const auto start = bytes.begin() + static_cast<std::ptrdiff_t>(position);
                      position += length;
-                     return formats::ReadResult{
-                         {start, start + static_cast<std::ptrdiff_t>(length)}, length == size};
+                     return io::ReadResult{{start, start + static_cast<std::ptrdiff_t>(length)},
+                                           length == size};
                  },
                  [&]() -> std::optional<formats::Byte> {
                      if (position == bytes.size())

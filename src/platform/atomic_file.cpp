@@ -124,7 +124,7 @@ private:
 } // namespace
 void write_new_file(const std::filesystem::path& path, std::span<const formats::Byte> bytes,
                     base::CancellationToken stop,
-                    const std::function<void(std::size_t)>& progress) {
+                    const base::CallbackRef<void(std::size_t)>& progress) {
     const auto checkpoint = [&](std::size_t written) {
         base::check_stop(stop);
         if (progress)

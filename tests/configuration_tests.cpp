@@ -285,7 +285,8 @@ TEST_CASE("F03 removal divides the signed current byte and never restores a reme
     const std::array<std::uint8_t, 8> expected{0, 0, 63, 192, 193, 255, 255, 0};
     for (std::size_t i = 0; i < input.size(); ++i)
         rules->definitions.units[i].movement = input[i];
-    rules::apply_double_movement(state::GameMode::email, false, *rules, [](std::int32_t) {});
+    auto ignore_redraw = [](std::int32_t) {};
+    rules::apply_double_movement(state::GameMode::email, false, *rules, ignore_redraw);
     for (std::size_t i = 0; i < expected.size(); ++i)
         CHECK(rules->definitions.units[i].movement == expected[i]);
 }
@@ -317,14 +318,15 @@ TEST_CASE("F03 doubling publishes its flag and full table before redraw or a red
     CHECK(rules->double_movement_applied);
     CHECK(rules->definitions.units[0].movement == 128);
     CHECK(rules->definitions.units[61].movement == 254);
-    rules::apply_double_movement(state::GameMode::tcp, false, *rules, [&](std::int32_t argument) {
+    auto observe_redraw = [&](std::int32_t argument) {
         CHECK(argument == 1);
         CHECK_FALSE(rules->double_movement_applied);
         CHECK(rules->definitions.units[0].movement == 192);
         CHECK(rules->definitions.units[61].movement == 255);
         rules->double_movement_applied = true;
         rules->definitions.units[0].movement = 17;
-    });
+    };
+    rules::apply_double_movement(state::GameMode::tcp, false, *rules, observe_redraw);
     CHECK(rules->double_movement_applied);
     CHECK(rules->definitions.units[0].movement == 17);
 }
@@ -393,7 +395,7 @@ TEST_CASE("F03 configuration releases its world pin when a bound child throws",
 }
 
 // Composition copies only borrowing handles; implementations keep their identity.
-static_assert(!std::is_copy_constructible_v<FileStorage>);
+static_assert(!std::is_copy_constructible_v<io::FileStorage>);
 static_assert(!std::is_copy_constructible_v<FileChooser>);
 static_assert(!std::is_copy_constructible_v<MusicControl>);
 static_assert(!std::is_copy_constructible_v<CountdownControl>);

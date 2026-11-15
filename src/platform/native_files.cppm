@@ -1,6 +1,7 @@
 export module openciv.platform.native_files;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.formats.bytes;
 export import openciv.base.cancellation;
 
@@ -12,7 +13,7 @@ formats::Bytes read_file(const std::filesystem::path& path);
 // remove the staging file; callbacks run only before publication and may throw.
 void write_new_file(const std::filesystem::path& path, std::span<const formats::Byte> bytes,
                     base::CancellationToken stop = {},
-                    const std::function<void(std::size_t)>& progress = {});
+                    const base::CallbackRef<void(std::size_t)>& progress = {});
 } // namespace openciv::io
 
 // Implementation in the primary unit; platform companions share this module.

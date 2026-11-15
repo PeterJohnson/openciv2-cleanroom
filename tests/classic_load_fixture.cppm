@@ -144,7 +144,7 @@ struct Fixture {
                      Bytes prefix(bytes.begin() + static_cast<std::ptrdiff_t>(position),
                                   bytes.begin() + static_cast<std::ptrdiff_t>(position + count));
                      position += count;
-                     return ReadResult{std::move(prefix), !failed && count == n};
+                     return io::ReadResult{std::move(prefix), !failed && count == n};
                  },
                  [&]() -> std::optional<Byte> {
                      ++chars;

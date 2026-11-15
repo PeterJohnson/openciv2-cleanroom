@@ -22,4 +22,5 @@ enum class WorldSize { small, normal, large };
 enum class RuleSelection { standard, advanced };
 // N05 protocol identifiers. Optional legacy transports need no native provider.
 enum class NetworkProtocol { tcp, ipx, modem, serial };
+enum class WorldParameter { land_mass, land_form, temperature, climate, age };
 } // namespace openciv::state

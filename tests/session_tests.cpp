@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 import std;
+import openciv.state.entity_allocation;
 import openciv.session.runtime;
 
 // Architecture §§3–5 session/query contracts and F02 §§2–3 lifetimes. These

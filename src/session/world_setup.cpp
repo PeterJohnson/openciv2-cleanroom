@@ -156,7 +156,10 @@ bool customize_world_parameters(SessionRuntime& runtime, base::GameplayRandom& r
                 sample(setup, parameter, random, call);
             }
         }
-        (void)save_classic_preferences(runtime, *services.preferences);
+        const auto before_io = [&] { publish(runtime); };
+        (void)services.preferences->write(
+            {runtime.process().ordinary_preferences, runtime.process().multiplayer_preferences},
+            before_io);
         return true;
     });
 }

@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 import std;
+import openciv.state.entity_allocation;
 import openciv.tests.classic_save_fixture;
 import openciv.civilization.knowledge;
 

@@ -129,12 +129,13 @@ TEST_CASE("P04 initialization selects language and ignores original heap-size hi
         f.files["scenario/LABELS." + std::string(extension)] = "@STRINGHEAP\n36000\n";
         f.labels.entries = {f.pool.store("Retained until rebuild")};
         unsigned caches = 0;
-        session::initialize_text(language, f.directories, f.pool, f.labels, [&] {
+        auto observe_caches = [&] {
             ++caches;
             REQUIRE(f.directories.extension == extension);
             REQUIRE(f.opens.empty());
             REQUIRE(f.pool.size() == 2);
-        });
+        };
+        session::initialize_text(language, f.directories, f.pool, f.labels, observe_caches);
         REQUIRE(caches == 1);
         const auto expected = language == 0                    ? -1
                               : language == -1                 ? -2
@@ -145,7 +146,8 @@ TEST_CASE("P04 initialization selects language and ignores original heap-size hi
         REQUIRE(f.labels.entries.size() == 1); // Only rebuild releases labels.
         REQUIRE_THROWS_AS(f.labels.label(0, f.pool), std::out_of_range);
         f.files["scenario/LABELS." + std::string(extension)] = "@STRINGHEAP\n35001\n";
-        session::initialize_text(language, f.directories, f.pool, f.labels, [] {});
+        auto ignore_caches = [] {};
+        session::initialize_text(language, f.directories, f.pool, f.labels, ignore_caches);
     }
 }
 TEST_CASE("P04 label rebuild preserves unrelated rule references", "[classic][labels]") {

@@ -70,23 +70,27 @@ TEST_CASE("N02 send sequences survive failure and broadcast reads the live post-
           "[network][N02]") {
     auto packet = encode_argument_message(21, {}, {}, 0x1234);
     MessageSendState state{0xffffffff, -99};
-    CHECK(send_directed(packet, 255, state, [&](auto destination, auto bytes, auto size) {
+    auto verify_send = [&](auto destination, auto bytes, auto size) {
         CHECK(destination == 255);
         CHECK(size == 44);
         CHECK(decode_message_header(bytes).sequence == 0xffffffff);
         CHECK(state.next_sequence == 0);
         return 0;
-    }));
+    };
+    CHECK(send_directed(packet, 255, state, verify_send));
     CHECK(state.last_result == 0);
-    CHECK_FALSE(send_directed(packet, 1, state, [](auto, auto, auto) { return -4; }));
+    auto reject_send = [](auto, auto, auto) { return -4; };
+    CHECK_FALSE(send_directed(packet, 1, state, reject_send));
     CHECK(state.next_sequence == 1);
     CHECK(state.last_result == -4);
-    CHECK_FALSE(send_broadcast(packet, state, [](auto, auto) { return 0; }));
-    CHECK(send_broadcast(packet, state, [](auto bytes, auto size) {
+    auto reject_broadcast = [](auto, auto) { return 0; };
+    CHECK_FALSE(send_broadcast(packet, state, reject_broadcast));
+    auto verify_broadcast = [](auto bytes, auto size) {
         CHECK(size == 44);
         put(bytes, 8, 20);
         return 20;
-    }));
+    };
+    CHECK(send_broadcast(packet, state, verify_broadcast));
     CHECK(state.next_sequence == 3);
     CHECK(decode_message_header(packet).size == 20);
 }
@@ -109,10 +113,11 @@ TEST_CASE("N02 message passes N05 fragmented FIFO transport without adding RNG d
     FrameReceiver incoming;
     ReceiveCallbacks callbacks;
     std::vector<ArgumentMessage> delivered;
-    callbacks.frame = [&](FrameView frame) {
+    auto capture_frame = [&](FrameView frame) {
         CHECK(frame.tag == 0x02000000);
         delivered.push_back(decode_argument_message(frame.payload));
     };
+    callbacks.frame = capture_frame;
     for (std::size_t offset = 0; offset < wire.size(); offset += 3)
         incoming.feed(
             std::span{wire}.subspan(offset, std::min<std::size_t>(3, wire.size() - offset)),

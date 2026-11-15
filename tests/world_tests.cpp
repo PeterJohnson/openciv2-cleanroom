@@ -294,7 +294,7 @@ TEST_CASE("W01 tile synchronization publishes after mutation with original argum
     MapStorage map{fallback};
     map.allocate(Geometry{4, 2});
     std::vector<TileSyncEffect> effects;
-    const TilePublisher publish = [&](const auto& effect) {
+    const auto publish = [&](const auto& effect) {
         CHECK(map.tile(effect.mutation.position).features == 1);
         effects.push_back(effect);
     };
@@ -318,18 +318,18 @@ TEST_CASE("W01 tile synchronization publishes after mutation with original argum
         map.mutate(mutation, controls, publish);
     }
     CHECK(effects.size() == 3);
-    map.mutate({TileField::owner, {-1, 0}, 9, 1, true}, {3, false, false, true},
-               [&](const auto& effect) {
-                   CHECK_FALSE(fallback.owner);
-                   CHECK(effect.mutation.operand == 15);
-                   CHECK(effect.mutation.position == Position{-1, 0});
-               });
+    auto observe_fallback = [&](const auto& effect) {
+        CHECK_FALSE(fallback.owner);
+        CHECK(effect.mutation.operand == 15);
+        CHECK(effect.mutation.position == Position{-1, 0});
+    };
+    map.mutate({TileField::owner, {-1, 0}, 9, 1, true}, {3, false, false, true}, observe_fallback);
+    auto fail_publication = [](const auto& effect) {
+        CHECK(effect.mutation.operand == -1);
+        throw std::runtime_error("scripted publisher failure");
+    };
     REQUIRE_THROWS_AS(map.mutate({TileField::fertility, {0, 0}, -1, 1, true},
-                                 {3, true, false, true},
-                                 [](const auto& effect) {
-                                     CHECK(effect.mutation.operand == -1);
-                                     throw std::runtime_error("scripted publisher failure");
-                                 }),
+                                 {3, true, false, true}, fail_publication),
                       std::runtime_error);
     CHECK(map.tile({0, 0}).fertility == 15);
 }

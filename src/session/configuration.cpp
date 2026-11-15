@@ -103,7 +103,7 @@ bool configure_graphics_options(SessionRuntime& runtime,
     return true;
 }
 bool configure_message_options(SessionRuntime& runtime, std::optional<MessageOptionChoices> choices,
-                               const FileStorage& supplied) {
+                               const io::FileStorage& supplied) {
     if (!choices)
         return false;
     const auto& services = supplied;
@@ -205,9 +205,9 @@ void MultiplayerOptionOperation::apply() {
     const auto& preferences = runtime_.process().multiplayer_preferences;
     live.double_production = preferences.double_production;
     live.double_movement = preferences.double_movement;
+    const auto redraw = published(runtime_, services_.redraw_status);
     rules::apply_double_movement(world.globals.multiplayer, live.double_movement,
-                                 *runtime_.process().rules,
-                                 published(runtime_, services_.redraw_status));
+                                 *runtime_.process().rules, redraw);
     if (world.globals.multiplayer >= state::GameMode::tcp && world.multiplayer.player_count > 1) {
         publish(runtime_);
         services_.broadcaster->units();

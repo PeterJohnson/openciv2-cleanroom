@@ -1,9 +1,9 @@
-export module openciv.session.file_storage;
+export module openciv.io.storage;
 
 import std;
-export import openciv.session.classic_stream;
+export import openciv.io.stream;
 
-export namespace openciv::session {
+export namespace openciv::io {
 // A noncopyable backend. Returned files own individual open-file lifetimes.
 class FileStorage {
 public:
@@ -15,4 +15,4 @@ public:
     virtual std::unique_ptr<CoreOutput> replace(std::string_view path) const = 0;
     virtual bool remove(std::string_view path) const = 0;
 };
-} // namespace openciv::session
+} // namespace openciv::io

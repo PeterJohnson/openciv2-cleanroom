@@ -51,13 +51,11 @@ struct World {
         leaders[0].plural = state::NameReference{123, true};
     }
     bool run(const city::NameCatalog& provider) {
-        return city::default_name(
-            city, civilizations, leaders,
-            [&](std::int32_t id) {
-                labels.push_back(id);
-                return plural;
-            },
-            provider);
+        auto resolve_name = [&](std::int32_t id) {
+            labels.push_back(id);
+            return plural;
+        };
+        return city::default_name(city, civilizations, leaders, resolve_name, provider);
     }
     std::string name() const {
         const auto bytes = city.name;

@@ -1,6 +1,7 @@
 export module openciv.state.game;
 
 import std;
+export import openciv.state.entity_allocation;
 export import openciv.state.world_lifetime;
 export import openciv.state.civilization;
 export import openciv.state.events;

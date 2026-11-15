@@ -28,7 +28,7 @@ public:
     virtual void start(bool notify) const = 0;
 };
 struct SaveMenuDependencies {
-    const FileStorage* output = nullptr;
+    const io::FileStorage* output = nullptr;
     // N03 start is distinct from resume. These are real timer boundaries.
     const CountdownControl* countdown = nullptr;
     // Pure presentation queries. They do not mutate game state or admit reentry.

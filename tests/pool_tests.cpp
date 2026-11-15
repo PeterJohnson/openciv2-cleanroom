@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 import std;
+import openciv.state.entity_allocation;
 import openciv.state.records;
 
 using namespace openciv::state;
@@ -138,26 +139,28 @@ TEST_CASE("F02 cached city calculation reads the shared workspace without select
     CityMoodWorkspace workspace{CitySlot{4}, 5, 2};
     const auto before = workspace;
     CHECK(city_calculation_entry(CitySlot{9}, false, workspace) == 3);
-    CHECK(city_calculation_entry(std::nullopt, true, workspace, [] {
-              FAIL("No full call for absent city");
-              return 0;
-          }) == 0);
+    auto pipeline_1 = [] {
+        FAIL("No full call for absent city");
+        return 0;
+    };
+    CHECK(city_calculation_entry(std::nullopt, true, workspace, pipeline_1) == 0);
     CHECK(workspace == before);
-    CHECK(city_calculation_entry(CitySlot{0}, true, workspace, [&] {
-              CHECK(workspace.city == CitySlot{0});
-              workspace.happy = 8;
-              return 6;
-          }) == 6);
+    auto pipeline_2 = [&] {
+        CHECK(workspace.city == CitySlot{0});
+        workspace.happy = 8;
+        return 6;
+    };
+    CHECK(city_calculation_entry(CitySlot{0}, true, workspace, pipeline_2) == 6);
     CHECK(workspace.happy == 8);
     workspace.happy = std::numeric_limits<std::int32_t>::max();
     workspace.unhappy = -1;
     CHECK(city_calculation_entry(CitySlot{9}, false, workspace) ==
           std::numeric_limits<std::int32_t>::min());
-    CHECK_THROWS_AS(city_calculation_entry(CitySlot{5}, true, workspace,
-                                           [&]() -> std::int32_t {
-                                               workspace.happy = 17;
-                                               throw std::runtime_error("scripted child failure");
-                                           }),
+    auto pipeline_3 = [&]() -> std::int32_t {
+        workspace.happy = 17;
+        throw std::runtime_error("scripted child failure");
+    };
+    CHECK_THROWS_AS(city_calculation_entry(CitySlot{5}, true, workspace, pipeline_3),
                     std::runtime_error);
     CHECK(workspace.city == CitySlot{5});
     CHECK(workspace.happy == 17);

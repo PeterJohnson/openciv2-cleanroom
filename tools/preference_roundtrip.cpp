@@ -10,14 +10,14 @@ import openciv.platform.native_files;
 
 namespace {
 // Owns the observed native stream; counters outlive this synchronous read.
-class ObservedInput final : public openciv::session::CoreInput {
+class ObservedInput final : public openciv::io::CoreInput {
 public:
-    ObservedInput(std::unique_ptr<CoreInput> input, bool& complete, std::size_t& items)
+    ObservedInput(std::unique_ptr<openciv::io::CoreInput> input, bool& complete, std::size_t& items)
         : input_(std::move(input)), complete_(complete), items_(items) {}
     ~ObservedInput() override { close_on_destruction(); }
 
 private:
-    openciv::formats::ReadResult read_item(std::size_t size) override {
+    openciv::io::ReadResult read_item(std::size_t size) override {
         auto result = input_->item(size);
         complete_ = complete_ && result.complete;
         ++items_;
@@ -25,22 +25,22 @@ private:
     }
     std::optional<openciv::formats::Byte> read_byte() override { return input_->byte(); }
     bool finish() override { return input_->close(); }
-    std::unique_ptr<CoreInput> input_;
+    std::unique_ptr<openciv::io::CoreInput> input_;
     bool& complete_;
     std::size_t& items_;
 };
-class ObservedStorage final : public openciv::session::FileStorage {
+class ObservedStorage final : public openciv::io::FileStorage {
 public:
     ObservedStorage(const openciv::io::ClassicFiles& files, std::string path, bool& complete,
                     std::size_t& items)
         : files_(files), path_(std::move(path)), complete_(complete), items_(items) {}
-    std::unique_ptr<openciv::session::CoreInput> read(std::string_view) const override {
+    std::unique_ptr<openciv::io::CoreInput> read(std::string_view) const override {
         auto input = files_.open_input(path_);
         if (!input)
             throw std::runtime_error("Comparison input could not be reopened");
         return std::make_unique<ObservedInput>(std::move(input), complete_, items_);
     }
-    std::unique_ptr<openciv::session::CoreOutput> replace(std::string_view path) const override {
+    std::unique_ptr<openciv::io::CoreOutput> replace(std::string_view path) const override {
         return files_.open_output(path);
     }
     bool remove(std::string_view path) const override { return files_.remove_file(path); }

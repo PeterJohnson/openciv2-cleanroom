@@ -1,9 +1,14 @@
-export module openciv.session.classic_stream;
+export module openciv.io.stream;
 
 import std;
-export import openciv.formats.classic_io;
+export import openciv.formats.bytes;
 
-export namespace openciv::session {
+export namespace openciv::io {
+// A transfer can return a short prefix; the stream owns its cursor and I/O effects.
+struct ReadResult {
+    formats::Bytes prefix;
+    bool complete = false;
+};
 // A uniquely owned open file. Explicit close reports finalization failure;
 // repeated close never repeats I/O, even when the first close threw. Derived
 // destructors call close_on_destruction() while their resources still exist.
@@ -25,7 +30,7 @@ protected:
     CoreFile() = default;
     void require_open() const {
         if (closed_)
-            throw std::logic_error("Classic file used after close");
+            throw std::logic_error("File used after close");
     }
     void close_on_destruction() noexcept {
         try {
@@ -40,7 +45,7 @@ private:
 };
 class CoreInput : public CoreFile {
 public:
-    formats::ReadResult item(std::size_t size) {
+    ReadResult item(std::size_t size) {
         require_open();
         return read_item(size);
     }
@@ -50,7 +55,7 @@ public:
     }
 
 private:
-    virtual formats::ReadResult read_item(std::size_t size) = 0;
+    virtual ReadResult read_item(std::size_t size) = 0;
     virtual std::optional<formats::Byte> read_byte() = 0;
 };
 class CoreOutput : public CoreFile {
@@ -63,4 +68,4 @@ public:
 private:
     virtual bool write_item(std::span<const formats::Byte> bytes) = 0;
 };
-} // namespace openciv::session
+} // namespace openciv::io

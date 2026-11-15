@@ -18,7 +18,7 @@ enum class CoreSaveStatus { success = 0, output = 1 };
 // providers must not reenter or mutate game state.
 CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
                                  std::string_view requested_path, bool scenario_export,
-                                 const FileStorage& storage);
+                                 const io::FileStorage& storage);
 } // namespace openciv::session
 
 module :private;
@@ -58,7 +58,7 @@ void check_scans(const state::GameState& world) {
 } // namespace
 CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
                                  std::string_view requested_path, bool scenario_export,
-                                 const FileStorage& storage) {
+                                 const io::FileStorage& storage) {
     if (!runtime.active() || runtime.has_pending_commands())
         throw std::logic_error("Core save requires an active runtime with settled commands");
     const std::string request(requested_path);
@@ -85,7 +85,7 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
         if (exported.multiplayer == state::GameMode::hotseat)
             exported.human_players = world.multiplayer.hotseat_participants;
         bytes = encode_game_header();
-        const WriteItem append = [&](std::span<const Byte> value) {
+        const auto append = [&](std::span<const Byte> value) {
             bytes.insert(bytes.end(), value.begin(), value.end());
             return true;
         };
@@ -105,14 +105,14 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
         if (exported.multiplayer != state::GameMode::single_player)
             write_multiplayer_item(append, world.multiplayer, world.multiplayer.network_turn_civ,
                                    retained.record_bytes);
-        if (world.events.loaded && !scenario_export)
-            write_event_items(
-                append, append,
-                [&](Byte value) {
-                    bytes.push_back(value);
-                    return true;
-                },
-                world.events.collection, retained.event_bytes);
+        if (world.events.loaded && !scenario_export) {
+            const auto append_byte = [&](Byte value) {
+                bytes.push_back(value);
+                return true;
+            };
+            write_event_items(append, append, append_byte, world.events.collection,
+                              retained.event_bytes);
+        }
     } catch (...) {
         runtime.publish();
         throw;

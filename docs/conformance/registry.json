@@ -578,7 +578,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "F02.assignCityToken",
@@ -619,7 +619,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "F02.reserveUnitSlot",
@@ -664,7 +664,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "W01.wrapX",
@@ -1209,7 +1209,7 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "F02.nextCityToken",
@@ -1221,7 +1221,7 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "F02.unitEnd",
@@ -1233,7 +1233,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Exclusive unit scan bound, 0..2048; reservation increments only on successful extension.",
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "F02.unitTokenScan",
@@ -1247,7 +1247,7 @@
       ],
       "initialValue": null,
       "publication": "Read-only token-field view for reservation. All and only entry-scanned slots are supplied. No other unit fields or slots are read or written. Extension does not initialize the new slot.",
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "F02.militaryCounts",
@@ -1259,7 +1259,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Recorded signed cyclic military counts, not a recomputed census. Reservation preserves all eight values.",
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "F02.effectiveHumanSet",
@@ -1271,7 +1271,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Effective human set at entry, separate from controller assignments or the persistent roster. Reservation preserves it.",
-      "implementation": "src/state/identities.cppm"
+      "implementation": "src/state/entity_allocation.cppm"
     },
     {
       "id": "W01.width",

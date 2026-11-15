@@ -1,6 +1,7 @@
 export module openciv.analysis.sqlite_export;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.query.stored;
 export import openciv.base.cancellation;
 
@@ -10,5 +11,5 @@ export namespace openciv::analysis {
 // cancellation or a throwing callback discards the whole in-memory transaction.
 formats::Bytes sqlite_snapshot(const query::StoredSnapshot& snapshot,
                                base::CancellationToken stop = {},
-                               const std::function<void(std::size_t)>& progress = {});
+                               const base::CallbackRef<void(std::size_t)>& progress = {});
 } // namespace openciv::analysis

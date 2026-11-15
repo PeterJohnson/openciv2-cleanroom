@@ -120,7 +120,7 @@ TEST_CASE("Native F03 preferences replace reload and delete failed output throug
     CHECK_FALSE(files.remove_file("."));
     CHECK(fs::is_directory(dir.path));
     services.open_output = [&](std::string_view path) {
-        auto output = std::shared_ptr<CoreOutput>(files.open_output(path));
+        auto output = std::shared_ptr<io::CoreOutput>(files.open_output(path));
         REQUIRE(output);
         return test::output_file({[output](std::span<const Byte> value) {
                                       CHECK(output->item(value.first(1)));
@@ -147,7 +147,7 @@ TEST_CASE("Native F05 premade loading uses binary files without rewriting their 
     io::write_new_file(dir.path / "MiXeD.Mp", bytes);
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{94}};
-    StartingPositions starts;
+    state::StartingPositions starts;
     PremadeWorldCallbacks services;
     unsigned failures = 0;
     services.open = [&](std::string_view path) { return files.open_input(path); };
@@ -156,7 +156,7 @@ TEST_CASE("Native F05 premade loading uses binary files without rewriting their 
     test::fail_service(services.choices.ticks);
     services.choices.use_start_locations = [] { return 0; };
     REQUIRE(load_premade_world(runtime, starts, "mixed.mp", services) == WorldSource::premade_flat);
-    CHECK(starts == StartingPositions{});
+    CHECK(starts == state::StartingPositions{});
     CHECK(runtime.world().world_setup.width == 4);
     CHECK(runtime.world().globals.rules == 0x8000);
     for (const auto& tile : runtime.world().map.tiles())
@@ -360,7 +360,7 @@ TEST_CASE("Native failed core save reports partial output without live hotseat s
     std::size_t closes = 0, items = 0;
     CoreSaveCallbacks saving;
     saving.open = [&](std::string_view path) {
-        auto output = std::shared_ptr<CoreOutput>(native.open_output(path));
+        auto output = std::shared_ptr<io::CoreOutput>(native.open_output(path));
         REQUIRE(output);
         return test::output_file({[&, output](std::span<const Byte> bytes) {
                                       ++items;

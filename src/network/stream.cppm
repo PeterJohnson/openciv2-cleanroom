@@ -24,8 +24,8 @@ struct FrameView {
     std::span<const Byte> payload, padding, wire;
 };
 struct ReceiveCallbacks {
-    std::function<void(FrameView)> frame;
-    std::function<void(std::uint32_t)> oversized;
+    base::CallbackRef<void(FrameView)> frame;
+    base::CallbackRef<void(std::uint32_t)> oversized;
 };
 enum class ReceiveStop {
     exhausted,
@@ -49,7 +49,7 @@ public:
     std::uint32_t oversized_limit = 50000;
     // Explicit safe backing profile, independent of callback-based N05 threshold.
     std::uint32_t backing_limit = 8 * 1024 * 1024;
-    ReceiveResult feed(std::span<const Byte> input, ReceiveCallbacks& callbacks);
+    ReceiveResult feed(std::span<const Byte> input, const ReceiveCallbacks& callbacks);
     void reset() noexcept;
     void close() noexcept;
     std::size_t received() const noexcept { return frame_.empty() ? header_used_ : received_; }
@@ -108,7 +108,7 @@ public:
                     const SendDependencies& services, std::span<const Byte> padding = {});
     DrainResult drain_one(const SendDependencies& services);
     DrainResult write_event(const SendDependencies& services,
-                            const std::function<void()>& close_handler);
+                            const base::CallbackRef<void()>& close_handler);
     std::size_t size() const noexcept { return queue_.size(); }
     std::size_t front_offset() const noexcept { return queue_.empty() ? 0 : queue_.front().sent; }
     std::size_t backlog_threshold() const noexcept { return backlog_threshold_; }

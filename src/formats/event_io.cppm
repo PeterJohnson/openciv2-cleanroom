@@ -2,6 +2,7 @@ export module openciv.formats.event_io;
 import openciv.formats.state_conversion;
 
 import std;
+export import openciv.base.callback_ref;
 export import openciv.formats.classic_io;
 export import openciv.formats.save_records;
 
@@ -13,8 +14,8 @@ struct ImportedEventBytes {
     std::array<Byte, 40> retained{};
 };
 using EventCompatibility = std::map<state::EventId, ImportedEventBytes>;
-using WriteEventText = std::function<bool(std::span<const Byte>)>;
-using WriteEventByte = std::function<bool(Byte)>;
+using WriteEventText = base::CallbackRef<bool(std::span<const Byte>)>;
+using WriteEventByte = base::CallbackRef<bool(Byte)>;
 // Parent owns the events-loaded/scenario-export gate. Writes tag, count, all
 // fixed records, then each present text and its NUL as separate service calls.
 // No string truncation. A text hole ends only that event's text-line traversal.

@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 import std;
+import openciv.state.entity_allocation;
 import openciv.formats.state_conversion;
 import openciv.session.runtime;
 import openciv.formats.preference_io;

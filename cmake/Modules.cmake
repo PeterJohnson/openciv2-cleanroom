@@ -20,6 +20,17 @@ if(TARGET oc2_base)
   )
 endif()
 
+if(TARGET oc2_contracts)
+  oc2_modules(oc2_contracts PUBLIC
+    src/state/identities.cppm
+    src/state/choices.cppm
+    src/state/unit_types.cppm
+    src/session/player_setup_types.cppm
+    src/session/world_setup_types.cppm
+    src/session/configuration_types.cppm
+  )
+endif()
+
 if(TARGET oc2_game)
   oc2_modules(oc2_game PUBLIC
     src/ai/goals.cppm
@@ -30,7 +41,6 @@ if(TARGET oc2_game)
     src/rules/double_movement.cppm
     src/rules/normalization.cppm
     src/rules/rules_install.cppm
-    src/state/choices.cppm
     src/state/city_names.cppm
     src/state/city_preferences.cppm
     src/state/civilization.cppm
@@ -39,7 +49,7 @@ if(TARGET oc2_game)
     src/state/game_input.cppm
     src/state/gameplay.cppm
     src/state/history.cppm
-    src/state/identities.cppm
+    src/state/entity_allocation.cppm
     src/state/label_catalog.cppm
     src/state/labels.cppm
     src/state/layout.cppm
@@ -52,8 +62,8 @@ if(TARGET oc2_game)
     src/state/scenario.cppm
     src/state/text_parameters.cppm
     src/state/text_pool.cppm
-    src/state/unit_types.cppm
     src/state/world_lifetime.cppm
+    src/state/starting_positions.cppm
     src/state/world_setup.cppm
     src/turn/calendar.cppm
     src/unit/deletion.cppm
@@ -64,10 +74,13 @@ if(TARGET oc2_game)
   )
 endif()
 
+if(TARGET oc2_io)
+  oc2_modules(oc2_io PUBLIC src/formats/bytes.cppm src/io/stream.cppm src/io/storage.cppm)
+endif()
+
 if(TARGET oc2_formats)
   oc2_modules(oc2_formats PUBLIC
     src/formats/builtin_gameplay_data.cppm
-    src/formats/bytes.cppm
     src/formats/city_names.cppm
     src/formats/city_preferences.cppm
     src/formats/classic_city_names.cppm
@@ -134,17 +147,18 @@ if(TARGET oc2_session)
     src/session/classic_rules.cppm
     src/session/classic_save.cppm
     src/session/classic_save_menu.cppm
-    src/session/classic_stream.cppm
     src/session/client_types.cppm
     src/session/client_connection.cppm
     src/session/client.cppm
     src/session/command_types.cppm
     src/session/commands.cppm
     src/session/configuration.cppm
-    src/session/file_storage.cppm
     src/session/game_install.cppm
     src/session/new_game.cppm
     src/session/player_setup.cppm
+    src/session/preferences.cppm
+    src/session/classic_premade_world.cppm
+    src/session/classic_world_entry.cppm
     src/session/premade_world.cppm
     src/session/runtime.cppm
     src/session/setup_calendar.cppm

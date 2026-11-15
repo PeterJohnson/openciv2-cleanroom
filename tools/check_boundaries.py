@@ -7,7 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 INCLUDE = re.compile(r'^\s*#\s*include\s*[<"]([^>"\n]+)[>"]', re.MULTILINE)
 IMPORT = re.compile(r'^\s*(?:export\s+)?import\s+([\w.:]+)\s*;', re.MULTILINE)
 MODULE = re.compile(r'^\s*(?:export\s+)?module\s+([\w.:]+)\s*;', re.MULTILINE)
-PORTABLE = ('base', 'state', 'world', 'unit', 'city', 'civilization', 'rules',
+UNIT = re.compile(r'^\s*(export\s+)?module\s+([\w.:]+)\s*;', re.MULTILINE)
+PORTABLE = ('io', 'base', 'state', 'world', 'unit', 'city', 'civilization', 'rules',
             'turn', 'ai', 'formats', 'query', 'network', 'session', 'viewmodel')
 GAME = {'base', 'state', 'world', 'unit', 'city', 'civilization', 'rules', 'turn', 'ai'}
 NATIVE_CONTENT = {f'formats/{stem}.{suffix}' for stem in ('rules', 'city_names', 'city_preferences')
@@ -16,7 +17,11 @@ CLASSIC_LOADERS = {'formats/classic_text_reader.cppm', 'formats/classic_rules.cp
                    'formats/classic_city_names.cppm', 'formats/classic_city_preferences.cppm'}
 PLAYER_STATE = {'state/identities.cppm', 'state/unit_types.cppm', 'state/choices.cppm'}
 PLAYER_SESSION = {'session/client.cppm', 'session/client_types.cppm', 'session/command_types.cppm',
-                  'session/classic_file_choice.cppm'}
+                  'session/classic_file_choice.cppm', 'session/player_setup_types.cppm',
+                  'session/world_setup_types.cppm', 'session/configuration_types.cppm'}
+COMMON_SETUP = {f'session/{stem}.{suffix}'
+                for stem in ('world_entry', 'premade_world', 'world_setup')
+                for suffix in ('cppm', 'cpp')}
 
 
 def check(root=ROOT):
@@ -33,6 +38,17 @@ def check(root=ROOT):
 
     def dependencies(path, origin):
         text = path.read_text(encoding='utf-8')
+        unit = UNIT.search(text)
+        if unit and not unit[1]:
+            owner = unit[2].split(':')[0]
+            target = modules.get(owner)
+            if target is None:
+                errors.add(f'{origin}: unresolved module owner {owner}')
+            elif target.parent != path.parent:
+                errors.add(f'{origin}: module implementation belongs outside its owner directory: {owner}')
+            # Only non-partition implementation units implicitly import their primary.
+            if ':' not in unit[2]:
+                yield owner, target
         for name in INCLUDE.findall(text):
             target = next((p.resolve() for p in (path.parent / name, source / name)
                            if p.is_file()), None)
@@ -78,6 +94,10 @@ def check(root=ROOT):
             if target and target.is_relative_to(source):
                 relative = target.relative_to(source).as_posix().replace('.hpp', '.cppm')
                 forbidden = portable and relative.startswith(('platform/', 'ui/', 'application.'))
+                if origin.startswith('io/'):
+                    forbidden |= not (relative.startswith(('io/', 'base/')) or relative == 'formats/bytes.cppm')
+                if origin in COMMON_SETUP:
+                    forbidden |= relative.startswith('formats/')
                 if origin.split('/')[0] in GAME:
                     forbidden |= relative.startswith(('formats/', 'session/', 'network/', 'query/'))
                 if origin in CLASSIC_LOADERS or origin in {p.replace('.cppm', '.cpp') for p in CLASSIC_LOADERS}:

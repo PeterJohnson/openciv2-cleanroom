@@ -192,8 +192,8 @@ private:
              "{\"operation\":" + quote(operation_id) +
                  ",\"parent\":" + (parent.empty() ? "null" : quote(parent)) +
                  ",\"arguments\":" + arguments_json(selected, full) + "}");
-        const auto value = state::city_calculation_entry(
-            selected, full, mood, [&] { return pipeline(call, selected, depth); });
+        auto pipeline_1 = [&] { return pipeline(call, selected, depth); };
+        const auto value = state::city_calculation_entry(selected, full, mood, pipeline_1);
         if (call == "root" && cursor_ != inputs.size())
             throw Stop{"unexpected-input", "root/return", "unused mandatory provider input"};
         emit(call + "/return", "return", call, "{\"result\":" + scalar("i32", value) + "}");

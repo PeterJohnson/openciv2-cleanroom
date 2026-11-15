@@ -32,12 +32,12 @@ TEST_CASE("F06 leader export never substitutes the live player selector", "[lead
     world.globals.human_players = 6;
     world.globals.player_civ = 7;
     std::size_t calls = 0;
-    REQUIRE(write_leader_items(
-        [&](std::span<const Byte>) {
-            ++calls;
-            CHECK(world.globals.player_civ == 7);
-            return true;
-        },
-        world.globals, world.civilizations, process.rules->leaders, {}));
+    auto observe_write = [&](std::span<const Byte>) {
+        ++calls;
+        CHECK(world.globals.player_civ == 7);
+        return true;
+    };
+    REQUIRE(write_leader_items(observe_write, world.globals, world.civilizations,
+                               process.rules->leaders, {}));
     CHECK(calls == 67);
 }

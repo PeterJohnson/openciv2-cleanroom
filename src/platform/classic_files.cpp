@@ -67,13 +67,13 @@ public:
 private:
     std::FILE* file_ = nullptr;
 };
-class NativeInput final : public session::CoreInput {
+class NativeInput final : public io::CoreInput {
 public:
     explicit NativeInput(std::unique_ptr<NativeFile> file) : file_(std::move(file)) {}
     ~NativeInput() override { close_on_destruction(); }
 
 private:
-    formats::ReadResult read_item(std::size_t size) override {
+    io::ReadResult read_item(std::size_t size) override {
         formats::Bytes bytes(size);
         const auto count = std::fread(bytes.data(), 1, size, file_->get());
         bytes.resize(count);
@@ -90,7 +90,7 @@ private:
     }
     std::unique_ptr<NativeFile> file_;
 };
-class NativeOutput final : public session::CoreOutput {
+class NativeOutput final : public io::CoreOutput {
 public:
     explicit NativeOutput(std::unique_ptr<NativeFile> file) : file_(std::move(file)) {}
     ~NativeOutput() override { close_on_destruction(); }
@@ -224,7 +224,7 @@ bool ClassicFiles::exists(std::string_view directory, std::string_view name) con
     const auto path = resolve(directory, name);
     return path && std::filesystem::is_regular_file(*path);
 }
-std::unique_ptr<session::CoreInput> ClassicFiles::open_input(std::string_view requested) const {
+std::unique_ptr<io::CoreInput> ClassicFiles::open_input(std::string_view requested) const {
     const auto path = resolve({}, requested);
     if (!path || !std::filesystem::is_regular_file(*path))
         return {};
@@ -233,7 +233,7 @@ std::unique_ptr<session::CoreInput> ClassicFiles::open_input(std::string_view re
         return {};
     return std::make_unique<NativeInput>(std::move(file));
 }
-std::unique_ptr<session::CoreOutput> ClassicFiles::open_output(std::string_view requested) const {
+std::unique_ptr<io::CoreOutput> ClassicFiles::open_output(std::string_view requested) const {
     const auto path = resolve({}, requested, true);
     if (!path)
         return {};

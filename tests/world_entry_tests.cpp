@@ -180,8 +180,9 @@ struct Fixture {
     }
     bool run(base::GameplayRandom& random, NewWorldChoice choice = NewWorldChoice::random,
              std::string_view call = "entry") {
-        return enter_new_world(runtime, files, random, call, choice,
-                               formats::content::builtin_gameplay()->values.calendar, services);
+        return enter_classic_new_world(runtime, files, random, call, choice,
+                                       formats::content::builtin_gameplay()->values.calendar,
+                                       services);
     }
 };
 base::ControlledChoices choices(bool parameters = true, bool players = true, bool initialize = true,
@@ -362,7 +363,8 @@ TEST_CASE("F05 preference open and write failures do not cancel accepted setup",
           "[world-entry][session]") {
     for (bool fail_open : {false, true}) {
         Fixture f;
-        f.services.parameters.preferences.open_output = [&](auto) -> std::unique_ptr<CoreOutput> {
+        f.services.parameters.preferences.open_output =
+            [&](auto) -> std::unique_ptr<io::CoreOutput> {
             f.event("save");
             if (fail_open)
                 return {};
@@ -610,7 +612,8 @@ TEST_CASE("F05 introduction selects highest twelve eligible known advances then 
 
 TEST_CASE("F05 world entry validates the selected service graph before replacing a game",
           "[world-entry][session]") {
-    const std::array<std::function<void(WorldEntryDependencies&)>, 5> remove{
+    const std::array<std::function<void(WorldEntryDependencies&)>, 6> remove{
+        [](auto& services) { services.reset_source = {}; },
         [](auto& services) { services.load_content = {}; },
         [](auto& services) { services.size = nullptr; },
         [](auto& services) { services.players = nullptr; },
@@ -629,10 +632,10 @@ TEST_CASE("F05 world entry validates the selected service graph before replacing
         const auto before = random.checkpoint();
         WorldEntryDependencies dependencies = f.services;
         missing(dependencies);
-        CHECK_THROWS_AS(enter_new_world(f.runtime, f.files, random, "entry", NewWorldChoice::random,
-                                        formats::content::builtin_gameplay()->values.calendar,
-                                        dependencies),
-                        std::invalid_argument);
+        CHECK_THROWS_AS(
+            enter_new_world(f.runtime, f.files.starts, random, "entry", NewWorldChoice::random,
+                            formats::content::builtin_gameplay()->values.calendar, dependencies),
+            std::invalid_argument);
         CHECK(&f.runtime.world() == world);
         CHECK(f.runtime.world().globals.turn == 77);
         CHECK(f.files.game_stem == "existing");
@@ -656,4 +659,43 @@ TEST_CASE("F05 new-world setup pins inactive storage across nested choice and ga
     REQUIRE(f.run(random));
     CHECK(callbacks > 10);
     CHECK_NOTHROW(f.runtime.prepare_new_game());
+}
+
+TEST_CASE("F05 common world entry accepts decoded content and semantic preference storage",
+          "[world-entry][session][boundary]") {
+    Fixture f;
+    auto content = f.services.load_content(); // Decode before entering the common workflow.
+    f.trace.clear();
+    state::StartingPositions starts;
+    starts.x[0] = 7;
+    f.files.game_stem = "adapter-owned";
+    std::vector<std::string> source_events;
+    f.services.reset_source = [&] {
+        CHECK(f.runtime.world().globals.turn == 0);
+        CHECK(starts == state::StartingPositions{});
+        source_events.push_back("reset");
+    };
+    f.services.load_content = [&] {
+        source_events.push_back("content");
+        return std::move(content);
+    };
+    struct Writer final : PreferenceWriter {
+        mutable std::vector<PreferenceSnapshot> snapshots;
+        bool write(PreferenceSnapshot values, base::CallbackRef<void()>) const override {
+            snapshots.push_back(std::move(values));
+            return true;
+        }
+    } writer;
+    WorldEntryDependencies dependencies = f.services;
+    dependencies.parameters.preferences = &writer;
+    f.runtime.world().globals.turn = 88;
+    base::GameplayRandom random{choices(), "entry-test"};
+    REQUIRE(enter_new_world(f.runtime, starts, random, "entry", NewWorldChoice::random,
+                            formats::content::builtin_gameplay()->values.calendar, dependencies));
+    random.require_choices_consumed();
+    CHECK(source_events == std::vector<std::string>{"reset", "content"});
+    REQUIRE(writer.snapshots.size() == 1);
+    CHECK(writer.snapshots[0].ordinary.difficulty == state::Difficulty::prince);
+    CHECK(f.saved.empty());
+    CHECK(f.files.game_stem == "adapter-owned");
 }

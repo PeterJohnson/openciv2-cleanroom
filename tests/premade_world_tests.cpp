@@ -38,7 +38,7 @@ formats::Bytes tiles(const world::MapStorage& map) {
 struct Fixture {
     state::ProcessContext process;
     SessionRuntime runtime{process, base::RuntimeId{93}};
-    formats::StartingPositions starts;
+    state::StartingPositions starts;
     PremadeWorldCallbacks services;
     formats::Bytes input = raw_map();
     std::size_t position = 0;
@@ -67,27 +67,27 @@ struct Fixture {
         runtime.world().world_setup = {99, 88, {1, 2, 3, 4, 5}};
         runtime.world().globals.game_flags = 0xffff;
         runtime.world().globals.rules = 0x1555;
-        services.open = [&](std::string_view path) -> std::unique_ptr<CoreInput> {
+        services.open = [&](std::string_view path) -> std::unique_ptr<io::CoreInput> {
             CHECK(path == "authored.mp");
             event("open");
             if (open_failure)
                 return {};
             position = 0;
-            return test::input_file(
-                {[&](std::size_t count) {
-                     reads.push_back(count);
-                     event("read");
-                     const auto size = std::min(count, input.size() - position);
-                     const auto bytes = std::span{input}.subspan(position, size);
-                     formats::Bytes prefix(bytes.begin(), bytes.end());
-                     position += size;
-                     return formats::ReadResult{std::move(prefix), size == count};
-                 },
-                 {},
-                 [&] {
-                     event("close");
-                     return true;
-                 }});
+            return test::input_file({[&](std::size_t count) {
+                                         reads.push_back(count);
+                                         event("read");
+                                         const auto size = std::min(count, input.size() - position);
+                                         const auto bytes =
+                                             std::span{input}.subspan(position, size);
+                                         formats::Bytes prefix(bytes.begin(), bytes.end());
+                                         position += size;
+                                         return io::ReadResult{std::move(prefix), size == count};
+                                     },
+                                     {},
+                                     [&] {
+                                         event("close");
+                                         return true;
+                                     }});
         };
         services.load_failure = [&] { event("failure"); };
         services.choices.use_seed = [&] {
@@ -210,7 +210,7 @@ TEST_CASE("F05 seed and hint responses treat only zero as discard", "[premade-wo
         REQUIRE(f.load());
         CHECK(f.runtime.world().map.pattern_seed == (response == 0 ? 2 : 24));
         if (response == 0)
-            CHECK(f.starts == formats::StartingPositions{});
+            CHECK(f.starts == state::StartingPositions{});
         else {
             CHECK(f.starts.x[20] == 300);
             CHECK(f.starts.y[20] == -7);
@@ -230,7 +230,7 @@ TEST_CASE("F05 hint prompt scans all x values and ignores y validity", "[premade
         CHECK(prepare_premade_world(f.runtime, f.starts, f.services.choices) ==
               WorldSource::premade_flat);
         CHECK(f.trace == std::vector<std::string>{"seed", "hints"});
-        CHECK(f.starts == formats::StartingPositions{});
+        CHECK(f.starts == state::StartingPositions{});
     }
     Fixture f;
     f.read_without_preparation();
@@ -355,7 +355,7 @@ TEST_CASE("F05 second premade game replaces flat rule but retains classification
     CHECK(f.runtime.world().globals.game_flags == 6);
     CHECK(f.runtime.world().world_setup.parameters == std::array<std::int32_t, 5>{1, 2, 3, 4, 5});
     CHECK(f.runtime.world().map.regions[3].fertile == 20);
-    CHECK(f.starts == formats::StartingPositions{});
+    CHECK(f.starts == state::StartingPositions{});
 }
 
 TEST_CASE("F05 map I/O allocation choices and failure notices publish before external callbacks",

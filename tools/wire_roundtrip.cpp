@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
             network::ReceiveCallbacks callbacks;
             formats::Bytes encoded;
             frames = messages = 0;
-            callbacks.frame = [&](network::FrameView frame) {
+            auto verify_frame = [&](network::FrameView frame) {
                 const auto wire = network::encode_frame(frame.tag, frame.payload, frame.padding);
                 encoded.insert(encoded.end(), wire.begin(), wire.end());
                 ++frames;
@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
                     ++messages;
                 }
             };
+            callbacks.frame = verify_frame;
             for (std::size_t offset = 0; offset < bytes.size(); offset += chunk) {
                 const auto part =
                     std::span{bytes}.subspan(offset, std::min(chunk, bytes.size() - offset));

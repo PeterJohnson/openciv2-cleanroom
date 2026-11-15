@@ -1,6 +1,7 @@
 #include "conformance_identity.hpp"
 
 import std;
+import openciv.state.entity_allocation;
 import openciv.base.arithmetic;
 import openciv.tools.conformance_random;
 import openciv.tools.conformance_script;
