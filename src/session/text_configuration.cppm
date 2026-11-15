@@ -7,7 +7,7 @@ export import openciv.formats.classic_text_reader;
 export import openciv.state.labels;
 
 export namespace openciv::session {
-// Process language/cache setup is independent of parsing any label source.
+/// Process language/cache setup is independent of parsing any label source.
 void initialize_text(std::int32_t language, formats::classic::TextDirectories& directories,
                      state::TextPool& pool, state::Labels& labels,
                      const base::CallbackRef<void()>& build_game_cache);

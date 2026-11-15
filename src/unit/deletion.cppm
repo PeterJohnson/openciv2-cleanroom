@@ -6,33 +6,41 @@ export import openciv.state.game;
 export import openciv.unit.stacks;
 
 export namespace openciv::unit {
-// U01 sections 6, 9: owning children/transport services, not optional observers.
-// The provider is borrowed and must outlive UnitDeletion. Required operations
-// are interface methods; a child failure retains preceding effects.
+/// U01 sections 6, 9: owning children/transport services, not optional observers.
+/// The provider is borrowed and must outlive UnitDeletion. Required operations
+/// are interface methods; a child failure retains preceding effects.
 class UnitDeletionEffects {
 public:
     UnitDeletionEffects() = default;
     virtual ~UnitDeletionEffects() = default;
     UnitDeletionEffects(const UnitDeletionEffects&) = delete;
     UnitDeletionEffects& operator=(const UnitDeletionEffects&) = delete;
+    /// Publish the required local effects after removing a unit at a position.
     virtual void unit_removed(world::Position position) const = 0;
+    /// Refresh the affected home-city calculation through its owning subsystem.
     virtual void refresh_home_city(std::int32_t city) const = 0;
+    /// Perform the owning civilization-lifecycle check after unit loss.
     virtual void check_civilization(std::int32_t owner, std::int32_t killer) const = 0;
+    /// Synchronize deletion effects for the position and optional home city.
     virtual void synchronize_deletion(world::Position position,
                                       std::optional<state::CitySlot> home) const = 0;
 };
 
-// Local bookkeeping; session::UnitOperation owns remote request lifetimes. N02/N03 still
-// own wire encoding, dispatch and synchronization; V01 owns checkDestroyed.
-// Rules, world and supplied backing must remain alive across child calls.
+/// Local bookkeeping; session::UnitOperation owns remote request lifetimes. N02/N03 still
+/// own wire encoding, dispatch and synchronization; V01 owns checkDestroyed.
+/// Rules, world and supplied backing must remain alive across child calls.
 class UnitDeletion {
 public:
+    /// Borrow the world, rules, stack budget, and required deletion services.
     UnitDeletion(state::GameState& world, const state::RuleDefinitions& rules, StackBudget& budget,
                  StackDiagnostics stacks, const UnitDeletionEffects& services);
+    /// Execute the U01 deletion sequence, retaining effects committed before a failure.
     void erase(std::int32_t slot, bool notify);
 
 private:
+    /// Read the selected unit type AI role with checked backing access.
     std::int32_t role(std::size_t type) const;
+    /// Return the owner civilization after checking its backing index.
     state::Civilization& civilization(std::int32_t owner);
     state::GameState& world_;
     const state::RuleDefinitions& rules_;

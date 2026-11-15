@@ -4,23 +4,27 @@ import openciv.base.arithmetic;
 import std;
 
 export namespace openciv::base {
-// F01 §§2–4,6; X02 §§2,5–6. These are semantic identities, never draw indices.
+/// F01 §§2–4,6; X02 §§2,5–6. These are semantic identities, never draw indices.
 struct ChoiceKey {
     std::string site;
     std::string call;
     std::int32_t attempt = 0;
     auto operator<=>(const ChoiceKey&) const = default;
 };
+/// Sampling law requesting an unmodified primary code in 0..32767.
 struct PrimaryCode {
     bool operator==(const PrimaryCode&) const = default;
 };
+/// Sampling law reducing a primary code modulo a positive divisor.
 struct PrimaryModulo {
     std::int32_t n;
     bool operator==(const PrimaryModulo&) const = default;
 };
+/// Sampling law mapping a secondary code to a binary64 unit fraction.
 struct SecondaryUnit {
     bool operator==(const SecondaryUnit&) const = default;
 };
+/// Sampling law mapping a secondary code to an integer interval (F01 §4).
 struct SecondaryRange {
     std::int32_t lo, hi;
     bool operator==(const SecondaryRange&) const = default;
@@ -28,6 +32,7 @@ struct SecondaryRange {
 using SamplingLaw = std::variant<PrimaryCode, PrimaryModulo, SecondaryUnit, SecondaryRange>;
 using ChoiceCode = std::variant<std::int32_t, std::uint32_t>;
 using ChoiceResult = std::variant<std::int32_t, double>;
+/// One semantic decision, retaining its identity, sampling law, code, and result.
 struct Choice {
     ChoiceKey key;
     SamplingLaw law;
@@ -36,6 +41,7 @@ struct Choice {
     // X02 f64 comparisons retain the exact bit pattern, including signed zero.
     bool operator==(const Choice& other) const;
 };
+/// Stable categories for controlled-choice and checkpoint failures.
 enum class ChoiceFailure {
     invalid_record,
     duplicate_key,
@@ -47,25 +53,35 @@ enum class ChoiceFailure {
     trace_limit,
     invalid_checkpoint
 };
+/// Return the stable diagnostic spelling of a choice failure.
 std::string_view choice_failure_code(ChoiceFailure failure) noexcept;
+/// A choice failure with an optional semantic decision identity.
 class ChoiceError : public std::runtime_error {
 public:
+    /// Build a categorized failure, optionally identifying the offending decision.
     explicit ChoiceError(ChoiceFailure failure, std::optional<ChoiceKey> key = {});
+    /// Return the machine-readable failure category.
     ChoiceFailure failure() const noexcept { return failure_; }
+    /// Return the offending decision identity when one is available.
     const std::optional<ChoiceKey>& key() const noexcept { return key_; }
 
 private:
     ChoiceFailure failure_;
     std::optional<ChoiceKey> key_;
 };
-// Construct/validate the F01 mapping independently of a generator or tape.
+/// Compute the specified F01 result from a sampling law and raw code.
+/// Construct/validate the F01 mapping independently of a generator or tape.
 ChoiceResult choice_result(SamplingLaw law, ChoiceCode code);
+/// Validate a semantic identity and code, then construct their mapped decision.
 Choice make_choice(ChoiceKey key, SamplingLaw law, ChoiceCode code);
+/// Reject a record whose identity, law, code, and result are inconsistent.
 void validate_choice(const Choice& choice);
+/// Owned semantic decisions supplied for deterministic controlled execution.
 struct ControlledChoices {
     std::vector<Choice> records;
     bool operator==(const ControlledChoices&) const = default;
 };
+/// A bounded chronological record of generated semantic decisions.
 struct ChoiceTrace {
     // An explicit harness budget, not game state or a game-clock timeout.
     std::size_t limit;

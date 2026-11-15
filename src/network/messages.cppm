@@ -7,33 +7,42 @@ export import openciv.formats.bytes;
 export namespace openciv::network {
 inline constexpr std::uint32_t message_magic = 0x66606660;
 inline constexpr std::size_t message_header_size = 16, argument_envelope_size = 44;
+/// The semantic fields of the fixed classic network message header.
 struct MessageHeader {
     std::uint32_t kind = 0, size = 16, sequence = 0;
     bool operator==(const MessageHeader&) const = default;
 };
+/// An owned message header and opaque body.
 struct Message {
     MessageHeader header;
     formats::Bytes body;
     bool operator==(const Message&) const = default;
 };
+/// A classic six-argument envelope with an optional owned payload.
 struct ArgumentMessage {
     MessageHeader header;
     std::array<std::int32_t, 6> arguments{};
     formats::Bytes payload;
     bool operator==(const ArgumentMessage&) const = default;
 };
-// N02 §2 / Appendix A. Pure owned wire codecs, not command authorization or
-// allocator-size/alias emulation. Header initialization preserves sequence.
+/// N02 §2 / Appendix A. Pure owned wire codecs, not command authorization or
+/// allocator-size/alias emulation. Header initialization preserves sequence.
 void initialize_message_header(std::span<formats::Byte> backing, std::uint32_t kind,
                                std::uint32_t size);
+/// Decode and validate the fixed message header.
 MessageHeader decode_message_header(std::span<const formats::Byte> bytes);
+/// Decode a complete classic message into owned header and body values.
 Message decode_message(std::span<const formats::Byte> bytes);
+/// Encode a classic message with its declared header fields and body.
 formats::Bytes encode_message(const Message& message);
+/// Decode the six signed arguments and trailing payload from a classic envelope.
 ArgumentMessage decode_argument_message(std::span<const formats::Byte> bytes);
+/// Encode six arguments and payload with the supplied kind and sequence number.
 formats::Bytes encode_argument_message(std::uint32_t kind,
                                        const std::array<std::int32_t, 6>& arguments,
                                        std::span<const formats::Byte> payload,
                                        std::uint32_t sequence);
+/// Retained outgoing sequence allocation and last transport result.
 struct MessageSendState {
     std::uint32_t next_sequence = 0;
     std::int32_t last_result = 0;
@@ -41,10 +50,11 @@ struct MessageSendState {
 using SecureSend =
     base::CallbackRef<std::int32_t(std::uint16_t, std::span<formats::Byte>, std::uint32_t)>;
 using BroadcastSend = base::CallbackRef<std::int32_t(std::span<formats::Byte>, std::uint32_t)>;
-// Retain sequence allocation on failure. Services may change packet bytes; the
-// broadcast completion test reads its live declared size after the callback.
+/// Retain sequence allocation on failure. Services may change packet bytes; the
+/// broadcast completion test reads its live declared size after the callback.
 bool send_directed(formats::Bytes& packet, std::uint16_t recipient, MessageSendState& state,
                    const SecureSend& send);
+/// Allocate a sequence and broadcast; compare completion with the post-callback size.
 bool send_broadcast(formats::Bytes& packet, MessageSendState& state, const BroadcastSend& send);
 } // namespace openciv::network
 

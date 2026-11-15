@@ -7,7 +7,7 @@ export import openciv.state.civilization;
 export import openciv.state.layout;
 
 export namespace openciv::formats {
-// Classic stored representations. Decode/re-encode preserves all admitted bits.
+/// Classic stored representations. Decode/re-encode preserves all admitted bits.
 struct StoredUnit {
     state::UnitToken token{0};
     std::int16_t x = 0, y = 0;
@@ -24,6 +24,7 @@ struct StoredUnit {
     std::uint16_t retained_word = 0;
     bool operator==(const StoredUnit&) const = default;
 };
+/// Classic city fields, including fixed-width names and opaque retained bytes.
 struct StoredCity {
     state::CityToken token{0};
     std::int16_t x = 0, y = 0;
@@ -46,6 +47,7 @@ struct StoredCity {
     std::uint8_t retained_byte = 0;
     bool operator==(const StoredCity&) const = default;
 };
+/// Classic global save fields retained independently of live engine state.
 struct StoredGlobals {
     std::uint16_t rules = 0;
     std::uint32_t game_options = 0;
@@ -68,6 +70,7 @@ struct StoredGlobals {
     std::array<std::uint8_t, 8> power_rank{}, civ_by_rank{};
     bool operator==(const StoredGlobals&) const = default;
 };
+/// Classic civilization record, including advances, diplomacy, goals, and retained bytes.
 struct StoredCivilization {
     std::uint16_t flags = 0;
     std::int32_t gold = 0;
@@ -108,12 +111,14 @@ struct StoredCivilization {
     std::array<state::CivilizationGoal, 16> standing_goals;
     bool operator==(const StoredCivilization&) const = default;
 };
+/// Fixed-width civilization names as stored in classic files.
 struct StoredCivilizationNames {
     std::int16_t city_style = 0;
     FixedText<24> leader, tribe, adjective;
     std::array<FixedText<24>, 7> titles;
     bool operator==(const StoredCivilizationNames&) const = default;
 };
+/// Stored scenario parameters and their retained format fields.
 struct ScenarioParameters {
     std::uint16_t flags = 0;
     FixedText<80> name;
@@ -122,6 +127,7 @@ struct ScenarioParameters {
     std::array<std::int16_t, 4> victory_thresholds{};
     bool operator==(const ScenarioParameters&) const = default;
 };
+/// Stored elimination-history entries and counters.
 struct EliminationHistory {
     std::int16_t count = 0;
     std::array<std::int16_t, 12> turns{};
@@ -129,6 +135,7 @@ struct EliminationHistory {
     std::array<FixedText<24>, 12> names;
     bool operator==(const EliminationHistory&) const = default;
 };
+/// Stored multiplayer state, including opaque interoperability fields.
 struct MultiplayerRecord {
     std::array<std::int16_t, 8> center_x{}, center_y{}, introduced{};
     std::int32_t turn_time_limit = 0;
@@ -144,10 +151,12 @@ struct MultiplayerRecord {
     std::array<std::uint8_t, 34> retained_472{};
     bool operator==(const MultiplayerRecord&) const = default;
 };
+/// Classic map-view coordinates and display values.
 struct SavedMapView {
     std::int16_t open = 0, track_moves = 0, x = 0, y = 0, zoom = 0;
     bool operator==(const SavedMapView&) const = default;
 };
+/// Ordinary user preferences in their classic storage representation.
 struct StoredOrdinaryPreferences {
     std::uint16_t rules = 0;
     std::int16_t default_level = 0, difficulty = 0, tribe = 0, gender = 0;
@@ -160,6 +169,7 @@ struct StoredOrdinaryPreferences {
     std::int16_t rules_choice = 0, accelerated_start = 0;
     bool operator==(const StoredOrdinaryPreferences&) const = default;
 };
+/// Multiplayer user preferences in their classic storage representation.
 struct StoredMultiplayerPreferences {
     // These remembered choices are distinct from saved/live session values.
     std::int16_t kill_on_retirement = 0, show_human_starts = 0, chat_from_start = 0;
@@ -180,6 +190,7 @@ struct StoredMultiplayerPreferences {
     std::int16_t legacy_setting_5 = 0;
     bool operator==(const StoredMultiplayerPreferences&) const = default;
 };
+/// Classic event operands and integer flags prior to live translation.
 struct StoredEventValues {
     std::uint32_t triggers = 0, actions = 0;
     std::int32_t unit_type = 0;

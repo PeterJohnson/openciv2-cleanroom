@@ -15,9 +15,9 @@ export import openciv.state.world_setup;
 export import openciv.world.map;
 
 export namespace openciv::state {
-// F02 §2 ownership of the implemented process fields. Further preferences join
-// this context as their owning operations arrive. Defaults
-// are construction values, not a substitute for classic setup/load procedures.
+/// F02 §2 ownership of the implemented process fields. Further preferences join
+/// this context as their owning operations arrive. Defaults
+/// are construction values, not a substitute for classic setup/load procedures.
 struct ProcessContext {
     ProcessTokens tokens;
     // Keep the large rule tables off native/WASM caller stacks. Each process
@@ -28,10 +28,11 @@ struct ProcessContext {
     TextParameters text_parameters;
     world::Tile fallback;
 };
-// Logical world and retained workspace ownership. File records are decoded
-// separately; constructing this object performs no F05/F06 transformations.
-// The supplying process context must outlive the world.
+/// Logical world and retained workspace ownership. File records are decoded
+/// separately; constructing this object performs no F05/F06 transformations.
+/// The supplying process context must outlive the world.
 struct GameState {
+    /// Create a world whose map fallback is borrowed from the longer-lived process.
     explicit GameState(ProcessContext& process) : map(process.fallback) {}
     const std::shared_ptr<const WorldLifetime> lifetime = std::make_shared<WorldLifetime>();
     EntityPools entities;

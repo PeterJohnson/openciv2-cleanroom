@@ -73,6 +73,11 @@ review and stage the result. Enable the staged-format check once per clone with
 [formatting setup](docs/BUILDING.md#formatting-and-commits) for the pinned tool,
 Windows commands and existing-hook integration. CI also checks formatting.
 
+The [source guide](docs/code-guide.md) maps the module layers and explains the
+ownership and compatibility conventions used in the code. Class and function
+contracts use Doxygen comments in the module interfaces. Run `doxygen Doxyfile`
+to generate a browsable API reference at `build/api-docs/html/index.html`.
+
 Implementation code must be written from this repository's specifications, not
 copied or derived from OpenCiv2 or Civ2 decompilation/reconstruction source.
 External code links and filenames in validation/provenance sections are research

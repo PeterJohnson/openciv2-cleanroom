@@ -6,15 +6,18 @@ export import openciv.base.callback_ref;
 export import openciv.formats.bytes;
 
 export namespace openciv::formats::content {
+/// Owned source bytes and a stable backing identity used for content receipts.
 struct Source {
     std::string identity; // Stable backing identity, including aliases.
     Bytes bytes;
 };
 // Only explicitly mounted sources; adapters enforce containment and never fetch URLs.
 using Resolver = base::CallbackRef<Source(std::string_view)>;
+/// A mounted relative path, resolved source identity, and verified content hash.
 struct FileReceipt {
     std::string path, identity, sha256;
 };
+/// Reject absolute paths, traversal components, schemes, and invalid mounted-path syntax.
 void validate_relative_path(std::string_view path);
 } // namespace openciv::formats::content
 

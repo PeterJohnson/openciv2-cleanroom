@@ -7,8 +7,8 @@ export import openciv.formats.classic_io;
 export import openciv.formats.save_records;
 
 export namespace openciv::formats {
-// Opaque imported bytes belong to the classic adapter, keyed to actual live
-// event lifetime. Expired/replaced events never transfer metadata to reused IDs.
+/// Opaque imported bytes belong to the classic adapter, keyed to actual live
+/// event lifetime. Expired/replaced events never transfer metadata to reused IDs.
 struct ImportedEventBytes {
     std::weak_ptr<const state::Event> event;
     std::array<Byte, 40> retained{};
@@ -16,9 +16,9 @@ struct ImportedEventBytes {
 using EventCompatibility = std::map<state::EventId, ImportedEventBytes>;
 using WriteEventText = base::CallbackRef<bool(std::span<const Byte>)>;
 using WriteEventByte = base::CallbackRef<bool(Byte)>;
-// Parent owns the events-loaded/scenario-export gate. Writes tag, count, all
-// fixed records, then each present text and its NUL as separate service calls.
-// No string truncation. A text hole ends only that event's text-line traversal.
+/// Parent owns the events-loaded/scenario-export gate. Writes tag, count, all
+/// fixed records, then each present text and its NUL as separate service calls.
+/// No string truncation. A text hole ends only that event's text-line traversal.
 bool write_event_items(const WriteItem& write, const WriteEventText& text,
                        const WriteEventByte& byte, const state::EventCollection& events,
                        const EventCompatibility& compatibility = {});

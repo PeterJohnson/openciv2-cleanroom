@@ -8,45 +8,50 @@ export import openciv.base.callback_ref;
 export import openciv.session.runtime;
 
 export namespace openciv::session {
+/// Owner-supplied choices for the premade-map setup workflow.
 struct PremadeWorldChoices {
-    // Zero discards; every nonzero result, including a negative result, keeps.
+    /// Zero discards; every nonzero result, including a negative result, keeps.
     base::CallbackRef<std::int32_t()> use_seed, use_start_locations;
-    // F01 game ticks, not milliseconds or a gameplay random draw.
+    /// F01 game ticks, not milliseconds or a gameplay random draw.
     base::CallbackRef<std::uint32_t()> ticks;
+    /// Validate the supplied premade-world choice callbacks.
     void validate() const;
 };
-// F05 section 3 after a successful F06 read. Normalizes the live map, applies
-// the two conditional choices and finally the current stored topology rule.
-// Requires complete allocated tile/remembered backing. Does not rebuild regions,
-// classify area, clear status flags, allocate, generate terrain or save a file.
+/// F05 section 3 after a successful F06 read. Normalizes the live map, applies
+/// the two conditional choices and finally the current stored topology rule.
+/// Requires complete allocated tile/remembered backing. Does not rebuild regions,
+/// classify area, clear status flags, allocate, generate terrain or save a file.
 WorldSource prepare_premade_world(SessionRuntime& runtime, state::StartingPositions& starts,
                                   const PremadeWorldChoices& choices);
-// Borrowed providers and callable owners must outlive the consuming operation.
+/// Borrowed providers and callable owners must outlive the consuming operation.
 struct PremadeWorldInput {
     world::MapInput map;
     state::StartingPositions starts;
 };
+/// Abstract loader returning semantic premade-map inputs from an explicit path.
 class PremadeWorldSource {
 public:
     PremadeWorldSource() = default;
     virtual ~PremadeWorldSource() = default;
     PremadeWorldSource(const PremadeWorldSource&) = delete;
     PremadeWorldSource& operator=(const PremadeWorldSource&) = delete;
-    // Complete decoding and close before returning. nullopt means input failure.
+    /// Complete decoding and close before returning. nullopt means input failure.
     virtual std::optional<PremadeWorldInput> load(std::string_view path) const = 0;
 };
+/// Borrowed premade-world source and setup/failure services.
 struct PremadeWorldDependencies {
     const PremadeWorldSource* source = nullptr;
     base::CallbackRef<void()> load_failure;
     PremadeWorldChoices choices;
+    /// Require the services consumed by premade-world setup.
     void validate() const;
 };
-// F05 section 3 / F06 section 4 accepted-file path. nullopt path means cancel;
-// nullopt result means cancel or returned input failure (which reports notice).
-// The native chooser/directory policy remains a separate interaction boundary.
-// Input closes once before installation. Decode/allocation failures retain the
-// old map; successful installation publishes setup dimensions before choices. Paths
-// are opaque to this parent except that embedded NUL is outside its domain.
+/// F05 section 3 / F06 section 4 accepted-file path. nullopt path means cancel;
+/// nullopt result means cancel or returned input failure (which reports notice).
+/// The native chooser/directory policy remains a separate interaction boundary.
+/// Input closes once before installation. Decode/allocation failures retain the
+/// old map; successful installation publishes setup dimensions before choices. Paths
+/// are opaque to this parent except that embedded NUL is outside its domain.
 std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
                                               state::StartingPositions& starts,
                                               std::optional<std::string> selected_path,

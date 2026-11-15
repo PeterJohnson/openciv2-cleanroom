@@ -8,18 +8,20 @@ export import openciv.state.identities;
 export import openciv.state.unit_types;
 
 export namespace openciv::state {
-// F02 §§3,5–6: logical runtime values, never a packed file/wire representation.
-// Narrow numeric members preserve the specified cyclic publication domains.
-// Every negative link is terminal. Retain its actual signed value for round trips;
-// interpreting a link does not validate or repair its target record.
+/// F02 §§3,5–6: logical runtime values, never a packed file/wire representation.
+/// Narrow numeric members preserve the specified cyclic publication domains.
+/// Every negative link is terminal. Retain its actual signed value for round trips;
+/// interpreting a link does not validate or repair its target record.
 template <class Slot> struct SlotLink {
     std::int16_t value = -1;
+    /// Interpret a nonnegative link as a slot; preserve every negative value as terminal.
     std::optional<Slot> slot() const noexcept {
         return value < 0 ? std::nullopt : std::optional{static_cast<Slot>(value)};
     }
     bool operator==(const SlotLink&) const = default;
 };
 
+/// Live unit state with a lifetime token and explicit stack links.
 struct Unit {
     UnitToken token{0};
     std::int16_t x = 0, y = 0;
@@ -34,6 +36,7 @@ struct Unit {
     SlotLink<UnitSlot> previous, next;
     bool operator==(const Unit&) const = default;
 };
+/// Live city state with owned name text and retained economy/trade values.
 struct City {
     CityToken token{0};
     std::int16_t x = 0, y = 0;
@@ -56,29 +59,39 @@ struct City {
     bool operator==(const City&) const = default;
 };
 
-// Heap-backed fixed-capacity storage keeps slot addresses stable without large
-// native/WASM stack allocations. The scan bound is independent of live count.
+/// Heap-backed fixed-capacity storage keeps slot addresses stable without large
+/// native/WASM stack allocations. The scan bound is independent of live count.
 template <class Record, class Slot, std::size_t Capacity> class SlotPool {
 public:
+    /// Allocate stable fixed-capacity record backing with an initially empty scan.
     SlotPool() : records_(std::make_unique<std::array<Record, Capacity>>()) {}
+    /// Return the exclusive scan bound, which may include unoccupied slots.
     std::size_t end() const noexcept { return end_; }
+    /// Set the exclusive scan bound after checking it fits the backing capacity.
     void set_end(std::size_t end) {
         if (end > Capacity)
             throw std::out_of_range("Pool scan bound exceeds supplied backing");
         end_ = end;
     }
+    /// Borrow mutable backing for every slot, including those beyond the scan bound.
     std::span<Record> storage() noexcept { return *records_; }
+    /// Borrow immutable backing for every slot, including those beyond the scan bound.
     std::span<const Record> storage() const noexcept { return *records_; }
+    /// Borrow the mutable prefix inside the current scan bound.
     std::span<Record> scanned() noexcept { return storage().first(end_); }
+    /// Borrow the immutable prefix inside the current scan bound.
     std::span<const Record> scanned() const noexcept { return storage().first(end_); }
+    /// Return a slot record after a backing-capacity check; liveness is not implied.
     Record& at(Slot slot) { return records_->at(static_cast<std::size_t>(slot)); }
+    /// Read a slot record after a backing-capacity check; liveness is not implied.
     const Record& at(Slot slot) const { return records_->at(static_cast<std::size_t>(slot)); }
+    /// Report whether a slot is inside the scan bound and has a nonzero lifetime token.
     bool live(Slot slot) const noexcept {
         const auto index = static_cast<std::size_t>(slot);
         return index < end_ && occupied((*records_)[index].token);
     }
-    // F02 §3 deletion finalization only, after the owning lifecycle's cleanup.
-    // Negative/already-free inputs are no-ops; unsupported positive slots reject.
+    /// F02 §3 deletion finalization only, after the owning lifecycle's cleanup.
+    /// Negative/already-free inputs are no-ops; unsupported positive slots reject.
     bool finish_deletion(std::int32_t index) {
         if (index < 0)
             return false;
@@ -100,12 +113,13 @@ private:
 inline constexpr std::size_t city_creation_limit = 255;
 using UnitPool = SlotPool<Unit, UnitSlot, unit_capacity>;
 using CityPool = SlotPool<City, CitySlot, city_backing_capacity>;
+/// The independently scanned unit and city pools owned by a world.
 struct EntityPools {
     UnitPool units;
     CityPool cities;
 };
-// U01 sections 2–4, 9: retained controls, not stored unit-record fields. Activity
-// is a boolean assignment at operation boundaries, never a nesting counter.
+/// U01 sections 2–4, 9: retained controls, not stored unit-record fields. Activity
+/// is a boolean assignment at operation boundaries, never a nesting counter.
 struct UnitStackState {
     std::int32_t suppression = 0;
     bool animation_active = false;
@@ -115,29 +129,31 @@ struct UnitStackState {
     bool bottom_active = false;
     std::int32_t detach_reply = 0, attach_reply = 0, relocate_reply = 0, bottom_reply = 0;
 };
-// U01 sections 6, 9: deletion has its own activity and reply fields. The reply
-// becomes Pending (-2) at a client request, not at construction or every call.
+/// U01 sections 6, 9: deletion has its own activity and reply fields. The reply
+/// becomes Pending (-2) at a client request, not at construction or every call.
 struct UnitDeletionState {
     bool active = false;
     std::int32_t reply = 0;
 };
+/// Reserve a unit slot under F02 owner/human limits and update the scan bound.
 std::optional<UnitSlot> reserve_unit_slot(UnitPool& pool, CivilizationSlot owner,
                                           std::int16_t military_count,
                                           std::uint8_t effective_humans);
-// F05 §2 entity portion of the outer new-session boundary. Does not reset tokens,
-// map, rules, preferences, name cursors or the separate inner new-game boundary.
+/// F05 §2 entity portion of the outer new-session boundary. Does not reset tokens,
+/// map, rules, preferences, name cursors or the separate inner new-game boundary.
 void invalidate_entities_for_new_session(EntityPools& pools);
-// F02 §2 / F05 §5 entity portion of inner reset: bounds and selected slot only.
+/// F02 §2 / F05 §5 entity portion of inner reset: bounds and selected slot only.
 void reset_entity_scans(EntityPools& pools, std::optional<UnitSlot>& selected);
-// F02 §3 / F06 §7. Caller invokes only after BOTH record input groups succeed.
+/// F02 §3 / F06 §7. Caller invokes only after BOTH record input groups succeed.
 void renew_loaded_lifetimes(EntityPools& pools, ProcessTokens& tokens, bool legacy_without_ids);
 
-// F02 §9 shared retained mood workspace, separate from city-record snapshots.
+/// F02 §9 shared retained mood workspace, separate from city-record snapshots.
 struct CityMoodWorkspace {
     std::optional<CitySlot> city;
     std::int32_t happy = 0, unhappy = 0;
     bool operator==(const CityMoodWorkspace&) const = default;
 };
+/// Return retained net happiness, or invoke the owning full calculation pipeline.
 std::int32_t city_calculation_entry(std::optional<CitySlot> city, bool full,
                                     CityMoodWorkspace& workspace,
                                     const base::CallbackRef<std::int32_t()>& pipeline = {});

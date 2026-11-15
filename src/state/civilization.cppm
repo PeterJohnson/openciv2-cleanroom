@@ -5,25 +5,28 @@ export import openciv.state.choices;
 export import openciv.state.records;
 
 export namespace openciv::state {
-// F02 §4, F06 §3: retained logical values, not packed file records. Construction
-// defaults are conveniences, not original process/new-game initializers. No
-// census, diplomacy symmetry, lifetime renewal or other repair is implicit.
+/// F02 §4, F06 §3: retained logical values, not packed file records. Construction
+/// defaults are conveniences, not original process/new-game initializers. No
+/// census, diplomacy symmetry, lifetime renewal or other repair is implicit.
 struct CivilizationGoal {
     std::int16_t x = 0, y = 0;
     std::int8_t role = 0, priority = 0;
     bool operator==(const CivilizationGoal&) const = default;
 };
+/// Live civilization name overrides using owned text.
 struct CivilizationNames {
     std::int16_t city_style = 0;
     std::string leader, tribe, adjective;
     std::array<std::string, 7> titles;
     bool operator==(const CivilizationNames&) const = default;
 };
+/// A full-width text reference with an explicit custom-name marker.
 struct NameReference {
     std::uint32_t id = 0;
     bool custom = false;
     bool operator==(const NameReference&) const = default;
 };
+/// Retained leader names, government titles, and tribe-use cursors.
 struct Leader {
     std::int8_t attack = 0, expand = 0, civilize = 0;
     std::uint8_t times_used = 0, city_name_index = 0;
@@ -34,6 +37,7 @@ struct Leader {
     std::array<std::array<NameReference, 2>, 7> titles{};
     bool operator==(const Leader&) const = default;
 };
+/// Live civilization state, including diplomacy, research, statistics, and AI goals.
 struct Civilization {
     std::uint16_t flags = 0;
     std::int32_t gold = 0;
@@ -72,8 +76,8 @@ struct Civilization {
     std::array<CivilizationGoal, 16> standing_goals;
     bool operator==(const Civilization&) const = default;
 };
-// These values span world/configuration/session ownership. A stored view keeps
-// the serialized scan bounds and selectors; it is not a running SessionRuntime.
+/// These values span world/configuration/session ownership. A stored view keeps
+/// the serialized scan bounds and selectors; it is not a running SessionRuntime.
 struct GlobalValues {
     std::uint16_t rules = 0;
     std::uint32_t game_options = 0;
@@ -96,9 +100,9 @@ struct GlobalValues {
     std::array<std::uint8_t, 8> power_rank{}, civ_by_rank{};
     bool operator==(const GlobalValues&) const = default;
 };
-// F06 section 6 stage 17, after names restore and before rule reloads.
-// Rebuilds only active/in-production counts, modulo 256; retained losses and
-// strategic summaries survive. Unsupported type access stops after prior effects.
+/// F06 section 6 stage 17, after names restore and before rule reloads.
+/// Rebuilds only active/in-production counts, modulo 256; retained losses and
+/// strategic summaries survive. Unsupported type access stops after prior effects.
 void rebuild_loaded_unit_census(std::span<Civilization, 8> civilizations, const EntityPools& pools);
 } // namespace openciv::state
 

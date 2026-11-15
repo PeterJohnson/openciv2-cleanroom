@@ -7,22 +7,24 @@ export import openciv.formats.classic_labels;
 export import openciv.formats.classic_rules;
 
 export namespace openciv::session {
-// Borrowed providers and callable owners must outlive the consuming operation.
+/// Borrowed providers and callable owners must outlive the consuming operation.
 struct RuleContextDependencies {
     base::CallbackRef<bool(std::string_view, std::string_view)> exists;
     const formats::classic::TextCase* comparison = nullptr;
     formats::classic::MissingLabels labels;
     formats::classic::RuleFailureObserver rules;
 };
-// Classic content source. Borrows file selection/workspace, owns its reader.
-// Providers, policies and callback owners outlive this source.
-// Each load returns independent data and closes every file before returning.
+/// Classic content source. Borrows file selection/workspace, owns its reader.
+/// Providers, policies and callback owners outlive this source.
+/// Each load returns independent data and closes every file before returning.
 class ClassicRuleContext {
 public:
+    /// Borrow retained file/parser state and services for classic content selection.
     ClassicRuleContext(ClassicFileState& files, formats::classic::TextWorkspace& workspace,
                        formats::classic::TextFiles text_files, RuleContextDependencies services);
     ClassicRuleContext(const ClassicRuleContext&) = delete;
     ClassicRuleContext& operator=(const ClassicRuleContext&) = delete;
+    /// Resolve and decode the chosen classic rules and associated content.
     state::LoadedContent load();
 
 private:

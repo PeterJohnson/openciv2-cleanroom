@@ -5,27 +5,37 @@ export import openciv.query.live_records;
 import openciv.session.client_connection;
 
 export namespace openciv::session {
-// The only surface handed to clients. Copying shares the same lease; no public
-// constructor can manufacture or alter authority. Owned query results may be
-// retained, but a revoked client can obtain no subsequent observation.
+/// The only surface handed to clients. Copying shares the same lease; no public
+/// constructor can manufacture or alter authority. Owned query results may be
+/// retained, but a revoked client can obtain no subsequent observation.
 class PlayerClient {
 public:
     PlayerClient(const PlayerClient&) = default;
     PlayerClient& operator=(const PlayerClient&) = default;
+    /// Return the validated identity of this client lease.
     ClientIdentity identity() const;
+    /// Return an owned snapshot of units visible through this participant binding.
     query::LiveRecords<query::OwnUnit> own_units() const;
+    /// Return an owned snapshot of cities visible through this participant binding.
     query::LiveRecords<query::OwnCity> own_cities() const;
+    /// List commands discoverable with this binding access level.
     std::vector<CommandDescriptor> commands() const;
+    /// Validate and admit a semantic command request, returning its initial status.
     CommandUpdate submit(CommandRequest request) const;
-    // Ordered notifications contain only effects not previously delivered to
-    // this lease. result() remains a cumulative snapshot until owner retirement.
+    /// Drain queued command notifications for this binding.
+    /// Ordered notifications contain only effects not previously delivered to
+    /// this lease. result() remains a cumulative snapshot until owner retirement.
     std::vector<CommandUpdate> updates() const;
+    /// Inspect a retained command result when accessible to this binding.
     std::optional<CommandUpdate> result(CommandId command) const;
+    /// Submit a choice for a pending interaction using this client lease.
     InputReceipt reply(InteractionId interaction, std::int32_t choice) const;
+    /// Request cancellation of an accessible command using this client lease.
     InputReceipt cancel(CommandId command) const;
 
 private:
     friend class detail::ClientConnection;
+    /// Retain the connection implementing this revocable client lease.
     explicit PlayerClient(std::shared_ptr<detail::ClientConnection> connection);
     std::shared_ptr<detail::ClientConnection> connection_;
 };

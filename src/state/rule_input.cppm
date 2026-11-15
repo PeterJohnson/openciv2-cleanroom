@@ -4,10 +4,12 @@ import std;
 export import openciv.state.rules;
 
 export namespace openciv::state {
+/// An authored override for a leader government title.
 struct LeaderTitleOverride {
     Government government = Government::anarchy;
     state::TitlePair titles;
 };
+/// Unpublished semantic rules and title overrides prepared for installation.
 struct RuleInput {
     // Decoded table values. Prerequisites are unresolved operands; movement,
     // default titles and enabled counts are established by RuleInstaller.

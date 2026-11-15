@@ -5,17 +5,22 @@ export import openciv.state.city_names;
 export import openciv.base.text_comparison;
 
 export namespace openciv::city {
+/// Distinguish a missing civilization list, an exhausted list, and a selected name.
 enum class NameOutcome { unavailable, exhausted, selected };
+/// The outcome and classic text bytes of one default-name lookup.
 struct NameAttempt {
     NameOutcome outcome = NameOutcome::unavailable;
     std::string bytes;
 };
-// Owned data, independent of source syntax and I/O. Earlier layers take precedence;
-// a matching list uses only the fallback from its own layer.
+/// Owned data, independent of source syntax and I/O. Earlier layers take precedence;
+/// a matching list uses only the fallback from its own layer.
 class NameCatalog {
 public:
+    /// Own ordered content layers and the comparison policy used to match plural names.
     NameCatalog(std::vector<state::CityNameLists> layers, base::NameComparison comparison);
+    /// Resolve a name by the retained cursor, using only the matching layer fallback.
     NameAttempt select(std::string_view plural, std::uint8_t remaining) const;
+    /// Inspect the owned name layers in precedence order.
     const std::vector<state::CityNameLists>& layers() const noexcept { return layers_; }
 
 private:

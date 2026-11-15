@@ -7,6 +7,7 @@ export namespace openciv::state {
 // F05 sections 2-3. Order matches the F06 CIV2.DAT preference fields, not
 // the customized-dialog order (which visits climate before temperature).
 
+/// Retained world-generation choices and derived setup dimensions.
 struct WorldSetup {
     // Retained working dimensions, separate from currently allocated map
     // storage. The size helper consumes width as U and leaves s16(2*U), even

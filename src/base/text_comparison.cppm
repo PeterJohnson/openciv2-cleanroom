@@ -4,12 +4,14 @@ import std;
 
 export namespace openciv::base {
 using NameComparison = std::function<bool(std::string_view, std::string_view)>;
+/// A name comparison needs a character profile unavailable to the ASCII policy.
 class ComparisonUnavailable : public std::runtime_error {
 public:
+    /// Describe an unsupported comparison of unequal non-ASCII bytes.
     ComparisonUnavailable()
         : std::runtime_error("Non-ASCII name comparison requires an established profile") {}
 };
-// Exact bytes always compare; unequal high bytes require an established profile.
+/// Exact bytes always compare; unequal high bytes require an established profile.
 inline bool ascii_name_equal(std::string_view a, std::string_view b) {
     if (a.size() != b.size())
         return false;

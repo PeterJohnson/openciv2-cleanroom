@@ -5,8 +5,8 @@ export import openciv.state.world_lifetime;
 export import openciv.formats.stored_records;
 
 export namespace openciv::formats {
-// Imported opaque bytes never enter live domain state. Entity entries are keyed
-// by renewed tokens; replacing a world expires the complete metadata snapshot.
+/// Imported opaque bytes never enter live domain state. Entity entries are keyed
+/// by renewed tokens; replacing a world expires the complete metadata snapshot.
 struct RecordCompatibility {
     std::weak_ptr<const state::WorldLifetime> lifetime;
     StoredGlobals globals;
@@ -15,10 +15,15 @@ struct RecordCompatibility {
     std::map<state::UnitToken, StoredUnit> units;
     std::map<state::CityToken, StoredCity> cities;
 };
+/// Copy only opaque imported fields into the newly encoded record.
 void preserve_opaque(StoredUnit& output, const StoredUnit& imported);
+/// Copy only opaque imported fields into the newly encoded record.
 void preserve_opaque(StoredCity& output, const StoredCity& imported);
+/// Copy only opaque imported fields into the newly encoded record.
 void preserve_opaque(StoredGlobals& output, const StoredGlobals& imported);
+/// Copy only opaque imported fields into the newly encoded record.
 void preserve_opaque(StoredCivilization& output, const StoredCivilization& imported);
+/// Copy only opaque imported fields into the newly encoded record.
 void preserve_opaque(MultiplayerRecord& output, const MultiplayerRecord& imported);
 } // namespace openciv::formats
 

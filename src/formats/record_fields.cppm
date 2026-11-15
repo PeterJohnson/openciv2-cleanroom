@@ -4,9 +4,10 @@ import std;
 export import openciv.formats.save_records;
 
 export namespace openciv::formats {
-// F06 §§3–4 named logical fields. The fixed save codecs and read-only
-// projections share these lists; byte packing remains in the codecs.
-// Unit/city/tile lists expose logical values, not host or wire layouts.
+/// Visit the record fields in declared codec order, preserving names and widths.
+/// F06 §§3–4 named logical fields. The fixed save codecs and read-only
+/// projections share these lists; byte packing remains in the codecs.
+/// Unit/city/tile lists expose logical values, not host or wire layouts.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, StoredGlobals>
 void visit_fields(Visitor& visit, Record& v) {
@@ -52,6 +53,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("power_rank", v.power_rank);
     visit("civ_by_rank", v.civ_by_rank);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, StoredCivilization>
 void visit_fields(Visitor& visit, Record& v) {
@@ -114,6 +116,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("goals", v.goals);
     visit("standing_goals", v.standing_goals);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, StoredCivilizationNames>
 void visit_fields(Visitor& visit, Record& v) {
@@ -123,6 +126,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("adjective", v.adjective);
     visit("titles", v.titles);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, StoredLeader>
 void visit_fields(Visitor& visit, Record& v) {
@@ -140,12 +144,14 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("names", v.names);
     visit("titles", v.titles);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, SavedLayout>
 void visit_fields(Visitor& visit, Record& v) {
     visit("valid", v.valid);
     visit("rectangles", v.rectangles);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, SavedMapView>
 void visit_fields(Visitor& visit, Record& v) {
@@ -155,6 +161,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("y", v.y);
     visit("zoom", v.zoom);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, ScenarioParameters>
 void visit_fields(Visitor& visit, Record& v) {
@@ -167,6 +174,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("objective_civ", v.objective_civ);
     visit("victory_thresholds", v.victory_thresholds);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, EliminationHistory>
 void visit_fields(Visitor& visit, Record& v) {
@@ -176,6 +184,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("portraits", v.portraits);
     visit("names", v.names);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, MultiplayerRecord>
 void visit_fields(Visitor& visit, Record& v) {
@@ -203,6 +212,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("claimed_humans", v.claimed_humans);
     visit("retained_472", v.retained_472);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, EventRecord>
 void visit_fields(Visitor& visit, Record& v) {
@@ -257,6 +267,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("give_tech", v.give_tech);
     visit("give_tech_civ", v.give_tech_civ);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, state::CivilizationGoal>
 void visit_fields(Visitor& visit, Record& v) {
@@ -265,6 +276,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("role", v.role);
     visit("priority", v.priority);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, SavedRectangle>
 void visit_fields(Visitor& visit, Record& v) {
@@ -273,6 +285,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("right", v.right);
     visit("bottom", v.bottom);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, StoredUnit>
 void visit_fields(Visitor& visit, Record& v) {
@@ -298,6 +311,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("token", v.token);
     visit("retained_word", v.retained_word);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, StoredCity>
 void visit_fields(Visitor& visit, Record& v) {
@@ -333,6 +347,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("unhappy", v.unhappy);
     visit("token", v.token);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, world::Tile>
 void visit_fields(Visitor& visit, Record& v) {
@@ -346,6 +361,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("fertility", v.fertility);
     visit("owner", v.owner);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, world::RegionSummary>
 void visit_fields(Visitor& visit, Record& v) {
@@ -355,6 +371,7 @@ void visit_fields(Visitor& visit, Record& v) {
     visit("retained", v.retained);
     visit("neighboring_water", v.neighboring_water);
 }
+/// Visit the record fields in declared codec order, preserving names and widths.
 template <class Visitor, class Record>
     requires std::same_as<std::remove_cv_t<Record>, MapHeader>
 void visit_fields(Visitor& visit, Record& v) {

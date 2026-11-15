@@ -3,22 +3,24 @@ export module openciv.state.entity_allocation;
 import std;
 export import openciv.state.identities;
 export namespace openciv::state {
-// F02 §§2–3: owned by a process context, shared across its successive games.
-// This is only the token portion of that context, not the complete process state.
+/// F02 §§2–3: owned by a process context, shared across its successive games.
+/// This is only the token portion of that context, not the complete process state.
 struct ProcessTokens {
     std::uint32_t next_unit = 1;
     std::uint32_t next_city = 1;
 
+    /// Allocate the next unit lifetime token using the process counter policy.
     UnitToken assign_unit() noexcept;
+    /// Allocate the next city lifetime token using the process counter policy.
     CityToken assign_city() noexcept;
     bool operator==(const ProcessTokens&) const = default;
 };
 
-// F02 §3 slot-selection prefix only: no record initialization/token assignment,
-// count update or limit notice. The caller supplies exactly the [0, unit_end)
-// token view at entry and owns backing for all 2048 slots. No callback may run
-// during reservation. On extension the entry view stays unchanged; rebuild it
-// from the owning pool before a subsequent call. unit_end must not alias tokens.
+/// F02 §3 slot-selection prefix only: no record initialization/token assignment,
+/// count update or limit notice. The caller supplies exactly the [0, unit_end)
+/// token view at entry and owns backing for all 2048 slots. No callback may run
+/// during reservation. On extension the entry view stays unchanged; rebuild it
+/// from the owning pool before a subsequent call. unit_end must not alias tokens.
 std::optional<UnitSlot> reserve_unit_slot(std::span<const UnitToken> scanned_tokens,
                                           std::uint32_t& unit_end, CivilizationSlot owner,
                                           std::int16_t military_count,

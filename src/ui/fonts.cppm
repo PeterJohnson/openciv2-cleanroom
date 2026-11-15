@@ -6,8 +6,8 @@ import imgui;
 
 export namespace openciv::ui {
 
-// Register stock TrueType faces in the current context. ImGui rasterizes glyphs
-// on demand at the requested size/density; SDL owns the resulting atlas textures.
+/// Register stock TrueType faces in the current context. ImGui rasterizes glyphs
+/// on demand at the requested size/density; SDL owns the resulting atlas textures.
 void load_fonts(ImGuiIO& io);
 } // namespace openciv::ui
 

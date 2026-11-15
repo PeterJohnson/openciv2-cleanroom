@@ -7,6 +7,7 @@ namespace {
 using formats::Byte;
 using formats::ByteReader;
 using formats::Bytes;
+/// Reject codec inputs outside the admitted nonnegative signed-32-bit extent.
 void admit_size(std::size_t size) {
     if (size > static_cast<std::size_t>(std::numeric_limits<std::int32_t>::max()))
         throw std::length_error("Codec input exceeds admitted nonnegative i32 extent");
@@ -18,17 +19,19 @@ CodecResult encode_runs(RunCode code, std::span<const Byte> input, std::span<Byt
     admit_size(input.size());
     if (code != RunCode::byte && code != RunCode::word)
         throw std::invalid_argument("Unknown run-length code width");
-    const bool word = code == RunCode::word;
-    const std::size_t threshold = word ? 3U : 2U, maximum = word ? 32767U : 127U;
-    const auto size = input.size();
+    const bool word_tokens = code == RunCode::word;
+    // N02 uses distinct repeat thresholds and count fields for the two token widths.
+    const std::size_t repeat_threshold = word_tokens ? 3U : 2U;
+    const std::size_t maximum_count = word_tokens ? 32767U : 127U;
+    const auto input_size = input.size();
     std::size_t written = 0;
     CodecStop stop = CodecStop::complete;
-    const auto room = [&](std::size_t count) {
+    const auto has_room = [&](std::size_t count) {
         if (count > output.size() - written) {
             stop = CodecStop::output_capacity;
             return false;
         }
-        if (written + count >= size) {
+        if (written + count >= input_size) {
             stop = CodecStop::no_gain;
             return false;
         }
@@ -40,65 +43,69 @@ CodecResult encode_runs(RunCode code, std::span<const Byte> input, std::span<Byt
             return false;
         }
         output[written++] = value;
-        if (written >= size) {
+        if (written >= input_size) {
             stop = CodecStop::no_gain;
             return false;
         }
         return true;
     };
-    const auto token = [&](std::size_t count, bool literal, std::size_t begin) {
-        const auto header = count + (literal ? maximum + 1 : 0);
-        if (word) {
-            if (!room(2))
+    // The high count bit marks literal bytes; a repeat token carries one payload byte.
+    const auto emit_token = [&](std::size_t count, bool literal, std::size_t segment_begin) {
+        const auto header = count + (literal ? maximum_count + 1 : 0);
+        if (word_tokens) {
+            // Word-token writes validate whole header/body extents before copying each part.
+            if (!has_room(2))
                 return false;
             output[written++] = static_cast<Byte>(header);
             output[written++] = static_cast<Byte>(header >> 8);
             const auto body = literal ? count : 1;
-            if (!room(body))
+            if (!has_room(body))
                 return false;
             if (literal)
-                std::copy_n(input.data() + begin, count, output.data() + written);
+                std::copy_n(input.data() + segment_begin, count, output.data() + written);
             else
-                output[written] = input[begin];
+                output[written] = input[segment_begin];
             written += body;
             return true;
         }
+        // Byte-token failure retains the byte-by-byte scratch prefix required by N02.
         if (!emit_byte(static_cast<Byte>(header)))
             return false;
         if (!literal)
-            return emit_byte(input[begin]);
+            return emit_byte(input[segment_begin]);
         for (std::size_t i = 0; i < count; ++i)
-            if (!emit_byte(input[begin + i]))
+            if (!emit_byte(input[segment_begin + i]))
                 return false;
         return true;
     };
-    std::size_t begin = 0, scan = 1;
-    while (begin < size) {
-        while (scan < size && input[scan] == input[begin])
-            ++scan;
-        if (scan - begin > threshold) {
-            while (begin < scan) {
-                const auto count = std::min(word ? maximum - 1 : maximum, scan - begin);
-                if (!token(count, false, begin))
+    std::size_t segment_begin = 0, scan_end = 1;
+    while (segment_begin < input_size) {
+        while (scan_end < input_size && input[scan_end] == input[segment_begin])
+            ++scan_end;
+        if (scan_end - segment_begin > repeat_threshold) {
+            while (segment_begin < scan_end) {
+                const auto count = std::min(word_tokens ? maximum_count - 1 : maximum_count,
+                                            scan_end - segment_begin);
+                if (!emit_token(count, false, segment_begin))
                     return {stop, written};
-                begin += count;
+                segment_begin += count;
             }
         }
-        while (scan < size) {
-            if (scan + 1 == size) {
-                ++scan;
+        while (scan_end < input_size) {
+            if (scan_end + 1 == input_size) {
+                ++scan_end;
                 break;
             }
-            const auto next = input[scan + 1];
-            if (next == input[scan])
+            const auto next = input[scan_end + 1];
+            if (next == input[scan_end])
                 break;
-            ++scan;
+            ++scan_end;
         }
-        while (begin < scan) {
-            const auto count = std::min(maximum, scan - begin);
-            if (!token(count, true, begin))
+        while (segment_begin < scan_end) {
+            const auto count = std::min(maximum_count, scan_end - segment_begin);
+            if (!emit_token(count, true, segment_begin))
                 return {stop, written};
-            begin += count;
+            segment_begin += count;
         }
     }
     output_length = written;
@@ -156,6 +163,7 @@ CodecResult decode_word_runs(std::span<const Byte> input, std::span<Byte> output
     return {CodecStop::complete, written};
 }
 namespace {
+/// Prepare compressed bytes separately and replace the owned image only on success.
 CodecResult compress(RunCode code, Bytes& image) {
     admit_size(image.size());
 

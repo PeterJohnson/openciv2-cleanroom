@@ -5,44 +5,53 @@ import std;
 export import openciv.state.game;
 
 export namespace openciv::ai {
-// U04 read-only queries on stable state, required at the redirection boundary.
-// They must not mutate records/rules, dispatch events or reenter goals.
-// Missing input may report an error. The provider outlives SharedGoals.
+/// U04 read-only queries on stable state, required at the redirection boundary.
+/// They must not mutate records/rules, dispatch events or reenter goals.
+/// Missing input may report an error. The provider outlives SharedGoals.
 class UnitMovementQueries {
 public:
     UnitMovementQueries() = default;
     virtual ~UnitMovementQueries() = default;
     UnitMovementQueries(const UnitMovementQueries&) = delete;
     UnitMovementQueries& operator=(const UnitMovementQueries&) = delete;
+    /// Report whether the unit may receive an immediate goal redirection.
     virtual bool can_act(state::UnitSlot unit) const = 0;
+    /// Return the movement budget used to test whether a goal is reachable.
     virtual std::int32_t remaining_moves(state::UnitSlot unit) const = 0;
 };
-// A01 section 2 / Appendix A. No expiry for zero; -128 remains -128.
+/// A01 section 2 / Appendix A. No expiry for zero; -128 remains -128.
 void negate_goal_priority(state::CivilizationGoal& goal) noexcept;
+/// Mark every standing goal unused and clear its priority (A01 §2).
 void reset_standing_goals(state::Civilization& civilization) noexcept;
-// The role argument is already a retained signed byte. Coordinate comparisons
-// use full incoming values. Result 128 is narrowed only for the next comparison.
+/// The role argument is already a retained signed byte. Coordinate comparisons
+/// use full incoming values. Result 128 is narrowed only for the next comparison.
 std::int32_t goal_priority_at(const state::Civilization& civilization, world::Position position,
                               std::int8_t role) noexcept;
 
-// A01 section 2 shared goal operations, including real W01 map/distance reads
-// and immediate unit redirection. These are engine operations, not authority or
-// client-session admission. Owners supply the U04 queries and publish at their
-// external boundaries as needed. Missing services/backing stop where consumed,
-// retaining preceding changes; no capacity, coordinate or priority normalization.
+/// A01 section 2 shared goal operations, including real W01 map/distance reads
+/// and immediate unit redirection. These are engine operations, not authority or
+/// client-session admission. Owners supply the U04 queries and publish at their
+/// external boundaries as needed. Missing services/backing stop where consumed,
+/// retaining preceding changes; no capacity, coordinate or priority normalization.
 class SharedGoals {
 public:
+    /// Borrow world state, rule definitions, and movement queries for goal updates.
     SharedGoals(state::GameState& world, const state::RuleDefinitions& rules,
                 const UnitMovementQueries& services);
+    /// Insert a current goal in priority order and redirect eligible nearby units.
     void add_current(std::int32_t civilization, world::Position position, std::int32_t role,
                      std::int32_t priority);
+    /// Insert a nonduplicate standing goal in priority order.
     void add_standing(std::int32_t civilization, world::Position position, std::int32_t role,
                       std::int32_t priority);
+    /// Expire old current goals, negate retained priorities, and reapply standing goals.
     void refresh(std::int32_t civilization);
+    /// Clear standing goals of the requested role within the weighted distance limit.
     void clear_standing_near(std::int32_t civilization, std::int32_t role, world::Position position,
                              std::int32_t limit);
 
 private:
+    /// Return the civilization record, rejecting a slot outside the backing array.
     state::Civilization& civilization(std::int32_t slot);
     state::GameState& world_;
     const state::RuleDefinitions& rules_;

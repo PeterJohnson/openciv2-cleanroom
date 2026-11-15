@@ -4,6 +4,7 @@ import std;
 export import openciv.world.map;
 
 export namespace openciv::world {
+/// Owned semantic map layers prepared independently of live map storage.
 struct MapInput {
     std::int32_t width = 0, height = 0;
     std::uint16_t topology = 0, seed = 0;
@@ -12,7 +13,16 @@ struct MapInput {
     std::array<std::vector<std::uint8_t>, 2> coarse;
     std::array<RegionSummary, 64> regions{};
 };
+/// Validate dimensions and layer extents; embedded maps also require memory/coarse layers.
+/// @param input Owned semantic layers to validate without modifying them.
+/// @param embedded True for a saved-game map; false for a standalone map.
+/// @throws std::invalid_argument If dimensions or required layer sizes are invalid.
 void validate_map_input(const MapInput& input, bool embedded);
+/// Prepare a complete replacement map and swap it into the destination after validation.
+/// @param input Semantic map data copied into newly prepared storage.
+/// @param map Destination whose fallback binding remains unchanged.
+/// @param embedded True to install saved memory, coarse grids, and regional summaries.
+/// False preserves the destination regional summaries and initializes fresh layers.
 void install_map(const MapInput& input, MapStorage& map, bool embedded);
 } // namespace openciv::world
 

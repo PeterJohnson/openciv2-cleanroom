@@ -3,7 +3,9 @@ export module openciv.state.unit_types;
 import std;
 
 export namespace openciv::state {
+/// A unit-type slot in the selected ruleset.
 enum class UnitType : std::uint8_t {};
+/// Retained classic order codes, including the no-order sentinel.
 enum class UnitOrder : std::int8_t {
     none = -1,
     fortifying = 1,

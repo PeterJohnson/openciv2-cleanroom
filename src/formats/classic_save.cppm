@@ -5,6 +5,7 @@ export import openciv.formats.classic_io;
 export import openciv.formats.save_records;
 
 export namespace openciv::formats {
+/// Stored map layers and regional summaries as decoded from an embedded save.
 struct StoredMap {
     MapHeader header;
     std::array<Bytes, 7> remembered;
@@ -13,10 +14,12 @@ struct StoredMap {
     std::array<world::RegionSummary, 64> regions;
     bool operator==(const StoredMap&) const = default;
 };
+/// Retained tribe-use counters and leader gender from a saved game.
 struct TribeUsage {
     Byte times_used = 0, city_name_index = 0, female = 0;
     bool operator==(const TribeUsage&) const = default;
 };
+/// Optional event strings in F06 serialization order, preserving absent versus empty.
 struct EventStrings {
     // F06 §8 order: unit/city/who/whom, text prefix, then the eleven other
     // fields. Bytes exclude the terminator; nullopt and empty are distinct.
@@ -25,18 +28,20 @@ struct EventStrings {
     std::array<std::optional<Bytes>, 11> other;
     bool operator==(const EventStrings&) const = default;
 };
+/// An event record paired with its externally stored string payloads.
 struct StoredEvent {
     EventRecord record;
     EventStrings strings;
     bool operator==(const StoredEvent&) const = default;
 };
+/// The stored event block, including its linked event records and strings.
 struct StoredEvents {
     std::vector<StoredEvent> entries;
     bool operator==(const StoredEvents&) const = default;
 };
-// F06 §§2–4,8 stored-file view, supported classic input versions; current output is 0x2c. It
-// owns its values; no rules, process state, tokens, live map, RNG or presentation are accessed.
-// The full F06 §6 session-load operation is a separate integration boundary.
+/// F06 §§2–4,8 stored-file view, supported classic input versions; current output is 0x2c. It
+/// owns its values; no rules, process state, tokens, live map, RNG or presentation are accessed.
+/// The full F06 §6 session-load operation is a separate integration boundary.
 struct StoredSave {
     GameHeader header;
     StoredGlobals globals;
@@ -61,13 +66,13 @@ struct StoredSave {
     Bytes trailing;
     bool operator==(const StoredSave&) const = default;
 };
-// Supported backing: W01 geometry, 0..2048 units, 0..256 city slots, nonnegative
-// event counts, nominal contiguous text markers and strings of at most 255 bytes.
-// Other scalar/retained values are preserved without claiming semantic validity.
-// Rejection never mutates input or live state. DecodeError offsets are file-wide.
+/// Supported backing: W01 geometry, 0..2048 units, 0..256 city slots, nonnegative
+/// event counts, nominal contiguous text markers and strings of at most 255 bytes.
+/// Other scalar/retained values are preserved without claiming semantic validity.
+/// Rejection never mutates input or live state. DecodeError offsets are file-wide.
 StoredSave decode_stored_save(std::span<const Byte> bytes);
-// Lossless stored-view re-encoding preserves the admitted header separator and
-// presence words. This is not the F06 §5 live save/scenario-export operation.
-// Inconsistent container sizes/flags/presence reject before any bytes escape.
+/// Lossless stored-view re-encoding preserves the admitted header separator and
+/// presence words. This is not the F06 §5 live save/scenario-export operation.
+/// Inconsistent container sizes/flags/presence reject before any bytes escape.
 Bytes encode_stored_save(const StoredSave& save);
 } // namespace openciv::formats

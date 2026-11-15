@@ -1,6 +1,7 @@
 #include "platform/menu_macos_bridge.h"
 #import <AppKit/AppKit.h>
 
+/// Own an AppKit menu bar and route item activation to the borrowed C callback.
 @interface OpenCivMenu : NSObject {
 @public
     void* context;
@@ -11,9 +12,13 @@
     NSMenu* current;
     NSMutableArray<NSMenuItem*>* items;
 }
+/// Queue the semantic command stored in the activated item's tag.
 - (void)invoke:(NSMenuItem*)sender;
+/// Create and select the next top-level menu group.
 - (void)beginGroup:(NSString*)title;
+/// Add a UTF-8 command label and optional keyboard shortcut to the current group.
 - (void)addCommand:(int)command label:(const char*)label key:(char)key;
+/// Detach callbacks and restore the application menus that preceded this adapter.
 - (void)close;
 @end
 

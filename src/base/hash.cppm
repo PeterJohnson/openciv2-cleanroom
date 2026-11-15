@@ -3,8 +3,10 @@ export module openciv.base.hash;
 import std;
 
 export namespace openciv::base {
-// Content identities only; no gameplay random context or host services.
+/// Encode bytes as lowercase hexadecimal, with two characters per byte.
+/// Content identities only; no gameplay random context or host services.
 std::string hex_bytes(std::span<const std::uint8_t> bytes);
+/// Return the lowercase hexadecimal SHA-256 digest of the supplied bytes.
 std::string sha256(std::span<const std::uint8_t> bytes);
 } // namespace openciv::base
 

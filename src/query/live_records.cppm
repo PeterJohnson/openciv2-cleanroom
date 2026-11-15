@@ -6,7 +6,9 @@ export import openciv.state.identities;
 export import openciv.state.unit_types;
 
 export namespace openciv::query {
+/// Describe how a player-visible record was obtained.
 enum class LiveProvenance { owned_current };
+/// Identify the runtime, session revision, and observer behind a live query.
 struct LiveObservation {
     base::RuntimeId runtime{0};
     base::SessionId session{0};
@@ -15,6 +17,7 @@ struct LiveObservation {
     LiveProvenance provenance = LiveProvenance::owned_current;
     bool operator==(const LiveObservation&) const = default;
 };
+/// Owned snapshot of a player-visible unit and its current identity token.
 struct OwnUnit {
     state::UnitSlot slot{0};
     state::UnitToken token{0};
@@ -25,6 +28,7 @@ struct OwnUnit {
     std::optional<state::CitySlot> home;
     bool operator==(const OwnUnit&) const = default;
 };
+/// Owned snapshot of a player-visible city without retained name padding.
 struct OwnCity {
     state::CitySlot slot{0};
     state::CityToken token{0};
@@ -34,6 +38,7 @@ struct OwnCity {
     std::int16_t food_box = 0, shield_box = 0;
     bool operator==(const OwnCity&) const = default;
 };
+/// Owned query records paired with the observation that produced them.
 template <class Record> struct LiveRecords {
     LiveObservation observation;
     std::vector<Record> records;

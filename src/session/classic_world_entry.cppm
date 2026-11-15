@@ -4,8 +4,8 @@ import std;
 export import openciv.session.classic_load;
 export import openciv.session.world_entry;
 export namespace openciv::session {
-// Composition adapter: reset classic scratch after runtime isolation and before
-// loading content. Common world entry never depends on classic paths or codecs.
+/// Composition adapter: reset classic scratch after runtime isolation and before
+/// loading content. Common world entry never depends on classic paths or codecs.
 bool enter_classic_new_world(SessionRuntime& runtime, ClassicFileState& files,
                              base::GameplayRandom& random, std::string_view call,
                              NewWorldChoice choice, const state::CalendarValues& calendar,

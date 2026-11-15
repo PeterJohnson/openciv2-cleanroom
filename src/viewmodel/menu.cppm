@@ -5,17 +5,21 @@ export import openciv.viewmodel.shell;
 
 export namespace openciv {
 
+/// A semantic shell command with its menu label and display properties.
 struct MenuItem {
     Command command;
     std::string_view label;
     std::string_view shortcut;
     char key; // Primary modifier (Command on macOS, Control elsewhere).
 };
+/// A top-level menu label and its ordered items.
 struct MenuGroup {
     std::string_view label;
     std::span<const MenuItem> items;
 };
+/// Borrow the static shell menu definitions.
 [[nodiscard]] std::span<const MenuGroup> main_menu();
+/// Find a menu item by command, returning null when absent.
 [[nodiscard]] const MenuItem* find_menu_item(Command command);
 } // namespace openciv
 

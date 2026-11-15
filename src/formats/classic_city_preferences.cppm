@@ -6,11 +6,12 @@ export import openciv.state.city_preferences;
 export import openciv.state.rule_state;
 
 export namespace openciv::formats::classic {
-// Decode an update against a snapshot of the supplied names. Installation is
-// shared with native content in rules::apply_city_preferences.
+/// Decode an update against a snapshot of the supplied names. Installation is
+/// shared with native content in rules::apply_city_preferences.
 state::CityPreferenceUpdate load_city_preferences(TextReader& reader,
                                                   const state::RuleDefinitions& rules,
                                                   const TextCase& comparison);
+/// Parse classic city build preferences using the selected rule names and case policy.
 state::CityPreferenceUpdate load_city_preferences(TextReader& reader, const state::RuleState& rules,
                                                   const TextCase& comparison);
 } // namespace openciv::formats::classic

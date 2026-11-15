@@ -5,11 +5,11 @@ export import openciv.base.callback_ref;
 export import openciv.state.rule_state;
 
 export namespace openciv::rules {
-// F03 section 8. No services occur between reading mode/requested and finishing
-// the 62 table entries, so the caller supplies those scalar operands by value.
-// A changed multiplayer request publishes the retained flag before the table,
-// then invokes required redrawStatus(1). Single-player and repeated requests
-// leave both flag and table untouched. Existing unit movement is never changed.
+/// F03 section 8. No services occur between reading mode/requested and finishing
+/// the 62 table entries, so the caller supplies those scalar operands by value.
+/// A changed multiplayer request publishes the retained flag before the table,
+/// then invokes required redrawStatus(1). Single-player and repeated requests
+/// leave both flag and table untouched. Existing unit movement is never changed.
 void apply_double_movement(state::GameMode mode, bool enabled, state::RuleState& rules,
                            const base::CallbackRef<void(std::int32_t)>& redraw_status);
 } // namespace openciv::rules

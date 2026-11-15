@@ -6,10 +6,13 @@ export import openciv.formats.save_records;
 export import openciv.state.rule_state;
 
 export namespace openciv::formats {
+/// Encode live leader names as canonical custom/noncustom markers for F06 storage.
 StoredLeader stored_leader(const state::Leader& leader);
+/// The saved map cursor coordinates written alongside leader state.
 struct SavedCursor {
     std::int16_t x = 0, y = 0;
 };
+/// Write leader and naming state in classic save order; report write failure.
 bool write_leader_items(const WriteItem& write, const state::GlobalValues& globals,
                         std::span<const state::Civilization> civilizations,
                         std::span<const state::Leader> leaders, const SavedCursor& cursor);

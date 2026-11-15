@@ -10,29 +10,34 @@ export import openciv.state.game;
 
 export namespace openciv::session {
 
+/// Persist preference snapshots through classic binary file codecs.
 class ClassicPreferenceWriter final : public PreferenceWriter {
 public:
+    /// Borrow the storage provider used for preference-file replacement.
     explicit ClassicPreferenceWriter(const io::FileStorage& storage) : storage_(storage) {}
+    /// Write the selected snapshot, invoking before_io at its specified boundary.
     bool write(PreferenceSnapshot values, base::CallbackRef<void()> before_io = {}) const override;
 
 private:
     const io::FileStorage& storage_;
 };
+/// Outcome of loading classic preference files.
 enum class PreferenceLoadStatus { success, defaults, input };
-// Stage both independent items against data snapshots and close before install.
-// The storage provider is borrowed for this synchronous call.
-// Short items receive their specified fallback defaults; close failure and
-// exceptions leave installed preferences unchanged. Missing files default both.
+/// Stage both independent items against data snapshots and close before install.
+/// The storage provider is borrowed for this synchronous call.
+/// Short items receive their specified fallback defaults; close failure and
+/// exceptions leave installed preferences unchanged. Missing files default both.
 PreferenceLoadStatus load_classic_preferences(state::ProcessContext& process,
                                               const state::PreferenceDefaults& defaults,
                                               const io::FileStorage& services);
+/// Outcome of saving classic preference files.
 enum class PreferenceSaveStatus { success = 0, output = 1 };
-// F03 production preference contract: coherent configuration, truthful write
-// and close results, exactly-once close. Failed output is removed when possible;
-// accepted preferences remain. Providers do not admit configuration mutations.
+/// F03 production preference contract: coherent configuration, truthful write
+/// and close results, exactly-once close. Failed output is removed when possible;
+/// accepted preferences remain. Providers do not admit configuration mutations.
 PreferenceSaveStatus save_classic_preferences(const state::ProcessContext& process,
                                               const io::FileStorage& services);
-// Synchronous owner adapter: publish before open/write/close/remove.
+/// Synchronous owner adapter: publish before open/write/close/remove.
 PreferenceSaveStatus save_classic_preferences(SessionRuntime& runtime,
                                               const io::FileStorage& services);
 } // namespace openciv::session

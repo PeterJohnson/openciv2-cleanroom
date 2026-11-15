@@ -13,6 +13,7 @@ export {
     using ::ImGui_ImplSDLRenderer3_Shutdown;
 }
 export namespace openciv::ui {
+/// Check the compiled Dear ImGui version and data-layout compatibility.
 inline void check_imgui_version() {
     IMGUI_CHECKVERSION();
 }

@@ -4,13 +4,17 @@ import std;
 
 export namespace openciv::state {
 using TextId = std::uint32_t;
-// Owned text and stable implementation-local references. IDs are not classic
-// ordinals, file fields, allocation sizes or gameplay object identities.
+/// Owned text and stable implementation-local references. IDs are not classic
+/// ordinals, file fields, allocation sizes or gameplay object identities.
 class TextPool {
 public:
+    /// Replace the pool with its reserved `<nil>` entry, invalidating old views and IDs.
     void initialize();
+    /// Store text through its first NUL; return zero for empty text and preserve existing views.
     TextId store(std::string_view text);
+    /// Borrow the text for a checked local ID until the pool is rebuilt.
     std::string_view text(TextId id) const;
+    /// Return the number of retained entries, including the reserved nil entry.
     std::size_t size() const noexcept { return entries_.size(); }
 
 private:

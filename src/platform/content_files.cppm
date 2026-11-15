@@ -4,9 +4,12 @@ import std;
 export import openciv.formats.gameplay;
 
 export namespace openciv::io {
+/// Read content files contained within an explicitly mounted native directory.
 class ContentDirectory {
 public:
+    /// Mount a canonical content root for subsequent contained reads.
     explicit ContentDirectory(const std::filesystem::path& mounted_root);
+    /// Read a relative content path within the byte limit and optional narrower directory.
     formats::content::Source read(std::string_view relative,
                                   std::size_t maximum_bytes = 16 * 1024 * 1024,
                                   std::string_view required_directory = {});

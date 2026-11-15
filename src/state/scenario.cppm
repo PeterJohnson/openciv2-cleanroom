@@ -4,8 +4,8 @@ import std;
 export import openciv.state.civilization;
 
 export namespace openciv::state {
-// F02 section 8 / S01 section 2. Scenario-active, export and events-loaded
-// indicators live separately. Construction does not perform the reset operation.
+/// F02 section 8 / S01 section 2. Scenario-active, export and events-loaded
+/// indicators live separately. Construction does not perform the reset operation.
 struct ScenarioParameters {
     std::uint16_t flags = 0;
     std::string name;
@@ -14,7 +14,7 @@ struct ScenarioParameters {
     std::array<std::int16_t, 4> victory_thresholds{};
     bool operator==(const ScenarioParameters&) const = default;
 };
-// S01 section 2 / F06 section 3: retain the name tail; reset no world/event flags.
+/// S01 section 2 / F06 section 3: retain the name tail; reset no world/event flags.
 void reset_scenario_parameters(ScenarioParameters& parameters);
 } // namespace openciv::state
 

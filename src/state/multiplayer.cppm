@@ -6,9 +6,9 @@ export import openciv.state.civilization;
 export import openciv.state.preferences;
 
 export namespace openciv::state {
-// F02 session/world ownership and F06 section 4 persistent multiplayer fields.
-// Logical values only; codecs own the 1172-byte file layout. Construction is
-// not the F03 preference default procedure or a classic session reset.
+/// F02 session/world ownership and F06 section 4 persistent multiplayer fields.
+/// Logical values only; codecs own the 1172-byte file layout. Construction is
+/// not the F03 preference default procedure or a classic session reset.
 struct MultiplayerValues {
     std::array<std::int16_t, 8> center_x{}, center_y{};
     std::array<bool, 8> introduced{};
@@ -26,17 +26,19 @@ struct MultiplayerValues {
     bool double_production = false, double_movement = false;
     bool operator==(const MultiplayerValues&) const = default;
 };
+/// Per-civilization pending/present password indicators.
 struct PasswordFlags {
     std::array<bool, 8> pending{}, present{};
     bool operator==(const PasswordFlags&) const = default;
 };
-// N03 section 11, shared by option/timer votes. N02 reply dispatch owns updates
-// to pending/status; these are signed counts/results, not membership sets.
+/// N03 section 11, shared by option/timer votes. N02 reply dispatch owns updates
+/// to pending/status; these are signed counts/results, not membership sets.
 struct OptionVoteState {
     std::int32_t pending = 0, status = 0;
     std::uint32_t popup_tick = 0;
     bool operator==(const OptionVoteState&) const = default;
 };
+/// Retained multiplayer state, separating stored values from runtime authority and votes.
 struct MultiplayerState {
     MultiplayerValues saved;
     PasswordFlags passwords;
@@ -53,16 +55,18 @@ struct MultiplayerState {
     OptionVoteState vote{};
     bool operator==(const MultiplayerState&) const = default;
 };
-// F06 section 9: rotation spans all 256 bytes, including row and array seams.
+/// F06 section 9: rotation spans all 256 bytes, including row and array seams.
 void encode_passwords(std::array<std::uint8_t, 256>& bytes) noexcept;
+/// Undo classic password encoding across all 256 bytes, including row boundaries.
 void decode_passwords(std::array<std::uint8_t, 256>& bytes) noexcept;
+/// Refresh password indicators from decoded row prefixes, then restore encoded bytes.
 void refresh_password_flags(MultiplayerState& state) noexcept;
-// Exactly 255 primary choices; byte 255 retains its incoming raw value. The
-// owner supplies a unique semantic call identity per reset. A missing choice
-// retains the assigned prefix and leaves the later clearing/encoding undone.
+/// Exactly 255 primary choices; byte 255 retains its incoming raw value. The
+/// owner supplies a unique semantic call identity per reset. A missing choice
+/// retains the assigned prefix and leaves the later clearing/encoding undone.
 void reset_passwords(MultiplayerState& state, base::GameplayRandom& random, std::string_view call);
-// F06 section 6 completion: parent invokes only after successful input AND
-// close. Equal modes are a no-op. This performs no transport/mode admission.
+/// F06 section 6 completion: parent invokes only after successful input AND
+/// close. Equal modes are a no-op. This performs no transport/mode admission.
 void adapt_loaded_mode(GameMode entry_mode, GlobalValues& globals, MultiplayerState& state,
                        MultiplayerPreferences& preferences) noexcept;
 } // namespace openciv::state

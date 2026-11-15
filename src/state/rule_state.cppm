@@ -7,6 +7,7 @@ export import openciv.state.rules;
 export import openciv.state.text_pool;
 
 export namespace openciv::state {
+/// Text-pool bindings for installed semantic rule names.
 struct RuleNameBindings {
     std::array<TextId, 100> advances{};
     std::array<TextId, 67> improvements{};
@@ -20,9 +21,9 @@ struct RuleNameBindings {
     std::array<TextId, 9> attitudes{};
     bool operator==(const RuleNameBindings&) const = default;
 };
-// F02/F03 logical rule state. Text references are implementation-local; custom
-// name status is explicit. Original pool traces belong to comparison tooling,
-// and signed name markers belong to the F06 codec. Initialize text at setup.
+/// F02/F03 logical rule state. Text references are implementation-local; custom
+/// name status is explicit. Original pool traces belong to comparison tooling,
+/// and signed name markers belong to the F06 codec. Initialize text at setup.
 struct RuleState {
     RuleDefinitions definitions;
     TextPool text;

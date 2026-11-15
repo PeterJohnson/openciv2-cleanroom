@@ -4,31 +4,48 @@ import std;
 export import openciv.formats.content_json;
 
 export namespace openciv::formats::content::detail {
-// Shared native authoring checks. Reader references one owned document and its
-// exact numeric-token tree; it never performs I/O or installs runtime state.
+/// Shared native authoring checks. Reader references one owned document and its
+/// exact numeric-token tree; it never performs I/O or installs runtime state.
 struct Reader {
     jt::Json& value;
     const jt::Json& numbers;
     std::string path;
+    /// Throw a content error at the current document path.
     [[noreturn]] void error(std::string message) const;
+    /// Require named members and reject unknown fields, optionally admitting extensions.
     void members(std::span<const std::string_view> required,
                  std::span<const std::string_view> optional = {}, bool extensions = false) const;
+    /// Validate required/optional members supplied as initializer lists.
     void members(std::initializer_list<std::string_view> required,
                  std::initializer_list<std::string_view> optional, bool extensions = false) const;
+    /// Require exactly the listed fields, with optional namespaced extensions.
     void fields(std::span<const std::string_view> names, bool extensions = false) const;
+    /// Validate an exact field list supplied as an initializer list.
     void fields(std::initializer_list<std::string_view> names, bool extensions = false) const;
+    /// Report whether the current object contains a field.
     bool has(std::string_view key) const;
+    /// Return a reader for a required object member, extending its diagnostic path.
     Reader at(std::string_view key) const;
+    /// Return a reader for an array element, rejecting an out-of-range index.
     Reader element(std::size_t i) const;
+    /// Require an array and return its length.
     std::size_t array_size() const;
+    /// Require an object and return its borrowed member map.
     const std::map<std::string, jt::Json>& object() const;
+    /// Read Unicode text, optionally rejecting an empty string.
     std::string text(bool nonempty = true) const;
+    /// Read and validate a semantic identifier.
     std::string id() const;
+    /// Read a 64-character lowercase hexadecimal SHA-256 value.
     std::string sha256() const;
+    /// Require the current string to equal the specified format constant.
     void constant(std::string_view expected) const;
+    /// Validate an exact integer token within the supplied bounds and normalize its JSON value.
     std::int32_t integer(std::int32_t low = std::numeric_limits<std::int32_t>::min(),
                          std::int32_t high = std::numeric_limits<std::int32_t>::max()) const;
+    /// Return a positive integer revision as exact decimal text.
     std::string revision() const;
+    /// Validate every element of a text array, optionally rejecting empty strings.
     void texts(bool nonempty) const;
 };
 } // namespace openciv::formats::content::detail

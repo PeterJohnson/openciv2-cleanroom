@@ -5,12 +5,15 @@ export import openciv.base.session_ids;
 export import openciv.state.identities;
 
 export namespace openciv::session {
+/// Access level required to discover or submit a command.
 enum class AccessClass { player, developer };
+/// A unit slot paired with its lifetime token to detect stale targets.
 struct UnitTarget {
     state::UnitSlot slot{0};
     state::UnitToken token{0};
     bool operator==(const UnitTarget&) const = default;
 };
+/// A city slot paired with its lifetime token to detect stale targets.
 struct CityTarget {
     state::CitySlot slot{0};
     state::CityToken token{0};
@@ -18,19 +21,23 @@ struct CityTarget {
 };
 using CommandValue =
     std::variant<std::int32_t, bool, std::string, state::CivilizationSlot, UnitTarget, CityTarget>;
+/// A named, typed command argument or result value.
 struct NamedValue {
     std::string name;
     CommandValue value;
     bool operator==(const NamedValue&) const = default;
 };
 using CommandValues = std::vector<NamedValue>;
+/// The supported command-value alternatives in schema order.
 enum class ValueKind { integer, boolean, text, civilization, unit, city };
+/// Name, type, and requiredness of a command argument or result field.
 struct ValueSchema {
     std::string name;
     ValueKind kind = ValueKind::integer;
     bool required = true;
     bool operator==(const ValueSchema&) const = default;
 };
+/// Versioned public command metadata, access level, and value schemas.
 struct CommandDescriptor {
     unsigned version = 1;
     std::string name, help;
@@ -38,24 +45,31 @@ struct CommandDescriptor {
     std::vector<ValueSchema> arguments, result;
     bool operator==(const CommandDescriptor&) const = default;
 };
-// Architecture §5: structural validation, not availability or execution checks.
+/// Architecture §5: structural validation, not availability or execution checks.
 void validate_descriptor(const CommandDescriptor& descriptor);
+/// Return a structural validation error, or nullopt when supplied values match the schema.
 std::optional<std::string> validate_values(std::span<const ValueSchema> schema,
                                            std::span<const NamedValue> values);
+/// Find a required named value; throw std::out_of_range when absent.
 const CommandValue& command_value(std::span<const NamedValue> values, std::string_view name);
+/// An owned command name and its semantic arguments.
 struct CommandRequest {
     std::string name;
     CommandValues arguments;
     bool operator==(const CommandRequest&) const = default;
 };
+/// Globally scoped command identity used to correlate requests and replies.
 struct CommandCorrelation {
     base::RuntimeId runtime{0};
     base::SessionId session{0};
     base::CommandId command{0};
     auto operator<=>(const CommandCorrelation&) const = default;
 };
+/// The admission, execution, interaction, or terminal state of a command.
 enum class CommandStatus { rejected, pending, awaiting_interaction, completed, cancelled, failed };
+/// Report whether the status can no longer accept command continuation.
 bool terminal(CommandStatus status) noexcept;
+/// One committed semantic effect with a stable per-command sequence index.
 struct Effect {
     std::uint64_t index =
         0; // One-based within this command; stable across notifications and snapshots.
@@ -63,6 +77,7 @@ struct Effect {
     CommandValues values;
     bool operator==(const Effect&) const = default;
 };
+/// A pending choice contract including recipient, target, deadline, and cancellation policy.
 struct InteractionSpec {
     std::string prompt;
     std::optional<base::ParticipantId> recipient; // Absent selects the admitted actor.
@@ -73,6 +88,7 @@ struct InteractionSpec {
     bool cancellable = true;
     bool operator==(const InteractionSpec&) const = default;
 };
+/// An issued interaction with its identity and admitted recipient.
 struct Interaction {
     base::InteractionId id{0};
     base::ParticipantId recipient{0};
@@ -80,6 +96,7 @@ struct Interaction {
     InteractionSpec spec;
     bool operator==(const Interaction&) const = default;
 };
+/// An owned command observation including result, pending choice, and committed effects.
 struct CommandUpdate {
     CommandCorrelation correlation;
     CommandStatus status = CommandStatus::rejected;
@@ -89,6 +106,7 @@ struct CommandUpdate {
     std::vector<Effect> committed;
     bool operator==(const CommandUpdate&) const = default;
 };
+/// Whether an input was admitted and the corresponding diagnostic code.
 struct InputReceipt {
     bool accepted = false;
     std::string code;

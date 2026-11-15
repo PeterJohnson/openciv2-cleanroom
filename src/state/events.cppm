@@ -3,7 +3,7 @@ export module openciv.state.events;
 import std;
 
 export namespace openciv::state {
-// F02/S02 semantic payload. File presence words and opaque bytes live in codecs.
+/// F02/S02 semantic payload. File presence words and opaque bytes live in codecs.
 struct EventValues {
     std::uint32_t triggers = 0, actions = 0;
     std::int32_t unit_type = 0;
@@ -28,15 +28,20 @@ struct EventValues {
     std::int32_t destroy_civ = 0, give_tech = 0, give_tech_civ = 0;
     bool operator==(const EventValues&) const = default;
 };
-// An absent string and a present empty string are distinct.
-// Copies of a backed reference share its logical identity, including edits.
+/// An absent string and a present empty string are distinct.
+/// Copies of a backed reference share its logical identity, including edits.
 class EventString {
 public:
     EventString() = default;
+    /// Create a present string with a fresh shared identity, stopping at the first NUL.
     explicit EventString(std::string_view text);
+    /// Report whether this field has a string identity, even if the text is empty.
     bool present() const noexcept { return text_ != nullptr; }
+    /// Report whether a shared text backing is available.
     bool backed() const noexcept { return text_ != nullptr; }
+    /// Borrow mutable text; throw std::out_of_range for an absent string.
     std::string& value();
+    /// Borrow immutable text; throw std::out_of_range for an absent string.
     const std::string& value() const;
     bool operator==(const EventString&) const = default;
 
@@ -44,63 +49,79 @@ private:
     std::shared_ptr<std::string> text_;
 };
 inline constexpr std::size_t event_string_count = 35, event_text_begin = 4, event_other_begin = 24;
+/// Owned event operands and optional strings prepared for installation.
 struct EventInput {
     EventValues values;
     std::array<std::optional<std::string>, event_string_count> strings;
 };
 using EventCatalog = std::vector<EventInput>;
-// Field order: unit/city/who/whom; 20 text slots; move owner/unit, aggression
-// whom/who, create owner/unit/home, ancillary civ/unit, money receiver, wave.
+/// Field order: unit/city/who/whom; 20 text slots; move owner/unit, aggression
+/// whom/who, create owner/unit/home, ancillary civ/unit, money receiver, wave.
 enum class EventId : std::uint64_t {};
+/// A live event with stable logical identity and shared string references.
 class Event {
 public:
     Event() = default;
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
+    /// Return this event identity within its owning collection lifetime.
     EventId identity() const noexcept { return identity_; }
     EventValues values;
     std::array<EventString, event_string_count> strings;
+    /// Replace one string reference after validating the field index.
     void set_string(std::size_t field, EventString text);
 
 private:
     friend class EventCollection;
     EventId identity_{0};
 };
+/// Own ordered events and allocate monotonically increasing event identities.
 class EventCollection {
 public:
     EventCollection() = default;
     EventCollection(const EventCollection&) = delete;
     EventCollection& operator=(const EventCollection&) = delete;
+    /// Return the number of retained events.
     std::size_t size() const noexcept { return entries_.size(); }
+    /// Report whether the collection is empty and has never issued an identity.
     bool pristine() const noexcept { return entries_.empty() && next_identity_ == 1; }
+    /// Return shared ownership of the event at a checked index.
     std::shared_ptr<Event> at(std::size_t index) { return entries_.at(index); }
+    /// Return shared immutable access to the event at a checked index.
     std::shared_ptr<const Event> at(std::size_t index) const { return entries_.at(index); }
+    /// Test whether this exact event object belongs to the collection.
     bool contains(const std::shared_ptr<const Event>& event) const noexcept;
+    /// Find a mutable event by identity, returning null when absent.
     std::shared_ptr<Event> find(EventId identity) noexcept;
+    /// Find an immutable event by identity, returning null when absent.
     std::shared_ptr<const Event> find(EventId identity) const noexcept;
+    /// Detach copied string identities while preserving event identities and required aliases.
     void compact();
+    /// Append a fresh event and assign its next collection identity.
     std::shared_ptr<Event> append();
+    /// Remove all events while preserving the identity counter and external loaded flag.
     void reset(); // Does not change the separate events-loaded indicator.
 private:
     friend void install_events(const EventCatalog&, EventCollection&);
     std::vector<std::shared_ptr<Event>> entries_;
     std::uint64_t next_identity_ = 1;
 };
-// Prepare a replacement before publishing. Source formats supply owned data;
-// fresh event identities remain monotonic within the destination collection.
+/// Prepare a replacement before publishing. Source formats supply owned data;
+/// fresh event identities remain monotonic within the destination collection.
 void install_events(const EventCatalog& input, EventCollection& collection);
+/// The event collection and its independently retained loaded indicator.
 struct EventState {
     EventCollection collection;
     bool loaded = false;
 };
-// S02 section 2: append payloads first, then duplicate strings from the two
-// heads. Nonempty destinations and text holes retain the specified aliasing.
-// Self-copy rejects before edits.
+/// S02 section 2: append payloads first, then duplicate strings from the two
+/// heads. Nonempty destinations and text holes retain the specified aliasing.
+/// Self-copy rejects before edits.
 void copy_events(const EventCollection& source, EventCollection& destination);
-// Detach copied string identities once, preserving text-hole aliases and event IDs.
-// Replacement is prepared before publication. Allocation failure propagates.
+/// Detach copied string identities once, preserving text-hole aliases and event IDs.
+/// Replacement is prepared before publication. Allocation failure propagates.
 void compact_events(EventCollection& collection);
-// Fresh string identity, through first NUL. Allocation failure propagates.
+/// Fresh string identity, through first NUL. Allocation failure propagates.
 void create_event_string(EventString& target, std::string_view text);
 } // namespace openciv::state
 

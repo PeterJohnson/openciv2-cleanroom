@@ -6,8 +6,8 @@ export import openciv.state.layout;
 export import openciv.state.records;
 
 export namespace openciv::state {
-// F02 process lifetime; F03 section 8 preferences. Construction is not the
-// default operation. F06 codecs alone define the two CIV2.DAT item layouts.
+/// F02 process lifetime; F03 section 8 preferences. Construction is not the
+/// default operation. F06 codecs alone define the two CIV2.DAT item layouts.
 struct OrdinaryPreferences {
     std::uint16_t rules = 0;
     std::int16_t default_level = 0, tribe = 0;
@@ -24,6 +24,7 @@ struct OrdinaryPreferences {
     RuleSelection rules_choice = RuleSelection::standard;
     bool operator==(const OrdinaryPreferences&) const = default;
 };
+/// Live multiplayer preferences, independent of serialized record layout.
 struct MultiplayerPreferences {
     // These remembered choices are distinct from saved/live session values.
     bool kill_on_retirement = false, show_human_starts = false, chat_from_start = false;
@@ -41,14 +42,17 @@ struct MultiplayerPreferences {
     bool double_production = false, double_movement = false;
     bool operator==(const MultiplayerPreferences&) const = default;
 };
+/// Owner-supplied environment values used when establishing ordinary defaults.
 struct PreferenceDefaults {
     // Supplied startup screen/renderer outcomes. No original memory API or
     // renderer allocation requirement is inferred from these logical inputs.
     std::int32_t screen_width = 0;
     bool animations_available = false;
 };
+/// Apply F03 ordinary preference defaults using explicit environment inputs.
 void default_ordinary_preferences(OrdinaryPreferences& preferences,
                                   const PreferenceDefaults& defaults);
+/// Apply F03 multiplayer preference defaults.
 void default_multiplayer_preferences(MultiplayerPreferences& preferences);
 } // namespace openciv::state
 

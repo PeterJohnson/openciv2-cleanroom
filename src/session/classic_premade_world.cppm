@@ -5,9 +5,12 @@ export import openciv.session.premade_world;
 export import openciv.io.storage;
 import openciv.formats.game_input;
 export namespace openciv::session {
+/// Load classic standalone maps through an explicit file-storage provider.
 class ClassicPremadeWorldSource final : public PremadeWorldSource {
 public:
+    /// Borrow the storage provider used for premade-map reads.
     explicit ClassicPremadeWorldSource(const io::FileStorage& storage) : storage_(storage) {}
+    /// Decode the chosen classic map, returning no input when loading cannot proceed.
     std::optional<PremadeWorldInput> load(std::string_view path) const override;
 
 private:

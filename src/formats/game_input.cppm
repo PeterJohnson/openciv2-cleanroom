@@ -7,8 +7,9 @@ export import openciv.formats.classic_save;
 export import openciv.state.game_input;
 
 export namespace openciv::formats {
-// Convert admitted stored representations to common restoration operands.
+/// Convert admitted stored representations to common restoration operands.
 state::GameInput game_input(StoredSave save);
+/// Translate a decoded standalone map into a semantic map installation input.
 world::MapInput map_input(RawMapFile map);
 } // namespace openciv::formats
 
