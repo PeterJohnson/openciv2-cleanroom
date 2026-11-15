@@ -3,6 +3,7 @@
 // original executable, capture payload or historical harness is a test input.
 #include "classic_stream_fixture.hpp"
 #include "session/premade_world.hpp"
+#include "formats/game_input.hpp"
 #include "session/runtime.hpp"
 #include "session/world_setup.hpp"
 #include <catch2/catch_test_macros.hpp>
@@ -83,7 +84,7 @@ struct Fixture {
                  {},
                  [&] {
                      event("close");
-                     return false;
+                     return true;
                  }});
         };
         services.allocate = [&](world::StorageRequest request) {
@@ -111,9 +112,9 @@ struct Fixture {
     }
     auto load() { return load_premade_world(runtime, starts, "authored.mp", services); }
     void read_without_preparation() {
-        formats::MemoryItems source{input};
-        REQUIRE(formats::read_map_items([&](auto count) { return source.read(count); },
-                                        formats::MapStream::raw, runtime.world().map, starts));
+        const auto file = formats::decode_raw_map(input);
+        starts = file.starts;
+        world::install_map(formats::map_input(file), runtime.world().map, false);
     }
 };
 } // namespace
@@ -128,12 +129,12 @@ TEST_CASE("F05 premade loading composes F06 normalization and retained rule topo
     const auto original = f.input;
     REQUIRE(f.load() == WorldSource::premade_flat);
     auto& map = f.runtime.world().map;
-    CHECK(f.position == 122); // No exact-EOF read or trailing-byte consumption.
-    CHECK(f.reads == std::vector<std::size_t>{14, 42, 42, 24});
+    CHECK(f.position == f.input.size()); // Trailing bytes are accepted by the stored codec.
     REQUIRE(f.allocations.size() == 12);
     CHECK(f.allocations.front() == world::StorageRequest{world::StorageKind::tiles, 0, 4});
     CHECK(f.allocations.back() == world::StorageRequest{world::StorageKind::coarse, 3, 1});
-    CHECK(f.trace[f.trace.size() - 3] == "close");
+    CHECK(std::find(f.trace.begin(), f.trace.end(), "close") <
+          std::find(f.trace.begin(), f.trace.end(), "allocate"));
     CHECK(f.trace[f.trace.size() - 2] == "seed");
     CHECK(f.trace.back() == "hints");
     CHECK(map.geometry().width() == 4);
@@ -295,86 +296,56 @@ TEST_CASE("F05 cancellation and open failure leave map starts dimensions and fla
                     std::invalid_argument);
 }
 
-TEST_CASE("F05 short raw-map items close then report failure without normalizing their prefix",
+TEST_CASE("F05 truncated raw maps leave the previous world and starts intact",
           "[premade-world][session]") {
     for (const std::size_t available :
          {0U, 13U, 14U, 15U, 55U, 56U, 57U, 97U, 98U, 99U, 100U, 101U, 121U}) {
         Fixture f;
-        f.input.resize(available);
         const auto setup = f.runtime.world().world_setup;
-        const auto globals = f.runtime.world().globals;
+        const auto before = tiles(f.runtime.world().map);
+        const auto starts = f.starts;
+        f.input.resize(available);
         CHECK_FALSE(f.load());
-        REQUIRE(f.trace.size() >= 3);
-        CHECK(f.trace[f.trace.size() - 2] == "close");
-        CHECK(f.trace.back() == "failure");
-        CHECK(f.runtime.world().globals == globals);
-        auto& map = f.runtime.world().map;
-        if (available < 98) {
-            CHECK(f.runtime.world().world_setup == setup);
-            CHECK(map.geometry().width() == 8);
-            CHECK(map.pattern_seed == 55);
-            CHECK(map.tile({0, 0}).region == 17);
-        } else {
-            CHECK(f.runtime.world().world_setup.width == 4);
-            CHECK(f.runtime.world().world_setup.height == 2);
-            CHECK(map.pattern_seed == 24);
-            CHECK(map.stored_topology == 0xfffe);
-            CHECK(map.tile({2, 1}).owner.has_value()); // Never F05-normalized to Unowned.
-            if (available >= 100)
-                CHECK(map.tile({0, 0}).features == 0xff);
-        }
-        if (available == 15)
-            CHECK(f.starts.x[0] == 0x1202);
-        if (available == 57) {
-            CHECK(f.starts.x[0] == 2);
-            CHECK(f.starts.y[0] == 0x5601);
-        }
-        if (available < 14) {
-            CHECK(f.starts.x[0] == 0x1234);
-            CHECK(f.starts.y[0] == 0x5678);
-        }
+        CHECK(tiles(f.runtime.world().map) == before);
+        CHECK(f.starts == starts);
+        CHECK(f.runtime.world().world_setup == setup);
+        CHECK(f.allocations.empty());
         CHECK(std::count(f.trace.begin(), f.trace.end(), "close") == 1);
+        CHECK(f.trace.back() == "failure");
     }
 }
-
-TEST_CASE("F05 allocation failures publish loaded dimensions retain buffers and close once",
+TEST_CASE("F05 failed map preparation keeps the previously installed map",
           "[premade-world][session]") {
     for (std::size_t stop = 0; stop < 12; ++stop) {
         Fixture f;
+        const auto before = tiles(f.runtime.world().map);
+        const auto starts = f.starts;
+        const auto setup = f.runtime.world().world_setup;
         std::size_t calls = 0;
         f.services.allocate = [&](auto) {
-            CHECK(f.runtime.world().world_setup.width == 4);
-            CHECK(f.runtime.world().world_setup.height == 2);
             if (calls++ == stop)
-                throw std::bad_alloc{};
+                throw std::bad_alloc();
         };
         CHECK_THROWS_AS(f.load(), std::bad_alloc);
         CHECK(calls == stop + 1);
-        CHECK(f.reads == std::vector<std::size_t>{14, 42, 42});
-        CHECK(f.trace.back() == "close");
-        CHECK_FALSE(f.runtime.world().map.allocated());
-        CHECK(f.runtime.world().map.pattern_seed == 24);
-        CHECK(f.runtime.world().globals.rules == 0x1555);
-        CHECK(f.starts.x[20] == 300);
-        if (stop > 0)
-            CHECK(f.runtime.world().map.tile({0, 0}) == world::Tile{});
-        else
-            CHECK_THROWS_AS(f.runtime.world().map.tiles(), std::logic_error);
+        CHECK(tiles(f.runtime.world().map) == before);
+        CHECK(f.starts == starts);
+        CHECK(f.runtime.world().world_setup == setup);
+        CHECK(std::count(f.trace.begin(), f.trace.end(), "close") == 1);
     }
 }
-
-TEST_CASE("F05 returned close failure is ignored but close exceptions do not normalize or retry",
+TEST_CASE("F05 close exceptions precede installation and are never retried",
           "[premade-world][session]") {
     Fixture f;
+    const auto before = tiles(f.runtime.world().map);
     f.observe = [&](auto event) {
         if (event == "close")
             throw std::runtime_error("close");
     };
     CHECK_THROWS_AS(f.load(), std::runtime_error);
     CHECK(std::count(f.trace.begin(), f.trace.end(), "close") == 1);
-    CHECK(f.runtime.world().map.tile({0, 0}).features == 0xff);
-    CHECK(f.runtime.world().globals.rules == 0x1555);
-    CHECK(f.trace.back() == "close");
+    CHECK(tiles(f.runtime.world().map) == before);
+    CHECK(f.allocations.empty());
 }
 
 TEST_CASE("F05 failed choice services retain normalization and earlier clock or hint effects",
@@ -448,15 +419,15 @@ TEST_CASE("F05 malformed item and allocation reentry stop safely with closed inp
           "[premade-world][session]") {
     Fixture f;
     f.input[0] = 3;
-    CHECK_THROWS_AS(f.load(), formats::DecodeError);
-    CHECK(f.trace == std::vector<std::string>{"open", "read", "close"});
+    CHECK_FALSE(f.load());
+    CHECK(f.trace == std::vector<std::string>{"open", "read", "close", "failure"});
     CHECK(f.runtime.world().world_setup.width == 99);
     f.input = raw_map();
     f.trace.clear();
     f.services.allocate = [&](auto) { f.runtime.world().map.allocate({8, 4}); };
     CHECK_THROWS_AS(f.load(), std::out_of_range);
     CHECK(f.trace.back() == "close");
-    CHECK(f.runtime.world().world_setup.width == 4);
+    CHECK(f.runtime.world().world_setup.width == 99);
 }
 
 TEST_CASE("F05 premade parameters are sampled only after successful loading",

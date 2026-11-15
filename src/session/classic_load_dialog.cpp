@@ -17,30 +17,16 @@ std::function<R(Args...)> published(SessionRuntime& runtime, std::function<R(Arg
         return service(std::forward<Args>(args)...);
     };
 }
-void wrap_network(SessionRuntime& runtime, unit::UnitNetworkServices& services) {
-    services.state_difference = published(runtime, services.state_difference);
-    services.flush = published(runtime, services.flush);
-    services.ticks = published(runtime, services.ticks);
-    services.process_messages = published(runtime, services.process_messages);
-    services.priority_messages = published(runtime, services.priority_messages);
-    services.normal_messages = published(runtime, services.normal_messages);
-    services.log_timeout = published(runtime, services.log_timeout);
-    services.show_timeout = published(runtime, services.show_timeout);
-}
 void cleanup(SessionRuntime& runtime, unit::StackBudget& budget,
              const LoadDialogServices& services) {
     auto stacks = services.stacks;
     auto placement = services.placement;
-    wrap_network(runtime, placement);
-    placement.request = published(runtime, placement.request);
+    placement.synchronize = published(runtime, placement.synchronize);
     auto deletion = services.deletion;
-    wrap_network(runtime, deletion);
     deletion.removed_unit = published(runtime, deletion.removed_unit);
     deletion.refresh_home = published(runtime, deletion.refresh_home);
     deletion.check_destroyed = published(runtime, deletion.check_destroyed);
-    deletion.unit_change = published(runtime, deletion.unit_change);
-    deletion.home_change = published(runtime, deletion.home_change);
-    deletion.request_delete = published(runtime, deletion.request_delete);
+    deletion.synchronize = published(runtime, deletion.synchronize);
     cleanup_classic_loaded_units(runtime.world(), runtime.process().rules->definitions, budget,
                                  std::move(stacks), std::move(placement), std::move(deletion));
 }
@@ -64,10 +50,7 @@ void choose_alternative(SessionRuntime& runtime, std::string& path,
     if (choice == 0)
         return;
     publish(runtime);
-    const auto selected = services.enumerate(directory, "*.ALT");
-    if (selected != entries)
-        throw std::invalid_argument("Scenario alternative enumerations are inconsistent");
-    const auto& name = selected.at(static_cast<std::size_t>(choice - 1));
+    const auto& name = entries.at(static_cast<std::size_t>(choice - 1));
     if (name.empty() || name.find_first_of("\\/:") != std::string::npos ||
         name.find('\0') != std::string::npos || name == "." || name == "..")
         throw std::invalid_argument("Scenario alternative is not an unqualified filename");
@@ -78,8 +61,23 @@ void choose_alternative(SessionRuntime& runtime, std::string& path,
 std::optional<CoreLoadStatus>
 load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
                     ClassicLoadDialogState& dialog, std::optional<std::string> selected_path,
-                    bool show_title, const LoadDialogServices& services,
+                    bool show_title, const LoadDialogServices& supplied,
                     unit::StackBudget& stack_budget, std::string_view call) {
+    const auto services = supplied;
+    if (!services.input.change_directory)
+        throw std::invalid_argument("Load workflow requires directory service");
+    if (selected_path) {
+        services.input.validate();
+        if (!services.close_map_window || !services.enumerate ||
+            !services.input.comparison.uppercase_path || !services.parse_events ||
+            !services.scenario_loaded || !services.synchronize_music || !services.configure_sound ||
+            !services.load_notice || !services.deletion.check_destroyed ||
+            (show_title && !services.present_title))
+            throw std::invalid_argument("Load workflow requires complete semantic services");
+    }
+    std::optional<ClassicLoadOperation> operation;
+    if (selected_path)
+        operation.emplace(runtime, files, services.input);
     const auto home = [&] {
         files.text.working = files.text.home;
         publish(runtime);
@@ -103,8 +101,7 @@ load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
             services.close_map_window(i);
         }
         choose_alternative(runtime, *selected_path, services, call_identity);
-        const auto status =
-            load_classic_core(runtime, files, *selected_path, services.input, call_identity);
+        const auto status = operation->load(*selected_path, call_identity);
         if (status != CoreLoadStatus::success) {
             publish(runtime);
             services.load_notice(status);

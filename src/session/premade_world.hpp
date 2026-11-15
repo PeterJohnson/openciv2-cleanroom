@@ -27,9 +27,8 @@ struct PremadeWorldServices {
 // F05 section 3 / F06 section 4 accepted-file path. nullopt path means cancel;
 // nullopt result means cancel or returned input failure (which reports notice).
 // The native chooser/directory policy remains a separate interaction boundary.
-// Real F06 item loading closes once before normalization/notice; short reads,
-// allocation failures and service exceptions preserve their reached effects.
-// Publishes loaded working dimensions when F06 reaches map allocation. Paths
+// Input closes once before installation. Decode/allocation failures retain the
+// old map; successful installation publishes setup dimensions before choices. Paths
 // are opaque to this parent except that embedded NUL is outside its domain.
 std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
                                               formats::StartingPositions& starts,

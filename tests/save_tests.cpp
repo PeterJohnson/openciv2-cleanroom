@@ -323,7 +323,7 @@ TEST_CASE("F06 stored save rejects truncated required blocks unsupported version
     // Each byte boundary, including mid-record, must fail without touching input.
     for (std::size_t end = 0; end < bytes.size(); ++end)
         CHECK_THROWS_AS(decode_stored_save(std::span{bytes}.first(end)), DecodeError);
-    for (Byte version : std::array<Byte, 8>{0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2d}) {
+    for (Byte version : std::array<Byte, 5>{0x25, 0x29, 0x2a, 0x2b, 0x2d}) {
         auto bad = bytes;
         bad[10] = version;
         CHECK_THROWS_AS(decode_stored_save(bad), DecodeError);

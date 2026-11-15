@@ -187,9 +187,10 @@ TEST_CASE("F06 preparation errors open no output and accepted save effects survi
     CHECK(invalid.opens == 0);
     Fixture f;
     f.fail_write = true;
+    const auto layout = f.runtime.world().layout;
     CHECK(f.save(true) == CoreSaveStatus::output);
     CHECK((f.runtime.world().globals.game_flags & 0x40) != 0);
     CHECK(f.runtime.world().names[1].leader.bytes[0] == 'L');
-    CHECK(f.runtime.world().layout.rectangles[0] == f.files.current_screen);
+    CHECK(f.runtime.world().layout == layout);
     CHECK(f.closes == 1);
 }

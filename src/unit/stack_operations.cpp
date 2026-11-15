@@ -30,20 +30,14 @@ StackOperations::OperationState StackOperations::state(PlacementOperation operat
     }
     throw std::invalid_argument("Unknown unit placement operation");
 }
-bool StackOperations::begin(PlacementRequest request) {
-    auto operation = state(request.operation);
-    operation.active = true;
-    if (world_.globals.multiplayer < 3 || world_.multiplayer.network_host)
-        return true;
-    request_unit_operation(
-        operation.active, operation.reply, world_.turn_loop_active,
-        [&] { services_.request(request); }, services_);
-    return false;
+void StackOperations::begin(PlacementOperation operation) {
+    if (world_.globals.multiplayer >= 3 && !world_.multiplayer.network_host)
+        throw std::logic_error("Local placement requires authority; route through UnitOperation");
+    state(operation).active = true;
 }
 void StackOperations::synchronize(bool sync) {
     if (world_.globals.multiplayer >= 3 && sync) {
-        services_.state_difference();
-        services_.flush(5000);
+        services_.synchronize();
     }
 }
 void StackOperations::finish(PlacementOperation operation, bool sync) {
@@ -52,22 +46,19 @@ void StackOperations::finish(PlacementOperation operation, bool sync) {
 }
 void StackOperations::detach(std::int32_t slot, bool sync) {
     local_.step();
-    if (!begin({PlacementOperation::detach, {slot}}))
-        return;
+    begin(PlacementOperation::detach);
     local_.detach_body(slot);
     finish(PlacementOperation::detach, sync);
 }
 void StackOperations::attach_at_front(std::int32_t slot, world::Position position, bool sync) {
     local_.step();
-    if (!begin({PlacementOperation::attach, {slot, position.x, position.y}}))
-        return;
+    begin(PlacementOperation::attach);
     local_.attach_body(slot, position);
     finish(PlacementOperation::attach, sync);
 }
 void StackOperations::relocate(std::int32_t slot, world::Position position, bool sync) {
     local_.step();
-    if (!begin({PlacementOperation::relocate, {slot, position.x, position.y}}))
-        return;
+    begin(PlacementOperation::relocate);
     detach(slot, false);
     attach_at_front(slot, position, false);
     finish(PlacementOperation::relocate, sync);
@@ -81,8 +72,7 @@ void StackOperations::move_to_bottom(std::int32_t slot, bool sync) {
     if (local_.record(slot).next.value < 0)
         return;
     local_.step();
-    if (!begin({PlacementOperation::bottom, {slot}}))
-        return;
+    begin(PlacementOperation::bottom);
     if (local_.record(slot).next.value >= 0) {
         const world::Position position{local_.record(slot).x, local_.record(slot).y};
         auto anchor = first(slot);

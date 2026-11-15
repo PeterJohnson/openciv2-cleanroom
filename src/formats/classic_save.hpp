@@ -33,9 +33,9 @@ struct StoredEvents {
     std::vector<StoredEvent> entries;
     bool operator==(const StoredEvents&) const = default;
 };
-// F06 §§2–4,8 stored-file view, currently version 0x2c only. It owns its values;
-// no rules, process state, tokens, live map, RNG or presentation are accessed.
-// The full F06 §6 session-load operation is a separate integration boundary.
+// F06 §§2–4,8 stored-file view, supported classic input versions; current output is 0x2c. It owns
+// its values; no rules, process state, tokens, live map, RNG or presentation are accessed. The full
+// F06 §6 session-load operation is a separate integration boundary.
 struct StoredSave {
     GameHeader header;
     state::GlobalValues globals;

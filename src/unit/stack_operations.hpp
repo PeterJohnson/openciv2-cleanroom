@@ -1,23 +1,17 @@
 #pragma once
 
 #include "state/game.hpp"
-#include "unit/request.hpp"
 #include "unit/stacks.hpp"
 
 namespace openciv::unit {
 enum class PlacementOperation { detach, attach, relocate, bottom };
-struct PlacementRequest {
-    PlacementOperation operation;
-    // U01 section 9: unit, optionally x/y, with all unused arguments zero.
-    // N02 owns the wire envelope. The caller's sync flag is never forwarded.
-    std::array<std::int32_t, 6> arguments{};
-    bool operator==(const PlacementRequest&) const = default;
-};
-struct StackOperationServices : UnitNetworkServices {
-    std::function<void(PlacementRequest)> request;
+struct StackOperationServices {
+    // Semantic completion notification. Transport scheduling belongs to the session.
+    std::function<void()> synchronize;
 };
 // U01 sections 2–4, 9: independently gated placement, including the children
-// reached from repairing traversals. No terrain revelation or move cost is added.
+// reached from repairing traversals. Local/host authority is required; remote
+// requests use session::UnitOperation. No terrain revelation or move cost is added.
 class StackOperations {
 public:
     StackOperations(state::GameState& world, StackBudget& budget, StackServices stack_services,
@@ -49,7 +43,7 @@ private:
         std::int32_t& reply;
     };
     OperationState state(PlacementOperation operation);
-    bool begin(PlacementRequest request);
+    void begin(PlacementOperation operation);
     void synchronize(bool sync);
     void finish(PlacementOperation operation, bool sync);
     state::GameState& world_;

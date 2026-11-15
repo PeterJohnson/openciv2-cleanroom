@@ -98,15 +98,13 @@ struct Fixture {
             trace.push_back("probe:" + std::string(directory) + "\\" + std::string(name));
             return name.starts_with("EVENTS.") && resource_exists;
         };
-        services.input.load_rules = [&](bool init) {
-            CHECK(init);
-            trace.push_back("rules");
+        services.input.load_content = [&] {
+            trace.push_back("content");
+            auto input = std::make_unique<state::RuleInput>();
+            input->definitions = process.rules->definitions;
+            return state::LoadedContent{std::move(input), {}};
         };
-        services.input.reload_table = [&](LoadedRuleTable, bool init) {
-            CHECK(init);
-            trace.push_back("reload");
-        };
-        services.input.close_rules = [&] { trace.push_back("rules-close"); };
+        services.deletion.check_destroyed = [](std::int32_t, std::int32_t) {};
         services.parse_events = [&](std::string_view stem, std::string_view section) {
             CHECK(stem == "EVENTS");
             CHECK(section == "BEGINEVENTS");
@@ -145,7 +143,8 @@ struct Fixture {
         runtime.gameplay_random().restore(controlled.checkpoint());
     }
     std::vector<std::string> after_close() const {
-        const auto found = std::find(trace.begin(), trace.end(), "close");
+        const auto content = std::find(trace.begin(), trace.end(), "content");
+        const auto found = std::find(content, trace.end(), "flush");
         REQUIRE(found != trace.end());
         return {found + 1, trace.end()};
     }
@@ -207,7 +206,7 @@ TEST_CASE("F06 ALT mapping uses scaled primary boundaries and service enumeratio
         // Contains .SCN in the directory, not the selected filename extension.
         CHECK(f.load("C:\\home\\campaign.sCn.extra\\chosen.bin") == CoreLoadStatus::input);
         CHECK(f.files.opened_path == "C:\\home\\campaign.sCn.extra\\" + std::string(selected[i]));
-        CHECK(f.enumerations == (i < 2 ? 1 : 2));
+        CHECK(f.enumerations == 1);
         CHECK_NOTHROW(f.runtime.gameplay_random().require_choices_consumed());
         CHECK(f.runtime.gameplay_random().checkpoint().trace->events.size() == 1);
         CHECK(f.dialog.chosen_path == "prior-path");
@@ -226,22 +225,6 @@ TEST_CASE("F06 missing alternatives and ordinary choices consume no variant draw
         CHECK(f.enumerations == (scenario ? 1 : 0));
         CHECK(f.runtime.gameplay_random().checkpoint() == before);
     }
-}
-
-TEST_CASE("F06 inconsistent ALT enumeration stops after its consumed decision",
-          "[session][load-dialog][random]") {
-    Fixture f;
-    f.choice(32767);
-    f.services.enumerate = [&](std::string_view, std::string_view) {
-        return ++f.enumerations == 1 ? std::vector<std::string>{"a.ALT", "b.ALT"}
-                                     : std::vector<std::string>{"b.ALT", "a.ALT"};
-    };
-    CHECK_THROWS_AS(f.load("C:\\home\\choice.scn"), std::invalid_argument);
-    CHECK(f.enumerations == 2);
-    CHECK(f.opens == 0);
-    CHECK(f.dialog.chosen_path == "prior-path");
-    CHECK(f.dialog.loaded_file_kind == 19);
-    CHECK_NOTHROW(f.runtime.gameplay_random().require_choices_consumed());
 }
 
 TEST_CASE("F06 ALT backing errors stop without fabricating a load result",
@@ -271,8 +254,8 @@ TEST_CASE("F06 ordinary load replaces options and clears an unloaded retained ev
     auto& world = f.runtime.world();
     world.events.loaded = true;
     REQUIRE(world.events.collection.append());
-    f.services.parse_events = {};
-    f.services.scenario_loaded = {};
+    test::fail_service(f.services.parse_events);
+    test::fail_service(f.services.scenario_loaded);
     f.services.configure_sound = [&](bool enabled) {
         CHECK(enabled);
         CHECK(world.globals.game_options == 0x10018);
@@ -314,9 +297,9 @@ TEST_CASE("F06 scenario replacement resets parses compacts and publishes before 
         CHECK(events.loaded);
         REQUIRE(events.collection.size() == 1);
         CHECK_FALSE(events.collection.contains(old));
-        CHECK_FALSE(events.collection.contains(f.parsed));
-        CHECK(events.collection.at(0)->identity == f.parsed->identity);
-        CHECK(events.collection.at(0)->strings[4] != f.parsed->strings[4]);
+        CHECK(events.collection.contains(f.parsed));
+        CHECK(events.collection.at(0)->identity() == f.parsed->identity());
+        CHECK(events.collection.at(0)->strings[4] == f.parsed->strings[4]);
         CHECK(events.collection.at(0)->strings[4].value() == "Authored event");
         CHECK(events.collection.at(0)->values.turn == 42);
         CHECK(f.runtime.world().globals.game_options == 0x10018);
@@ -324,10 +307,10 @@ TEST_CASE("F06 scenario replacement resets parses compacts and publishes before 
     };
     CHECK(f.load() == CoreLoadStatus::success);
     CHECK(f.after_close() == std::vector<std::string>{"flush", "probe:C:\\home\\EVENTS.GER",
-                                                      "parse", "allocate", "allocate", "allocate",
-                                                      "allocate", "sound:on", "scenario-loaded",
-                                                      "music", "title", "cd:C:\\home"});
-    CHECK(allocations == 4);
+                                                      "parse", "allocate", "allocate", "sound:on",
+                                                      "scenario-loaded", "music", "title",
+                                                      "cd:C:\\home"});
+    CHECK(allocations == 2);
 }
 
 TEST_CASE("F06 unavailable or failed replacement events leave no stale list",
@@ -340,7 +323,7 @@ TEST_CASE("F06 unavailable or failed replacement events leave no stale list",
         events.loaded = true;
         f.resource_exists = exists;
         f.parse_success = false;
-        f.services.scenario_loaded = {};
+        test::fail_service(f.services.scenario_loaded);
         CHECK(f.load() == CoreLoadStatus::success);
         CHECK_FALSE(events.loaded);
         CHECK(events.collection.size() == 0);
@@ -361,7 +344,7 @@ TEST_CASE("F06 persisted events survive the wrapper without replacement or a sce
         event.record.whom_civ = 2;
         save.events->entries.push_back(event);
         f.bytes = formats::encode_stored_save(save);
-        f.services.parse_events = {};
+        test::fail_service(f.services.parse_events);
         CHECK(f.load("C:\\home\\continued.sav", false) == CoreLoadStatus::success);
         CHECK(f.after_close() == std::vector<std::string>{"flush", "sound:on", "scenario-loaded",
                                                           "music", "cd:C:\\home"});
@@ -395,29 +378,6 @@ TEST_CASE("F06 sound and event callbacks precede live music gates and home resto
         CHECK(std::count(f.trace.begin(), f.trace.end(), "scenario-loaded") == (enable ? 1 : 0));
         CHECK(f.trace.back() == "cd:C:\\new-home");
         CHECK(f.runtime.world().events.collection.size() == 1); // No reset after event execution.
-    }
-}
-
-TEST_CASE("F06 compaction resource failures retain the reached copy prefix and stop loading",
-          "[session][load-dialog][events]") {
-    for (const std::size_t fail : {1U, 3U, 4U}) {
-        Fixture f;
-        f.bytes = formats::encode_stored_save(saved(true));
-        auto& events = f.runtime.world().events;
-        std::size_t allocations = 0;
-        f.services.input.events.allocate = [&](state::EventAllocation) {
-            return ++allocations != fail;
-        };
-        CHECK_THROWS_AS(f.load(), std::bad_alloc);
-        CHECK_FALSE(events.loaded);
-        CHECK(events.collection.size() == (fail == 3 ? 0 : 1));
-        CHECK(events.collection.contains(f.parsed) == (fail == 1));
-        CHECK(f.runtime.world().globals.game_options == 0); // Core cleared saved cheat bit.
-        CHECK_FALSE(f.runtime.world().multiplayer.network_host);
-        CHECK(f.dialog.chosen_path == "prior-path");
-        CHECK(f.dialog.loaded_file_kind == 19);
-        CHECK(f.closes == 1);
-        CHECK(std::find(f.trace.begin(), f.trace.end(), "music") == f.trace.end());
     }
 }
 
@@ -473,17 +433,14 @@ TEST_CASE("F06 load wrapper runs real cleanup after presentation and publishes d
     CHECK(client.own_units().records.size() == 1);
 }
 
-TEST_CASE("F06 missing owning child stops at its invocation with earlier effects retained",
+TEST_CASE("F06 missing workflow service rejects before any load effects",
           "[session][load-dialog]") {
     Fixture f;
     f.services.synchronize_music = {};
-    CHECK_THROWS_AS(f.load(), std::bad_function_call);
-    CHECK(f.closes == 1);
-    CHECK(f.after_close() == std::vector<std::string>{"flush", "sound:on"});
-    CHECK(f.runtime.world().globals.game_options == f.process.ordinary_preferences.game_options);
-    CHECK_FALSE(f.runtime.world().multiplayer.network_host);
+    CHECK_THROWS_AS(f.load(), std::invalid_argument);
+    CHECK(f.trace.empty());
+    CHECK(f.opens == 0);
     CHECK(f.dialog.chosen_path == "prior-path");
-    CHECK(f.dialog.loaded_file_kind == 19);
 }
 
 TEST_CASE("F06 completed load retains the selected alternative without drawing again",
@@ -502,7 +459,7 @@ TEST_CASE("F06 completed load retains the selected alternative without drawing a
     CHECK(f.files.opened_path == f.dialog.chosen_path);
     CHECK(f.files.loaded_filename == "first.ALT");
     CHECK(f.files.scenario_directory == "C:\\home\\campaign");
-    CHECK(f.enumerations == 2);
+    CHECK(f.enumerations == 1);
     CHECK(f.opens == 1);
     CHECK(f.closes == 1);
     CHECK_NOTHROW(f.runtime.gameplay_random().require_choices_consumed());

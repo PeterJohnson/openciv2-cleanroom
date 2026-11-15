@@ -12,8 +12,7 @@ struct ClassicLoadDialogState {
 struct LoadDialogServices {
     CoreLoadServices input;
     std::function<void(std::int32_t index)> close_map_window;
-    // Return matching, unqualified filenames in service order. A second call
-    // must supply the same sequence. No sorting or synthetic matches are added.
+    // Return one owned listing of matching, unqualified filenames in service order.
     std::function<std::vector<std::string>(std::string_view directory, std::string_view pattern)>
         enumerate;
     // Required S02 and P10/P01 operations when reached. Parsing appends to the
@@ -31,9 +30,9 @@ struct LoadDialogServices {
 // nullopt input/return means cancellation; otherwise return the core status.
 // Accepted input requires initialized randomness and settled commands. Paths
 // have no embedded NUL and a final backslash. ALT enumerations above 65535
-// entries, inconsistent sequences or unqualified-name violations stop safely.
-// Required services are called at their actual boundary; exceptions retain the
-// completed prefix. Compaction allocation failure stops before loaded=true.
+// entries or unqualified-name violations stop safely. Required wiring is
+// validated before effects; bound semantic children retain their completed prefix. Compaction
+// allocation failure stops before loaded=true.
 std::optional<CoreLoadStatus>
 load_classic_dialog(SessionRuntime& runtime, ClassicFileState& files,
                     ClassicLoadDialogState& dialog, std::optional<std::string> selected_path,

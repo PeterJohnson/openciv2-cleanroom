@@ -63,9 +63,24 @@ StoredSave decode_stored_save(std::span<const Byte> bytes) {
     ByteReader r{bytes};
     StoredSave save;
     save.header = read_record(r, 12, decode_game_header);
-    if (save.header.version != 0x2c)
-        throw DecodeError(10, "Stored-save view currently supports only version 0x2c");
-    save.globals = read_record(r, global_record_size, decode_globals);
+    const auto version = save.header.version;
+    if (game_version_status(version) != VersionStatus::supported)
+        throw DecodeError(10, "Unsupported classic save version");
+    const auto fragments = [&](std::size_t size,
+                               std::initializer_list<std::pair<std::size_t, std::size_t>> parts) {
+        Bytes record(size);
+        for (const auto [offset, length] : parts) {
+            const auto bytes = r.take(length);
+            std::copy(bytes.begin(), bytes.end(),
+                      record.begin() + static_cast<std::ptrdiff_t>(offset));
+        }
+        return record;
+    };
+    if (version < 0x28)
+        save.globals = decode_globals(
+            fragments(global_record_size, {{0, 0x36}, {0x36, 0x5d}, {0x9a, 0x5d}, {0xfe, 0x4c}}));
+    else
+        save.globals = read_record(r, global_record_size, decode_globals);
     std::size_t units = 0, cities = 0;
     try {
         units = count(save.globals.unit_end, state::unit_capacity, "Unit scan bound");
@@ -77,8 +92,23 @@ StoredSave decode_stored_save(std::span<const Byte> bytes) {
     }
     for (auto& v : save.names)
         v = read_record(r, civilization_names_size, decode_civilization_names);
-    for (auto& v : save.civilizations)
-        v = read_record(r, civilization_record_size, decode_civilization);
+    for (auto& v : save.civilizations) {
+        if (version >= 0x28) {
+            v = read_record(r, civilization_record_size, decode_civilization);
+        } else {
+            auto record_bytes = fragments(civilization_record_size, {{0, 0x58},
+                                                                     {0x58, 0xc},
+                                                                     {0x66, 0xe},
+                                                                     {0x74, 0x5d},
+                                                                     {0xd8, 0x36},
+                                                                     {0x116, 0x36},
+                                                                     {0x154, 0x36}});
+            r.take(1);
+            const auto tail = r.take(0x402);
+            std::copy(tail.begin(), tail.end(), record_bytes.begin() + 0x192);
+            v = decode_civilization(record_bytes);
+        }
+    }
     const auto map_offset = r.position();
     auto& map = save.map;
     map.header = read_record(r, map_header_size, decode_map_header);
@@ -100,9 +130,11 @@ StoredSave decode_stored_save(std::span<const Byte> bytes) {
     for (auto& region : map.regions)
         region = read_record(r, region_record_size, decode_region);
     for (std::size_t i = 0; i < units; ++i)
-        save.units.push_back(read_record(r, unit_record_size, decode_unit));
+        save.units.push_back(version < 0x29 ? decode_unit(fragments(unit_record_size, {{0, 26}}))
+                                            : read_record(r, unit_record_size, decode_unit));
     for (std::size_t i = 0; i < cities; ++i)
-        save.cities.push_back(read_record(r, city_record_size, decode_city));
+        save.cities.push_back(version < 0x29 ? decode_city(fragments(city_record_size, {{0, 84}}))
+                                             : read_record(r, city_record_size, decode_city));
     for (auto& tribe : save.tribes) {
         tribe.times_used = r.u8();
         tribe.city_name_index = r.u8();
@@ -121,7 +153,7 @@ StoredSave decode_stored_save(std::span<const Byte> bytes) {
     if (has_scenario(save.globals))
         save.scenario = read_record(r, scenario_parameters_size, decode_scenario_parameters);
     save.eliminations = read_record(r, elimination_record_size, decode_elimination_history);
-    if (save.globals.multiplayer != 0)
+    if (version >= 0x29 && save.globals.multiplayer != 0)
         save.multiplayer = read_record(r, multiplayer_record_size, decode_multiplayer);
     if (has_event_tag(r.remaining())) {
         r.take(4);

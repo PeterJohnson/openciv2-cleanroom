@@ -1,5 +1,6 @@
 // Authored P04 section 2 / Appendix B and F03 section 2 expectations.
 #include "formats/classic_labels.hpp"
+#include "session/text_configuration.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <limits>
 #include <map>
@@ -32,7 +33,12 @@ struct Fixture {
                 },
                 {}};
     }
-    LabelLoader loader() { return {reader, directories, pool, labels, hooks}; }
+    state::LabelCatalog read() { return load_labels(reader, directories, hooks); }
+    void rebuild() { state::install_labels(read(), pool, labels); }
+    std::int32_t load() {
+        rebuild();
+        return static_cast<std::int32_t>(labels.entries.size());
+    }
 };
 std::string table(std::int32_t count, std::string_view prefix = "Label") {
     std::string result = "@LABELS\n" + std::to_string(count) + "\n";
@@ -47,14 +53,12 @@ TEST_CASE("P04 classic label indices and popup text resolve authored content",
     Fixture f;
     f.files["scenario/LABELS.TXT"] =
         "@STRINGHEAP\n50000\n" + table(888) + "@POPUPS\nOK\nHelp\nCancel\nUnused\n";
-    f.loader().rebuild();
+    f.rebuild();
     REQUIRE(f.labels.declared_count == 888);
     REQUIRE(f.labels.entries.size() == 888);
     REQUIRE(f.labels.label(887, f.pool) == "Label887");
     REQUIRE(f.labels.popup(1, f.pool) == "Help");
-    REQUIRE(f.reader.is_open()); // Popup loading does not close the section file.
-    REQUIRE(f.reader.next_line());
-    REQUIRE(f.reader.line() == "Unused");
+    REQUIRE_FALSE(f.reader.is_open());
     REQUIRE(f.opens == std::vector<std::string>(2, "scenario/LABELS.TXT"));
     REQUIRE(f.directories.working == "caller");
 }
@@ -63,7 +67,7 @@ TEST_CASE("P04 short labels append installation rows then share one error label"
     Fixture f;
     f.files["scenario/LABELS.TXT"] = "@LABELS\n2\nScenario,whole;label\n\n";
     f.files["home/LABELS.TXT"] = "@LABELS\n4\nSkipped0\nSkipped1\nHome2\nHome3\n";
-    REQUIRE(f.loader().load_labels() == 888);
+    REQUIRE(f.load() == 888);
     REQUIRE(f.labels.declared_count == 2); // Fallback count is not published here.
     REQUIRE(f.labels.label(0, f.pool) == "Scenario,whole;label");
     REQUIRE(f.labels.entries[1] == 0); // Ordinary empty text did not allocate.
@@ -81,7 +85,7 @@ TEST_CASE("P04 zero and negative label counts retain signed publication and fall
         Fixture f;
         f.files["scenario/LABELS.TXT"] = table(count);
         f.files["home/LABELS.TXT"] = table(2, "Home");
-        REQUIRE(f.loader().load_labels() == 888);
+        REQUIRE(f.load() == 888);
         REQUIRE(f.labels.declared_count == count);
         REQUIRE(f.labels.label(0, f.pool) == "Home0");
         REQUIRE(f.labels.label(1, f.pool) == "Home1");
@@ -102,13 +106,11 @@ TEST_CASE("P04 missing labels report failure clear the collection and retain pop
         REQUIRE(f.labels.declared_count == 7);
         REQUIRE(f.labels.entries.size() == 1);
     };
-    auto loader = f.loader();
-    REQUIRE(loader.load_labels() == 0);
+    REQUIRE(f.load() == 0);
     REQUIRE(reports == 1);
     REQUIRE(f.labels.declared_count == 0);
     REQUIRE(f.labels.entries.empty());
     REQUIRE_THROWS_AS(f.labels.label(0, f.pool), std::out_of_range);
-    loader.load_popups();
     REQUIRE(f.labels.popup(1, f.pool) == "Old help");
     REQUIRE(f.pool.size() == 3);
     REQUIRE_FALSE(f.reader.is_open());
@@ -126,7 +128,7 @@ TEST_CASE("P04 initialization selects language and ignores original heap-size hi
         f.files["scenario/LABELS." + std::string(extension)] = "@STRINGHEAP\n36000\n";
         f.labels.entries = {f.pool.store("Retained until rebuild")};
         unsigned caches = 0;
-        f.loader().initialize(language, [&] {
+        session::initialize_text(language, f.directories, f.pool, f.labels, [&] {
             ++caches;
             REQUIRE(f.directories.extension == extension);
             REQUIRE(f.opens.empty());
@@ -142,7 +144,7 @@ TEST_CASE("P04 initialization selects language and ignores original heap-size hi
         REQUIRE(f.labels.entries.size() == 1); // Only rebuild releases labels.
         REQUIRE_THROWS_AS(f.labels.label(0, f.pool), std::out_of_range);
         f.files["scenario/LABELS." + std::string(extension)] = "@STRINGHEAP\n35001\n";
-        f.loader().initialize(language, [] {});
+        session::initialize_text(language, f.directories, f.pool, f.labels, [] {});
     }
 }
 TEST_CASE("P04 label rebuild preserves unrelated rule references", "[classic][labels]") {
@@ -152,7 +154,7 @@ TEST_CASE("P04 label rebuild preserves unrelated rule references", "[classic][la
     const auto old_rule_binding = f.pool.store("Old rule");
     f.labels.popups[0] = old_rule_binding;
     f.files["scenario/LABELS.GER"] = "@STRINGHEAP\n40000\n" + table(888, "New");
-    f.loader().rebuild();
+    f.rebuild();
     REQUIRE(f.labels.status_language == 2);
     REQUIRE(f.directories.extension == "GER");
     REQUIRE(f.pool.text(old_rule_binding) == "Old rule");
@@ -163,10 +165,23 @@ TEST_CASE("P04 invalid label counts cannot write outside the resource table", "[
         Fixture f;
         f.files["scenario/LABELS.TXT"] = table(fallback ? 1 : 889);
         f.files["home/LABELS.TXT"] = table(889, "Home");
-        REQUIRE_THROWS_AS(f.loader().load_labels(), std::out_of_range);
-        REQUIRE(f.labels.declared_count == (fallback ? 1 : 889));
-        REQUIRE(f.labels.entries.size() == 888);
-        REQUIRE(f.labels.label(887, f.pool) == (fallback ? "Home887" : "Label887"));
+        REQUIRE_THROWS_AS(f.load(), std::out_of_range);
+        REQUIRE(f.labels.entries.empty());
+        REQUIRE(f.pool.size() == 1);
+        REQUIRE_FALSE(f.reader.is_open());
         REQUIRE(f.directories.search == "scenario");
     }
+}
+
+TEST_CASE("P04 parsed catalogs own their text independently of reader and runtime pools",
+          "[classic][labels]") {
+    Fixture f;
+    f.files["scenario/LABELS.TXT"] = table(2, "Owned");
+    auto catalog = f.read();
+    CHECK(f.labels.entries.empty());
+    CHECK(f.pool.size() == 1);
+    f.files.clear();
+    f.reader.close();
+    state::install_labels(catalog, f.pool, f.labels);
+    CHECK(f.labels.label(0, f.pool) == "Owned0");
 }

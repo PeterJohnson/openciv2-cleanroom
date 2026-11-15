@@ -1,6 +1,7 @@
 // F02/F03 logical text and F06 storage separation.
 #include "rules/rules_install.hpp"
 #include "formats/leader_io.hpp"
+#include "session/game_install.hpp"
 #include "rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 using namespace openciv;
@@ -75,14 +76,15 @@ TEST_CASE("Stored markers preserve custom status independently of text identitie
     stored.plural = -32768;
     stored.names[0] = 12345;
     REQUIRE(formats::decode_leader(formats::encode_leader(stored)) == stored);
-    formats::LeaderLoadScratch scratch;
-    scratch.by_tribe[1].assign(stored);
-    state::GlobalValues globals;
-    globals.player_civ = 1;
-    auto civs = std::make_unique<std::array<state::Civilization, 8>>();
-    (*civs)[1].tribe = 1;
-    std::array<state::CivilizationNames, 8> names;
-    formats::restore_leader_names(false, globals, *civs, names, *live, scratch);
+    auto input = std::make_unique<state::GameInput>();
+    input->leaders[1].emplace();
+    input->leaders[1]->plural = input->leaders[1]->adjective = true;
+    input->leaders[1]->titles[3][1] = true;
+    state::ProcessContext process;
+    state::GameState world(process);
+    world.globals.player_civ = 1;
+    world.civilizations[1].tribe = 1;
+    session::restore_leader_names(*input, world, *live);
     REQUIRE(leader.plural == state::NameReference{10, true});
     REQUIRE(leader.adjective.custom);
     REQUIRE(leader.titles[3][1].custom);

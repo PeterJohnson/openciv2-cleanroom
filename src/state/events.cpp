@@ -11,36 +11,15 @@ std::string_view terminated(std::string_view text) {
 bool allowed(const EventServices& services, EventAllocationKind kind, std::size_t bytes) {
     return !services.allocate || services.allocate({kind, bytes});
 }
-void check_member(const EventCollection& collection, const std::shared_ptr<Event>& event) {
+void check_member(const EventCollection& collection, const std::shared_ptr<const Event>& event) {
     if (!collection.contains(event))
         throw std::out_of_range("Event callback invalidated the selected event");
 }
-std::size_t minimum(std::size_t field) {
-    if (field == 0 || field == 25 || field == 29 || field == 32)
-        return 15;
-    return (field >= 4 && field < 24) || field == 34 ? 1 : 24;
-}
-bool duplicate(EventString& target, const EventString& source, const EventServices& services,
-               std::size_t capacity) {
-    capacity = std::max(capacity, terminated(source.value()).size() + 1);
-    if (allowed(services, EventAllocationKind::string, capacity)) {
-        // The reference argument is captured; its contents are live after the
-        // resource call. A grown string cannot overrun the admitted capacity.
-        const auto text = terminated(source.value());
-        if (text.size() + 1 > capacity)
-            throw std::out_of_range("Event copy source grew beyond supplied string backing");
-        try {
-            target = EventString(text);
-            return true;
-        } catch (const std::bad_alloc&) {
-        }
-    }
-    if (services.report)
-        services.report(-9, 3);
-    return false;
+bool duplicate(EventString& target, const EventString& source, const EventServices& services) {
+    return create_event_string(target, source.value(), services);
 }
 bool copy(const EventCollection& source, EventCollection& destination,
-          const EventServices& services, bool preserve_identity) {
+          const EventServices& services) {
     if (&source == &destination)
         throw std::invalid_argument("Event self-copy has no admitted finite traversal");
     for (std::size_t i = 0; i < source.size(); ++i) {
@@ -51,11 +30,10 @@ bool copy(const EventCollection& source, EventCollection& destination,
         check_member(source, from);
         to->values = from->values;
         to->strings = from->strings;
-        if (preserve_identity)
-            to->identity = from->identity;
     }
     for (std::size_t i = 0; i < source.size(); ++i) {
-        const auto from = source.at(i), to = destination.at(i);
+        const auto from = source.at(i);
+        const auto to = destination.at(i);
         for (std::size_t field = 0; field < event_string_count; ++field) {
             if (field >= event_text_begin && field < event_other_begin &&
                 !from->strings[field].present()) {
@@ -67,7 +45,7 @@ bool copy(const EventCollection& source, EventCollection& destination,
             // Keep the supplied identity alive through resource callbacks.
             const auto reference = from->strings[field];
             EventString replacement;
-            if (!duplicate(replacement, reference, services, minimum(field)))
+            if (!duplicate(replacement, reference, services))
                 return false;
             check_member(source, from);
             check_member(destination, to);
@@ -79,11 +57,6 @@ bool copy(const EventCollection& source, EventCollection& destination,
 } // namespace
 EventString::EventString(std::string_view text)
     : text_(std::make_shared<std::string>(terminated(text))) {}
-EventString EventString::unresolved() {
-    EventString result;
-    result.unresolved_ = true;
-    return result;
-}
 std::string& EventString::value() {
     if (!text_)
         throw std::out_of_range("Event string has no established text backing");
@@ -94,32 +67,16 @@ const std::string& EventString::value() const {
         throw std::out_of_range("Event string has no established text backing");
     return *text_;
 }
-std::array<std::uint32_t*, event_string_count> event_markers(EventValues& v) {
-    std::array<std::uint32_t*, event_string_count> result{};
-    result[0] = &v.unit_name;
-    result[1] = &v.city_name;
-    result[2] = &v.who_name;
-    result[3] = &v.whom_name;
-    for (std::size_t i = 0; i < 20; ++i)
-        result[4 + i] = &v.text[i];
-    const std::array other{&v.move_owner_name,     &v.move_unit_name,     &v.aggression_whom_name,
-                           &v.aggression_who_name, &v.create_owner_name,  &v.create_unit_name,
-                           &v.create_homecity,     &v.auxiliary_civ_name, &v.auxiliary_unit_name,
-                           &v.money_receiver_name, &v.wave_file};
-    std::copy(other.begin(), other.end(), result.begin() + event_other_begin);
-    return result;
-}
 void Event::set_string(std::size_t field, EventString text) {
     auto& target = strings.at(field);
-    *event_markers(values)[field] = text.present() ? 1 : 0;
     target = std::move(text);
 }
-bool EventCollection::contains(const std::shared_ptr<Event>& event) const noexcept {
+bool EventCollection::contains(const std::shared_ptr<const Event>& event) const noexcept {
     return std::find(entries_.begin(), entries_.end(), event) != entries_.end();
 }
-std::shared_ptr<Event> EventCollection::find(EventId identity) const noexcept {
+std::shared_ptr<const Event> EventCollection::find(EventId identity) const noexcept {
     for (const auto& event : entries_)
-        if (event->identity == identity)
+        if (event->identity() == identity)
             return event;
     return {};
 }
@@ -133,7 +90,7 @@ std::shared_ptr<Event> EventCollection::append(const EventServices& services) {
         throw std::overflow_error("Event logical identities exhausted");
     try {
         auto event = std::make_shared<Event>();
-        event->identity = static_cast<EventId>(next_identity_);
+        event->identity_ = static_cast<EventId>(next_identity_);
         entries_.push_back(event);
         ++next_identity_;
         ++revision_;
@@ -163,13 +120,32 @@ bool create_event_string(EventString& target, std::string_view text, const Event
 }
 bool copy_events(const EventCollection& source, EventCollection& destination,
                  const EventServices& services) {
-    return copy(source, destination, services, false);
+    return copy(source, destination, services);
+}
+std::shared_ptr<Event> EventCollection::find(EventId identity) noexcept {
+    for (const auto& event : entries_)
+        if (event->identity() == identity)
+            return event;
+    return {};
+}
+bool EventCollection::compact(const EventServices& services) {
+    const auto revision = revision_;
+    EventCollection replacement;
+    auto admission = services;
+    admission.allocate = [&](EventAllocation request) {
+        const auto result = allowed(services, request.kind, request.bytes);
+        if (revision_ != revision)
+            throw std::logic_error("Event resource admission changed the source collection");
+        return result;
+    };
+    if (!copy(*this, replacement, admission))
+        return false;
+    for (std::size_t i = 0; i < entries_.size(); ++i)
+        entries_[i]->strings = std::move(replacement.entries_[i]->strings);
+    ++revision_;
+    return true;
 }
 bool compact_events(EventCollection& collection, const EventServices& services) {
-    EventCollection temporary;
-    if (!copy(collection, temporary, services, true))
-        return false;
-    collection.reset();
-    return copy(temporary, collection, services, true);
+    return collection.compact(services);
 }
 } // namespace openciv::state

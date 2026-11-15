@@ -1,8 +1,7 @@
 # Unit stack and deletion foundations for post-load cleanup
 
 `unit::StackOperations` implements U01 sections 2–4 traversal, ordered validation,
-detach/front attachment, relocation and bottom ordering with section 9 authority
-and synchronization. It uses `LocalStacks`' real unit-pool and W01 map bodies. The
+detach/front attachment, relocation and bottom ordering for local/host authority. It uses `LocalStacks`' real unit-pool and W01 map bodies. The
 runtime owns its suppression, animation and per-operation activity fields in
 `GameState::unit_stacks`; constructing or replacing a client session does not
 perform a classic lifecycle reset of these fields.
@@ -29,57 +28,51 @@ markers clear on normal return only, and are boolean assignments rather than loc
 
 ## Routed placement and composite operations
 
-`StackOperations` supplies real detach/attach children to repairing traversal,
-including recursive repair during destination lookup. Each child rechecks the
-live mode and host flag independently. An admitted received-message callback can
-change authority before the next child; diagnostics cannot. The already selected local
-body continues after callbacks; it does not restart or discard received effects.
-Standalone `LocalStacks` retains its explicit local/host precondition.
+`StackOperations` supplies local detach/attach children to repairing traversal.
+It rejects remote execution; gameplay methods do not pump messages or wait for
+replies. Relocation and whole-stack ordering keep their local composition and
+semantic completion notifications.
 
-Detach, attach, relocate and move-to-bottom each own distinct activity/reply
-fields. Their client requests carry the full signed arguments in six fields,
-zeroing unused fields and omitting synchronization flags. The shared U01
-request/wait implementation also serves basic deletion without combining its
-state or request boundary. N02/N03 still own wire production, dispatch and
-state-difference application. Local activity clears only after the selected
-synchronization and flush sequence returns; a callback changing mode does not
-cancel the already selected flush.
+`session::UnitOperation` owns the routed lifetime. It chooses local execution or
+an owned noncopyable `UnitRequestChannel`, preserves distinct operation reply and
+activity state, sends each primitive once and yields. Whole-stack relocation captures the next
+member before each child request and rechecks authority when that child completes.
+Each poll performs bounded work. Wrapping
+ticks determine the 3600-tick timeout; queued late replies drain across subsequent
+polls. Timeout notification precedes disabling the turn loop. Cancellation,
+failure and completion release the channel and session guard exactly once.
 
-Relocation composes independently gated detach/attach with synchronization false,
-then its own synchronization tail. Relocate-in-place captures coordinates first.
-Move-to-bottom reads the successor before activity/authority entry, preserves its
-terminal early return, then uses the real head/next/detach/last operations. Whole-stack
-relocation captures each next member before relocation, has no combined request or
-activity gate, and runs its outer synchronization even for a negative entry.
-Front insertion reverses transferred members, including movement to their current
-position. Child requests remain separate when authority selects a nonhost.
+N02/N03 adapters own wire encoding, state-difference application and transport
+scheduling. Local synchronization is a semantic notification to that adapter.
+The graphical/browser caller can continue rendering and processing unrelated
+work while a request is pending. Tests exercise local routing, all remote request
+kinds, pending replies, wraparound, late replies, cancellation and service failure.
 
 ## Basic deletion and the F06 cleanup scan
 
-`unit::UnitDeletion::erase` implements U01 section 6's basic deletion and its
-section 9 request/wait boundary. Negative and lifetime-zero entries return before
+`unit::UnitDeletion::erase` implements U01 section 6's local deletion.
+`session::UnitOperation` owns its remote request boundary. Negative and lifetime-zero entries return before
 activity or authority handling. Local deletion captures the selectors, applies
 the guarded military/per-type/cached-total decrements at their specified widths,
 detaches through the real stack primitive, clears the lifetime and shrinks only
 the exact tail once. Its carrier-reference scan includes free records and changes
 only matching sleep orders. Loss statistics are retained.
 
-The optional local notifications include home slot zero. The later network tail
-excludes home zero, tests mode after prior children and completes its selected
-sequence without retesting mode between callbacks. The last exact settlement-type
-gate invokes the required V01 destruction-check child even with notifications off.
-Another settlement type does not suppress that call; V01 decides the outcome.
-Captures survive callbacks while the later rule, count and mode reads remain live.
+The optional local notifications include home slot zero. The transport adapter's
+semantic synchronization notification carries the changed position and optional
+home; its home notice excludes zero. The final settlement-type gate invokes the
+required V01 destruction-check child even with notifications off. Another
+settlement type does not suppress that call; V01 decides the outcome.
+Captures survive gameplay children while subsequent rule, count and mode reads
+remain live.
 
-On a network nonhost, deletion clears its activity, assigns Pending, sends once,
-reads the start tick even after a synchronous reply, and processes messages until
-a reply or the signed wrapping 3,600-tick boundary. Timeout logs and notifies before
-disabling the classic turn loop; the final queue drain can deliver a late reply.
-There is no local mutation fallback and no final activity clear after reentrant
-client callbacks. N02/N03 wire production, dispatch and synchronization remain
-required bindings, as does V01's destruction cascade. Unbound children throw at
-the invocation, retaining established effects; the tests supply explicit child
-outcomes rather than claiming those owning algorithms are implemented.
+The session operation implements remote deletion with the same pending reply,
+wrapping deadline and late-reply drain as placement, without local mutation
+fallback. Required children are checked before admission; a bound child that
+throws retains established effects. N02/N03 wire production, dispatch and
+synchronization remain adapter bindings, and V01's destruction cascade remains
+an owning gameplay child. Tests supply explicit child outcomes without claiming
+those owning algorithms are implemented.
 
 Runtime state now includes the separate eight cached unit totals, deletion
 activity/reply, classic turn-loop activity and network-host flag. They are retained
@@ -99,8 +92,8 @@ This extracted cleanup stage is now called by the
 [accepted-file dialog](m1-stored-saves.md#accepted-file-load-caller) after core input,
 event replacement/execution, preference/audio/title effects and home-directory
 return. Required owning children and application admission remain separate work.
-Its placement children honor authority changes at real network boundaries.
-Diagnostic-driven authority changes are not production cases. Required S02/P10/V01
+Its placement children require local authority; the session owns remote request
+continuations. Diagnostic-driven authority changes are not production cases. Required S02/P10/V01
 implementations, native bindings and application admission remain open.
 
 ## Backing and execution boundaries

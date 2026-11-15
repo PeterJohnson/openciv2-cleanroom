@@ -46,7 +46,18 @@ using EliminationHistory = state::EliminationHistory;
 using MultiplayerRecord = state::MultiplayerValues;
 // Serialized presence words are retained bits, never pointers/IDs/offsets.
 // Strings live separately in StoredEvent; this record alone executes nothing.
-using EventRecord = state::EventValues;
+struct EventRecord : state::EventValues {
+    std::uint32_t unit_name = 0, city_name = 0, who_name = 0, whom_name = 0;
+    std::array<std::uint32_t, 20> text{};
+    std::uint32_t move_owner_name = 0, move_unit_name = 0;
+    std::uint32_t aggression_whom_name = 0, aggression_who_name = 0;
+    std::uint32_t create_owner_name = 0, create_unit_name = 0, create_homecity = 0;
+    std::uint32_t auxiliary_civ_name = 0, auxiliary_unit_name = 0;
+    std::array<std::uint8_t, 40> retained{};
+    std::uint32_t money_receiver_name = 0, wave_file = 0;
+    bool operator==(const EventRecord&) const = default;
+};
+std::array<std::uint32_t*, state::event_string_count> event_markers(EventRecord& values);
 state::GlobalValues decode_globals(std::span<const Byte> bytes);
 state::Civilization decode_civilization(std::span<const Byte> bytes);
 state::CivilizationNames decode_civilization_names(std::span<const Byte> bytes);

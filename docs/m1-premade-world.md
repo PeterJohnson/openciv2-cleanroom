@@ -8,18 +8,15 @@ interactions.
 
 ## Ordered behavior
 
-Cancellation leaves state untouched. An accepted path opens a binary input;
-open failure reports the required failure notice. The F06 reader consumes its
-14-byte header, separate X and Y arrays, and tile item, preserving its existing
-short-item and allocation behavior. At map allocation, the parent copies the
-published doubled width/height to retained setup dimensions. An earlier short
-header or start-array read preserves the previous dimensions and map. There is
-no exact-EOF check or trailing-byte consumption.
+Cancellation leaves state untouched. An accepted path opens a binary input and
+reads bounded owned bytes. Decode and close complete before installation. Short
+or malformed inputs and close failures report failure without changing the map,
+starts or setup dimensions. Trailing bytes are accepted. A close exception is
+never retried.
 
-The input closes once before preparation or a returned-failure notice. A returned
-close failure is ignored. Resource/service exceptions close the input and stop
-at the reached state; a close exception is not retried. Neither short tile reads
-nor resource failures receive successful-load normalization.
+Raw records convert to the common `MapInput`. New storage is prepared before
+replacing the existing map, so allocation failure retains the old map. Successful
+installation publishes starts and setup dimensions before F05 preparation.
 
 Successful preparation clears tile features, the entire radius metadata byte,
 revelation, regions and fertility, and makes occupants Unowned. Terrain/terrain
@@ -45,11 +42,10 @@ failed map selection returns without discarded RNG draws under F05/X01.
 
 ## Publication and verification
 
-The owner may run setup before client admission. An active runtime publishes
-before every input, allocation, close, notice, clock and choice callback, and on
-normal or exceptional completion. The operation does not create/revoke leases.
-Pending session commands reject an accepted load before opening input. Missing
-required services stop where reached; optional allocation checks remain optional.
+The owner may run setup before client admission. Actual choice/clock/notice
+boundaries publish to active clients, as does completion. The operation does not
+create or revoke leases. Pending commands and missing required service bindings
+reject before input. Allocation admission is not gameplay reentry.
 
 Portable tests use independently authored binary inputs and specification
 expectations. They cover exact normalized tile bytes, retained backing, all

@@ -78,23 +78,13 @@ a complete folding table. Byte text and presentation encoding remain separate.
 
 ## Shared labels and startup
 
-`formats::classic::LabelLoader` implements P04 §2 using the same reader and pool.
-Initialization selects language and invokes the supplied GAME-cache builder.
-Original STRINGHEAP size hints are ignored. Label loading is separate. Rebuild
-replaces labels while preserving rule references and missing-popup fallbacks;
-it does not reset the text pool, language or lookup configuration.
+`formats::classic::load_labels` returns an owned `state::LabelCatalog`, including
+home fallback and popup text. It closes its reader before returning and never
+accesses a live text pool. `state::install_labels` publishes catalog text into the
+shared pool, retaining popup bindings when their source is absent. Parsing errors
+leave installed labels untouched. Language selection and GAME-cache setup belong
+to `session::initialize_text`, independently of any label source.
 
-Classic resources use 888 label indices and three popup roles. Short tables
-load installation fallbacks and then `[ERROR:LABELS.TXT]`; ordinary empty text
-resolves to `<nil>`. Invalid writes are bounded, missing LABELS reports failure,
-and scoped search overrides restore on failure. No original handle/lock errors,
-heap capacity or allocation callbacks are modeled.
-
-The GAME-cache builder remains a supplied service. F03 specifies header recognition
-and indexed lookup but not the builder's finite capacity or duplicate insertion
-policy. Those are specification gaps for building the original cache; no guessed
-dictionary implementation is used. Uncached unique-header inputs can already run
-through the reader. Full application startup and session reload wiring remain open.
 
 ## Classic rule tables
 

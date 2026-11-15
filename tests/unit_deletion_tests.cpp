@@ -42,31 +42,16 @@ struct Fixture {
             if (on_destroyed)
                 on_destroyed();
         };
-        services.state_difference = [&] {
+        services.synchronize = [&](world::Position position, std::optional<state::CitySlot> home) {
             calls.push_back("sync");
             if (on_sync)
                 on_sync();
-        };
-        services.unit_change = [&](world::Position position) {
             calls.push_back("unit:" + std::to_string(position.x) + "," +
                             std::to_string(position.y));
+            if (home && static_cast<std::int32_t>(*home) > 0)
+                calls.push_back("home:" + std::to_string(static_cast<std::int32_t>(*home)));
+            calls.push_back("flush:5000");
         };
-        services.home_change = [&](std::int32_t home) {
-            calls.push_back("home:" + std::to_string(home));
-        };
-        services.flush = [&](std::int32_t bound) {
-            calls.push_back("flush:" + std::to_string(bound));
-        };
-        services.priority_messages = [&] {
-            calls.push_back("priority?");
-            return false;
-        };
-        services.normal_messages = [&] {
-            calls.push_back("normal?");
-            return false;
-        };
-        services.log_timeout = [&] { calls.push_back("log"); };
-        services.show_timeout = [&] { calls.push_back("timeout"); };
     }
     state::Civilization& civ() { return world.civilizations[1]; }
     state::Unit& unit(std::size_t slot) { return world.entities.units.storage()[slot]; }
@@ -373,119 +358,4 @@ TEST_CASE("U01 deletion rejects out-of-pool slots and retains signed owner meani
         CHECK(f.unit(0).token == state::UnitToken{0});
         CHECK(f.world.unit_deletion.active);
     }
-}
-
-TEST_CASE("U01 client deletion sends once reads initial clock after reply and drains queues",
-          "[unit][deletion]") {
-    Fixture f;
-    f.live(0);
-    const auto before = f.unit(0);
-    f.world.globals.multiplayer = 3;
-    bool pending = true;
-    f.services.request_delete = [&](std::int32_t slot) {
-        CHECK(slot == 0);
-        CHECK_FALSE(f.world.unit_deletion.active);
-        CHECK(f.world.unit_deletion.reply == -2);
-        f.calls.push_back("request");
-        f.world.unit_deletion.reply = 17;
-        f.world.globals.multiplayer = 0;
-    };
-    f.services.ticks = [&] {
-        f.calls.push_back("ticks");
-        return 900U;
-    };
-    f.services.priority_messages = [&] {
-        f.calls.push_back("priority?");
-        return pending;
-    };
-    f.services.process_messages = [&](std::int32_t first, std::int32_t second) {
-        CHECK(first == 1);
-        CHECK(second == 0);
-        f.calls.push_back("drain");
-        pending = false;
-        f.world.unit_deletion.active = true;
-        f.world.unit_deletion.reply = 23;
-    };
-    f.operation().erase(0, false); // No local fallback even with notify=false.
-    CHECK(f.calls == std::vector<std::string>{"request", "ticks", "priority?", "drain", "priority?",
-                                              "normal?"});
-    CHECK(f.unit(0) == before);
-    CHECK(f.world.unit_totals[1] == 10);
-    CHECK(f.world.unit_deletion.active);
-    CHECK(f.world.unit_deletion.reply == 23);
-    CHECK(f.world.turn_loop_active);
-}
-
-TEST_CASE("U01 client deletion waiting uses signed wrapping ticks and live replies",
-          "[unit][deletion]") {
-    Fixture f;
-    f.live(0);
-    f.world.globals.multiplayer = 6;
-    std::vector<std::uint32_t> ticks;
-    SECTION("wrap") {
-        ticks = {0xfffffff0U, 0x10U};
-    }
-    SECTION("negative signed delta") {
-        ticks = {100U, 99U};
-    }
-    std::size_t index = 0;
-    f.services.request_delete = [&](std::int32_t) { f.calls.push_back("request"); };
-    f.services.ticks = [&] {
-        f.calls.push_back("ticks");
-        return ticks.at(index++);
-    };
-    f.services.process_messages = [&](std::int32_t first, std::int32_t second) {
-        CHECK(first == 1);
-        CHECK(second == 1);
-        f.calls.push_back("wait");
-        f.world.unit_deletion.reply = 0;
-    };
-    f.operation().erase(0, true);
-    CHECK(f.calls ==
-          std::vector<std::string>{"request", "ticks", "ticks", "wait", "priority?", "normal?"});
-    CHECK(f.unit(0).token == state::UnitToken{1});
-    CHECK(f.world.turn_loop_active);
-}
-
-TEST_CASE("U01 timeout notification precedes disabling turn loop and late drain reply",
-          "[unit][deletion]") {
-    Fixture f;
-    f.live(0);
-    f.world.globals.multiplayer = 3;
-    const std::array<std::uint32_t, 3> ticks{1000, 4599, 4600};
-    std::size_t index = 0;
-    bool queued = true;
-    f.services.request_delete = [&](std::int32_t) { f.calls.push_back("request"); };
-    f.services.ticks = [&] {
-        f.calls.push_back("ticks");
-        return ticks.at(index++);
-    };
-    f.services.show_timeout = [&] {
-        CHECK(f.world.turn_loop_active);
-        f.calls.push_back("timeout");
-        f.world.unit_deletion.active = true;
-    };
-    f.services.normal_messages = [&] {
-        f.calls.push_back("normal?");
-        return queued;
-    };
-    f.services.process_messages = [&](std::int32_t first, std::int32_t second) {
-        CHECK(first == 1);
-        if (second == 1) {
-            f.calls.push_back("wait");
-        } else {
-            CHECK_FALSE(f.world.turn_loop_active);
-            f.calls.push_back("drain");
-            queued = false;
-            f.world.unit_deletion.reply = 77;
-        }
-    };
-    f.operation().erase(0, false);
-    CHECK(f.calls == std::vector<std::string>{"request", "ticks", "ticks", "wait", "ticks", "log",
-                                              "timeout", "priority?", "normal?", "drain",
-                                              "priority?", "normal?"});
-    CHECK(f.world.unit_deletion.reply == 77);
-    CHECK(f.world.unit_deletion.active);
-    CHECK_FALSE(f.world.turn_loop_active);
-    CHECK(f.unit(0).token == state::UnitToken{1});
 }

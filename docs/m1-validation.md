@@ -10,6 +10,21 @@ Full W02/V01/balancing/AI and graphical setup integration remain M3/M4 work;
 supplied-child foundation tests do not establish those mechanics. Historical test
 counts below describe their recorded revisions, not current review verification.
 
+The 2026-11-14 ownership and format-boundary follow-up separates owned save/map
+inputs from installation, guards complete load lifetimes, loads rules once,
+separates label parsing from text setup, removes serialized presence words from
+live events, and moves unit request waiting into session continuations. Tests now
+assert admitted values and gameplay effects instead of private partial-I/O or
+allocator traces; retained codec tests still check stored byte fidelity.
+
+Validation of that follow-up: 530/530 Linux native CTests (517 Catch2 cases),
+530/530 ASan/UBSan CTests with LeakSanitizer disabled for the host environment,
+8/8 Emscripten CTests (504 portable cases, 209,649 assertions), 121 Python tests,
+and a rebuilt SDL desktop smoke test. Pinned clang-format 20.1.8, include-boundary
+and conformance metadata checks pass. The current native conformance report is
+refreshed for the changed source identity. These are implementation regressions;
+no new original-game, Windows or macOS execution evidence is claimed.
+
 The five-finding implementation follow-up passes 546 native CTests (534 Catch2
 cases) and all seven WASM CTest targets (522 portable Catch2 cases), including
 57 foundation conformance vectors on each platform. Regression coverage now

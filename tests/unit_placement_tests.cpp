@@ -14,38 +14,21 @@ struct Fixture {
     StackBudget budget{100000, 64};
     StackOperationServices services;
     std::vector<std::string> calls;
-    std::vector<PlacementRequest> requests;
     std::vector<StackDiagnostic> reports;
-    std::function<void(PlacementRequest)> on_request;
     std::function<void()> on_sync, on_flush;
     Fixture() {
         world.map.allocate(world::Geometry{8, 6});
         world.multiplayer.network_host = true;
         world.globals.multiplayer = 3;
         world.turn_loop_active = true;
-        services.state_difference = [&] {
+        services.synchronize = [&] {
             calls.push_back("sync");
             if (on_sync)
                 on_sync();
-        };
-        services.flush = [&](std::int32_t limit) {
-            CHECK(limit == 5000);
             calls.push_back("flush");
             if (on_flush)
                 on_flush();
         };
-        services.request = [&](PlacementRequest request) {
-            calls.push_back("request");
-            requests.push_back(request);
-            if (on_request)
-                on_request(request);
-        };
-        services.ticks = [&] {
-            calls.push_back("ticks");
-            return 100U;
-        };
-        services.priority_messages = [] { return false; };
-        services.normal_messages = [] { return false; };
     }
     state::Unit& unit(std::size_t index) { return world.entities.units.storage()[index]; }
     void live(unsigned index, world::Position position = {2, 2}) {
@@ -231,114 +214,6 @@ TEST_CASE("U01 empty whole-stack relocation still runs synchronization without a
     CHECK(f.world.unit_stacks.relocate_reply == 19);
 }
 
-TEST_CASE(
-    "U01 client placement has distinct reply fields full request arguments and no local fallback",
-    "[unit][placement]") {
-    Fixture f;
-    f.chain({0, 1});
-    f.world.multiplayer.network_host = false;
-    auto& state = f.world.unit_stacks;
-    state.detach_reply = 10;
-    state.attach_reply = 11;
-    state.relocate_reply = 12;
-    state.bottom_reply = 13;
-    const auto first = f.unit(0), second = f.unit(1);
-    const auto tile = f.world.map.tile({2, 2});
-    PlacementOperation operation;
-    SECTION("detach") {
-        operation = PlacementOperation::detach;
-    }
-    SECTION("attach") {
-        operation = PlacementOperation::attach;
-    }
-    SECTION("relocate") {
-        operation = PlacementOperation::relocate;
-    }
-    SECTION("bottom") {
-        operation = PlacementOperation::bottom;
-    }
-    f.on_request = [&](PlacementRequest request) {
-        CHECK(request.operation == operation);
-        CHECK_FALSE(f.active(operation));
-        CHECK(f.reply(operation) == -2);
-        f.reply(operation) = 37;
-        f.active(operation) = true;
-        f.world.globals.multiplayer = 0;
-    };
-    auto stacks = f.operations();
-    PlacementRequest expected{operation, {0}};
-    switch (operation) {
-    case PlacementOperation::detach:
-        stacks.detach(0, false);
-        break;
-    case PlacementOperation::attach:
-        stacks.attach_at_front(0, {65538, -65534}, true);
-        expected.arguments = {0, 65538, -65534};
-        break;
-    case PlacementOperation::relocate:
-        stacks.relocate(0, {65538, -65534}, false);
-        expected.arguments = {0, 65538, -65534};
-        break;
-    case PlacementOperation::bottom:
-        stacks.move_to_bottom(0, true);
-        break;
-    }
-    CHECK(f.requests == std::vector<PlacementRequest>{expected});
-    CHECK(f.unit(0) == first);
-    CHECK(f.unit(1) == second);
-    CHECK(f.world.map.tile({2, 2}) == tile);
-    CHECK(f.calls == std::vector<std::string>{"request", "ticks"});
-    std::array<std::int32_t, 4> replies{10, 11, 12, 13};
-    replies[static_cast<std::size_t>(operation)] = 37;
-    CHECK(std::array{state.detach_reply, state.attach_reply, state.relocate_reply,
-                     state.bottom_reply} == replies);
-    CHECK(f.active(operation));
-}
-
-TEST_CASE("U01 placement authority precedes backing except explicit wrapper guards",
-          "[unit][placement]") {
-    Fixture f;
-    f.world.multiplayer.network_host = false;
-    f.on_request = [&](PlacementRequest request) { f.reply(request.operation) = 0; };
-    auto stacks = f.operations();
-    stacks.detach(-7, false);
-    stacks.attach_at_front(-7, {70000, -80000}, false);
-    stacks.relocate(-7, {70000, -80000}, true);
-    CHECK(f.requests ==
-          std::vector<PlacementRequest>{{PlacementOperation::detach, {-7}},
-                                        {PlacementOperation::attach, {-7, 70000, -80000}},
-                                        {PlacementOperation::relocate, {-7, 70000, -80000}}});
-    CHECK_THROWS_AS(stacks.move_to_bottom(-7, true), std::out_of_range);
-    CHECK_THROWS_AS(stacks.relocate_in_place(-7, true), std::out_of_range);
-    CHECK(f.requests.size() == 3);
-    f.world.multiplayer.network_host = true;
-    CHECK_THROWS_AS(stacks.detach(-7, false), std::out_of_range);
-    CHECK(f.world.unit_stacks.detach_active);
-}
-
-TEST_CASE("U01 client whole-stack relocation captures next before each request and keeps child "
-          "boundaries",
-          "[unit][placement]") {
-    Fixture f;
-    f.chain({0, 1});
-    f.world.multiplayer.network_host = false;
-    f.on_request = [&](PlacementRequest request) {
-        CHECK(request.operation == PlacementOperation::relocate);
-        const auto slot = static_cast<std::size_t>(request.arguments[0]);
-        f.unit(slot).x = 6;
-        f.unit(slot).next.value = f.unit(slot).previous.value = -1;
-        f.unit(1).previous.value = -1;
-        f.world.unit_stacks.relocate_reply = 0;
-    };
-    f.operations().relocate_stack(0, {6, 2}, true);
-    CHECK(f.requests == std::vector<PlacementRequest>{{PlacementOperation::relocate, {0, 6, 2}},
-                                                      {PlacementOperation::relocate, {1, 6, 2}}});
-    CHECK(f.calls ==
-          std::vector<std::string>{"request", "ticks", "request", "ticks", "sync", "flush"});
-    CHECK(f.unit(0).x == 6);
-    CHECK(f.unit(1).x == 6);
-}
-
 TEST_CASE("U01 placement failures retain local mutations and nested activity markers",
           "[unit][placement]") {
     Fixture f;
@@ -353,44 +228,12 @@ TEST_CASE("U01 placement failures retain local mutations and nested activity mar
     }
 }
 
-TEST_CASE("U01 placement timeout drains a late reply without clearing callback activity",
-          "[unit][placement]") {
-    Fixture f;
-    f.live(0);
-    f.world.multiplayer.network_host = false;
-    const auto before = f.unit(0);
-    unsigned count = 0;
-    bool queued = true;
-    f.services.ticks = [&] { return count++ == 0 ? 0xfffffff0U : 3584U; }; // Wrapped delta 3600.
-    f.services.log_timeout = [&] { f.calls.push_back("log"); };
-    f.services.show_timeout = [&] {
-        CHECK(f.world.turn_loop_active);
-        f.calls.push_back("timeout");
-        f.world.unit_stacks.attach_active = true;
-    };
-    f.services.normal_messages = [&] { return queued; };
-    f.services.process_messages = [&](std::int32_t first, std::int32_t second) {
-        CHECK(first == 1);
-        CHECK(second == 0);
-        CHECK_FALSE(f.world.turn_loop_active);
-        f.calls.push_back("drain");
-        queued = false;
-        f.world.unit_stacks.attach_reply = 91;
-    };
-    f.operations().attach_at_front(0, {6, 2}, true);
-    CHECK(f.calls == std::vector<std::string>{"request", "log", "timeout", "drain"});
-    CHECK(f.unit(0) == before);
-    CHECK(f.world.unit_stacks.attach_reply == 91);
-    CHECK(f.world.unit_stacks.attach_active);
-}
-
 TEST_CASE("U01 repair diagnostics preserve host authority", "[unit][placement]") {
     Fixture f;
     f.live(0);
     f.unit(0).previous.value = f.unit(0).next.value = 0;
     CHECK(f.operations().validate(0) == 0);
     CHECK(f.world.multiplayer.network_host);
-    CHECK(f.requests.empty());
     CHECK(f.unit(0).previous.value == -1);
     CHECK(f.unit(0).next.value == -1);
     CHECK(f.world.map.tile({2, 2}).unit());

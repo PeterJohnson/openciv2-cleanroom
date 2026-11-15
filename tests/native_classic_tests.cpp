@@ -160,8 +160,8 @@ TEST_CASE("Native F05 premade loading uses binary files without rewriting their 
     io::write_new_file(dir.path / "short.mp", std::span{bytes}.first(100));
     CHECK_FALSE(load_premade_world(runtime, starts, "short.mp", services));
     CHECK(failures == 1);
-    CHECK(runtime.world().map.tile({0, 0}).features == 0xff);
-    CHECK(runtime.world().map.tile({0, 0}).owner == 0);
+    CHECK(runtime.world().map.tile({0, 0}).features == 0);
+    CHECK_FALSE(runtime.world().map.tile({0, 0}).owner);
     CHECK(io::read_file(dir.path / "short.mp") == Bytes(bytes.begin(), bytes.begin() + 100));
 }
 TEST_CASE("Native classic input preserves short prefixes binary controls and independent cursors",
@@ -293,31 +293,26 @@ TEST_CASE("Native core load edit and save bind real labels rules directories and
     process.tokens = {100, 200};
     std::size_t sprites = 0, flushes = 0;
     RuleContextServices hooks;
-    hooks.reload_sprites = [&] { ++sprites; }; // Explicit headless resource consumer.
-    hooks.flush = [&] { ++flushes; };
-    hooks.change_directory = [&](auto d) { native.change_directory(d); };
     hooks.exists = [&](auto d, auto n) { return native.exists(d, n); };
     hooks.comparison = classic::ascii_text_case();
-    ClassicRuleContext context(*process.rules, files, workspace,
+    ClassicRuleContext context(files, workspace,
                                {[&](auto d, auto n) { return native.open_text(d, n); }, {}}, hooks);
     CoreLoadServices loading;
     loading.open = [&](auto path) { return native.open_input(path); };
-    loading.flush = hooks.flush;
-    loading.change_directory = hooks.change_directory;
+    loading.flush = [&] { ++flushes; };
+    loading.content_installed = [&] { ++sprites; };
+    loading.change_directory = [&](auto directory) { native.change_directory(directory); };
     loading.exists = hooks.exists;
     loading.comparison = hooks.comparison;
-    loading.load_rules = [&](bool replace) { context.load(replace); };
-    loading.reload_table = [&](auto table, bool keep) { context.reload(table, keep); };
-    loading.close_rules = [&] { context.close(); };
+    loading.load_content = [&] { return context.load(); };
     const auto cwd = fs::current_path();
     REQUIRE(load_classic_core(runtime, files, io::classic_path(dir.path / "scenario/start.sav"),
                               loading, "disk/load") == CoreLoadStatus::success);
     REQUIRE(sprites == 1);
-    REQUIRE(flushes == 8);
+    REQUIRE(flushes == 1);
     REQUIRE(files.game_stem == io::classic_path(dir.path / "scenario/GAME"));
     REQUIRE(fs::equivalent(native.working(), dir.path));
     REQUIRE(fs::current_path() == cwd);
-    REQUIRE_FALSE(context.is_open());
     REQUIRE(process.rules->definitions.cosmic.values[0] == 3);
     REQUIRE(runtime.world().entities.units.at(state::UnitSlot{0}).token == state::UnitToken{100});
     runtime.world().globals.turn = 17;
@@ -380,4 +375,20 @@ TEST_CASE("Native failed core save reports partial output without live hotseat s
     REQUIRE(closes == 1);
     REQUIRE(world.globals.saved_current_civ == 3);
     REQUIRE(io::read_file(target) == Bytes{'C', 'I', 'V', 'I', 'L', 'I', 'Z', 'E', 0, 0x1a, 0x2c});
+}
+
+TEST_CASE("Native F06 input finalization reports read errors rather than clean EOF",
+          "[io][classic-files]") {
+    TemporaryDirectory dir;
+    io::ClassicFiles files(dir.path);
+    auto input = files.open_input(".");
+    // Some hosts reject directories at open; POSIX stdio can admit the handle
+    // and fail its first read. Neither path is a successfully finalized input.
+    if (!input) {
+        SUCCEED("Host rejected the directory at open");
+        return;
+    }
+    CHECK_FALSE(input->item(32).complete);
+    CHECK_FALSE(input->close());
+    CHECK_FALSE(input->close());
 }

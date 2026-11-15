@@ -45,9 +45,10 @@ separate live save operation below.
 
 ## Declared admission limits
 
-Only `0x2c` is supported by this stored-file API. The existing version gate and
-entity item helper still describe their broader separate contracts; they do not
-make this API support `0x26`, `0x27` or `0x28`.
+The decoder accepts `0x26`, `0x27`, `0x28` and `0x2c`. Compact legacy records
+are expanded into owned values with explicit zero defaults for omitted storage;
+conversion supplies explicit occupancy for records without stored lifetime tokens. The encoder emits `0x2c` only.
+Lossless byte-for-byte round trips apply to current-version stored views.
 
 The backing domain is W01's positive even i16 width, positive i16 height and
 area below 32768; unit scan bounds 0..2048 and city scan bounds 0..256. The
@@ -65,292 +66,82 @@ validation; rules and cross-record consistency still need their own checks.
 
 ## Ordered persistent records and load census
 
-`formats/world_record_io.hpp` implements F06 §6 stages 5–6 and §7 over supplied
-live global/name/civilization records, after the parent's header and rule setup.
-It accepts the core reader's `0x26`, `0x27`, `0x28` and `0x2c` versions. This
-does not expand the complete stored-file decoder's `0x2c` admission boundary.
-
-Current records arrive as three items: globals, eight name records, then eight
-civilization records. Legacy records use the specified four global fragments,
-name-array item and nine items per civilization, including the required discarded
-byte. The old path first clears the specified technology and census arrays;
-omitted tails remain zero, while the unrepresented civilization byte at `0x65`
-retains its incoming value. Each item publishes its transferred prefix, including
-a full transfer reported as failed. Untouched bytes retain live values after the
-item service returns. No later item is attempted after failure. An optional
-publication binding mirrors global scan bounds into the runtime pools after each
-global fragment, including a failed prefix, before any following service call.
-
-Enemy count is recomputed modulo 256 immediately after successful global input,
-before names. Scenario capture, cheat/reveal/history changes and clearing the
-saved-as-scenario flag occur only after all civilization input succeeds. A failed
-read preserves the caller's prior scenario output. `write_persistent_items`
-emits the three current blocks using values observed at their individual write
-boundaries; the parent still owns scenario-export preparation and other blocks.
-
-`state::rebuild_loaded_unit_census` implements the later F06 §6 stage 17. For
-each civilization, it clears active and in-production counts, then scans live
-unit slots and nonnegative city production. Counts wrap modulo 256. Free slots,
-records beyond the scan bound and owners outside 0…7 contribute nothing. Losses
-and other retained summaries survive. A live matching-owner type outside the
-62-counter backing stops before that increment, retaining prior effects.
-
-Eleven authored native/WASM cases cover all supported record versions, every
-partial global prefix, partial array records, failure at each legacy item,
-preclear/retained tails, live callbacks, scenario flag combinations, census wrap
-and safe stops. An integration case reads persistent records and entities into
-`GameState`, renews tokens through the existing entity reader, and verifies that
-stored counts survive until the explicit census phase. In particular, renewal
-to token zero affects the later count. These are specification/regression tests,
-not original execution or X02 fixtures. The composed core parent now binds scan
-publication and sequences the intervening map, leader, multiplayer and event
-stages; these APIs do not admit a running session.
+`decode_stored_save` reads persistent globals, names and civilization records
+without changing a world. `formats::game_input` converts the owned record tree
+into common restoration operands. `session::install_game` applies scenario flag
+normalization, enemy count, loaded entity lifetimes and unit production/active
+censuses. These transformations have one owner regardless of the source format.
+No synthetic file callback publishes partial records or selects simulation work.
 
 ## Ordered leader and name operations
 
-`formats/leader_io.hpp` supplies F06 §6 stage 8 and the name phases of §§5–6.
-These are callable stages over already established world/rule state, not a
-transactional publication of a decoded save or a complete session loader.
-
-- `read_leader_items` reads each of the 21 triplets as three individual bytes,
-  cursor x/y as separate words, then one selected Leader item per player. Only
-  the triplet fields update live rule leaders. Saved records populate scratch
-  indexed by tribe; the last repeated tribe record wins. Scratch records track
-  their established byte prefix so a first short read cannot fabricate a known
-  zero remainder. Partial reads retain transferred bytes and prior state.
-- `write_leader_items` reads live triplet/cursor/leader values at each item
-  boundary. Both paths select one player in mode zero, otherwise human bits
-  0…7 in ascending order, including repeated tribes and an empty mask. Temporary
-  `player_civ` changes restore on ordinary failure and safe stops. Item services
-  may change later fields or the live mask; a selected read destination remains
-  the tribe captured before that item call.
-- `restore_leader_names` normalizes all 21 leaders, then runs the caller-selected
-  ordinary or scenario branch. Ordinary loading uses saved negative fields as
-  sign markers, not replacement rule data. Negation reduces to signed 16 bits,
-  keeps −32768 unchanged, and can toggle shared tribes repeatedly. Scenario
-  loading sets gender/portrait, compares plural bytes case-sensitively and resets
-  all title pairs only on equality. It then negates the three name labels, without
-  reselecting the leader name after changing gender or applying saved title signs.
-- `prepare_scenario_names` updates adjective, plural and leader override fields
-  in that order for scenario export or an active scenario. Nonnegative labels
-  copy through NUL, preserving tail bytes; negative labels retain custom text.
-  The declared safe boundary rejects an unbacked label or a string that cannot
-  fit its 24-byte field before writing that field, preserving earlier effects.
-  This is a safe stop, not a newly invented ordinary save-failure status.
-
-Ten authored native/WASM cases exercise item order, every truncated prefix of a
-two-player stream, repeated tribes, callbacks, selector restoration, signed
-boundaries, scenario equality/gender ordering, missing backing and fixed-text
-tails. They are specification/regression evidence, not X02 fixtures or original
-I/O traces. A [retained original-data check](conformance/reports/original-rule-labels-windows.json)
-also loads the pinned LABELS/RULES inputs, supplies the saved triplets/sign scratch
-and applies the ordinary name phase. The resulting complete 48-byte English
-leader record matches the original save exactly. This extends the earlier 18
-label-magnitude comparison; it does not execute the original again or run the
-remaining ordered load stages. The report retains the earlier LABELS-provenance
-limitation and pins the comparison executable and input bytes.
+Stored leader records retain their signed markers for lossless codec output.
+The common input contains customization flags indexed by tribe; repeated saved
+tribes select the last record, while installation still applies the specified
+per-civilization toggles. Scenario names and portraits use the installed rules.
+`prepare_scenario_names` belongs to session save preparation. Export never
+substitutes a temporary player selector into the authoritative globals.
 
 ## Passwords and multiplayer load/save stages
 
-`state/multiplayer.hpp` owns the logical saved multiplayer values, separate
-runtime local-human/resume selectors and the two password flags per civilization.
-`GameState` retains these values; `ProcessContext` retains the four menu preference
-fields currently consumed by F06. Construction and client-session replacement
-do not execute F03 preference defaults or reset this state. The existing
-`formats::MultiplayerRecord` is an alias for the shared logical saved values;
-its exact 1172-byte codec and stored inspection contract are unchanged.
-
-F06 §9 encoding rotates the complete 256-byte password array, including row and
-array seams. Refresh derives both flags from each decoded row's first byte and
-re-encodes without changing the encoded bytes or drawing randomness. Reset
-consumes 255 primary codes, stores their low bytes, retains incoming byte 255,
-then clears row starts/flags and encodes. An unresolved choice retains the
-sampled prefix before those later effects. This serialized session state uses
-`GameplayRandom`; presentation/cosmetic contexts are inaccessible to the operation.
-The owner supplies a distinct semantic reset call identity. The decision site
-is `F06.password-reset.byte`, with call suffix `/row/<civ>/byte/<column>` and
-attempt zero. Controlled choices and generated traces use the same identities.
-This binds the existing policy; it does not add RNG data to classic saves.
-
-`formats::read_multiplayer_items` implements F06 §6 stages 11–12. It first
-sign-extends the saved-current selector into runtime local human. Old versions
-or mode zero reset passwords and only the specified defaults, retaining all
-other multiplayer payload. Current multiplayer input clears the saved block,
-then publishes its transferred prefix. Failure retains that prefix and skips
-resume fallback and flag refresh. A successful read uses the saved resume byte,
-then turn civ, then the first alive civ in 1…7 as specified, with no draws.
-Menu simultaneous and saved simultaneous remain separate fields.
-
-`write_multiplayer_item` implements F06's file-only resume substitution using an
-export copy. The supplied network-turn value is narrowed into the encoded byte;
-live state remains unchanged on success, failure or exception. `state::adapt_loaded_mode`
-is the completion phase, callable only after successful load and file close.
-Equal modes do nothing; entry mode zero retains the loaded mode, while a nonzero
-entry replaces it. Human-mask fallback, doubling and menu preference changes
-follow F06; variable resume-bit shifts use F01's modulo-32 count rule.
-
-Thirteen authored native/WASM cases check all password bit positions, controlled
-and generated reset/replay, missing-choice prefixes, every partial multiplayer
-item, retained defaults, callbacks, successful/failed writes, mode adaptation
-and process/world ownership through `SessionRuntime`. These are specification
-and regression evidence, not original password captures or full mixed-peer
-sessions. The owning loader must still sequence these callable stages with
-all surrounding input, cleanup, rule and event operations.
+Password encoding, decoding, reset and mode adaptation remain state operations.
+The installer selects legacy/single-player defaults or an admitted multiplayer
+block, then owns password randomness, resume selection and flag refresh. Decoders
+consume no random choices. Live export substitutes the network-turn selector in
+a local encoded value. Password and mode tests cover the underlying semantic
+operations independently of file chunking.
 
 ## Ordered events and string ownership
 
-`state/events.hpp` supplies the F02/S02 ordered collection and separate loaded
-indicator now owned by `GameState`. Events have typed logical identities,
-retained payload and owned string references. Absent, present-empty, backed and
-unresolved saved references remain distinct. Serialized presence words are
-retained bits, never dereferenced or used as live identities; `EventRecord`
-continues to use the existing 444-byte codec. Stored-file inspection retains its
-separate immutable string representation and admission limits.
+`EventValues` contains semantic fields. The stored `EventRecord` additionally
+contains presence words and opaque bytes. Import resolves strings before they
+enter the live collection. `EventCollection` assigns immutable IDs and exposes
+const events through const access. Copying preserves the specified text-hole
+aliases; compaction prepares one detached copy and publishes its strings into
+the same live events. Failure during preparation retains the collection.
 
-`formats::read_event_items` implements F06 §8 with separate fixed-item and
-character services. An absent, partial or mismatched tag clears only loaded;
-the old list survives. A recognized tag requires a complete signed count before
-resetting the collection. Zero and negative counts yield loaded emptiness after
-completion. All fixed records precede all strings. Partial fixed records retain
-their transferred prefix; unresolved string markers do not fabricate empty text.
-String reads distinguish EOF, NUL and the consumed 256th byte: overlong input
-retains its first 255 bytes without scanning to a later terminator. Each field
-publishes only after successful string creation. A text hole stops text-line
-reads, retaining later unresolved markers; accessing those strings stops safely.
-
-S02 §2 copying first appends payloads, then duplicates strings in the specified
-order. It supports a nonempty destination's old-head rewrite behavior, shared
-source strings and text holes. Duplicated fields acquire distinct identities;
-fields after a hole retain their prior reference relationships. Compaction uses
-two such copies, preserving event identities, payload/order, consumed flags and
-bound selectors. Failure during the first copy leaves the main collection in
-place; failure after replacement retains the second copy's published prefix.
-Logical references keep their backing alive without relying on native addresses.
-
-`EventServices` supplies optional event/string resource outcomes and error
-reporting. String failure reports −9/category 3 and does not publish an empty
-replacement. Copy requests retain the 15/24/1 minimum string capacities, without
-truncating longer content. This is not an emulation of original pool addresses
-or block-allocation traces. Node-invalidating callbacks, an allocation callback
-that changes its captured destination tail, self-copy and copying a source that
-grows beyond its admitted capacity stop with prior effects intact. Record and
-string-content callbacks otherwise remain live at their documented boundaries.
-
-`write_event_items` emits the tag/count, all fixed records, then each selected
-string through its first NUL, with text output and the terminating NUL as separate
-calls. It does not impose the reader's 255-byte retention limit. Presence tokens
-may be canonicalized to nonzero values; logical string identity never enters
-the file. The parent owns the loaded/scenario-export gate. Loaded becomes true
-on read only after successful compaction.
-
-Fifteen authored native/WASM cases cover all fields, partial fixed records,
-optional tags, negative counts, empty/overlong/unterminated strings, text holes,
-allocation/reporting failures, copy aliases, compaction replacement boundaries,
-callbacks, ordered write failures and runtime ownership without RNG changes.
-These are specification/regression evidence, not original event captures or X02
-fixtures. Event parsing, trigger/action execution, editor integration and complete
-F06 orchestration remain separate work.
+Opaque imported event bytes remain in `ClassicFileState` adapter metadata,
+weakly associated with the actual event object. They survive compaction and
+export, but cannot leak into a new event merely because its numeric ID matches.
+Live presence markers derive from strings; stored-view encoding preserves the
+original marker bits. Resource hooks express admission failures, not arbitrary
+gameplay changes during allocation.
 
 ## Ordered map summaries, history, layout and scenario parameters
 
-`formats/save_aux_io.hpp` supplies the remaining fixed auxiliary stream stages
-from F06 §6 stages 7, 9–10 and the final layout decision in stage 19. These
-helpers operate on supplied live state and retained transfer scratch; the parent
-still sequences the complete file operation and its rule/lifecycle boundaries.
-
-- Map summaries read coarse grids 0 and 1 as separate items, flush, then read
-  the 64-region table as one item. A short grid read establishes only the
-  transferred cells; other cells retain their values or explicit unknown state.
-  Grids 2 and 3 remain untouched. Region input retains untransferred fields after
-  callbacks. Replacing/releasing captured map backing during its read stops
-  safely before publishing to invalid storage. Output rejects an unknown cell
-  at that grid's boundary, preserving earlier writes.
-- Power history is one 1,200-byte item. The layout has separate packed transfer
-  scratch and live working coordinates. A failed layout read retains its packed
-  prefix without unpacking; successful input sign-extends all coordinates and
-  publishes the file's valid marker before the flush. Each of the forty map-view
-  fields is then read individually. None of these operations creates windows.
-- Saving writes power history first, then copies the live current screen into
-  the saved screen, reduces coordinates modulo 65,536, packs and writes layout,
-  then writes each view field. Preparation effects survive later write failure.
-  The final load decision separately replaces layout-valid based on matching
-  screen dimensions and captured scenario status, allowing different origins.
-- Scenario input uses captured scenario status or the live Scenario flag.
-  Ordinary input calls S01's field-specific reset: flags/name-first-byte zero,
-  technology paradigm 10 and the eight other numeric fields zero. The name tail,
-  world flags and events remain intact. Elimination history always follows;
-  all twelve rows survive regardless of its count. Output uses explicit scenario
-  export or the live Scenario flag, then writes elimination history.
-
-`GameState` now retains power/elimination history, scenario parameters, logical
-layout and map views across client-session replacement. Existing stored codecs
-alias the shared map-view/scenario/elimination types without changing bytes.
-Fourteen authored native/WASM cases cover every failed fixed-block prefix,
-individual view fields, live callbacks, packing boundaries, scenario gates,
-unknown backing and runtime ownership without RNG changes.
-
-The native comparison driver additionally reads/writes these isolated stages
-against original bytes and compares their fields with the stored decoder.
-All 21 admitted original `0x2c` saves match exactly and remain unchanged; the
-[auxiliary comparison report](conformance/reports/original-save-aux-windows.json)
-pins the inputs, implementation and driver. Those files are all ordinary mode-zero
-saves; scenario evidence here is authored tests. Three legacy files remain outside
-the driver's complete stored-view domain. This is original-data interoperability
-evidence, not original execution, observed failure traces or a full session load.
+Stored map records convert to `world::MapInput`. Geometry and vector lengths are
+validated before allocation. The installer prepares new map storage and exchanges
+it only on success, preserving the target's fallback binding. Legacy stored
+layout coordinates widen during conversion; screen/scenario validity belongs to
+the session installer. Export uses a layout snapshot and does not modify live
+window geometry. Scenario default resets and elimination history installation
+also belong to the installer.
 
 ## Composed core load
 
-`session/classic_load.hpp` implements F06 §6's core orchestration over an existing
-`SessionRuntime` and caller-retained `ClassicFileState`. It selects the entry-mode
-extension, uses the any-period rule, opens input, reads the character header and
-version gate, selects the requested path's scenario/GAME context, updates the
-remembered basename/subdirectory and invokes full rule loading. It then runs the
-record, map, entity, leader, history/layout, multiplayer and event stages in order,
-restores names, rebuilds the census, invalidates the city-cache identity, requests
-the three final rule reloads, decides layout validity, closes input and adapts mode.
+`ClassicLoadOperation` copies and validates its services and acquires a
+`SessionActivity`. It reads bounded owned bytes, validates the supported header,
+closes input once, decodes and admits the input, and asks one content factory for
+`LoadedContent`. `RuleInstaller` installs that content and reuses the same input
+for final name-preserving table updates. Parsing does not keep a reader open
+across gameplay installation.
 
-File, directory, probe, comparison, flush and owning F03 operations are required
-service bindings. A normal F03 callback return means that operation completed;
-an absent binding rejects before file effects. Resource hooks remain optional.
-The composition root retains path/cursor/packed-layout/leader scratch across calls,
-supplies current screen state and initializes the runtime's random contexts before
-classic import. No RNG metadata is required from or added to the classic file.
-The core entry requires settled commands and leaves participant/client identities
-alone; it is not the post-load wrapper or a connection/admission procedure.
+Malformed or truncated input and close failure leave the previous world, rules,
+tokens and RNG unchanged. Semantic installation children retain completed effects
+if they fail; this is not a promise that every installation effect is transactional.
+The activity prevents callbacks from replacing the world. A dialog wrapper keeps
+the same operation alive through event, sound, presentation and cleanup callbacks.
 
-Early input, unsupported and newer-version results are distinct. Required later
-item failure returns data status with earlier effects retained; input is closed
-exactly once, and close failure is ignored. Exceptions from rule services or safe
-backing checks close input without rolling back state. An unterminated 79-byte
-header still consumes its extra separator read before stopping; a missing final
-backslash stops after the initial flush. Neither case invents an ordinary original
-error result. Paths use supplied case comparison, not the host's locale or native
-path parser. Same-runtime query revisions publish at service and completion
-boundaries; the core loader does not grant new client authority.
-
-Fourteen authored native/WASM cases cover complete `0x26`, `0x27`, `0x28` and
-`0x2c` flows, every required item failure, header/version/path gates, retained
-directories, scan publication before names, post-close mode adaptation,
-scenario/event/name/census ordering,
-rule failures, random ownership and query access through an unchanged client.
-One case invokes the actual F03 full-table and name-preserving final parsers.
-The other ordering cases declare supplied F03 child effects; the separate native
-integration below exercises the reload wrapper and real files. Composition also fixes older
-map/entity helpers to preserve untouched post-callback fields on partial input
-and stop before using map storage invalidated by a callback.
-
-This is authored integration evidence, not an original-game core-load comparison
-or an X02 registration. The 21 original-save auxiliary comparisons still pass but
-do not run this orchestrator. M1-04 in the [closeout contract](m1-closeout.md)
-names the required current-export comparison. Browser storage, graphical resource
-bindings, owning post-load actions and application save/resume join M2–M5.
-Inspection's stored view has not been relabeled as loaded-state analysis.
+Tests cover all four admitted versions, staged failure, ownership, single-close
+behavior, real classic content loading, scenario/multiplayer transforms, live
+edit/export/reload, and nonmutation of stored inputs. Private failed-I/O memory
+traces are replaced by explicit admission and installation checks.
 
 ## Composed live save
 
 `session/classic_save.hpp` implements F06's production save boundary. It prepares
 an owned byte image before opening output. Accepted preparation updates the
-saved-current civilization, scenario knowledge/flags/names and layout. Temporary
+saved-current civilization and scenario knowledge/flags/names. Temporary
 hotseat masks, selected-player and resume values stay in the export context.
 No output provider observes those substitutions in the live session, and no file
 write is a game-event boundary. Census, regions, lifetimes and RNG are unchanged.
@@ -371,52 +162,17 @@ claim for this revision.
 
 ## Native files and rule context
 
-`platform/classic_files.hpp` supplies native F06 binary input/replacement output,
-F03 text streams, existence probes and an explicit working-directory context.
-The component walk matches ASCII case aliases independently of host filesystem
-case sensitivity and rejects ambiguous aliases. Native path strings use UTF-8;
-non-ASCII bytes match exactly, with no claim to the original non-ASCII folding
-profile. Backslashes are adapted to native separators, including absolute paths
-returned by `classic_path`. Actual traversal preserves symbolic-link/parent
-semantics. No service changes the host process working directory.
+Native files remain owned noncopyable `CoreInput`/`CoreOutput` services, with
+exactly-once close and destructor cleanup. `io::ClassicFiles` provides binary
+files, case-independent lookup and an explicit working-directory context without
+changing the process directory. Low-level read/write tests still verify short
+prefixes and actual I/O errors independently of gameplay installation.
 
-Binary item reads return the transferred prefix on short input. Output truncates
-an existing destination, writes each requested item/text/byte and retains partial
-files. Open failure returns an absent service; closing returns the host result,
-which the production save requires to report success. Stream ownership also
-releases native handles on exceptions. These services support regular files;
-they do not implement atomic export or a browser durable-save acknowledgement.
-
-Text input streams from the file rather than copying the whole file into a
-memory snapshot. It translates CRLF, preserves bare CR, observes the 254-byte
-translated read window and seeks physical offsets. NUL/control-Z text still
-stops at an explicit unsupported boundary. The portable reader retains control
-of explicit-file fallback, stream reuse and supplied section indexes; the native
-adapter does not merge scenario and home files or fabricate a GAME cache.
-
-`session/classic_rules.hpp` supplies F03 §1's ordered reload wrapper: rebuild
-labels using the existing search context, invoke the required sprite service,
-probe scenario `RULES` with the live language extension, select scenario/home,
-load all tables, return working state to home, then flush. The selected search
-context remains for subsequent table opens. Failure retains earlier publications
-and directory selection. F06's final advance/improvement/unit calls use the real
-name-preserving parsers and close at the parent-specified boundary. Resource,
-directory, probe, comparison and flush services are required; headless callers
-must explicitly supply their resource/flush consumers.
-
-Four authored portable cases cover wrapper order, home/scenario selection,
-resource/parser failures and final name-preserving reloads. Seven native cases
-cover binary prefixes, replacement/partial output, independent cursors, real
-directory/case lookup, text windows/physical seeks, section fallback and full
-load-edit-save-reload using actual labels/rules files. A fault-injected native write retains a partial header/version prefix and reports
-failure while live hotseat state remains unchanged throughout.
-The complete file integration checks input preservation and unchanged host cwd;
-its sprite/flush consumers are declared headless callbacks, not graphical loaders.
-These new services are built in the tools-enabled native configuration; the rule
-context remains portable and runs in WASM tests. Linux/macOS filesystem execution,
-browser storage, graphical startup/resources and post-load admission remain
-unverified or incomplete. The [live-save exchange](m1-original-live-save.md)
-records original acceptance of two core exports with these native bindings.
+`ClassicRuleContext` owns its reader and borrows file-selection/workspace state.
+Each `load()` returns independent rules and labels, restores temporary search
+selection, and closes resources on success or failure. Resource presentation is
+an explicit post-install notification rather than a parser child. Native tests
+exercise real labels/rules files and load-edit-save-reload on disk.
 
 ## Save-menu caller and file-choice boundary
 
@@ -453,69 +209,20 @@ application admission remain separate integration work.
 
 ## Accepted-file load caller
 
-`session/classic_load_dialog.hpp` composes F06 section 11's accepted-file flow
-with the real core loader, S02 event compaction and U01 cleanup. Its input is an
-accepted path or cancellation from the separate chooser boundary. Cancellation
-restores the live home directory without reading a file. Acceptance closes map
-windows 1 through 7 before variant selection or core input.
+`load_classic_dialog` snapshots and validates service wiring before closing map
+windows or selecting an alternative. Cancelled input only restores the directory.
+Alternative selection samples the specified scaled choice from one owned directory
+listing; a second enumeration is not a gameplay dependency.
 
-The uppercased path's `.SCN` substring selects the ALT branch, including when the
-substring occurs in a directory or before another suffix. Enumeration preserves
-service order. An empty result consumes no draw; a nonempty result consumes one
-primary-code choice at `F06.scenario-alternative`, keyed by the supplied operation
-call identity. The specified scaled mapping includes the original file as choice
-zero. A nonzero choice uses a consistent second enumeration. The adapter rejects
-inconsistent enumerations, selected names that are not unqualified filenames,
-and more than 65,535 alternatives with a safe stop, retaining earlier effects and
-any consumed choice. That declared resource bound keeps the arithmetic product in
-the nonnegative signed-32 domain. It does not invent a fallback file or redraw.
+A guarded core operation remains alive through post-load work. The wrapper
+handles replacement scenario events, preference/sound application, scenario
+notification, music/title and local unit cleanup. Bound semantic children may
+fail after completed effects; an absent required binding is rejected before any
+of those effects. The wrapper publishes the accepted path only on completion.
 
-After successful core input and its close/mode adaptation, the caller flushes.
-Only unloaded scenario events probe `EVENTS.<language extension>` in the loaded
-file's directory. An existing resource resets the event list before the required
-S02 parser child. Successful parsing invokes real two-pass compaction and then
-publishes loaded=true. Allocation failure stops at its reached compaction prefix.
-If the loaded flag remains false, the old/partial list is reset. Persisted events
-bypass replacement, preserving Consumed flags and wildcard bindings.
-
-`ProcessContext::ordinary_preferences.game_options` now holds the ordinary remembered word
-separately from live world options. The caller applies it after event loading,
-then configures sound. The live Music and events-loaded gates select ScenarioLoaded
-execution; this is independent of the scenario flag. Music synchronization follows
-and still runs with Music disabled, allowing P10's stop/request behavior. Optional
-title presentation precedes restoring the live home directory. Real U01 cleanup
-then establishes host, repairs stacks and deletes negative-position units without
-notifications. The final selected path is retained only after that completes.
-
-Core failures invoke a result-specific notice before clearing the opaque loaded
-file classification. Cancellation and thrown service/resource stops are distinct
-from these returned core errors. Required child exceptions preserve completed
-effects; there is no implicit home-directory or world rollback. Query publication
-precedes external boundaries, including unit diagnostics, destruction checks and
-request/wait services. Clients can observe the already deleted unit at the V01
-boundary, without receiving direct mutable world access.
-
-The initial eighteen independently authored cases exercise real core input and cleanup,
-ALT quantization edges/order/no-draw paths, retained selected paths, ordinary and
-scenario events, live callback changes, compaction failure prefixes, cancellation,
-all four core error statuses, required-child stops and client observation during
-deletion. Expectations derive from the specifications. They are not original-game
-captures or evidence that the supplied S02 parser/executor, audio, title or V01
-children are implemented. Those bindings, accepted configuration changes,
-native enumeration/chooser integration, application admission and broader original
-resume/edit comparisons remain open. Ordinary preference defaults and persistence
-now have their own [F03 implementation](m1-classic-text.md#process-preferences-and-civ2dat),
-with a further composition case feeding the loaded word into this caller.
-
-Windows verification at `2d22a52` passed 401 default-off CTests and 403
-with SQLite enabled. Pinned Emscripten passed all six CTests, including 381
-portable Catch2 cases with 183,359 assertions. The 18 accepted-file cases account
-for 424 assertions on both native and WASM. All 54 X02 fixtures retain identical
-native/WASM actual results and consumed prefixes; their refreshed metadata does
-not add load-dialog fixture coverage. Pinned clang-format 20.1.8 passes. The
-unchanged upstream Catch2 `__COUNTER__` and existing command-initializer warnings
-remain in the WASM build. Logs are retained locally in ignored
-`build/load-dialog-{native,sqlite,wasm}-{build,ctest}.log`.
+The following dated Windows evidence records the implementation at the time of
+the observation. It does not assert that private call traces remain production
+requirements after these interface changes.
 
 ## Windows evidence — 2026-11-13 Pacific
 

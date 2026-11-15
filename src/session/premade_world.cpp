@@ -1,5 +1,6 @@
 #include "session/premade_world.hpp"
 #include "session/runtime.hpp"
+#include "formats/game_input.hpp"
 #include <algorithm>
 
 namespace openciv::session {
@@ -99,30 +100,32 @@ std::optional<WorldSource> load_premade_world(SessionRuntime& runtime,
         }
         bool loaded = false;
         try {
-            const formats::ReadItem read = [&](std::size_t count) {
-                publish(runtime);
-                return input->item(count);
-            };
-            const world::AllocationCheck allocate = [&](world::StorageRequest request) {
-                auto& map = runtime.world().map;
-                if (request.kind == world::StorageKind::tiles) {
-                    runtime.world().world_setup.width =
-                        static_cast<std::int16_t>(map.geometry().width());
-                    runtime.world().world_setup.height =
-                        static_cast<std::int16_t>(map.geometry().height());
-                }
-                if (services.allocate) {
-                    publish(runtime);
-                    const auto revision = map.storage_revision();
-                    services.allocate(request);
-                    if (map.storage_revision() != revision)
-                        throw std::out_of_range("Premade allocation callback replaced map backing");
-                }
-            };
-            loaded = formats::read_map_items(read, formats::MapStream::raw, runtime.world().map,
-                                             starts, allocate);
-            publish(runtime);
-            (void)input->close();
+            formats::Bytes bytes;
+            for (;;) {
+                auto part = input->item(65536);
+                if (part.prefix.size() > 65536 || (part.complete && part.prefix.size() != 65536))
+                    throw std::invalid_argument("Inconsistent map transfer");
+                if (bytes.size() + part.prefix.size() > 256 * 1024 * 1024)
+                    throw std::length_error("Map exceeds admission limit");
+                bytes.insert(bytes.end(), part.prefix.begin(), part.prefix.end());
+                if (!part.complete)
+                    break;
+            }
+            const bool closed = input->close();
+            std::optional<formats::RawMapFile> decoded;
+            try {
+                decoded = formats::decode_raw_map(bytes);
+            } catch (const formats::DecodeError&) {
+            }
+            if (closed && decoded) {
+                const auto selected_starts = decoded->starts;
+                const auto data = formats::map_input(std::move(*decoded));
+                world::install_map(data, runtime.world().map, false, services.allocate);
+                starts = selected_starts;
+                runtime.world().world_setup.width = static_cast<std::int16_t>(data.width);
+                runtime.world().world_setup.height = static_cast<std::int16_t>(data.height);
+                loaded = true;
+            }
         } catch (...) {
             publish(runtime);
             throw;

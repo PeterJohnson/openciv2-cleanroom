@@ -270,10 +270,32 @@ rule pack. Native provenance stays outside the common inputs. Include checks
 prevent gameplay from depending on formats and native loaders from depending on
 classic parsers.
 
+Classic save decoding produces owned `StoredSave` records for versions 0x26,
+0x27, 0x28 and 0x2c. Conversion produces `state::GameInput`; `session::install_game`
+owns derived values, password randomness, entity lifetimes, name restoration and
+mode adaptation. Raw maps similarly converge on `world::MapInput`. Decoding and
+file close complete before installation; short files do not publish record prefixes.
+Map allocation is staged before replacing existing storage. Live exports preserve
+opaque event bytes in adapter-owned metadata tied to event lifetime, while stored
+codec round trips retain the complete admitted representation.
+
+`ClassicRuleContext` is an input source, returning owned `LoadedContent` once.
+The installer reuses its `RuleInput` for final name-preserving updates. There is
+no parser reload/close protocol in the load workflow. Classic label parsing
+returns `LabelCatalog`; pool installation and language/cache setup are separate.
+
+Events contain semantic values and owned string identities. Only the codec has
+serialized presence words. Collection-controlled IDs and const access protect
+identity; compaction prepares detached strings once and commits them to the same
+live events. Required text-hole aliases survive. Resource admission hooks are
+not gameplay reentry points or original allocator trace emulators.
+
 Use classes to enforce invariants, resource ownership and state transitions.
 `PlayerClient` protects authority; `SessionRuntime` owns execution;
-`ClassicSaveOperation` owns a suspended save; `SessionActivity` pins its world
-and protects an active option-vote operation.
+`ClassicSaveOperation` owns a suspended save; `ClassicLoadOperation` guards a
+load through its post-load callbacks; `UnitOperation` owns pending unit requests
+and whole-stack continuations; `SessionActivity` pins the world during those
+operations and an active option vote.
 Public client/value headers do not include mutable state or engine operation
 interfaces. Transitive include checks and portable target dependency checks
 protect these boundaries as the frontend grows.
@@ -306,6 +328,12 @@ failure, while destructor cleanup preserves an earlier exception. Codecs continu
 to accept individual read/write functions. Vote callbacks have an owned
 registration: modal completion or failure cancels it and invalidates escaped
 callback copies before the runtime can start another game.
+
+Local stack/deletion mechanics never wait for transport. `UnitOperation` selects
+local authority or owns a noncopyable `UnitRequestChannel`, and yields after send.
+Each poll performs bounded work, tracks the wrapping deadline and drains queued
+replies without an internal message loop. Cancellation releases the channel and
+session guard. Clocks and timeout notifications remain individual policies.
 
 Transport send exceptions mean no bytes were accepted. The send queue retains
 its bytes and offset until it receives a result; an adapter that accepted bytes

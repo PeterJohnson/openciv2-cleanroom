@@ -17,20 +17,12 @@ state::Civilization& UnitDeletion::civilization(std::int32_t owner) {
         throw std::out_of_range("Unit deletion has no civilization backing");
     return world_.civilizations[static_cast<std::size_t>(owner)];
 }
-void UnitDeletion::remote(std::int32_t slot) {
-    auto& operation = world_.unit_deletion;
-    request_unit_operation(
-        operation.active, operation.reply, world_.turn_loop_active,
-        [&] { services_.request_delete(slot); }, services_);
-}
 void UnitDeletion::erase(std::int32_t slot, bool notify) {
     if (slot < 0 || !state::occupied(stacks_.backed_unit(slot).token))
         return;
+    if (world_.globals.multiplayer >= 3 && !world_.multiplayer.network_host)
+        throw std::logic_error("Local deletion requires authority; route through UnitOperation");
     world_.unit_deletion.active = true;
-    if (world_.globals.multiplayer >= 3 && !world_.multiplayer.network_host) {
-        remote(slot);
-        return;
-    }
     auto& unit = stacks_.backed_unit(slot);
     const world::Position position{unit.x, unit.y};
     const auto type = static_cast<std::size_t>(unit.type);
@@ -69,11 +61,7 @@ void UnitDeletion::erase(std::int32_t slot, bool notify) {
         civilization(owner).units_active.at(type) == 0)
         services_.check_destroyed(owner, -1);
     if (world_.globals.multiplayer >= 3 && notify) {
-        services_.state_difference();
-        services_.unit_change(position);
-        if (home && static_cast<std::int32_t>(*home) > 0)
-            services_.home_change(static_cast<std::int32_t>(*home));
-        services_.flush(5000);
+        services_.synchronize(position, home);
     }
     world_.unit_deletion.active = false;
 }

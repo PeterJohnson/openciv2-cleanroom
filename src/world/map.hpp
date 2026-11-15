@@ -90,6 +90,8 @@ public:
 
     void allocate(Geometry geometry, const AllocationCheck& check = {});
     void release(const ReleaseObserver& observer = {});
+    // Exchange owned storage after successful preparation; fallback bindings stay local.
+    void swap_storage(MapStorage& other) noexcept;
     bool allocated() const noexcept { return allocated_; }
     const Geometry& geometry() const;
     std::span<Tile> tiles();

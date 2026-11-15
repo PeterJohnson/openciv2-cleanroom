@@ -1,44 +1,12 @@
 #include "session/classic_load.hpp"
 #include "session/classic_file_choice.hpp"
-#include "session/runtime.hpp"
-#include "formats/multiplayer_io.hpp"
-#include "formats/world_record_io.hpp"
+#include "session/game_install.hpp"
+#include "formats/game_input.hpp"
+#include "rules/rules_install.hpp"
 
 namespace openciv::session {
 namespace {
 using namespace formats;
-CoreLoadStatus header(const ReadItem& read, const ReadEventByte& byte, std::uint16_t& version) {
-    std::string text;
-    bool terminated = false;
-    for (unsigned i = 0; i < 79; ++i) {
-        const auto value = byte().value_or(0xff);
-        if (value == 0) {
-            terminated = true;
-            break;
-        }
-        text.push_back(static_cast<char>(value));
-    }
-    (void)byte(); // Separator is consumed even for a bad/unterminated header.
-    if (!terminated)
-        throw std::out_of_range("Core header comparison has no terminated supplied backing");
-    if (text != "CIVILIZE")
-        return CoreLoadStatus::input;
-    const auto item = read(2);
-    if (item.prefix.size() > 2 || (item.complete && item.prefix.size() != 2))
-        throw std::invalid_argument("Version service returned an inconsistent transferred prefix");
-    if (!item.complete)
-        return CoreLoadStatus::input;
-    version = ByteReader(item.prefix).u16();
-    switch (game_version_status(version)) {
-    case VersionStatus::unsupported_old:
-        return CoreLoadStatus::unsupported;
-    case VersionStatus::newer:
-        return CoreLoadStatus::newer;
-    case VersionStatus::supported:
-        return CoreLoadStatus::success;
-    }
-    throw std::logic_error("Unknown version status");
-}
 void paths(ClassicFileState& retained, const std::string& request,
            const CoreLoadServices& services) {
     const auto separator = request.rfind('\\');
@@ -66,115 +34,128 @@ void paths(ClassicFileState& retained, const std::string& request,
     services.change_directory(retained.text.working);
 }
 } // namespace
-CoreLoadStatus load_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
-                                 std::string_view requested_path, const CoreLoadServices& services,
-                                 std::string_view password_reset_call) {
-    if (!services.open || !services.flush || !services.change_directory || !services.exists ||
-        !services.comparison.equal || !services.load_rules || !services.reload_table ||
-        !services.close_rules)
-        throw std::invalid_argument("Core load requires complete file/path/rule service bindings");
-    if (runtime.has_pending_commands())
-        throw std::logic_error("Core load requires settled session commands");
-    auto& random = runtime.gameplay_random(); // Check initialization before any effects.
-    auto& world = runtime.world();
-    auto& process = runtime.process();
-    const std::string request(requested_path), reset_call(password_reset_call);
-    if (request.find('\0') != std::string::npos)
-        throw std::invalid_argument("Core path must not contain NUL");
-    const auto entry_mode = world.globals.multiplayer;
-    select_classic_extension(false, entry_mode, retained.extension);
+void CoreLoadServices::validate() const {
+    if (!open || !flush || !change_directory || !exists || !comparison.equal || !load_content)
+        throw std::invalid_argument("Core load requires complete file/path/content bindings");
+}
+ClassicLoadOperation::ClassicLoadOperation(SessionRuntime& runtime, ClassicFileState& retained,
+                                           CoreLoadServices services)
+    : runtime_(runtime), retained_(retained), services_(std::move(services)), activity_([&] {
+          services_.validate();
+          (void)runtime_.gameplay_random();
+          return runtime_.begin_activity();
+      }()) {}
+CoreLoadStatus ClassicLoadOperation::load(std::string_view path,
+                                          std::string_view password_reset_call) {
+    if (started_)
+        throw std::logic_error("Load operation already started");
+    const std::string request(path), reset_call(password_reset_call);
+    if (request.find('\0') != std::string::npos || request.rfind('\\') == std::string::npos)
+        throw std::invalid_argument("Core load requires a qualified path without NUL");
+    started_ = true;
+    auto& retained = retained_;
+    auto& runtime = runtime_;
+    const auto& services = services_;
+    select_classic_extension(false, runtime.world().globals.multiplayer, retained.extension);
     retained.opened_path = request;
     if (request.find('.') == std::string::npos)
         retained.opened_path += retained.extension;
-    const auto opened_path = retained.opened_path;
-    auto input = services.open(opened_path);
-    if (!input) {
-        runtime.publish();
+    auto input = services.open(retained.opened_path);
+    if (!input)
         return CoreLoadStatus::input;
-    }
-    const auto close = [&] {
-        if (runtime.active())
-            runtime.publish();
-        (void)input->close();
-    };
     try {
-        const auto flush = [&] {
-            runtime.publish();
-            services.flush();
-        };
-        const ReadItem read = [&](std::size_t n) {
-            runtime.publish();
-            return input->item(n);
-        };
-        const ReadEventByte byte = [&] {
-            runtime.publish();
-            return input->byte();
-        };
-        std::uint16_t version = 0;
-        auto status = header(read, byte, version);
-        if (status != CoreLoadStatus::success) {
-            close();
-            runtime.publish();
-            return status;
-        }
-        flush();
-        paths(retained, request, services);
-        flush();
-        services.load_rules(true);
-        status = CoreLoadStatus::data;
-        flush();
-        const auto body = [&] {
-            bool scenario = false;
-            const auto scans = [&] {
-                world.entities.units.set_end(static_cast<std::size_t>(world.globals.unit_end));
-                world.entities.cities.set_end(static_cast<std::size_t>(world.globals.city_end));
-            };
-            if (!read_persistent_items(read, version, world.globals, world.names,
-                                       world.civilizations, scenario, scans))
-                return false;
-            if (!read_map_items(read, MapStream::embedded, world.map, retained.starts,
-                                services.allocate_map) ||
-                !read_map_summary_items(read, world.map, flush))
-                return false;
-            scans(); // Retain admitted later callback changes before entity input.
-            if (!read_entity_items(read, version, world.entities, process.tokens) ||
-                !read_leader_items(read, world.globals, world.civilizations, process.rules->leaders,
-                                   retained.cursor, retained.leaders) ||
-                !read_history_layout_items(read, world.power_history, retained.packed_layout,
-                                           world.layout, world.views, flush) ||
-                !read_scenario_history_items(read, scenario, world.globals, world.scenario,
-                                             world.eliminations) ||
-                !read_multiplayer_items(read, version, world.globals, world.multiplayer,
-                                        process.multiplayer_preferences, random, reset_call) ||
-                !read_event_items(read, byte, world.events, services.events))
-                return false;
-            flush();
-            restore_leader_names(scenario, world.globals, world.civilizations, world.names,
-                                 *process.rules, retained.leaders);
-            flush();
-            state::rebuild_loaded_unit_census(world.civilizations, world.entities);
-            world.mood.city.reset();
-            for (const auto table : {LoadedRuleTable::advances, LoadedRuleTable::improvements,
-                                     LoadedRuleTable::units}) {
-                runtime.publish();
-                services.reload_table(table, true);
+        // Header and bounded file bytes are local to this operation. I/O callbacks
+        // cannot expose a partially restored world or select simulation work.
+        Bytes bytes;
+        for (unsigned i = 0; i < 12; ++i) {
+            const auto value = input->byte();
+            if (!value) {
+                input->close();
+                return CoreLoadStatus::input;
             }
-            services.close_rules();
-            finish_loaded_layout(world.layout, retained.current_screen, scenario);
-            return true;
-        };
-        if (body())
-            status = CoreLoadStatus::success;
-        close();
-        if (status == CoreLoadStatus::success)
-            state::adapt_loaded_mode(entry_mode, world.globals, world.multiplayer,
-                                     process.multiplayer_preferences);
+            bytes.push_back(*value);
+        }
+        GameHeader header;
+        try {
+            header = decode_game_header(bytes);
+        } catch (const DecodeError&) {
+            input->close();
+            return CoreLoadStatus::input;
+        }
+        switch (game_version_status(header.version)) {
+        case VersionStatus::newer:
+            input->close();
+            return CoreLoadStatus::newer;
+        case VersionStatus::unsupported_old:
+            input->close();
+            return CoreLoadStatus::unsupported;
+        case VersionStatus::supported:
+            break;
+        }
+        constexpr std::size_t maximum = 256 * 1024 * 1024;
+        for (;;) {
+            auto part = input->item(65536);
+            if (part.prefix.size() > 65536 || (part.complete && part.prefix.size() != 65536))
+                throw std::invalid_argument("Inconsistent input transfer");
+            if (part.prefix.size() > maximum - bytes.size())
+                throw std::length_error("Save exceeds admission limit");
+            bytes.insert(bytes.end(), part.prefix.begin(), part.prefix.end());
+            if (!part.complete)
+                break;
+        }
+        if (!input->close())
+            return CoreLoadStatus::input;
+        std::unique_ptr<state::GameInput> loaded;
+        std::vector<std::array<Byte, 40>> event_bytes;
+        try {
+            auto stored = decode_stored_save(bytes);
+            if (stored.events)
+                for (const auto& event : stored.events->entries)
+                    event_bytes.push_back(event.record.retained);
+            loaded = std::make_unique<state::GameInput>(game_input(std::move(stored)));
+            validate_game_input(*loaded);
+        } catch (const DecodeError&) {
+            return CoreLoadStatus::data;
+        } catch (const std::invalid_argument&) {
+            return CoreLoadStatus::data;
+        } catch (const std::out_of_range&) {
+            return CoreLoadStatus::data;
+        }
+        paths(retained, request, services);
+        auto content = services.load_content();
+        if (!content.rules)
+            throw std::invalid_argument("Content source returned no rules");
+        // Installation alone owns live transforms and random choices. A bound
+        // semantic child may fail after earlier installation effects.
+        auto& rules = *runtime.process().rules;
+        if (content.labels)
+            state::install_labels(*content.labels, rules.text, rules.labels);
+        rules::RuleInstaller(*content.rules, rules).load(true);
+        if (services.content_installed)
+            services.content_installed();
+        install_game(*loaded, runtime, *content.rules, retained.current_screen,
+                     services.allocate_map, services.events, reset_call);
+        retained.event_bytes.clear();
+        for (std::size_t i = 0; i < event_bytes.size(); ++i) {
+            const auto event = runtime.world().events.collection.at(i);
+            retained.event_bytes.emplace(event->identity(),
+                                         ImportedEventBytes{event, event_bytes[i]});
+        }
+        retained.starts = {};
+        retained.cursor = {loaded->cursor_x, loaded->cursor_y};
+        pack_layout(loaded->layout, retained.packed_layout);
         runtime.publish();
-        return status;
+        services.flush();
+        return CoreLoadStatus::success;
     } catch (...) {
-        if (runtime.active())
-            runtime.publish();
+        runtime.publish();
         throw;
     }
+}
+CoreLoadStatus load_classic_core(SessionRuntime& runtime, ClassicFileState& retained,
+                                 std::string_view path, const CoreLoadServices& services,
+                                 std::string_view password_reset_call) {
+    ClassicLoadOperation operation(runtime, retained, services);
+    return operation.load(path, password_reset_call);
 }
 } // namespace openciv::session

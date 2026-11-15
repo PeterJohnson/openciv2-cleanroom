@@ -1,6 +1,7 @@
 #include "session/classic_save.hpp"
 #include "session/classic_file_choice.hpp"
 #include "session/runtime.hpp"
+#include "session/game_install.hpp"
 #include "civilization/knowledge.hpp"
 #include "formats/multiplayer_io.hpp"
 #include "formats/world_record_io.hpp"
@@ -94,7 +95,7 @@ CoreSaveStatus save_classic_core(SessionRuntime& runtime, ClassicFileState& reta
                     bytes.push_back(value);
                     return true;
                 },
-                world.events.collection);
+                world.events.collection, retained.event_bytes);
     } catch (...) {
         runtime.publish();
         throw;

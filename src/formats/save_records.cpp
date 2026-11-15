@@ -132,4 +132,19 @@ EventRecord decode_event_record(std::span<const Byte> bytes) {
 Bytes encode_event_record(const EventRecord& v) {
     return encode(v, event_record_size);
 }
+std::array<std::uint32_t*, state::event_string_count> event_markers(EventRecord& v) {
+    std::array<std::uint32_t*, state::event_string_count> result{};
+    result[0] = &v.unit_name;
+    result[1] = &v.city_name;
+    result[2] = &v.who_name;
+    result[3] = &v.whom_name;
+    for (std::size_t i = 0; i < 20; ++i)
+        result[4 + i] = &v.text[i];
+    const std::array other{&v.move_owner_name,     &v.move_unit_name,     &v.aggression_whom_name,
+                           &v.aggression_who_name, &v.create_owner_name,  &v.create_unit_name,
+                           &v.create_homecity,     &v.auxiliary_civ_name, &v.auxiliary_unit_name,
+                           &v.money_receiver_name, &v.wave_file};
+    std::copy(other.begin(), other.end(), result.begin() + state::event_other_begin);
+    return result;
+}
 } // namespace openciv::formats

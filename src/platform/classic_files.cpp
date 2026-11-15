@@ -78,7 +78,11 @@ private:
         const auto value = std::fgetc(file_->get());
         return value == EOF ? std::nullopt : std::optional{static_cast<Byte>(value)};
     }
-    bool finish() override { return file_->close(); }
+    bool finish() override {
+        const bool input_ok = std::ferror(file_->get()) == 0;
+        const bool closed = file_->close();
+        return input_ok && closed;
+    }
     std::unique_ptr<NativeFile> file_;
 };
 class NativeOutput final : public session::CoreOutput {

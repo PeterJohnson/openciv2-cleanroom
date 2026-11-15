@@ -30,6 +30,21 @@ Pattern pattern_at(Position p, std::uint16_t seed) {
 }
 } // namespace
 
+void MapStorage::swap_storage(MapStorage& other) noexcept {
+    using std::swap;
+    swap(geometry_, other.geometry_);
+    swap(allocated_, other.allocated_);
+    swap(tiles_, other.tiles_);
+    swap(remembered_, other.remembered_);
+    swap(coarse_, other.coarse_);
+    swap(retired_, other.retired_);
+    swap(pattern_seed, other.pattern_seed);
+    swap(stored_topology, other.stored_topology);
+    swap(regions, other.regions);
+    swap(remembered_barbarian, other.remembered_barbarian);
+    ++storage_revision_;
+    ++other.storage_revision_;
+}
 void MapStorage::allocate(Geometry shape, const AllocationCheck& check) {
     ++storage_revision_;
     geometry_ = shape;

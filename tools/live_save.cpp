@@ -96,13 +96,10 @@ int main(int argc, char** argv) {
         std::map<std::string, std::string> text_sources;
         std::size_t sprites = 0, flushes = 0;
         RuleContextServices hooks;
-        hooks.reload_sprites = [&] { ++sprites; };
-        hooks.flush = [&] { ++flushes; };
-        hooks.change_directory = [&](auto directory) { disk.change_directory(directory); };
         hooks.exists = [&](auto directory, auto name) { return disk.exists(directory, name); };
         hooks.comparison = classic::ascii_text_case();
         ClassicRuleContext rules(
-            *process.rules, files, workspace,
+            files, workspace,
             {[&](auto directory, auto name) {
                  auto opened = disk.open_text(directory, name);
                  if (opened.stream) {
@@ -117,13 +114,12 @@ int main(int argc, char** argv) {
             hooks);
         CoreLoadServices loading;
         loading.open = [&](auto path) { return disk.open_input(path); };
-        loading.flush = hooks.flush;
-        loading.change_directory = hooks.change_directory;
+        loading.flush = [&] { ++flushes; };
+        loading.content_installed = [&] { ++sprites; };
+        loading.change_directory = [&](auto directory) { disk.change_directory(directory); };
         loading.exists = hooks.exists;
         loading.comparison = hooks.comparison;
-        loading.load_rules = [&](bool initialize) { rules.load(initialize); };
-        loading.reload_table = [&](auto table, bool keep) { rules.reload(table, keep); };
-        loading.close_rules = [&] { rules.close(); };
+        loading.load_content = [&] { return rules.load(); };
         const auto loaded =
             load_classic_core(runtime, files, io::classic_path(input), loading, "live-driver/load");
         if (loaded != CoreLoadStatus::success)
