@@ -3,8 +3,10 @@
 #include "classic_rule_fixture.hpp"
 #include "formats/content_conversion.hpp"
 #include "formats/city_preferences.hpp"
+#include "formats/classic_city_preferences.hpp"
 #include "formats/city_names.hpp"
-#include "formats/rules_install.hpp"
+#include "formats/classic_city_names.hpp"
+#include "rules/rules_install.hpp"
 #include "formats/classic_rules.hpp"
 #include "rules/city_preferences.hpp"
 #include "base/hash.hpp"
@@ -20,7 +22,8 @@ content::Source source(std::string text) {
 auto load(const content::ContentConversion& converted, content::ResolvedPack selected) {
     selected.components["cityPreferences"] = {
         nullptr, content::parse_json(converted.component, "converted")};
-    return content::load_city_preferences(selected, classic::ascii_text_case());
+    return content::load_city_preferences(
+        selected, content::load_rules(selected)->input.definitions, base::ascii_name_equal);
 }
 state::CityPreferences classic_result(const content::Source& input,
                                       const state::RuleDefinitions& rules, std::int32_t retained) {
@@ -37,7 +40,8 @@ state::CityPreferences classic_result(const content::Source& input,
     state::CityPreferences out;
     out.no_defend = retained;
     out.build_order.fill(97);
-    classic::load_city_preferences(reader, rules, out, classic::ascii_text_case());
+    rules::apply_city_preferences(
+        classic::load_city_preferences(reader, rules, classic::ascii_text_case()), out);
     return out;
 }
 } // namespace
@@ -56,7 +60,8 @@ TEST_CASE("RULES conversion emits complete validated components with explicit sl
         content::ResolvedDocument{nullptr, content::parse_json(converted.compatibility, "mapping")};
     const auto loaded = content::load_rules(pack);
     const auto authored = rule_fixture::Input{}.load();
-    auto expected = authored->definitions;
+    auto expected_projection = rule_fixture::installed(authored->input);
+    auto& expected = *expected_projection;
     const auto identities = [](auto& to, const auto& from) {
         for (std::size_t i = 0; i < to.size(); ++i) {
             if constexpr (requires { to[i].identity.id; })
@@ -65,7 +70,8 @@ TEST_CASE("RULES conversion emits complete validated components with explicit sl
                 to[i].id = from[i].id;
         }
     };
-    const auto& actual = loaded->definitions;
+    const auto actual_projection = rule_fixture::installed(loaded->input);
+    const auto& actual = *actual_projection;
     identities(expected.advances, actual.advances);
     identities(expected.improvements, actual.improvements);
     identities(expected.units, actual.units);
@@ -77,13 +83,14 @@ TEST_CASE("RULES conversion emits complete validated components with explicit sl
     identities(expected.difficulties, actual.difficulties);
     identities(expected.diplomatic_attitudes, actual.diplomatic_attitudes);
     CHECK(actual == expected);
-    CHECK(loaded->definitions.cosmic == authored->definitions.cosmic);
-    CHECK(loaded->definitions.units[0].movement == 6);
-    CHECK(loaded->movement_points[0] == 2);
-    CHECK(loaded->definitions.units[0].hit_points == 30);
-    CHECK(loaded->definitions.tribes[0].plural == authored->definitions.tribes[0].plural);
-    CHECK(loaded->definitions.advances[0].identity.id == "classic.advances.0");
-    CHECK(loaded->definitions.orders[0].identity.id == "classic.orders.0");
+    CHECK(loaded->input.definitions.cosmic == authored->input.definitions.cosmic);
+    CHECK(rule_fixture::installed(loaded->input)->units[0].movement == 6);
+    CHECK(loaded->input.movement_points[0] == 2);
+    CHECK(loaded->input.definitions.units[0].hit_points == 30);
+    CHECK(loaded->input.definitions.tribes[0].plural ==
+          authored->input.definitions.tribes[0].plural);
+    CHECK(loaded->input.definitions.advances[0].identity.id == "classic.advances.0");
+    CHECK(loaded->input.definitions.orders[0].identity.id == "classic.orders.0");
     CHECK(converted.receipt["conversion"].getString() == "classic-rules/1");
     CHECK(converted.receipt["source"]["sha256"].getString() == base::sha256(input.bytes));
 }
@@ -108,18 +115,19 @@ TEST_CASE("RULES conversion preserves reload operands and retained names",
     pack.compatibility =
         content::ResolvedDocument{nullptr, content::parse_json(converted.compatibility, "mapping")};
     const auto loaded = content::load_rules(pack);
-    CHECK(loaded->definitions.improvements[0].identity.name.classic == std::string("Caf\xe9"));
-    CHECK(loaded->definitions.improvements[0].cost_rows == 10);
-    CHECK(loaded->definitions.units[0].abilities == 0x8001);
-    CHECK(loaded->definitions.units[1].identity.name.classic == "Unit 2");
-    CHECK(loaded->movement_points[0] == 259);
-    REQUIRE(loaded->title_overrides[0].size() == 2);
-    CHECK(loaded->title_overrides[0][0].titles.male.classic == "First");
+    CHECK(loaded->input.definitions.improvements[0].identity.name.classic ==
+          std::string("Caf\xe9"));
+    CHECK(loaded->input.definitions.improvements[0].cost_rows == 10);
+    CHECK(loaded->input.definitions.units[0].abilities == 0x8001);
+    CHECK(loaded->input.definitions.units[1].identity.name.classic == "Unit 2");
+    CHECK(loaded->input.movement_points[0] == 259);
+    REQUIRE(loaded->input.title_overrides[0].size() == 2);
+    CHECK(loaded->input.title_overrides[0][0].titles.male.classic == "First");
     auto original = std::make_unique<state::RuleState>(),
          native = std::make_unique<state::RuleState>();
     for (auto* target : {original.get(), native.get()}) {
         target->text.initialize();
-        target->definitions = loaded->definitions;
+        target->definitions = loaded->input.definitions;
         target->definitions.units[0].identity.name = {"Kept unit", "Kept unit"};
         target->definitions.improvements[0].identity.name = {"Kept building", "Kept building"};
         target->definitions.advances[1].identity.name = {"Kept advance", "Kept advance"};
@@ -133,8 +141,9 @@ TEST_CASE("RULES conversion preserves reload operands and retained names",
                                 },
                                 {}},
                                classic::ascii_text_case());
-    classic::RuleLoader classic_loader(reader, *original, classic::ascii_text_case());
-    content::RuleInstaller native_loader(loaded, *native);
+    classic_rule_fixture::InstalledRules classic_loader(reader, *original,
+                                                        classic::ascii_text_case());
+    rules::RuleInstaller native_loader(loaded->input, *native);
     REQUIRE(reader.open("RULES", "CIVILIZE"));
     classic_loader.advances(true);
     native_loader.advances(true);
@@ -201,9 +210,10 @@ TEST_CASE("CITY conversion preserves classic name sequences across every cursor"
         auto verification = selected;
         verification.components["cityNames"] = {
             nullptr, content::parse_json(converted.component, "converted")};
-        const auto admitted = content::load_city_names(verification, classic::ascii_text_case());
-        CHECK(admitted->lists.fallback.has_value() == (fallback != 0));
-        auto native = content::city_name_provider(admitted, classic::ascii_text_case());
+        const auto admitted = content::load_city_names(
+            verification, fixture.load()->input.definitions, base::ascii_name_equal);
+        CHECK(admitted->catalog.layers().front().fallback.has_value() == (fallback != 0));
+        auto native = admitted->catalog;
         classic::TextWorkspace workspace;
         classic::TextDirectories directories;
         classic::TextReader reader(workspace, directories,
@@ -213,13 +223,12 @@ TEST_CASE("CITY conversion preserves classic name sequences across every cursor"
                                     },
                                     {}},
                                    classic::ascii_text_case());
-        auto original =
-            classic::city_name_provider(reader, directories, classic::ascii_text_case());
+        auto original = classic::load_city_names(reader, directories, classic::ascii_text_case());
         for (int tribe = 0; tribe < 21; ++tribe) {
             const auto plural = "tribes " + std::to_string(tribe);
             for (unsigned cursor = 0; cursor < 256; ++cursor) {
-                const auto a = original.attempt(plural, static_cast<std::uint8_t>(cursor));
-                const auto b = native.attempt(plural, static_cast<std::uint8_t>(cursor));
+                const auto a = original.select(plural, static_cast<std::uint8_t>(cursor));
+                const auto b = native.select(plural, static_cast<std::uint8_t>(cursor));
                 REQUIRE(a.outcome == b.outcome);
                 REQUIRE(a.bytes == b.bytes);
                 const auto expected = cursor == 0                ? "@" + plural
@@ -229,21 +238,19 @@ TEST_CASE("CITY conversion preserves classic name sequences across every cursor"
                                       : populated && cursor == 5 ? std::string("Extra Two")
                                                                  : std::string{};
                 REQUIRE(b.bytes == expected);
-                original.close();
             }
         }
-        CHECK(native.attempt("Missing", 1).outcome == city::NameOutcome::unavailable);
-        for (const auto& list : admitted->lists.civilizations) {
+        CHECK(native.select("Missing", 1).outcome == city::NameOutcome::unavailable);
+        for (const auto& list : admitted->catalog.layers().front().civilizations) {
             if (list.plural.classic != "STOP" && list.plural.classic != "EXTRA")
                 continue;
             for (unsigned cursor = 0; cursor < 256; ++cursor) {
                 const auto a =
-                    original.attempt(list.plural.classic, static_cast<std::uint8_t>(cursor));
+                    original.select(list.plural.classic, static_cast<std::uint8_t>(cursor));
                 const auto b =
-                    native.attempt(list.plural.classic, static_cast<std::uint8_t>(cursor));
+                    native.select(list.plural.classic, static_cast<std::uint8_t>(cursor));
                 REQUIRE(a.outcome == b.outcome);
                 REQUIRE(a.bytes == b.bytes);
-                original.close();
             }
         }
         CHECK(converted.receipt["source"]["sha256"].getString() == base::sha256(input.bytes));
@@ -281,12 +288,15 @@ TEST_CASE("CITY conversion preserves reversible selectors and classic read bound
     auto verification = selected;
     verification.components["cityNames"] = {nullptr,
                                             content::parse_json(converted.component, "converted")};
-    const auto loaded = content::load_city_names(verification, classic::ascii_text_case());
-    REQUIRE(loaded->lists.civilizations.size() == 1);
-    CHECK(loaded->lists.civilizations[0].plural.classic == std::string("Caf\xe9"));
-    REQUIRE(loaded->lists.civilizations[0].names.size() == 2);
-    CHECK(loaded->lists.civilizations[0].names[0].classic == std::string(254, 'x'));
-    CHECK(loaded->lists.civilizations[0].names[1].classic == "x");
+    const auto loaded = content::load_city_names(verification, fixture.load()->input.definitions,
+                                                 base::ascii_name_equal);
+    REQUIRE(loaded->catalog.layers().front().civilizations.size() == 1);
+    CHECK(loaded->catalog.layers().front().civilizations[0].plural.classic ==
+          std::string("Caf\xe9"));
+    REQUIRE(loaded->catalog.layers().front().civilizations[0].names.size() == 2);
+    CHECK(loaded->catalog.layers().front().civilizations[0].names[0].classic ==
+          std::string(254, 'x'));
+    CHECK(loaded->catalog.layers().front().civilizations[0].names[1].classic == "x");
     try {
         content::convert_city_names(source(text + "@CAF\xc9\nTwo\n@STOP\n"), selected,
                                     classic::ascii_text_case());
@@ -314,7 +324,8 @@ TEST_CASE("CITYPREF conversion validates native output and preserves retained se
             actual.no_defend = retained;
             actual.build_order.fill(97);
             rules::apply_city_preferences(native->update, actual);
-            const auto expected = classic_result(input, native->rules->definitions, retained);
+            const auto expected =
+                classic_result(input, fixture.load()->input.definitions, retained);
             CHECK(actual.count == expected.count);
             CHECK(actual.no_defend == expected.no_defend);
             CHECK(actual.build_order == expected.build_order);
@@ -358,7 +369,7 @@ TEST_CASE("CITYPREF conversion keeps first-match duplicates and nominal limits",
             content::convert_city_preferences(terminated, selected, classic::ascii_text_case()),
             selected);
         CHECK(result->update.build_order == std::vector<std::uint8_t>{1});
-        CHECK(classic_result(terminated, fixture.load()->definitions, 0).count == 1);
+        CHECK(classic_result(terminated, fixture.load()->input.definitions, 0).count == 1);
     }
 }
 TEST_CASE("CITYPREF conversion distinguishes reversible text from unknown comparison rules",
@@ -383,7 +394,7 @@ TEST_CASE(
     rule_fixture::Input fixture;
     const auto selected = fixture.pack();
     const auto bad = source("@AUTOBUILD\nimprovements 1\nmisspelled reference\n");
-    CHECK(classic_result(bad, fixture.load()->definitions, 7).count == 1);
+    CHECK(classic_result(bad, fixture.load()->input.definitions, 7).count == 1);
     try {
         content::convert_city_preferences(bad, selected, classic::ascii_text_case());
         FAIL("unresolved reference must reject conversion");

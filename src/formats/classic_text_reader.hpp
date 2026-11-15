@@ -96,6 +96,8 @@ public:
                TextCase comparison);
     TextReader(const TextReader&) = delete;
     TextReader& operator=(const TextReader&) = delete;
+    // Open exactly one source for staged decoders, with no directory fallback.
+    bool open_source(std::string_view directory, std::string_view filename);
     // F03 section 2: low-level open, then wrapper with temporary home fallback.
     // null filename reuses the stream; null section opens without searching.
     bool open_low(std::optional<std::string_view> filename,

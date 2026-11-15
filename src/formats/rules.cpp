@@ -210,7 +210,7 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
     out->rules_source = input->second.file;
     if (pack.compatibility)
         out->compatibility_source = pack.compatibility->file;
-    auto& values = out->definitions;
+    auto& values = out->input.definitions;
     auto cosmic = root.at("globalRules");
     cosmic.fields(cosmic_names);
     std::array<std::int32_t, 22> raw_cosmic{};
@@ -230,22 +230,18 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
             prerequisites.error("expected two prerequisites");
         for (std::size_t j = 0; j < 2; ++j)
             target.prerequisites[j] = advance(prerequisites.element(j), maps[0]);
-        out->advance_prerequisites[i] = target.prerequisites;
         target.enabled = target.prerequisites[0] != AdvanceReference::never;
         target.epoch = static_cast<AdvanceEpoch>(
             named(r.at("epoch"), {"ancient", "renaissance", "industrial", "modern"}));
         target.category = static_cast<AdvanceCategory>(
             named(r.at("category"), {"military", "economic", "social", "academic", "applied"}));
     }
-    values.enabled_advance_count = rules::fix_advance_references(values.advances);
     for (std::size_t i = 0; i < values.improvements.size(); ++i) {
         auto r = row(1, i);
         r.fields({"id", "name", "costRows", "upkeep", "prerequisite"});
-        out->improvement_prerequisites[i] = advance(r.at("prerequisite"), maps[0]);
-        values.improvements[i] = {
-            name(r), rules::code8(r.at("costRows").integer()),
-            rules::code8(r.at("upkeep").integer()),
-            rules::follow_disabled(out->improvement_prerequisites[i], values.advances)};
+        values.improvements[i] = {name(r), rules::code8(r.at("costRows").integer()),
+                                  rules::code8(r.at("upkeep").integer()),
+                                  advance(r.at("prerequisite"), maps[0])};
     }
     auto wonders = root.at("wonderObsolescence");
     if (wonders.array_size() != 28)
@@ -273,9 +269,7 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
         target.role = static_cast<RuleRole>(
             named(r.at("role"), {"attack", "defend", "naval-superiority", "air-superiority",
                                  "sea-transport", "settle", "diplomacy", "trade"}));
-        out->movement_points[i] = r.at("movementPoints").integer();
-        target.movement = rules::normalize_movement(
-            out->movement_points[i], values.cosmic[CosmicParameter::road_movement_multiplier]);
+        out->input.movement_points[i] = r.at("movementPoints").integer();
         target.range = rules::code8(r.at("range").integer());
         target.attack = rules::code8(r.at("attack").integer());
         target.defense = rules::code8(r.at("defense").integer());
@@ -369,8 +363,6 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
         target.personality = {rules::signed8(personality.at("aggression").integer()),
                               rules::signed8(personality.at("expansion").integer()),
                               rules::signed8(personality.at("civilizationPreference").integer())};
-        for (std::size_t j = 0; j < target.titles.size(); ++j)
-            target.titles[j] = values.governments[j].titles;
         auto overrides = r.at("governmentTitles");
         for (std::size_t j = 0; j < overrides.array_size(); ++j) {
             auto title = overrides.element(j);
@@ -378,11 +370,9 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
             const auto government = maps[4].lookup(title.at("government"));
             if (!government)
                 title.error("Anarchy titles cannot be overridden");
-            target.titles[static_cast<std::size_t>(government)] = {text(title.at("male"), false),
-                                                                   text(title.at("female"), false)};
-            out->title_overrides[i].push_back(
+            out->input.title_overrides[i].push_back(
                 {static_cast<std::uint8_t>(government),
-                 target.titles[static_cast<std::size_t>(government)]});
+                 {text(title.at("male"), false), text(title.at("female"), false)}});
         }
     }
     const auto simple_names = [&](auto& output, std::size_t kind, bool padded, bool token) {
@@ -405,14 +395,14 @@ std::shared_ptr<const RuleContent> load_rules(const ResolvedPack& pack) {
                                                 ? std::uint8_t{0}
                                                 : static_cast<std::uint8_t>(shortcut.classic[0])};
     }
-    for (std::size_t i = 0; i < out->government_advances.size(); ++i) {
+    for (std::size_t i = 0; i < out->input.government_advances.size(); ++i) {
         const auto& required = pack.gameplay.bundle->values.governments[i].required_advance;
         if (!required)
             continue;
         if (const auto fixed = canonical_advance(*required))
-            out->government_advances[i] = static_cast<AdvanceReference>(*fixed);
+            out->input.government_advances[i] = static_cast<AdvanceReference>(*fixed);
         else if (const auto found = maps[0].ids.find(*required); found != maps[0].ids.end())
-            out->government_advances[i] = static_cast<AdvanceReference>(found->second);
+            out->input.government_advances[i] = static_cast<AdvanceReference>(found->second);
         else
             throw Error("invalid-content", "gameplay/governments",
                         "unresolved required advance " + *required);

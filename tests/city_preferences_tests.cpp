@@ -1,6 +1,7 @@
 // F03 section 8 and data-format.md section 5 / Appendix B; authored inputs.
 #include "rule_fixture.hpp"
 #include "formats/city_preferences.hpp"
+#include "formats/classic_city_preferences.hpp"
 #include "rules/city_preferences.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <algorithm>
@@ -19,7 +20,10 @@ struct PreferencesFixture {
             nullptr, content::parse_json(preferences.toString(), "preferences.json")};
         return selected;
     }
-    auto load() const { return content::load_city_preferences(pack(), classic::ascii_text_case()); }
+    auto load() const {
+        return content::load_city_preferences(pack(), input.load()->input.definitions,
+                                              base::ascii_name_equal);
+    }
 };
 state::CityPreferences retained() {
     state::CityPreferences state;
@@ -85,8 +89,10 @@ TEST_CASE("Native and classic city preferences share order duplicates and retain
                       "@AUTOBUILD\r\nImPrOvEmEnTs 2,ignored\r\nimprovements 1\r\nimprovements 2";
         auto reader = input.reader();
         auto classic_state = retained();
-        classic::load_city_preferences(reader, native->rules->definitions, classic_state,
-                                       classic::ascii_text_case());
+        rules::apply_city_preferences(
+            classic::load_city_preferences(reader, f.input.load()->input.definitions,
+                                           classic::ascii_text_case()),
+            classic_state);
         REQUIRE(classic_state == native_state);
         REQUIRE(classic_state.count == 3);
         REQUIRE(classic_state.no_defend == (deprioritize ? 1 : 7));
@@ -158,8 +164,10 @@ TEST_CASE("Classic city preferences retain NoDefend and stop at the first unmatc
         input.bytes = bytes;
         auto reader = input.reader();
         auto state = retained();
-        classic::load_city_preferences(reader, rules->definitions, state,
-                                       classic::ascii_text_case());
+        rules::apply_city_preferences(classic::load_city_preferences(reader,
+                                                                     rules->input.definitions,
+                                                                     classic::ascii_text_case()),
+                                      state);
         REQUIRE(state.count == 0);
         REQUIRE(state.no_defend == 7);
         REQUIRE(state.build_order == retained().build_order);
@@ -169,7 +177,9 @@ TEST_CASE("Classic city preferences retain NoDefend and stop at the first unmatc
     marker.bytes = "@NODEFEND";
     auto reader = marker.reader();
     auto state = retained();
-    classic::load_city_preferences(reader, rules->definitions, state, classic::ascii_text_case());
+    rules::apply_city_preferences(classic::load_city_preferences(reader, rules->input.definitions,
+                                                                 classic::ascii_text_case()),
+                                  state);
     REQUIRE(state.count == 0);
     REQUIRE(state.no_defend == 1);
     REQUIRE_FALSE(reader.is_open());
@@ -177,7 +187,7 @@ TEST_CASE("Classic city preferences retain NoDefend and stop at the first unmatc
 TEST_CASE("Classic city preferences stop at capacity and preserve the earliest matching identity",
           "[classic][preferences]") {
     PreferencesFixture f;
-    auto rules = f.input.load()->definitions;
+    auto rules = f.input.load()->input.definitions;
     rules.improvements[2].identity.name = rules.improvements[1].identity.name;
     TextInput input;
     input.bytes = "@NODEFEND\n@AUTOBUILD\n";
@@ -185,7 +195,8 @@ TEST_CASE("Classic city preferences stop at capacity and preserve the earliest m
         *input.bytes += "improvements 1\n";
     auto reader = input.reader();
     auto state = retained();
-    classic::load_city_preferences(reader, rules, state, classic::ascii_text_case());
+    rules::apply_city_preferences(
+        classic::load_city_preferences(reader, rules, classic::ascii_text_case()), state);
     REQUIRE(state.count == 32);
     REQUIRE(state.no_defend == 1);
     REQUIRE(std::all_of(state.build_order.begin(), state.build_order.end(),
@@ -193,28 +204,29 @@ TEST_CASE("Classic city preferences stop at capacity and preserve the earliest m
     REQUIRE(*input.last_reads == 34); // Two headers and exactly 32 preference lines.
     REQUIRE_FALSE(reader.is_open());
 }
-TEST_CASE("Classic preference lookup reads live names and guards callback corrupted count",
-          "[classic][preferences]") {
+TEST_CASE(
+    "Classic preference decoding snapshots names and leaves state unchanged until application",
+    "[classic][preferences]") {
     PreferencesFixture f;
-    auto rules = f.input.load()->definitions;
+    auto definitions = f.input.load()->input.definitions;
     TextInput input;
-    input.bytes = "@NODEFEND\n@AUTOBUILD\nNew Name\nimprovements 1\n";
+    input.bytes = "@NODEFEND\n@AUTOBUILD\nimprovements 2\nimprovements 1\n";
     auto state = retained();
+    const auto before = state;
     input.callback = [&](unsigned reads) {
+        REQUIRE(state == before);
         if (reads == 3)
-            rules.improvements[2].identity.name.classic = "New Name";
-        if (reads == 4)
-            state.count = 32;
+            definitions.improvements[2].identity.name.classic = "Changed";
     };
     auto reader = input.reader();
-    REQUIRE_THROWS_AS(
-        classic::load_city_preferences(reader, rules, state, classic::ascii_text_case()),
-        std::out_of_range);
+    const auto update =
+        classic::load_city_preferences(reader, definitions, classic::ascii_text_case());
+    REQUIRE(state == before);
+    REQUIRE_FALSE(reader.is_open());
+    rules::apply_city_preferences(update, state);
     REQUIRE(state.no_defend == 1);
-    REQUIRE(state.count == 32);
+    REQUIRE(state.count == 2);
     REQUIRE(state.build_order[0] == 2);
-    REQUIRE(state.build_order[1] == 1234);
-    REQUIRE(state.build_order.back() == 1234);
-    REQUIRE(input.workspace.line() == "improvements 1");
-    REQUIRE(reader.is_open()); // Safe stop retains the preceding parsing effects.
+    REQUIRE(state.build_order[1] == 1);
+    REQUIRE(state.build_order[2] == 1234);
 }

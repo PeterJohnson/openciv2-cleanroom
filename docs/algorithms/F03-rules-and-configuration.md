@@ -19,6 +19,13 @@ in the original executable or a historical test.
 | Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
 | Executable comparison only | Singleton parser streams/cursors, process-directory changes, allocation order, native dialogs and partial parser-object mutations. |
 
+Production decoders stage owned rule inputs and preference updates. A shared
+installer applies successful rule tables or full loads, retaining the specified
+keepNames/leader policies and live-dependent fixups. Failed decoding reports its
+source/section/row diagnostic without publishing a partial live table. Parser
+callbacks are not gameplay interleavings; original partial parser-memory traces
+are comparison details under the architecture boundary.
+
 The algorithms below specify game values/decisions and their real dependencies,
 plus explicitly identified external data definitions. They do not prescribe
 function boundaries, object/global layout, allocation strategy or incidental
@@ -63,9 +70,9 @@ semantic publications and failure effects. Only dependencies within the binding
 scope above constrain evaluation; storage/API choices need no original-trace
 equivalence proof. External file/wire definitions remain binding at adapters.
 
-Token/section consumption, accepted partial rule publication and name/reference
-resolution retain their dependencies. Independent conversion work may be staged
-only if later reads, parser failures and published values remain equivalent.
+Token/section consumption and name/reference resolution retain their external
+meaning. Staging preserves successfully admitted effects; a decoding rejection
+does not require installing a partial table.
 
 ### Logical text and classic name markers
 

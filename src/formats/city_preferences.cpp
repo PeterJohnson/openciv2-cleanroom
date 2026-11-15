@@ -2,55 +2,11 @@
 #include "content_reader.hpp"
 #include <algorithm>
 
-namespace openciv::formats::classic {
-namespace {
-template <class Name>
-void load(TextReader& reader, state::CityPreferences& retained, const TextCase& comparison,
-          Name name) {
-    if (!comparison.equal)
-        throw std::invalid_argument("City preferences require a name comparison service");
-    retained.count = 0;
-    if (reader.open("CITYPREF.TXT", "NODEFEND"))
-        retained.no_defend = 1;
-    reader.close();
-    if (!reader.open("CITYPREF.TXT", "AUTOBUILD"))
-        return;
-    while (reader.next_line()) {
-        const auto token = reader.next_token();
-        std::int32_t slot = 1;
-        for (; slot <= 38; ++slot)
-            if (comparison.equal(token, name(static_cast<std::size_t>(slot))))
-                break;
-        if (slot > 38)
-            break;
-        if (retained.count < 0 ||
-            static_cast<std::size_t>(retained.count) >= retained.build_order.size())
-            throw std::out_of_range("Live city preference count is outside its backed list");
-        retained.build_order[static_cast<std::size_t>(retained.count++)] = slot;
-        if (retained.count == 32)
-            break;
-    }
-    reader.close();
-}
-} // namespace
-void load_city_preferences(TextReader& reader, const state::RuleDefinitions& live_rules,
-                           state::CityPreferences& retained, const TextCase& comparison) {
-    load(reader, retained, comparison, [&](std::size_t slot) -> std::string_view {
-        return live_rules.improvements[slot].identity.name.classic;
-    });
-}
-void load_city_preferences(TextReader& reader, const state::RuleState& live_rules,
-                           state::CityPreferences& retained, const TextCase& comparison) {
-    load(reader, retained, comparison, [&](std::size_t slot) {
-        return live_rules.text.text(live_rules.names.improvements[slot]);
-    });
-}
-} // namespace openciv::formats::classic
-
 namespace openciv::formats::content {
 std::shared_ptr<const CityPreferenceContent>
-load_city_preferences(const ResolvedPack& pack, const classic::TextCase& comparison) {
-    if (!comparison.equal)
+load_city_preferences(const ResolvedPack& pack, const state::RuleDefinitions& rules,
+                      const base::NameComparison& comparison) {
+    if (!comparison)
         throw std::invalid_argument("City preferences require a name comparison service");
     const auto selected = pack.components.find("cityPreferences");
     if (selected == pack.components.end())
@@ -60,7 +16,6 @@ load_city_preferences(const ResolvedPack& pack, const classic::TextCase& compari
     root.fields({"format", "humanCityDefensePriority", "buildPreferences"}, true);
     root.at("format").constant("openciv2-city-preferences/1");
     auto out = std::make_shared<CityPreferenceContent>();
-    out->rules = load_rules(pack);
     out->source = selected->second.file;
     const auto priority = root.at("humanCityDefensePriority").text();
     if (priority != "deprioritize" && priority != "unchanged")
@@ -69,7 +24,7 @@ load_city_preferences(const ResolvedPack& pack, const classic::TextCase& compari
     const auto list = root.at("buildPreferences");
     if (list.array_size() > 32)
         list.error("at most 32 build preferences are supported");
-    const auto& improvements = out->rules->definitions.improvements;
+    const auto& improvements = rules.improvements;
     for (std::size_t i = 0; i < list.array_size(); ++i) {
         const auto field = list.element(i);
         const auto id = field.id();
@@ -83,11 +38,9 @@ load_city_preferences(const ResolvedPack& pack, const classic::TextCase& compari
             field.error("improvement name cannot round-trip through a trimmed classic token");
         for (std::size_t earlier = 1; earlier < slot; ++earlier) {
             try {
-                if (comparison.equal(name, improvements[earlier].identity.name.classic))
+                if (comparison(name, improvements[earlier].identity.name.classic))
                     field.error("classic preference name resolves to an earlier improvement");
-            } catch (const classic::TextError& error) {
-                if (error.fault != classic::TextFault::comparison_unavailable)
-                    throw;
+            } catch (const base::ComparisonUnavailable& error) {
                 throw Error("comparison-unavailable", field.path, error.what());
             }
         }

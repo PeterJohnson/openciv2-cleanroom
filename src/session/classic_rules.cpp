@@ -1,4 +1,5 @@
 #include "session/classic_rules.hpp"
+#include "rules/rules_install.hpp"
 
 namespace openciv::session {
 namespace classic = formats::classic;
@@ -22,8 +23,9 @@ void ClassicRuleContext::load(bool replace_leader_data) {
     files_.text.working = files_.text.search;
     const auto selected = files_.text.working;
     services_.change_directory(selected);
-    classic::RuleLoader(reader_, rules_, services_.comparison, services_.rules)
-        .load("RULES", replace_leader_data);
+    auto input = std::make_unique<state::RuleInput>();
+    classic::RuleLoader(reader_, *input, services_.comparison, services_.rules).load("RULES");
+    rules::RuleInstaller(*input, rules_).load(replace_leader_data);
     files_.text.working = files_.text.home;
     const auto home = files_.text.working;
     services_.change_directory(home);
@@ -43,13 +45,19 @@ void ClassicRuleContext::reload(LoadedRuleTable table, bool keep_names) {
             services_.rules.fatal(error);
         throw error;
     }
-    classic::RuleLoader loader(reader_, rules_, services_.comparison, services_.rules);
-    if (table == LoadedRuleTable::advances)
-        loader.advances(keep_names);
-    else if (table == LoadedRuleTable::improvements)
-        loader.improvements(keep_names);
-    else
-        loader.units(keep_names);
+    auto input = std::make_unique<state::RuleInput>();
+    classic::RuleLoader loader(reader_, *input, services_.comparison, services_.rules);
+    rules::RuleInstaller installer(*input, rules_);
+    if (table == LoadedRuleTable::advances) {
+        loader.advances();
+        installer.advances(keep_names);
+    } else if (table == LoadedRuleTable::improvements) {
+        loader.improvements();
+        installer.improvements(keep_names);
+    } else {
+        loader.units();
+        installer.units(keep_names);
+    }
 }
 void ClassicRuleContext::close() {
     reader_.close();

@@ -2,7 +2,8 @@
 #include "content_conversion.hpp"
 #include "classic_rules.hpp"
 #include "classic_text.hpp"
-#include "rules_install.hpp"
+#include "rules/rules_install.hpp"
+#include "rules.hpp"
 #include "base/hash.hpp"
 
 namespace openciv::formats::content {
@@ -65,7 +66,8 @@ RuleConversion convert_rules(const Source& source, const classic::TextCase& comp
     const std::string text(source.bytes.begin(), source.bytes.end());
     auto state = std::make_unique<RuleState>();
     state->text.initialize();
-    classic::RuleConversionOperands operands;
+    auto decoded = std::make_unique<state::RuleInput>();
+    auto& operands = *decoded;
     classic::TextWorkspace workspace;
     classic::TextDirectories directories;
     classic::TextReader reader(workspace, directories,
@@ -76,7 +78,8 @@ RuleConversion convert_rules(const Source& source, const classic::TextCase& comp
                                 {}},
                                comparison);
     try {
-        classic::RuleLoader(reader, *state, comparison, {}, &operands).load("RULES", true);
+        classic::RuleLoader(reader, operands, comparison).load("RULES");
+        rules::RuleInstaller(operands, *state).load(true);
     } catch (const classic::RuleLoadError& error) {
         throw Error("invalid-classic-rules", source.identity + "/" + error.section,
                     std::string(error.what()) + " at row " + std::to_string(error.row));
@@ -145,19 +148,19 @@ RuleConversion convert_rules(const Source& source, const classic::TextCase& comp
         row["aiValue"] = int(v.ai_value);
         row["civilizedAiModifier"] = int(v.civilized_ai_modifier);
         row["prerequisites"] = array();
-        for (auto p : operands.advance_prerequisites[i])
+        for (auto p : operands.definitions.advances[i].prerequisites)
             row["prerequisites"].getArray().push_back(reference(p));
         row["epoch"] = named(unsigned(v.epoch), {"ancient", "renaissance", "industrial", "modern"});
         row["category"] =
             named(unsigned(v.category), {"military", "economic", "social", "academic", "applied"});
     });
-    collection("improvements", values.improvements,
-               [&](auto& row, const ImprovementRule& v, auto i) {
-                   row["name"] = v.identity.name.utf8;
-                   row["costRows"] = int(v.cost_rows);
-                   row["upkeep"] = int(v.upkeep);
-                   row["prerequisite"] = reference(operands.improvement_prerequisites[i]);
-               });
+    collection(
+        "improvements", values.improvements, [&](auto& row, const ImprovementRule& v, auto i) {
+            row["name"] = v.identity.name.utf8;
+            row["costRows"] = int(v.cost_rows);
+            row["upkeep"] = int(v.upkeep);
+            row["prerequisite"] = reference(operands.definitions.improvements[i].prerequisite);
+        });
     rules["wonderObsolescence"] = array();
     for (std::size_t i = 0; i < 28; ++i) {
         jt::Json row;
@@ -268,7 +271,7 @@ RuleConversion convert_rules(const Source& source, const classic::TextCase& comp
     const auto native = load_rules(pack);
     auto installed = std::make_unique<RuleState>();
     installed->text.initialize();
-    RuleInstaller(native, *installed).load(true);
+    rules::RuleInstaller(native->input, *installed).load(true);
     if (installed->definitions != values)
         throw Error("unsupported-classic-value", source.identity,
                     "Native installation does not preserve classic rule values");

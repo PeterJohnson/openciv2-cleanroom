@@ -1,4 +1,6 @@
 #pragma once
+#include "formats/classic_rules.hpp"
+#include "rules/rules_install.hpp"
 // Authored F03 table inputs shared by parser and ordered-load integration tests.
 #include <array>
 #include <string>
@@ -53,4 +55,73 @@ inline std::array<std::string, 12> complete_sections() {
         out[11] += "diplomaticAttitudes " + std::to_string(i) + "\n";
     return out;
 }
+} // namespace classic_rule_fixture
+
+namespace classic_rule_fixture {
+class InstalledRules {
+public:
+    InstalledRules(openciv::formats::classic::TextReader& reader, openciv::state::RuleState& live,
+                   openciv::formats::classic::TextCase comparison,
+                   openciv::formats::classic::RuleLoadServices services = {})
+        : decoder_(reader, *input_, std::move(comparison), std::move(services)),
+          installer_(*input_, live) {}
+    void load(std::string_view filename, bool replace) {
+        decoder_.load(filename);
+        installer_.load(replace);
+    }
+    void cosmic() {
+        decoder_.cosmic();
+        installer_.cosmic();
+    }
+    void advances(bool keep = false) {
+        decoder_.advances();
+        installer_.advances(keep);
+    }
+    void improvements(bool keep = false) {
+        decoder_.improvements();
+        installer_.improvements(keep);
+    }
+    void wonder_expiry() {
+        decoder_.wonder_expiry();
+        installer_.wonder_expiry();
+    }
+    void units(bool keep = false) {
+        decoder_.units();
+        installer_.units(keep);
+    }
+    void terrain() {
+        decoder_.terrain();
+        installer_.terrain();
+    }
+    void governments() {
+        decoder_.governments();
+        installer_.governments();
+    }
+    void leaders(bool keep) {
+        decoder_.leaders();
+        installer_.leaders(keep);
+    }
+    void commodities() {
+        decoder_.commodities();
+        installer_.commodities();
+    }
+    void orders() {
+        decoder_.orders();
+        installer_.orders();
+    }
+    void difficulties() {
+        decoder_.difficulties();
+        installer_.difficulties();
+    }
+    void attitudes() {
+        decoder_.attitudes();
+        installer_.attitudes();
+    }
+
+private:
+    std::unique_ptr<openciv::state::RuleInput> input_ =
+        std::make_unique<openciv::state::RuleInput>();
+    openciv::formats::classic::RuleLoader decoder_;
+    openciv::rules::RuleInstaller installer_;
+};
 } // namespace classic_rule_fixture

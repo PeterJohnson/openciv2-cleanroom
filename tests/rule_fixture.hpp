@@ -1,4 +1,5 @@
 #pragma once
+#include "rules/rules_install.hpp"
 // Independently authored complete identities, not stock rules or engine outputs.
 // Collection counts and row fields follow data-format.md section 4 / Appendix B.
 #include "formats/rules.hpp"
@@ -98,4 +99,14 @@ struct Input {
     }
     std::shared_ptr<const RuleContent> load() const { return load_rules(pack()); }
 };
+} // namespace rule_fixture
+
+namespace rule_fixture {
+inline std::unique_ptr<openciv::state::RuleDefinitions>
+installed(const openciv::state::RuleInput& input) {
+    auto live = std::make_unique<openciv::state::RuleState>();
+    live->text.initialize();
+    openciv::rules::RuleInstaller(input, *live).load(true);
+    return std::make_unique<openciv::state::RuleDefinitions>(std::move(live->definitions));
+}
 } // namespace rule_fixture

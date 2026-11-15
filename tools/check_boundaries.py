@@ -7,6 +7,11 @@ ROOT = Path(__file__).resolve().parents[1]
 INCLUDE = re.compile(r'^\s*#\s*include\s*[<"]([^>"\n]+)[>"]', re.MULTILINE)
 PORTABLE = ('base', 'state', 'world', 'unit', 'city', 'civilization', 'rules',
             'turn', 'ai', 'formats', 'query', 'network', 'session', 'viewmodel')
+GAME = {'base', 'state', 'world', 'unit', 'city', 'civilization', 'rules', 'turn', 'ai'}
+NATIVE_CONTENT = {f'formats/{stem}.{suffix}' for stem in ('rules', 'city_names', 'city_preferences')
+                  for suffix in ('hpp', 'cpp')}
+CLASSIC_LOADERS = {'formats/classic_text_reader.hpp', 'formats/classic_rules.hpp',
+                   'formats/classic_city_names.hpp', 'formats/classic_city_preferences.hpp'}
 PLAYER_STATE = {'state/identities.hpp', 'state/unit_types.hpp'}
 PLAYER_SESSION = {'session/client.hpp', 'session/command_types.hpp',
                   'session/classic_file_choice.hpp'}
@@ -26,6 +31,12 @@ def check(root=ROOT):
             if target and target.is_relative_to(source.resolve()):
                 relative = target.relative_to(source.resolve()).as_posix()
                 forbidden = portable and relative.startswith(('platform/', 'ui/', 'application.'))
+                if origin.split('/')[0] in GAME:
+                    forbidden |= relative.startswith(('formats/', 'session/', 'network/', 'query/'))
+                if origin in CLASSIC_LOADERS or origin in {p.replace('.hpp', '.cpp') for p in CLASSIC_LOADERS}:
+                    forbidden |= relative.startswith(('formats/content_', 'formats/rules.')) or relative in {'formats/city_names.hpp', 'formats/city_preferences.hpp'}
+                if origin in NATIVE_CONTENT:
+                    forbidden |= relative in CLASSIC_LOADERS
                 if player:
                     forbidden |= (relative.startswith('state/') and relative not in PLAYER_STATE)
                     forbidden |= (relative.startswith('session/') and relative not in PLAYER_SESSION)

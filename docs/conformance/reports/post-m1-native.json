@@ -1,11 +1,11 @@
 {
   "format": "openciv2-conformance-run/2",
   "runnerScope": "foundation-session-v3",
-  "createdUtc": "2026-11-14T23:15:30.011716+00:00",
-  "implementationRevision": "91a4c8258bb3cd575472f0b70c49f4e4f09259d6",
+  "createdUtc": "2026-11-15T00:06:57.140065+00:00",
+  "implementationRevision": "68b5204266e88715442afe673f8a7eca49de1a02",
   "uncommittedImplementationChanges": true,
   "implementationSources": {
-    "CMakeLists.txt": "af1956318c166254b8d5f57ba0bd5333272d68c12790867c0caf722627fec020",
+    "CMakeLists.txt": "79e416ef0844bae5ea338ea1c18fc1e3e1fb5c9bed2b57a3dec4f2696642f815",
     "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
     "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
     "cmake/ConformanceIdentity.cmake": "264902e11af1d6595b5da394f89db779e83c68620e06b7e442e7cd1b2ff60b42",
@@ -48,7 +48,7 @@
     "src/session/command_runtime.cpp": "0ac7cd78d0fbfaa193e69ba8820ccce9a8c0eff59f7141b63229f27d4ae1e618",
     "src/session/commands.hpp": "2a6e5cd4336bc757020323596fb82154a6974a386c387436b0d4aeb472f41607",
     "src/session/commands.cpp": "e7f41d26b8db405eefee3228b92055b22004eb9bf96507beafa0a77e8c4a5124",
-    "src/state/city_names.hpp": "174c19eaf2eacdcc9c59b511401222a35dc081860e3e526ee9d1ff0388f15c68",
+    "src/state/city_names.hpp": "9b9d7f3a7186770a67987be33204ff67bf67aa85dd375e6a91f5349ad7625154",
     "src/state/city_preferences.hpp": "0d6c1c1e7b57bb334cf5ea72a475a249e04b982e6908d1d76c46398ba0a6b2bc",
     "src/state/civilization.cpp": "1fc65a2893cec7fbd9769a9780fa3e1d527a6980bacc7767eb495acadf1fdb8c",
     "src/state/civilization.hpp": "f3a6b51cf8a170ef326554ab79c343d6352b66a15d1b2766a2eab40b5eaca8d1",
@@ -63,6 +63,7 @@
     "src/state/multiplayer.hpp": "e7693a23825d9dcca437524cb2f06702168e90b47ec25062ec398fe7140b2976",
     "src/state/preferences.cpp": "9e01421ea69c68321d6a04d19db9d09e6301772d6027b3c4a198f94f8ec53f2b",
     "src/state/preferences.hpp": "f1b8a58cbf6759b8f02495e8d91a9bdf1bb07877195a08a729708fe393d68b47",
+    "src/state/rule_input.hpp": "e3d1d52f03e686e52c8f61be574fe5a86f446fe0ff6cfa9bf0b72f5b655caef6",
     "src/state/rule_state.hpp": "6f084e72020c8235a7dfe9dd75ce5d696be9390a3628cf599766484304629341",
     "src/state/rules.hpp": "b3f3ec369fd8db843a5e9cd61a6123562fa3ba1cf63d5f822b54e36d07c61276",
     "src/state/scenario.cpp": "93bace800d8e5f480cca33b5340511e81b6325d42a4e768064e53f4d00d243a5",
@@ -83,7 +84,7 @@
   "adapterIdentity": {
     "format": "openciv2-conformance-adapter/1",
     "sources": {
-      "CMakeLists.txt": "af1956318c166254b8d5f57ba0bd5333272d68c12790867c0caf722627fec020",
+      "CMakeLists.txt": "79e416ef0844bae5ea338ea1c18fc1e3e1fb5c9bed2b57a3dec4f2696642f815",
       "dependencies.json": "3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433",
       "cmake/Toolchain.cmake": "997b976738f4ddf0e92b85992962b416f9688cfdcfad377276c6a673a5ae1c13",
       "cmake/ConformanceIdentity.cmake": "264902e11af1d6595b5da394f89db779e83c68620e06b7e442e7cd1b2ff60b42",
@@ -126,7 +127,7 @@
       "src/session/command_runtime.cpp": "0ac7cd78d0fbfaa193e69ba8820ccce9a8c0eff59f7141b63229f27d4ae1e618",
       "src/session/commands.hpp": "2a6e5cd4336bc757020323596fb82154a6974a386c387436b0d4aeb472f41607",
       "src/session/commands.cpp": "e7f41d26b8db405eefee3228b92055b22004eb9bf96507beafa0a77e8c4a5124",
-      "src/state/city_names.hpp": "174c19eaf2eacdcc9c59b511401222a35dc081860e3e526ee9d1ff0388f15c68",
+      "src/state/city_names.hpp": "9b9d7f3a7186770a67987be33204ff67bf67aa85dd375e6a91f5349ad7625154",
       "src/state/city_preferences.hpp": "0d6c1c1e7b57bb334cf5ea72a475a249e04b982e6908d1d76c46398ba0a6b2bc",
       "src/state/civilization.cpp": "1fc65a2893cec7fbd9769a9780fa3e1d527a6980bacc7767eb495acadf1fdb8c",
       "src/state/civilization.hpp": "f3a6b51cf8a170ef326554ab79c343d6352b66a15d1b2766a2eab40b5eaca8d1",
@@ -141,6 +142,7 @@
       "src/state/multiplayer.hpp": "e7693a23825d9dcca437524cb2f06702168e90b47ec25062ec398fe7140b2976",
       "src/state/preferences.cpp": "9e01421ea69c68321d6a04d19db9d09e6301772d6027b3c4a198f94f8ec53f2b",
       "src/state/preferences.hpp": "f1b8a58cbf6759b8f02495e8d91a9bdf1bb07877195a08a729708fe393d68b47",
+      "src/state/rule_input.hpp": "e3d1d52f03e686e52c8f61be574fe5a86f446fe0ff6cfa9bf0b72f5b655caef6",
       "src/state/rule_state.hpp": "6f084e72020c8235a7dfe9dd75ce5d696be9390a3628cf599766484304629341",
       "src/state/rules.hpp": "b3f3ec369fd8db843a5e9cd61a6123562fa3ba1cf63d5f822b54e36d07c61276",
       "src/state/scenario.cpp": "93bace800d8e5f480cca33b5340511e81b6325d42a4e768064e53f4d00d243a5",
@@ -154,7 +156,7 @@
     "buildIdentity": "status=configured-only\nplatform=linux\ncmake=3.31.10\ngenerator=Ninja\nsystem=Linux 7.0.0-43-generic\nprocessor=x86_64\nc=Clang 20.1.8\ncxx=Clang 20.1.8\ncxx_path=/usr/bin/clang++-20\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=/missing/fonts\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n"
   },
   "adapterArtifacts": {
-    "/home/peter/project/openciv2-cleanroom/build/m1-headless/oc2_conformance_adapter": "12b5a1d4f616b8c2ac0a708e89259469e8aac29bd65ed7108eaeaa05c0addecd"
+    "/home/peter/project/openciv2-cleanroom/build/m1-headless/oc2_conformance_adapter": "1a22c1776368eee40dbc0530463f2a2758c6d502af6aa790af7ba16643e14b48"
   },
   "host": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
   "buildIdentity": "status=configured-only\nplatform=linux\ncmake=3.31.10\ngenerator=Ninja\nsystem=Linux 7.0.0-43-generic\nprocessor=x86_64\nc=Clang 20.1.8\ncxx=Clang 20.1.8\ncxx_path=/usr/bin/clang++-20\ndependency_lock_sha256=3883baf272a8f051001dac4a0350f1ab948a44d36ee3fc15fcfeb691b0210433\nOC2_VERIFY_TOOLCHAIN=ON\nOC2_BUILD_GUI=OFF\nOC2_BUILD_TOOLS=ON\nOC2_ENABLE_SQLITE_EXPORT=OFF\nBUILD_TESTING=ON\nOC2_GUI_TESTS=OFF\nOC2_SANITIZERS=OFF\nOC2_FETCH_SDL=OFF\nOC2_FETCH_DEPENDENCIES=OFF\nCMAKE_BUILD_TYPE=Debug\nCMAKE_OSX_SYSROOT=\nCMAKE_OSX_DEPLOYMENT_TARGET=\nCMAKE_OBJCXX_COMPILER_ID=\nCMAKE_OBJCXX_COMPILER_VERSION=\nCMAKE_CXX_COMPILER_VERSION_INTERNAL=\nSDL3_DIR=\nSDL3_VERSION=\nCMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION=\nCMAKE_VS_PLATFORM_TOOLSET_VERSION=\nFETCHCONTENT_SOURCE_DIR_CATCH2=/tmp/Catch2-3.8.1\nFETCHCONTENT_SOURCE_DIR_SDL3=\nFETCHCONTENT_SOURCE_DIR_IMGUI=\nFETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE=\nFETCHCONTENT_SOURCE_DIR_DEJAVU=/missing/fonts\nFETCHCONTENT_SOURCE_DIR_SQLITE=\nDEVELOPER_DIR=\nVCToolsVersion=\nWindowsSDKVersion=\n",

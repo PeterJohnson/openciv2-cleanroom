@@ -78,7 +78,7 @@ TEST_CASE("F03 reload rebuilds labels before sprites and selects rules before re
                                "open:" + std::string(selected) + "/RULES.TXT", "cd:home", "flush"});
     }
 }
-TEST_CASE("F03 wrapper failure retains labels numeric prefixes and selected directory",
+TEST_CASE("F03 wrapper failure retains labels and selected directory without installing rules",
           "[session][rule-context]") {
     Fixture f;
     f.body = classic_rule_fixture::complete_sections()[0];
@@ -87,7 +87,7 @@ TEST_CASE("F03 wrapper failure retains labels numeric prefixes and selected dire
     REQUIRE_THROWS_AS(f.context->load(true), classic::RuleLoadError);
     REQUIRE(f.files.text.working == "scenario");
     REQUIRE(f.files.text.search == "scenario");
-    REQUIRE(f.rules->definitions.cosmic.values[0] == 9);
+    REQUIRE(f.rules->definitions.cosmic.values[0] == 0);
     REQUIRE(f.rules->labels.declared_count == 2);
     REQUIRE(std::find(f.trace.begin(), f.trace.end(), "flush") == f.trace.end());
     REQUIRE(std::find(f.trace.begin(), f.trace.end(), "cd:home") == f.trace.end());

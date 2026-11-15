@@ -34,3 +34,26 @@ class BoundaryTests(unittest.TestCase):
                 path.write_text(f'#include <{header}>\n')
                 with self.assertRaisesRegex(ValueError, 'forbidden platform include'):
                     check_boundaries.check(root)
+
+    def test_domain_cannot_depend_on_format_codecs(self):
+        self.check_forbidden_chain('rules/install.hpp', 'formats/rules.hpp')
+
+    def test_native_content_cannot_depend_on_classic_loaders(self):
+        self.check_forbidden_chain('formats/city_names.hpp', 'formats/classic_text_reader.hpp')
+
+    def test_classic_parser_cannot_depend_on_native_content(self):
+        self.check_forbidden_chain('formats/classic_rules.hpp', 'formats/content_json.hpp')
+
+    def check_forbidden_chain(self, origin, forbidden):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name, text in {
+                origin: '#include "base/helper.hpp"\n',
+                'base/helper.hpp': f'#include "{forbidden}"\n',
+                forbidden: '// implementation dependency\n',
+            }.items():
+                path = root / 'src' / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text)
+            with self.assertRaisesRegex(ValueError, 'forbidden include.*' + forbidden):
+                check_boundaries.check(root)

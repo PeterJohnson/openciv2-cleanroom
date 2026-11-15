@@ -1,7 +1,9 @@
 // C01 default naming and data-format.md section 5 / Appendix B.
-// Authored provider inputs and expected outcomes, not original-game captures.
+// Authored catalog inputs and expected outcomes, not original-game captures.
 #include "formats/city_names.hpp"
-#include "formats/rules_install.hpp"
+#include "city/names.hpp"
+#include "formats/classic_city_names.hpp"
+#include "rules/rules_install.hpp"
 #include "rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <map>
@@ -30,7 +32,8 @@ struct Input {
         return out;
     }
     auto load(bool overlay = false) const {
-        return content::load_city_names(pack(overlay), classic::ascii_text_case());
+        return content::load_city_names(pack(overlay), rules.load()->input.definitions,
+                                        base::ascii_name_equal);
     }
 };
 struct World {
@@ -45,7 +48,7 @@ struct World {
         city.name.bytes[0] = 0;
         leaders[0].plural = state::NameReference{123, true};
     }
-    bool run(const city::NameProvider& provider) {
+    bool run(const city::NameCatalog& provider) {
         return city::default_name(
             city, civilizations, leaders,
             [&](std::int32_t id) {
@@ -99,10 +102,11 @@ TEST_CASE("Native installed leaders supply C01 names while rule reload retains t
     const auto admitted = Input{}.load();
     auto rules = std::make_unique<state::RuleState>();
     rules->text.initialize();
-    content::RuleInstaller install(admitted->rules, *rules);
+    const auto rule_content = rule_fixture::Input{}.load();
+    rules::RuleInstaller install(rule_content->input, *rules);
     install.load(true);
     World world;
-    const auto provider = content::city_name_provider(admitted, classic::ascii_text_case());
+    const auto provider = admitted->catalog;
     REQUIRE(city::default_name(world.city, world.civilizations, *rules, provider));
     REQUIRE(world.name() == "First");
     REQUIRE(rules->leaders[0].city_name_index == 1);
@@ -120,13 +124,13 @@ TEST_CASE("Native installed leaders supply C01 names while rule reload retains t
     REQUIRE(rules->leaders[0].city_name_index == 3);
 }
 
-TEST_CASE("C01 native and classic providers preserve ordered names residual fallback and wrap",
+TEST_CASE("C01 native and classic catalogs preserve ordered names residual fallback and wrap",
           "[city][names][content][classic]") {
     Input input;
     input.names["civilizations"][0]["pluralName"] = jt::Json("TrIbEs 0");
     const auto admitted = input.load();
     REQUIRE(admitted->starting_lists_complete);
-    auto native_provider = content::city_name_provider(admitted, classic::ascii_text_case());
+    auto native_provider = admitted->catalog;
     for (const unsigned count : {0U, 1U, 2U, 3U, 4U, 254U, 255U}) {
         CAPTURE(count);
         TextInput text;
@@ -135,7 +139,7 @@ TEST_CASE("C01 native and classic providers preserve ordered names residual fall
             "Two\r\n@STOP\r\n";
         auto reader = text.reader();
         auto classic_provider =
-            classic::city_name_provider(reader, text.directories, classic::ascii_text_case());
+            classic::load_city_names(reader, text.directories, classic::ascii_text_case());
         World native, original;
         native.leaders[0].city_name_index = static_cast<std::uint8_t>(count);
         original.leaders[0].city_name_index = static_cast<std::uint8_t>(count);
@@ -161,7 +165,7 @@ TEST_CASE("C01 successful publication truncates classic bytes clears tail and ke
     Input input;
     input.names["civilizations"][0]["cityNames"] =
         rule_fixture::json(R"(["12345678901234é tail","12345678901234é tail","X"])");
-    auto provider = content::city_name_provider(input.load(), classic::ascii_text_case());
+    auto provider = input.load()->catalog;
     World world;
     REQUIRE(world.run(provider));
     REQUIRE(world.name() == std::string("12345678901234\xe9"));
@@ -177,7 +181,7 @@ TEST_CASE("C01 successful publication truncates classic bytes clears tail and ke
     text.files["scenario/CITY.TXT"] = "@tribes 0\n12345678901234\xe9 tail\n@STOP\n";
     auto reader = text.reader();
     auto classic_provider =
-        classic::city_name_provider(reader, text.directories, classic::ascii_text_case());
+        classic::load_city_names(reader, text.directories, classic::ascii_text_case());
     World classic_world;
     REQUIRE(classic_world.run(classic_provider));
     REQUIRE(classic_world.city.name == first);
@@ -185,7 +189,7 @@ TEST_CASE("C01 successful publication truncates classic bytes clears tail and ke
 TEST_CASE("C01 unavailable plural lists preserve the increment and old name payload",
           "[city][names][content][classic]") {
     Input input;
-    auto provider = content::city_name_provider(input.load(), classic::ascii_text_case());
+    auto provider = input.load()->catalog;
     World world;
     world.plural = "Renamed civilization";
     world.leaders[0].city_name_index = 9;
@@ -197,7 +201,7 @@ TEST_CASE("C01 unavailable plural lists preserve the increment and old name payl
     text.files["scenario/CITY.TXT"] = "@Other\nUnused\n@EXTRA\nUnused fallback\n";
     auto reader = text.reader();
     auto classic_provider =
-        classic::city_name_provider(reader, text.directories, classic::ascii_text_case());
+        classic::load_city_names(reader, text.directories, classic::ascii_text_case());
     World classic_world;
     classic_world.plural = world.plural;
     classic_world.leaders[0].city_name_index = 9;
@@ -214,24 +218,13 @@ TEST_CASE("C01 exhausted lists reset and retry twice while absent fallback stays
         input.names["civilizations"][0]["cityNames"].setArray();
         input.names["fallbackNames"] = absent ? jt::Json() : rule_fixture::json("[]");
         const auto admitted = input.load(true);
-        REQUIRE(admitted->lists.fallback.has_value() == !absent);
+        REQUIRE(admitted->catalog.layers().front().fallback.has_value() == !absent);
         REQUIRE_FALSE(admitted->starting_lists_complete);
-        auto native = content::city_name_provider(admitted, classic::ascii_text_case());
-        unsigned attempts = 0, closes = 0;
-        const city::NameProvider observed{[&](auto name, auto count) {
-                                              ++attempts;
-                                              return native.attempt(name, count);
-                                          },
-                                          [&] {
-                                              ++closes;
-                                              native.close();
-                                          }};
+        auto native = admitted->catalog;
         World world;
         world.leaders[0].city_name_index = 11;
         const auto before = world.city.name;
-        REQUIRE_FALSE(world.run(observed));
-        REQUIRE(attempts == 2);
-        REQUIRE(closes == 1);
+        REQUIRE_FALSE(world.run(native));
         REQUIRE(world.leaders[0].city_name_index == 0);
         REQUIRE(world.city.name == before);
         TextInput text;
@@ -239,7 +232,7 @@ TEST_CASE("C01 exhausted lists reset and retry twice while absent fallback stays
             "@tribes 0\n@STOP\n" + (absent ? std::string{} : std::string("@EXTRA\n@STOP\n"));
         auto reader = text.reader();
         auto classic_provider =
-            classic::city_name_provider(reader, text.directories, classic::ascii_text_case());
+            classic::load_city_names(reader, text.directories, classic::ascii_text_case());
         World classic_world;
         classic_world.leaders[0].city_name_index = 11;
         REQUIRE_FALSE(classic_world.run(classic_provider));
@@ -249,63 +242,24 @@ TEST_CASE("C01 exhausted lists reset and retry twice while absent fallback stays
         REQUIRE_FALSE(reader.is_open());
     }
 }
-TEST_CASE("C01 owner and plural are captured but counters follow live tribe changes",
-          "[city][names]") {
-    World world;
-    world.leaders[0].city_name_index = 7;
-    world.leaders[2].city_name_index = 19;
-    world.leaders[2].plural = state::NameReference{456, true};
-    world.civilizations[3].tribe = 4;
-    world.leaders[4].city_name_index = 99;
-    unsigned calls = 0, closes = 0;
-    city::NameProvider provider{[&](std::string_view plural, std::uint8_t count) {
-                                    REQUIRE(plural == "tribes 0");
-                                    if (!calls++) {
-                                        REQUIRE(count == 8);
-                                        REQUIRE(world.leaders[0].city_name_index == 8);
-                                        world.city.owner = state::CivilizationSlot{3};
-                                        world.civilizations[1].tribe = 2;
-                                        world.plural = "Changed";
-                                        return city::NameAttempt{city::NameOutcome::exhausted, {}};
-                                    }
-                                    REQUIRE(count == 1);
-                                    REQUIRE(world.leaders[2].city_name_index == 1);
-                                    return city::NameAttempt{city::NameOutcome::selected,
-                                                             "Published"};
-                                },
-                                [&] { ++closes; }};
-    REQUIRE(world.run(provider));
-    REQUIRE(world.name() == "Published");
-    REQUIRE(world.leaders[0].city_name_index == 8);
-    REQUIRE(world.leaders[2].city_name_index == 1);
-    REQUIRE(world.leaders[4].city_name_index == 99);
-    REQUIRE(world.labels == std::vector<std::int32_t>{123});
-    REQUIRE(closes == 1);
-}
-TEST_CASE("C01 opening callbacks precede resets and missing EXTRA reopens only on retry",
-          "[city][names][classic]") {
+TEST_CASE("C01 catalogs own loaded data and resolve current plural names", "[city][names]") {
     TextInput text;
-    text.files["scenario/CITY.TXT"] = "@tribes 0\nFirst\n@STOP\n";
+    text.files["scenario/CITY.TXT"] = "@tribes 0\nFirst\n@STOP\n@Renamed\nChanged\n@STOP\n";
+    auto catalog = [&] {
+        auto reader = text.reader();
+        return classic::load_city_names(reader, text.directories, classic::ascii_text_case());
+    }();
+    text.files.clear();
     World world;
-    world.leaders[0].city_name_index = 1;
-    world.leaders[2].city_name_index = 77;
-    unsigned opened = 0;
-    text.opening = [&] {
-        if (!opened++) {
-            REQUIRE(world.leaders[0].city_name_index == 2);
-            world.civilizations[1].tribe = 2;
-        } else
-            REQUIRE(world.leaders[2].city_name_index == 1);
-    };
-    auto reader = text.reader();
-    const auto provider =
-        classic::city_name_provider(reader, text.directories, classic::ascii_text_case());
-    REQUIRE(world.run(provider));
+    REQUIRE(world.run(catalog));
     REQUIRE(world.name() == "First");
-    REQUIRE(world.leaders[0].city_name_index == 2);
+    world.plural = "Renamed";
+    world.civilizations[1].tribe = 2;
+    REQUIRE(world.run(catalog));
+    REQUIRE(world.name() == "Changed");
+    REQUIRE(world.leaders[0].city_name_index == 1);
     REQUIRE(world.leaders[2].city_name_index == 1);
-    REQUIRE(opened == 2);
-    REQUIRE(text.opened == std::vector<std::string>(2, "scenario/CITY.TXT"));
+    REQUIRE(text.opened.size() == 2);
 }
 TEST_CASE("C01 classic fallback selection retains the chosen file and leaves home directory",
           "[city][names][classic]") {
@@ -314,7 +268,7 @@ TEST_CASE("C01 classic fallback selection retains the chosen file and leaves hom
     text.files["home/CITY.TXT"] = "@TrIbEs 0\nHome\n@STOP\n@EXTRA\nHome extra\n@STOP\n";
     auto reader = text.reader();
     const auto provider =
-        classic::city_name_provider(reader, text.directories, classic::ascii_text_case());
+        classic::load_city_names(reader, text.directories, classic::ascii_text_case());
     World world;
     world.leaders[0].city_name_index = 1;
     REQUIRE(world.run(provider));
@@ -324,56 +278,32 @@ TEST_CASE("C01 classic fallback selection retains the chosen file and leaves hom
     REQUIRE(text.directories.search == "scenario");
     REQUIRE_FALSE(reader.is_open());
 }
-TEST_CASE("C01 provider failures preserve reached effects without invented normal cleanup",
+TEST_CASE("C01 incomplete imported lists preserve valid prefix and report unsupported exhaustion",
           "[city][names][classic]") {
-    World world;
-    world.leaders[0].plural = state::NameReference{32768, true};
-    unsigned closed = 0;
-    city::NameProvider provider{[&](auto, auto) -> city::NameAttempt {
-                                    world.city.name.bytes[4] = 77;
-                                    throw std::runtime_error("supplied provider failure");
-                                },
-                                [&] { ++closed; }};
-    REQUIRE_THROWS_AS(world.run(provider), std::runtime_error);
-    REQUIRE(world.labels == std::vector<std::int32_t>{32768});
-    REQUIRE(world.leaders[0].city_name_index == 1);
-    REQUIRE(world.city.name.bytes[4] == 77);
-    REQUIRE(closed == 0);
     TextInput text;
-    text.files["scenario/CITY.TXT"] = "@tribes 0\nOnly\n"; // No explicit terminator.
+    text.files["scenario/CITY.TXT"] = "@tribes 0\nOnly\n";
     auto reader = text.reader();
-    auto classic_provider =
-        classic::city_name_provider(reader, text.directories, classic::ascii_text_case());
-    World eof;
-    eof.leaders[0].city_name_index = 1;
-    const auto before = eof.city.name;
-    try {
-        eof.run(classic_provider);
-        FAIL("EXTRA cannot reuse a stream already closed by EOF");
-    } catch (const classic::TextError& error) {
-        REQUIRE(error.fault == classic::TextFault::unavailable_stream);
-    }
-    REQUIRE(eof.leaders[0].city_name_index == 2);
-    REQUIRE(eof.city.name == before);
-}
-TEST_CASE("C01 live reference backing failures stop after the applicable prefix", "[city][names]") {
+    auto catalog = classic::load_city_names(reader, text.directories, classic::ascii_text_case());
+    REQUIRE_FALSE(reader.is_open());
     World world;
-    world.civilizations[1].tribe = -1;
-    unsigned attempts = 0, closes = 0;
-    city::NameProvider provider{[&](auto, auto) {
-                                    ++attempts;
-                                    world.civilizations[1].tribe = 21;
-                                    return city::NameAttempt{city::NameOutcome::exhausted, {}};
-                                },
-                                [&] { ++closes; }};
-    REQUIRE_THROWS_AS(world.run(provider), std::out_of_range);
-    REQUIRE(world.labels.empty());
-    REQUIRE(attempts == 0);
-    world.civilizations[1].tribe = 0;
-    REQUIRE_THROWS_AS(world.run(provider), std::out_of_range);
-    REQUIRE(world.leaders[0].city_name_index == 1);
-    REQUIRE(attempts == 1);
-    REQUIRE(closes == 0);
+    REQUIRE(world.run(catalog));
+    REQUIRE(world.name() == "Only");
+    const auto before = world.city.name;
+    REQUIRE_THROWS_AS(world.run(catalog), std::invalid_argument);
+    REQUIRE(world.leaders[0].city_name_index == 2);
+    REQUIRE(world.city.name == before);
+}
+TEST_CASE("C01 invalid live references fail before cursor or name changes", "[city][names]") {
+    World world;
+    const auto catalog = Input{}.load()->catalog;
+    const auto before = world.city.name;
+    for (const auto tribe : {-1, 21}) {
+        world.civilizations[1].tribe = static_cast<std::int16_t>(tribe);
+        REQUIRE_THROWS_AS(world.run(catalog), std::out_of_range);
+        REQUIRE(world.labels.empty());
+        REQUIRE(world.leaders[0].city_name_index == 0);
+        REQUIRE(world.city.name == before);
+    }
 }
 TEST_CASE("Native city-name admission rejects ambiguous selectors missing base lists and bad text",
           "[city][names][content]") {
@@ -401,5 +331,40 @@ TEST_CASE("Native city-name admission rejects ambiguous selectors missing base l
     rejected(input, "comparison-unavailable");
     input.names = original;
     input.names["fallbackNames"][0] = jt::Json(std::string(254, 'x'));
-    REQUIRE(input.load()->lists.fallback->front().classic.size() == 254);
+    REQUIRE(input.load()->catalog.layers().front().fallback->front().classic.size() == 254);
+}
+
+TEST_CASE("C01 catalog layers never borrow a fallback from another source",
+          "[city][names][classic]") {
+    TextInput text;
+    text.files["scenario/CITY.TXT"] = "@tribes 0\nScenario\n@STOP\n";
+    text.files["home/CITY.TXT"] =
+        "@tribes 0\nHome override\n@STOP\n@Home only\nHome\n@STOP\n@EXTRA\nHome extra\n@STOP\n";
+    auto reader = text.reader();
+    const auto catalog =
+        classic::load_city_names(reader, text.directories, classic::ascii_text_case());
+    REQUIRE(catalog.select("tribes 0", 1).bytes == "Scenario");
+    REQUIRE(catalog.select("tribes 0", 2).outcome == city::NameOutcome::exhausted);
+    REQUIRE(catalog.select("Home only", 2).bytes == "Home extra");
+    World world;
+    world.leaders[0].city_name_index = 1;
+    REQUIRE(world.run(catalog));
+    REQUIRE(world.name() == "Scenario");
+    REQUIRE(world.leaders[0].city_name_index == 1);
+    REQUIRE(text.opened == std::vector<std::string>{"scenario/CITY.TXT", "home/CITY.TXT"});
+}
+TEST_CASE("C01 missing scenario sources and identical directories load one usable catalog",
+          "[city][names][classic]") {
+    for (const bool same : {false, true}) {
+        TextInput text;
+        if (same)
+            text.directories.search = "home";
+        text.files["home/CITY.TXT"] = "@tribes 0\nHome\n@STOP\n";
+        auto reader = text.reader();
+        const auto catalog =
+            classic::load_city_names(reader, text.directories, classic::ascii_text_case());
+        REQUIRE(catalog.layers().size() == 1);
+        REQUIRE(catalog.select("tribes 0", 1).bytes == "Home");
+        REQUIRE(text.opened.size() == (same ? 1 : 2));
+    }
 }

@@ -1,9 +1,10 @@
 #include "classic_text.hpp"
-#include "content_json.hpp"
+#include "error.hpp"
 #include <algorithm>
 #include <array>
+#include <cstdint>
 
-namespace openciv::formats::content {
+namespace openciv::formats {
 namespace {
 // https://www.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP1252.TXT
 constexpr std::array<std::uint32_t, 32> extended{
@@ -82,4 +83,4 @@ std::string encode_windows1252(std::string_view input, std::string_view location
     }
     return out;
 }
-} // namespace openciv::formats::content
+} // namespace openciv::formats

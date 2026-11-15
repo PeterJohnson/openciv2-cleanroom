@@ -1,5 +1,6 @@
 #include "classic_text_reader.hpp"
 #include "base/arithmetic.hpp"
+#include "base/text_comparison.hpp"
 #include <algorithm>
 #include <utility>
 
@@ -95,13 +96,11 @@ bool MemoryTextStream::seek(std::size_t file_offset) {
 }
 TextCase ascii_text_case() {
     return {[](std::string_view a, std::string_view b) {
-                if (a.size() != b.size())
-                    return false;
-                for (std::size_t i = 0; i < a.size(); ++i) {
-                    if (a[i] != b[i] && ascii_upper(a[i]) != ascii_upper(b[i]))
-                        return false;
+                try {
+                    return base::ascii_name_equal(a, b);
+                } catch (const base::ComparisonUnavailable& error) {
+                    throw TextError(TextFault::comparison_unavailable, error.what());
                 }
-                return true;
             },
             uppercase};
 }
@@ -114,10 +113,8 @@ TextReader::TextReader(TextWorkspace& workspace, TextDirectories& directories, T
         throw std::invalid_argument("Classic text requires file and comparison services");
 }
 void TextReader::close() {
-    if (stream_) {
-        stream_->close();
-        stream_.reset();
-    }
+    if (auto closing = std::move(stream_))
+        closing->close();
 }
 TextReadStatus TextReader::read_buffer() {
     if (!stream_)
@@ -182,6 +179,20 @@ bool TextReader::find_section(std::string_view section, bool rewind_once) {
             return false;
         }
     }
+}
+bool TextReader::open_source(std::string_view directory, std::string_view filename) {
+    const std::string selected(directory);
+    auto name = std::string(filename);
+    if (name.find('.') == std::string::npos)
+        name += "." + directories_.extension;
+    name = comparison_.uppercase_path(name);
+    close();
+    RestoreString restore(directories_.working);
+    directories_.working = selected;
+    auto opened = files_.open(selected, name);
+    path_ = std::move(opened.path);
+    stream_ = std::move(opened.stream);
+    return stream_ != nullptr;
 }
 bool TextReader::open_low(std::optional<std::string_view> filename,
                           std::optional<std::string_view> section) {

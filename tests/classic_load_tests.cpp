@@ -450,7 +450,8 @@ TEST_CASE("F06 core composes real F03 tables and name preserving final reloads",
          },
          {}},
         classic::ascii_text_case());
-    classic::RuleLoader loader(reader, *f.process.rules, classic::ascii_text_case());
+    classic_rule_fixture::InstalledRules loader(reader, *f.process.rules,
+                                                classic::ascii_text_case());
     std::size_t text_count = 0;
     f.services.load_rules = [&](bool initialize) {
         loader.load("RULES", initialize);

@@ -1,10 +1,11 @@
 // F02/F03 logical text and F06 storage separation.
-#include "formats/rules_install.hpp"
+#include "rules/rules_install.hpp"
 #include "formats/leader_io.hpp"
 #include "rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 using namespace openciv;
 using namespace openciv::formats::content;
+using openciv::rules::RuleInstaller;
 TEST_CASE("Native names survive unrelated text allocations and preserve requested state",
           "[rules-install]") {
     const auto source = rule_fixture::Input{}.load();
@@ -13,13 +14,14 @@ TEST_CASE("Native names survive unrelated text allocations and preserve requeste
         live->text.initialize();
         for (unsigned i = 0; i < prefix; ++i)
             live->text.store("Earlier");
-        RuleInstaller install(source, *live);
+        RuleInstaller install(source->input, *live);
         install.load(true);
-        REQUIRE(live->definitions == source->definitions);
+        REQUIRE(live->definitions == *rule_fixture::installed(source->input));
         auto& leader = live->leaders[0];
         REQUIRE(live->text.text(leader.names[0].id) ==
-                source->definitions.tribes[0].leaders[0].classic);
-        REQUIRE(live->text.text(leader.plural.id) == source->definitions.tribes[0].plural.classic);
+                source->input.definitions.tribes[0].leaders[0].classic);
+        REQUIRE(live->text.text(leader.plural.id) ==
+                source->input.definitions.tribes[0].plural.classic);
         REQUIRE(leader.leader_name == leader.names[leader.female]);
         REQUIRE_FALSE(leader.leader_name.custom);
         leader.plural.custom = true;
@@ -51,7 +53,7 @@ TEST_CASE("Repeated title overrides select final names without storage constrain
             {"government":"governments.authored.1","male":"Last","female":""}])");
     auto live = std::make_unique<state::RuleState>();
     live->text.initialize();
-    RuleInstaller(input.load(), *live).load(true);
+    RuleInstaller(input.load()->input, *live).load(true);
     REQUIRE(live->text.text(live->leaders[0].titles[1][0].id) == "Last");
     REQUIRE(live->text.text(live->leaders[0].titles[1][1].id) == "<nil>");
 }
@@ -92,7 +94,9 @@ TEST_CASE("Invalid native rules leave current content unchanged", "[rules-instal
     live->definitions.units[0].attack = 72;
     rule_fixture::Input input;
     input.rules["units"][0]["hitPoints"] = jt::Json(31);
-    REQUIRE_THROWS_AS(RuleInstaller(input.load(), *live).load(true), Error);
+    REQUIRE_THROWS_AS(RuleInstaller(input.load()->input, *live).load(true), Error);
     REQUIRE(live->definitions.units[0].attack == 72);
-    REQUIRE_THROWS_AS(RuleInstaller(nullptr, *live), std::invalid_argument);
+    const auto admitted = rule_fixture::Input{}.load();
+    live->text = {};
+    REQUIRE_THROWS_AS(RuleInstaller(admitted->input, *live), std::invalid_argument);
 }

@@ -62,7 +62,7 @@
     {
       "id": "C01",
       "path": "docs/algorithms/C01-city-lifecycle-and-ownership.md",
-      "sha256": "20e4f631e2f232686fdbedf8058eb966fdd707925b26437b0fb0acaf86f3844b",
+      "sha256": "f1dd54fe5bf960040d2a55cac5401ccbe4da5d04375c49db594405d1fce0cc33",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -139,7 +139,7 @@
     {
       "id": "F03",
       "path": "docs/algorithms/F03-rules-and-configuration.md",
-      "sha256": "0693d69eecae9bbc2575434ef6dafacfc2ad1a7fa1916f34b26bbb1974286b7b",
+      "sha256": "7ca1f746749e34d5bc820ed10a55f289669d45afcb6f3d67a111490f3fe6aaed",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },

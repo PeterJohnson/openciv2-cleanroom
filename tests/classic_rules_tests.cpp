@@ -2,10 +2,11 @@
 // These are specification tests, not captures from the original executable.
 #include "formats/classic_rules.hpp"
 #include "formats/city_names.hpp"
-#include "formats/city_preferences.hpp"
+#include "formats/classic_city_preferences.hpp"
+#include "rules/city_preferences.hpp"
 #include "formats/save_records.hpp"
 #include "formats/leader_io.hpp"
-#include "formats/rules_install.hpp"
+#include "rules/rules_install.hpp"
 #include "rule_fixture.hpp"
 #include "classic_rule_fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
@@ -44,7 +45,9 @@ struct Fixture {
                 },
                 {}};
     }
-    RuleLoader loader() { return {reader, retained, ascii_text_case(), hooks}; }
+    classic_rule_fixture::InstalledRules loader() {
+        return {reader, retained, ascii_text_case(), hooks};
+    }
     void select(std::string_view section) { REQUIRE(reader.open("RULES", section)); }
 };
 using classic_rule_fixture::complete_sections;
@@ -80,22 +83,26 @@ TEST_CASE("F03 conversion captures installation operands before lossy normalizat
     for (const auto& section : sections)
         bytes += section;
     Fixture captured(bytes), baseline(bytes);
-    RuleConversionOperands operands;
-    RuleLoader loader(captured.reader, captured.retained, ascii_text_case(), {}, &operands);
-    loader.load("RULES", true);
+    auto decoded = std::make_unique<state::RuleInput>();
+    auto& operands = *decoded;
+    RuleLoader loader(captured.reader, operands, ascii_text_case());
+    loader.load("RULES");
+    rules::RuleInstaller(operands, captured.retained).load(true);
     baseline.loader().load("RULES", true);
     CHECK(captured.retained.definitions == baseline.retained.definitions);
     CHECK(captured.retained.names == baseline.retained.names);
     CHECK(captured.retained.leaders == baseline.retained.leaders);
-    CHECK(operands.advance_prerequisites[1][0] == static_cast<state::AdvanceReference>(0));
+    CHECK(operands.definitions.advances[1].prerequisites[0] ==
+          static_cast<state::AdvanceReference>(0));
     CHECK(captured.values->advances[1].prerequisites[0] == state::AdvanceReference::never);
-    CHECK(operands.improvement_prerequisites[0] == static_cast<state::AdvanceReference>(0));
+    CHECK(operands.definitions.improvements[0].prerequisite ==
+          static_cast<state::AdvanceReference>(0));
     CHECK(captured.values->improvements[0].prerequisite == state::AdvanceReference::never);
     CHECK(operands.movement_points[0] == 259);
     CHECK(captured.values->units[0].movement == 9);
     CHECK(captured.values->units[0].hit_points == 30);
     CHECK(operands.movement_points[1] == 0);
-    CHECK(operands.advance_prerequisites[2][0] == state::AdvanceReference::never);
+    CHECK(operands.definitions.advances[2].prerequisites[0] == state::AdvanceReference::never);
     REQUIRE(operands.title_overrides[0].size() == 2);
     CHECK(operands.title_overrides[0][0].government == 1);
     CHECK(operands.title_overrides[0][0].titles.male.classic == "First");
@@ -106,23 +113,23 @@ TEST_CASE("F03 conversion captures installation operands before lossy normalizat
     captured.bytes.clear();
     for (const auto& section : complete_sections())
         captured.bytes += section;
-    loader.load("RULES", true);
+    loader.load("RULES");
     CHECK(operands.movement_points[0] == 2);
-    CHECK(operands.advance_prerequisites[1][0] == state::AdvanceReference::none);
-    CHECK(operands.improvement_prerequisites[0] == state::AdvanceReference::none);
+    CHECK(operands.definitions.advances[1].prerequisites[0] == state::AdvanceReference::none);
+    CHECK(operands.definitions.improvements[0].prerequisite == state::AdvanceReference::none);
     for (const auto& titles : operands.title_overrides)
         CHECK(titles.empty());
 }
 
-TEST_CASE("F03 conversion refuses an incomplete retained-leader projection before loading",
-          "[classic][rules][conversion]") {
-    Fixture f("@COSMIC\n");
-    RuleConversionOperands operands;
-    const auto before = f.retained.definitions;
-    RuleLoader loader(f.reader, f.retained, ascii_text_case(), {}, &operands);
-    CHECK_THROWS_AS(loader.load("RULES", false), std::invalid_argument);
-    CHECK(f.opens.empty());
-    CHECK(f.retained.definitions == before);
+TEST_CASE("F03 decoding has no live-state or text-pool prerequisite", "[classic][rules]") {
+    Fixture f(complete_sections()[0]);
+    auto decoded = std::make_unique<state::RuleInput>();
+    auto& input = *decoded;
+    RuleLoader loader(f.reader, input, ascii_text_case());
+    f.select("COSMIC");
+    loader.cosmic();
+    CHECK(input.definitions.cosmic.values[0] == 3);
+    CHECK(f.retained.definitions.cosmic.values[0] == 0);
 }
 
 TEST_CASE("F03 complete classic tables match independently authored native definitions",
@@ -140,7 +147,8 @@ TEST_CASE("F03 complete classic tables match independently authored native defin
             into[i].identity.id = from[i].identity.id;
     };
     auto& actual = *f.values;
-    const auto& expected = native->definitions;
+    const auto projection = rule_fixture::installed(native->input);
+    const auto& expected = *projection;
     identities(actual.advances, expected.advances);
     identities(actual.improvements, expected.improvements);
     identities(actual.units, expected.units);
@@ -289,46 +297,36 @@ TEST_CASE(
             "A commodity name longer than ten");
     REQUIRE(f.values->commodities[15].name.classic == "A commodity name longer than ten");
 }
-TEST_CASE("F03 reference errors retain their ordered prefix and cannot return to parsing",
+TEST_CASE("F03 reference errors diagnose the input and leave live tables unchanged",
           "[classic][rules]") {
     for (int p = 0; p < 2; ++p) {
         const auto row = p == 0 ? "Name,-1,2,NIL,nil,3,4" : "Name,-1,2,nil,NIL,3,4";
         Fixture f("@CIVILIZE\n" + std::string(row) + "\n");
-        f.values->advances[0].epoch = state::AdvanceEpoch::industrial;
         f.values->advances[99].enabled = true;
+        const auto before = std::make_unique<state::RuleDefinitions>(*f.values);
         unsigned reports = 0;
         f.hooks.fatal = [&](const RuleLoadError&) { ++reports; };
         f.select("CIVILIZE");
         reference_error([&] { f.loader().advances(); }, -4, 0, p, row);
         REQUIRE(reports == 1);
-        REQUIRE(f.values->advances[0].ai_value == -1);
-        REQUIRE(f.values->advances[0].epoch == state::AdvanceEpoch::industrial);
-        REQUIRE(f.values->advances[0].prerequisites[static_cast<std::size_t>(p)] ==
-                state::AdvanceReference::invalid);
-        REQUIRE_FALSE(f.values->advances[99].enabled);
+        REQUIRE(*f.values == *before);
+        REQUIRE(f.retained.text.size() == 1);
     }
     Fixture f("@IMPROVE\nGood,7,8,nil\nBad,-1,2,NIL\n@ENDWONDER\nNIL,ignored\n"
               "@UNITS\nBad,NIL,2,3,4,5,6,7,8,999,9,1,NIL,101\n");
+    f.retained.double_movement_applied = true;
+    const auto before = std::make_unique<state::RuleDefinitions>(*f.values);
     auto loader = f.loader();
     f.select("IMPROVE");
     reference_error([&] { loader.improvements(); }, -5, 1, 0, "Bad,-1,2,NIL");
-    REQUIRE(f.values->improvements[0].cost_rows == 7);
-    REQUIRE(f.values->improvements[1].cost_rows == 255);
-    REQUIRE(f.values->improvements[1].prerequisite == state::AdvanceReference::invalid);
     f.select("ENDWONDER");
     reference_error([&] { loader.wonder_expiry(); }, -4, 0, 0, "NIL,ignored");
-    REQUIRE(f.values->wonder_obsolescence[0] == state::AdvanceReference::invalid);
-    f.values->units[61].prerequisite = state::AdvanceReference::none;
-    f.retained.double_movement_applied = true;
     f.select("UNITS");
     reference_error([&] { loader.units(); }, -6, 0, 0, "Bad,NIL,2,3,4,5,6,7,8,999,9,1,NIL,101");
-    REQUIRE(f.values->units[0].cost_rows == 200);
-    REQUIRE(f.values->units[0].hit_points == 70);
-    REQUIRE(f.values->units[0].abilities == 5);
-    REQUIRE(f.values->units[61].prerequisite == state::AdvanceReference::never);
-    REQUIRE_FALSE(f.retained.double_movement_applied);
+    REQUIRE(*f.values == *before);
+    REQUIRE(f.retained.double_movement_applied);
 }
-TEST_CASE("F03 terrain errors publish complete work groups and special rows retain work",
+TEST_CASE("F03 terrain errors leave live work unchanged and special rows retain work",
           "[classic][rules]") {
     for (const int position : {0, 1, 99}) {
         auto row = std::string("Land,1,2,3,4,5,") + (position == 0 ? "bad" : "YES") + ",6,7,8," +
@@ -339,10 +337,9 @@ TEST_CASE("F03 terrain errors publish complete work groups and special rows reta
         f.select("TERRAIN");
         reference_error([&] { f.loader().terrain(); }, -7, 0, position, row);
         const auto& work = *f.values->terrain[0].work;
-        REQUIRE(work.irrigation.ai_government_threshold == 8);
-        REQUIRE(work.mining.ai_government_threshold == (position == 0 ? 0 : 11));
-        REQUIRE(work.transformation == (position == 99 ? state::TerrainResult::invalid
-                                                       : state::TerrainResult::improve_in_place));
+        REQUIRE(work.irrigation.ai_government_threshold == 0);
+        REQUIRE(work.mining.ai_government_threshold == 0);
+        REQUIRE(work.transformation == state::TerrainResult::improve_in_place);
     }
     Fixture f(complete_sections()[5]);
     state::BaseTerrainWork retained;
@@ -405,7 +402,7 @@ TEST_CASE("F03 ordinary text preserves whole labels and empty classic text resol
     REQUIRE(f.values->diplomatic_attitudes[8].name.classic == ";friendly, really");
     REQUIRE(f.retained.text.text(f.retained.names.orders[2]) == "Order");
 }
-TEST_CASE("F03 text EOF preserves already parsed values", "[classic][rules]") {
+TEST_CASE("F03 text EOF leaves the live table unchanged", "[classic][rules]") {
     Fixture eof("@COSMIC\n9\n");
     eof.values->cosmic.values.fill(77);
     eof.select("COSMIC");
@@ -415,8 +412,8 @@ TEST_CASE("F03 text EOF preserves already parsed values", "[classic][rules]") {
     } catch (const TextError& error) {
         REQUIRE(error.fault == TextFault::unavailable_stream);
     }
-    REQUIRE(eof.values->cosmic.values[0] == 9);
-    REQUIRE(eof.values->cosmic.values[1] == 1); // Retained end cursor reads empty token.
+    REQUIRE(eof.values->cosmic.values[0] == 77);
+    REQUIRE(eof.values->cosmic.values[1] == 77);
     REQUIRE(eof.values->cosmic.values[2] == 77);
 }
 TEST_CASE("F03 full load uses explicit fallback then keeps the selected improvement stream",
@@ -437,7 +434,7 @@ TEST_CASE("F03 full load uses explicit fallback then keeps the selected improvem
     REQUIRE(f.values->tribes[0].leaders[0].classic.empty());
     REQUIRE(f.values->diplomatic_attitudes[8].name.classic == "diplomaticAttitudes 8");
 }
-TEST_CASE("F03 missing reused sections stop after prior tables without home merging",
+TEST_CASE("F03 missing reused sections reject staged input without home merging",
           "[classic][rules]") {
     const auto sections = complete_sections();
     Fixture f("");
@@ -452,8 +449,8 @@ TEST_CASE("F03 missing reused sections stop after prior tables without home merg
         REQUIRE(error.fault == TextFault::unavailable_stream);
     }
     REQUIRE(f.opens == std::vector<std::string>(3, "scenario/RULES.TXT"));
-    REQUIRE(f.values->enabled_advance_count == 100);
-    REQUIRE(f.values->improvements[66].cost_rows == 10);
+    REQUIRE(f.values->enabled_advance_count == 0);
+    REQUIRE(f.values->improvements[66].cost_rows == 0);
     REQUIRE(f.values->units[0].attack == 99);
     REQUIRE_FALSE(f.reader.is_open());
     REQUIRE(f.directories.search == "scenario");
@@ -481,7 +478,7 @@ TEST_CASE("F03 fixed rows consume blank and comment data and decode explicit cla
     f.bytes = "@IMPROVE\n\nIgnored,1,2,nil\n";
     f.select("IMPROVE");
     reference_error([&] { f.loader().improvements(); }, -5, 0, 0, "");
-    REQUIRE(f.values->improvements[0].identity.name.classic == " ");
+    REQUIRE(f.values->improvements[0].identity.name.classic.empty());
     REQUIRE(f.values->improvements[0].cost_rows == 0);
     REQUIRE(f.values->improvements[1].identity.name.classic.empty());
 }
@@ -493,7 +490,8 @@ TEST_CASE("Process preference lookup resolves retained pool bindings instead of 
     f.retained.text.initialize();
     REQUIRE(f.retained.text.store("New binding") == 1);
     state::CityPreferences preferences;
-    load_city_preferences(f.reader, f.retained, preferences, ascii_text_case());
+    rules::apply_city_preferences(load_city_preferences(f.reader, f.retained, ascii_text_case()),
+                                  preferences);
     REQUIRE(preferences.count == 1);
     REQUIRE(preferences.build_order[0] == 1);
     REQUIRE(f.values->improvements[1].identity.name.classic == "Cached input");
@@ -512,10 +510,14 @@ TEST_CASE("Native and classic rules produce equivalent semantic results with dif
             {"government":"governments.authored.1","male":"Last","female":"LastFemale"},
             {"government":"governments.authored.6","male":"","female":""}])");
     const auto source = input.load();
-    REQUIRE(source->advance_prerequisites[0][0] == static_cast<state::AdvanceReference>(1));
-    REQUIRE(source->definitions.advances[0].prerequisites[0] == state::AdvanceReference::never);
-    REQUIRE(source->improvement_prerequisites[0] == static_cast<state::AdvanceReference>(1));
-    REQUIRE(source->definitions.improvements[0].prerequisite == state::AdvanceReference::never);
+    REQUIRE(source->input.definitions.advances[0].prerequisites[0] ==
+            static_cast<state::AdvanceReference>(1));
+    REQUIRE(rule_fixture::installed(source->input)->advances[0].prerequisites[0] ==
+            state::AdvanceReference::never);
+    REQUIRE(source->input.definitions.improvements[0].prerequisite ==
+            static_cast<state::AdvanceReference>(1));
+    REQUIRE(rule_fixture::installed(source->input)->improvements[0].prerequisite ==
+            state::AdvanceReference::never);
     auto sections = complete_sections();
     auto replace_once = [](std::string& bytes, std::string_view before, std::string_view after) {
         const auto at = bytes.find(before);
@@ -532,12 +534,12 @@ TEST_CASE("Native and classic rules produce equivalent semantic results with dif
         bytes += section;
     for (bool replace : {false, true}) {
         Fixture classic(bytes);
-        *classic.values = source->definitions;
+        *classic.values = source->input.definitions;
         auto native = std::make_unique<state::RuleState>(classic.retained);
         for (unsigned i = 0; i < 70000; ++i)
             native->text.store("Unrelated");
         classic.loader().load("RULES", replace);
-        formats::content::RuleInstaller(source, *native).load(replace);
+        rules::RuleInstaller(source->input, *native).load(replace);
         REQUIRE(native->definitions == classic.retained.definitions);
         const auto compare = [&](const auto& a, const auto& b) {
             for (std::size_t i = 0; i < a.size(); ++i)

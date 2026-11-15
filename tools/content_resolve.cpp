@@ -3,6 +3,7 @@
 #include "formats/city_preferences.hpp"
 #include "formats/city_names.hpp"
 #include "formats/rules.hpp"
+#include "rules/rules_install.hpp"
 #include "platform/content_files.hpp"
 #include <iostream>
 
@@ -71,18 +72,20 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
         report["status"] = jt::Json("resolved");
         report["scope"] = jt::Json("pack-selection-and-gameplay");
         if (validate_rules) {
-            const auto preferences = validate_preferences
-                                         ? content::load_city_preferences(
-                                               *pack, openciv::formats::classic::ascii_text_case())
-                                         : nullptr;
-            const auto names =
-                validate_names
-                    ? content::load_city_names(*pack, openciv::formats::classic::ascii_text_case())
+            const auto rules = content::load_rules(*pack);
+            const auto preferences =
+                validate_preferences
+                    ? content::load_city_preferences(*pack, rules->input.definitions,
+                                                     openciv::base::ascii_name_equal)
                     : nullptr;
-            const auto rules = preferences ? preferences->rules
-                               : names     ? names->rules
-                                           : content::load_rules(*pack);
-            const auto& definitions = rules->definitions;
+            const auto names = validate_names
+                                   ? content::load_city_names(*pack, rules->input.definitions,
+                                                              openciv::base::ascii_name_equal)
+                                   : nullptr;
+            auto installed = std::make_unique<openciv::state::RuleState>();
+            installed->text.initialize();
+            openciv::rules::RuleInstaller(rules->input, *installed).load(true);
+            const auto& definitions = installed->definitions;
             using openciv::state::CosmicParameter;
             report["status"] = jt::Json("validated");
             report["scope"] = jt::Json("rules-and-gameplay-references");
@@ -101,11 +104,14 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
                 auto& values = report["cityNames"];
                 values["comparison"] = jt::Json("ascii-with-exact-byte-equality");
                 values["startingListsComplete"] = jt::Json(names->starting_lists_complete);
-                values["fallbackAvailable"] = jt::Json(names->lists.fallback.has_value());
+                values["fallbackAvailable"] =
+                    jt::Json(names->catalog.layers().front().fallback.has_value());
                 values["fallbackCount"] = jt::Json(
-                    names->lists.fallback ? static_cast<int>(names->lists.fallback->size()) : 0);
+                    names->catalog.layers().front().fallback
+                        ? static_cast<int>(names->catalog.layers().front().fallback->size())
+                        : 0);
                 values["civilizations"].setArray();
-                for (const auto& list : names->lists.civilizations) {
+                for (const auto& list : names->catalog.layers().front().civilizations) {
                     jt::Json row;
                     row["pluralName"] = jt::Json(list.plural.utf8);
                     row["nameCount"] = jt::Json(static_cast<int>(list.names.size()));
@@ -120,7 +126,7 @@ int run_content_resolve(std::span<const std::string> arguments, ContentValidatio
             report["rules"]["shieldBoxRows"] =
                 jt::Json(definitions.cosmic[CosmicParameter::shield_box_rows]);
             report["rules"]["governmentAdvances"].setArray();
-            for (const auto advance : rules->government_advances)
+            for (const auto advance : rules->input.government_advances)
                 report["rules"]["governmentAdvances"].getArray().push_back(
                     advance ? jt::Json(static_cast<int>(*advance)) : jt::Json());
             report["rules"]["units"].setArray();

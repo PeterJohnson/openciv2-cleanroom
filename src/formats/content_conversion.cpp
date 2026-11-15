@@ -1,11 +1,26 @@
 #include "formats/content_conversion.hpp"
+#include "formats/rules.hpp"
 #include "formats/city_preferences.hpp"
 #include "formats/city_names.hpp"
+#include "formats/classic_city_names.hpp"
+#include "formats/classic_city_preferences.hpp"
+#include "rules/city_preferences.hpp"
 #include "formats/classic_text.hpp"
 #include "base/hash.hpp"
 
 namespace openciv::formats::content {
 namespace {
+base::NameComparison name_comparison(const classic::TextCase& comparison) {
+    return [equal = comparison.equal](std::string_view a, std::string_view b) {
+        try {
+            return equal(a, b);
+        } catch (const classic::TextError& error) {
+            if (error.fault != classic::TextFault::comparison_unavailable)
+                throw;
+            throw base::ComparisonUnavailable();
+        }
+    };
+}
 jt::Json empty_array() {
     jt::Json result;
     result.setArray();
@@ -55,61 +70,42 @@ ContentConversion convert_city_names(const Source& source, const ResolvedPack& s
     component["fallbackNames"] = jt::Json();
     jt::Json unsupported = empty_array();
     try {
-        std::vector<std::string> lines;
         reader.open_low("CITY", std::nullopt);
-        while (reader.next_line())
-            lines.emplace_back(reader.line());
-        const auto stop = [&](std::string_view line) {
-            return line.size() >= 5 && comparison.equal(line.substr(0, 5), "@STOP");
-        };
+        const auto parsed = classic::read_city_names(reader, comparison);
         std::vector<std::string> selectors;
-        std::size_t materialized_bytes = 0;
-        for (std::size_t i = 0; i < lines.size(); ++i) {
-            const auto& header = lines[i];
-            if (header.empty() || header.front() != '@')
-                continue;
-            const auto selector = header.substr(1);
+        for (const auto& list : parsed.civilizations) {
+            const auto& selector = list.plural.classic;
+            const bool stop =
+                selector.size() >= 4 && comparison.equal(selector.substr(0, 4), "STOP");
             bool repeated = false;
             for (const auto& previous : selectors)
                 if (comparison.equal(previous, selector))
                     repeated = true;
             if (repeated) {
-                // Repeated structural STOP markers still select the first
-                // matching occurrence when used as a live custom plural.
-                if (stop(header))
+                if (stop)
                     continue;
                 throw Error("ambiguous-classic-selector", source.identity,
                             "CITY contains repeated section selectors");
             }
             selectors.push_back(selector);
             jt::Json names = empty_array();
-            std::size_t j = i + 1;
-            for (; j < lines.size() && !lines[j].empty() && !stop(lines[j]); ++j) {
-                // C01 does not stop at an unrelated section header or skip comments.
-                auto name = decode_windows1252(lines[j], source.identity);
-                materialized_bytes += name.size();
-                if (materialized_bytes > 16 * 1024 * 1024)
-                    throw Error("unsupported-classic-text", source.identity,
-                                "Materialized CITY lists exceed the native component size limit");
-                names.getArray().emplace_back(std::move(name));
-            }
+            for (const auto& name : list.names)
+                names.getArray().emplace_back(name.utf8);
             const bool extra = comparison.equal(selector, "EXTRA");
             if (extra)
                 component["fallbackNames"] = names;
-            if (j == lines.size() && names.getArray().size() < 255) {
-                if (stop(header) || extra) {
+            if (!list.complete) {
+                if (stop || extra) {
                     unsupported.getArray().emplace_back(
-                        "Exhausted-stream custom plural selector: " +
-                        decode_windows1252(selector, source.identity));
+                        "Exhausted-stream custom plural selector: " + list.plural.utf8);
                     continue;
                 }
                 throw Error("unsupported-classic-text", source.identity,
                             "CITY list reaches EOF without a blank or STOP terminator; classic "
                             "exhausted-stream behavior is not a native list");
             }
-            // EXTRA is also a valid live plural selector, so retain that header.
             jt::Json row;
-            row["pluralName"] = decode_windows1252(selector, source.identity);
+            row["pluralName"] = list.plural.utf8;
             row["cityNames"] = std::move(names);
             component["civilizations"].getArray().push_back(std::move(row));
         }
@@ -118,13 +114,15 @@ ContentConversion convert_city_names(const Source& source, const ResolvedPack& s
                         ? "comparison-unavailable"
                         : "unsupported-classic-text",
                     source.identity, error.what());
+    } catch (const std::invalid_argument& error) {
+        throw Error("unsupported-classic-text", source.identity, error.what());
     }
     ContentConversion out;
     out.component = component.toString() + "\n";
     auto verification = selected;
     verification.components["cityNames"] = {nullptr,
                                             parse_json(out.component, "converted-city-names")};
-    load_city_names(verification, comparison);
+    load_city_names(verification, rules->input.definitions, name_comparison(comparison));
     auto& receipt = out.receipt;
     receipt["format"] = "openciv2-content-conversion/1";
     receipt["conversion"] = "classic-city-names/1";
@@ -171,7 +169,8 @@ ContentConversion convert_city_preferences(const Source& source, const ResolvedP
     classic::TextReader reader(workspace, directories, std::move(files), comparison);
     state::CityPreferences parsed;
     try {
-        classic::load_city_preferences(reader, rules->definitions, parsed, comparison);
+        rules::apply_city_preferences(
+            classic::load_city_preferences(reader, rules->input.definitions, comparison), parsed);
         reader.close();
         // A conversion cannot silently turn a misspelled reference into a shorter
         // authored list. Classic loading keeps its existing stop-at-miss behavior.
@@ -185,7 +184,8 @@ ContentConversion convert_city_preferences(const Source& source, const ResolvedP
                 bool found = false;
                 for (std::size_t slot = 1; slot <= 38; ++slot)
                     if (comparison.equal(
-                            token, rules->definitions.improvements[slot].identity.name.classic)) {
+                            token,
+                            rules->input.definitions.improvements[slot].identity.name.classic)) {
                         found = true;
                         break;
                     }
@@ -208,14 +208,15 @@ ContentConversion convert_city_preferences(const Source& source, const ResolvedP
     for (std::int32_t i = 0; i < parsed.count; ++i) {
         const auto slot = static_cast<std::size_t>(parsed.build_order[static_cast<std::size_t>(i)]);
         component["buildPreferences"].getArray().emplace_back(
-            rules->definitions.improvements[slot].identity.id);
+            rules->input.definitions.improvements[slot].identity.id);
     }
     ContentConversion out;
     out.component = component.toString() + "\n";
     auto verification = selected;
     verification.components["cityPreferences"] = {
         nullptr, parse_json(out.component, "converted-city-preferences")};
-    const auto native = load_city_preferences(verification, comparison);
+    const auto native =
+        load_city_preferences(verification, rules->input.definitions, name_comparison(comparison));
     if (native->update.deprioritize_defense != (parsed.no_defend != 0) ||
         native->update.build_order.size() != static_cast<std::size_t>(parsed.count))
         throw std::logic_error("Converted preference semantics disagree with classic input");

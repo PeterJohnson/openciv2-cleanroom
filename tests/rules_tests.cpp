@@ -8,6 +8,8 @@
 
 using namespace openciv;
 using namespace formats::content;
+using formats::decode_windows1252;
+using formats::encode_windows1252;
 using rule_fixture::Input;
 using rule_fixture::json;
 
@@ -32,7 +34,8 @@ TEST_CASE("Native complete rules bind explicit identities independently of array
           "[content][rules]") {
     Input input;
     const auto baseline = input.load();
-    const auto& r = baseline->definitions;
+    const auto projection = rule_fixture::installed(baseline->input);
+    const auto& r = *projection;
     REQUIRE(r.advances.size() == 100);
     REQUIRE(r.enabled_advance_count == 100);
     REQUIRE(r.units[0].movement == 6);
@@ -42,23 +45,23 @@ TEST_CASE("Native complete rules bind explicit identities independently of array
     REQUIRE_FALSE(r.terrain[11].work);
     REQUIRE(r.cosmic[state::CosmicParameter::food_box_rows] == 6);
     REQUIRE(r.cosmic[state::CosmicParameter::shield_box_rows] == 5);
-    REQUIRE(baseline->government_advances[2] == state::AdvanceReference{54});
-    REQUIRE(baseline->government_advances[3] == state::AdvanceReference{15});
-    REQUIRE(baseline->government_advances[4] == state::AdvanceReference{31});
-    REQUIRE(baseline->government_advances[5] == state::AdvanceReference{71});
-    REQUIRE(baseline->government_advances[6] == state::AdvanceReference{21});
-    REQUIRE_FALSE(baseline->government_advances[0]);
+    REQUIRE(baseline->input.government_advances[2] == state::AdvanceReference{54});
+    REQUIRE(baseline->input.government_advances[3] == state::AdvanceReference{15});
+    REQUIRE(baseline->input.government_advances[4] == state::AdvanceReference{31});
+    REQUIRE(baseline->input.government_advances[5] == state::AdvanceReference{71});
+    REQUIRE(baseline->input.government_advances[6] == state::AdvanceReference{21});
+    REQUIRE_FALSE(baseline->input.government_advances[0]);
     for (auto& [key, value] : input.rules.getObject()) {
         (void)key;
         if (value.isArray())
             std::reverse(value.getArray().begin(), value.getArray().end());
     }
-    REQUIRE(input.load()->definitions == r);
+    REQUIRE(*rule_fixture::installed(input.load()->input) == r);
     input.rules["units"][0]["name"] = jt::Json("Renamed");
     const auto renamed = input.load();
-    REQUIRE(renamed->definitions.units[61].identity.name.utf8 == "Renamed");
-    REQUIRE(renamed->definitions.units[61].identity.id == "units.authored.61");
-    REQUIRE(baseline->definitions.units[61].identity.name.utf8 == "units 61");
+    REQUIRE(renamed->input.definitions.units[61].identity.name.utf8 == "Renamed");
+    REQUIRE(renamed->input.definitions.units[61].identity.id == "units.authored.61");
+    REQUIRE(baseline->input.definitions.units[61].identity.name.utf8 == "units 61");
 }
 TEST_CASE("F03 normalization retains wrapping signed views and distinct scaling",
           "[content][rules]") {
@@ -97,7 +100,8 @@ TEST_CASE("F03 normalization retains wrapping signed views and distinct scaling"
     input.rules["tribes"][0]["cityStyle"] = jt::Json(65538);
     input.rules["tribes"][0]["personality"]["aggression"] = jt::Json(-129);
     const auto loaded = input.load();
-    const auto& r = loaded->definitions;
+    const auto projection = rule_fixture::installed(loaded->input);
+    const auto& r = *projection;
     REQUIRE(r.cosmic[state::CosmicParameter::road_movement_multiplier] == 10);
     REQUIRE(r.cosmic[state::CosmicParameter::food_box_rows] == 20);
     REQUIRE(r.cosmic[state::CosmicParameter::shield_box_rows] == 19);
@@ -134,8 +138,8 @@ TEST_CASE("Native rule integer tokens are admitted without floating point roundi
         pack.components.at("rules").json = parse_json(changed, "rules.json");
         return load_rules(pack);
     };
-    REQUIRE(load_token("2.000e0")->definitions.units[0].movement == 6);
-    REQUIRE(load_token("-2147483648")->definitions.units[0].movement == 0);
+    REQUIRE(rule_fixture::installed(load_token("2.000e0")->input)->units[0].movement == 6);
+    REQUIRE(rule_fixture::installed(load_token("-2147483648")->input)->units[0].movement == 0);
     REQUIRE_THROWS_AS(load_token("2.000000000000000000001"), Error);
     REQUIRE_THROWS_AS(load_token("2147483648"), Error);
 }
@@ -152,7 +156,8 @@ TEST_CASE(
     input.rules["units"][0]["prerequisite"] = json(R"({"advance":"advances.authored.1"})");
     input.rules["wonderObsolescence"][0]["advance"] = json(R"({"advance":"advances.authored.1"})");
     const auto loaded = input.load();
-    const auto& r = loaded->definitions;
+    const auto projection = rule_fixture::installed(loaded->input);
+    const auto& r = *projection;
     REQUIRE(r.enabled_advance_count == 99);
     REQUIRE(r.advances[0].enabled);
     REQUIRE(r.advances[0].prerequisites[0] == state::AdvanceReference::never);
@@ -174,7 +179,8 @@ TEST_CASE("Native rule titles text and presentation table identities preserve th
     input.rules["tribes"][0]["governmentTitles"] = json(
         R"([{"government":"governments.authored.1","male":"First","female":"First"},{"government":"governments.authored.1","male":"Last","female":""}])");
     const auto loaded = input.load();
-    const auto& r = loaded->definitions;
+    const auto projection = rule_fixture::installed(loaded->input);
+    const auto& r = *projection;
     REQUIRE(r.units[0].identity.name.utf8 == " ");
     REQUIRE(r.improvements[1].identity.name.classic == "Caf\xe9");
     REQUIRE(r.orders[0].identity.name.utf8.empty());
@@ -246,7 +252,7 @@ TEST_CASE("Registered gameplay advance identities cannot move but bind custom se
     input.rules["advances"][54]["id"] = jt::Json("advance.monarchy");
     auto& mappings = input.compatibility["ruleSlots"]["advances"].getArray();
     mappings.erase(mappings.begin() + 54);
-    REQUIRE(input.load()->definitions.advances[54].identity.id == "advance.monarchy");
+    REQUIRE(input.load()->input.definitions.advances[54].identity.id == "advance.monarchy");
     auto mapping = json(R"({"id":"advance.monarchy","slot":53})");
     mappings.push_back(mapping);
     REQUIRE_THROWS_AS(input.load(), Error);
@@ -254,5 +260,5 @@ TEST_CASE("Registered gameplay advance identities cannot move but bind custom se
     auto altered = std::make_shared<GameplayBundle>(*input.gameplay);
     altered->values.governments[2].required_advance = "advances.authored.7";
     input.gameplay = altered;
-    REQUIRE(input.load()->government_advances[2] == state::AdvanceReference{7});
+    REQUIRE(input.load()->input.government_advances[2] == state::AdvanceReference{7});
 }

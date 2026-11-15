@@ -249,6 +249,27 @@ whose state and dependencies are explicit operands. Neither needs an artificial
 object identity. Keep format records separate from live state and encode fields
 explicitly.
 
+Different content formats converge on common owned domain data before gameplay
+behavior begins. Keep classic and native loaders in separate headers and source
+files; neither loader depends on the other. Use a format-specific runtime service
+only when a required ongoing interaction cannot be represented as data. Codec
+syntax, scanner state, file cleanup and provenance do not belong in gameplay
+interfaces. An individual name-comparison policy may be injected independently
+of storage; it does not own a reader or a naming protocol.
+
+City-name loaders produce `city::NameCatalog`, whose ordered layers keep each
+source's civilization lists and fallback together. `city::default_name` owns the
+shared counter/retry/publication behavior. City-preference loaders produce
+`state::CityPreferenceUpdate`, applied by `rules::apply_city_preferences`.
+Classic and native rule loaders produce `state::RuleInput`; `rules::RuleInstaller`
+owns installation, name retention, live prerequisite fixups, movement scaling and
+ordered title overrides. Decoding may stage unpublished inputs and must not
+mutate a live `RuleState`. Load selected rules once and supply them explicitly
+for dependent component validation; those components do not retain the whole
+rule pack. Native provenance stays outside the common inputs. Include checks
+prevent gameplay from depending on formats and native loaders from depending on
+classic parsers.
+
 Use classes to enforce invariants, resource ownership and state transitions.
 `PlayerClient` protects authority; `SessionRuntime` owns execution;
 `ClassicSaveOperation` owns a suspended save; `SessionActivity` pins its world

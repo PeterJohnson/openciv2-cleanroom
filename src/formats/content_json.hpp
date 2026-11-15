@@ -1,5 +1,6 @@
 #pragma once
 
+#include "error.hpp"
 #include <json.h>
 #include <cstdint>
 #include <stdexcept>
@@ -7,11 +8,7 @@
 #include <string_view>
 
 namespace openciv::formats::content {
-class Error : public std::runtime_error {
-public:
-    Error(std::string code, std::string location, std::string message);
-    const std::string code, location;
-};
+using formats::Error;
 // Native content conventions, data-format.md §2. jt::Json owns the decoded DOM.
 // Numeric lexemes are retained separately, so admission never relies on doubles.
 struct JsonDocument {

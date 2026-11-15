@@ -295,6 +295,16 @@ Pending and NoCity are different results; no timeout rollback is implied.
 
 ## Default city naming
 
+Production decodes selected sources into owned name catalogs before invoking
+naming. The classic file procedure below specifies source precedence, ordered
+selection and outcomes; opening, scanning and closing are not gameplay reentry
+points. Scenario and home catalogs remain separate: a matching scenario list
+uses only its own EXTRA pool, even when exhausted. An unterminated imported
+civilization list can supply its known prefix; selecting beyond that prefix
+reports unsupported content instead of reusing a closed scanner. An EXTRA pool
+ending at EOF remains a finite fallback pool. Native lists have explicit ends.
+The counter, retry and published-name effects below remain shared behavior.
+
 The classic provider reads CITY text as below. The [native JSON city-name
 provider](../content/data-format.md#5-city-names-and-production-preferences)
 supplies ordered name lists for explicitly named civilizations and a shared

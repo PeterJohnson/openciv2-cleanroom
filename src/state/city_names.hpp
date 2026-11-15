@@ -7,10 +7,13 @@ namespace openciv::state {
 struct CityNameList {
     RuleText plural;
     std::vector<RuleText> names;
+    // Imported prefixes may be usable without establishing a valid end.
+    // Selecting beyond such a prefix reports unsupported content.
+    bool complete = true;
 };
 struct CityNameLists {
     std::vector<CityNameList> civilizations;
-    // Missing and present-but-exhausted are different provider states.
+    // Missing and present-but-exhausted remain distinct.
     std::optional<std::vector<RuleText>> fallback;
 };
 } // namespace openciv::state

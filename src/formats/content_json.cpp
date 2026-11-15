@@ -4,9 +4,6 @@
 #include <set>
 
 namespace openciv::formats::content {
-Error::Error(std::string category, std::string where, std::string message)
-    : std::runtime_error(where + ": " + message), code(std::move(category)),
-      location(std::move(where)) {}
 namespace {
 bool digit(char c) {
     return c >= '0' && c <= '9';

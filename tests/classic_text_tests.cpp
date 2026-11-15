@@ -12,7 +12,7 @@ struct Trace {
     unsigned reads = 0, closes = 0;
     std::vector<std::size_t> seeks;
     std::optional<TextRead> override_read;
-    bool fail_seek = false;
+    bool fail_seek = false, fail_close = false;
 };
 class TracedStream final : public TextStream {
 public:
@@ -29,6 +29,8 @@ public:
     void close() override {
         ++trace_->closes;
         memory_.close();
+        if (trace_->fail_close)
+            throw std::runtime_error("close failed");
     }
 
 private:
@@ -405,4 +407,22 @@ TEST_CASE("F03 open requests remain owned across file service effects and retrie
     REQUIRE(f.workspace.line() == "@A");
     REQUIRE(reader.next_line());
     REQUIRE(reader.next_token() == "selected");
+}
+
+TEST_CASE("Staged text source selection is explicit and a failed close is attempted once",
+          "[classic][text]") {
+    Fixture f;
+    f.files["home/CITY.TXT"] = "@Tribe\nName\n@STOP\n";
+    auto reader = f.reader();
+    REQUIRE_FALSE(reader.open_source("scenario", "CITY"));
+    REQUIRE(f.opens == std::vector<std::string>{"scenario/CITY.TXT"});
+    REQUIRE(reader.open_source("home", "CITY"));
+    REQUIRE(f.directories.working == "caller");
+    REQUIRE(f.directories.search == "scenario");
+    auto trace = f.traces.at("home/CITY.TXT");
+    trace->fail_close = true;
+    REQUIRE_THROWS_AS(reader.close(), std::runtime_error);
+    REQUIRE_FALSE(reader.is_open());
+    reader.close();
+    REQUIRE(trace->closes == 1);
 }

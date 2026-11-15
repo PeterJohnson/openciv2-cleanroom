@@ -54,7 +54,8 @@ struct Fixture {
             classic::ascii_text_case());
         services.load_ordinary_rules = [&] {
             event("rules");
-            classic::RuleLoader(*reader, *process.rules, classic::ascii_text_case())
+            classic_rule_fixture::InstalledRules(*reader, *process.rules,
+                                                 classic::ascii_text_case())
                 .load("RULES", true);
         };
         services.reload_table = [&](LoadedRuleTable table) {
@@ -63,7 +64,8 @@ struct Fixture {
                                                                     : "IMPROVE";
             event(section);
             REQUIRE(reader->open("RULES", section));
-            classic::RuleLoader loader(*reader, *process.rules, classic::ascii_text_case());
+            classic_rule_fixture::InstalledRules loader(*reader, *process.rules,
+                                                        classic::ascii_text_case());
             // Explicit authored child policy, not inferred application wiring.
             if (table == LoadedRuleTable::advances)
                 loader.advances(true);
