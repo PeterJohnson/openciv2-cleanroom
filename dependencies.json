@@ -73,6 +73,7 @@
   "toolchains": {
     "linux": {
       "runner": "ubuntu-24.04",
+      "container": "ubuntu:26.04",
       "compilerId": "Clang",
       "compilerVersion": "20.1.8"
     },

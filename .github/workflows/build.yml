@@ -9,8 +9,21 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, macos-15, windows-2022]
+        include:
+          - os: ubuntu-24.04
+            container: ubuntu:26.04
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    defaults:
+      run:
+        shell: bash
     steps:
+      - name: Prepare Ubuntu container
+        if: matrix.container != ''
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates curl g++ git ninja-build python3 xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
@@ -37,10 +50,22 @@ jobs:
         os: [ubuntu-24.04, macos-15, windows-2022]
         mode: [desktop, headless]
         include:
+          - os: ubuntu-24.04
+            container: ubuntu:26.04
           - os: windows-2022
             mode: headless-sqlite-off
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    defaults:
+      run:
+        shell: bash
     steps:
+      - name: Prepare Ubuntu container
+        if: matrix.container != ''
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates curl g++ git ninja-build python3 sudo xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
       - uses: ./.github/actions/toolchain
       - uses: ilammy/msvc-dev-cmd@v1
@@ -99,7 +124,16 @@ jobs:
 
   sanitizers:
     runs-on: ubuntu-24.04
+    container: ubuntu:26.04
+    defaults:
+      run:
+        shell: bash
     steps:
+      - name: Prepare Ubuntu container
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates curl g++ git ninja-build python3 xz-utils libtinfo6 zlib1g
       - uses: actions/checkout@v4
       - uses: ./.github/actions/toolchain
       - run: cmake --preset sanitize -DOC2_FETCH_DEPENDENCIES=ON -DOC2_VERIFY_TOOLCHAIN=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++

@@ -64,13 +64,19 @@ to absent `share/libc++/v1/std.cppm` and `std.compat.cppm` sources.
 
 The Linux probe now uses an `ubuntu:26.04` container on the Ubuntu 24.04 hosted
 runner, with the distribution's `g++` development package supplying libstdc++ 15
-and its module sources. Clang remains pinned to 20.1.8.
+and its module sources. Clang remains pinned to 20.1.8. The experiment branch's
+Linux native, metadata and sanitizer jobs use this same container. WebAssembly
+retains the Ubuntu 24.04 host because it uses emsdk's own standard library.
 
 The macOS probe now explicitly selects Homebrew's installed module metadata
 under `lib/c++`, along with its matching libc++ headers and runtime. This uses
 the layout and linkage tested by [Homebrew's LLVM formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/l/llvm%4020.rb).
 The regular named-module matrix still uses the platform's normal standard
 library configuration; it does not depend on this `import std` setup.
+
+The [follow-up probe at `b700c7a`](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43687229562)
+passes on Linux, Windows and macOS. WebAssembly still fails before compiling
+the consumer because its standard-library module is not available in the SDK.
 
 Named modules are feasible with the experiment's macOS compiler change.
 Portable `import std` adoption additionally needs a deliberate standard-library

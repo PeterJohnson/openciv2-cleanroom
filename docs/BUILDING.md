@@ -88,6 +88,10 @@ Linux uses Clang 20.1.8; Windows uses clang-cl
 module experiment branch uses Homebrew LLVM 20.1.8 on macOS with the Xcode 16.4
 SDK; main uses AppleClang 17.0.0.17000013. WASM uses emsdk 4.0.23 / Clang 22.0.0. Runner labels are
 `ubuntu-24.04`, `windows-2022`, and `macos-15`, not moving `*-latest` aliases.
+The experiment branch runs Linux native builds, metadata checks, sanitizers,
+and the Linux standard-library module probe inside `ubuntu:26.04` containers,
+with libstdc++ 15 supplied by the distribution's `g++` development package.
+WebAssembly retains the Ubuntu 24.04 host and emsdk's own standard library.
 Hosted images/OS libraries may still change; compiler drift fails configuration
 instead of silently redefining the baseline. Historical platform results are
 recorded in [the M1 build matrix](m1-build-matrix.md). The C++23/CMake main baseline
