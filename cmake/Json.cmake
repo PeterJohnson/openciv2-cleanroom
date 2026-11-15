@@ -23,7 +23,7 @@ add_library(oc2_json STATIC "${oc2_json_dir}/json.cpp"
   "${oc2_json_dir}/double-conversion/string-to-double.cc"
   "${oc2_json_dir}/double-conversion/strtod.cc")
 target_include_directories(oc2_json SYSTEM PUBLIC "${oc2_json_dir}")
-target_compile_features(oc2_json PUBLIC cxx_std_20)
+target_compile_features(oc2_json PUBLIC cxx_std_23)
 if(MSVC)
   # jtckdint selects long long via __cplusplus. MSVC's legacy macro otherwise
   # chooses 32-bit long and corrupts multi-digit negative JSON integers on LLP64.

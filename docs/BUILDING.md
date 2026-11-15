@@ -7,7 +7,7 @@ loading, full save/wire codecs and the general X02 runner remain plan work.
 
 ## Dependencies and presets
 
-Use CMake 3.24+, a C++20 compiler, and Ninja for the supplied presets. macOS
+Use CMake 4.5+, a C++23 compiler, and Ninja for the supplied presets. macOS
 requires the Xcode command-line tools/AppKit; Windows needs a Visual Studio
 developer shell for Ninja, or the Visual Studio generator shown below.
 
@@ -80,15 +80,23 @@ See [content resolution commands](m1-content-runtime.md#pack-inheritance-and-mou
 
 ## Pinned CI toolchains and inventories
 
-CI installs CMake **3.31.10** and enforces the versions in `dependencies.json`
-with `OC2_VERIFY_TOOLCHAIN=ON`. Linux uses Clang 20.1.8; Windows uses clang-cl
+CI installs CMake **4.5.0** and enforces the versions in `dependencies.json`
+with `OC2_VERIFY_TOOLCHAIN=ON`. The toolchain action downloads Kitware's release
+binaries directly; availability does not depend on the Python package release.
+Linux uses Clang 20.1.8; Windows uses clang-cl
 20.1.8 with Visual Studio 2022's SDK/libraries and the Ninja generator; macOS selects Xcode 16.4 / AppleClang
 17.0.0.17000013; WASM uses emsdk 4.0.23 / Clang 22.0.0. Runner labels are
 `ubuntu-24.04`, `windows-2022`, and `macos-15`, not moving `*-latest` aliases.
 Hosted images/OS libraries may still change; compiler drift fails configuration
-instead of silently redefining the baseline. The macOS/Windows baseline awaits
-actual execution evidence. Normal developer builds retain CMake 3.24+ and other
-compatible C++20 compilers; strict verification is opt-in outside CI.
+instead of silently redefining the baseline. Historical platform results are
+recorded in [the M1 build matrix](m1-build-matrix.md); the C++23/CMake upgrade
+requires fresh hosted Windows/macOS results. Normal developer builds use
+CMake 4.5+ and compatible C++23 compilers; strict verification is opt-in outside CI.
+
+C++ and the macOS Objective-C++ adapter require C++23 with extensions disabled.
+The current targets use headers and keep C++ module scanning disabled. A future
+module migration must enable `CXX_SCAN_FOR_MODULES` on participating targets and
+validate the compiler, standard library and dependency scanner on every platform.
 
 Every configure writes `build-identity.txt` with the actual compiler, CMake,
 platform, lock hash, source overrides and build options. It records

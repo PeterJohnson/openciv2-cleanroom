@@ -1,4 +1,4 @@
-cmake_policy(VERSION 3.24)
+cmake_policy(VERSION 4.5)
 # Keep this compiled-input set in sync with run_conformance.ADAPTER_SOURCES.
 set(oc2_conformance_sources
   CMakeLists.txt dependencies.json cmake/Toolchain.cmake

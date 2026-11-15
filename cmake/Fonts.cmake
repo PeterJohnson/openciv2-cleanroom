@@ -34,7 +34,7 @@ string(APPEND oc2_font_cpp "const FontSource sources[] = {\n${oc2_font_entries}}
 file(CONFIGURE OUTPUT "${PROJECT_BINARY_DIR}/font_data.cpp" CONTENT "${oc2_font_cpp}" @ONLY)
 add_library(oc2_font_data STATIC "${PROJECT_BINARY_DIR}/font_data.cpp")
 target_include_directories(oc2_font_data PRIVATE "${PROJECT_SOURCE_DIR}/src")
-target_compile_features(oc2_font_data PRIVATE cxx_std_20)
+target_compile_features(oc2_font_data PRIVATE cxx_std_23)
 
 string(JSON oc2_font_license_file GET "${oc2_font_json}" license file)
 string(JSON oc2_font_license_hash GET "${oc2_font_json}" license sha256)

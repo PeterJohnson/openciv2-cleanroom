@@ -20,11 +20,10 @@ runs:
     - id: pins
       shell: python
       run: |
-        import json, os, subprocess, sys
+        import json, os, sys
         pins = json.load(open('dependencies.json'))
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'cmake==' + pins['tools']['cmake']])
         with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
-            for key in ('emsdk', 'playwright'):
+            for key in ('cmake', 'emsdk', 'playwright'):
                 print(f"{key}={pins['tools'][key]}", file=output)
             platform = {'linux': 'linux', 'win32': 'windows', 'darwin': 'macos'}[sys.platform]
             print('llvm=' + pins['toolchains'][platform]['compilerVersion'], file=output)
@@ -32,6 +31,9 @@ runs:
             xcode = pins['toolchains']['macos']['xcode']
             with open(os.environ['GITHUB_ENV'], 'a') as output:
                 print(f'DEVELOPER_DIR=/Applications/Xcode_{xcode}.app/Contents/Developer', file=output)
+    - uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: ${{ steps.pins.outputs.cmake }}
     - uses: KyleMayes/install-llvm-action@v2
       if: runner.os != 'macOS' && inputs.web != 'true'
       with:

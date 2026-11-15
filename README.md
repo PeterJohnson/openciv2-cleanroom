@@ -17,7 +17,7 @@ X01 and X02 define that convention and its conformance checks.
   required behavior, supported inputs and permitted differences.
 - [Conformance (X02)](docs/algorithms/X02-whole-game-conformance.md): fixtures,
   comparison rules, integration cases and evidence gaps.
-- [Architecture](docs/architecture.md): cleanroom boundary, C++20/CMake libraries,
+- [Architecture](docs/architecture.md): cleanroom boundary, C++23/CMake libraries,
   embedded session service and player controllers, SDL3/ImGui presentation,
   platform menus, assets, persistence and classic networking.
 - [Tools and automation](docs/architecture.md#5-inspection-tools-console-and-user-automation):
@@ -41,7 +41,7 @@ X01 and X02 define that convention and its conformance checks.
 - [Application shell](docs/application-shell.md): implemented UI/platform boundaries
   and current limitations.
 
-The initial C++20/CMake/SDL3 shell provides native macOS/Windows menus, ImGui
+The C++23/CMake/SDL3 shell provides native macOS/Windows menus, ImGui
 Linux/browser menus and dialogs, and a development view with illustrative tiles. Drawn text uses pinned DejaVu
 TrueType fonts rasterized at runtime; headless builds need no font data.
 M0 and [M1's finite foundation contract](docs/m1-validation.md) are complete.
@@ -53,8 +53,8 @@ the first playable slice. A complete standalone content set, console and Lua
 integration retain their milestones in the implementation plan. Catch2 covers
 portable behavior and SDL integration; ImGui Test Engine covers the drawn interface.
 
-To build with explicitly enabled pinned dependency downloads (CMake 3.24+,
-Ninja, and a C++20 compiler required):
+To build with explicitly enabled pinned dependency downloads (CMake 4.5+,
+Ninja, and a C++23 compiler required):
 
 ```sh
 cmake --preset desktop-fetch

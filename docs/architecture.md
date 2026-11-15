@@ -6,7 +6,7 @@ the libraries and capabilities below are the target design, not a conformance
 claim. Delivery status and acceptance gates are in the
 [implementation plan](implementation-plan.md).
 
-Build a C++20 game with CMake, SDL3, and Dear ImGui for macOS, Linux, Windows,
+Build a C++23 game with CMake, SDL3, and Dear ImGui for macOS, Linux, Windows,
 and browser WebAssembly through Emscripten. The game implementation, including
 AI, persistence, session orchestration, and networking, runs without a graphical
 framework. The graphical application, save inspection tools, conformance runner,
@@ -235,7 +235,7 @@ first real operations arrive. Native menu sources currently compile into
 | `oc2_export_sqlite` | Optional native analysis adapter: writes immutable query records to a versioned SQLite snapshot. Depends on `oc2_query` and SQLite; no dependency on it from game, formats, session or query libraries. |
 | `oc2_net_bridge` | Separate native browser transport bridge; built only when requested. No game simulation. |
 
-Keep public interfaces small and use ordinary C++20 headers and source files.
+Keep public interfaces small and use ordinary C++23 headers and source files.
 Use RAII and owned values; introduce virtual interfaces at external service
 boundaries, not for every algorithm. Avoid a general ECS, plugin framework,
 global service locator, or C++ modules requirement in the initial implementation.
@@ -1037,9 +1037,14 @@ classic resource-name lookup without depending on host case sensitivity.
 
 ## 9. Build, tests, and delivery
 
-Use target-based CMake with `cxx_std_20`, extensions disabled, and separate build
-directories per native or Emscripten toolchain. Enable Objective-C++ only for the
-macOS adapter. Commit portable presets for debug, release, sanitizers, headless,
+Require CMake 4.5 or newer and use target-based CMake with `cxx_std_23`,
+extensions disabled, and separate build directories per native or Emscripten
+toolchain. Enable Objective-C++ only for the
+macOS adapter, also in C++23 mode. Header-based targets leave module scanning
+disabled; enable it per target when introducing modules after cross-platform
+validation. C++23 library facilities must be available on every pinned platform;
+language-mode support alone does not establish standard-library support.
+Commit portable presets for debug, release, sanitizers, headless,
 and web; keep machine paths in untracked user presets. Record exact dependency
 and emsdk versions in [dependencies.json](../dependencies.json), updating the
 tested set together. M0 also pins CI CMake/compiler baselines and emits a
@@ -1139,7 +1144,8 @@ Pin ImGui and its test engine as a tested pair. The test engine has its own
 record its notice and applicable terms separately from ImGui's MIT license,
 and keep test instrumentation out of release builds.
 
-CI covers Linux GCC/Clang, macOS AppleClang, Windows MSVC, and pinned Emscripten.
+CI uses pinned Linux Clang, macOS AppleClang, Windows clang-cl with Microsoft's
+SDK/libraries, and Emscripten. Other developer compilers need separate validation.
 Run portable arithmetic/replay vectors across native and WASM builds, sanitizers
 on suitable native jobs, decoder/protocol fuzzing, browser smoke tests, and
 display-backed UI tests. Original-game file/peer tests use separately provisioned

@@ -10,6 +10,23 @@ Full W02/V01/balancing/AI and graphical setup integration remain M3/M4 work;
 supplied-child foundation tests do not establish those mechanics. Historical test
 counts below describe their recorded revisions, not current review verification.
 
+The toolchain follow-up requires C++23 for C++ and the macOS Objective-C++
+adapter, and raises the CMake minimum and CI pin to 4.5.0. Compiler pins are
+unchanged. CI installs Kitware release binaries directly because the CMake
+4.5.0 Python package was not yet published. Build identities now record language
+standards and module-scanning settings. Current targets remain header-based;
+module scanning is enabled per target when a module migration is introduced.
+
+Validation: 536/536 Linux native CTests (523 Catch2 cases), 536/536 ASan/UBSan
+CTests with LeakSanitizer disabled for this host, 8/8 Emscripten CTests
+(510 portable cases, 208,961 assertions), 3/3 desktop runtime/startup CTests,
+121 Python tests, and 14 tools-only CLI checks with Python discovery disabled
+during configuration. All 57 native conformance vectors pass and the source-bound
+report is refreshed. Formatting, include boundaries, metadata and workflow YAML
+checks pass. An isolated named-module probe also builds and runs on Linux and
+WebAssembly with CMake 4.5.0. This does not establish full-project module support;
+the C++23/CMake upgrade still needs fresh hosted Windows/macOS execution evidence.
+
 The service-lifetime follow-up replaces all 24 `Services` structs with focused
 noncopyable provider interfaces, borrowed dependency descriptors, direct callback
 views or passive diagnostic output. File load/save/preferences share `FileStorage`;

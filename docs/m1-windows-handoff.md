@@ -86,7 +86,7 @@ with another peer are separate pending observations.
 ## Windows checks
 
 Use a Visual Studio 2022 developer PowerShell with its SDK, Ninja, Clang 20.1.8
-and CMake 3.31.10 available, following [BUILDING.md](BUILDING.md). The explicit
+and the CMake version pinned in `dependencies.json` available, following [BUILDING.md](BUILDING.md). The explicit
 fetch preset below permits the pinned Catch2 download; an offline source override
 is documented there. Run from this checkout:
 
