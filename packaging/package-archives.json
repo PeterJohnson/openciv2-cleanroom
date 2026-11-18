@@ -91,6 +91,10 @@
       "contentHash": "NdNWGDiZ6eS/Mf/9+QHR91cj1K7Hy+PX9yrHI/zM7xFYuj9IWT2uxtB6sCHjrnxAeLV9fut1R6zHDUGKX6f9lQ==",
       "archiveSha512": "Y1fibjW9zDGhrbRY8euhJzAm4TiGW39wmM4M3ykTXDF/WK+gqMAVtkxbYxXOAsSWQTvBeL/XJpNdjTKvY/cywQ=="
     },
+    "microsoft.dotnet.ilcompiler.11.0.0.nupkg": {
+      "contentHash": "lw6gUL92db6XPwYsQwaGwrJxgRM0X0qQKl0QkwuZIACMtgH0eFu6jmq6W+/L8qTxQZwggfV/dGjICyMqVHdehg==",
+      "archiveSha512": "3rBJqAlEO+erUgcJ9xNRxB00kBSSsr2qKYuvRKFAIAmnqO3tGb3mv0/c1CWN6gyvzLhF9qf456oTDyE55yJ0vg=="
+    },
     "microsoft.net.illink.tasks.11.0.0.nupkg": {
       "contentHash": "gK2aq4XvChj5kvozpPHrkfKkr7zc5Z4xoTrJb4GPZzDEPMlCk0TX632bwY3LsWcX2UVcVRQBBGzsBGC2lq6YhA==",
       "archiveSha512": "RkPFHxgjzoPhOne9ujHLjGj1PnxtWTUbuntGPA0tRp4mXzvTamWNqO5h5JUj2FmPsPWlj73wY5JBUVWtWi13/A=="
@@ -106,6 +110,18 @@
     "randn.pcg32.0.5.0.nupkg": {
       "contentHash": "rbvbu9rbGgWzKA9Ni2XPNKUWwvZKpD520K+K47ARST+RQCfrpy36Ej8zyLJo2GymYjZCXlBlY354WG6s2TdvYg==",
       "archiveSha512": "SH1ojLf1w9HLlKLFhDFSpESS2lQOmgV7v9gZJuFkrjJHk6KQH/mGrE4P8U4VQK/614m4H97liWSyoPBI8EMiLw=="
+    },
+    "runtime.linux-x64.microsoft.dotnet.ilcompiler.11.0.0.nupkg": {
+      "contentHash": "HMCCGxJ1Q41NF31M+yWB7h0OAWr0XpiS8ZYMOi/V5IU/864Yi00rLq3M1K3AhE2+q86YJA4V9KZ28NXE+Q/uxA==",
+      "archiveSha512": "zt/Zq9OMgryacFiq7sXbUv71lG7Td/MpYDiUoa1BHUgauqWMOEuwxKjmn9lxKMxsUkUPtpA/7I4pYeJ2mwbZ0A=="
+    },
+    "runtime.osx-arm64.microsoft.dotnet.ilcompiler.11.0.0.nupkg": {
+      "contentHash": "QWuxf01ws1E+3w6fzpbOQ3lhiRKIqUqi1Pf/ZIBlSvpAybsYMPoCYOssuBC/JrzJ8BcCObGHEYmEs7x1O3KVjg==",
+      "archiveSha512": "jmd5E/MpDgZQHNuILvPzZWwmoO0B1ZpzFO0UZkOX4kwvOVZtFV6QKD8WRrNU/kc3KS8kIMEgsl6cdfUUyT6OTg=="
+    },
+    "runtime.win-x64.microsoft.dotnet.ilcompiler.11.0.0.nupkg": {
+      "contentHash": "GhYzDaU4IbNnTgyFgxT2URnUogx+xuphFHscUx8v1H8ZRKiIlYa/8Lkpd0SXJZ+pEWHJFJXLvEPpWLEcwyNkmQ==",
+      "archiveSha512": "q2E3tiO9/AYh1yaZID0XrM+BRHOzH1Pzyhx3wPRm7CuZbjJhIxLncEojAnKVcXqK+ljq8u/2IJMVBfy78of1FA=="
     },
     "skiasharp.4.156.1.nupkg": {
       "contentHash": "DFlbYk/Rxnqm+UM/EaynxLlucc07+fuWzT84KsyT8aCDAT1PZOPlp5eATD7eYczTgV771bnxQKSrLbNmUCaSLQ==",

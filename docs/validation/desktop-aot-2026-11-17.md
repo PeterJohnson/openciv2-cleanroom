@@ -37,8 +37,30 @@ restricted execution sandbox; this did not require source changes.
 | Published Linux AOT executable | `ed9bd232e3abf2b0500f0609dc478eb327637f0f0c3c5470447a661d4974b808` |
 
 The updated CI workflow publishes Native AOT on Linux x64, macOS ARM64 and
-Windows x64, and exercises Linux input. That workflow has not been executed for
-this change here; macOS/Windows AOT compilation and desktop execution remain
-unverified by this local run. No performance, full-desktop acceptance or
+Windows x64, and exercises Linux input. At the time of this initial local run,
+that workflow had not executed for this change; macOS/Windows AOT compilation
+and desktop execution were unverified. No performance, full-desktop acceptance or
 original-game compatibility claim follows from these checks. Reproduce them
 with the [build guide](../BUILDING.md#opt-in-native-aot-desktop).
+
+## Correction after hosted restore
+
+[The first hosted run](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44233912263)
+found that the initial local restore had selected Ubuntu's rebuilt, unsigned
+`Microsoft.DotNet.ILCompiler` package. Microsoft's signed NuGet package has a
+different content hash and adds a RID-specific compiler dependency; the initial
+locks therefore failed on all three hosted platforms. The earlier report hashes
+above remain historical evidence of that local build.
+
+The correction regenerated all three locks using Microsoft's SDK 11.0.100 and a
+fresh cache. SDK signature verification passed for the generic compiler and all
+three platform compiler archives before their content/archive hashes were pinned.
+The notice collector now includes the SDK license for the platform compiler too.
+All three locked restores, ten notice tests and five identity tests passed.
+Linux AOT publication completed without warnings, with 31 packages and 36 notice
+files; the rebuilt executable passed the same six input checks and normal close.
+
+| Corrected artifact | SHA-256 |
+| --- | --- |
+| `build/desktop-aot/application-aot-upstream.json` | `47071b1f094872474a48b59a61f12ee54acade95affefacee40cfa07722b22f4` |
+| Published Linux AOT executable | `ecd07503a77b6e74d3b98f77f97fa29ca2b9f1bfe4006b91bee6904a9636750e` |

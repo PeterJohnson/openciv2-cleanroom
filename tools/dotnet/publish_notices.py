@@ -141,7 +141,7 @@ def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime,
                     add(destination, bundle.read(entry)); files.append(destination)
             for supplement in supplements(name, version, meta):
                 files.append(vendor(supplement))
-            if name in ('Microsoft.NET.ILLink.Tasks', 'Microsoft.NET.Sdk.WebAssembly.Pack', 'Microsoft.DotNet.ILCompiler'):
+            if name in ('Microsoft.NET.ILLink.Tasks', 'Microsoft.NET.Sdk.WebAssembly.Pack', 'Microsoft.DotNet.ILCompiler') or re.fullmatch(r'runtime\.[a-z0-9-]+\.Microsoft\.DotNet\.ILCompiler', name):
                 if version != runtime:
                     raise ValueError('Unpinned SDK dependency')
                 add('dotnet/SDK-LICENSE.txt', (dotnet_root / 'LICENSE.txt').read_bytes())

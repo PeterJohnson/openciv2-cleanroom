@@ -147,6 +147,23 @@ class PublicationTests(unittest.TestCase):
                     notices.generate(self.project, self.assets, self.lock, self.output,
                                      self.sdk, '11.0.100', '11.0.0', rid, browser, self_contained, True)
 
+    def test_compiler_packages_receive_the_matching_sdk_license(self):
+        for name in ('Microsoft.DotNet.ILCompiler', 'runtime.linux-x64.Microsoft.DotNet.ILCompiler'):
+            with self.subTest(package=name):
+                archive = self.root / 'cache' / name.lower() / '11.0.0' / (name.lower() + '.11.0.0.nupkg')
+                archive.parent.mkdir(parents=True)
+                with zipfile.ZipFile(archive, 'w') as bundle:
+                    bundle.writestr(name + '.nuspec', '<package><metadata><license type="expression">MIT</license></metadata></package>')
+                    bundle.writestr('THIRD-PARTY-NOTICES.TXT', 'Compiler notices fixture')
+                digest = notices.sha512(archive.read_bytes())
+                self.assets.write_text(json.dumps({
+                    'libraries': {name + '/11.0.0': {'type': 'package', 'sha512': digest, 'path': name.lower() + '/11.0.0'}},
+                    'targets': {}, 'packageFolders': {str(self.root / 'cache'): {}}}))
+                self.lock.write_text(json.dumps({'dependencies': {'net11.0': {name: {'resolved': '11.0.0', 'contentHash': digest}}}}))
+                report = self.generate()
+                self.assertIn('dotnet/SDK-LICENSE.txt', report['packages'][0]['notices'])
+                self.assertIn(name + '/THIRD-PARTY-NOTICES.TXT', report['packages'][0]['notices'])
+
 
 if __name__ == '__main__':
     unittest.main()

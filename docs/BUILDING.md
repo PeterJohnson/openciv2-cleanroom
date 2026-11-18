@@ -67,7 +67,10 @@ dotnet publish src/OpenCiv2.Desktop -c Release -p:Oc2DesktopAot=true --no-restor
 ```
 
 The build selects the SDK's portable host RID. Checked-in AOT locks cover
-`linux-x64`, `osx-arm64` and `win-x64`. Build on the target OS with the pinned SDK
+`linux-x64`, `osx-arm64` and `win-x64`. Use Microsoft's SDK distribution and signed
+NuGet compiler packages: distribution-rebuilt SDK/compiler packages can have
+different hashes and dependency graphs even with the same version number.
+Build on the target OS with the pinned SDK
 and a native toolchain: Clang on Linux, Xcode command-line tools on macOS, or
 Visual Studio's Desktop development with C++ workload on Windows. See the
 [.NET Native AOT prerequisites](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/).
