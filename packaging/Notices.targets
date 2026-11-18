@@ -1,0 +1,22 @@
+<Project>
+  <!-- Publishing executable distributions needs Python; ordinary build/test and
+       base restore retain their existing dependency graph. -->
+  <PropertyGroup>
+    <Oc2Python Condition="'$(Oc2Python)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">python</Oc2Python>
+    <Oc2Python Condition="'$(Oc2Python)' == ''">python3</Oc2Python>
+  </PropertyGroup>
+  <Target Name="Oc2PublishDependencyNotices" AfterTargets="Publish"
+      Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildProjectName)', '^OpenCiv2\.(Cli(\.Sqlite)?|Desktop|Browser|Browser\.Tests|ConformanceBrowser|AutomationBrowser|PerformanceBrowser)$'))">
+    <PropertyGroup>
+      <_Oc2NoticeOutput>$(PublishDir)</_Oc2NoticeOutput>
+      <_Oc2NoticeLock>$(MSBuildProjectDirectory)/packages.lock.json</_Oc2NoticeLock>
+      <_Oc2NoticeLock Condition="'$(Oc2PackageRid)' != ''">$(NuGetLockFilePath)</_Oc2NoticeLock>
+      <_Oc2SelfContainedArg Condition="'$(SelfContained)' == 'true'">--self-contained</_Oc2SelfContainedArg>
+      <_Oc2BrowserArg></_Oc2BrowserArg>
+      <_Oc2NoticeOutput Condition="'$(TargetPlatformIdentifier)' == 'browser'">$(PublishDir)wwwroot</_Oc2NoticeOutput>
+      <_Oc2BrowserArg Condition="'$(TargetPlatformIdentifier)' == 'browser'">--browser</_Oc2BrowserArg>
+    </PropertyGroup>
+    <!-- End directory arguments in a dot so a Windows trailing backslash cannot escape the closing quote. -->
+    <Exec Command="&quot;$(Oc2Python)&quot; &quot;$(MSBuildThisFileDirectory)../tools/dotnet/publish_notices.py&quot; --project &quot;$(MSBuildProjectFullPath)&quot; --assets &quot;$(ProjectAssetsFile)&quot; --lock &quot;$(_Oc2NoticeLock)&quot; --output &quot;$(_Oc2NoticeOutput)/.&quot; --dotnet-root &quot;$(NetCoreRoot)/.&quot; --sdk &quot;$(NETCoreSdkVersion)&quot; --runtime &quot;$(RuntimeFrameworkVersion)&quot; --rid &quot;$(RuntimeIdentifier)&quot; $(_Oc2BrowserArg) $(_Oc2SelfContainedArg)" />
+  </Target>
+</Project>

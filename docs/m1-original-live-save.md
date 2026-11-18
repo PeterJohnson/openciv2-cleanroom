@@ -1,23 +1,19 @@
 # M1 original live-save exchange
 
-On 2026-11-14, the original MGE executable loaded a save exported from the
-cleanroom C++ live session with an explicitly edited treasury of 777. It saved,
-advanced a turn to 3960 B.C. with 778 gold, and saved again. The C++ core loaded
-that original resave and exported it; the original reopened the second export
-with the city, year and treasury present. The
-[metadata report](conformance/reports/original-live-save-windows.json) retains
-source, executable, input, output and capture identities. This is independent
-normal-UI interoperability evidence, outside X02. This historical observation predates the [completed M1 audit](m1-validation.md).
+These dated observations describe the original executable and its UI. They are
+not a fresh interoperability run of the current C# implementation. Use the
+current C# helper commands below and capture new input/output/executable hashes
+before making that claim; see [validation](validation/README.md).
 
 ## Driver and reproduction
 
-Build with native tools and tests enabled. `oc2_live_save` uses the real native
+Build with native tools and tests enabled. `OpenCiv2.LiveSave` uses the real native
 binary/text/directory services, the F03 reload wrapper and F06 ordered core
-load/save. Its JSON report uses the pinned jart/json.cpp dependency. Invoke it
+load/save. Its JSON report uses the System.Text.Json serializer. Invoke it
 with an original game data directory and a new output filename:
 
 ```powershell
-build/headless-fetch/oc2_live_save.exe build/original-text-runtime build/original-text-runtime/nameprobe_resumed.sav build/original-text-runtime/live_cpp_gold777.sav --gold 6 777
+tests/OpenCiv2.LiveSave/bin/Release/net10.0/OpenCiv2.LiveSave.exe build/original-text-runtime build/original-text-runtime/nameprobe_resumed.sav build/original-text-runtime/live_cpp_gold777.sav --gold 6 777
 ```
 
 The driver admits current `0x2c`, mode-zero stored input. The optional `--gold`
@@ -60,13 +56,13 @@ captured `nameprobe_resumed.sav` at turn 2, 3980 B.C., player/local civilization
    The original advances to 3960 B.C. and 778 gold. Save as
    `live_original_turn3.sav`.
 4. Run the driver on that resave without `--gold`, writing `live_cpp_turn3.sav`.
-   The C++ loaded summary reports turn 3, year -3960 and civilization 6 gold 778.
+   The recorded loaded summary reports turn 3, year -3960 and civilization 6 gold 778.
 5. Load `live_cpp_turn3.sav` in the original. The load notice and map show
    3960 B.C., `AsciiOnly`, 10,000 people and 778 gold.
 
-Both C++ exports differ from their original inputs, as expected from live
+Both exported saves differ from their original inputs, as expected from live
 loading/saving and the declared first edit. All inputs and selected text files
-remain unchanged by the driver. The first original resave also loads in C++
+remain unchanged by the driver. The first original resave also loads in the recorded tool
 with gold 777; re-exporting it produces the same bytes as the first edited
 export. After adding the explicit-extension guard, a repeat export of the
 starting save with the final driver reproduces the first edited output exactly.
@@ -79,11 +75,3 @@ The original executes turn processing; the cleanroom driver does not. Two AI
 cities in the starting world have empty names from the earlier CITY setup, so
 this is not a nominal stock-city-creation reference. No executable patching,
 injection, process-memory inspection or reconstruction harness is used.
-
-This does not establish complete application admission/resource integration,
-legacy conversion interoperability, scenario/event cases, multiplayer or all
-supported edits. The [M1 closeout](m1-closeout.md#m1-04-bounded-file-interoperability)
-requires only its named current-export recheck; broader admission, versions and
-modes remain M3–M6 work. Original
-payloads and screenshots remain under ignored `build/`; only the procedure
-and metadata report are committed.

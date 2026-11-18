@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>oc2-sqlite</AssemblyName></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../OpenCiv2.Cli/OpenCiv2.Cli.csproj" />
+    <ProjectReference Include="../OpenCiv2.Export.Sqlite/OpenCiv2.Export.Sqlite.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="../src/OpenCiv2.Base/OpenCiv2.Base.csproj" />
+    <Project Path="../src/OpenCiv2.IO/OpenCiv2.IO.csproj" />
+    <Project Path="../src/OpenCiv2.Contracts/OpenCiv2.Contracts.csproj" />
+    <Project Path="../src/OpenCiv2.Core/OpenCiv2.Core.csproj" />
+    <Project Path="../src/OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
+    <Project Path="../src/OpenCiv2.Query/OpenCiv2.Query.csproj" />
+    <Project Path="../src/OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" />
+    <Project Path="../src/OpenCiv2.Cli/OpenCiv2.Cli.csproj" />
+    <Project Path="../src/OpenCiv2.Export.Sqlite/OpenCiv2.Export.Sqlite.csproj" />
+    <Project Path="../src/OpenCiv2.Cli.Sqlite/OpenCiv2.Cli.Sqlite.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="../tests/OpenCiv2.Sqlite.Tests/OpenCiv2.Sqlite.Tests.csproj" />
+  </Folder>
+</Solution>

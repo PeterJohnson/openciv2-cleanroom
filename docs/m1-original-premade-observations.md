@@ -1,10 +1,15 @@
 # Original premade-map radius observation
 
+These dated observations describe the original executable and its UI. They are
+not a fresh interoperability run of the current C# implementation. Use the
+current C# helper commands below and capture new input/output/executable hashes
+before making that claim; see [validation](validation/README.md).
+
 On 2026-11-14, the supplied original Civilization II Multiplayer Gold executable
 ran on Windows in the isolated `build/original-setup-runtime` directory. Normal
 UI input opened an independently authored raw map and saved the resulting game.
 No executable code, process-memory reads, injected calls or historical harnesses
-were used. The [retained report](conformance/reports/original-premade-windows.json)
+were used. The [dated capture record](https://github.com/PeterJohnson/openciv2-cleanroom/blob/6e58a59e841760e7d3a5706e727d4bb8090bb224/docs/conformance/reports/original-premade-windows.json)
 identifies the executable, data, authored map, output and 15 UI captures by hash.
 Binary inputs, output and captures remain local under ignored `build/` paths.
 
@@ -31,8 +36,8 @@ game confirmation. The comparison session was then closed normally.
 The original save contains 4,000 tiles, seven unit slots and **zero city slots**.
 Every tile's full radius byte is **zero**, including all low five bits that were
 set in the input. Width, height, topology and seed remain 100, 80, 0 and 24.
-The C++ stored decoder's offsets/bytes were checked against the actual save
-bytes, and the existing C++ save roundtrip driver reproduced all 69,803 bytes
+The stored decoder's offsets/bytes were checked against the actual save
+bytes, and the existing round-trip helper reproduced all 69,803 bytes
 exactly, including its ordered auxiliary comparisons. Stored validation passed
 its available checks; rule-dependent and gameplay validation remain incomplete.
 
@@ -49,3 +54,7 @@ compatibility, every setup branch, hint acceptance, arbitrary radius patterns,
 flat topology or interrupted-read behavior. Those remain separate contracts and
 tests. Runtime rule/text files retain the earlier text observation's declared
 name probes; their exact hashes are included rather than claiming pristine data.
+
+The linked capture metadata is preserved at its recorded revision. It does not
+validate the current C# exporter; repeat the procedure with current binaries and
+record fresh source, executable and file identities for that claim.

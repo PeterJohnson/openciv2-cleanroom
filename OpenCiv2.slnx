@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OpenCiv2.ViewModels/OpenCiv2.ViewModels.csproj" />
+    <Project Path="src/OpenCiv2.Console/OpenCiv2.Console.csproj" />
+    <Project Path="src/OpenCiv2.Base/OpenCiv2.Base.csproj" />
+    <Project Path="src/OpenCiv2.IO/OpenCiv2.IO.csproj" />
+    <Project Path="src/OpenCiv2.Contracts/OpenCiv2.Contracts.csproj" />
+    <Project Path="src/OpenCiv2.Core/OpenCiv2.Core.csproj" />
+    <Project Path="src/OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
+    <Project Path="src/OpenCiv2.Session/OpenCiv2.Session.csproj" />
+    <Project Path="src/OpenCiv2.Network/OpenCiv2.Network.csproj" />
+    <Project Path="src/OpenCiv2.Query/OpenCiv2.Query.csproj" />
+    <Project Path="src/OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" />
+    <Project Path="src/OpenCiv2.Platform.Native/OpenCiv2.Platform.Native.csproj" />
+    <Project Path="src/OpenCiv2.Cli/OpenCiv2.Cli.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OpenCiv2.Conformance/OpenCiv2.Conformance.csproj" />
+    <Project Path="tests/OpenCiv2.ConformanceAdapter/OpenCiv2.ConformanceAdapter.csproj" />
+    <Project Path="tests/OpenCiv2.FoundationCases/OpenCiv2.FoundationCases.csproj" />
+    <Project Path="tests/OpenCiv2.Base.Tests/OpenCiv2.Base.Tests.csproj" />
+    <Project Path="tests/OpenCiv2.FoundationProbe/OpenCiv2.FoundationProbe.csproj" />
+    <Project Path="tests/OpenCiv2.SaveRoundTrip/OpenCiv2.SaveRoundTrip.csproj" />
+    <Project Path="tests/OpenCiv2.PreferenceRoundTrip/OpenCiv2.PreferenceRoundTrip.csproj" />
+    <Project Path="tests/OpenCiv2.MapRoundTrip/OpenCiv2.MapRoundTrip.csproj" />
+    <Project Path="tests/OpenCiv2.WireRoundTrip/OpenCiv2.WireRoundTrip.csproj" />
+    <Project Path="tests/OpenCiv2.LiveSave/OpenCiv2.LiveSave.csproj" />
+  </Folder>
+</Solution>

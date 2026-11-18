@@ -1,10 +1,15 @@
 # M1 original text and save observations
 
+These dated observations describe the original executable and its UI. They are
+not a fresh interoperability run of the current C# implementation. Use the
+current C# helper commands below and capture new input/output/executable hashes
+before making that claim; see [validation](validation/README.md).
+
 On 2026-11-13 Pacific, the original MGE executable accepted two byte-preserving
-C++ exports on Windows. It resumed the first, founded a city, processed a turn
-and saved again. The C++ codec reproduced that second save exactly, and the
+exported saves on Windows. It resumed the first, founded a city, processed a turn
+and saved again. The codec reproduced that second save exactly, and the
 original reopened it with the city present. The
-[retained report](conformance/reports/original-text-and-save-windows.json)
+[dated capture record](https://github.com/PeterJohnson/openciv2-cleanroom/blob/6e58a59e841760e7d3a5706e727d4bb8090bb224/docs/conformance/reports/original-text-and-save-windows.json)
 records executable/input/output/source hashes, build identity, actions and local
 capture identities. This is independent original-program evidence, outside X02.
 This historical observation predates the [completed M1 audit](m1-validation.md).
@@ -57,7 +62,7 @@ the pooled plural lookup separately from the civilization's display name.
 ## Observations and comparison limit
 
 The selected header was `@pRoBeÉ`, the second of the three authored headers.
-The proposal repeated after loading the C++ export. This is consistent with
+The proposal repeated after loading the exported save. This is consistent with
 ASCII case equivalence and a distinction between É/é in this lookup, but it
 does **not** establish either a complete comparison table or an isolated
 accented-pair result. F03 §2 distinguishes ordinary unique-header input from
@@ -75,7 +80,7 @@ No new comparison algorithm is implemented by this change.
 Run the native driver, supplying a new destination:
 
 ```powershell
-build/headless-fetch/oc2_save_roundtrip.exe build/original-text-runtime/nameprobe_base.sav build/original-text-runtime/nameprobe_cpp.sav
+tests/OpenCiv2.SaveRoundTrip/bin/Release/net10.0/OpenCiv2.SaveRoundTrip.exe build/original-text-runtime/nameprobe_base.sav build/original-text-runtime/nameprobe_cpp.sav
 ```
 
 The original loaded `nameprobe_cpp.sav` and displayed Warlord/4000 B.C. Build
@@ -90,12 +95,6 @@ has eight unit slots and two city slots; the resumed save has seven of each.
 Stored city slot 2 has owner 6, size 1, token 9 and name `AsciiOnly`. Stored
 globals report turn 2, year −3980 and multiplayer mode 0. The first export and
 the original input both rejected reuse as output paths and remained unchanged.
-
-This checks F06's current `0x2c` stored encoding through actual original resume.
-The cleanroom engine did not perform the city action, ordered session loading
-or a gameplay edit. Legacy versions, scenario/event cases, multiplayer and
-exports from a live cleanroom session require their own evidence. The later
-[live-save exchange](m1-original-live-save.md) supplies a bounded current
-single-player treasury-edit/resume check with the same world.
-Original payloads and screenshots remain under ignored `build/`; only this
-procedure and the metadata report are committed.
+The linked capture metadata is preserved at its recorded revision. It does not
+validate the current C# exporter; repeat the procedure with current binaries and
+record fresh source, executable and file identities for that claim.

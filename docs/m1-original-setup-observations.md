@@ -2,7 +2,7 @@
 
 The original MGE executable was exercised through its normal Windows UI in an
 isolated `build/original-setup-runtime` copy. The
-[retained report](conformance/reports/original-setup-windows.json) records the
+[dated capture record](https://github.com/PeterJohnson/openciv2-cleanroom/blob/6e58a59e841760e7d3a5706e727d4bb8090bb224/docs/conformance/reports/original-setup-windows.json) records the
 executable/data hashes, three exact preference-file identities, actions and
 22 local screenshot identities. The original window was closed after the
 comparison. No source, process-memory access or reconstruction harness was used.
@@ -50,3 +50,7 @@ historical name: 1950 was edited but never submitted. It is not rejection/retry
 evidence. Capture 08 follows the actual OK submission of 19×80. Return/Escape
 while the width field had focus did not submit/cancel in this run; the dialog's
 visible buttons were used for the successful actions.
+
+The linked capture metadata is preserved at its recorded revision. It does not
+validate the current C# exporter; repeat the procedure with current binaries and
+record fresh source, executable and file identities for that claim.

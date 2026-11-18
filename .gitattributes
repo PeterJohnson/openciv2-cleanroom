@@ -1,17 +1,9 @@
 # Keep specification/fixture hashes stable across platform checkouts.
 * text=auto eol=lf
-.githooks/* text eol=lf
-.clang-format text eol=lf
+*.cs text eol=lf
+*.csproj text eol=lf
+*.slnx text eol=lf
+*.props text eol=lf
+*.targets text eol=lf
 *.c text eol=lf
-*.cc text eol=lf
-*.cpp text eol=lf
-*.cxx text eol=lf
 *.h text eol=lf
-*.hh text eol=lf
-*.hpp text eol=lf
-*.hxx text eol=lf
-*.m text eol=lf
-*.mm text eol=lf
-*.inl text eol=lf
-*.ipp text eol=lf
-*.tpp text eol=lf

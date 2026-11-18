@@ -1,38 +1,26 @@
 # M1 classic text, rules and city preferences
 
 The portable F03 text reader, P04 label loader, all twelve classic rule-table
-readers and both city-production preference paths are implemented. Native JSON uses the pinned
-jart/json.cpp admission wrapper; classic text uses supplied file, section-index
+readers and both city-production preference paths are implemented. Native JSON uses the System.Text.Json admission wrapper; classic text uses supplied file, section-index
 and byte-comparison services. Both rule paths produce `RuleDefinitions`, and
 both preference paths publish `CityPreferences`. This supplies part of M1's
 native/classic content boundary. The later [conversion slice](m1-content-conversion.md)
 completes the three M1 conversions; playable session content admission remains
 later work. [The completion audit](m1-validation.md) records the closed M1 scope.
 
-## Text representation refactor
+## Text ownership
 
-Current production text uses unpadded owned strings and local references with
-explicit custom-name flags. The F06 stored leader codec is a separate type;
-live export translates flags without narrowing text IDs. Label rebuilds preserve
-unrelated rule references. Synthetic text-allocation callbacks, padding checks
-and matching allocation traces have been removed from production interfaces/tests.
-Original ordinal calculation remains only in `tools/check_original_rule_labels.py`,
-using original data and the lossless stored inspector. The former C++ ordinal
-comparison executable is removed. Earlier allocation/ordinal results below are
-historical evidence, not current implementation or milestone requirements.
-Semantic regression checks replace the historical allocation-trace assertions.
-
-Refactor validation: 559 native CTests (547 Catch2 cases), all seven WASM CTests,
-115 Python tests with two expected skips, and all 57 registered conformance
-vectors on both targets pass. Pinned formatting and metadata checks pass.
-These are implementation regressions and specification-derived checks. No new
-original-executable run was performed for canonical live name markers; their
-translation is checked against the specified F06 restoration consumer. Historical
-original reports remain historical and are not relabeled as evidence for this build.
+Production text uses unpadded owned strings and local references with explicit
+custom-name flags. F06 stored leaders use a separate lossless record type;
+live export translates name flags without narrowing text IDs. Label rebuilds
+preserve unrelated rule references. Semantic tests cover names, flags, retained
+references and publication. `tools/check_original_rule_labels.py` independently
+checks original data using the stored inspector; original ordinals do not define
+runtime allocation or text ownership.
 
 ## Classic reader
 
-`formats/classic_text_reader.cppm` implements F03 §2/9 and the required retained
+`src/OpenCiv2.Formats/Classic/TextReader.cs` implements F03 §2/9 and the required retained
 state in Appendix A:
 
 - Reads contain at most 254 text-mode bytes. The owned memory adapter translates
@@ -70,7 +58,7 @@ text-mode cases needs an explicit contract or supplied service.
 
 The default comparison is deliberately partial: equal lengths and bytes need
 no folding, differing ASCII bytes use ASCII case equivalence, and an encountered
-unequal high-byte pair reports `comparison_unavailable`. Path uppercasing accepts
+unequal high-byte pair reports `comparison-unavailable`. Path uppercasing accepts
 ASCII only. Other comparison services can be supplied explicitly. This does not
 close the [F03/C01 non-ASCII comparison gap](m1-rule-content.md#encoding-and-remaining-comparison-gap)
 or turn the [ordered original observation](m1-original-text-observations.md) into
@@ -78,18 +66,18 @@ a complete folding table. Byte text and presentation encoding remain separate.
 
 ## Shared labels and startup
 
-`formats::classic::load_labels` returns an owned `state::LabelCatalog`, including
+`ClassicLabels.Load` returns an owned `LabelCatalog`, including
 home fallback and popup text. It closes its reader before returning and never
-accesses a live text pool. `state::install_labels` publishes catalog text into the
+accesses a live text pool. `LabelCatalog.Install` publishes catalog text into the
 shared pool, retaining popup bindings when their source is absent. Parsing errors
 leave installed labels untouched. Language selection and GAME-cache setup belong
-to `session::initialize_text`, independently of any label source.
+to `TextConfiguration.Initialize`, independently of any label source.
 
 
 ## Classic rule tables
 
-`formats/classic_rules.cppm` implements F03 §§3–7/9 and the declared Appendix A
-reference vocabulary. `RuleLoader::load` requests COSMIC, CIVILIZE, IMPROVE,
+`src/OpenCiv2.Formats/Classic/RuleLoader.cs` implements F03 §§3–7/9 and the declared Appendix A
+reference vocabulary. `RuleLoader.Load` requests COSMIC, CIVILIZE, IMPROVE,
 ENDWONDER, UNITS, TERRAIN, GOVERNMENTS, LEADERS, CARAVAN, ORDERS, DIFFICULTY and
 ATTITUDES in that order. The first three opens use an owned explicit filename;
 later sections reuse the selected improvement stream. Physical section order
@@ -106,14 +94,14 @@ and wonder expiry do not. Enabled cycles remain accepted. Unit abilities assign
 a zero-extended 16-bit result into the 32-bit logical field, clearing old high
 bits. Special terrain rows retain existing work/transformation values.
 
-Individual advance, improvement and unit readers support `keep_names`, including
+Individual advance, improvement and unit readers support `keepNames`, including
 default tails. Government definitions always change. Leader preservation consumes
 and stores the new strings, then restores each previous field individually;
 it neither selects a new current name nor installs default title pairs. Repeated
 optional title overrides use the last value. The loader retains each leader's
 usage count and city-name cursor.
 
-`state::RuleState` owns decoded definitions, text storage, logical name references,
+`RuleState` owns decoded definitions, text storage, logical name references,
 21 live leaders and the double-movement flag. Name references are full-width;
 custom-name status is an explicit flag. Preserving names does not allocate or
 publish discarded replacements. Appends retain existing views. Label rebuilds
@@ -122,10 +110,8 @@ The original parallel unit-name pointer table has no runtime consumer and is omi
 
 The separate F06 `StoredLeader` type preserves every byte of an imported record.
 Live name restoration consumes its sign markers, and live saving writes canonical
-markers without depending on UI text allocation history. The original consistency
-[report](conformance/reports/original-rule-labels-windows.json) is historical
-evidence about original ordinals. Its independent Python predictor remains in
-`tools/check_original_rule_labels.py`; the old C++ ordinal driver was removed.
+markers without depending on UI text allocation history. Original observations
+are recorded separately in [the text observation procedure](m1-original-text-observations.md).
 No original source/harness is an implementation input.
 
 Reference failures retain the specified prefix and report the module, code, row,
@@ -148,7 +134,7 @@ now applies admitted semantic input to the same retained state and pool.
 
 ## City-production preferences
 
-`formats::classic::load_city_preferences` follows F03 §8 incrementally. It
+`ClassicCityContent.LoadPreferences` follows F03 §8 incrementally. It
 clears the active count, retains unused list payload and NoDefend, checks
 NODEFEND presence, closes, and independently opens AUTOBUILD. It reads current
 improvement names 1…38 in ascending order, appends the first match, retains
@@ -160,7 +146,7 @@ The `RuleState` overload resolves current improvement label IDs through the
 shared pool. The definition-only overload remains available for direct semantic
 content inputs; it is not the process name-reference lookup.
 
-`formats::content::load_city_preferences` validates a selected resolved pack's
+`NativeCityContent.LoadPreferences` validates a selected resolved pack's
 `openciv2-city-preferences/1` component and its complete native rules. IDs must
 resolve to improvements 1…38; at most 32 entries are accepted. The validator
 rejects an ID whose classic name first matches an earlier improvement, including
@@ -168,7 +154,7 @@ case collisions. Empty/padded-space names cannot round-trip through the trimmed
 token and are rejected. Unestablished comparisons get a distinct diagnostic.
 The immutable result retains the selected rules and preference source receipts.
 
-`rules::apply_city_preferences` validates the complete native update before
+`CityPreferences.Apply` validates the complete native update before
 publication, then replaces the active prefix while retaining unused payload.
 `deprioritize` writes NoDefend=1; `unchanged` preserves its incoming value. This
 does not choose city production, modify automation flags or reset other settings.
@@ -178,7 +164,7 @@ The native command accepts the same explicit parent mounts, locale and gameplay
 profile gate as other content commands:
 
 ```powershell
-build/headless-fetch/oc2.exe content validate-preferences path/to/content.json --json
+src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-preferences path/to/content.json --json
 ```
 
 Its report format is `openciv2-city-preferences-validation/1`, with scope
@@ -202,12 +188,12 @@ Ordinary defaults use the supplied startup screen width and renderer animation
 availability, including the width-greater-than-999 boundary and herald gate.
 They assign the documented settings and empty the preference text. Multiplayer
 defaults empty the name/address strings and set custom timer text to `60`.
-Live text is owned `std::string`, binary settings are `bool`, and established
+Live text is owned `string`, binary settings are `bool`, and established
 choice meanings use named enums. Unknown legacy settings and padding are stored
 codec concerns. The logical startup inputs do not emulate the original native
 memory API or prescribe renderer allocations.
 
-`formats/preference_io.cppm` implements every field of F06's 72-byte ordinary
+`src/OpenCiv2.Formats/ClassicPreferences.cs` implements every field of F06's 72-byte ordinary
 item and 444-byte multiplayer item. Pure codecs decode owned transferred prefixes
 against explicit prior values. Successful stored items retain arbitrary scalar
 bits and unterminated fixed strings. Stored prefix helpers retain untransferred
@@ -217,10 +203,10 @@ zero-filled text tails and legacy settings, and rejects oversized or embedded-NU
 text without truncation. The second item starts at the actual cursor. Trailing
 file bytes are ignored.
 
-`session/classic_preferences.cppm` snapshots preferences and defaults, borrows a
+`src/OpenCiv2.Session/PreferenceFiles.cs` snapshots preferences and defaults, borrows a
 `FileStorage` provider, reads both items and closes before installing either result. Missing
 files default both records. Short items use their own fallback; close failure
-returns `PreferenceLoadStatus::input` with installed preferences unchanged.
+returns `PreferenceLoadStatus.Input` with installed preferences unchanged.
 Exceptions close once without publishing a prefix. Saves snapshot both records,
 require successful write and close, and attempt removal after reported output
 failure. Accepted configuration changes remain if persistence fails.
@@ -244,7 +230,7 @@ a successful original-file round trip. Its optional output is a separate new
 516-byte file; ignored trailing input is reported separately:
 
 ```powershell
-build/headless-fetch/oc2_preference_roundtrip.exe path/to/CIV2.DAT path/to/new-copy.dat
+tests/OpenCiv2.PreferenceRoundTrip/bin/Release/net10.0/OpenCiv2.PreferenceRoundTrip path/to/CIV2.DAT path/to/new-copy.dat
 ```
 
 On 2026-11-14 UTC, the driver read the existing 516-byte `CIV2.DAT` from the
@@ -255,24 +241,16 @@ SHA-256, were all
 `318a571574588fce7fda32feed0c84bd70b76988abe80867f041c92c92a5411a`.
 The local input is `build/original-text-runtime/CIV2.DAT`; the output is
 `build/original-preferences-roundtrip-2d22a52.dat`. Neither is committed. This
-checks original-file input/re-encoding through the new C++ path; it is not a new
+checks original-file input/re-encoding through the file codec path; it is not a new
 original-program execution or acceptance of edited preferences.
 
 Accepted setup rules, application startup binding, native preference presentation
 and original reload of an edited preference file remain separate work. Accepted
 in-game changes now use the operations described below.
 
-At the preference-persistence checkpoint, verification passed all 417 native
-CTests and 419 with SQLite enabled. Pinned WASM passed all six CTests, including
-395 portable Catch2 cases and 185,072 assertions. The 54 retained native/WASM
-X02 observations and consumed prefixes matched; F03 preference operations are
-not yet registered with X02. Pinned clang-format 20.1.8 passed.
-Logs are retained locally in ignored
-`build/preferences-{native,sqlite,wasm}-{build,ctest}.log`.
-
 ## Accepted in-game configuration
 
-`session/configuration.cppm` applies F03 section 8's accepted game, graphics and
+`src/OpenCiv2.Session/Configuration.cs` applies F03 section 8's accepted game, graphics and
 message choices to live session state and persists them through the real
 two-item preference writer. Cancellation leaves both records alone. Game options
 clear their eleven controlled bits, apply sound/music choices and the specified
@@ -283,7 +261,7 @@ resource warning. Message choices replace the entire disabled-message word,
 clearing unknown bits. Required child exceptions retain preceding effects;
 reported preference-save failures do not roll back accepted options.
 
-`rules/double_movement.cppm` implements the actual F03 table transformation.
+`src/OpenCiv2.Core` implements the actual F03 table transformation.
 It visits all 62 unit types and changes land movement, preserving byte wrapping
 when doubling and dividing the signed current byte with truncation toward zero
 when removing doubling.
@@ -313,28 +291,18 @@ their state is shared across calls rather than cloned into each operation.
 Ordinary game/graphics/message configuration also pins world references through
 external children, including configuration before a client session exists.
 
-The following counts describe the historical synchronous modal implementation.
-Current vote regressions cover the same option effects plus yielding, channel
-ownership, cancellation, exception cleanup and pending-world protection.
-
-Twenty-eight authored portable cases cover checkbox mappings, audio ordering,
-save failures, required-child stops, all 256 movement bytes, signed removal,
-authority changes during persistence, proposal rejection/acceptance, live callback
-mutations, raw simultaneous words, clock wrap and the 2400/2401 timeout boundary.
-The 3,881 assertions use specification-derived expectations and explicit child
-outcomes. They are not new original-game captures or actual network/modal/audio
-integration evidence. These operations are not yet registered with X02.
+Shared configuration and multiplayer-option cases cover checkbox mappings,
+audio ordering, save failures, required-child stops, all 256 movement bytes,
+signed removal, authority changes during persistence, proposal rejection and
+acceptance, live callback mutations, raw simultaneous words, clock wrap and the
+2400/2401 timeout boundary. They also test yielding, channel ownership,
+cancellation, exception cleanup and pending-world protection. Expectations are
+specification-derived with supplied child outcomes; actual network/modal/audio
+integration and X02 registration remain separate work.
 
 Application command/widget binding, P10 audio implementations, N02 option wire
 dispatch and replies, presentation and full F05 setup remain required owning
 work. Runtime and injected services outlive their pending operation.
-
-Verification passes all 445 native CTests and 447 with SQLite enabled. Pinned
-WASM passes all six CTests, including 423 portable Catch2 cases and 188,953
-assertions. The 54 retained native/WASM X02 observations and consumed prefixes
-remain identical. Pinned clang-format 20.1.8 passes for all 242 owned files and
-the eight staged C++ files. Logs are retained locally in ignored
-`build/configuration-{native,sqlite,wasm}-{build,ctest}.log`.
 
 ## Evidence and remaining work
 
@@ -366,5 +334,10 @@ consumer, GAME cache and browser persistence remain separate integration work.
 M1 closeout is limited to [M1-02](m1-closeout.md#m1-02-content-and-conversion-matrix)
 and regression checks for the implemented readers. The complete comparison
 profile, other native components, GAME-cache construction, application wiring
-and owning consumers remain M2–M5 work. This historical slice is not an additional
-M1 work list.
+and owning consumers remain M2–M5 work. The completed reader contract does not expand
+M1 into those later integrations.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

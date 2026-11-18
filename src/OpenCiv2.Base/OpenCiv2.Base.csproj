@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><PackageReference Include="RandN.Pcg32" /></ItemGroup>
+</Project>

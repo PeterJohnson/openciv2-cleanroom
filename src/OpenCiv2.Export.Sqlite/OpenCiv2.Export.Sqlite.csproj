@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Oc2Python Condition="'$(Oc2Python)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">python</Oc2Python>
+    <Oc2Python Condition="'$(Oc2Python)' == ''">python3</Oc2Python>
+    <Oc2SqliteDirectory Condition="'$(Oc2SqliteDirectory)' == ''">$(MSBuildThisFileDirectory)../../build/sqlite/native</Oc2SqliteDirectory>
+    <Oc2SqliteLibrary Condition="$([MSBuild]::IsOSPlatform('Windows'))">oc2_sqlite.dll</Oc2SqliteLibrary>
+    <Oc2SqliteLibrary Condition="$([MSBuild]::IsOSPlatform('OSX'))">liboc2_sqlite.dylib</Oc2SqliteLibrary>
+    <Oc2SqliteLibrary Condition="$([MSBuild]::IsOSPlatform('Linux'))">liboc2_sqlite.so</Oc2SqliteLibrary>
+  </PropertyGroup>
+  <ItemGroup>
+    <_Oc2IdentityInput Include="$(MSBuildThisFileDirectory)../../docs/m1-sqlite-export.md;$(MSBuildThisFileDirectory)../../tools/dotnet/build_sqlite.py;$(Oc2SqliteDirectory)/oc2-sqlite-build.json" />
+    <ProjectReference Include="../OpenCiv2.Query/OpenCiv2.Query.csproj" />
+    <Content Include="$(Oc2SqliteDirectory)/$(Oc2SqliteLibrary)" Link="$(Oc2SqliteLibrary)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(Oc2SqliteDirectory)/oc2-sqlite-build.json" Link="oc2-sqlite-build.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(Oc2SqliteDirectory)/SQLITE-NOTICE.txt" Link="SQLITE-NOTICE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="RequirePinnedSqlite" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(Oc2SqliteDirectory)/$(Oc2SqliteLibrary)')" Text="Build the optional native dependency first: python tools/dotnet/build_sqlite.py" />
+    <Exec Command="&quot;$(Oc2Python)&quot; &quot;$(MSBuildThisFileDirectory)../../tools/dotnet/build_sqlite.py&quot; --verify --output &quot;$(Oc2SqliteDirectory)&quot;" />
+  </Target>
+</Project>

@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../OpenCiv2.AutomationCases/OpenCiv2.AutomationCases.csproj" /></ItemGroup>
+  <Import Project="../../native/lua/Native.targets" />
+</Project>

@@ -1,6 +1,6 @@
 # F05 player and rules setup
 
-`session/player_setup.cppm` implements the section 4 wizard through accepted
+`src/OpenCiv2.Session/PlayerSetup.cs` implements the section 4 wizard through accepted
 city style and opponent overrides. The engine owns ordered mutations and retry
 destinations; injected services supply modal responses and the P03/P04 portrait
 child. The caller supplies the selected validated calendar and gameplay random
@@ -35,7 +35,7 @@ signed-byte overrides belong to world state and begin Absent.
 
 ## Validation and remaining integration
 
-Nineteen portable cases cover 1,919 assertions: retry destinations, immediate
+Shared player-setup cases cover retry destinations, immediate
 state/preference writes, all 192 combinations of advanced rule bits/source/old
 topology, entry-local retention, calendar binding, custom name/title/portrait
 ordering, byte limits and partial failure, exact controlled-choice consumption,
@@ -45,12 +45,6 @@ are authored from F05/F03/F01. The separate
 the newly clarified preference and name-dialog behavior; no original executable,
 screenshot or historical harness is an implementation-test input.
 
-Windows MSVC passes all 527 default-off and 529 SQLite-enabled CTests. The
-pinned WebAssembly build passes all six CTests, including 504 portable cases
-and 192,739 assertions. All 54 registered conformance observations match between
-native and WebAssembly. Logs are retained under
-`build/player-setup-*-final-build.log` and `build/player-setup-*-final-ctest.log`.
-
 The [new-world entry parent](m1-world-entry.md) now joins this wizard to size/map
 selection, parameters, preference saving, required rule reloads, inner
 initialization and the introduction list. Outer menu/session lifecycle and
@@ -59,3 +53,8 @@ The synchronous service API does not yet provide a
 cooperative command continuation or pending-wizard checkpoint restore. Complete
 M1 lifecycle, content admission and original-peer profile gates still require
 their owning integrations. This helper does not claim full new-game equivalence.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

@@ -2,7 +2,7 @@
 
 On 2026-11-14 the supplied original MGE executable ran through its normal Windows
 UI in `build/original-setup-runtime`. The
-[report](conformance/reports/original-player-setup-windows.json) records executable,
+[dated capture record](https://github.com/PeterJohnson/openciv2-cleanroom/blob/6e58a59e841760e7d3a5706e727d4bb8090bb224/docs/conformance/reports/original-player-setup-windows.json) records executable,
 data, screenshot and preference-file identities. The runtime inherits the earlier
 declared rule/text name probes; it is not a pristine installation. No
 reconstruction source, process-memory inspection, injected calls or historical
@@ -61,3 +61,7 @@ overrides, private publication timing, scenario calendars, invalid backing or al
 name-edit variants. Those tests retain specification provenance. The report lists
 both deliberately authored preference seeds and all before/after files, separate
 from original-produced outputs.
+
+The linked capture metadata is preserved at its recorded revision. It does not
+validate the current C# exporter; repeat the procedure with current binaries and
+record fresh source, executable and file identities for that claim.

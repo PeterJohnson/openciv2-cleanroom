@@ -9,12 +9,12 @@ and [F02 §§2–3](algorithms/F02-game-state-and-invariants.md).
 
 ## Ownership and lifecycle
 
-`oc2_session` depends on portable query/formats/game/base libraries. Local access
-uses C++ calls without a transport, GUI, Lua, SQLite or runtime assets.
+`OpenCiv2.Session` depends on portable query/formats/game/base libraries. Local access
+uses direct C# calls without a transport, GUI, Lua, SQLite or runtime assets.
 `SessionRuntime` is the trusted composition/engine surface; applications give
 clients only a `PlayerClient`. All calls run on one cooperative mutation lane.
 
-The runtime owns `state::GameState`: the existing stable entity pools, global,
+The runtime owns `GameState`: the existing stable entity pools, global,
 civilization and name records, retained mood workspace and map storage. It also
 owns saved multiplayer values, runtime local-human/resume/network-turn selectors,
 the hotseat participant mask and password flags, plus the ordered event collection
@@ -41,7 +41,7 @@ to the retained rule state; it does not itself admit or replace a session.
 Construction defaults are not claimed as original setup behavior.
 
 After admitted work finishes and required outboxes are transferred,
-`begin_client_session` replaces the client lifetime, revokes all old bindings,
+`BeginClientSession` replaces the client lifetime, revokes all old bindings,
 clears participant mappings and initializes independent gameplay and presentation
 contexts from explicit seeds. Their policy context name is `session`; cosmetic
 randomness remains frontend-owned. Rebinding or changing controllers does not
@@ -108,7 +108,7 @@ old clients. A new binding is a trusted owner action; the later mode/authority
 adapter must establish its current admission before issuing it.
 
 `own_units()` and `own_cities()` return owned projections with runtime/session,
-observer, publication revision and `owned_current` provenance. They enumerate
+observer, publication revision and `LiveProvenance.OwnedCurrent` provenance. They enumerate
 occupied records below the actual pool scan bound in slot order, preserve
 slot/token identity, and omit other owners and retained records outside that
 bound. They read no RNG context and do not recompute retained counts or workspaces.
@@ -131,19 +131,12 @@ broaden these queries. Offline save inspection remains a separate API/context.
 
 ## Validation and remaining work
 
-Eight authored Catch2 cases cover private grants, own-record filtering and stable
+Eight authored shared cases cover private grants, own-record filtering and stable
 order, non-mutation of state/RNG, owned observations, stale client copies,
 reassignment, removal, disconnect, session replacement/destruction, controller
 independence from human flags, retained process values and isolated virtual peers.
 They exercise the separate F02 entity-reset helper and independent presentation
 consumers, without claiming a completed F05 setup or original mode transcript.
-
-Windows MSVC passes 121 default-off and 123 SQLite-enabled CTests. The pinned
-Emscripten 4.0.23 build passes five CTests, including 114 portable Catch2 cases,
-46 X02 vectors and compiled-adapter rejection checks. The tools-only configuration also builds
-the session library without GUI, tests, dependency fetching, Python discovery
-or assets. Retained native/WASM reports were refreshed for build/source identity;
-X02 execution coverage is still F01/F02/W01, not these session cases.
 
 The [command contract](m1-command-contract.md) now implements descriptors,
 admission, owned ordering, effects/continuations, decisions and correlated results,
@@ -182,3 +175,8 @@ parameters, players, preference saves, ordered F03 reloads, inner initialization
 and the final advance list. W02, V01, balancing, acceleration and presentation
 remain required child operations; outer application/session admission and the
 menu loop remain separate.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

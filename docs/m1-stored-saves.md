@@ -9,12 +9,12 @@ admission, browser persistence and resumed gameplay remain open.
 
 ## Record and file boundary
 
-`state/civilization.cppm` supplies F02 §4 logical civilization/global values,
+`src/OpenCiv2.Core/State/Civilizations.cs` supplies F02 §4 logical civilization/global values,
 directed relationships, retained censuses, goals, names and leaders. Their
 construction defaults do not claim original initialization behavior. They have
 no packed host layout, database dependency or implicit repair operations.
 
-`formats/save_records.cppm` and `classic_save.cppm` implement F06 §§2–4,8:
+`src/OpenCiv2.Formats` and `src/OpenCiv2.Formats/ClassicFiles.cs` implement F06 §§2–4,8:
 
 - All current fixed records, including global/civilization/name/leader records,
   window layout, map views, scenario parameters, elimination history,
@@ -66,9 +66,9 @@ validation; rules and cross-record consistency still need their own checks.
 
 ## Ordered persistent records and load census
 
-`decode_stored_save` reads persistent globals, names and civilization records
-without changing a world. `formats::game_input` converts the owned record tree
-into common restoration operands. `session::install_game` applies scenario flag
+`ClassicFiles.DecodeStoredSave` reads persistent globals, names and civilization records
+without changing a world. `RestorationInput.Game` converts the owned record tree
+into common restoration operands. `GameInstallation.Install` applies scenario flag
 normalization, enemy count, loaded entity lifetimes and unit production/active
 censuses. These transformations have one owner regardless of the source format.
 No synthetic file callback publishes partial records or selects simulation work.
@@ -79,7 +79,7 @@ Stored leader records retain their signed markers for lossless codec output.
 The common input contains customization flags indexed by tribe; repeated saved
 tribes select the last record, while installation still applies the specified
 per-civilization toggles. Scenario names and portraits use the installed rules.
-`prepare_scenario_names` belongs to session save preparation. Export never
+`GameInstallation.PrepareScenarioNames` belongs to session save preparation. Export never
 substitutes a temporary player selector into the authoritative globals.
 
 ## Passwords and multiplayer load/save stages
@@ -109,7 +109,7 @@ gameplay changes during allocation.
 
 ## Ordered map summaries, history, layout and scenario parameters
 
-Stored map records convert to `world::MapInput`. Geometry and vector lengths are
+Stored map records convert to `MapInput`. Geometry and vector lengths are
 validated before allocation. The installer prepares new map storage and exchanges
 it only on success, preserving the target's fallback binding. Legacy stored
 layout coordinates widen during conversion; screen/scenario validity belongs to
@@ -140,7 +140,7 @@ traces are replaced by explicit admission and installation checks.
 
 ## Composed live save
 
-`session/classic_save.cppm` implements F06's production save boundary. It prepares
+`src/OpenCiv2.Session/ClassicGameFiles.cs` implements F06's production save boundary. It prepares
 an owned byte image before opening output. Accepted preparation updates the
 saved-current civilization and scenario knowledge/flags/names. Temporary
 hotseat masks, selected-player and resume values stay in the export context.
@@ -164,7 +164,7 @@ claim for this revision.
 ## Native files and rule context
 
 Native files remain owned noncopyable `CoreInput`/`CoreOutput` services, with
-exactly-once close and destructor cleanup. `io::ClassicFiles` provides binary
+exactly-once close and destructor cleanup. `OpenCiv2.IO.IFileStorage` provides binary
 files, case-independent lookup and an explicit working-directory context without
 changing the process directory. Low-level read/write tests still verify short
 prefixes and actual I/O errors independently of gameplay installation.
@@ -177,15 +177,15 @@ exercise real labels/rules files and load-edit-save-reload on disk.
 
 ## Save-menu caller and file-choice boundary
 
-`session/classic_file_choice.cppm` exchanges semantic file types, a suggested path,
+`src/OpenCiv2.Session/ClassicFileChoice.cs` exchanges semantic file types, a suggested path,
 title, extension and open/save requirements. Results distinguish accepted paths,
 cancellation and failure with an owned diagnostic. Only accepted valid paths are
 published. Native flags, handles, NUL-separated filters, capacities, return-byte
 conventions and extended-error queries are absent from the portable API.
 `FileChooser` is an owned virtual service with nonblocking begin/poll/cancel
-operations. M2 supplies ImGui and browser adapters for its semantic requests.
+operations. M2 supplies Avalonia and browser adapters for its semantic requests.
 
-`session/classic_save_menu.cppm` invokes the real writer only after acceptance.
+`src/OpenCiv2.Session/ClassicSaveMenu.cs` invokes the real writer only after acceptance.
 It supplies a familiar ruler/year suggestion and scenario/email notices as a UI
 choice, not a compatibility gate. Cancellation exits in every mode without saving
 or publishing draft paths; N04 owns any mandatory email-turn save flow. Active
@@ -194,7 +194,7 @@ entry stops N03 countdown and attempts one start on every exit, including errors
 revalidates/captures the live game at acceptance. Its `SessionActivity` guard
 requires cancellation before session replacement, without blocking command or
 deadline processing. The existing synchronous helper is an immediate-provider
-adapter over the same phases; F05 setup migration follows its eventual UI.
+adapter over the same phases; F05 setup UI remains a later integration task.
 
 Text services are pure presentation queries on captured values. Notices own their
 arguments, and neither filename suggestions nor notices write process text scratch.
@@ -210,7 +210,7 @@ application admission remain separate integration work.
 
 ## Accepted-file load caller
 
-`load_classic_dialog` keeps its guarded core-load operation alive through
+`ClassicLoadDialog.Load` keeps its guarded core-load operation alive through
 post-load event, sound, title and unit cleanup stages. For scenario text events,
 a source factory returns an optional owned `EventCatalog`. The common event
 installer prepares fresh strings/events and commits the collection on success;
@@ -223,45 +223,20 @@ notifications, home-directory return and real U01 cleanup keep their specified
 order. The owning S02 interpreter and N02/P10/V01 children remain separate work;
 these interfaces do not claim that those algorithms are complete.
 
-## Windows evidence — 2026-11-13 Pacific
+## Native codec checks
 
-Visual Studio 2026 / MSVC 19.51.36260.0, Windows SDK 10.0.26100.0 and CMake 4.4.3
-build the headless targets. This is a supported developer toolchain, **not** the
-pinned Windows CI clang-cl baseline. All 60 CTests pass: 57 Catch2 cases, two
-metadata checks and the twenty existing X02 vectors. The ten new Catch2 cases
-use independently authored specification-derived bytes and cover field offsets,
-signed boundaries, retained values, every required truncation prefix, optional
-blocks, repeated tribe records, event presence/order and inconsistent encodings.
-These are not newly registered X02 execution fixtures.
-
-The pinned Emscripten 4.0.23 / Clang 22.0.0 / CMake 3.31.10 toolchain passes all
-four headless CTests under Node 22.16.0 on this Windows host, including the same
-57 Catch2 cases and twenty vectors. Catch2 comes from the hash-verified native
-dependency download via an explicit source override. The retained native and
-WASM X02 reports have been refreshed from their rebuilt adapters. The existing
-Catch2 `__COUNTER__` warnings remain. The new tests exposed excessive stack use
-from several stored-save copies; the civilization collection now owns heap
-storage, copies remain independent, and the default 64 KiB WASM stack passes.
-
-The Python suite runs 99 tests successfully with two Windows symlink tests
-skipped because this host cannot create those links. Schema and gameplay-data
-checks pass. Neither these checks nor structural codec tests prove gameplay
-compatibility.
-
-A separate library-only build passes with tests, GUI, dependency fetching and
-Python discovery disabled, and an intentionally missing asset directory.
-Formatting uses the pinned clang-format 20.1.8. The repository hook is enabled
-in this clone. The Windows sandbox prevents MSVC's PDB service and temporary
-Git-hook commits; those validation commands run outside that sandbox.
+The C# codec and native file adapter are tested on Linux, macOS and Windows;
+see [validation status](validation/README.md). Structural codec tests establish
+stored representations, not complete gameplay compatibility.
 
 The native comparison driver can be run with:
 
 ```powershell
-.\build\headless-fetch\oc2_save_roundtrip.exe 'C:\Games\Civ2\EXAMPLE.SAV'
-.\build\headless-fetch\oc2_save_roundtrip.exe 'C:\Games\Civ2\EXAMPLE.SAV' 'C:\Scratch\NEW_OUTPUT.SAV'
+.\tests\OpenCiv2.SaveRoundTrip\bin\Release\net10.0\OpenCiv2.SaveRoundTrip.exe 'C:\Games\Civ2\EXAMPLE.SAV'
+.\tests\OpenCiv2.SaveRoundTrip\bin\Release\net10.0\OpenCiv2.SaveRoundTrip.exe 'C:\Games\Civ2\EXAMPLE.SAV' 'C:\Scratch\NEW_OUTPUT.SAV'
 ```
 
-It reads the input, decodes/re-encodes it in C++, compares every byte and prints
+It reads the input, decodes/re-encodes it with the C# codec, compares every byte and prints
 structural metadata. It also compares the isolated auxiliary load/write stages
 above, reporting `orderedAuxiliaryEqual`. With no output argument it writes no file. The optional
 output uses the native atomic publication adapter and refuses an existing
@@ -273,24 +248,24 @@ Against the original installation at `C:\Projects\civ2\Civ2`, all 21 current
 saved games in that directory reproduce their input bytes exactly, with source
 SHA-256 values unchanged. The original executable's hash matches the prior
 handoff. `ROME.SCN`, `TUTORIAL.SAV` and `WWII.SCN` are explicitly rejected as
-legacy versions. The [retained comparison report](conformance/reports/original-saves-windows.json)
+legacy versions. The [retained comparison report](validation/README.md)
 records versions, hashes, driver/build identity, source hashes and diagnostics.
 Original file contents remain external. None of these comparisons executes the
 original program or establishes that it accepted an edited export.
 
 A later [normal-UI Windows run](m1-original-text-observations.md) closes a bounded
-original-resume check: the original accepted a C++ byte-exact export of a fresh
+original-resume check: the original accepted a byte-exact export of a fresh
 single-player save, founded a city, processed a turn and saved at 3980 B.C. That
-save also reproduced exactly through C++, and the original accepted the second
+save also reproduced exactly through the codec, and the original accepted the second
 export with the city present. The report keeps full source/output identities
 and limitations. Eight inspection/driver CLI cases now include authored-file
 output, source preservation, existing-destination refusal and malformed-input
 cleanup. These checks do not implement the ordered load or live save operation.
 
 A subsequent [live-session Windows exchange](m1-original-live-save.md) uses
-`oc2_live_save HOME INPUT.SAV NEW_OUTPUT.SAV [--gold CIV VALUE]` with the real
+`OpenCiv2.LiveSave HOME INPUT.SAV NEW_OUTPUT.SAV [--gold CIV VALUE]` with the real
 F03 wrapper and F06 core. The original accepted a live export with a declared
-treasury edit, saved it, advanced a turn and reopened a second C++ live export
+treasury edit, saved it, advanced a turn and reopened a second live export
 of its resave. This closes a bounded current single-player edit/resume case;
 post-load admission, graphical resources and broader file/mode coverage remain
 open. The driver requires native tools/tests and a new explicit `.sav` or `.SAV`
@@ -304,3 +279,8 @@ codec/load/save regressions and the bounded M1-04 original-file checks. Legacy
 stored views, broader resumed gameplay edits, full application admission and
 original-peer sessions join M3–M6. Do not advertise a loaded-world view based on
 stored records or turn historical next steps into new M1 requirements.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

@@ -25,7 +25,7 @@ and contains no ZIP importer, downloader, auto-discovery or asset-code execution
 ## C2ATLAS1
 
 All index integers are unsigned little-endian 32-bit values, decoded explicitly
-without casting file memory to C++ structs.
+without casting file memory to runtime records.
 
 | Offset | Bytes | Meaning |
 | --- | --- | --- |
@@ -54,8 +54,8 @@ check every PNG chunk/CRC, validate proxy semantics or allocate textures.
 
 M2 should expose a portable read-only catalog of semantic IDs, logical/physical
 size, palette and encoded image bytes. Select and pin an independent PNG decoder,
-apply decoded-pixel budgets before allocation, then pass decoded pixels to SDL
-texture ownership in the frontend. The game and queries receive no SDL objects.
+apply decoded-pixel budgets before allocation, then pass decoded pixels to frontend-owned Skia resources. The game and queries
+receive no GPU objects or Avalonia controls.
 Test the parser using small owned valid and malformed containers; validate the
 real package separately from graphics-independent tests.
 
@@ -80,22 +80,13 @@ versions or hashes. Version 2.37 is our reproducible content selection, not a cl
 that these exact bytes produced the historical caches. Noto fonts in the asset
 checkout belong to authoring/review and are a different font source.
 
-`cmake/Fonts.cmake` acquires the TTF archive only for GUI builds, under the existing
-explicit-download/offline-override policy. It checks each face and license hash,
-then embeds the unmodified TTF bytes in `oc2_font_data`. This is data packaging,
-not build-time rasterization. The twelve faces total 5,349,360 bytes before
-executable/linker or web transfer compression. No installed OS font, Wine, bitmap
-font parser, Python generator or graphics checkout is required. The complete
-upstream font notice is appended to the build's `THIRD_PARTY_NOTICES.txt`.
-
-The frontend registers these process-lifetime bytes with Dear ImGui 1.93.0's
-bundled `stb_truetype` rasterizer; ImGui does not own/free the embedded data.
-DejaVu Sans regular is the drawn UI default. Size/density-specific glyph atlases
-are generated on demand at runtime and uploaded through the SDL renderer backend.
-Widgets and custom ImGui draw lists use the same fonts, measurements and caches.
-Reuse glyphs across frames; DPI/zoom changes request the appropriate raster size,
-and renderer/context teardown destroys only the derived caches/textures. Native
-macOS/Windows menu bars retain platform typography.
+Avalonia owns frontend font measurement, rasterization and GPU caches. The current
+host uses the packaged Inter font; its SIL OFL license and dependency notices are
+verified during publication. DejaVu remains the designated graphics-content font
+input for M2, with exact face/license hashes in the asset inventory. Runtime font
+integration must keep immutable source bytes separate from size/density-specific
+caches and share text measurements between widgets and custom drawing. macOS
+native menus use platform typography; Windows/Linux menus use Avalonia.
 
 The asset release still contains `fonts.bin` (`C2FONTS2`) and `fonts_aa.bin`
 (`C2FONTAA`). They are opaque legacy package members, **excluded from the new
@@ -140,29 +131,18 @@ own semantic interaction and information. Replacement layout hints do not replac
 those contracts. Future sound/media additions need new manifest/schema entries,
 codec contracts and notices; they must preserve P10 completion/cancellation effects.
 
-## CMake and runtime integration
+## Runtime integration
 
-`OC2_ASSETS_DIR` is now a CMake cache path for an **explicit** approved source
-root or extracted package. For a GUI build, an invalid path fails configuration;
-a recognized directory enables the explicit `asset-check` target, requiring
-Python 3.9+ only for that opt-in development check. Example:
+Validate an explicitly acquired asset package from the repository root:
 
 ```sh
-cmake --preset desktop -DOC2_ASSETS_DIR="$HOME/project/openciv2-assets"
-cmake --build --preset desktop --target asset-check
 python3 tools/check_assets.py /path/to/extracted/runtime
 ```
 
-Supply the ordinary offline library overrides from the build guide as needed.
-A source root is compared to the inspected selection/metadata baseline. An
-extracted package is checked structurally and against its own inventory; use the
-pinned archive checksum before extraction for release identity. `python3
-tools/check_assets.py` without a directory validates repository metadata alone.
-
-This setting does not yet load, copy, preload or install assets. M2 will consume
-the validated data through a new reader, with immutable package receipts and a
-separate explicit scenario-content path. WASM packaging will stage the selected
-data into its virtual filesystem or fetch it asynchronously under the same
-manifest. There is no baked-in developer home path. Headless builds ignore
-`OC2_ASSETS_DIR` entirely, even when it names a missing path, and never require
-an asset checkout, Python, SDL or ImGui.
+Without a directory, the tool validates repository metadata only. Verify the
+pinned archive checksum before extraction; package inspection is not image/font
+decoding. M2 introduces the C# content loader and Avalonia resource ownership,
+explicit scenario selection and native/browser storage adapters. Browser packages
+must stage or asynchronously fetch selected immutable data under the same manifest.
+There is no baked-in developer path. Headless builds do not require a graphics
+checkout, installed fonts, display or rasterizer.

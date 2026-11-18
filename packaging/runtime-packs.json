@@ -1,0 +1,12 @@
+{
+  "version": "10.0.15",
+  "sha512": {
+    "linux-x64": "Ak6y3EEqwNT/ZL5WEAoGbjxju8MisXpnRxYRynRifotaKEadhhWk5/z2KTvNbnRyAvMqrbN21TSnJY4NxZShxQ==",
+    "linux-arm64": "uyFmBiC5sVKn7/EIraL/ZL7/4jbEi6FBvfnZ5yh5hkBN4vd+72Dgggfl+wVOSdkCQWKj0Nq/MSRYNYZFTmtgng==",
+    "osx-x64": "9C7IqzWTJkodw5bK4G+3XGCkwDeaTkG/sB5eNoFeOE5CdUDr40M+wykO5JcMr6iHaX1ilVoHxj6u6bRJAL7jTQ==",
+    "osx-arm64": "UDRfvR+u0bf/7cn/gbFxOG+2Py6pAGXHBK4p//mrEGJopfTQ6cohTPL7LCcXdyaaOSMw0ggYfUwKh5EyjzTQmg==",
+    "win-x64": "MEGAkRGHrAXYA2t/Lo0mDxH+/O5NLqgWTcVh70iOZJTpoOCL/jKfOgDqYoDi3W9WcnviL4DhMl+5lWC8cxttSw==",
+    "win-arm64": "EJ1Qv3iyGDMmnHAOVHiRwDXYCGTLO1Jq0+EnNnqLh6fWunT5Xz1MZA5v0BPWDjqGUuE9Z/V0xm3E8WvEzAtYmA==",
+    "browser-wasm": "f86GTdEhWupPFJHDoeZdcqIg8CAlX7M57UEfyEB3bWNO83vZQQtPirOhdHxM533RVRtkt/zjtPqaTDzZ+EWTWA=="
+  }
+}

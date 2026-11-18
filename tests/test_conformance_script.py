@@ -7,7 +7,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 import conformance_script as script
-import run_conformance as runner
+import conformance as runner
 
 
 def fixture(name):

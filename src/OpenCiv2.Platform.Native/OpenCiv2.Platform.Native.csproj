@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
+    <ProjectReference Include="../OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" />
+  </ItemGroup>
+</Project>

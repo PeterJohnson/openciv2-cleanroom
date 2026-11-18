@@ -12,7 +12,7 @@ DRIVER = Path(sys.argv.pop(1)).resolve()
 class PreferenceDriverTests(unittest.TestCase):
     def run_driver(self, *paths):
         return subprocess.run([str(DRIVER), *(str(p) for p in paths)],
-                              capture_output=True, text=True)
+                              capture_output=True, text=True, encoding="utf-8")
 
     def test_complete_items_and_ignored_trailing_bytes(self):
         with tempfile.TemporaryDirectory(prefix="oc2-preferences-") as temporary:

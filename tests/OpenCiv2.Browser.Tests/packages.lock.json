@@ -1,0 +1,114 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0-browser1.0": {
+      "Microsoft.NET.ILLink.Tasks": {
+        "type": "Direct",
+        "requested": "[10.0.15, )",
+        "resolved": "10.0.15",
+        "contentHash": "u0WnRcZgBZYHlVFpbe/3Adpmb9rmNJ8/fmEwqc/xjB7fFppq+gfaLJd3Sdaw+J02zV0eP/T9dneQ3Dv5jWw6bw=="
+      },
+      "Microsoft.NET.Sdk.WebAssembly.Pack": {
+        "type": "Direct",
+        "requested": "[10.0.15, )",
+        "resolved": "10.0.15",
+        "contentHash": "7CKLQNBPbCtKGba+OljoWAi4awMyM5E6ORtqkW5avCfNd8beVf9zNmyha3JZT0vztXJnKgdjUOAV5tvqZvmXTQ=="
+      },
+      "RandN.Core": {
+        "type": "Transitive",
+        "resolved": "0.5.0",
+        "contentHash": "OhiLvvC2lQyZPnBnNOTAJz9Q57wwx8gWI9wmTLIxMYJAL+lC+kmsQIqJtvDAemITL2IaQ3zfvKAVJd1AQDy4IA=="
+      },
+      "openciv2.base": {
+        "type": "Project",
+        "dependencies": {
+          "RandN.Pcg32": "[0.5.0, )"
+        }
+      },
+      "openciv2.console": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "openciv2.contracts": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "openciv2.core": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )",
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "openciv2.formats": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.IO": "[1.0.0, )"
+        }
+      },
+      "openciv2.foundationcases": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )",
+          "OpenCiv2.Console": "[1.0.0, )",
+          "OpenCiv2.Contracts": "[1.0.0, )",
+          "OpenCiv2.IO": "[1.0.0, )",
+          "OpenCiv2.Network": "[1.0.0, )",
+          "OpenCiv2.Query": "[1.0.0, )",
+          "OpenCiv2.Session": "[1.0.0, )",
+          "OpenCiv2.ViewModels": "[1.0.0, )"
+        }
+      },
+      "openciv2.io": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "openciv2.network": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.IO": "[1.0.0, )"
+        }
+      },
+      "openciv2.query": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.Formats": "[1.0.0, )"
+        }
+      },
+      "openciv2.session": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.Formats": "[1.0.0, )",
+          "OpenCiv2.Network": "[1.0.0, )",
+          "OpenCiv2.Query": "[1.0.0, )"
+        }
+      },
+      "openciv2.viewmodels": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "RandN.Pcg32": {
+        "type": "CentralTransitive",
+        "requested": "[0.5.0, )",
+        "resolved": "0.5.0",
+        "contentHash": "rbvbu9rbGgWzKA9Ni2XPNKUWwvZKpD520K+K47ARST+RQCfrpy36Ej8zyLJo2GymYjZCXlBlY354WG6s2TdvYg==",
+        "dependencies": {
+          "RandN.Core": "[0.5.0, 0.6.0)"
+        }
+      }
+    },
+    "net10.0-browser1.0/browser-wasm": {}
+  }
+}

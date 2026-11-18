@@ -1,7 +1,7 @@
 # F05 premade-world preparation
 
 Status: the accepted-file premade path now composes the real F06 raw-map reader
-with F05 section 3 preparation in `session/premade_world.cppm`. It returns Premade
+with F05 section 3 preparation in `src/OpenCiv2.Session/PremadeWorld.cs`. It returns Premade
 Cylindrical or Premade Flat for the later setup wizard; the shared source type
 also includes Generated. The native chooser and outer menu remain separate
 interactions.
@@ -58,16 +58,6 @@ authored 4,000-tile map with every radius byte set to `0xff`; the original saved
 every radius byte as zero before the first human action, with no cities present.
 The report distinguishes that whole-path result from isolated preparation tests.
 
-Fifteen portable premade cases pass 715 assertions; one native filesystem case
-adds 14 assertions. Full verification passes 494 native CTests and 496 with
-SQLite enabled. Pinned Emscripten 4.0.23 passes six CTests, including 471 portable
-Catch2 cases and 190,658 assertions. All 54 registered native/WASM X02 results
-and consumed prefixes agree; this F05 path is not yet registered in X02.
-Pinned clang-format 20.1.8 formatted 252 owned files. The F05 inventory hash
-reflects the reviewed radius-byte clarification. Local final logs are
-`build/premade-world-{native,sqlite,wasm}-final-build.log` and
-`build/premade-world-{native,sqlite,wasm}-final-ctest.log`.
-
 Premade preparation stops before W02. Terrain finalization, region/connectivity
 rebuilding and start-location selection remain required. The
 [player/rules wizard](m1-player-setup.md) and [new-world entry parent](m1-world-entry.md)
@@ -75,3 +65,8 @@ now compose this path. Outer menu/session lifecycle,
 V01/F05 creation/placement/balancing/acceleration and application
 interaction binding remain required. These tests do not establish a playable
 generated world or complete M1.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

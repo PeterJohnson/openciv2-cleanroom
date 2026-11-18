@@ -1,6 +1,6 @@
 # F05 inner new-game initialization
 
-`SessionRuntime::prepare_new_game` now precedes this inner helper. It replaces
+`SessionRuntime.PrepareNewGame` now precedes this inner helper. It replaces
 the world, clears mutable rule/text/fallback state and revokes old clients after
 admitted commands are complete/cancelled and required outboxes drained. F05 entry
 also clears loaded-file scratch. The inner helper preserves only current-attempt
@@ -8,7 +8,7 @@ map/setup data; it must not be used as a standalone boundary between games.
 The fresh-game equivalence tests supersede earlier second-game retention claims.
 
 Status: the section 5 initialization parent is implemented in
-`session/new_game.cppm`, with required civilization-creation and start-balancing
+`src/OpenCiv2.Session/NewGameInitialization.cs`, with required civilization-creation and start-balancing
 children. This is not a complete setup wizard, generated world or playable
 starting position. The [M1 audit](m1-validation.md) retains those obligations.
 
@@ -72,19 +72,14 @@ gameplay choice ordering. Active-client tests verify publication and retained
 leases; an inactive runtime verifies that initialization does not require client
 admission. Supplied child outcomes are not V01 or balancing implementations.
 
-The 15 new cases pass 471 assertions on Windows and WASM. Full verification passes
-460 native CTests and 462 with SQLite enabled. Pinned Emscripten 4.0.23 passes
-all six CTests, including 438 portable Catch2 cases and 189,424 assertions.
-All 54 retained native/WASM X02 observations and consumed prefixes match; these
-reports still cover the registered F01/F02/W01 operations. Pinned clang-format
-20.1.8 formatted all 245 owned files and checked the four staged C++ files.
-Local ignored logs are `build/new-game-{native,sqlite,wasm}-build.log`,
-`build/new-game-{native,sqlite,wasm}-test-build.log` and
-`build/new-game-{native,sqlite,wasm}-ctest.log`.
-
 The [world-size and parameter helpers](m1-world-setup.md) are now implemented
 separately. The [new-world entry parent](m1-world-entry.md) now composes them with
 the player wizard and this initializer. The outer new-session/menu boundary,
 complete V01 creation, F05 placement/balancing/acceleration,
 application composition and X02 registration remain separate required work.
 No new original-program observation is claimed by these tests.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

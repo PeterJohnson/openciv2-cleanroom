@@ -48,10 +48,9 @@ The new UI uses the DejaVu Sans, Serif and Sans Mono families identified by the
 asset notice, rasterized at runtime. Their exact historical cache-source versions
 are unknown. We separately pin the upstream DejaVu **2.37** TTF archive, all twelve
 regular/bold/italic/bold-italic faces and their license in [fonts.json](fonts.json).
-The shell embeds the verified TTF data and uses ImGui's runtime rasterizer, with
-no graphics-pack dependency. See the [font contract](asset-format.md#truetype-fonts-and-runtime-rasterization).
-The build appends the full upstream font notice to its software notices. Font
-hashes are checked even for explicit local source overrides.
+The Avalonia host currently uses packaged Inter with full font notices. The
+DejaVu selection remains the graphics-content input for M2 integration; frontend
+rasterization and caches use Avalonia/Skia. Headless tools require no fonts.
 
 ## Standalone content and classic compatibility
 
@@ -86,7 +85,7 @@ save/wire formats. Track user-import provenance after conversion as well.
 The [first-wave formats](gameplay-format.md) and [shipped defaults](../../data/gameplay/classic-mge-5.4.0f/README.md)
 cover calendar, spaceship, government, difficulty, combat and scoring values
 previously fixed in the executable. Schemas, source pins and an offline developer
-loader validate these complete component scopes. Portable C++ loading now
+loader validate these complete component scopes. Portable C# loading now
 produces immutable typed values with classic/custom profile gates; owning
 gameplay consumers and session integration remain open. The [assessment](built-in-gameplay-data.md)
 tracks later candidates; further component extraction is deferred until
@@ -106,7 +105,7 @@ claim.
 | Sound, music and movies | No runtime sound/media set is present in the approved graphics package. | M2/M5: extend the asset data contract and notices when authored audio arrives; preserve P10 completion/skip semantics with media disabled. |
 | Classic saves/maps/scenarios and imported graphics/text | User inputs, not a source of automatically redistributable stock content. Never scan unrelated directories or silently replace custom content. | M1-04: fixed file corpus and current-export checks; M2–M6: wider content, formats and mode interoperability. |
 | X02 foundation vectors | 57 authored F01/F02/W01 fixtures with hashes/provenance in the registry. No original execution claimed. | M1-03: fixed review/execution denominator; later operation families join their owning milestones. |
-| Shell and metadata test data | Authored Catch2 cases and temporary synthetic metadata/pack containers in `tests/`. No original assets or full font payloads. | Extend as contracts arrive; synthetic container acceptance is not glyph/PNG decoding evidence. |
+| Shell and metadata test data | Authored shared cases and temporary synthetic metadata/pack containers in `tests/`. No original assets or full font payloads. | Extend as contracts arrive; synthetic container acceptance is not glyph/PNG decoding evidence. |
 | Original executable and installation resources | External comparison target only; absent from this checkout and release packages. | `original-access` below. |
 
 These gaps are tracked as `stock-content`, `runtime-font-platforms`, and
@@ -121,7 +120,7 @@ compatibility environment. Do not acquire an executable from reconstruction
 repositories, package it with this project, or link it into any target. Access is
 now available through the user-supplied Windows installation at
 `C:\Projects\civ2\Civ2` (2026-11-13). Its `civ2.exe` matches the target hash below.
-Seven original raw maps and 21 current saves passed C++ decode/encode with source
+Seven original raw maps and 21 current saves were used in recorded decode/encode observations with source
 preservation. Later isolated Windows runs captured original LAN discovery/ID
 responses and [actual acceptance of two byte-preserving save exports](../m1-original-text-observations.md),
 including original city founding and resave between them. These are bounded

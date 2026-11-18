@@ -8,7 +8,7 @@ session admission remain separate work. The [M1 audit](m1-validation.md) records
 
 ## Operation and state
 
-`city::default_name` implements C01's [default naming contract](algorithms/C01-city-lifecycle-and-ownership.md#default-city-naming).
+`CityNames.DefaultName` implements C01's [default naming contract](algorithms/C01-city-lifecycle-and-ownership.md#default-city-naming).
 It captures the city's owner and resolves the magnitude of that owner's current
 leader plural-label ID once, retaining the resulting section/selector text.
 The resolver receives 32768 for the signed-16 value −32768. It does not assume
@@ -32,7 +32,7 @@ founding prompt; those are distinct C01 caller steps.
 
 ## Classic and native providers
 
-`formats::classic::city_name_provider` uses the supplied F03 reader and directory
+`ClassicCityContent.LoadNames` uses the supplied F03 reader and directory
 state. It tries the retained civilization section with an explicit CITY filename,
 then retries from home on failure. Successful selection leaves the working
 directory at home. It reads whole trimmed lines, stopping on an empty line or
@@ -47,7 +47,7 @@ bounded error. A blank/STOP terminator before EOF supports normal exhaustion.
 Cursor 255→0 performs no name-line reads and publishes the live line left by
 section lookup, normally the actual matching header with its stored spelling.
 
-`formats::content::load_city_names` uses pinned jart/json.cpp to validate the
+the native city-name loader uses System.Text.Json to validate the
 selected `openciv2-city-names/1` component and its complete native rules. It keeps
 ordered proposals, duplicate city names, explicit plural selectors and nullable
 fallback storage. It rejects ambiguous selectors, non-reversible Windows-1252,
@@ -71,7 +71,7 @@ it does not substitute Unicode folding or the Windows host locale.
 ## Validation command and evidence
 
 ```powershell
-build/headless-fetch/oc2.exe content validate-names path/to/content.json --json
+src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-names path/to/content.json --json
 ```
 
 The command accepts explicit parent mounts, locale selection and `--require-classic`.
@@ -103,3 +103,8 @@ now operates on the same live leader bindings. Application startup/GAME-cache
 construction and session/city-creation integration join M3/M4. CITY conversion
 and receipts pass [M1-02](m1-content-conversion.md#m1-02-acceptance-evidence);
 original-file evidence is bounded separately by M1-04.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

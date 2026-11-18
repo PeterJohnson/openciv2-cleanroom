@@ -1,147 +1,99 @@
-# Conformance inventory
+# Conformance inventory and execution
 
-M0 established the checked metadata. M1 now executes twenty-nine F01, eighteen F02 and
-ten W01 [X02 version 3 fixtures](../algorithms/conformance/) through real C++
-operations on native and WASM. The [bounded runner](../m1-foundations.md) checks
-pure mappings, keyed sampling and policy replay, stateful token/reservation leaves
-and scalar geometry. F02 city dispatch additionally exercises ordered supplied-child
-actions, nested real entries and unresolved-input prefixes. The C03 pipeline is an
-explicit substitute; its gameplay and normal callback schedule are not implemented
-by these fixtures. The [fresh-game adapter](../m1-fresh-game.md) adds three
-explicit reset/preservation projections over the real session boundary.
-Metadata validation does not execute gameplay.
+The inventory registers fifteen operation contracts, 32 state keys and all 65
+specification families. The C# adapter executes a bounded foundation selection of
+57 cases on native .NET and Chromium WASM. These are authored contract/policy
+vectors, not whole-game or original-peer compatibility evidence. See
+[current validation](../validation/README.md) for actual runs and platform gaps.
 
-[M1-03](../m1-closeout.md#m1-03-finite-conformance-and-review) freezes M1 review
-at the baseline 15 operation IDs and 57 fixture IDs, plus eight explicitly named
-Catch2/CLI evidence families. The ledger records long-term coverage gaps; a gap's
-M1–M7 label is not authorization to implement it all during M1. No new per-helper
-X02 adapter or full gameplay integration family is an additional closeout gate.
+The [registry](registry.json) records operations, state closure, supplied providers
+and reference fixture provenance. Its fixture execution fields make no runtime
+claim: source-bound execution reports come from `tools/dotnet/run_conformance.py`.
+The [selection](selection.json) identifies the 57 active cases: fifty controlled
+vectors and seven PCG32 replay variants. The reference MT replay vectors retain
+independent input provenance; they are not the current production RNG policy.
+
+The portable adapter is `tests/OpenCiv2.Conformance`; its native and browser hosts
+are `OpenCiv2.ConformanceAdapter` and `OpenCiv2.ConformanceBrowser`. It runs actual
+Core/Session code and never reads expected results. The independent Python
+fixture validator/comparator is `tools/conformance.py`.
+
+## Run the checks
+
+From the repository root:
 
 ```sh
 python3 tools/check_conformance.py
-python3 tools/check_assets.py
-python3 -m unittest discover -s tests -p 'test_*.py' -v
+python3 tools/dotnet/pcg_fixtures.py
+python3 tools/dotnet/run_conformance.py --report build/test-results/conformance-native.json --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net10.0/OpenCiv2.ConformanceAdapter.dll
 ```
 
-Use `python` on Windows. Python 3.9+ and the standard library suffice for the
-metadata checks. The existing formatter tests additionally use pinned
-clang-format. With Python available, CMake exposes `inventory-check` and CTest
-metadata tests; normal builds and headless Catch2 tests do not require Python.
-With testing and Python enabled, CTest also runs `conformance_foundations` and
-writes `conformance-results.json`. Its test-only adapter links the portable
-`oc2_session` dependency graph, never SDL. `conformance_sampler_rejections` additionally executes
-negative input and watchdog checks against the compiled native/WASM adapter.
-`conformance_script_rejections` checks ordered input failures, retained effects,
-event/provider/depth bounds and nested missing-result stops on both builds.
-`conformance_session_rejections` checks reset vectors, transport validation,
-every observed field and exact projection exclusions on both builds.
+Use the [test guide](../testing/README.md#x02-execution) for builds, browser runs,
+negative cases and native/browser comparisons. Metadata validation checks
+bookkeeping and does not execute gameplay. The C# runner verifies SDK/runtime,
+compiled inputs, fixtures/policy and invoked artifacts before accepting results;
+changes during execution prevent report publication. Fresh code needs a rebuild
+and fresh execution, not relabeled hashes from an older report.
 
-## Versioned registries
+## Registered scope
 
-[registry.json](registry.json) schema 1, inventory 5 contains:
+F01 covers pure mappings, sampling laws, controlled semantic choices and versioned
+PCG32 replay. F02 covers token allocation/reservation, supplied-child city dispatch
+and three fresh-game projections. W01 covers scalar map geometry. City dispatch's
+C03 child is explicitly supplied; neither that algorithm nor its normal gameplay
+callback schedule is implemented by these fixtures. Fresh-game projections retain
+their declared exclusions. See [the finite foundation contract](../m1-closeout.md).
 
-- All 65 specification families, exact file hashes, specification status and
-  separate registration status. This denominator counts documents, not behavior.
-- Six F01, five F02 and four W01 operation contracts, with typed
-  arguments/results, state closure, preconditions, callbacks, stop/event boundaries,
-  dependency edges and explicit
-  empty independence claims. All have C++ implementations and executable
-  adapters. `implementation: null` still means no implementation exists.
-- Nine F02 keys: two process token counters, the unit scan bound and its fixed
-  entry token view, eight recorded military counts, and the effective-human mask.
-  The shared city selection and whole happy/unhappy counters add three keys.
-  Three W01 keys cover dimensions and the current flat-world rule. Their type,
-  lifetime, ordering and reference rules are registered. Full pool
-  records and other retained workspaces still need registrations. `F01.randomContexts`
-  registers a complete reachable generator through policy v2 origin/position;
-  it is omitted in controlled-choice mode. Sampling events are conditional on
-  a nonconstant decision; their registered dependency edges apply when present.
-  Fresh-game observation adds sixteen selected keys and three explicit excluded
-  record groups, bringing the registry to 32 state keys. Its arrays cover all
-  backing slots, while its documented projection excludes other fields.
-- One explicitly supplied C03 child contract, with registered outputs and callbacks.
-  It has no gameplay implementation and does not count as an implemented operation.
-- Fifty-seven fixture identities/revisions/hashes and their provenance: 50
-  specification vectors and seven explicitly labeled implementation-policy
-  regression vectors, with a passing [native report](reports/f01-native.json)
-  and a separate [WASM report](reports/f01-wasm.json).
-  The target executable hash in a vector is not proof of access to that image.
+Operations declare typed arguments/results, preconditions, reads/writes, callbacks,
+supplied children, partial effects, stop boundaries, event dependencies and
+independence claims. State keys declare type, lifetime, ordering, references and
+publication. `implementation` names a current C# source file; `null` means no
+implementation. A supplied provider cannot also claim to implement its gameplay
+operation. Full pool/workspace registrations and complete gameplay remain future work.
 
-[coverage.json](coverage.json) uses X02 §8's required row fields and dispositions.
-Rows own the fifteen registered operation contracts. `evidenceEntries` identify the
-local specification path/hash and operation; no original function-address or
-source-fragment inventory is claimed. Do not follow the specs' reconstruction
-source links to fill these fields or extract/translate their harnesses into tests.
-Historical source-reference sections are provenance only. Specification
-clarification and independently captured original-game observations are the route
-for missing behavior/evidence. A future independently supplied source-coverage audit
-must remain distinguishable from this cleanroom operation inventory.
+The logical-value validator supports exact scalar tags, nested records, ordered
+arrays, f64 bits and bounded blob references. Accepting a value tag does not imply
+that every corresponding composite operation, external blob source or queued
+provider is implemented. Missing supplied values stop explicitly rather than
+falling back to RNG, clocks or guessed outputs.
 
-The ledger also records all G01–G23 integration families, with their required
-comparisons and no executed cases. Each gap has a bounded domain, known prefix,
-closure evidence and delivery milestone. A family description, registration,
-implementation, supplied vector and successful execution are separate facts.
-Never convert one into another or report a percentage over different denominators.
+The [coverage ledger](coverage.json) maps registered operations to X02 dispositions,
+comparison surfaces, evidence entries and bounded gaps. G01–G23 integration
+families remain unexecuted until their actual gameplay exists and has evidence.
+A document, registration, implementation, vector and passing execution are separate
+facts; do not report a percentage across those different denominators.
 
-The sampler cases cover all four F01 laws in each ownership domain, constants,
-reversed and wrapped ranges, endpoints, modulo bias, and replay at a known stream
-position. Replay uses the standard engine vector documented in the
-[random policy](../random-policy.md#portable-fixture-replay-contexts), not outputs
-captured from this adapter. This does not supply independent fixture review or
-an original-program observation. Context reconstruction is linear in the recorded
-position and bounded by the host watchdog; it is not a general session-save codec.
-
-The logical-value validator recognizes every X02 scalar tag, nested records and
-ordered arrays, including exact f64 bits and bounded blob references. Only the
-registered operation closures execute. Blob loading/hash resolution, other scripted
-providers/queues, invalid-access safe stops, projections and independence comparisons
-remain unsupported; accepting a tag does not imply those execution capabilities.
-
-The eight workspace fixtures cover absence, retained cached reads, signed32 wrap,
-selection before child entry, failure followed by output, nested cached/full calls,
-and unresolved results after committed effects. A provider request ID is
-`<call>/pipeline`; nested calls are `<parent>/deliver/<action-id>` with `~` and `/`
-escaped as `~0` and `~1`. Actions retain their listed order. The validator checks
-that schedule independently of the expected trace's order edges. Only completed
-provider returns count as consumed; a missing result retains its accepted request
-and earlier effects without fabricating returns or cleanup.
-
-The adapter reserves two event slots for a diagnostic snapshot and stop. Thus a
-normal trace needs its event count plus two available slots. Bounds are 10,000
-provider records, 10,000 actions per record and 64 active entry levels; event,
-provider-request and host-time limits remain fixture inputs. Budget exhaustion is
-an operational failure. It cannot pass as gameplay. The WASM test adapter reserves
-a 1 MiB stack so its depth guard can produce the same diagnostic prefix as native.
+Scripted city fixtures exercise absence, caching, wrapping, selection order,
+partial failure, nested entries and missing results. Provider request IDs are
+`<call>/pipeline`; nested calls use `<parent>/deliver/<action-id>` with JSON-pointer
+escaping. The validator checks schedules independently of expected event ordering.
+Only completed provider returns count as consumed. The adapter reserves two event
+slots for diagnostic snapshot/stop; limits include 10,000 provider records,
+10,000 actions per record and 64 active entry levels. Budget exhaustion is an
+operational failure, never a passing gameplay result.
 
 ## Updating an operation
 
-1. Read the owning repository spec. Register the actual arguments, result,
-   complete shared state closure, aliasing, callbacks, failure/partial effects,
-   stop boundaries, observation dependencies and justified independence domains.
-   Add every shared state key once, with its lifetime/order/reference rules.
-2. Add its coverage row with the X02 disposition, bounded domain, evidence,
-   comparison surfaces and concrete unresolved gaps. Split mixed dispositions.
-3. Author fixtures with independent provenance and pin their exact bytes and
-   owning spec hashes. Do not relabel implementation snapshots as original goldens.
-4. Set `implementation` to the actual repository entry file when it exists;
-   retain the operation ID independently of source layout. Add its callable
-   adapter and fixture validation; the current runner deliberately supports only
-   the registered F01/F02/W01 primitives and supplied-child workspace boundary.
-5. Only set execution status and `lastRun` after an actual run. Store its report
-   with implementation revision, fixture ID/revision/hash, spec hashes, policy,
-   platform and bounded observations, following X02. Metadata checks validate
-   fixture/spec/source identities, comparison scope, actual trace/result and
-   input consumption in the referenced foundation reports (retaining their initial
-   `f01-native.json` / `f01-wasm.json` filenames). Format version 2 also
-   checks the adapter's embedded compiled-source/build identity; the runner
-   rejects stale binaries before executing fixtures. Rebuild and rerun after source
-   changes; never edit an expected vector to make an implementation pass.
-6. Review spec/fixture changes before updating hashes. Bump `inventoryVersion`
-   when changing the inventory denominator; schema changes bump `schemaVersion`.
-   Run the checks above and the operation's Catch2/conformance tests.
+1. Read the owning repository specification. Register the admitted arguments,
+   results, full observable state closure, aliasing, callbacks, partial effects,
+   stop boundaries and justified ordering/independence. State keys have one owner.
+2. Add the coverage row with bounded domain, evidence, comparison surfaces and
+   concrete remaining gaps. Split mixed dispositions and preserve supplied-child
+   exclusions. The milestone label does not authorize every future algorithm.
+3. Author expectations independently, record provenance and pin exact fixture/spec
+   bytes. Do not relabel implementation snapshots as original-game observations.
+4. Implement the C# operation and adapter boundary, plus validation/rejection cases.
+   Set `implementation` to its current source and keep the operation ID stable
+   across internal refactors. Register portable regression cases in FoundationSuite.
+5. Run native/browser X02 and rejection suites and compare results/consumption.
+   Preserve source identities, invoked artifacts, SDK/runtime, input hashes and
+   report status. The inventory itself must not claim execution.
+6. Review contract/fixture changes before updating hashes. Update
+   `inventoryVersion` when changing the registered denominator and schema version
+   when changing its format. Independently verify any policy vectors; never edit
+   expected output merely to make an implementation pass.
 
-The validator rejects stale specification/fixture bytes, duplicate JSON keys,
-missing owners/anchors/state references/cases/gaps, cyclic event dependencies,
-inconsistent implementation statuses and execution claims without an adapter.
-These are bookkeeping checks, not a v3 gameplay fixture parser or compatibility
-claim. Original interoperability and integration cases remain mandatory.
+External source links and reconstruction harness names in specification provenance
+are not implementation/test inputs. Resolve missing behavior through the behavioral
+contract or independent original-game observations. Original-file/peer evidence and
+full integration checks remain necessary for compatibility claims.

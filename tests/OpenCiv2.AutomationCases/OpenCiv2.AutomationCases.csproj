@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../src/OpenCiv2.Automation/OpenCiv2.Automation.csproj" />
+    <ProjectReference Include="../../src/OpenCiv2.Session/OpenCiv2.Session.csproj" />
+  </ItemGroup>
+</Project>

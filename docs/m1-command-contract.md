@@ -1,7 +1,7 @@
 # M1 command and continuation contract
 
 Status: portable semantic command, interaction and authority-adapter foundations
-implemented in `oc2_session`, from [architecture §§4–5](architecture.md#4-commands-interactions-and-event-delivery).
+implemented in `OpenCiv2.Session`, from [architecture §§4–5](architecture.md#4-commands-interactions-and-event-delivery).
 No fake gameplay command is installed in production. The authored test operations
 prove the service contract; owning mechanics and classic mode loops must register
 their actual operations as they arrive. The [M1 audit](m1-validation.md) records completion of the finite foundation scope.
@@ -31,10 +31,10 @@ into an owned FIFO; it does not run the factory or imply completion. Multiple
 controllers of a participant share that ordered lane. Factories create explicit
 continuation objects with retained semantic state, not suspended native stacks.
 
-`advance_one()` consumes at most one queued input and resumes at most one
-continuation. A pending operation needs an explicit `continue_command`, decision,
+`AdvanceOne()` consumes at most one queued input and resumes at most one
+continuation. A pending operation needs an explicit `ContinueCommand`, decision,
 cancellation or deadline input; it is not automatically spun each frame.
-Recursive `advance_one` is rejected. An owning operation can call injected
+Recursive `AdvanceOne` is rejected. An owning operation can call injected
 services at its specified boundary, publish effects and reread the live world
 after a callback. This does not implement every X02 scripted reentry domain or
 replace the distinct F04/N03/N04 loops with a generic turn scheduler.
@@ -56,7 +56,7 @@ binding receives the complete prefix of any visible pending command once.
 `result()` explicitly returns an owned cumulative snapshot. Polling notifications
 never runs mechanics, and separate recipients still see only their own prompts.
 
-The trusted owner calls `retire_command` after consuming a terminal local result.
+The trusted owner calls `RetireCommand` after consuming a terminal local result.
 Retirement refuses pending commands, unread notifications on any live binding,
 untransferred requests, and incoming-peer duplicate receipts. It removes obsolete
 queued cancellations and delivery cursors together with the command. Already
@@ -83,7 +83,7 @@ access to queued notifications; an authorized replacement can observe and answer
 an existing pending interaction without rerunning the prefix.
 
 Player cancellation is permitted for an owned command or the recipient's
-cancellable interaction. The trusted engine also has `cancel_command` for the
+cancellable interaction. The trusted engine also has `CancelCommand` for the
 owning lifecycle/mode to supply cancellation after participant removal. This is
 an input to the continuation, not forced completion. Previously queued inputs
 retain FIFO order; cancellation delivered after completion cannot undo it.
@@ -103,7 +103,7 @@ requests do not reexecute; a completed duplicate can reissue its cached reply.
 Reusing a correlation with changed arguments or participant identity is rejected.
 
 Incoming results must match the waiting correlation, designated source and result
-schema. They enter a separate `apply_result` factory, never the request-execution
+schema. They enter a separate `CommandDefinition.ApplyResult` factory, never the request-execution
 factory. Duplicate results cannot execute or reroll work again. Failed/cancelled
 peer outcomes remain explicit terminal outcomes. The owning result operation is
 responsible for applying the received resolved values without drawing a new choice.
@@ -137,8 +137,7 @@ continuation persistence remain outside this profile.
 
 ## Validation
 
-Twelve authored command cases and eight existing session cases pass on Windows
-MSVC and WASM. They cover descriptor/access validation, owned FIFO inputs,
+Shared command and session cases execute on native .NET and WASM. They cover descriptor/access validation, owned FIFO inputs,
 acceptance versus completion, callbacks/live reads, cancellation and deadlines,
 private prompts and withdrawal, stale targets, replacement controllers,
 independent fake peers, result application without rerolling, duplicate handling,
@@ -149,20 +148,13 @@ live sampling arguments after a reply, presentation-consumer invariance, and a
 missing choice after a committed effect. These fake operations establish the
 foundation contract, not any particular classic gameplay selection rule.
 
-The full builds pass 121 default-off and 123 SQLite-enabled Windows CTests and
-all five WASM CTests (114 portable Catch2 cases plus metadata, 46 X02 vectors
-and compiled-adapter rejection checks). The tools-only build remains independent of GUI, assets, Python
-discovery and dependency downloads. Retained native/WASM reports were refreshed
-for build identity; these command scenarios are not yet registered X02 fixtures
-and are not original-program observations.
-
 ## Post-M1 integration interfaces
 
-Player code imports `session/client.cppm` and `session/command_types.cppm`;
-`query/live_records.cppm` contains owned observations without exposing entity pools.
-The engine retains `runtime.cppm`, operation definitions and mutable contexts.
-`tools/check_boundaries.py` follows transitive includes, and CMake rejects graphical
-or platform dependencies in portable targets.
+Player code imports `src/OpenCiv2.Contracts/Clients.cs` and `src/OpenCiv2.Contracts/Commands.cs`;
+`src/OpenCiv2.Contracts` contains owned observations without exposing entity pools.
+The engine retains `src/OpenCiv2.Session/SessionRuntime.cs`, operation definitions and mutable contexts.
+`tools/dotnet/check_graph.py` checks transitive project/package boundaries;
+public-API tests reject leaked mutable engine types.
 
 `ClassicSaveOperation` is the first asynchronous lifecycle workflow. Its owned
 `FileChooser` interface has nonblocking begin/poll/cancel operations. A pending
@@ -174,23 +166,10 @@ notice/snapshot values. Cancellation, chooser exceptions and destruction dismiss
 the chooser and attempt one restart after a completed timer stop. The synchronous
 headless wrapper drives these same phases through an immediate chooser.
 
-The application still needs ImGui/browser implementations of this interface in
-M2. The broader F05 wizard migration accompanies its M3 UI; its existing supplied
-interaction tests and semantic ordering remain intact.
+M2 supplies desktop/browser file-choice adapters for this interface. The F05
+wizard UI must preserve the implemented supplied interactions and semantic order.
+The bounded [application host](application.md) already proves command confirmation,
+cancellation, observer filtering and console input over the same scoped client.
 
-Post-M1 refactor validation (working tree based on `91a4c82`, 2026-11-14):
-577 native CTests, 577 ASan/UBSan CTests and all eight WASM CTest targets pass;
-the WASM portable suite contains 552 cases. All 118 Python tests pass, including
-transitive boundary rejection tests. A 1,000-effect regression delivers exactly
-1,000 effect entries to each owner lease; cumulative snapshots remain available.
-Pending workflow checks cover cancellation/destruction, chooser failure,
-replacement/restore rejection, accepted live-state changes, deadlines and peer
-replies. LeakSanitizer cannot run under this environment's tracer; sanitizer
-execution uses `ASAN_OPTIONS=detect_leaks=0`.
-
-The desktop application and native storage library build with
-`OC2_BUILD_TOOLS=OFF`. New [native](conformance/reports/post-m1-native.json) and
-[WASM](conformance/reports/post-m1-wasm.json) reports bind the same 57 fixture
-observations and consumed prefixes to current compiled inputs. The original M1
-hosted/original-game evidence remains unchanged and revision-bound; these local
-checks do not claim a new Windows/macOS or original-game run.
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md).

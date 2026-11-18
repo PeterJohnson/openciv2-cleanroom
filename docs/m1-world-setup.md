@@ -2,7 +2,7 @@
 
 Status: F05 section 3's generated-size and customized-parameter helpers, and
 section 2's five-draw parameter path and post-selection dispatch, are implemented
-in `session/world_setup.cppm`. The owning size/dialog/file interactions are explicit
+in `src/OpenCiv2.Session/WorldSetupOperations.cs`. The owning size/dialog/file interactions are explicit
 services. This increment does not generate terrain or complete the player wizard.
 
 ## Implemented behavior
@@ -43,7 +43,7 @@ alternative. Accepted preference edits retain their documented effects.
 
 ## Ownership and boundaries
 
-`GameState::world_setup` retains working dimensions and five parameters separately
+`GameState.WorldSetup` retains working dimensions and five parameters separately
 from the currently allocated map. The size helper consumes its current width as
 U and leaves W; it neither halves nor resets it at entry nor reallocates map storage.
 The outer setup composition must supply the retained working dimensions at that
@@ -58,8 +58,7 @@ admission, lease changes or implicit new-game resets occur here.
 
 ## Evidence and remaining work
 
-Eighteen portable cases cover 519 assertions on Windows and WASM: preset/area
-boundaries,
+Shared native/browser world-setup cases cover preset/area boundaries,
 decimal reduction and rejection, custom retries and cancellation, unavailable
 content, retained dimensions, normalized persistence, distinct random orders,
 all land-mass/form residue pairs, cancellation at each parameter, missing choices,
@@ -69,15 +68,6 @@ confirm repeated custom defaults, acceptance of 65586×80, normalized preference
 remembered preset behavior and Random preserving preferences. Their report
 explicitly distinguishes observed outcomes from private-state/specification tests.
 
-Full final verification passes 478 native CTests and 480 with SQLite enabled.
-Pinned Emscripten 4.0.23 passes all six CTests, including 456 portable Catch2
-cases and 189,943 assertions. All 54 registered native/WASM X02 results and
-consumed prefixes still match; setup is not yet registered in X02. The F05
-inventory hash was updated after reviewing the specification clarifications.
-Pinned clang-format 20.1.8 formatted 249 owned files. Local ignored final logs
-are `build/world-setup-{native,sqlite,wasm}-final-build.log` and
-`build/world-setup-{native,sqlite,wasm}-final-ctest.log`.
-
 The [premade path](m1-premade-world.md) now composes its real F06 reader and
 preparation. The [player/rules wizard](m1-player-setup.md) and
 [new-world entry composition](m1-world-entry.md) now join these helpers.
@@ -86,3 +76,8 @@ W02 generation, V01 creation, F05 placement/balancing/
 acceleration, application interaction binding and X02 setup registration remain
 required work. The [inner initializer](m1-new-game.md) is already implemented
 with required creation/balancing children. The later [finite audit](m1-validation.md) closes M1; these supplied children remain later gameplay work.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

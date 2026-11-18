@@ -1,18 +1,13 @@
 # M1 initial foundations
 
-Historical foundation-slice evidence follows. M1 is now complete under the
-[finite closeout audit](m1-validation.md). The subsequent [stored-save slice](m1-stored-saves.md)
-adds civilization/global records and full current stored-file decoding, with
-Windows validation. [Stored inspection](m1-inspection.md) adds owned queries and
-the native `oc2` CLI. [Gameplay content loading](m1-content-runtime.md) adds strict
-JSON admission and typed operands for the six gameplay components. The Linux/WASM
-evidence below describes the earlier slices. The reviewed
-[fresh-game boundary](m1-fresh-game.md) now has registered reset/preservation
-projections and broader lifecycle integration tests.
+M1 is complete within its [finite scope](m1-validation.md). The C# foundations
+support the [stored-save codecs](m1-stored-saves.md), [inspection CLI](m1-inspection.md),
+[gameplay content loading](m1-content-runtime.md) and [fresh-game boundary](m1-fresh-game.md).
+Execution evidence is recorded in [validation status](validation/README.md).
 Implemented foundations include F01 numeric
-primitives and isolated random contexts in standard-library-only `oc2_base`,
-F02 entity records/pools and W01 map foundations in `oc2_game`, initial F06 codecs
-in `oc2_formats`, and a bounded developer runner for fifteen registered X02 operations. No reconstruction
+primitives and isolated random contexts in `OpenCiv2.Base`,
+F02 entity records/pools and W01 map foundations in `OpenCiv2.Core`, initial F06 codecs
+in `OpenCiv2.Formats`, and a bounded developer runner for fifteen registered X02 operations. No reconstruction
 source, legacy harness, original executable or asset checkout is a code input.
 
 ## Implemented boundary
@@ -24,12 +19,11 @@ source, legacy harness, original executable or asset checkout is a code input.
   native-integer conversions.
 - F01 §§3–4: primary-code modulo bias and the exact binary64 secondary unit/range
   mapping, including reversed, equal and accepted wrapped intervals. Separate
-  rounding points and disabled contraction preserve the specified evaluation;
-  non-nearest host rounding is rejected before a sampled operation advances.
+  rounding points preserve the specified evaluation under the normal .NET binary64 environment.
 - F01 §5: pure millisecond-to-game-tick and tick-to-map-pattern conversions.
   The library does not read a clock or decide when to reseed a map.
-- F01 §§2,6 and the architecture: [versioned random policy](random-policy.md)
-  using `std::mt19937_64` behind an owned, mockable raw-source interface,
+- F01 §§2,6 and the architecture: [versioned random policy](random-policy-pcg32.md)
+  using PCG32 behind an owned, mockable raw-source interface,
   explicit seeds, distinct gameplay/presentation-content/cosmetic context types,
   in-memory checkpoints, keyed controlled choices and bounded semantic traces,
   repeat/restore and isolation tests. No frontend links
@@ -50,54 +44,47 @@ source, legacy harness, original executable or asset checkout is a code input.
   The [record/codec handoff](m1-windows-handoff.md) documents the implemented
   boundary, external original-map comparisons and remaining save/session work.
 
-The fourteen registered adapters produce actual entry/return/exit traces,
+The fifteen registered adapters produce actual entry/return/exit traces,
 conditional random events for the four semantic sampling operations, and ordered
 provider/reentry/stop traces for F02's shared workspace entry with a supplied C03 child.
-`oc2_conformance_adapter` is a test executable, not a save-inspection CLI or game
+`OpenCiv2.ConformanceAdapter` is a test executable, not a save-inspection CLI or game
 console. It receives operation names and canonical typed input encodings; it
-never reads expected results. C++ implementations are identical under native
-and Emscripten builds.
+never reads expected results. C# implementations are identical under native
+and browser WebAssembly builds.
 
 ## Wrapping integer expressions
 
-`openciv::base::WrappingI32` in `base/arithmetic.cppm` owns a signed 32-bit value
-and defaults to zero. Explicit construction from an integer reduces modulo
-2^32 and takes the signed view, including for wider inputs. Floating-point and
-boolean construction are rejected. Explicit casts to `std::int32_t` and
-`std::uint32_t` expose the signed value or unsigned bit view respectively.
+`OpenCiv2.Base.WrappingI32` in `src/OpenCiv2.Base/WrappingI32.cs` is a readonly
+record struct with an `int Value`, defaulting to zero. Explicit conversions from
+`int`, `uint`, `long` and `ulong` take the signed low-32-bit view. Explicit casts
+to `int` and `uint` expose the signed value or unsigned bits.
 
-```cpp
-using openciv::base::WrappingI32;
-const auto result = (WrappingI32{value} * WrappingI32{multiplier}
-                     + WrappingI32{adjustment}) / WrappingI32{divisor};
-const auto stored = static_cast<std::int32_t>(result);
+```csharp
+using OpenCiv2.Base;
+var result = ((WrappingI32)value * (WrappingI32)multiplier
+              + (WrappingI32)adjustment) / (WrappingI32)divisor;
+int stored = (int)result;
 ```
 
-Addition, subtraction, multiplication and unary negation wrap at each operation;
-comparisons are signed. Division and remainder truncate toward zero and retain
-the helpers' `std::domain_error` for zero divisors or `INT_MIN / -1` (including
-remainder). Compound assignments have the same semantics and leave their target
-unchanged on failure. Mixed native-integer arithmetic/comparisons require an
-explicit conversion; there is no implicit boolean conversion.
-
-The overloads `clamp_ab`, `clamp_c` and `shift_signed` take and return wrapped
-values, preserving reversed bounds and the signed count convention. No shift
-operators are provided. Existing raw-integer helpers and floating-point sampling
-remain available. Apply the type where an algorithm specifies i32 arithmetic;
-IDs, container sizes and narrower conversion boundaries keep their own contracts.
-Its object representation is not a file or wire encoding.
+Addition, subtraction, multiplication and negation wrap at each operation;
+comparisons are signed. Division/remainder delegate to the explicit F01 helpers
+and reject zero or the unrepresentable minimum-integer/negative-one boundary.
+There are no implicit boolean conversions or shift operators. Use `Arithmetic`
+for the specified clamps and signed-variable-shift laws. Checked project defaults
+do not change these explicitly wrapping intermediates.
 
 ## F02 identity and reservation boundary
 
-`state/identities.cppm` defines distinct civilization/unit/city slots and unit/city
+`src/OpenCiv2.Contracts/Identities.cs` defines distinct civilization/unit/city slots and unit/city
 lifetime tokens. Zero tokens mean free records; any nonzero token is occupied,
 including values with the high bit set. `ProcessTokens` owns separate u32 counters
 starting at 1. Assignment returns the current counter and increments modulo 2^32,
 without skipping zero or searching for collisions. A process owner retains this
-object across games; independent peers own separate objects. Other process state
-and the actual new-game/load lifecycle remain unimplemented.
+object across games; independent peers own separate objects. `ProcessContext` retains preferences and tokens while
+`SessionRuntime.PrepareNewGame` replaces the world; the setup and load contracts
+define their bounded compositions.
 
-`reserve_unit_slot` accepts a read-only token view of exactly `[0, unit_end)` at
+`EntityAllocation.ReserveUnit` accepts a read-only token view of exactly `[0, unit_end)` at
 entry, the mutable exclusive scan bound, owner, recorded i16 military count, and
 effective-human mask. It first reuses the lowest free slot. Only extension checks
 the 2048-slot capacity, military count greater than 1948, and nonhuman bound 2040.
@@ -118,12 +105,12 @@ Seven new specification-derived fixtures cover initial/token-wrap/zero assignmen
 independent city assignment, first-hole reuse, extension and military-count refusal.
 Compact reservation fixtures label their retained-summary inputs accepted-off-nominal;
 their recorded counts deliberately exceed the small scanned populations.
-Catch2 additionally covers the 2039/2040/2047/2048 bounds, both sides of 1948,
+xUnit additionally covers the 2039/2040/2047/2048 bounds, both sides of 1948,
 effective-human bits, negative retained counts, invalid views and a caller-driven
 scan reset retaining records and token positions. These are leaf-operation tests,
 not full U01 creation, C01 city reservation, deletion or F06 token-remapping tests.
 
-The subsequent record slice adds five pool/workspace and eleven codec/I/O Catch2
+The subsequent record slice adds five pool/workspace and eleven codec/I/O xUnit
 cases. These cover deletion finalization, entity reset portions, current/legacy
 lifetime renewal, full unit/city payloads, explicit little-endian field vectors,
 retained bytes, truncated records and short-item publication prefixes. Full
@@ -131,7 +118,7 @@ creation/deletion policy, civilization/global records and session load remain op
 
 ## W01 geometry and map boundary
 
-`world/geometry.cppm` provides rectangular lookup, canonical row-order coordinates,
+`src/OpenCiv2.Core/Geometry.cs` provides rectangular lookup, canonical row-order coordinates,
 single-correction horizontal/coarse wrapping, step and weighted distances,
 sign-based direction selection, half-open spans/rectangles and ordered neighbors.
 It accepts positive even signed-16 widths, positive signed-16 heights and an area
@@ -145,7 +132,7 @@ geometry call, independently of a stored file header. Neighborhood tables are
 explicit mutable inputs; order, duplicates, altered offsets and center positions
 are retained. None of these operations accepts a random context or clock service.
 
-`world/map.cppm` owns contiguous C++ tile records, remembered-improvement layers
+`src/OpenCiv2.Core/MapStorage.cs` owns owned tile records, remembered-improvement layers
 1..7, four coarse grids and separately retained region summaries/seed/header
 topology. Codecs must encode logical fields explicitly. Civilization-0 memory
 and the shared mutable fallback are supplied separately; allocation/release
@@ -174,7 +161,7 @@ Coordinates and operands remain unreduced in effects except for normalized owner
 A publisher failure retains the completed mutation. N02 wire encoding and
 session authority remain separate future integrations.
 
-Eleven Catch2 cases exercise these contracts, retained state, allocator failure,
+Eleven shared cases exercise these contracts, retained state, allocator failure,
 fallback/parity aliasing, unsupported backing, sync routes and callback failures.
 Ten new X02 vectors cover wrap, step/weighted distance and nullable tile indices,
 with the dimensions/current topology included in the registered state closure.
@@ -185,10 +172,10 @@ unimplemented; this slice does not claim all of W01 or its gameplay consumers.
 
 ## X02 runner scope
 
-`tools/run_conformance.py` is a Python-standard-library developer host driver;
+`tools/dotnet/run_conformance.py` is a Python-standard-library developer host driver;
 it invokes the adapter directly or through Node and compares its JSON output.
-The game library, ordinary builds and Catch2 tests have no Python dependency.
-The driver obtains actual operation results from C++; it separately validates
+The game library, ordinary builds and xUnit tests have no Python dependency.
+The driver obtains actual operation results from C#; it separately validates
 supplied choice codes/results against F01 before execution.
 
 The `f01-f02-w01-script-v3` scope validates exact X02 v3 structure, target/specification
@@ -228,7 +215,7 @@ not seeds or a test of PRNG quality.
 
 Stateful adapter inputs use canonical numeric fields on stdin in the registered
 protocol order. This avoids command-line size limits and carries no expected
-result or snapshot. Typed fixture validation precedes execution; the C++ adapter
+result or snapshot. Typed fixture validation precedes execution; the C# adapter
 also rejects missing, out-of-range and trailing state input. The original three
 F01 and seven F02 fixtures and their expectations are unchanged. Boolean inputs
 use exact JSON true/false in fixtures and 0/1 only in the internal adapter protocol.
@@ -236,74 +223,21 @@ use exact JSON true/false in fixtures and 0/1 only in the internal adapter proto
 Reports retain raw fixture hashes/revisions, target/spec/evidence identities,
 implementation revision plus exact source hashes and dirty status, adapter
 binary hashes, build identity, actual traces, consumption, comparison scope,
-explicit randomness/policy inputs, limits and first mismatch. The original twenty
-fixture expectations remain unchanged; 26 new sampler cases include nineteen
-specification vectors and seven standard-engine policy regression vectors. Eight
-additional workspace vectors bring the total to 54. The X02 action/stop schema
-clarification advances existing fixture revisions and pins without changing their
-expected results. Retained
-[native](conformance/reports/f01-native.json) and
-[WASM](conformance/reports/f01-wasm.json) reports describe the tested working-tree
-sources by hash; their base commit is not a claim that uncommitted code was in
-that commit. The registry points to the native report, and metadata checks
-reject a changed implementation or a recorded pass that disagrees with a fixture.
-
-Report format `openciv2-conformance-run/2` binds compiled-source hashes and the
-build identity to a manifest embedded in the adapter during its build. Before
-executing fixtures, the runner queries `--identity` and rejects missing or stale
-manifests. An optional `--build-identity` file must match that embedded identity;
-it cannot relabel an older executable. Python driver hashes describe the driver
-actually run, separately from the compiled inputs. Source or adapter changes
-during a run prevent publication of its report. CMake regenerates the manifest
-when its declared compiled inputs change; rebuild before rerunning conformance.
+explicit randomness/policy inputs, limits and first mismatch. The current C# selection has 57 cases, including seven explicit PCG32 policy
+variants. Reports use `openciv2-managed-conformance-run/1`, with compiled input
+manifests embedded by MSBuild and checked by the runner. Reporting-code identities
+are separate from compiled inputs. Source or artifact changes during execution
+prevent publication; rebuild before rerunning after any input change.
 
 ## Running and extending
 
-```sh
-cmake --preset headless-fetch
-cmake --build --preset headless-fetch --parallel 4
-ctest --preset headless-fetch --output-on-failure
-python3 tools/run_conformance.py \
-  --report build/headless-fetch/conformance-results.json \
-  --build-identity build/headless-fetch/build-identity.txt \
-  --adapter build/headless-fetch/oc2_conformance_adapter
-```
+Use the C# adapter in `tests/OpenCiv2.ConformanceAdapter` and the browser host in
+`tests/OpenCiv2.ConformanceBrowser`. The [test guide](testing/README.md#x02-execution)
+provides execution, rejection and native/browser comparison commands. The runner
+embeds and validates compiled input identities, binds invoked artifacts and
+rejects changed inputs before publishing a report. It never passes expected
+observations to the adapter.
 
-On Windows use `python` and the `.exe` executable. For WASM pass the pinned
-Node executable and adapter `.js` file after `--adapter`. `--fixture` selects
-individual repository-bundle cases; absent that option all current vectors run.
-Exit status is 0 only when every selected case passes, 1 for case failures,
-invalid/unsupported cases or budget exhaustion, and 2 for command/setup errors.
-CTest writes a fresh report in its build directory; CI uploads it with the test
-evidence. Updating the retained reports is an explicit reviewed step after an
-implementation change, not automatic regeneration of expected results.
-
-This is historical foundation evidence, not the remaining M1 task list.
-The [finite closeout contract](m1-closeout.md) bounds checkpoint, conversion,
-review, interoperability and build work. Stored [inspection](m1-inspection.md),
-[SQLite export](m1-sqlite-export.md), [network primitives](m1-network-foundations.md)
-and [session ownership](m1-session-foundations.md) now have their own implemented
-boundaries. Complete gameplay/setup and network integration remain M3–M6.
-The [audit](m1-validation.md) records the seven closeout gates.
-
-## Local validation — 2026-11-13 UTC
-
-Linux Clang 20.1.8 / CMake 3.31.10 passes all 50 headless CTests: 47 Catch2 cases,
-two metadata checks and execution of the twenty X02 vectors. A separate ASan/UBSan
-build passes the same 50 tests with leak detection enabled (outside the local
-ptrace sandbox). Emscripten 4.0.23 / Clang 22.0.0 passes four CTests under Node:
-the 47 Catch2 cases, two host metadata checks and the twenty adapter vectors.
-The Windows/macOS CI jobs are configured to run the new tests, but these M1
-changes have not yet run on those hosts.
-
-The library-only build also passes with GUI, tests, Python discovery and
-dependency fetching disabled and an intentionally missing asset directory.
-
-All 99 Python tests and pinned clang-format checks pass. Negative cases include
-forged/stale execution evidence, bad integer encodings, duplicate JSON keys,
-unsupported state/providers/normalization, missing dependencies, reordered or
-duplicated events, mismatched results, adapter failure, stale or missing embedded
-build identities, source changes during execution, incomplete/ill-typed state,
-changed slot order, absence versus slot/tile zero, invalid geometry dimensions,
-untyped boolean values and watchdog exhaustion.
-The unchanged WASM Catch2 macros still emit their upstream `__COUNTER__` warnings.
+Register new operations and state closures under [conformance](conformance/README.md).
+Keep policy-specific PCG32 replay fixtures separate from controlled semantic
+choices. A fixed implementation test does not establish original-game equivalence.

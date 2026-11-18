@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><ProjectReference Include="../../src/OpenCiv2.ViewModels/OpenCiv2.ViewModels.csproj" /><ProjectReference Include="../../src/OpenCiv2.Console/OpenCiv2.Console.csproj" /><ProjectReference Include="../../src/OpenCiv2.Base/OpenCiv2.Base.csproj" /><ProjectReference Include="../../src/OpenCiv2.IO/OpenCiv2.IO.csproj" />
+    <ProjectReference Include="../../src/OpenCiv2.Contracts/OpenCiv2.Contracts.csproj" /><ProjectReference Include="../../src/OpenCiv2.Query/OpenCiv2.Query.csproj" /><ProjectReference Include="../../src/OpenCiv2.Network/OpenCiv2.Network.csproj" /><ProjectReference Include="../../src/OpenCiv2.Session/OpenCiv2.Session.csproj" /></ItemGroup>
+</Project>

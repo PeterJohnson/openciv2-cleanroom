@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../OpenCiv2.Conformance/OpenCiv2.Conformance.csproj" /></ItemGroup>
+</Project>

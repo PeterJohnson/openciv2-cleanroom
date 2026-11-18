@@ -4,7 +4,7 @@ These [JSON Schema Draft 2020-12](https://json-schema.org/draft/2020-12/json-sch
 documents describe the unreleased version 1 [content contract](../data-format.md).
 They validate document structure and expressible field constraints. Passing a
 schema does **not** establish a complete playable pack or classic compatibility.
-The C++ loaders now admit gameplay bundles, pack selections and
+The C# loaders now admit gameplay bundles, pack selections and
 [typed native rules](../../m1-rule-content.md); remaining component semantics and
 session admission are implementation work. The schemas and format specification
 evolve together until publication.
@@ -90,9 +90,9 @@ exact `format` value. It reads only the files requested and the local schemas;
 it does not open manifest components, resolve parents, load resources or change
 content. Passing a manifest alone does not check its referenced files.
 
-[CI](../../../.github/workflows/build.yml) runs these checks and the
+[CI](../../../.github/workflows/repository.yml) runs these checks and the
 [regression tests](../../../tests/test_content_schemas.py) on Linux, macOS and
-Windows. The Python packages are developer dependencies only; ordinary CMake
+Windows. The Python packages are developer dependencies only; ordinary .NET
 builds and the existing stdlib metadata checks do not require them.
 
 ## Editor and validator integration

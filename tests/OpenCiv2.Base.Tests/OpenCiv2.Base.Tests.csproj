@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3.mtp-v2" />
+    <ProjectReference Include="../OpenCiv2.FoundationCases/OpenCiv2.FoundationCases.csproj" />
+    <ProjectReference Include="../../src/OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" />
+    <ProjectReference Include="../../src/OpenCiv2.Platform.Native/OpenCiv2.Platform.Native.csproj" />
+  </ItemGroup>
+</Project>

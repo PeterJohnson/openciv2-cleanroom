@@ -1,18 +1,14 @@
 # Random policy: oc2-mt19937-64, version 2
 
-This is the new implementation's replay policy under F01 §§2–4,6 and the
-[randomness ownership contract](architecture.md#randomness-ownership). It does
-not implement an original-game sequence. Required sampling laws still come from
-F01; this policy only supplies codes. It adds no classic save or wire fields.
-Version 2 replaces the initial SplitMix64 policy with C++20's `std::mt19937_64`.
-It changes seed-to-sequence results; version 1 checkpoints are rejected.
+This document defines the MT19937-64 reference replay policy used by the
+reference fixture corpus. **Production C# uses [PCG32 version 1](random-policy-pcg32.md).**
+This reference does not specify production seeding or checkpoint representation,
+and neither policy reproduces an original-game sequence. F01 owns the sampling
+laws; replay policies only supply raw codes and add no classic save/wire fields.
 
-`GameplayRandom`, `PresentationRandom` and `CosmeticRandom` are different C++
-types, each owning its state. No global generator exists. Initializing or drawing
-from one context never accesses another. Owners supply explicit unsigned 64-bit
-seed material (zero is valid) and a stable context name. Context/site names are
-nonempty ASCII letters, digits or `.-_/`; addresses, native handles and thread
-scheduling are not context identities. Seed acquisition is outside this library.
+The reference contexts have distinct gameplay, presentation-content and cosmetic
+domains, each owning its state. Explicit unsigned 64-bit seeds and stable ASCII
+context names determine initialization; addresses and scheduling are not identities.
 
 Initialization applies FNV-1a-64, starting at decimal 14695981039346656037 and
 multiplying by 1099511628211 after each byte xor, to the domain label followed by
@@ -30,15 +26,15 @@ assignment of draws. A site name identifies the caller's semantic decision for
 instrumentation, not a separate keyed stream. Repeating a site draws again;
 callers explicitly retain and reuse resolved results when their contract does.
 
-The code generator is the standard library's `std::mt19937_64`, whose
+The code generator is MT19937-64, whose
 [transition, output and seeding algorithms](https://eel.is/c++draft/rand.eng.mers)
 and [predefined parameters](https://eel.is/c++draft/rand.predef) are standardized.
 There is no local implementation of the generator. The selected engine and its
 integer seeding overload fix the raw output sequence across conforming platforms.
-We do not use `std::default_random_engine` or standard distribution adapters.
+Reference calculations use this exact engine and the explicit F01 mappings.
 
 The engine is behind the owned `RandomSource` interface. Its production
-implementation delegates directly to `std::mt19937_64`; tests can inject a source
+reference adapter uses MT19937-64; validation can supply a source
 with authored raw words. Contexts still own F01 mappings, domain boundaries,
 draw accounting and semantic traces. Injection transfers exclusive ownership of
 an already initialized source and does not apply the seed/name derivation again.
@@ -60,7 +56,7 @@ rounding modes fail before advancing state. Constant results do not request a
 decision site or code. Ordinary arithmetic uses the F01 mappings in `oc2_base`.
 
 A checkpoint owns `{version, domain, context, engine, draws}`, including an
-independent source clone (the entire `std::mt19937_64` state and position for the
+independent source clone (the entire MT19937-64 state and position for the
 production source). Copying a checkpoint or context never shares mutable source
 state. Restore checks version/domain/name/source identity before changing the
 destination. The original seed is
@@ -128,7 +124,7 @@ Restoring a random context while its existing continuation is suspended is teste
 serializing/reconstructing that continuation, world/process state, client inputs,
 effects and routing queues remains separate pending-session checkpoint work.
 
-These C++ semantic records are independent of X02 JSON. The sampler fixture
+These semantic records are independent of X02 JSON. The sampler fixture
 adapter validates event IDs, fixture key uniqueness, typed choices and the
 registered sampling boundary. Broader provider/state dependencies remain the
 responsibility of their owning operation adapters.
@@ -166,7 +162,7 @@ with seed material chosen to undo the declared domain/name xor. Their expected
 codes are projections of that independent standard vector and their results
 follow F01. They establish this implementation policy, not an original trajectory.
 
-Catch2 tests controlled mappings in all three domains, invalid input/prefix
+Reference vectors test controlled mappings in all three domains, invalid input/prefix
 preservation, bounded generated traces, restore across engine state blocks, and
 an authored command with retries, deterministic ties, retained choices across an
 interaction, a live read after a reply, and presentation-consumer invariance.

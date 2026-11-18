@@ -1,0 +1,135 @@
+{
+  "format": "openciv2-performance-budgets/1",
+  "establishedBeforeMeasurement": true,
+  "referenceHost": "Linux x64, AMD Ryzen AI 9 HX 370, 24 logical CPUs; record actual RAM, affinity, load and power context for each run",
+  "purpose": "Absolute responsiveness and resource ceilings for the implemented foundation workloads. These are engineering targets, not observed results or rendering-derived simulation claims.",
+  "inputs": {
+    "largeSave": {
+      "version": 44,
+      "width": 252,
+      "height": 252,
+      "tiles": 31752,
+      "units": 2048,
+      "cities": 256,
+      "events": 0
+    },
+    "largeMap": {
+      "width": 252,
+      "height": 252,
+      "tiles": 31752
+    },
+    "rules": "Complete independently authored F03 rule sections from tests/rules_cli.py; do not read an original game installation",
+    "pack": "Repository format-demonstration content with two authored parent overlays; pinned manifests and files",
+    "liveWorld": {
+      "width": 252,
+      "height": 252,
+      "units": 2048,
+      "cities": 256
+    },
+    "sessionCommand": "Production LocalUnitCommands.StackBottom over an owned coherent three-unit stack, real lease/submit/confirm/advance/result/retire"
+  },
+  "sampling": {
+    "warmup": 3,
+    "cliRepetitions": 15,
+    "coreRepetitions": 40,
+    "browserRepetitions": 15,
+    "quantile": "nearest-rank",
+    "medianRegressionInvestigationRatio": 1.2
+  },
+  "cli": {
+    "startup-help": {
+      "p50Ms": 300,
+      "p95Ms": 600,
+      "peakRssMiB": 128
+    },
+    "save-roundtrip": {
+      "p50Ms": 600,
+      "p95Ms": 1200,
+      "peakRssMiB": 256
+    },
+    "inspect-large": {
+      "p50Ms": 2500,
+      "p95Ms": 4000,
+      "peakRssMiB": 768
+    },
+    "validate-large": {
+      "p50Ms": 1200,
+      "p95Ms": 2000,
+      "peakRssMiB": 512
+    },
+    "diff-large": {
+      "p50Ms": 2500,
+      "p95Ms": 4000,
+      "peakRssMiB": 768
+    },
+    "resolve-pack": {
+      "p50Ms": 500,
+      "p95Ms": 1000,
+      "peakRssMiB": 256
+    },
+    "convert-rules": {
+      "p50Ms": 700,
+      "p95Ms": 1500,
+      "peakRssMiB": 256
+    },
+    "export-sqlite": {
+      "p50Ms": 10000,
+      "p95Ms": 15000,
+      "peakRssMiB": 768
+    }
+  },
+  "warmNative": {
+    "decode-large": {
+      "p50Ms": 75,
+      "p95Ms": 150,
+      "allocatedMiBPerOperation": 32
+    },
+    "inspect-large": {
+      "p50Ms": 300,
+      "p95Ms": 600,
+      "allocatedMiBPerOperation": 256
+    },
+    "diff-large": {
+      "p50Ms": 300,
+      "p95Ms": 600,
+      "allocatedMiBPerOperation": 256
+    },
+    "resolve-pack": {
+      "p50Ms": 30,
+      "p95Ms": 75,
+      "allocatedMiBPerOperation": 16
+    },
+    "convert-rules": {
+      "p50Ms": 75,
+      "p95Ms": 150,
+      "allocatedMiBPerOperation": 32
+    },
+    "create-world": {
+      "p50Ms": 15,
+      "p95Ms": 30,
+      "allocatedMiBPerOperation": 16
+    },
+    "own-projection": {
+      "p50Ms": 5,
+      "p95Ms": 10,
+      "allocatedMiBPerOperation": 4
+    },
+    "session-command": {
+      "p50Ms": 5,
+      "p95Ms": 10,
+      "allocatedMiBPerOperation": 4
+    }
+  },
+  "browser": {
+    "compressedTransferMiB": 25,
+    "coldReadyMs": 8000,
+    "warmReadyMs": 3000,
+    "warmOperationLatencyMultiplier": 5,
+    "peakManagedHeapMiB": 768
+  },
+  "desktop": {
+    "readyMs": 2000,
+    "idleRssMiB": 512
+  },
+  "policy": "A repeatable matched-workload median regression above 20% requires investigation even below absolute budgets. Failures cannot be hidden by averaging workloads, dropping slow samples or silently raising these ceilings; record any reviewed tradeoff explicitly. Browser and native timings are separate populations. Allocation budgets are managed allocations, never native RSS or GC pauses."
+}

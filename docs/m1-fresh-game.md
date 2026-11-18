@@ -1,7 +1,7 @@
 # Fresh-game isolation evidence
 
 The compatibility review makes X01 fresh-game isolation an M1 foundation gate.
-`SessionRuntime::prepare_new_game` replaces world/workspace and mutable content
+`SessionRuntime.PrepareNewGame` replaces world/workspace and mutable content
 state before selected content is installed. It preserves explicit preferences,
 identity generators and the caller's declared random contexts. The F05 entry
 parent also resets classic file scratch. This is a separate operation from
@@ -25,7 +25,7 @@ zero scan bounds. They compare these fields exactly:
 
 Byte arrays use exact lowercase hexadecimal; city shields retain signed16 values.
 The used-state vector exercises full capacities, high bits, signed extrema,
-non-ASCII text, and token counters at zero and `UINT32_MAX`. The empty-scan vector
+non-ASCII text, and token counters at zero and `uint.MaxValue`. The empty-scan vector
 proves that clearing only the scanned prefix would fail. Expectations come from
 X01's reviewed contract, not recorded cleanroom outputs or original-game behavior.
 
@@ -43,7 +43,7 @@ declarations/constructors, so stale reset code cannot inherit a passing report.
 
 ## Wider integration checks
 
-`tests/fresh_game_tests.cpp` complements the projection by populating world
+`tests/OpenCiv2.FoundationCases/FreshGameCases.cs` complements the projection by populating world
 records, free-slot payloads, goals, stack/deletion guards, multiplayer values,
 events, history, map/knowledge state, layouts, substitutions, and mutable rules.
 It compares the fresh world against independently constructed initial records,
@@ -65,13 +65,6 @@ creation and graphical integration remain M3/M4 work under the reviewed plan.
 
 ## Verification
 
-Windows MSVC passes 563 native and 565 SQLite-enabled CTests. Pinned WASM
-passes seven CTests, including 539 portable Catch2 cases and 194,977 assertions.
-The isolation filter passes four cases with 215 assertions. All 57 registered
-native/WASM observations and consumed prefixes match. The developer Python suite
-passes 115 tests with two Windows skips; four additional adapter checks run in
-CTest on both targets. Pinned clang-format 20.1.8 formats the owned sources.
-Local logs for this change use the `build/fresh-game-` prefix. Full M1
-completion follows only the seven [closeout gates](m1-closeout.md). This reset
-projection and the wider integration cases remain fixed M1-03/M1-05 review and
-regression evidence, not a mandate to expand reset adapters to every future field.
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

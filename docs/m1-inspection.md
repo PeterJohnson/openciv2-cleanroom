@@ -1,26 +1,25 @@
 # M1 stored inspection
 
-The native `oc2` CLI and portable `oc2_query` library implement offline inspection
+The native `oc2` CLI and portable `OpenCiv2.Query` library implement offline inspection
 of version `0x2c` saves and classic raw maps. M1 is complete within its [finite scope](m1-validation.md); this remains a
 stored observation, not a loaded session or a gameplay compatibility claim.
 Optional [SQLite export](m1-sqlite-export.md) consumes the same owned snapshots.
 
 ## Build and use
 
-From a Visual Studio developer PowerShell, a tools-only build needs no downloaded
-dependencies, Python, SDL, ImGui, assets, Lua or SQLite:
+Build the root solution with the pinned .NET SDK. The CLI needs no display,
+assets, Lua or SQLite. For example:
 
-```powershell
-cmake -S . -B build/tools-only -G Ninja -DOC2_BUILD_GUI=OFF -DBUILD_TESTING=OFF
-cmake --build build/tools-only
-.\build\tools-only\oc2.exe inspect 'C:\Games\Civ2\EXAMPLE.SAV' --cities --json
-.\build\tools-only\oc2.exe validate 'C:\Games\Civ2\EXAMPLE.SAV'
-.\build\tools-only\oc2.exe diff before.sav after.sav --json
+```sh
+dotnet restore --locked-mode
+dotnet build -c Release --no-restore
+dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- inspect path/to/game.sav --cities --json
+dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- validate path/to/game.sav
+dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- diff before.sav after.sav --json
 ```
 
-`OC2_BUILD_TOOLS` defaults ON for native builds and OFF for Emscripten. Set it OFF
-for libraries alone. The query library and its tests also build on WASM; the
-native filesystem and CLI targets do not. The executable accepts Unicode Windows
+The portable query library is tested in native and browser hosts; process CLI and
+native filesystem adapters are desktop-only. The executable accepts Unicode Windows
 paths, spaces, and `--` before paths that begin with option characters.
 
 `inspect` prints a human summary by default, or all records with `--json`.
@@ -54,8 +53,8 @@ change that exit code.
 
 ## Owned query and output contract
 
-`query::inspect_stored` takes immutable bytes and explicit
-`FileAccess::offline_omniscient`. Its owned `StoredSnapshot` exposes immutable
+`StoredInspection.Inspect` takes immutable bytes and explicit
+`FileAccess.OfflineOmniscient`. Its owned `StoredSnapshot` exposes immutable
 records, diagnostics, source bytes and SHA-256 observation identity. No API takes
 a mutable world, process lifetime counter, gameplay RNG or live-session grant.
 The existing live own-entity queries and session bindings are separate regression
@@ -106,24 +105,22 @@ original-program observation before a consumer depends on it.
 
 ## Verification
 
-Catch2 covers ownership, stable slots, retained/unsigned extremes, exact byte
+xUnit covers ownership, stable slots, retained/unsigned extremes, exact byte
 coverage, semantic diagnostic offsets, null/absence, optional blocks and diff
 matching. Eight CLI/driver integration tests use independently authored F06 bytes and
 Python's JSON/hash libraries, including Unicode paths, broken output pipes and source preservation.
 SHA-256 tests include published vectors and independent padding-boundary results.
 These checks run independently of graphics and gameplay content.
 
-At the inspection slice's introduction, MSVC 19.51 passed 68 CTests (64 Catch2 cases, two metadata
-checks, CLI integration and the twenty-vector conformance runner). Pinned
-Emscripten 4.0.23 passes four CTests, including all 64 portable Catch2 cases.
-The Python regression suite runs 99 tests with two Windows symlink cases skipped.
-The native tools-only build also passes the CLI suite with tests, GUI, dependency
-fetching and Python discovery disabled at configuration time.
-
-The [Windows original-file report](conformance/reports/original-inspection-windows.json)
+The [Windows original-file report](validation/README.md)
 records each source hash, exit code, diagnostics,
 exact raw reconstruction and source preservation. It contains no proprietary
 file contents. This check does not run the original executable, verify original
 acceptance of edited exports or claim resumed gameplay compatibility.
 All 21 current saves and seven raw maps reconstruct exactly and pass the available
 checks; all sources remain unchanged. Three legacy files return unsupported.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

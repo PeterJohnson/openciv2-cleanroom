@@ -1,0 +1,55 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)packaging/Notices.targets" />
+  <!-- Hash at build time and embed in each assembly. A report must never label an old
+       assembly using source hashes collected only when the report is written. -->
+  <PropertyGroup>
+    <Oc2RepositoryRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildThisFileDirectory)'))</Oc2RepositoryRoot>
+  </PropertyGroup>
+  <Target Name="Oc2EmbedBuildIdentity" BeforeTargets="AssignTargetPaths">
+    <ItemGroup>
+      <_Oc2IdentityInput Include="$(NuGetLockFilePath)" Condition="'$(Oc2PackageRid)' != ''" />
+      <_Oc2IdentityInput Include="$(MSBuildProjectDirectory)/**/*.cs"
+          Exclude="$(MSBuildProjectDirectory)/obj/**;$(MSBuildProjectDirectory)/bin/**" />
+      <_Oc2IdentityInput Include="$(MSBuildProjectDirectory)/wwwroot/**/*" />
+      <_Oc2IdentityInput Include="$(MSBuildProjectFullPath);$(MSBuildProjectDirectory)/packages.lock.json;$(MSBuildThisFileDirectory)packaging/Notices.targets;
+          $(MSBuildThisFileDirectory)Directory.Build.props;$(MSBuildThisFileDirectory)Directory.Build.targets;
+          $(MSBuildThisFileDirectory)Directory.Packages.props;$(MSBuildThisFileDirectory)global.json;
+          $(MSBuildThisFileDirectory)NuGet.Config;$(Oc2RepositoryRoot)dependencies.json;
+          $(Oc2RepositoryRoot)docs/random-policy-pcg32.md;$(Oc2RepositoryRoot)docs/algorithms/F01-determinism-and-arithmetic.md;
+          $(Oc2RepositoryRoot)docs/algorithms/F02-game-state-and-invariants.md;
+          $(Oc2RepositoryRoot)docs/algorithms/F03-rules-and-configuration.md;
+          $(Oc2RepositoryRoot)docs/algorithms/C01-city-lifecycle-and-ownership.md;
+          $(Oc2RepositoryRoot)docs/algorithms/F06-save-load-and-file-formats.md;
+          $(Oc2RepositoryRoot)docs/algorithms/F05-game-setup-and-starting-positions.md;
+          $(Oc2RepositoryRoot)docs/algorithms/S01-scenario-loading-and-parameters.md;
+          $(Oc2RepositoryRoot)docs/algorithms/S02-event-language-and-execution.md;
+          $(Oc2RepositoryRoot)docs/algorithms/P04-text-and-dialogs.md;
+          $(Oc2RepositoryRoot)docs/algorithms/A01-ai-strategy-and-assessment.md;
+          $(Oc2RepositoryRoot)docs/algorithms/F04-turn-sequencing.md;
+          $(Oc2RepositoryRoot)docs/algorithms/V03-research-and-technology.md;
+          $(Oc2RepositoryRoot)docs/algorithms/N02-network-commands-and-state-synchronization.md;
+          $(Oc2RepositoryRoot)docs/algorithms/N03-multiplayer-turn-sequencing.md;
+          $(Oc2RepositoryRoot)docs/algorithms/N05-transport-and-wire-protocol.md;
+          $(Oc2RepositoryRoot)docs/algorithms/U01-unit-lifecycle-and-stacks.md;
+          $(Oc2RepositoryRoot)docs/algorithms/W01-map-geometry-and-spatial-state.md;
+          $(Oc2RepositoryRoot)docs/algorithms/X01-classic-compatibility-contract.md;$(Oc2RepositoryRoot)docs/architecture.md;$(Oc2RepositoryRoot)docs/m1-session-foundations.md;$(Oc2RepositoryRoot)docs/m1-command-contract.md;
+          $(Oc2RepositoryRoot)docs/algorithms/X02-whole-game-conformance.md;$(Oc2RepositoryRoot)docs/m1-checkpoint.md;$(Oc2RepositoryRoot)docs/m1-closeout.md;$(Oc2RepositoryRoot)docs/application.md;
+          $(Oc2RepositoryRoot)docs/m1-content-conversion.md;$(Oc2RepositoryRoot)docs/content/data-format.md;$(Oc2RepositoryRoot)docs/content/gameplay-format.md;
+          $(Oc2RepositoryRoot)data/gameplay/classic-mge-5.4.0f/*.json">
+      </_Oc2IdentityInput>
+      <_Oc2IdentityInput>
+        <SourcePath>$([MSBuild]::MakeRelative('$(Oc2RepositoryRoot)', '%(FullPath)'))</SourcePath>
+      </_Oc2IdentityInput>
+    </ItemGroup>
+    <GetFileHash Files="@(_Oc2IdentityInput)" Algorithm="SHA256" HashEncoding="hex">
+      <Output TaskParameter="Items" ItemName="_Oc2HashedInput" />
+    </GetFileHash>
+    <WriteLinesToFile File="$(IntermediateOutputPath)oc2-build-identity.txt" Overwrite="true"
+        WriteOnlyWhenDifferent="true" Encoding="UTF-8"
+        Lines="format=openciv2-compiled-inputs/1;sdk=$(NETCoreSdkVersion);runtime=$(RuntimeFrameworkVersion);target=$(TargetFramework);configuration=$(Configuration);@(_Oc2HashedInput->'%(SourcePath)=%(FileHash)')" />
+    <ItemGroup>
+      <EmbeddedResource Include="$(IntermediateOutputPath)oc2-build-identity.txt" LogicalName="OpenCiv2.BuildIdentity" />
+      <FileWrites Include="$(IntermediateOutputPath)oc2-build-identity.txt" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,0 +1,364 @@
+{
+  "format": "openciv2-native-ci-acceptance/1",
+  "testedRevision": "7a3a3199f90ab0bb98bb425590e04ab17b311c4f",
+  "dateUtc": "2026-11-17",
+  "repository": "PeterJohnson/openciv2-cleanroom",
+  "branch": "codex/csharp-migration",
+  "runs": [
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-17T05:56:41Z",
+      "headSha": "7a3a3199f90ab0bb98bb425590e04ab17b311c4f",
+      "status": "completed",
+      "updatedAt": "2026-11-17T06:03:25Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903",
+      "jobs": [
+        {
+          "id": 133851588043,
+          "name": "coverage-inventory",
+          "conclusion": "success",
+          "skippedSteps": []
+        },
+        {
+          "id": 133851588333,
+          "name": "native (ubuntu-24.04)",
+          "conclusion": "success",
+          "skippedSteps": [
+            "Run ilammy/msvc-dev-cmd@v1",
+            "Keep managed solution platform independent of MSVC target"
+          ]
+        },
+        {
+          "id": 133851588357,
+          "name": "native (windows-2022)",
+          "conclusion": "success",
+          "skippedSteps": [
+            "Cooperative CLI signal cancellation",
+            "Native application input on isolated X11"
+          ]
+        },
+        {
+          "id": 133851588405,
+          "name": "native (macos-15)",
+          "conclusion": "success",
+          "skippedSteps": [
+            "Run ilammy/msvc-dev-cmd@v1",
+            "Keep managed solution platform independent of MSVC target",
+            "Cooperative CLI signal cancellation",
+            "Native application input on isolated X11"
+          ]
+        },
+        {
+          "id": 133851588435,
+          "name": "browser",
+          "conclusion": "success",
+          "skippedSteps": []
+        }
+      ]
+    },
+    {
+      "conclusion": "success",
+      "createdAt": "2026-11-17T05:56:41Z",
+      "headSha": "7a3a3199f90ab0bb98bb425590e04ab17b311c4f",
+      "status": "completed",
+      "updatedAt": "2026-11-17T06:00:14Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604889",
+      "jobs": [
+        {
+          "id": 133851587814,
+          "name": "metadata-and-formatting (windows-2022)",
+          "conclusion": "success",
+          "skippedSteps": []
+        },
+        {
+          "id": 133851588198,
+          "name": "metadata-and-formatting (ubuntu-24.04)",
+          "conclusion": "success",
+          "skippedSteps": []
+        },
+        {
+          "id": 133851588202,
+          "name": "metadata-and-formatting (macos-15)",
+          "conclusion": "success",
+          "skippedSteps": []
+        }
+      ]
+    }
+  ],
+  "nativeTargets": [
+    {
+      "runner": "ubuntu-24.04",
+      "rid": "linux-x64",
+      "jobId": 133851588333
+    },
+    {
+      "runner": "macos-15",
+      "image": "macos-15-arm64",
+      "imageVersion": "20261104.0514.1",
+      "os": "macOS 15.8.2",
+      "rid": "osx-arm64",
+      "jobId": 133851588405
+    },
+    {
+      "runner": "windows-2022",
+      "imageVersion": "20261112.366.7",
+      "os": "Windows Server 2022 10.0.20348",
+      "rid": "win-x64",
+      "jobId": 133851588357
+    }
+  ],
+  "toolchain": {
+    "sdk": "10.0.404",
+    "configuredRuntime": "10.0.15",
+    "configuration": "Release",
+    "browser": "Chromium 145.0.7632.6",
+    "playwright": "1.58.2",
+    "note": "Windows dotnet --info reports installed host/muxer 11.0.0; managed projects pin 10.0.15 and package tests observe their bundled CoreCLR."
+  },
+  "perNativeTarget": {
+    "nativeTests": 454,
+    "nativeSkipped": 0,
+    "sharedGroups": 432,
+    "x02Fixtures": 57,
+    "cliHelperTests": 56,
+    "luaTests": 13,
+    "luaSkipped": 0,
+    "sqliteTests": 4,
+    "sqliteSkipped": 0,
+    "rootPythonTests": 139,
+    "basePackageTests": 36,
+    "sqlitePackageTests": 41,
+    "packageSkipped": 0
+  },
+  "browser": {
+    "sharedGroups": 432,
+    "x02Fixtures": 57,
+    "luaGroups": 13,
+    "actualInputChecks": 16,
+    "foundationStepElapsedSecondsApproximate": 62.7
+  },
+  "reportReview": {
+    "format": "openciv2-ci-report-review/1",
+    "revision": "7a3a3199f90ab0bb98bb425590e04ab17b311c4f",
+    "foundationGroupsEqual": 432,
+    "conformanceObservationsAndPrefixesEqual": 57,
+    "luaGroupsAndOutcomeEqual": 13,
+    "targets": [
+      "linux-x64",
+      "osx-arm64",
+      "win-x64",
+      "browser-wasm"
+    ],
+    "scope": "Downloaded report/source verification. Invoked binaries and generated WASM Lua inputs were verified on CI runners; not reexecuted locally."
+  },
+  "scope": "Source/observation and archive-digest review of actual CI results. Invoked executable identities and generated WASM Lua inputs were verified on runners, not reexecuted locally. No macOS/Windows native GUI-input, interrupt or performance pass is claimed.",
+  "remainingGates": [
+    "macOS/Windows real native pointer/keyboard input and normal shutdown",
+    "macOS/Windows actual OS interruption/cancellation and closed-output delivery",
+    "macOS/Windows performance on target hardware",
+    "native execution on osx-x64, linux-arm64 and win-arm64 before claiming those RIDs",
+    "later M2-M7 gameplay/platform features and release signing/installers"
+  ],
+  "artifacts": [
+    {
+      "id": 14304151963,
+      "name": "cli-packages-ubuntu-24.04",
+      "size_in_bytes": 71845688,
+      "digest": "sha256:b7478d699447be076db74234921abd2b39bfe1c2db54c91879f56b6f461354ec",
+      "expires_at": "2027-02-15T05:56:41Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903/artifacts/14304151963"
+    },
+    {
+      "id": 14303853006,
+      "name": "cli-packages-windows-2022",
+      "size_in_bytes": 72915790,
+      "digest": "sha256:b27cfc090e3f82403bde221dbf32f6deb2bb3d2d32539eed5a37b142f2aa23d0",
+      "expires_at": "2027-02-15T05:56:41Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903/artifacts/14303853006"
+    },
+    {
+      "id": 14303772702,
+      "name": "managed-macos-15",
+      "size_in_bytes": 129068,
+      "digest": "sha256:b197cb0d2057436cbd8ed561d9c087b147e7fd897eed205e6a22b1027ecdc8d9",
+      "expires_at": "2027-02-15T05:56:41Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903/artifacts/14303772702"
+    },
+    {
+      "id": 14303613060,
+      "name": "managed-ubuntu-24.04",
+      "size_in_bytes": 155930,
+      "digest": "sha256:6682ec462740cb70d59b4b58c4b575a77ba3093b33906394bd111f33f792aa25",
+      "expires_at": "2027-02-15T05:56:41Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903/artifacts/14303613060"
+    },
+    {
+      "id": 14303438629,
+      "name": "managed-windows-2022",
+      "size_in_bytes": 130355,
+      "digest": "sha256:585ce7c50075a980c6b404ba40df3650c6d7c3f1a375a0f1070f7ae8a71905a5",
+      "expires_at": "2027-02-15T05:56:41Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903/artifacts/14303438629"
+    },
+    {
+      "id": 14303134249,
+      "name": "managed-browser",
+      "size_in_bytes": 499293,
+      "digest": "sha256:e9977d41a415f7c2c19ca107b614d20239beb195ba9804548a3da30c896d6ff5",
+      "expires_at": "2027-02-15T05:56:41Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903/artifacts/14303134249"
+    },
+    {
+      "id": 14303034720,
+      "name": "cli-packages-macos-15",
+      "size_in_bytes": 65493441,
+      "digest": "sha256:b8175209a94994eca3a1dc33f852d4423fb86aae2d6e14f7a6faf843965d3c8d",
+      "expires_at": "2027-02-15T05:56:41Z",
+      "url": "https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903/artifacts/14303034720"
+    }
+  ],
+  "packages": [
+    {
+      "archive": "oc2-linux-x64.tar.gz",
+      "sha256": "92119034494fe954b022c3a0aa417c59c68b6003045869dd64659e657fe96a7a",
+      "bytes": 35769442,
+      "rid": "linux-x64",
+      "testsRun": 36,
+      "skipped": [],
+      "packagedCoreclrObserved": true,
+      "installedRuntimeRoots": "empty",
+      "manifestRejectionChecks": 2,
+      "packageManifestSha256": "dd9eb3251b24268975c52be3ad2acd27f1ab56757f0066e7f32a44a09676171f",
+      "report": "managed-ubuntu-24.04/package-base.json",
+      "reportSha256": "b414b0d46e1fc05397cb17ec7c94a31281401d78ef2b157c3ca21e3376498049"
+    },
+    {
+      "archive": "oc2-sqlite-linux-x64.tar.gz",
+      "sha256": "d3fd1838908e0e53146ac8275a73a7ff8febf4ee6907d0aa3c7699b210bf2efb",
+      "bytes": 36430901,
+      "rid": "linux-x64",
+      "testsRun": 41,
+      "skipped": [],
+      "packagedCoreclrObserved": true,
+      "installedRuntimeRoots": "empty",
+      "manifestRejectionChecks": 2,
+      "packageManifestSha256": "8dbc086318f8ffc070552d1da964d617d40c1a577cb0bdc7483fc14eb62f5cbb",
+      "report": "managed-ubuntu-24.04/package-sqlite.json",
+      "reportSha256": "780df5021baa5f179d900c599587530c2b463798ad0f5a7913c137a46379a679"
+    },
+    {
+      "archive": "oc2-osx-arm64.tar.gz",
+      "sha256": "ae58fca78f6e922713a5de68433845c0b2992b8be55d8737b588094fdda377f2",
+      "bytes": 32600540,
+      "rid": "osx-arm64",
+      "testsRun": 36,
+      "skipped": [],
+      "packagedCoreclrObserved": true,
+      "installedRuntimeRoots": "empty",
+      "manifestRejectionChecks": 2,
+      "packageManifestSha256": "cc808fd47a63c4e1cdf0e2676991833be88de44cbfc3cd90541530b7adb98262",
+      "report": "managed-macos-15/package-base.json",
+      "reportSha256": "33c719fe0f8bdb90c7c75143a1e12045f414a8a229d39ee194369ce11c549e13"
+    },
+    {
+      "archive": "oc2-sqlite-osx-arm64.tar.gz",
+      "sha256": "16447544fcdb0601a377035d37972e1783918ca6ac4223f1c968a4ec8dc3dfb3",
+      "bytes": 33262136,
+      "rid": "osx-arm64",
+      "testsRun": 41,
+      "skipped": [],
+      "packagedCoreclrObserved": true,
+      "installedRuntimeRoots": "empty",
+      "manifestRejectionChecks": 2,
+      "packageManifestSha256": "a0df473b9a0c516b6f68b39abf4dc7d3aa38fe338df00254c949c25151850ba3",
+      "report": "managed-macos-15/package-sqlite.json",
+      "reportSha256": "669b82e6735898c63b65bcfecefa004cdda59aa0df64572a37950afcb2aeb44f"
+    },
+    {
+      "archive": "oc2-win-x64.zip",
+      "sha256": "6ece0394ae15f5472c550bf3d8cb22235c72f83733a0a7d62794d34abd973112",
+      "bytes": 36244423,
+      "rid": "win-x64",
+      "testsRun": 36,
+      "skipped": [],
+      "packagedCoreclrObserved": true,
+      "installedRuntimeRoots": "empty",
+      "manifestRejectionChecks": 2,
+      "packageManifestSha256": "76bc8ef791b1f36a3c3571ffbb86561f274326af8edd9541de091dd84711fff9",
+      "report": "managed-windows-2022/package-base.json",
+      "reportSha256": "8b0ff7741768fd1033b177ff486eac0d0fd73967d68e7029e452ab167a957c11"
+    },
+    {
+      "archive": "oc2-sqlite-win-x64.zip",
+      "sha256": "bef9829110399a916a5b723b9c710a209d91653926065cebecbf92c2d712c1f5",
+      "bytes": 37007252,
+      "rid": "win-x64",
+      "testsRun": 41,
+      "skipped": [],
+      "packagedCoreclrObserved": true,
+      "installedRuntimeRoots": "empty",
+      "manifestRejectionChecks": 2,
+      "packageManifestSha256": "4f93b3ed003ecd6b4b151e9fe15df6dc983f6f68f2bb31ebc7bec2af174d93e1",
+      "report": "managed-windows-2022/package-sqlite.json",
+      "reportSha256": "311bd1ffc3c9ace7815b93be36089f48e616055827fd749522a4c93c68719a68"
+    }
+  ],
+  "retainedRoot": "build/platform-ci/7a3a319",
+  "retainedFileSha256": {
+    "artifacts.json": "efb56fd2ed25beb2b6b4e3a1872556d2e5ad4b619a734a01a7474d33b61ce862",
+    "job-133851587814.log": "9cd0113ea6a5fa22eb6c2a7d7e598dcce49551ef186b7b986d7d29bd7f7ba7d2",
+    "job-133851588198.log": "271c78f4af4aa73008f5ad9b685aba18ceeac011db93d9864ca8c4a44cf1c5bd",
+    "job-133851588202.log": "d749818b0f31b78dd6e0de15098f7c695c049cfc7cacd52f46db3805d47b4075",
+    "job-133851588333.log": "084e92333a0c92eb4051093eeaf871b704cfabc561c014dd3a6d8270c1a3cdc8",
+    "job-133851588357.log": "be98aece53721f309553b8508675caaf69bd07e7e0b36689afed92bd26c105d9",
+    "job-133851588405.log": "18ab375f1b5c045bd6dbb6e2906a6a58e3679e8a76f2d2bfa4f2a0ca75373ff6",
+    "job-133851588435.log": "26a2eb25eb2a10453dc6736e33cc437e161e4a7217e10d822044970840ef7153",
+    "jobs.json": "f74123ad8a261004a81365a04debc5566b9c5b03ec30e9f085b828484ff2af8e",
+    "managed-browser/application-browser.json": "429c9e3803fb973bd2c619d7700fb1eb8ca6cd264529cf234e360107bc4a1590",
+    "managed-browser/application-browser.json.initial.png": "20df2301d97316f9a9c2d506a0b5d6bb9a3b1185fdc439e8f2b2aead1a4dc09a",
+    "managed-browser/application-browser.json.scale-1.png": "21ea8173e27fe17f91a82f81c27999efa42677dfaf879a81ff88d0d5e8bf2cf3",
+    "managed-browser/application-browser.json.scale-2.png": "3ddd0f8e5cd0952b8e679f71f623524b26a250c50d8da1b0edcfbb9934c28419",
+    "managed-browser/browser.json": "effec740b5f1a9522332570424c14050e603dd105fc56efdf7b9c3cb148fa168",
+    "managed-browser/build-identity.json": "069bf5323c1b7a3650e6e7549771b3f7d6e9ce8891b7cff42da5dcc461a50dd8",
+    "managed-browser/conformance-browser.json": "c6af0bb509ae5053d55a5aefabc76b16940bde4f126f059f1a6b2e9e0ea656fd",
+    "managed-browser/conformance-native.json": "6bd240a3176441ada7da46b0e193a7c99da76058ada988d3a31080ecbfa0bd57",
+    "managed-browser/dotnet-info.txt": "b841457c9ce25b46664d8446c2c19b197f7e13b01856dd7dc5dd261a4bdf889e",
+    "managed-browser/lua-browser.json": "892ef4f27c438073d6b9c8ee6427a25947aa44c6a6ed99e269c7dbf0e0faf429",
+    "managed-browser/lua-native.json": "1121eb893ab402b9d43b7a23f9cdabb6186b0515907c4a50d3d9a6b228b51f1b",
+    "managed-browser/workloads.txt": "af005d3155c847404bc18f42e494444249785073b10157a3e786f66fcaeaa542",
+    "managed-macos-15/build-identity.json": "85eefc6608130dd9c70fe3471382adffb305358a27c8dd3ba432bea4971a2c5c",
+    "managed-macos-15/conformance-native.json": "c1c247fb3bfec4c7abb3e8ecb034891dc3b4809bb291000e922cd4050265a883",
+    "managed-macos-15/dotnet-info.txt": "a2fa5e2f71c657b7ecb034254bc8ddeb9a3cd73dc1d7a177d5d51b6cd7e160a0",
+    "managed-macos-15/lua-native.json": "38f567066d3173950609147e26fe25574d853060b58f10f5a624c1c48eb69c60",
+    "managed-macos-15/native.json": "e1003a9a1eb87b91ebf437050208f96c3e6d68452fa7018a67faf4a4b9cc1f34",
+    "managed-macos-15/oc2-lua-build.json": "78795fc313e4a5e1ec0341d2b5db74f7ef4d2685ae243c5f776ea558445e4ab2",
+    "managed-macos-15/oc2-sqlite-build.json": "2f42a34fe430c19e163674c8390cb4920030e70573df03a5f0fcad8fa1b16a08",
+    "managed-macos-15/package-base.json": "33c719fe0f8bdb90c7c75143a1e12045f414a8a229d39ee194369ce11c549e13",
+    "managed-macos-15/package-sqlite.json": "669b82e6735898c63b65bcfecefa004cdda59aa0df64572a37950afcb2aeb44f",
+    "managed-run.json": "3fbfe0f658f003abcce382506c3b9de70e707d7d1c2ad9bc4714b29d17ab42fb",
+    "managed-ubuntu-24.04/application-native.json": "3614634da1574ef930ca748867b2100d943f4c21ede2aa6f8885071c018a3e7f",
+    "managed-ubuntu-24.04/application-native.json.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "managed-ubuntu-24.04/build-identity.json": "123b57c74ff59c3bbacf1d046b3c0630809bcc7000ff028f3fe68b36e65375f6",
+    "managed-ubuntu-24.04/conformance-native.json": "a22dbdb8e664301b66140499083d099f8d4a4ca79695c24c5d2e28b8e12a8aff",
+    "managed-ubuntu-24.04/dotnet-info.txt": "de83f7653ae41ef02e5837df121312dbbdff033ea3656242704405a99d8b4ca8",
+    "managed-ubuntu-24.04/lua-native.json": "13e4b92aadf47d7fd39c7d109f385c4658da70ef1d89e719d256c6d0e54d20da",
+    "managed-ubuntu-24.04/native.json": "e1003a9a1eb87b91ebf437050208f96c3e6d68452fa7018a67faf4a4b9cc1f34",
+    "managed-ubuntu-24.04/oc2-lua-build.json": "fd1f5baee4731652c71129ab42b9a631528e101cbb88a056ac44f804cccdd6fe",
+    "managed-ubuntu-24.04/oc2-sqlite-build.json": "8e92a2b445acd9faaa98d27e376f663db8363eda026e58d6c1b76e9fa2f382d7",
+    "managed-ubuntu-24.04/package-base.json": "b414b0d46e1fc05397cb17ec7c94a31281401d78ef2b157c3ca21e3376498049",
+    "managed-ubuntu-24.04/package-sqlite.json": "780df5021baa5f179d900c599587530c2b463798ad0f5a7913c137a46379a679",
+    "managed-windows-2022/build-identity.json": "749911cde5a512a50f1a739ba4f375cc2e2c28b1bfab790f51523de85fab69d4",
+    "managed-windows-2022/conformance-native.json": "e2959ac101f967fc7fc001a38414bdcdec93a43dc70667db628784cd19d1f0fb",
+    "managed-windows-2022/dotnet-info.txt": "26fd84b1450d0cd9bd989be9bcf9cea72361a4227a24b6641455722b7f4b30c5",
+    "managed-windows-2022/lua-native.json": "3ac0adefa5760f0e4ef7e8bbe0df7fb181ba0df9fc0396c3081ff11bf6d5c4e8",
+    "managed-windows-2022/native.json": "c67672e058a9ffb718383f122cd831dac7c6185150ab75862b125c906f746b0e",
+    "managed-windows-2022/oc2-lua-build.json": "141d12c7ceef50f8d6c9d0c5144cd1fa5ba0a098e357d7da28b52ea6ab3c541d",
+    "managed-windows-2022/oc2-sqlite-build.json": "9ace67bc488a2c802b9fa3f16b0ac828c5a8882cb905ca985fe0332d5c1a3306",
+    "managed-windows-2022/package-base.json": "8b0ff7741768fd1033b177ff486eac0d0fd73967d68e7029e452ab167a957c11",
+    "managed-windows-2022/package-sqlite.json": "311bd1ffc3c9ace7815b93be36089f48e616055827fd749522a4c93c68719a68",
+    "metadata-jobs.json": "5c1d37989c708e05ba79c768ffe092e02c943959a0ee8b7cfc7a8bc661803126",
+    "metadata-run.json": "c046a08acb00ce345a0058006645502618ac551b3d95457e4497934f9ad0277b",
+    "report-review.json": "ecfd01d919844b2e4d9bd3960d6a1efe0260d0b5735e594c54481b7890165e9c",
+    "verify-reports.py": "d22cf2e97fce6e21185eb734a92c2d5840a4f5271eb4c2aa5d74f01b3a0eda51"
+  }
+}

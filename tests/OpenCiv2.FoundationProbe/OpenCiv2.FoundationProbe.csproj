@@ -1,0 +1,4 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup><ProjectReference Include="../OpenCiv2.FoundationCases/OpenCiv2.FoundationCases.csproj" /></ItemGroup>
+</Project>

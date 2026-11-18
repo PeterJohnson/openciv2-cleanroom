@@ -10,7 +10,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 import conformance_script as script
-import run_conformance as runner
+import conformance as runner
 
 COMMAND = sys.argv[1:]
 sys.argv[1:] = []

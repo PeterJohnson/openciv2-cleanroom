@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <Oc2Python Condition="'$(Oc2Python)' == '' and $([MSBuild]::IsOSPlatform('Windows'))">python</Oc2Python>
+    <Oc2Python Condition="'$(Oc2Python)' == ''">python3</Oc2Python>
+    <Oc2LuaWasmDirectory Condition="'$(Oc2LuaWasmDirectory)' == ''">$(MSBuildThisFileDirectory)../../build/lua/wasm</Oc2LuaWasmDirectory>
+    <Oc2LuaPrepareTool>$(MSBuildThisFileDirectory)../../tools/dotnet/prepare_lua_wasm.py</Oc2LuaPrepareTool>
+    <WasmBuildNative>true</WasmBuildNative>
+    <EmccExtraCFlags>$(EmccExtraCFlags) -I&quot;$(Oc2LuaWasmDirectory)/source&quot;</EmccExtraCFlags>
+    <EmccExtraLDFlags>$(EmccExtraLDFlags) -I&quot;$(Oc2LuaWasmDirectory)/source&quot;</EmccExtraLDFlags>
+  </PropertyGroup>
+  <ItemGroup>
+    <NativeFileReference Include="$(Oc2LuaWasmDirectory)/cpp/*.cpp" />
+    <_Oc2IdentityInput Include="$(MSBuildThisFileFullPath);$(Oc2LuaPrepareTool);$(MSBuildThisFileDirectory)../../tools/dotnet/build_lua.py;$(Oc2LuaWasmDirectory)/oc2-lua-wasm.json;$(Oc2LuaWasmDirectory)/source/*;$(Oc2LuaWasmDirectory)/cpp/*" />
+    <Content Include="$(Oc2LuaWasmDirectory)/LUA-NOTICE.txt" Link="wwwroot/LUA-NOTICE.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="RequirePinnedWasmLua" BeforeTargets="PrepareForBuild">
+    <Exec Command="&quot;$(Oc2Python)&quot; &quot;$(Oc2LuaPrepareTool)&quot; --verify --output &quot;$(Oc2LuaWasmDirectory)&quot;" />
+  </Target>
+</Project>

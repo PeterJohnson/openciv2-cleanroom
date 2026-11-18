@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -139,38 +140,8 @@ def validate(root=ROOT):
             require((path.parent / spec["file"]).resolve() == (root / specs[spec["id"]]["path"]).resolve(),
                     "fixture spec path mismatch")
         require(item["provenance"] == fixture["evidence"]["kind"], "fixture provenance mismatch")
-        if item["executionStatus"] == "not-run":
-            require(item["runReport"] is None, "unexecuted fixture has run report")
-        else:
-            require(item["executionStatus"] in {"passed", "failed"}, "unknown execution status")
-            require(op["implementation"] is not None, "unimplemented operation claimed executed")
-            report = read_json(local_file(root, item["runReport"]))
-            from run_conformance import SCOPE, SOURCES, compare, load_fixture, validate_adapter_identity, consumed_inputs
-            require(report["format"] == "openciv2-conformance-run/2" and report["runnerScope"] == SCOPE,
-                    "unsupported execution report")
-            require(set(report["implementationSources"]) == set(SOURCES), "incomplete implementation identity")
-            for source, expected_hash in report["implementationSources"].items():
-                require(digest(local_file(root, source)) == expected_hash, "execution report implementation changed")
-            validate_adapter_identity(report["adapterIdentity"], report["implementationSources"])
-            require(report["buildIdentity"] == report["adapterIdentity"]["buildIdentity"],
-                    "execution report build identity mismatch")
-            cases = indexed(report["cases"], "report case")
-            require(item["id"] in cases, "fixture missing from execution report")
-            case = cases[item["id"]]
-            require((case["revision"], case["sha256"], case["operation"], case["evidenceKind"]) ==
-                    (item["revision"], item["sha256"], item["operation"], item["provenance"]), "execution report identity mismatch")
-            require(case["specifications"] == fixture["specifications"] and
-                    case["comparison"] == fixture["comparison"] and case["profile"] == fixture["profile"] and
-                    case["evidence"] == fixture["evidence"] and case["target"] == fixture["target"] and
-                    case["randomness"] == fixture["randomness"] and
-                    case["limits"] == fixture["limits"],
-                    "execution report contract mismatch")
-            require(case["status"] == item["executionStatus"], "execution report status mismatch")
-            if case["status"] == "passed":
-                load_fixture(path, root)  # Enforce the registered state/typed-value closure too.
-                require(compare(fixture, case["actual"]) is None and case["firstMismatch"] is None,
-                        "execution report does not match fixture")
-                require(case["consumed"] == consumed_inputs(fixture), "execution report consumption mismatch")
+        require(item["executionStatus"] == "not-run" and item["runReport"] is None,
+                "Execution claims require a source-bound report from tools/dotnet/run_conformance.py")
 
     gaps = indexed(ledger["gaps"], "gap")
     for gap in gaps.values():
@@ -202,7 +173,8 @@ def validate(root=ROOT):
                     "run claimed without executed cases")
     return (f"{len(specs)} specification families; {len(operations)} registered operations; "
             f"{len(states)} state keys; {len(fixtures)} inventoried vectors; "
-            f"{len(integrations)} integration families. Metadata integrity only; no gameplay executed by this check.")
+            f"{len(integrations)} integration families. Execution evidence is recorded separately by the C# native/browser runner. "
+            "Metadata integrity only; no gameplay executed by this check.")
 
 
 def main():

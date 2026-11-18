@@ -2,7 +2,7 @@
 
 On 2026-11-14 the supplied original MGE executable ran through its normal Windows
 UI in the isolated `build/original-setup-runtime` directory. The
-[report](conformance/reports/original-calendar-windows.json) records executable
+[dated capture record](https://github.com/PeterJohnson/openciv2-cleanroom/blob/6e58a59e841760e7d3a5706e727d4bb8090bb224/docs/conformance/reports/original-calendar-windows.json) records executable
 and data hashes, the exact observed strings and nine retained screenshot
 identities. No reconstruction source, injected calls, process-memory inspection
 or historical harness was used. The original was closed after both comparisons.
@@ -25,3 +25,7 @@ for scenario calendars, spaceship launch effects, later period boundaries,
 signed wrap or custom JSON operands. Those implementation tests retain
 specification provenance. The runtime rule/text files inherit the earlier
 declared name probes; their exact identities are in the report.
+
+The linked capture metadata is preserved at its recorded revision. It does not
+validate the current C# exporter; repeat the procedure with current binaries and
+record fresh source, executable and file identities for that claim.

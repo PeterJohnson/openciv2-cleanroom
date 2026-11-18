@@ -27,7 +27,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -56,7 +56,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -86,7 +86,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -114,7 +114,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -144,7 +144,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -174,7 +174,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -204,7 +204,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -232,7 +232,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -262,7 +262,7 @@
         "enter -> return -> exit dependencies"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": []
     },
     {
@@ -296,7 +296,7 @@
         "complete registered replay context at exit"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": [
         "x02-general-runner"
       ]
@@ -333,7 +333,7 @@
         "complete registered replay context at exit"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": [
         "x02-general-runner"
       ]
@@ -368,7 +368,7 @@
         "complete registered replay context at exit"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": [
         "x02-general-runner"
       ]
@@ -406,7 +406,7 @@
         "complete registered replay context at exit"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": [
         "x02-general-runner"
       ]
@@ -444,7 +444,7 @@
         "unresolved prefix and completed-provider count"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": [
         "x02-general-runner"
       ]
@@ -490,7 +490,7 @@
         "old client rejection"
       ],
       "implementationStatus": "implemented",
-      "lastRun": "docs/conformance/reports/post-m1-native.json",
+      "lastRun": null,
       "gaps": [
         "fresh-game-projection-review"
       ]

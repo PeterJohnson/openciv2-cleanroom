@@ -3,7 +3,7 @@
 Status: version 1 **format specification**, not yet a released format. Remaining
 semantic component loaders, classic converter and playable default content are
 implementation-plan work.
-The [C++ content loaders](../m1-content-runtime.md) implement the six built-in
+The [C# content loaders](../m1-content-runtime.md) implement the six built-in
 gameplay components, common JSON admission and pack inheritance/selection with
 hash-verified mounted inputs. The [native rule decoder](../m1-rule-content.md)
 admits complete typed rule definitions and their references. The
@@ -36,7 +36,7 @@ X02 fixtures, an executable script language or a new multiplayer protocol.
 `oc2_formats` owns both JSON decoding and the classic text adapters. It consumes
 explicit byte sources supplied by the I/O layer and publishes logical data or
 an owner-defined operation into `oc2_game`/`oc2_session`. Presentation consumes
-semantic text through view models. No text parser requires SDL or native widgets.
+semantic text through view models. No text parser requires Avalonia or native widgets.
 Image/font/audio decoding remains in `oc2_content` under [asset-format.md](asset-format.md).
 
 Keep classic parsing and its effects at the compatibility boundary: section
@@ -93,7 +93,7 @@ gameplay or required text semantics.
 
 Numbers in gameplay input fields are mathematical integers in the signed
 32-bit token domain used by F03/S02, unless a narrower semantic domain is stated.
-This is an external authoring limit, not a C++ storage requirement. Parse integers
+This is an external authoring limit, not a runtime storage requirement. Parse integers
 exactly, reject fractional values and never route them through an imprecise
 floating representation. Apply the significant conversions specified below.
 Strings, booleans, null and integers are not implicitly interchangeable.

@@ -10,16 +10,19 @@ specification gap and resolve it through the behavioral contract or independent
 original-game observations. Required file/wire/data definitions in the specs
 remain implementation inputs even when documented in an appendix.
 
-Before committing C/C++/Objective-C changes:
+Before committing C# changes:
 
-1. Run `python3 tools/format.py` with the clang-format version pinned in
-   `dependencies.json` (use `python` on Windows).
-2. Review the formatted diff and stage only the intended changes. The formatter
-   never stages files; preserve any intentional partial staging.
-3. Run `python3 tools/format.py --staged` and the checks appropriate to the change.
+1. Run `dotnet format OpenCiv2.slnx --no-restore` from the repository root,
+   plus the affected optional solution under `solutions/` when applicable.
+2. Review the diff and stage only intended changes; preserve partial staging.
+3. Run formatting verification and the checks appropriate to the affected
+   projects. See [docs/BUILDING.md](docs/BUILDING.md) and
+   [docs/testing/README.md](docs/testing/README.md).
 
-Enable the repository hook with `git config --local core.hooksPath .githooks`
-when no other hook configuration needs preserving. The hook checks staged
-contents and fails on formatting errors; fix them before committing.
-See [docs/BUILDING.md](docs/BUILDING.md#formatting-and-commits) for setup, commands
-and the CI check. Do not format dependencies or generated build files.
+For optional native Lua bridge changes, preserve its local C style and run the
+bridge's sanitizer and native/browser resource tests. Do not format dependencies
+or generated build files.
+
+Current project ownership is in [docs/code-guide.md](docs/code-guide.md).
+Continue work from [docs/implementation-plan.md](docs/implementation-plan.md);
+implemented foundation contracts do not imply the full specification is complete.

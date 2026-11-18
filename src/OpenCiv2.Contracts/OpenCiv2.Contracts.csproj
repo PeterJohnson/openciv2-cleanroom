@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup><ProjectReference Include="../OpenCiv2.Base/OpenCiv2.Base.csproj" /></ItemGroup>
+</Project>

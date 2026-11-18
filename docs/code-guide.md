@@ -1,79 +1,64 @@
-# Reading the source
+# Reading and extending the source
 
-Start with a module's `.cppm` file. It declares the types and operations available
-to its consumers, with Doxygen comments describing ownership, mutation, failure,
-and compatibility rules. Larger implementations live in the matching `.cpp`;
-smaller ones follow `module :private;` in the interface file. Internal module
-partitions, such as `session/runtime_state.cppm`, hold implementation details.
+Open `OpenCiv2.slnx` at the repository root for the headless core, CLI and tests.
+Optional solutions in `solutions/` add the desktop application, Lua, SQLite and
+performance probes. SDK/runtime/package versions are pinned centrally.
 
-`docs/architecture.md` defines the cleanroom boundary and the algorithm
-specifications indexed by `docs/algorithms/README.md` define gameplay behavior.
-Comments citing F01, F06, N02, or other specification IDs point to those contracts.
-They describe implemented operations, not a claim that the entire referenced
-specification is complete. Historical provenance links are not implementation
-inputs.
+Read the owning behavioral specification and [architecture](architecture.md)
+before changing a gameplay operation. The [coverage inventory](testing/coverage.md)
+links supported APIs and tests; [implementation milestones](implementation-plan.md)
+identify what remains. Contracts describe ownership and partial failure as well
+as successful results. Required file/wire layouts are explicit codecs, never
+runtime object layouts.
 
-## Where to look
+## Project map
 
-| Directory | Responsibility | Useful starting point |
+Projects live in `src/`; case libraries and executable hosts live in `tests/`.
+
+| Project | Responsibility | Useful starting point |
 | --- | --- | --- |
-| `src/base` | Defined arithmetic, random domains, callbacks, cancellation, identities | `arithmetic.cppm`, `random.cppm` |
-| `src/state` | Live world records, rules, preferences, and owned text | `game.cppm`, `records.cppm`, `rule_state.cppm` |
-| `src/world` | Doubled map coordinates, topology, layers, and tile updates | `geometry.cppm`, `map.cppm` |
-| `src/unit`, `src/city`, `src/civilization`, `src/ai`, `src/turn` | Specification-owned mechanics | `unit/stacks.cppm`, `ai/goals.cppm`, `turn/calendar.cppm` |
-| `src/rules` | Normalize and install selected rule inputs | `rules_install.cppm` |
-| `src/formats` | Classic byte/text codecs and native content decoding | `bytes.cppm`, `classic_save.cppm`, `content_pack.cppm` |
-| `src/session` | Setup/load/save workflows, command admission, clients, and publication | `runtime.cppm`, `client.cppm`, `commands.cppm` |
-| `src/network` | Classic messages, state images, compression, and stream framing | `messages.cppm`, `sections.cppm`, `stream.cppm` |
-| `src/query`, `src/analysis` | Owned observations, file inspection, diffs, and optional SQLite export | `query/stored.cppm`, `query/live_records.cppm` |
-| `src/io`, `src/platform` | Portable I/O contracts and native file/menu adapters | `io/stream.cppm`, `platform/classic_files.cppm` |
-| `src/viewmodel`, `src/ui` | Shell decisions and their graphical presentation | `viewmodel/shell.cppm`, `ui/interface.cppm` |
-| `src/application.cppm` | SDL application composition and event/frame lifecycle | `Application` |
+| `OpenCiv2.Base`, `OpenCiv2.IO` | Arithmetic, PCG32/choices, owned values and byte/storage contracts | `Arithmetic.cs`, `Randomness/RandomContext.cs`, `Storage.cs` |
+| `OpenCiv2.Contracts` | Immutable client observations, commands and setup values | `Clients.cs`, `Commands.cs` |
+| `OpenCiv2.Core` | Live state, map geometry/storage, rules and implemented gameplay leaves | `State/GameState.cs`, `MapStorage.cs`, `Rules/RuleInstaller.cs` |
+| `OpenCiv2.Formats` | Classic codecs, content decoding/conversion and versioned checkpoints | `ClassicFiles.cs`, `Content/ContentPack.cs`, `LocalCheckpointCodec.cs` |
+| `OpenCiv2.Session` | Authority, clients, continuations, setup/load/save and checkpoint ownership | `SessionRuntime.cs`, `CommandRuntime.cs`, `Checkpoint.cs` |
+| `OpenCiv2.Network` | Messages, framing, queues, compression and state images | `Stream.cs`, `SendQueue.cs`, `Sections.cs` |
+| `OpenCiv2.Query` | Stored inspection/diffs and observer-filtered live values | `StoredInspection.cs`, `LiveProjection.cs` |
+| `OpenCiv2.IO.Native`, `OpenCiv2.Platform.Native` | Native filesystem and classic text adapters | `NativeFiles.cs`, `ClassicStorage.cs`, `ClassicTextFiles.cs` |
+| `OpenCiv2.Cli`, `OpenCiv2.Export.Sqlite`, `OpenCiv2.Cli.Sqlite` | CLI composition and optional native export | `Program.cs`, `SqliteSnapshot.cs` |
+| `OpenCiv2.Automation` | Optional stock Lua interpreter, scoped player API and resource budgets | `LuaMachine.cs`, `ScriptTask.cs` |
+| `OpenCiv2.ViewModels`, `OpenCiv2.Console` | UI-independent player-client model and command parser | `SessionPanel.cs`, `CommandText.cs` |
+| `OpenCiv2.App`, `OpenCiv2.Desktop`, `OpenCiv2.Browser` | In-progress production Avalonia integration host | `SeamSession.cs`, `SeamView.cs`, `Program.cs` |
 
-## Contracts to keep in view
+Shared cases are in `tests/OpenCiv2.FoundationCases`; native and browser
+hosts execute the same portable cases. Native I/O and optional SQLite have their
+own tests. `OpenCiv2.Conformance` and its two hosts exercise the selected X02
+fixtures. Build commands and evidence checks are in the
+[build guide](BUILDING.md). Public client APIs expose owned values;
+mutable Core records and borrowed spans stay behind the session boundary.
 
-- **Stored and live values differ.** `formats::Stored*` types retain classic file
-  fields and opaque bytes. Live state uses semantic values, owned strings, and
-  lifetime tokens. Codecs serialize explicit widths and byte order; they do not
-  dump native objects.
-- **Slots do not identify lifetimes.** Unit and city targets carry both a slot and
-  a token. Pool scan bounds can include holes and are distinct from live counts.
-- **Borrowed services need stable owners.** References, spans, and `CallbackRef`
-  do not own their backing. Read each operation's lifetime and reentry contract
-  before retaining a view or invoking an injected service.
-- **Randomness is explicit.** Gameplay, presentation-content, and cosmetic
-  contexts are separate types. Semantic choice keys identify decisions; they are
-  not draw indices. Equal-bound sampling may consume no decision.
-- **Publication belongs to the operation.** `SessionRuntime::publish()` advances
-  observations at specified boundaries. A failure can retain earlier effects;
-  staged decoding and replacement are documented separately where supported.
-- **Classic arithmetic is intentional.** Wrapping integers, signed-count shifts,
-  clamp ordering, coordinate aliases, and one-step wrapping encode behavioral
-  contracts. Do not replace them with conventional arithmetic based on names
-  alone.
+## Adding behavior
 
-## Browsing the API
+1. Choose the owning subsystem inside Core, Formats, Network or Session. Keep
+   portable algorithms independent of filesystem, UI, database and Lua packages.
+2. Put player-visible values and command descriptors in Contracts. Session owns
+   authority, continuations and effects; ViewModels, Console and Automation receive
+   scoped `IPlayerClient` bindings. Composition roots alone construct mutable worlds.
+3. Add meaningful boundary/failure cases to FoundationCases when portable. Register
+   them in `FoundationSuite`; native xUnit and browser hosts execute the same cases.
+   Keep OS I/O tests in Base.Tests and optional interpreter/database tests separate.
+4. Update `docs/testing/coverage.json` and the owning contract. For new X02 behavior,
+   follow [conformance registration](conformance/README.md#updating-an-operation).
+5. Run affected builds/tests and project-boundary checks from [the build guide](BUILDING.md).
+   Rebuild after source/specification edits before accepting an identity-bound report.
 
-With Doxygen installed, run this from the repository root:
+Use explicit constructors, small service interfaces and C# XML documentation for
+nonobvious ownership, mutation, failure and lifetime rules. Preserve explicit
+integer wrapping and sampling laws rather than replacing them based on names.
+No reflection-driven command dispatcher, global mutable service locator or generic
+ECS is required. Avoid per-frame world copies and one UI control per map tile.
 
-```sh
-doxygen Doxyfile
-```
-
-Open `build/api-docs/html/index.html`. The configuration recognizes `.cppm` as
-C++, includes source navigation, and writes diagnostics to
-`build/api-docs/warnings.log`. Documentation generation is separate from the
-normal build and does not fetch dependencies.
-
-## Maintaining comments
-
-Document a class's responsibility and ownership at its declaration. Document a
-function's observable result and any nonobvious precondition, mutation, failure,
-or lifetime rule beside the declaration callers read. Use `///` comments and
-`@param`, `@return`, or `@throws` when they clarify a contract. Defaulted special
-members and straightforward forwarding definitions generally inherit the type
-or interface contract instead of repeating it.
-
-Keep specification references and explain why unusual ordering or arithmetic is
-required. Put implementation rationale near the relevant branch. Avoid comments
-that merely restate the name, and update the contract whenever behavior changes.
+Native interop is limited to the optional stock Lua bridge and SQLite API. Keep
+protected native calls, safe-handle lifetimes and resource budgets intact. Tools
+under `tools/dotnet/` build dependencies, execute hosts and verify evidence; root
+Python tools validate specification/content data independently of the application.

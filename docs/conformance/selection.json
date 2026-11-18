@@ -1,0 +1,524 @@
+{
+  "format": "openciv2-managed-conformance-selection/1",
+  "policy": {
+    "id": "oc2-pcg32",
+    "version": "1",
+    "file": "docs/random-policy-pcg32.md",
+    "sha256": "de8d3832fd83d0591b0aa5756696afb2f3bc4177976b18fc55618b1b2a7cf19d"
+  },
+  "cases": [
+    {
+      "historicalId": "X02.F01.equal-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-equal-range.json",
+      "historicalSha256": "8da89c3a270dc53539a139e98569ecc9ea8308344a88db2907f821ccae378bd8",
+      "id": "X02.F01.equal-range",
+      "path": "docs/algorithms/conformance/X02-F01-equal-range.json",
+      "sha256": "8da89c3a270dc53539a139e98569ecc9ea8308344a88db2907f821ccae378bd8",
+      "operation": "F01.secondaryRangeFromCode"
+    },
+    {
+      "historicalId": "X02.F01.primary-modulo",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
+      "historicalSha256": "4f078421db2c406ba5bd37b1cc2e6aebdd45c233ced468f7b2f51fcca97ea245",
+      "id": "X02.F01.primary-modulo",
+      "path": "docs/algorithms/conformance/X02-F01-primary-modulo.json",
+      "sha256": "4f078421db2c406ba5bd37b1cc2e6aebdd45c233ced468f7b2f51fcca97ea245",
+      "operation": "F01.primaryModuloFromCode"
+    },
+    {
+      "historicalId": "X02.F01.sample-cosmetic-code",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-cosmetic-code.json",
+      "historicalSha256": "792f329f6ccd73c501da952827b4203cb2109861529f158eb3ace001998865e3",
+      "id": "X02.F01.sample-cosmetic-code",
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-code.json",
+      "sha256": "792f329f6ccd73c501da952827b4203cb2109861529f158eb3ace001998865e3",
+      "operation": "F01.primaryCode"
+    },
+    {
+      "historicalId": "X02.F01.sample-cosmetic-modulo",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-cosmetic-modulo.json",
+      "historicalSha256": "bcdd0b954a99d7f45952406b66f34fc412d6b89980c9502812de272eee8944b7",
+      "id": "X02.F01.sample-cosmetic-modulo",
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-modulo.json",
+      "sha256": "bcdd0b954a99d7f45952406b66f34fc412d6b89980c9502812de272eee8944b7",
+      "operation": "F01.primaryModulo"
+    },
+    {
+      "historicalId": "X02.F01.sample-cosmetic-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-cosmetic-range.json",
+      "historicalSha256": "8fa81ef3a941421a970bd9c0c8a03c7d1d6a2470bc4a2e48618e927da6c6f59a",
+      "id": "X02.F01.sample-cosmetic-range",
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-range.json",
+      "sha256": "8fa81ef3a941421a970bd9c0c8a03c7d1d6a2470bc4a2e48618e927da6c6f59a",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-cosmetic-unit",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-cosmetic-unit.json",
+      "historicalSha256": "37ec502977b754d36a69248582a4df9b2b7eba70390d1c9101d0fe869a6f9115",
+      "id": "X02.F01.sample-cosmetic-unit",
+      "path": "docs/algorithms/conformance/X02-F01-sample-cosmetic-unit.json",
+      "sha256": "37ec502977b754d36a69248582a4df9b2b7eba70390d1c9101d0fe869a6f9115",
+      "operation": "F01.secondaryUnit"
+    },
+    {
+      "historicalId": "X02.F01.sample-equal-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-equal-range.json",
+      "historicalSha256": "12423016c75cbf5c1dcdde4e6bf43242e08b49cd3572038fd6d7e579f14e9883",
+      "id": "X02.F01.sample-equal-range",
+      "path": "docs/algorithms/conformance/X02-F01-sample-equal-range.json",
+      "sha256": "12423016c75cbf5c1dcdde4e6bf43242e08b49cd3572038fd6d7e579f14e9883",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-gameplay-code",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-gameplay-code.json",
+      "historicalSha256": "384affa895f73863bf44c3bba7d045fbd115b78d4a8aa02b0267026c0313fb43",
+      "id": "X02.F01.sample-gameplay-code",
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-code.json",
+      "sha256": "384affa895f73863bf44c3bba7d045fbd115b78d4a8aa02b0267026c0313fb43",
+      "operation": "F01.primaryCode"
+    },
+    {
+      "historicalId": "X02.F01.sample-gameplay-modulo",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-gameplay-modulo.json",
+      "historicalSha256": "f6d606b05846293a5c2d3235a9c1f1d25c4048df0079456f1f31dbbe58b7cdba",
+      "id": "X02.F01.sample-gameplay-modulo",
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-modulo.json",
+      "sha256": "f6d606b05846293a5c2d3235a9c1f1d25c4048df0079456f1f31dbbe58b7cdba",
+      "operation": "F01.primaryModulo"
+    },
+    {
+      "historicalId": "X02.F01.sample-gameplay-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-gameplay-range.json",
+      "historicalSha256": "fc578ec797fa699cb58080b131cee42f973ce9c7a9cd1e52dc67cabc0e942fbe",
+      "id": "X02.F01.sample-gameplay-range",
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-range.json",
+      "sha256": "fc578ec797fa699cb58080b131cee42f973ce9c7a9cd1e52dc67cabc0e942fbe",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-gameplay-unit",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-gameplay-unit.json",
+      "historicalSha256": "c69f45a1065bc9fc5a2eb1d80a4fb02173d200bde9684d1461d10b8fdd88ff34",
+      "id": "X02.F01.sample-gameplay-unit",
+      "path": "docs/algorithms/conformance/X02-F01-sample-gameplay-unit.json",
+      "sha256": "c69f45a1065bc9fc5a2eb1d80a4fb02173d200bde9684d1461d10b8fdd88ff34",
+      "operation": "F01.secondaryUnit"
+    },
+    {
+      "historicalId": "X02.F01.sample-large-divisor",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-large-divisor.json",
+      "historicalSha256": "90765a2bbc796862d78172dd7904fb710135722e0821dfac4e2dcbe66a2194dc",
+      "id": "X02.F01.sample-large-divisor",
+      "path": "docs/algorithms/conformance/X02-F01-sample-large-divisor.json",
+      "sha256": "90765a2bbc796862d78172dd7904fb710135722e0821dfac4e2dcbe66a2194dc",
+      "operation": "F01.primaryModulo"
+    },
+    {
+      "historicalId": "X02.F01.sample-presentation-content-code",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-presentation-content-code.json",
+      "historicalSha256": "ac3482ca32ee1e198fdc5c077284cfa18a9f6ef62756b074a69927d6a3df7c10",
+      "id": "X02.F01.sample-presentation-content-code",
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-code.json",
+      "sha256": "ac3482ca32ee1e198fdc5c077284cfa18a9f6ef62756b074a69927d6a3df7c10",
+      "operation": "F01.primaryCode"
+    },
+    {
+      "historicalId": "X02.F01.sample-presentation-content-modulo",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-presentation-content-modulo.json",
+      "historicalSha256": "701ad9e7956382fc92e547aee8cf8d4bc9ec9499fded054220d0350df572283e",
+      "id": "X02.F01.sample-presentation-content-modulo",
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-modulo.json",
+      "sha256": "701ad9e7956382fc92e547aee8cf8d4bc9ec9499fded054220d0350df572283e",
+      "operation": "F01.primaryModulo"
+    },
+    {
+      "historicalId": "X02.F01.sample-presentation-content-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-presentation-content-range.json",
+      "historicalSha256": "594589993acca1d805af1431c29519570a4c2ce5c6bd6338a6dfc2d0d106b008",
+      "id": "X02.F01.sample-presentation-content-range",
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-range.json",
+      "sha256": "594589993acca1d805af1431c29519570a4c2ce5c6bd6338a6dfc2d0d106b008",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-presentation-content-unit",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-presentation-content-unit.json",
+      "historicalSha256": "c7354f4886567d83e797b3717054e1ba209180fd82c1725928f229f42c59cb48",
+      "id": "X02.F01.sample-presentation-content-unit",
+      "path": "docs/algorithms/conformance/X02-F01-sample-presentation-content-unit.json",
+      "sha256": "c7354f4886567d83e797b3717054e1ba209180fd82c1725928f229f42c59cb48",
+      "operation": "F01.secondaryUnit"
+    },
+    {
+      "historicalId": "X02.F01.sample-replay-cosmetic",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
+      "historicalSha256": "8a9c80d45caede3fccc662706666c30fe5013150b7eecca25ff382e486c72441",
+      "id": "X02.F01.sample-replay-cosmetic.pcg32-v1",
+      "path": "docs/algorithms/conformance-pcg32/X02-F01-sample-replay-cosmetic.json",
+      "sha256": "7d9ef33b82820237fe4d91c476a953c207790ba5b68c9820192bda24b1b8dd97",
+      "operation": "F01.primaryCode"
+    },
+    {
+      "historicalId": "X02.F01.sample-replay-equal-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
+      "historicalSha256": "160d6a06f397cc491aae8afff0f1ca0bcde2c2861f0d5e31ac5bde6581467b87",
+      "id": "X02.F01.sample-replay-equal-range.pcg32-v1",
+      "path": "docs/algorithms/conformance-pcg32/X02-F01-sample-replay-equal-range.json",
+      "sha256": "2278b1ac072859aedc97ea4065a147d9e089a19e881bf8e57c82a5bcbd70961f",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-replay-gameplay",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
+      "historicalSha256": "3909e36c97a65bfdcd638cf24f860ee5d826694e8d6388768535a4132afcf379",
+      "id": "X02.F01.sample-replay-gameplay.pcg32-v1",
+      "path": "docs/algorithms/conformance-pcg32/X02-F01-sample-replay-gameplay.json",
+      "sha256": "c3fe9fc649437a48fe96f8161a2a3fb3a7d9549a50797af216de85607d44ba94",
+      "operation": "F01.primaryCode"
+    },
+    {
+      "historicalId": "X02.F01.sample-replay-modulo",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
+      "historicalSha256": "431922748edb4bc688e83a1149c125c1aafadd20dc2d173ef9960a84c302d9cd",
+      "id": "X02.F01.sample-replay-modulo.pcg32-v1",
+      "path": "docs/algorithms/conformance-pcg32/X02-F01-sample-replay-modulo.json",
+      "sha256": "352d0afa42682ee8237211d06bcbd22c63f894b635ba5c32f2c9907a26c663fe",
+      "operation": "F01.primaryModulo"
+    },
+    {
+      "historicalId": "X02.F01.sample-replay-presentation-content",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
+      "historicalSha256": "d84826a50ba22a4b45e41a72919cd321d04a72b962a506536ede22d1e7d02c55",
+      "id": "X02.F01.sample-replay-presentation-content.pcg32-v1",
+      "path": "docs/algorithms/conformance-pcg32/X02-F01-sample-replay-presentation-content.json",
+      "sha256": "3f180ebf628b23234a611f82b7680ae18dce6f2c1872b9081bf73abacce476c0",
+      "operation": "F01.primaryCode"
+    },
+    {
+      "historicalId": "X02.F01.sample-replay-singleton",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
+      "historicalSha256": "5a10d7c94a16ab634ef6527606b3d05ca17580a99eb147bd30d7cc24004b6b7f",
+      "id": "X02.F01.sample-replay-singleton.pcg32-v1",
+      "path": "docs/algorithms/conformance-pcg32/X02-F01-sample-replay-singleton.json",
+      "sha256": "c518bb6e67ce59170890bee0248497119222d0156b60287f696742d60c32a525",
+      "operation": "F01.primaryModulo"
+    },
+    {
+      "historicalId": "X02.F01.sample-replay-unit",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
+      "historicalSha256": "26b1c2ae51630d8b04906641d0a0dda7067744ea2b9b941ca470162fe488a70e",
+      "id": "X02.F01.sample-replay-unit.pcg32-v1",
+      "path": "docs/algorithms/conformance-pcg32/X02-F01-sample-replay-unit.json",
+      "sha256": "a03631f081c8495e9b87f065fc9ea0e42221ca54267af643953abfe1290d213a",
+      "operation": "F01.secondaryUnit"
+    },
+    {
+      "historicalId": "X02.F01.sample-reversed-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-reversed-range.json",
+      "historicalSha256": "7533eec677ad5c64e1a04dfde54b25075c29300d3668a84a398dd5d5fe03611a",
+      "id": "X02.F01.sample-reversed-range",
+      "path": "docs/algorithms/conformance/X02-F01-sample-reversed-range.json",
+      "sha256": "7533eec677ad5c64e1a04dfde54b25075c29300d3668a84a398dd5d5fe03611a",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-rounded-endpoint",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
+      "historicalSha256": "11b78129e91cbd576ea43675905a30b7fb887e0269bb6b9fb82aef36877c1946",
+      "id": "X02.F01.sample-rounded-endpoint",
+      "path": "docs/algorithms/conformance/X02-F01-sample-rounded-endpoint.json",
+      "sha256": "11b78129e91cbd576ea43675905a30b7fb887e0269bb6b9fb82aef36877c1946",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-singleton",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-singleton.json",
+      "historicalSha256": "d1d7623ffacadf354c09b3d8a544774c3135e7b50979025ab8b3cec6eee8700d",
+      "id": "X02.F01.sample-singleton",
+      "path": "docs/algorithms/conformance/X02-F01-sample-singleton.json",
+      "sha256": "d1d7623ffacadf354c09b3d8a544774c3135e7b50979025ab8b3cec6eee8700d",
+      "operation": "F01.primaryModulo"
+    },
+    {
+      "historicalId": "X02.F01.sample-wrapped-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
+      "historicalSha256": "3a6b78a03cb37f27b7b9ea82182ea300b748e30b49e072e9d67f732100ebd340",
+      "id": "X02.F01.sample-wrapped-range",
+      "path": "docs/algorithms/conformance/X02-F01-sample-wrapped-range.json",
+      "sha256": "3a6b78a03cb37f27b7b9ea82182ea300b748e30b49e072e9d67f732100ebd340",
+      "operation": "F01.secondaryRange"
+    },
+    {
+      "historicalId": "X02.F01.sample-zero-unit",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-sample-zero-unit.json",
+      "historicalSha256": "0e4fe9b9ff08913dffcab3fe6b9d977d9dc3f3873262a3ea120210516d577e48",
+      "id": "X02.F01.sample-zero-unit",
+      "path": "docs/algorithms/conformance/X02-F01-sample-zero-unit.json",
+      "sha256": "0e4fe9b9ff08913dffcab3fe6b9d977d9dc3f3873262a3ea120210516d577e48",
+      "operation": "F01.secondaryUnit"
+    },
+    {
+      "historicalId": "X02.F01.wrapped-range",
+      "historicalPath": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
+      "historicalSha256": "414838bafd1ab3b5411a6415940bf6fe7a33d49a9659f09ca8701f84ce831894",
+      "id": "X02.F01.wrapped-range",
+      "path": "docs/algorithms/conformance/X02-F01-wrapped-range.json",
+      "sha256": "414838bafd1ab3b5411a6415940bf6fe7a33d49a9659f09ca8701f84ce831894",
+      "operation": "F01.secondaryRangeFromCode"
+    },
+    {
+      "historicalId": "X02.F02.city-token-wrap",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-city-token-wrap.json",
+      "historicalSha256": "03bfd5c30f35a9f6a1fb76338f121b0353d0d9cbb277daf29e11c542d05e180c",
+      "id": "X02.F02.city-token-wrap",
+      "path": "docs/algorithms/conformance/X02-F02-city-token-wrap.json",
+      "sha256": "03bfd5c30f35a9f6a1fb76338f121b0353d0d9cbb277daf29e11c542d05e180c",
+      "operation": "F02.assignCityToken"
+    },
+    {
+      "historicalId": "X02.F02.fresh-game-cold",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-fresh-game-cold.json",
+      "historicalSha256": "9171ac20e1c0e781766a70f594e91e6b99956e9f6676d2c15845dd2c68cf249e",
+      "id": "X02.F02.fresh-game-cold",
+      "path": "docs/algorithms/conformance/X02-F02-fresh-game-cold.json",
+      "sha256": "9171ac20e1c0e781766a70f594e91e6b99956e9f6676d2c15845dd2c68cf249e",
+      "operation": "F02.prepareNewGame"
+    },
+    {
+      "historicalId": "X02.F02.fresh-game-empty-scans",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-fresh-game-empty-scans.json",
+      "historicalSha256": "cadec30f269b0351cf36c516097a70895bb9ba2c021fec9f13b106c500c53c1f",
+      "id": "X02.F02.fresh-game-empty-scans",
+      "path": "docs/algorithms/conformance/X02-F02-fresh-game-empty-scans.json",
+      "sha256": "cadec30f269b0351cf36c516097a70895bb9ba2c021fec9f13b106c500c53c1f",
+      "operation": "F02.prepareNewGame"
+    },
+    {
+      "historicalId": "X02.F02.fresh-game-used",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-fresh-game-used.json",
+      "historicalSha256": "603dfa8e8f3c9bd632dee71b6906311186fb33ce017fa6001ee5871ac0d9805a",
+      "id": "X02.F02.fresh-game-used",
+      "path": "docs/algorithms/conformance/X02-F02-fresh-game-used.json",
+      "sha256": "603dfa8e8f3c9bd632dee71b6906311186fb33ce017fa6001ee5871ac0d9805a",
+      "operation": "F02.prepareNewGame"
+    },
+    {
+      "historicalId": "X02.F02.unit-reserve-extend",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-unit-reserve-extend.json",
+      "historicalSha256": "1e9d65215719af4b129c60e969efa3fa337f62b2ed1d605e7b38422e2973b1b0",
+      "id": "X02.F02.unit-reserve-extend",
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-extend.json",
+      "sha256": "1e9d65215719af4b129c60e969efa3fa337f62b2ed1d605e7b38422e2973b1b0",
+      "operation": "F02.reserveUnitSlot"
+    },
+    {
+      "historicalId": "X02.F02.unit-reserve-hole",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-unit-reserve-hole.json",
+      "historicalSha256": "698a7face726c99ce8e329d8b8c75c545b698567f6a328958b36a24a7c429dae",
+      "id": "X02.F02.unit-reserve-hole",
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-hole.json",
+      "sha256": "698a7face726c99ce8e329d8b8c75c545b698567f6a328958b36a24a7c429dae",
+      "operation": "F02.reserveUnitSlot"
+    },
+    {
+      "historicalId": "X02.F02.unit-reserve-military-limit",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
+      "historicalSha256": "03c70898335d8283686788c8aeb735270160abc2d06ea34a6ee2d20f2f2707c6",
+      "id": "X02.F02.unit-reserve-military-limit",
+      "path": "docs/algorithms/conformance/X02-F02-unit-reserve-military-limit.json",
+      "sha256": "03c70898335d8283686788c8aeb735270160abc2d06ea34a6ee2d20f2f2707c6",
+      "operation": "F02.reserveUnitSlot"
+    },
+    {
+      "historicalId": "X02.F02.unit-token-initial",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-unit-token-initial.json",
+      "historicalSha256": "01f887eba06942da21ca5fc268f057883d1da11b1b080c4428484c77d6d3ba62",
+      "id": "X02.F02.unit-token-initial",
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-initial.json",
+      "sha256": "01f887eba06942da21ca5fc268f057883d1da11b1b080c4428484c77d6d3ba62",
+      "operation": "F02.assignUnitToken"
+    },
+    {
+      "historicalId": "X02.F02.unit-token-wrap",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-unit-token-wrap.json",
+      "historicalSha256": "d310242f24610ca5b30d5cbf4763d70a4608c9e5f3739750cf58eb0d5320a3e1",
+      "id": "X02.F02.unit-token-wrap",
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-wrap.json",
+      "sha256": "d310242f24610ca5b30d5cbf4763d70a4608c9e5f3739750cf58eb0d5320a3e1",
+      "operation": "F02.assignUnitToken"
+    },
+    {
+      "historicalId": "X02.F02.unit-token-zero",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-unit-token-zero.json",
+      "historicalSha256": "2fa10d9f22f7f02f41e917967cebb79ae7362eebe58ae4f8ae8614dbbee6e829",
+      "id": "X02.F02.unit-token-zero",
+      "path": "docs/algorithms/conformance/X02-F02-unit-token-zero.json",
+      "sha256": "2fa10d9f22f7f02f41e917967cebb79ae7362eebe58ae4f8ae8614dbbee6e829",
+      "operation": "F02.assignUnitToken"
+    },
+    {
+      "historicalId": "X02.F02.workspace-absent",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-absent.json",
+      "historicalSha256": "76f81efaf7b63cdba42139ad371735e547926039722db8827d5d2e684bb6c44f",
+      "id": "X02.F02.workspace-absent",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-absent.json",
+      "sha256": "76f81efaf7b63cdba42139ad371735e547926039722db8827d5d2e684bb6c44f",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.F02.workspace-cached-wrap",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-cached-wrap.json",
+      "historicalSha256": "c6d089c90e12725d0e0fa363db3a167bb3c2dab7ceccafda7c10be976c043133",
+      "id": "X02.F02.workspace-cached-wrap",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-cached-wrap.json",
+      "sha256": "c6d089c90e12725d0e0fa363db3a167bb3c2dab7ceccafda7c10be976c043133",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.F02.workspace-cached",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-cached.json",
+      "historicalSha256": "e6b75c1d3c3ff82df1409a249e60bb23c13cfba0fc2d04f874982a43de88c955",
+      "id": "X02.F02.workspace-cached",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-cached.json",
+      "sha256": "e6b75c1d3c3ff82df1409a249e60bb23c13cfba0fc2d04f874982a43de88c955",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.F02.workspace-failure-output",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-failure-output.json",
+      "historicalSha256": "3de9f8cb1b6fc811acb6cf171a1a97147fe8b6cd750ed327b0eb0dacde26b071",
+      "id": "X02.F02.workspace-failure-output",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-failure-output.json",
+      "sha256": "3de9f8cb1b6fc811acb6cf171a1a97147fe8b6cd750ed327b0eb0dacde26b071",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.F02.workspace-publication",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-publication.json",
+      "historicalSha256": "3e63e88742c9e2f584f720ec4d17eb0ddcda310942e977cc278aac3faf234353",
+      "id": "X02.F02.workspace-publication",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-publication.json",
+      "sha256": "3e63e88742c9e2f584f720ec4d17eb0ddcda310942e977cc278aac3faf234353",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.F02.workspace-reentry",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-reentry.json",
+      "historicalSha256": "9a318f0e009e076e9878b3bfbc919c73dedcea8aa3803b195af146bec3c13e75",
+      "id": "X02.F02.workspace-reentry",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-reentry.json",
+      "sha256": "9a318f0e009e076e9878b3bfbc919c73dedcea8aa3803b195af146bec3c13e75",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.F02.workspace-unresolved-after-reentry",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-unresolved-after-reentry.json",
+      "historicalSha256": "c1764577419903082da44a46f6bef9cf723433b8903ad30015d731993609ffe5",
+      "id": "X02.F02.workspace-unresolved-after-reentry",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved-after-reentry.json",
+      "sha256": "c1764577419903082da44a46f6bef9cf723433b8903ad30015d731993609ffe5",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.F02.workspace-unresolved",
+      "historicalPath": "docs/algorithms/conformance/X02-F02-workspace-unresolved.json",
+      "historicalSha256": "0d3132c7fd9762f9cb5c8cee5684273200c2d090b8f8faee42f6f03af5d1e0de",
+      "id": "X02.F02.workspace-unresolved",
+      "path": "docs/algorithms/conformance/X02-F02-workspace-unresolved.json",
+      "sha256": "0d3132c7fd9762f9cb5c8cee5684273200c2d090b8f8faee42f6f03af5d1e0de",
+      "operation": "F02.cityCalculationEntry"
+    },
+    {
+      "historicalId": "X02.W01.lookup-alias",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-lookup-alias.json",
+      "historicalSha256": "13c8748241c11820867d3a68e50e9a09567c209194d708b8e343e9090fd708f5",
+      "id": "X02.W01.lookup-alias",
+      "path": "docs/algorithms/conformance/X02-W01-lookup-alias.json",
+      "sha256": "13c8748241c11820867d3a68e50e9a09567c209194d708b8e343e9090fd708f5",
+      "operation": "W01.tileIndex"
+    },
+    {
+      "historicalId": "X02.W01.lookup-canonical",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-lookup-canonical.json",
+      "historicalSha256": "82a984b16c7f8d62217ebf4f60f041c5e367ce4e877c85d91b8c748e69011137",
+      "id": "X02.W01.lookup-canonical",
+      "path": "docs/algorithms/conformance/X02-W01-lookup-canonical.json",
+      "sha256": "82a984b16c7f8d62217ebf4f60f041c5e367ce4e877c85d91b8c748e69011137",
+      "operation": "W01.tileIndex"
+    },
+    {
+      "historicalId": "X02.W01.lookup-miss",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-lookup-miss.json",
+      "historicalSha256": "bf6e903d4f761e8688b5159361a5d058fd8365f6b0102d73a19f18bcaa445ed8",
+      "id": "X02.W01.lookup-miss",
+      "path": "docs/algorithms/conformance/X02-W01-lookup-miss.json",
+      "sha256": "bf6e903d4f761e8688b5159361a5d058fd8365f6b0102d73a19f18bcaa445ed8",
+      "operation": "W01.tileIndex"
+    },
+    {
+      "historicalId": "X02.W01.step-minimum",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-step-minimum.json",
+      "historicalSha256": "ce8d0cb1e58f79c17584bb0ddfade1a6222ce600847629391d8aa69b48d2c37a",
+      "id": "X02.W01.step-minimum",
+      "path": "docs/algorithms/conformance/X02-W01-step-minimum.json",
+      "sha256": "ce8d0cb1e58f79c17584bb0ddfade1a6222ce600847629391d8aa69b48d2c37a",
+      "operation": "W01.stepDistance"
+    },
+    {
+      "historicalId": "X02.W01.step-off-map",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-step-off-map.json",
+      "historicalSha256": "665a85cfc2891b6b515e4aaeae4182d942ea8db3f0b8112402503fbb3acdcb5c",
+      "id": "X02.W01.step-off-map",
+      "path": "docs/algorithms/conformance/X02-W01-step-off-map.json",
+      "sha256": "665a85cfc2891b6b515e4aaeae4182d942ea8db3f0b8112402503fbb3acdcb5c",
+      "operation": "W01.stepDistance"
+    },
+    {
+      "historicalId": "X02.W01.step-seam",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-step-seam.json",
+      "historicalSha256": "ce5e4a459d1d88f276eaaf5e81d2fa3cb9fcdb7a60abb292b6841e02556d6ada",
+      "id": "X02.W01.step-seam",
+      "path": "docs/algorithms/conformance/X02-W01-step-seam.json",
+      "sha256": "ce5e4a459d1d88f276eaaf5e81d2fa3cb9fcdb7a60abb292b6841e02556d6ada",
+      "operation": "W01.stepDistance"
+    },
+    {
+      "historicalId": "X02.W01.weighted-off-map",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-weighted-off-map.json",
+      "historicalSha256": "7217c67df188556c91c1552fa4935d2107ebd188bc9b6c2ae8a2e868300a8d14",
+      "id": "X02.W01.weighted-off-map",
+      "path": "docs/algorithms/conformance/X02-W01-weighted-off-map.json",
+      "sha256": "7217c67df188556c91c1552fa4935d2107ebd188bc9b6c2ae8a2e868300a8d14",
+      "operation": "W01.weightedDistance"
+    },
+    {
+      "historicalId": "X02.W01.wrap-far-negative",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-wrap-far-negative.json",
+      "historicalSha256": "dad4a803203e158b63e65b9a15b9be840ad49f1d4143589000eb119da1f02a74",
+      "id": "X02.W01.wrap-far-negative",
+      "path": "docs/algorithms/conformance/X02-W01-wrap-far-negative.json",
+      "sha256": "dad4a803203e158b63e65b9a15b9be840ad49f1d4143589000eb119da1f02a74",
+      "operation": "W01.wrapX"
+    },
+    {
+      "historicalId": "X02.W01.wrap-far-positive",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-wrap-far-positive.json",
+      "historicalSha256": "18714a1abe44e64fcc441e8eaa6d67a10901dd66f1ccb8f1598f97e18504d223",
+      "id": "X02.W01.wrap-far-positive",
+      "path": "docs/algorithms/conformance/X02-W01-wrap-far-positive.json",
+      "sha256": "18714a1abe44e64fcc441e8eaa6d67a10901dd66f1ccb8f1598f97e18504d223",
+      "operation": "W01.wrapX"
+    },
+    {
+      "historicalId": "X02.W01.wrap-flat",
+      "historicalPath": "docs/algorithms/conformance/X02-W01-wrap-flat.json",
+      "historicalSha256": "7264fba40cee653ec882aef91ed0f5215577e1f634ad8fee2900d4d388dabc42",
+      "id": "X02.W01.wrap-flat",
+      "path": "docs/algorithms/conformance/X02-W01-wrap-flat.json",
+      "sha256": "7264fba40cee653ec882aef91ed0f5215577e1f634ad8fee2900d4d388dabc42",
+      "operation": "W01.wrapX"
+    }
+  ]
+}

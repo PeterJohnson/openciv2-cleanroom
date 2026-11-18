@@ -1,9 +1,9 @@
 # Unit stack and deletion foundations for post-load cleanup
 
-`unit::StackOperations` implements U01 sections 2–4 traversal, ordered validation,
+`StackOperations` implements U01 sections 2–4 traversal, ordered validation,
 detach/front attachment, relocation and bottom ordering for local/host authority. It uses `LocalStacks`' real unit-pool and W01 map bodies. The
 runtime owns its suppression, animation and per-operation activity fields in
-`GameState::unit_stacks`; constructing or replacing a client session does not
+`GameState.UnitStacks`; constructing or replacing a client session does not
 perform a classic lifecycle reset of these fields.
 
 The implemented queries are raw forward count, next, first, last, owner/position
@@ -33,7 +33,7 @@ It rejects remote execution; gameplay methods do not pump messages or wait for
 replies. Relocation and whole-stack ordering keep their local composition and
 semantic completion notifications.
 
-`session::UnitOperation` owns the routed lifetime. It chooses local execution or
+`UnitOperation` owns the routed lifetime. It chooses local execution or
 an owned noncopyable `UnitRequestChannel`, preserves distinct operation reply and
 activity state, sends each primitive once and yields. Whole-stack relocation captures the next
 member before each child request and rechecks authority when that child completes.
@@ -54,8 +54,8 @@ kinds, pending replies, wraparound, late replies, cancellation and service failu
 
 ## Basic deletion and the F06 cleanup scan
 
-`unit::UnitDeletion::erase` implements U01 section 6's local deletion.
-`session::UnitOperation` owns its remote request boundary. Negative and lifetime-zero entries return before
+`UnitDeletion.Erase` implements U01 section 6's local deletion.
+`UnitOperation` owns its remote request boundary. Negative and lifetime-zero entries return before
 activity or authority handling. Local deletion captures the selectors, applies
 the guarded military/per-type/cached-total decrements at their specified widths,
 detaches through the real stack primitive, clears the lifetime and shrinks only
@@ -84,7 +84,7 @@ logical values, not added save fields. Core loading does not rebuild these cache
 totals or initialize the new lifecycle fields by inference. The ordinary deletion
 domain uses coherent pool/global scan bounds; a tail change updates both.
 
-`session::cleanup_classic_loaded_units` composes F06 section 11 step 5 with these
+`ClassicLoadedUnits.Cleanup` composes F06 section 11 step 5 with these
 real U01 operations. It establishes host, visits ascending slots through the live
 bound, clears links on free records, validates live records and deletes them with
 notifications false when either coordinate is negative. It preserves positive
@@ -122,33 +122,21 @@ the internal depth counter unwinds independently of retained activity markers.
 Current tests cover traversal/ties, dead and nonreciprocal edges, ordered cuts,
 bounded rejection even under suppression, animation gating, placement, self-loop
 repair and 2048-member reversal. With and without diagnostic collection, repairs
-produce the same game state. Synthetic report mutations, interruptions and fake
-out-of-pool records were removed. Tests of real network replies/authority changes
-remain. The following test counts record earlier revisions, not this refactor.
+produce the same game state. Network reply and authority-change tests also cover bookkeeping, captured/live
+values, zero/high homes, callback failures, reentrant activity, special backing,
+client wait/timeout/drain and ascending cleanup effects. Placement cases cover
+local ordering, synchronization lifetime, independent replies and full payloads,
+authority changes during recursive repair, received-state retention, captured
+successors in client composites and interrupted children.
 
-Windows MSVC passes all 445 default-off and 447 SQLite-enabled CTests. Pinned
-Emscripten 4.0.23 passes all six CTests, including 423 portable Catch2 cases
-(188,953 assertions). The stack cases contribute 16,562 assertions. The 54
-retained X02 native/WASM observations and consumed prefixes remain identical;
-their reports were refreshed for the changed build and shared record header.
-Formatting passes with pinned clang-format 20.1.8. The upstream Catch2 WASM
-`__COUNTER__` warnings remain.
-
-Fourteen additional deletion cases and five initial F06 composition cases cover the
-bookkeeping, captured/live distinction, zero/high homes, callback failures,
-reentrant activity, special backing, client wait/timeout/drain and ascending
-cleanup effects. The 19 cases pass 191 assertions on native Windows and WASM.
-
-Fourteen placement cases and one additional F06 case cover local ordering,
-activity through synchronization, independent replies and full argument payloads,
-authority changes between children and inside recursive repair, received-state
-retention, captured successors in client composites, interrupted children and
-timeout/drain behavior. These 15 cases add 199 native/WASM assertions. All 34
-deletion/placement/F06 cases pass together after sharing the request implementation.
-
-These are portable specification-derived Catch2 cases, not original executable
+These are portable specification-derived shared cases, not original executable
 observations or newly registered X02 fixtures. Full unit creation, remaining
 deletion/cargo/query/ship-ordering operations, owning V01/transport bindings,
 complete F06 post-load composition and broader X02 adapter
 coverage remain separate work under the
 [M1 completion audit](m1-validation.md).
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

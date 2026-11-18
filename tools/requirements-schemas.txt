@@ -1,4 +1,4 @@
-# Developer/CI validation only; no game, CMake or stdlib metadata-check dependency.
+# Developer/CI validation only; not required by the game or standard-library metadata checks.
 jsonschema==4.26.0
 referencing==0.37.0
 attrs==26.1.0

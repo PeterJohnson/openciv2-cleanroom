@@ -1,4 +1,4 @@
-"""X02 §2/§6 rejection and comparison contracts; actual C++ cases run in CTest."""
+"""X02 rejection/comparison contracts; identity stubs never execute gameplay."""
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
-import run_conformance as runner
+import conformance as runner
 
 
 class ConformanceRunnerTests(unittest.TestCase):
@@ -28,94 +28,6 @@ class ConformanceRunnerTests(unittest.TestCase):
         change(case)
         self.path.write_text(json.dumps(case), encoding="utf-8")
         return runner.load_fixture(self.path, self.root)
-
-    def identity_adapter(self):
-        for source in runner.SOURCES:
-            destination = self.root / source
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(ROOT / source, destination)
-        sources = {path: runner.inventory.digest(self.root / path) for path in runner.SOURCES}
-        identity = {"format": "openciv2-conformance-adapter/1",
-                    "sources": {path: sources[path] for path in runner.ADAPTER_SOURCES},
-                    "buildIdentity": "test build identity\n"}
-        # A frozen build-time identity, never recomputed from the live checkout.
-        adapter = self.root / "identity_adapter.py"
-        adapter.write_text("import sys\n"
-                           "assert sys.argv[1:] == ['--identity']\n"
-                           f"print({json.dumps(identity)!r})\n", encoding="utf-8")
-        return [sys.executable, str(adapter)], sources, identity
-
-    def test_stale_adapter_is_rejected_before_any_fixture_can_pass(self):
-        command, _, _ = self.identity_adapter()
-        report = self.root / "report.json"
-        argv = ["run_conformance.py", "--root", str(self.root), "--report", str(report),
-                "--adapter", *command]
-        for source in runner.ADAPTER_SOURCES:
-            with self.subTest(source=source):
-                path = self.root / source
-                before = path.read_bytes()
-                path.write_bytes(before + b"\n")
-                with patch.object(sys, "argv", argv), patch.object(runner, "execute") as execute:
-                    with self.assertRaisesRegex(ValueError, "stale or incomplete adapter"):
-                        runner.main()
-                    execute.assert_not_called()
-                self.assertFalse(report.exists())
-                path.write_bytes(before)
-
-    def test_report_retains_verified_embedded_identity(self):
-        command, sources, identity = self.identity_adapter()
-        report = self.root / "report.json"
-        argv = ["run_conformance.py", "--root", str(self.root), "--report", str(report),
-                "--adapter", *command]
-        result = {"path": str(self.path), "status": "passed"}
-        with patch.object(sys, "argv", argv), patch.object(runner, "execute", return_value=result):
-            self.assertEqual(runner.main(), 0)
-        recorded = json.loads(report.read_text())
-        self.assertEqual(recorded["format"], "openciv2-conformance-run/2")
-        self.assertEqual(recorded["adapterIdentity"], identity)
-        self.assertEqual(recorded["implementationSources"], sources)
-        self.assertEqual(recorded["buildIdentity"], identity["buildIdentity"])
-
-    def test_external_build_identity_cannot_relabel_the_adapter(self):
-        command, _, _ = self.identity_adapter()
-        build_identity = self.root / "build-identity.txt"
-        build_identity.write_text("a different configuration\n", encoding="utf-8")
-        argv = ["run_conformance.py", "--root", str(self.root), "--build-identity", str(build_identity),
-                "--adapter", *command]
-        with patch.object(sys, "argv", argv), patch.object(runner, "execute") as execute:
-            with self.assertRaisesRegex(ValueError, "build identity does not match"):
-                runner.main()
-            execute.assert_not_called()
-
-    def test_missing_malformed_and_timed_out_identities_fail(self):
-        command, sources, identity = self.identity_adapter()
-        for output in ("not JSON", "{}", json.dumps({**identity, "format": "unknown"}),
-                       json.dumps({**identity, "sources": {}})):
-            with self.subTest(output=output[:50]):
-                process = subprocess.CompletedProcess([], 0, output, "")
-                with patch.object(runner.subprocess, "run", return_value=process):
-                    with self.assertRaises(ValueError):
-                        runner.read_adapter_identity(command, sources)
-        with patch.object(runner.subprocess, "run", return_value=subprocess.CompletedProcess([], 2, "", "old adapter")):
-            with self.assertRaisesRegex(ValueError, "identity query failed"):
-                runner.read_adapter_identity(command, sources)
-        with patch.object(runner.subprocess, "run", side_effect=subprocess.TimeoutExpired(command, 5)):
-            with self.assertRaisesRegex(ValueError, "identity watchdog expired"):
-                runner.read_adapter_identity(command, sources)
-
-    def test_source_change_during_execution_cannot_publish_a_report(self):
-        command, _, _ = self.identity_adapter()
-        report = self.root / "report.json"
-        def change_during_execution(*_):
-            path = self.root / "src/base/arithmetic.cppm"
-            path.write_bytes(path.read_bytes() + b"\n")
-            return {"path": str(self.path), "status": "passed"}
-        argv = ["run_conformance.py", "--root", str(self.root), "--report", str(report),
-                "--adapter", *command]
-        with patch.object(sys, "argv", argv), patch.object(runner, "execute", side_effect=change_during_execution):
-            with self.assertRaisesRegex(ValueError, "sources changed during the run"):
-                runner.main()
-        self.assertFalse(report.exists())
 
     def test_existing_vectors_validate_without_external_game_or_assets(self):
         for path in self.path.parent.glob("*.json"):

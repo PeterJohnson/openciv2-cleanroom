@@ -239,7 +239,7 @@ transcription only; they are not implementations of the full owning operations.
    family until every field in its declared initial scope is accounted for.
 2. Define file/version/manifest associations and JSON Schemas. Use semantic IDs,
    typed records and exact integer/rational inputs. Specify admissible custom
-   bounds from the algorithm and interchange limits, not incidental C++ storage.
+   bounds from the algorithm and interchange limits, not incidental runtime storage.
    The existing `classic-mge-5.4.0f` content profile cannot silently become a promise
    that arbitrary built-in changes interoperate with the original.
 3. Populate complete, owned classic-default files from the specification values,

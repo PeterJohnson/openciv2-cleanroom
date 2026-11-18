@@ -497,7 +497,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/base/arithmetic.cppm"
+      "implementation": "src/OpenCiv2.Base/Arithmetic.cs"
     },
     {
       "id": "F01.secondaryRangeFromCode",
@@ -537,7 +537,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/base/arithmetic.cppm"
+      "implementation": "src/OpenCiv2.Base/Arithmetic.cs"
     },
     {
       "id": "F02.assignUnitToken",
@@ -578,7 +578,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "F02.assignCityToken",
@@ -619,7 +619,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "F02.reserveUnitSlot",
@@ -664,7 +664,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "W01.wrapX",
@@ -706,7 +706,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cppm"
+      "implementation": "src/OpenCiv2.Core/Geometry.cs"
     },
     {
       "id": "W01.stepDistance",
@@ -751,7 +751,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cppm"
+      "implementation": "src/OpenCiv2.Core/Geometry.cs"
     },
     {
       "id": "W01.weightedDistance",
@@ -796,7 +796,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cppm"
+      "implementation": "src/OpenCiv2.Core/Geometry.cs"
     },
     {
       "id": "W01.tileIndex",
@@ -838,7 +838,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/world/geometry.cppm"
+      "implementation": "src/OpenCiv2.Core/Geometry.cs"
     },
     {
       "id": "F01.primaryCode",
@@ -895,7 +895,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.cppm"
+      "implementation": "src/OpenCiv2.Base/Randomness/RandomContext.cs"
     },
     {
       "id": "F01.primaryModulo",
@@ -953,7 +953,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.cppm"
+      "implementation": "src/OpenCiv2.Base/Randomness/RandomContext.cs"
     },
     {
       "id": "F01.secondaryUnit",
@@ -1010,7 +1010,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.cppm"
+      "implementation": "src/OpenCiv2.Base/Randomness/RandomContext.cs"
     },
     {
       "id": "F01.secondaryRange",
@@ -1069,7 +1069,7 @@
         "implementation-replay"
       ],
       "independenceClaims": [],
-      "implementation": "src/base/random.cppm"
+      "implementation": "src/OpenCiv2.Base/Randomness/RandomContext.cs"
     },
     {
       "id": "F02.cityCalculationEntry",
@@ -1117,7 +1117,7 @@
       "eventSchema": "shared-workspace-script-v1",
       "eventIdentity": "Call enter/return: <call>/enter or /return. Provider: <call>/pipeline/request or /return. Actions: <call>/action/<escaped-id>. Escape ~ as ~0 and / as ~1. Final root/exit, or root/prefix then root/stop. See tools/conformance_script.py for typed payload validation.",
       "eventOrder": "Synchronous call nesting and the complete listed provider/action order; no independent pairs. Prefix stops omit unfinished returns.",
-      "implementation": "src/state/records.cppm"
+      "implementation": "src/OpenCiv2.Core/State/Entities.cs"
     },
     {
       "id": "F02.prepareNewGame",
@@ -1195,7 +1195,7 @@
         ]
       ],
       "independenceClaims": [],
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     }
   ],
   "states": [
@@ -1209,7 +1209,7 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "F02.nextCityToken",
@@ -1221,7 +1221,7 @@
       "crossReferences": [],
       "initialValue": "1",
       "publication": "Assign current token then increment modulo 2^32; no skip-zero or collision search. New game does not reset it.",
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "F02.unitEnd",
@@ -1233,7 +1233,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Exclusive unit scan bound, 0..2048; reservation increments only on successful extension.",
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "F02.unitTokenScan",
@@ -1247,7 +1247,7 @@
       ],
       "initialValue": null,
       "publication": "Read-only token-field view for reservation. All and only entry-scanned slots are supplied. No other unit fields or slots are read or written. Extension does not initialize the new slot.",
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "F02.militaryCounts",
@@ -1259,7 +1259,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Recorded signed cyclic military counts, not a recomputed census. Reservation preserves all eight values.",
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "F02.effectiveHumanSet",
@@ -1271,7 +1271,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Effective human set at entry, separate from controller assignments or the persistent roster. Reservation preserves it.",
-      "implementation": "src/state/entity_allocation.cppm"
+      "implementation": "src/OpenCiv2.Core/State/EntityAllocation.cs"
     },
     {
       "id": "W01.width",
@@ -1283,7 +1283,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
-      "implementation": "src/world/geometry.cppm"
+      "implementation": "src/OpenCiv2.Core/Geometry.cs"
     },
     {
       "id": "W01.height",
@@ -1295,7 +1295,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
-      "implementation": "src/world/geometry.cppm"
+      "implementation": "src/OpenCiv2.Core/Geometry.cs"
     },
     {
       "id": "W01.flat",
@@ -1307,7 +1307,7 @@
       "crossReferences": [],
       "initialValue": null,
       "publication": "Caller-supplied dimensions or current topology rule. These queries do not mutate or infer them from a stored topology header.",
-      "implementation": "src/world/geometry.cppm"
+      "implementation": "src/OpenCiv2.Core/Geometry.cs"
     },
     {
       "id": "F01.randomContexts",
@@ -1319,7 +1319,7 @@
       "crossReferences": [],
       "initialValue": "Explicit fixture context; no implicit reseed or policy fallback. Omitted in controlled-choice mode.",
       "publication": "Snapshot only after actual sampling; adapter reconstructs and verifies the final engine against its declared origin and position. Harness trace is separate.",
-      "implementation": "src/base/random.cppm"
+      "implementation": "src/OpenCiv2.Base/Randomness/RandomContext.cs"
     },
     {
       "id": "F02.workspaceCity",
@@ -1333,7 +1333,7 @@
         "F02.happyCount",
         "F02.unhappyCount"
       ],
-      "implementation": "src/state/records.cppm"
+      "implementation": "src/OpenCiv2.Core/State/Entities.cs"
     },
     {
       "id": "F02.happyCount",
@@ -1347,7 +1347,7 @@
         "F02.workspaceCity",
         "F02.unhappyCount"
       ],
-      "implementation": "src/state/records.cppm"
+      "implementation": "src/OpenCiv2.Core/State/Entities.cs"
     },
     {
       "id": "F02.unhappyCount",
@@ -1361,7 +1361,7 @@
         "F02.workspaceCity",
         "F02.happyCount"
       ],
-      "implementation": "src/state/records.cppm"
+      "implementation": "src/OpenCiv2.Core/State/Entities.cs"
     },
     {
       "id": "F02.cityEnd",
@@ -1373,7 +1373,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.unitDamage",
@@ -1385,7 +1385,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.cityShields",
@@ -1397,7 +1397,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.futureTechnologies",
@@ -1409,7 +1409,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.peaceTurns",
@@ -1421,7 +1421,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.goalRoles",
@@ -1433,7 +1433,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.leaderCityNameCursors",
@@ -1445,7 +1445,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.resumeEvent",
@@ -1457,7 +1457,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.passwordBytes",
@@ -1469,7 +1469,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.mapAllocated",
@@ -1481,7 +1481,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.fallbackRegion",
@@ -1493,7 +1493,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.textLine",
@@ -1505,7 +1505,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.preferenceGameOptions",
@@ -1517,7 +1517,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.preferenceTimer",
@@ -1529,7 +1529,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.doubleMovementApplied",
@@ -1541,7 +1541,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.previousClientValid",
@@ -1553,7 +1553,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Observed after the actual prepare_new_game return; no callback during replacement.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.otherFreshWorldState",
@@ -1565,7 +1565,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "All other GameState fields: entity payloads except unit.damage/city.shield_box and scan bounds; globals except peace_turns; civilization payloads except future_techs/goal roles; names, setup, pending leader overrides, stack/deletion state, unit totals, loop/movement/color state, multiplayer except saved.resume_event/encoded_passwords, events, histories, scenario, layout/views, mood, and every map field except allocation presence.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.otherFreshProcessState",
@@ -1577,7 +1577,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "Process fields except tokens, ordinary_preferences.game_options, multiplayer_preferences.timer, fallback.region, text_parameters.line, rule leaders.city_name_index and double_movement_applied. Includes all other preferences, rule definitions/names/labels/text pools, substitutions and fallback fields.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     },
     {
       "id": "F02.otherFreshSessionState",
@@ -1589,7 +1589,7 @@
       "crossReferences": [],
       "initialValue": "See the explicit fixture entry; no prior game inferred.",
       "publication": "All private RuntimeState fields other than the observed validity of the incoming client: runtime/session/participant/controller/command/interaction IDs, active/advancing/revision, registries, lease queues, commands, ready work, transport queues, received correlations and random contexts.",
-      "implementation": "src/session/runtime.cpp"
+      "implementation": "src/OpenCiv2.Session/FreshGame.cs"
     }
   ],
   "fixtures": [
@@ -1600,8 +1600,8 @@
       "sha256": "8da89c3a270dc53539a139e98569ecc9ea8308344a88db2907f821ccae378bd8",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.primary-modulo",
@@ -1610,8 +1610,8 @@
       "sha256": "4f078421db2c406ba5bd37b1cc2e6aebdd45c233ced468f7b2f51fcca97ea245",
       "operation": "F01.primaryModuloFromCode",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.wrapped-range",
@@ -1620,8 +1620,8 @@
       "sha256": "414838bafd1ab3b5411a6415940bf6fe7a33d49a9659f09ca8701f84ce831894",
       "operation": "F01.secondaryRangeFromCode",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.unit-token-initial",
@@ -1630,8 +1630,8 @@
       "sha256": "01f887eba06942da21ca5fc268f057883d1da11b1b080c4428484c77d6d3ba62",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.unit-token-wrap",
@@ -1640,8 +1640,8 @@
       "sha256": "d310242f24610ca5b30d5cbf4763d70a4608c9e5f3739750cf58eb0d5320a3e1",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.unit-token-zero",
@@ -1650,8 +1650,8 @@
       "sha256": "2fa10d9f22f7f02f41e917967cebb79ae7362eebe58ae4f8ae8614dbbee6e829",
       "operation": "F02.assignUnitToken",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.city-token-wrap",
@@ -1660,8 +1660,8 @@
       "sha256": "03bfd5c30f35a9f6a1fb76338f121b0353d0d9cbb277daf29e11c542d05e180c",
       "operation": "F02.assignCityToken",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.unit-reserve-hole",
@@ -1670,8 +1670,8 @@
       "sha256": "698a7face726c99ce8e329d8b8c75c545b698567f6a328958b36a24a7c429dae",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.unit-reserve-extend",
@@ -1680,8 +1680,8 @@
       "sha256": "1e9d65215719af4b129c60e969efa3fa337f62b2ed1d605e7b38422e2973b1b0",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.unit-reserve-military-limit",
@@ -1690,8 +1690,8 @@
       "sha256": "03c70898335d8283686788c8aeb735270160abc2d06ea34a6ee2d20f2f2707c6",
       "operation": "F02.reserveUnitSlot",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.wrap-far-positive",
@@ -1700,8 +1700,8 @@
       "sha256": "18714a1abe44e64fcc441e8eaa6d67a10901dd66f1ccb8f1598f97e18504d223",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.wrap-far-negative",
@@ -1710,8 +1710,8 @@
       "sha256": "dad4a803203e158b63e65b9a15b9be840ad49f1d4143589000eb119da1f02a74",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.wrap-flat",
@@ -1720,8 +1720,8 @@
       "sha256": "7264fba40cee653ec882aef91ed0f5215577e1f634ad8fee2900d4d388dabc42",
       "operation": "W01.wrapX",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.step-seam",
@@ -1730,8 +1730,8 @@
       "sha256": "ce5e4a459d1d88f276eaaf5e81d2fa3cb9fcdb7a60abb292b6841e02556d6ada",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.step-off-map",
@@ -1740,8 +1740,8 @@
       "sha256": "665a85cfc2891b6b515e4aaeae4182d942ea8db3f0b8112402503fbb3acdcb5c",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.step-minimum",
@@ -1750,8 +1750,8 @@
       "sha256": "ce8d0cb1e58f79c17584bb0ddfade1a6222ce600847629391d8aa69b48d2c37a",
       "operation": "W01.stepDistance",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.weighted-off-map",
@@ -1760,8 +1760,8 @@
       "sha256": "7217c67df188556c91c1552fa4935d2107ebd188bc9b6c2ae8a2e868300a8d14",
       "operation": "W01.weightedDistance",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.lookup-alias",
@@ -1770,8 +1770,8 @@
       "sha256": "13c8748241c11820867d3a68e50e9a09567c209194d708b8e343e9090fd708f5",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.lookup-canonical",
@@ -1780,8 +1780,8 @@
       "sha256": "82a984b16c7f8d62217ebf4f60f041c5e367ce4e877c85d91b8c748e69011137",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.W01.lookup-miss",
@@ -1790,8 +1790,8 @@
       "sha256": "bf6e903d4f761e8688b5159361a5d058fd8365f6b0102d73a19f18bcaa445ed8",
       "operation": "W01.tileIndex",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-gameplay-code",
@@ -1800,8 +1800,8 @@
       "sha256": "384affa895f73863bf44c3bba7d045fbd115b78d4a8aa02b0267026c0313fb43",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-gameplay-modulo",
@@ -1810,8 +1810,8 @@
       "sha256": "f6d606b05846293a5c2d3235a9c1f1d25c4048df0079456f1f31dbbe58b7cdba",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-gameplay-unit",
@@ -1820,8 +1820,8 @@
       "sha256": "c69f45a1065bc9fc5a2eb1d80a4fb02173d200bde9684d1461d10b8fdd88ff34",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-gameplay-range",
@@ -1830,8 +1830,8 @@
       "sha256": "fc578ec797fa699cb58080b131cee42f973ce9c7a9cd1e52dc67cabc0e942fbe",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-presentation-content-code",
@@ -1840,8 +1840,8 @@
       "sha256": "ac3482ca32ee1e198fdc5c077284cfa18a9f6ef62756b074a69927d6a3df7c10",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-presentation-content-modulo",
@@ -1850,8 +1850,8 @@
       "sha256": "701ad9e7956382fc92e547aee8cf8d4bc9ec9499fded054220d0350df572283e",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-presentation-content-unit",
@@ -1860,8 +1860,8 @@
       "sha256": "c7354f4886567d83e797b3717054e1ba209180fd82c1725928f229f42c59cb48",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-presentation-content-range",
@@ -1870,8 +1870,8 @@
       "sha256": "594589993acca1d805af1431c29519570a4c2ce5c6bd6338a6dfc2d0d106b008",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-cosmetic-code",
@@ -1880,8 +1880,8 @@
       "sha256": "792f329f6ccd73c501da952827b4203cb2109861529f158eb3ace001998865e3",
       "operation": "F01.primaryCode",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-cosmetic-modulo",
@@ -1890,8 +1890,8 @@
       "sha256": "bcdd0b954a99d7f45952406b66f34fc412d6b89980c9502812de272eee8944b7",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-cosmetic-unit",
@@ -1900,8 +1900,8 @@
       "sha256": "37ec502977b754d36a69248582a4df9b2b7eba70390d1c9101d0fe869a6f9115",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-cosmetic-range",
@@ -1910,8 +1910,8 @@
       "sha256": "8fa81ef3a941421a970bd9c0c8a03c7d1d6a2470bc4a2e48618e927da6c6f59a",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-large-divisor",
@@ -1920,8 +1920,8 @@
       "sha256": "90765a2bbc796862d78172dd7904fb710135722e0821dfac4e2dcbe66a2194dc",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-singleton",
@@ -1930,8 +1930,8 @@
       "sha256": "d1d7623ffacadf354c09b3d8a544774c3135e7b50979025ab8b3cec6eee8700d",
       "operation": "F01.primaryModulo",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-equal-range",
@@ -1940,8 +1940,8 @@
       "sha256": "12423016c75cbf5c1dcdde4e6bf43242e08b49cd3572038fd6d7e579f14e9883",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-reversed-range",
@@ -1950,8 +1950,8 @@
       "sha256": "7533eec677ad5c64e1a04dfde54b25075c29300d3668a84a398dd5d5fe03611a",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-wrapped-range",
@@ -1960,8 +1960,8 @@
       "sha256": "3a6b78a03cb37f27b7b9ea82182ea300b748e30b49e072e9d67f732100ebd340",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-rounded-endpoint",
@@ -1970,8 +1970,8 @@
       "sha256": "11b78129e91cbd576ea43675905a30b7fb887e0269bb6b9fb82aef36877c1946",
       "operation": "F01.secondaryRange",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-zero-unit",
@@ -1980,78 +1980,78 @@
       "sha256": "0e4fe9b9ff08913dffcab3fe6b9d977d9dc3f3873262a3ea120210516d577e48",
       "operation": "F01.secondaryUnit",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-replay-gameplay",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-gameplay.json",
-      "sha256": "d50bc0a760e26a409f746cb9efbcd5f46d285333814281362226336f8dbe3bd7",
+      "sha256": "3909e36c97a65bfdcd638cf24f860ee5d826694e8d6388768535a4132afcf379",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-replay-presentation-content",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-presentation-content.json",
-      "sha256": "bed93810385bd253379b0e666f6d43f3fd5cee8821f40d673e4b9dcb2a2b816f",
+      "sha256": "d84826a50ba22a4b45e41a72919cd321d04a72b962a506536ede22d1e7d02c55",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-replay-cosmetic",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-cosmetic.json",
-      "sha256": "c47c2397fe73f15c5b5033357f5289422bff4350922581a8f0cf116e13cbbcfa",
+      "sha256": "8a9c80d45caede3fccc662706666c30fe5013150b7eecca25ff382e486c72441",
       "operation": "F01.primaryCode",
       "provenance": "implementation-regression",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-replay-modulo",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-modulo.json",
-      "sha256": "602d22fbe04d371d56b64be9f3b0b7b6fafca541daa22e194d44b4004c7b0c4a",
+      "sha256": "431922748edb4bc688e83a1149c125c1aafadd20dc2d173ef9960a84c302d9cd",
       "operation": "F01.primaryModulo",
       "provenance": "implementation-regression",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-replay-unit",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-unit.json",
-      "sha256": "6c98c3fc4ec8c0b33f890104ef7ddebc07a428c0584c00c24e865d358e465950",
+      "sha256": "26b1c2ae51630d8b04906641d0a0dda7067744ea2b9b941ca470162fe488a70e",
       "operation": "F01.secondaryUnit",
       "provenance": "implementation-regression",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-replay-singleton",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-singleton.json",
-      "sha256": "5c1e97023922fa241daf60c9169527df20f1d59004a157b5b160c93929245dc8",
+      "sha256": "5a10d7c94a16ab634ef6527606b3d05ca17580a99eb147bd30d7cc24004b6b7f",
       "operation": "F01.primaryModulo",
       "provenance": "implementation-regression",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F01.sample-replay-equal-range",
-      "revision": 8,
+      "revision": 9,
       "path": "docs/algorithms/conformance/X02-F01-sample-replay-equal-range.json",
-      "sha256": "c286ed0b24559228ca7bc9bff8d59154ffa32ebf0a243189ed9c7268d1dacfa4",
+      "sha256": "160d6a06f397cc491aae8afff0f1ca0bcde2c2861f0d5e31ac5bde6581467b87",
       "operation": "F01.secondaryRange",
       "provenance": "implementation-regression",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-absent",
@@ -2060,8 +2060,8 @@
       "sha256": "76f81efaf7b63cdba42139ad371735e547926039722db8827d5d2e684bb6c44f",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-cached",
@@ -2070,8 +2070,8 @@
       "sha256": "e6b75c1d3c3ff82df1409a249e60bb23c13cfba0fc2d04f874982a43de88c955",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-cached-wrap",
@@ -2080,8 +2080,8 @@
       "sha256": "c6d089c90e12725d0e0fa363db3a167bb3c2dab7ceccafda7c10be976c043133",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-publication",
@@ -2090,8 +2090,8 @@
       "sha256": "3e63e88742c9e2f584f720ec4d17eb0ddcda310942e977cc278aac3faf234353",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-failure-output",
@@ -2100,8 +2100,8 @@
       "sha256": "3de9f8cb1b6fc811acb6cf171a1a97147fe8b6cd750ed327b0eb0dacde26b071",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-reentry",
@@ -2110,8 +2110,8 @@
       "sha256": "9a318f0e009e076e9878b3bfbc919c73dedcea8aa3803b195af146bec3c13e75",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-unresolved",
@@ -2120,8 +2120,8 @@
       "sha256": "0d3132c7fd9762f9cb5c8cee5684273200c2d090b8f8faee42f6f03af5d1e0de",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.workspace-unresolved-after-reentry",
@@ -2130,8 +2130,8 @@
       "sha256": "c1764577419903082da44a46f6bef9cf723433b8903ad30015d731993609ffe5",
       "operation": "F02.cityCalculationEntry",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.fresh-game-cold",
@@ -2140,8 +2140,8 @@
       "sha256": "9171ac20e1c0e781766a70f594e91e6b99956e9f6676d2c15845dd2c68cf249e",
       "operation": "F02.prepareNewGame",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.fresh-game-used",
@@ -2150,8 +2150,8 @@
       "sha256": "603dfa8e8f3c9bd632dee71b6906311186fb33ce017fa6001ee5871ac0d9805a",
       "operation": "F02.prepareNewGame",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     },
     {
       "id": "X02.F02.fresh-game-empty-scans",
@@ -2160,8 +2160,8 @@
       "sha256": "cadec30f269b0351cf36c516097a70895bb9ba2c021fec9f13b106c500c53c1f",
       "operation": "F02.prepareNewGame",
       "provenance": "specification-vector",
-      "executionStatus": "passed",
-      "runReport": "docs/conformance/reports/post-m1-native.json"
+      "executionStatus": "not-run",
+      "runReport": null
     }
   ],
   "providers": [
@@ -2185,5 +2185,11 @@
       "implementation": null,
       "limitations": "Only the F02 entry boundary is exercised. Callback schedule is deliberately supplied, not an assertion about normal C03 gameplay."
     }
-  ]
+  ],
+  "execution": {
+    "selection": "docs/conformance/selection.json",
+    "runner": "tools/dotnet/run_conformance.py",
+    "validation": "docs/validation/README.md",
+    "scope": "Execution reports bind the selected PCG32 policy, compiled inputs and invoked artifacts. Metadata validation does not execute gameplay."
+  }
 }

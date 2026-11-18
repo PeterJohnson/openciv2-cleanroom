@@ -6,7 +6,7 @@ completed transport backend, lobby, synchronization service or playable session.
 
 ## Portable implementation
 
-`oc2_network` depends on portable formats/game/base libraries. It has no sockets,
+`OpenCiv2.Network` depends on portable formats/game/base libraries. It has no sockets,
 OS event pump, GUI, Lua or database dependency. Implementations and authored test
 expectations come from [N05 §§4–6](algorithms/N05-transport-and-wire-protocol.md)
 and [N02 §§2,5–7 and Appendices A,C](algorithms/N02-network-commands-and-state-synchronization.md).
@@ -14,10 +14,10 @@ No reconstruction code or historical source-derived execution harness is used.
 
 | Interface | Implemented behavior |
 | --- | --- |
-| `network/stream.cppm` | Little-endian 12-byte headers, 64-byte sender rounding, exact supplied padding; incremental fragmented/coalesced receive; header-fragment-dependent oversize callbacks and discard of only the current receive; reset/close callback boundary; owned partial-send FIFO with live chunk capacity, immediate/drain retry differences and backlog thresholds; UDP header, u16 length narrowing and retained null-payload bytes. |
-| `network/messages.cppm` | Owned 16-byte message and 44-byte argument envelopes, sequence-preserving header initialization, directed/broadcast send sequencing, failure retention and live post-callback broadcast-size comparison. |
-| `network/sections.cppm` | Twenty-byte section prefixes, exact raw-image decoding/encoding, checksum width quirks, all 24 nominal section extents, registration, mirror allocation/invalidation, full/delta/join/map-header raw-image construction and specified old/new checksum ordering; sequential incoming block copies and checksum updates that preserve earlier blocks on failure. |
-| `network/compression.cppm` | Bounded byte/word run-length codecs; logical-input-only tail handling; safe word-run chunks through 32766; validated decoded sizes; owned image replacement on success; semantic statuses and full-state receipt-count codec selection. |
+| `src/OpenCiv2.Network/Stream.cs` | Little-endian 12-byte headers, 64-byte sender rounding, exact supplied padding; incremental fragmented/coalesced receive; header-fragment-dependent oversize callbacks and discard of only the current receive; reset/close callback boundary; owned partial-send FIFO with live chunk capacity, immediate/drain retry differences and backlog thresholds; UDP header, u16 length narrowing and retained null-payload bytes. |
+| `src/OpenCiv2.Network/Messages.cs` | Owned 16-byte message and 44-byte argument envelopes, sequence-preserving header initialization, directed/broadcast send sequencing, failure retention and live post-callback broadcast-size comparison. |
+| `src/OpenCiv2.Network/Sections.cs` | Twenty-byte section prefixes, exact raw-image decoding/encoding, checksum width quirks, all 24 nominal section extents, registration, mirror allocation/invalidation, full/delta/join/map-header raw-image construction and specified old/new checksum ordering; sequential incoming block copies and checksum updates that preserve earlier blocks on failure. |
+| `src/OpenCiv2.Network/Compression.cs` | Bounded byte/word run-length codecs; logical-input-only tail handling; safe word-run chunks through 32766; validated decoded sizes; owned image replacement on success; semantic statuses and full-state receipt-count codec selection. |
 
 Input admission is explicit. Frames require at least 12 bytes and a payload that
 fits the frame. The configurable 8 MiB receive backing limit is a safe profile,
@@ -34,7 +34,7 @@ Receive callback views are borrowed until reset or callback return. A callback
 may reset/close its receiver, which must remain alive through `feed`; recursive
 feed is excluded. The allocation hook is a fault-injection service, not an
 application callback. Send and backlog services do not reenter their queue;
-event posting occurs after queue publication. C++ exceptions are not simulated
+event posting occurs after queue publication. framework exceptions are not simulated
 original failure codes and do not promise rollback. The queued IsConnected case
 stops at the explicitly excluded retired-descriptor boundary. No false common
 error result is invented for it or for retention-allocation failure.
@@ -44,7 +44,7 @@ the event pool. Its compression tail is a separate operation. Initial producer
 allocation, delta resize and append-report callback effects remain open. The block
 application primitive copies into materialized wire backing, ignores ancillary
 received prefix fields and recomputes checksums from the incoming payload. It
-does not read native C++ object bytes or publish wire fields to a live world.
+does not read runtime object bytes or publish wire fields to a live world.
 Its consumed count records inspected header/payload bytes, not the original
 application's signed consumed-offset workspace.
 
@@ -71,22 +71,12 @@ admission remain open.
 
 ## Validation
 
-Twenty-three specification-derived Catch2 cases pass on Windows MSVC and WASM,
-including every split of a two-record stream, one-byte feeds, coalescing,
+Specification-derived shared native/browser cases cover every split of a two-record stream, one-byte feeds, coalescing,
 partial sends, retries/failures, callback reset, retained padding, sequence wrap,
 live callback reads, checksum quirks, section/mirror ordering, exact compression
-tokens and ordered partial image application. The historical lookahead/allocator
-trace cases were replaced by bounded-codec tests; the counts here describe the
-earlier revision. They are not registered X02 execution fixtures or
+tokens and ordered partial image application. These bounded-codec tests are
+not registered X02 execution fixtures or
 original-program observations.
-
-On the Windows host, all 93 default-off and 95 SQLite-enabled CTests pass. The
-pinned Emscripten 4.0.23 / Node 22.16.0 build passes all four CTests, including
-87 portable Catch2 cases and the existing twenty X02 vectors. The native and
-WASM retained X02 reports were refreshed for the changed build definition;
-their operation coverage remains F01/F02/W01. A tools-only build with GUI,
-testing, dependency fetching and Python discovery disabled, and a missing asset
-directory, also builds the network library and inspects an external raw map.
 
 ## Original-program procedure
 
@@ -108,7 +98,7 @@ work around a sandbox failure.
 The independently authored driver connects to an explicit endpoint, captures
 the ID greeting, sends a fully authored ping request in three-byte writes, and
 requires an equal ping payload in the reply. Writes do not establish the OS's
-receive boundaries. `oc2_wire_roundtrip` then checks exact reconstruction through
+receive boundaries. `OpenCiv2.WireRoundTrip` then checks exact reconstruction through
 one-byte and single-buffer feeds, including opaque original padding and any
 complete N02 message envelopes. No original process memory or internal function
 entry points are used.
@@ -118,18 +108,13 @@ entry points are used.
   --host 127.0.0.1 --port 4993 `
   --original-exe build/original-peer-runtime/civ2.exe `
   --original-transport build/original-peer-runtime/XDaemon.dll `
-  --checker build/headless-fetch/oc2_wire_roundtrip.exe `
+  --checker tests/OpenCiv2.WireRoundTrip/bin/Release/net10.0/OpenCiv2.WireRoundTrip `
   --output build/original-peer-capture
 ```
 
-The output directory must be new. The report records raw received bytes, chunk
-sizes/times, binary/driver hashes, codec results and any failure. A failed run
-must not be reported as a peer pass. Ordinary CTest never launches the original
-program or connects to a network endpoint.
-
 `tools/probe_original_discovery.py` supplies one N02 GetServers request over
 loopback and listens on the shared discovery port for the original's broadcast
-ServerInfo response. It requires the explicit game label and runs the C++
+ServerInfo response. It requires the explicit game label and runs the wire
 checker's `--datagram` mode. Use the same original/checker/output arguments as
 above, replacing the script and port with `--port 4994 --game-name 'M1 Wire Test'`.
 Its N05 header zero and empty target/exclusion fields are authored test inputs.
@@ -137,10 +122,10 @@ It does not establish every N01 address-filter branch.
 
 ## Windows original observations — 2026-11-14 UTC
 
-The [retained report](conformance/reports/original-peer-windows.json) records an
+The [retained report](validation/README.md) records an
 actual unmodified original-program run from the isolated copy. The TCP listener
 on port 4993 belonged to that original process. The host sent a 64-byte ID frame
-assigning connection 1 about 512 ms after connection initiation. The C++ checker
+assigning connection 1 about 512 ms after connection initiation. The wire checker
 reconstructed it exactly with one-byte and coalesced supply.
 
 The subsequent authored ping received **no reply before the 10-second timeout**;
@@ -152,7 +137,7 @@ changed. A greeting observation is not a completed bidirectional TCP session.
 
 UDP discovery passed: the original replied to the authored request with a
 412-byte datagram (four-byte N05 prefix plus 408-byte ServerInfo), advertising
-the expected test name and `5.4.0f Multiplayer 26-March-99`. The C++ datagram and
+the expected test name and `5.4.0f Multiplayer 26-March-99`. The datagram and
 message codecs reproduced every byte. Raw captures remain under ignored `build/`;
 the checked-in report retains hashes/results and omits the original advertisement
 bytes, which contain local addresses and retained backing.
@@ -160,3 +145,8 @@ bytes, which contain local addresses and retained backing.
 Reverse-role handshakes, bidirectional TCP after resolving the original-host
 receive limitation, full application admission, original state images and
 gameplay agreement remain separate acceptance work.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

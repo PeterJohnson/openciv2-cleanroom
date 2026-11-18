@@ -1,20 +1,10 @@
 # Architecture
 
-Status: implementation architecture, with an initial application shell integrated.
-The [shell implementation](application-shell.md) records the implemented subset;
-the libraries and capabilities below are the target design, not a conformance
-claim. Delivery status and acceptance gates are in the
-[implementation plan](implementation-plan.md).
-
-Build a C++23 game with CMake, SDL3, and Dear ImGui for macOS, Linux, Windows,
-and browser WebAssembly through Emscripten. The game implementation, including
-AI, persistence, session orchestration, and networking, runs without a graphical
-framework. The graphical application, save inspection tools, conformance runner,
-and user automation are clients of the same portable implementation. Its logical
-client/server boundary is an embedded session service, with participant/controller
-bindings and mode-specific execution authority. An in-game console and Lua scripts
-use player queries and semantic commands; they do not require implementing the
-core algorithms in Lua.
+The application uses C#/.NET 10, Avalonia desktop/browser hosts and portable
+core libraries. The bounded foundations, CLI, session application and Lua bridge
+are implemented; [validation](validation/README.md) records native and browser
+evidence and the remaining desktop gates. The [implementation plan](implementation-plan.md)
+distinguishes current functionality from later gameplay and platform work.
 
 ## 1. Cleanroom and compatibility boundary
 
@@ -47,7 +37,7 @@ Implementation rules:
   section. Expected results distinguish specification-derived expectations,
   independent original-game captures, and implementation regression snapshots.
   A snapshot produced by our own implementation does not establish compatibility.
-- General-purpose dependencies such as SDL3, ImGui, Catch2, and independent
+- General-purpose dependencies such as .NET, Avalonia, Skia, Lua, SQLite and independent
   codecs are permitted. Record pinned versions and notices. The designated
   `PeterJohnson/openciv2-assets` runtime content is an allowed data dependency;
   its comparison tools and old-game source integration are outside the game build.
@@ -77,11 +67,11 @@ and identity generators. Complete/cancel admitted operations and drain required
 network output, revoke old clients and discard their queues before replacement.
 Load/resume and within-game civilization creation retain their distinct contracts.
 
-`SessionRuntime::prepare_new_game` establishes the implemented boundary;
+`SessionRuntime.PrepareNewGame` establishes the implemented boundary;
 `enter_new_world` invokes it before rules and setup, then resets common start
 positions and its selected source. `enter_classic_new_world` composes the classic
 file-scratch reset at that boundary.
-The rule object keeps its address for adapters but its contents are fresh. The
+The rule provider keeps its identity for adapters but its contents are fresh. The
 caller supplies the chosen RNG context explicitly; no hidden draw/reseed occurs.
 Cold-start and previously used runtimes must produce equivalent gameplay with the
 same inputs. Do not require old AI-goal refresh, old free-slot damage or old naming
@@ -165,11 +155,12 @@ by the game.
 
 ```mermaid
 flowchart TD
-    app[Graphical application] --> frontend[SDL3 / ImGui frontend]
+    app[Graphical application] --> frontend[Avalonia / custom Skia frontend]
     app --> platform[Native menus / storage / transport adapters]
     frontend --> views[Presentation models]
     views --> ports[Participant and controller API]
-    ports --> session[Embedded SessionRuntime]
+    session[Embedded SessionRuntime] -. implements .-> ports
+    app --> session
     frontend --> console[Portable console]
     console --> ports
     console -. optional .-> automation[Lua automation]
@@ -179,7 +170,7 @@ flowchart TD
     cli -. optional .-> export[SQLite snapshot exporter]
     export --> query
     export --> sqlite[SQLite]
-    runner[Headless runner / Catch2] --> session
+    runner[Headless runner / managed tests] --> session
     runner -. optional .-> automation
     runner -. optional .-> export
     session --> game[Game state / mechanics / AI / events]
@@ -197,110 +188,97 @@ flowchart TD
     platform --> base
 ```
 
-The participant/controller API belongs to `oc2_session`; it is not another
-process or library. Classic AI policies remain engine operations in `oc2_game`,
-scheduled by the runtime. The diagram's network dependency does not require
-opening a transport for local play.
+The participant/controller contracts are portable public APIs; Session implements
+them and the application composition root constructs the runtime. View models,
+console and scripts receive scoped clients, never mutable world access. Classic
+AI policies remain Core operations scheduled by Session. Local play opens no
+transport and needs no separate server process.
 
-Use a small number of libraries with internal subsystem directories; the 65
-specifications are ownership boundaries, not a requirement for 65 libraries.
-Proposed CMake targets:
+Use a small number of projects with internal subsystem directories; the 65
+specifications are ownership boundaries, not 65 assemblies. The root
+`OpenCiv2.slnx` builds the core and CLI. Optional solutions live in `solutions/`.
+The source guide identifies existing projects; Content and browser platform
+adapters are introduced when their M2 responsibilities require them:
 
-Currently implemented: `oc2_base`, `oc2_io`, `oc2_contracts`, F02/W01 and U01 stack/deletion primitives in
-`oc2_game`, stored codecs
-and gameplay content loaders in `oc2_formats`, stored/live projections in `oc2_query`, bounded N05/N02 primitives
-in `oc2_network`, initial ownership/client bindings in `oc2_session`, optional
-`oc2_export_sqlite`, `oc2_io_native`, `oc2_viewmodel`, `oc2_frontend`, `oc2_options`,
-ImGui dependency targets, and application/tool/test executables. The
-[M1 audit](m1-validation.md) records the remaining scope. The shell lives in
-`src/viewmodel/`; it contains no simulation. Add the remaining targets as their
-first real operations arrive. Native menu sources currently compile into
-`oc2_frontend` and can split into the listed adapter targets when needed.
-
-| Target | Responsibility and allowed dependencies |
+| Project | Responsibility and allowed dependencies |
 | --- | --- |
-| `oc2_base` | Logical IDs, explicit arithmetic, sampling policy, clocks, diagnostics, service contracts; C++ standard library only initially. |
-| `oc2_io` | Portable byte codecs and noncopyable file/storage contracts; depends on `oc2_base`, never game records or format adapters. |
-| `oc2_contracts` | Player-facing identity and choice values, setup and configuration presentation interfaces; depends on `oc2_base`. |
-| `oc2_game` | Authoritative C++ runtime records and collections for F02 state, rule model, W/U/C/V mechanics, A01–A08, event execution; depends on `oc2_base` and `oc2_contracts`. No database dependency. |
-| `oc2_formats` | Native JSON content decoding and classic F03/text/scenario adapters into shared logical models; F06 codecs and classic encoding. Depends on `oc2_game` and `oc2_io`; no filesystem or GUI calls. |
-| `oc2_query` | Read-only projections of decoded records and live state, with explicit access contexts and stable ordering; depends on `oc2_game` and `oc2_formats`. No session loading, recalculation, command dispatch, or presentation types. |
-| `oc2_network` | N01–N03/N05 protocol state machines, encoders, synchronization and authority; depends on `oc2_game` and `oc2_io`, injected transport/time. |
-| `oc2_session` | Embedded `SessionRuntime`, participant/controller bindings, scoped client API, mode/authority adapters, F04/F05/N04 orchestration, setup/load flows, AI scheduling, pending interactions, command descriptors/results and P01–P10 gameplay effects; composes game/formats/network/query libraries. |
-| `oc2_viewmodel` | Observer-filtered map/dialog/report/menu models and frontend intent mapping through the session client API; uses query value types, never mutable world access. No SDL/ImGui types. |
-| `oc2_console` | Command parsing, help/completion and structured output through a participant's session binding; no SDL/ImGui or required scripting runtime. |
-| `oc2_automation` | Optional Lua controller bindings, task scheduling and explicit script state through the scoped session API. Core libraries do not depend on Lua. |
-| `oc2_content` | Runtime asset package, CPU image/font data, asset identities and lookup; depends on portable types and selected independent decoders. No GPU objects. |
-| `oc2_frontend` | SDL window/input/render/audio and ImGui dialogs, custom drawing, map, minimap and console panel; depends on view models, content and console. |
-| `oc2_io_native`, `oc2_io_web` | Storage, time and transport implementations. Native headless I/O must not link SDL; web glue stays out of portable libraries. |
-| `oc2_menu_macos`, `oc2_menu_windows`, `oc2_menu_imgui` | Implement a shared menu contract; native handles stay in these graphical targets. |
-| `openciv2`, `oc2_headless`, `oc2_tests`, `oc2_runtime_tests`, `oc2_ui_tests` | Composition roots for the game, conformance/replay CLI, portable Catch2, SDL integration tests, and ImGui Test Engine. |
-| `oc2_cli` (executable `oc2`) | Native save inspection, validation and diff tools over formats/query/native I/O. Explicit loaded-state analysis additionally uses session APIs. No GUI or required Lua dependency. |
-| `oc2_export_sqlite` | Optional native analysis adapter: writes immutable query records to a versioned SQLite snapshot. Depends on `oc2_query` and SQLite; no dependency on it from game, formats, session or query libraries. |
-| `oc2_net_bridge` | Separate native browser transport bridge; built only when requested. No game simulation. |
+| `OpenCiv2.Base` | Logical IDs, explicit arithmetic, RNG policy, clocks and diagnostics; .NET only. |
+| `OpenCiv2.IO` | Byte codecs and storage contracts; Base only, no game records. |
+| `OpenCiv2.Contracts` | Public player identities, requests, observations, scoped client and setup/configuration interfaces; Base only, no mutable engine types. |
+| `OpenCiv2.Core` | State, rules, world/unit/city/civilization mechanics, AI and events; Base and Contracts, no database or GUI. |
+| `OpenCiv2.Formats` | Native content and classic save/map/text/scenario codecs into common owned models; Core and IO, no filesystem calls. |
+| `OpenCiv2.Query` | Stored/live projections, diagnostics and stable output; Core and Formats. Pure queries do not load sessions or recalculate gameplay. |
+| `OpenCiv2.Network` | Classic encodings, protocol state machines and synchronization; Core and IO, with injected transport/time. |
+| `OpenCiv2.Session` | Runtime, authority, scoped clients, command dispatch, setup/load/save, continuations, AI scheduling and effects; composes Core, Formats, Query and Network. |
+| `OpenCiv2.ViewModels` | Observer-filtered map/dialog/report/menu models and intent mapping; Contracts, with no mutable engine dependency or Avalonia types. |
+| `OpenCiv2.Console` | Parsing, help/completion and structured results through a scoped client; Contracts, no required GUI or scripting runtime. |
+| `OpenCiv2.Automation` | Optional Lua adapter, task scheduling and versioned task data through Contracts; native/WASM bridge isolated here. |
+| `OpenCiv2.Content` | CPU asset data, identities, lookup and independent decoders; no GPU objects. |
+| `OpenCiv2.IO.Native`, browser adapters | Storage, time and transport implementations; native headless I/O has no Avalonia dependency. Browser-specific JS interop stays in the host adapter. |
+| `OpenCiv2.Platform.Native` | Native adapters that compose Formats with IO.Native, including classic byte-text streams. No graphical dependency; excluded from portable/browser engine graphs. |
+| Avalonia frontend and desktop/browser hosts | Dialogs, console panel, custom Skia map and platform menus; view models, content and console. Only composition roots construct Session and platform services. |
+| `OpenCiv2.Cli` (`oc2`) | Native inspection, validation, diff and content tools over Formats, Query and native I/O; explicitly supported live analysis additionally uses Session. |
+| `OpenCiv2.Export.Sqlite` | Optional native snapshot exporter over Query and SQLite; never a dependency of Core, Formats, Query or Session. |
+| Managed tests, conformance adapter and later headless runner | Test/CLI composition roots over portable libraries; no graphical dependency. |
+| Native browser transport bridge | Separate optional service carrying transport bytes/events, not game simulation. |
 
-Keep public interfaces small and use C++23 named modules with `import std`.
-Use RAII and owned values; introduce virtual interfaces at external service
-boundaries, not for every algorithm. Avoid a general ECS, plugin framework,
-or global service locator. Source-level import/include and CMake dependency
-checks enforce the graphical boundary. Modules own their declarations and definitions;
-implementation units declare their owning module. Prefer a single `.cppm` for a
-small cohesive module, retaining separate implementation units where size or
-private dependencies justify them. Extract shared value dependencies or give
-mutually dependent classes one owner to keep the import graph acyclic. Do not
-use `extern "C++"` as an ownership escape hatch; linkage blocks are reserved for
-foreign ABI boundaries and their contents are not indented. Do not replace
-selective player-facing APIs with a single engine-wide export.
-See [module conventions](modules.md) for declaration ownership, CMake file sets,
-macro/C boundaries, and dependency modules.
+The [source guide](code-guide.md) maps projects to entry points and test hosts.
+`tools/dotnet/check_graph.py` checks project/package boundaries and locked graphs.
 
-### C++ interface choices
+Keep interfaces small, constructors explicit and internal state private. Use
+interfaces for cohesive service boundaries, not for every algorithm. Avoid a
+general ECS, reflection-based plugin framework or global service locator.
+Project/API dependency checks must prevent UI code from reaching mutable state;
+namespace conventions alone do not enforce that boundary.
 
-Use structs for owned values with meaningful public fields: decoded records,
-requests, results, rules and observations. Use free functions for algorithms
-whose state and dependencies are explicit operands. Neither needs an artificial
-object identity. Keep format records separate from live state and encode fields
-explicitly.
+### Managed interface and ownership choices
 
-Live text uses owned `std::string` values; binary flags use `bool`, and choices
-with specified meanings use named enums. Counts, bitmasks, indices, sentinels and
+Use small value types for IDs and numeric records, and owned records/classes for
+larger decoded values, requests, results, rules and observations. Use static
+functions for algorithms whose state and dependencies are explicit operands.
+Keep format records separate from live state and encode fields explicitly.
+Read-only properties do not make a shared array immutable; snapshots must copy or
+otherwise own their backing data. Keep borrowed spans within synchronous calls.
+
+Live text uses managed strings with explicit classic encoding conversions. Binary
+flags use `bool`, and choices with specified meanings use named enums. Counts, bitmasks, indices, sentinels and
 specified wrapping arithmetic retain their distinct semantics. Classic field
 widths, terminators, padding and noncanonical flag words belong to stored codec
 types. Explicit conversions normalize nonzero flags to true and export them as
 0/1, omit text padding and reject unrepresentable text instead of truncating it.
 Lossless stored decode/re-encode remains separate from a live import/export.
 
-Resource exhaustion is fatal at the application boundary. Ordinary C++ allocation
-failure propagates; command/content recovery must not convert `std::bad_alloc`
+Resource exhaustion is fatal at the application boundary. Allocation
+failure propagates; command/content recovery must not convert `OutOfMemoryException`
 into a recoverable game result. Production interfaces have no simulated allocation
 admission or release callbacks. Real I/O, malformed-input and admitted interaction
 failures retain their own error contracts.
 
 Different content formats converge on common owned domain data before gameplay
-behavior begins. Keep classic and native loaders in separate module interfaces and source
+behavior begins. Keep classic and native loaders in separate components and source
 files; neither loader depends on the other. Use a format-specific runtime service
 only when a required ongoing interaction cannot be represented as data. Codec
 syntax, scanner state, file cleanup and provenance do not belong in gameplay
 interfaces. An individual name-comparison policy may be injected independently
 of storage; it does not own a reader or a naming protocol.
 
-City-name loaders produce `city::NameCatalog`, whose ordered layers keep each
-source's civilization lists and fallback together. `city::default_name` owns the
+City-name loaders produce `NameCatalog`, whose ordered layers keep each
+source's civilization lists and fallback together. `CityNames.DefaultName` owns the
 shared counter/retry/publication behavior. City-preference loaders produce
-`state::CityPreferenceUpdate`, applied by `rules::apply_city_preferences`.
-Classic and native rule loaders produce `state::RuleInput`; `rules::RuleInstaller`
+`CityPreferenceUpdate`, applied by `CityPreferences.Apply`.
+Classic and native rule loaders produce `RuleInput`; `RuleInstaller`
 owns installation, name retention, live prerequisite fixups, movement scaling and
 ordered title overrides. Decoding may stage unpublished inputs and must not
 mutate a live `RuleState`. Load selected rules once and supply them explicitly
 for dependent component validation; those components do not retain the whole
-rule pack. Native provenance stays outside the common inputs. Include checks
+rule pack. Native provenance stays outside the common inputs. Dependency checks
 prevent gameplay from depending on formats and native loaders from depending on
 classic parsers.
 
 Classic save decoding produces owned `StoredSave` records for versions 0x26,
-0x27, 0x28 and 0x2c. Conversion produces `state::GameInput`; `session::install_game`
+0x27, 0x28 and 0x2c. Conversion produces `GameInput`; `GameInstallation.Install`
 owns derived values, password randomness, entity lifetimes, name restoration and
-mode adaptation. Raw maps similarly converge on `world::MapInput`. Decoding and
+mode adaptation. Raw maps similarly converge on `MapInput`. Decoding and
 file close complete before installation; short files do not publish record prefixes.
 Map allocation is staged before replacing existing storage. Live exports preserve
 opaque imported fields in adapter-owned metadata tied to world, entity and event
@@ -322,7 +300,7 @@ reads and closes both items, and only then installs the values/defaults. Close
 failure leaves prior preferences intact.
 
 Events contain semantic values and owned string identities. Only the codec has
-serialized presence words. Collection-controlled IDs and const access protect
+serialized presence words. Collection-controlled IDs and read-only access protect
 identity; compaction prepares detached strings once and commits them to the same
 live events. Required text-hole aliases survive. Resource admission hooks are
 not gameplay reentry points or original allocator trace emulators.
@@ -337,55 +315,31 @@ guard for synchronous configuration/setup, including before client admission;
 it does not admit a second owner workflow. Commands already protect their world
 while pending. Their unit children take `OperationContext` and do not attempt
 standalone workflow admission.
-Public client/value modules do not import mutable state or engine operation
-interfaces. Setup and configuration requests, results, and presentation providers
-live in `player_setup_types`, `world_setup_types`, and `configuration_types`.
-Their `oc2_contracts` target is available to view models/frontend code without
-linking the engine or format libraries.
-Identity value types and capacities remain in `state.identities`; process token
-generation and slot reservation belong to `state.entity_allocation`.
-`PlayerClient` delegates through a noncopyable internal connection
-contract. The runtime implementation checks weak session/lease references on
-every operation; copying a handle neither extends the session lifetime nor
-preserves revoked authority. Shared runtime implementation state belongs to an
-internal module partition, not a public interface. Transitive import/include
-checks and portable target dependency checks protect these boundaries as the
-frontend grows.
+Public client/value contracts do not expose mutable state or engine operations.
+The existing setup/configuration value families live in Contracts, available
+to view models without linking Core or Formats. Identity values and capacities
+remain separate from process token generation and slot reservation.
 
-Use noncopyable virtual interfaces for cohesive providers with implementation
-identity. `FileStorage` supplies binary input, replacement output and removal;
-the native filesystem implements it directly. `UnitMovementQueries`,
-`UnitDeletionEffects`, `SocketTransport`, `MusicControl`, `CountdownControl`,
-`OptionBroadcaster` and the setup interaction interfaces retain their own identity
-across calls. Required operations are methods, not nullable callback slots.
-Borrow a provider by reference, or by a validated pointer when a selected branch
-needs it. Do not clone a provider to freeze its wiring.
+A scoped client checks session identity, lease and revocation on every operation.
+Copying a managed reference does not extend authority. Dispose/revoke explicitly;
+do not wait for garbage collection to retire a client, channel or world guard.
+Internal runtime state stays internal, and public API checks prevent accidental
+exposure through return types or generic arguments.
 
-Use `base::CallbackRef` for an individual borrowed policy or notification.
-It binds a callable lvalue or a function pointer, owns no capture, and preserves
-callable identity when copied. Callback owners must outlive every invocation;
-do not replace their bindings while a dependent operation is active. Small
-`*Dependencies` records group borrowed providers, policies and callbacks. They
-contain no owning `std::function` targets, including in nested records. A copied
-dependency descriptor copies handles only. Avoid one-field service wrappers:
-label/failure observers, immediate file choice and stack synchronization use
-direct callback parameters. Passive stack diagnostics use an optional output
-pointer. Captured callable state is never an accidental per-invocation snapshot.
-Synchronous codec, resolver, progress, and network callbacks use borrowed views as well.
-A local closure variable owns a temporary policy across the call; an owning test
-fixture keeps callbacks alive when a returned stream or operation retains them.
+Use interfaces for providers with stable implementation identity: storage,
+movement/deletion services, transport, music, countdown, broadcasts and setup
+interactions. Validate required providers at construction or selected-branch
+admission. A delegate can represent an individual policy/notification; retain its
+owner for the operation lifetime and preserve live reads. Do not accidentally
+replace a shared provider with a copied snapshot or capture a stale world.
+Dependency descriptors contain provider references, not cloned service state.
 
-Use owning `std::function` where ownership is intended, such as registered
-operation factories, self-contained comparison policies and callbacks owned by
-an implementation. Tests may use concrete programmable providers and owned
-callback fixtures; those fixtures must remain alive for their consumers.
-
-Suspended operations own their chooser/channel and request/result values, and
-retain explicitly borrowed provider/callback handles. The owners of those
-dependencies outlive the operation, including cancellation/destruction. An
-operation must not retain a stack-local callback owner from an earlier call.
-The immediate save adapter supplies its chooser separately; the asynchronous
-save operation has one owned `FileChooser` and no redundant chooser callback.
+Suspended operations own requests, results, chooser/channel and continuation data.
+They retain dependencies for their whole lifetime, including cancellation and
+cleanup. Use explicit `IDisposable`/`IAsyncDisposable` lifetimes for resource and
+operation guards, and owned handles for native resources. Finalizers are not a
+semantic completion mechanism. Cleanup must not mask an earlier failure. An
+explicit close reports its own error and is attempted only once, even if it fails.
 
 Common new-world setup consumes decoded `PremadeWorldInput`, common starting
 positions, and a `PreferenceWriter` taking an owned preference snapshot. Classic
@@ -400,21 +354,22 @@ or revoking clients. Missing handles are composition errors; a failure raised
 by an implemented child retains its specified completed prefix. Snapshot data
 when a coherent input/export is required, independently of provider lifetimes.
 
-Generic byte streams and storage belong to `io.stream` and `io.storage`, in the
-small `oc2_io` target alongside byte codecs. They must not import game records,
+Generic byte streams and storage belong to `OpenCiv2.IO` alongside byte codecs.
+They must not import game records,
 format adapters, or sessions. Classic/native I/O adapters depend on these ports;
-the ports never depend on their adapters. `CoreInput` and `CoreOutput` are
-noncopyable file interfaces. Their shared close state ensures finalization is attempted once, including a throwing close;
-implementations release resources in their destructors. Explicit close reports
-failure, while destructor cleanup preserves an earlier exception. Codecs accept
-individual borrowed read/write callbacks. `MultiplayerOptionOperation` owns an
+the ports never depend on their adapters. `CoreInput` and `CoreOutput` designate the
+existing file contracts to port.
+Their shared close state ensures finalization is attempted once, including a
+throwing close; implementations release resources through explicit disposal.
+Codecs accept bounded read/write operations, with no host-path knowledge.
+`MultiplayerOptionOperation` owns an
 `OptionVoteChannel` and yields after proposal delivery. Each subsequent poll does
 bounded transport work and evaluates the wrapping deadline. Presentation observes
 owned proposal data; it does not own a blocking modal protocol or vote callback.
 Cancellation, failure and completion release the channel before the world guard.
 
 Local stack/deletion mechanics never wait for transport. `UnitOperation` selects
-local authority or owns a noncopyable `UnitRequestChannel`, and yields after send.
+local authority or owns a `UnitRequestChannel`, and yields after send.
 Each poll performs bounded work, tracks the wrapping deadline and drains queued
 replies without an internal message loop. Cancellation releases the channel and
 session guard. Clocks and timeout notifications remain individual policies.
@@ -426,18 +381,19 @@ wire bytes, response deadlines or the different immediate/queued error results.
 
 ## 3. State and deterministic execution
 
-Use ordinary C++ structures and containers as the authoritative runtime state.
+Use ordinary C# records/classes, value types and arrays as the authoritative
+runtime state.
 Start with typed `Unit`, `City`, `Civilization` and `Tile` records, arrays or
 stable slot pools for entities, and contiguous map storage. Reference entities
-through typed identities instead of long-lived pointers whose validity depends
-on container allocation. Keep visibility/remembered layers, retained caches and
+through typed identities instead of long-lived object references that can
+outlive an entity or world. Keep visibility/remembered layers, retained caches and
 operation workspaces explicit. Choose storage layout for clarity and measured
 access patterns while preserving the specified logical behavior.
 
 `GameState` contains logical world state; F06/N02 codecs own classic file/wire
 layouts separately. SQLite is only an optional derived export for inspection
 and analysis, never the live state store or a second authoritative copy. Game
-operations, AI and user automation access the C++ state through their existing
+operations, AI and user automation access managed state through their scoped
 interfaces. No SQL statements, database transactions or schema constraints
 govern gameplay mutations, iteration or publication boundaries.
 
@@ -470,8 +426,9 @@ authority paths. UI availability rules must not accidentally become AI rules.
 
 Implement F01 conversions, signed views, wrapping, division, and rounding
 explicitly. Do not depend on signed overflow, struct layout, host endianness,
-unordered-container traversal, or library-specific random distributions. Disable
-floating-point reassociation/fast-math where exact downstream results matter.
+unordered-container traversal, or library-specific random distributions. Preserve
+floating-point evaluation order and verify exact downstream bits across JIT,
+ARM64 and browser builds; do not introduce fused or reassociated operations.
 Use the specification's reference evaluation order until an owner-backed equivalence
 argument and tests justify a change.
 
@@ -514,7 +471,7 @@ Context identities cannot depend on native handles, allocation addresses, clocks
 sampled during rendering, or worker scheduling. Frame rate and worker scheduling
 cannot choose which gameplay decision receives a sample.
 
-The generator remains an implementation decision. Each retained selection keeps
+The managed generator is PCG32 under the versioned policy below. Each retained selection keeps
 its owning specification's sampling law, including F01's range/modulo biases,
 thresholds, eligibility, retries, deterministic ties and reuse of sampled values.
 This includes meaningful report content and scenario-authored response choices;
@@ -535,6 +492,23 @@ semantic interactions and effects without running animation or sound samplers.
 Original-peer results remain authoritative and must never be rerolled by a local
 presentation consumer. Separation adds no required classic save or wire fields.
 
+Contexts use explicit PCG32 from
+`RandN.Pcg32` under [policy version 1](random-policy-pcg32.md), including controlled
+choices, traces, bounded version-2 checkpoints and versioned X02 replay fixtures.
+The policy defines seed/stream derivation, raw-code projections, counters and
+bounded replay restoration. F01 sampling laws and context separation are preserved;
+general-game checkpoint performance and remaining platform checks stay open. A fixed seed
+under the new policy must reproduce across desktop, browser and future runtime
+upgrades. `System.Random` does not supply that versioned contract.
+
+The [MT19937-64 policy v2 document](random-policy.md) and its hashes remain
+historical evidence. Update policy-dependent replay fixtures with explicit new
+provenance; controlled-choice checks do not change their laws. Compare old/new
+mechanics using supplied semantic choices, not equal-seed stream equality.
+Version RNG-bearing checkpoints and reject unsupported old-policy inputs rather
+than silently resuming them under a different engine. Classic saves and wire
+formats remain unchanged.
+
 ### Saves and checkpoints
 
 Classic saves and new-engine checkpoints serve different purposes. F06 codecs
@@ -548,18 +522,19 @@ classic import. Define and record a fresh-context import policy in that case.
 
 ### Embedded session service
 
-Make `SessionRuntime` in `oc2_session` the service boundary for gameplay clients.
-It owns the local session's C++ world state, turn/mode continuation, command
+Make `SessionRuntime` in `OpenCiv2.Session` the service
+boundary for gameplay clients.
+It owns the local session's managed world state, turn/mode continuation, command
 routing and pending interactions, and uses an explicit process context for F02
 state that outlives a game. Starting another game reuses that context where
 required; independent peers in one test process receive separate contexts.
 The frontend owns windows, input and presentation models, and communicates with
-the runtime using semantic C++ values through a scoped client API.
+the runtime using semantic managed values through a scoped client API.
 
 Single-player and hotseat embed the service in the graphical process. Use direct
 calls and owned queues as appropriate; no loopback sockets, RPC serialization,
 extra world replica or worker thread is required for local controllers. The same
-runtime can be driven without SDL by tests and headless tools. This decision
+runtime can be driven without Avalonia by tests and headless tools. This decision
 does not introduce a dedicated server executable or a new network protocol;
 separating processes later requires its own interaction and compatibility work.
 
@@ -593,12 +568,13 @@ supplying another civilization ID. Multiple input sources for one participant,
 such as a console and an automation task, share that participant's admission
 rules and explicit command ordering. The effective human set, hotseat roster,
 turn actor and network executor retain their specification-defined state;
-do not derive them solely from a controller's C++ type. Assisting a human with
+do not derive them solely from a controller's implementation type. Assisting a human with
 Lua does not turn that civilization into a classic AI.
 
 The service API exposes command submission, correlated results, scoped read-only
-queries/events and interaction replies. `oc2_query` supplies projection logic
-and value types; live clients obtain records through their session binding, not
+queries/events and interaction replies. `OpenCiv2.Query` supplies projection logic;
+public observation values belong to Contracts. Live clients obtain records
+through their session binding, not
 by passing themselves unrestricted world state. Offline inspection uses its
 separate explicit access context. No mutable `GameState` escapes to a client.
 
@@ -658,13 +634,13 @@ make every command atomic. Conversely, arbitrary paint calls do not introduce
 new semantic callbacks. Revalidate pending targets according to their contracts
 after deletion, ownership changes, remote results, or turn expiry.
 
-Use SDL's callback-style application entry for the graphical shell; it fits the
-browser's cooperative lifecycle. Frame work collects inputs, advances eligible
-session work, obtains presentation models, and draws. Exact internal dispatch
-boundaries remain the session's responsibility. Yield expensive AI/generation
-work without exposing new intermediate state or admitting events at invented
-boundaries. [SDL main callback documentation](https://wiki.libsdl.org/SDL3/README-main-functions)
-describes the supported lifecycle.
+Avalonia hosts collect input, advance eligible session work, obtain presentation
+models and invalidate drawing as needed. The core owns dispatch boundaries and
+has no dependency on Avalonia's dispatcher. Tests and CLI drivers advance the
+same runtime directly. Async I/O can deliver bytes but cannot mutate the world
+concurrently. Yield expensive work without exposing new intermediate state or
+admitting events at invented boundaries. Browser execution must cooperate with
+the browser event loop.
 
 The network service and deadlines must remain responsive during dialogs,
 animations, native menu tracking, and file selection. Native menu tracking loops
@@ -685,7 +661,7 @@ automation distinct from the specified classic AI and S02 scenario event system.
 Expose a portable query service independently of display-specific view models.
 Return owned, read-only records with stable IDs, ordering, observation revision,
 and provenance (stored, remembered, currently visible, or explicitly computed).
-Do not expose mutable C++ pointers or Lua userdata that can modify world state.
+Do not expose mutable engine objects or Lua userdata that can modify world state.
 The session supplies the caller's observer and authority context; scripts cannot
 select an unrestricted observer or grant themselves editor privileges.
 
@@ -714,7 +690,7 @@ transactions; cancellation or a script error does not undo earlier commands.
 
 ### Saved-game inspection CLI
 
-Provide a native `oc2` executable that works without SDL, ImGui, graphical assets,
+Provide a native `oc2` executable that works without Avalonia, Skia, graphical assets,
 or a Lua runtime. These commands are implemented for current stored saves and
 raw maps; their [output contract and limits](m1-inspection.md) are explicit:
 
@@ -752,7 +728,8 @@ native CLI itself is not a browser requirement.
 Add a native CLI export over the same decoded records and query projections:
 
 ```sh
-# Implemented stored domain; requires OC2_ENABLE_SQLITE_EXPORT=ON.
+# Stored domain; requires the optional SQLite-enabled CLI package.
+# Build solutions/OpenCiv2.Sqlite.slnx; invoke the oc2-sqlite executable.
 oc2 export game.sav --sqlite analysis.sqlite
 ```
 
@@ -794,7 +771,7 @@ scope; this decision adds neither as a runtime requirement.
 
 ### In-game command console
 
-Build an ImGui panel for input, history, completion and output on top of the
+Build an Avalonia panel for input, history, completion and output on top of the
 portable console. Start with help, queries and commands from the playable slice;
 unsupported operations remain unavailable. Keep basic commands usable when Lua
 is disabled. Text input follows the same focus/capture rules as dialogs.
@@ -809,7 +786,7 @@ handoff, observer changes and session replacement.
 
 Use an optional embedded stock Lua interpreter for high-level player automation.
 Pin one runtime and binding API version for native and WASM builds when this
-target is introduced; do not depend on JIT availability. C++ continues to own
+target is introduced; do not depend on JIT availability. C# owns
 state, arithmetic, mechanics, persistence and authority. Moving classic AI or
 map-generation algorithms into scripts is a separate design decision requiring
 its own conformance evidence. Lua's
@@ -834,8 +811,10 @@ when the runtime needs to yield for responsiveness.
 Bound instruction work, memory, host-call work, command queues and output. Expose
 cancel/pause controls and useful script/line diagnostics. Lua instruction hooks
 alone cannot bound time spent inside a host function: keep host calls bounded
-or asynchronous. Catch runtime errors at the binding boundary without bypassing
-C++ cleanup; disable the failed task and report committed command effects.
+or asynchronous. Contain Lua errors within protected native bridge calls; no native long jump
+may cross a managed frame, and no managed exception may escape a native callback.
+Keep callback roots and interpreter handles alive until explicit disposal. Disable
+the failed task and report committed command effects.
 Stop further submissions on cancellation; in-flight operations still follow
 their normal completion/cancel and mandatory-reply contracts.
 
@@ -866,45 +845,51 @@ hotseat handoff, and revalidate pending work on resume/reconnect.
 
 ## 6. Presentation and platform menus
 
-Use SDL3 for windowing, input, 2D rendering, and audio. Start with `SDL_Renderer`
-and Dear ImGui's SDL3 platform and SDL_Renderer3 backends. The expected workload
-is layered 2D assets, text, and custom dialog drawing. Prove atlas sizes, alpha,
-clipping, high DPI, and browser performance in an early slice. Keep a narrow
-texture/drawing boundary so a later renderer change does not reach mechanics;
-do not build several renderers upfront. The upstream
-[ImGui backend catalog](https://github.com/ocornut/imgui/blob/master/docs/BACKENDS.md)
-documents these integrations.
+Use Avalonia for the application shell, conventional dialogs, focus, input and
+layout, with a custom batched Skia map surface. Keep tiles/sprites out of the
+control tree. Use explicit texture/atlas lifetimes, visible-region culling and
+measured terrain/overlay caches. A small drawing boundary keeps backend-specific
+objects out of view models and mechanics. Preserve full redraw, cached pan and
+dirty update cases in performance checks, including half-world views at 4K/5K.
+Measure model preparation, allocations and GC stalls as well as drawing time.
+
+The comparison established feasibility, not production renderer provenance or
+complete platform acceptance. Write the production renderer from permitted
+asset contracts; the experiment's source-reuse exception remains isolated.
 
 Build one menu/action model with stable action IDs, labels, shortcuts, checked,
-enabled, and hidden states. Derive availability from current game state; stale
-fields left by an original menu refresh are not required. Menu implementations
-render that model and return an action identity through the same dispatch path.
-The command service revalidates authority and target when accepting the action.
-The menu hierarchy, shortcuts and prompt/navigation flows are design choices.
+enabled and hidden states. Derive availability from current game state; stale
+fields left by an original menu refresh are not required. Menus return an action
+identity through the same dispatch path. The command service revalidates authority
+and target at acceptance. Resolve shortcuts centrally to prevent double dispatch.
 
 | Platform | Main menu bar | Dialogs |
 | --- | --- | --- |
-| macOS | AppKit `NSMenu`, implemented in a small Objective-C++ adapter | Dear ImGui |
-| Windows | Win32 menu attached to the SDL window, with native command/accelerator integration | Dear ImGui |
-| Linux | Dear ImGui main menu bar | Dear ImGui |
-| Browser WASM | Dear ImGui main menu bar | Dear ImGui |
+| macOS | Avalonia `NativeMenu` using the system menu bar | Avalonia controls/custom drawing |
+| Windows | In-window Avalonia menu | Avalonia controls/custom drawing |
+| Linux | In-window Avalonia menu; optional desktop global-menu export | Avalonia controls/custom drawing |
+| Browser WASM | In-window Avalonia menu | Avalonia controls/custom drawing |
 
-Native adapters integrate with SDL's existing application/window ownership;
-they do not create a second competing application loop. SDL exposes the Cocoa
-window and Win32 HWND through
-[window properties](https://wiki.libsdl.org/SDL3/SDL_GetWindowProperties).
-Resolve command IDs and shortcut dispatch centrally so an accelerator cannot
-fire once through the native menu and again through SDL. Account for macOS
-application-menu conventions and the Windows menu's client-area inset.
+Use native menus on macOS and Avalonia's own menus on Windows. Linux uses the
+same in-window menu model, with optional global-menu integration where supported.
+No Win32 menu adapter is required. Keep window ownership, shortcuts, focus and
+menu availability consistent across hosts; test native menu tracking on macOS.
+[NativeMenu documentation](https://docs.avaloniaui.net/controls/menus/nativemenu)
+describes the framework's macOS and Linux integration.
 
-Dialogs use ImGui for focus, input, navigation, and lifetime. Custom city panes,
-maps, charts, and decorated controls use draw lists and shared textures. Every
-interactive custom region also has a stable ImGui item identity and an input
-target that the test engine can operate; drawing alone is insufficient.
-Separate its hit testing and semantic action from its paint code. Desktop file
-browsing and confirmation dialogs also use ImGui. Browser file import/export
-uses a small browser capability adapter behind the ImGui flow, invoking the
-browser's required file selection/download mechanism.
+Dialogs use normal Avalonia controls where possible. Custom city/map regions
+need stable semantic identities, input/hit-test behavior, focus and accessibility
+peers; pixels alone are not an interactive control. Use shared measurements and
+asset caches without binding every map object as a UI control. Test keyboard-only
+operation, IME, focus transfer, modal cancellation and target changes.
+
+Desktop file selection uses a platform storage adapter; browser selection,
+import/export and durable save completion use browser capabilities behind the
+same semantic workflow. Never pretend the browser has arbitrary filesystem
+paths. Keep audio/media behind separate services: choosing Avalonia does not
+implement P10 playback or completion semantics. Native and browser hosts must
+prove windowed/fullscreen behavior, DPI changes and responsive protocol deadlines
+while dialogs and native menus are open.
 
 The renderer reads observer-filtered models rather than unrestricted world state.
 W03 and N04 govern fog, remembered knowledge, diplomacy privacy, and hotseat
@@ -942,25 +927,22 @@ resolver code. A generated constants header is eligible only as reviewed
 data-only asset output. See the asset repository's
 [runtime package guide](https://github.com/PeterJohnson/openciv2-assets/blob/c4161c1843e8e06a5cf864e1633b6f6221abb797/docs/ASSET-DEPENDENCIES.md).
 
-M0 accepts `OC2_ASSETS_DIR` as an explicit CMake cache setting for an asset
-source root or extracted runtime package and exposes an `asset-check` target.
-A developer preset can point to the sibling checkout; invalid explicit GUI paths
-fail clearly. Automatic archive acquisition, runtime loading and packaging remain
-M2/M7 work. The archive/hash pin is available for explicit acquisition. A source
-checkout can use its standalone runtime pack builder; run no review/comparison pipeline
-and require no `openciv2` checkout or original executable. CI/release builds
-consume immutable runtime packages with checked inventory and checksums. Pure
-game tests need only small owned fixtures and do not build the graphics pack.
+`tools/check_assets.py` verifies the pinned asset inventory. Runtime graphics-pack
+loading and installation remain M2 work. The archive/hash pin is available for
+explicit acquisition; an asset source checkout can use its standalone runtime
+pack builder. Require no reconstruction checkout or original executable.
+CI/release builds consume immutable runtime packages with checked inventory and
+checksums. Pure game tests use small owned fixtures and do not build a graphics pack.
 
 Use the DejaVu Serif, Sans and Sans Mono TrueType families identified in the
 asset repository's `THIRD-PARTY.txt`, with regular/bold/italic/bold-italic faces.
 The historical bitmap-generation font versions were not recorded; independently
 pin DejaVu 2.37 and each TTF/license hash rather than claim an exact reconstruction.
-The shell now embeds those verified font bytes and uses ImGui's runtime
-`stb_truetype` rasterizer. No bitmap cache decoder or Wine dependency is needed.
-The generated `oc2_font_data` target owns CPU font bytes separately from
-frontend-owned ImGui glyph caches/SDL textures;
-headless builds do not fetch/link fonts or rasterizers. Custom drawn dialogs use
+Avalonia owns text measurement and rasterization. Current publications include
+the dependencies and fonts they actually use, with verified notices; graphics-pack
+font selection and integration remain M2 work.
+CPU source bytes remain separate from frontend-owned glyph/GPU caches. Headless
+builds do not fetch/link fonts or rasterizers. Custom drawn dialogs use
 the same font measurements and atlases as widgets. Cache by face, size and DPI,
 and retain source bytes until all consuming contexts are destroyed. Native menus
 keep platform typography. New visual metrics must not change classic logical
@@ -983,8 +965,8 @@ menus, briefings/credits, conditional council content, encyclopedia and events. 
 companion-tool and unconfirmed legacy inputs; it is not a loader-completion claim.
 A separately selected [built-in gameplay bundle](content/gameplay-format.md)
 supplies the first six extracted constant families with shipped original defaults.
-Its explicit custom mode is outside classic-equivalence claims; C++ consumers and
-session/save integration remain unimplemented. The content backend does not
+Its explicit custom mode is outside classic-equivalence claims. Typed loading
+is implemented; complete gameplay/session integration retains its milestone gates. The content backend does not
 implicitly choose different built-in values.
 Original text files are optional inputs through compatibility adapters, not prerequisites for standalone play. Both decoders publish the same
 logical models and owner-defined operations; mechanics, AI and map generation
@@ -993,7 +975,8 @@ describe game concepts and use semantic IDs/units. Optional compatibility
 metadata carries classic slots, source addresses and import associations;
 native consumers do not scan virtual text-file sections.
 
-`oc2_formats` owns these codecs and receives explicit byte sources. Native pack
+`OpenCiv2.Formats` owns these codecs
+and receives explicit byte sources. Native pack
 validation precedes installation; classic selected files retain F03/C01/P04/P08/
 P09/S02 grammar, fallback, conversions and meaningful reload state. Classic
 parsing/loading may also stage unpublished results under X01. Preserve accepted
@@ -1011,8 +994,9 @@ set or obtain one from reconstruction source. Keep user-supplied classic data
 and approved distributable content clearly identified after conversion too.
 
 The current asset dependency supplies graphics; stock sound can be added there
-later. Reserve audio/media identities and manifest versioning now, with an SDL
-audio implementation and a silent test backend. Missing stock cosmetics can
+later. Reserve audio/media identities and manifest versioning now, with native/browser
+audio adapters and a silent test backend. Select and pin the playback/decoder
+dependencies when implementing those adapters. Missing stock cosmetics can
 have explicit fallback; supported authored WAV/video requests, meaningful
 notices, and completion/cancel semantics remain P10 obligations. Select
 independent media decoders against that domain before claiming scenario support.
@@ -1022,7 +1006,7 @@ suppress a game effect or required reply.
 ## 8. Persistence and networking
 
 Classic codecs read/write explicit field widths, little-endian values, strings,
-and retained bytes. They never dump C++ objects. Keep file bytes, N02 state
+and retained bytes. They never dump runtime objects or CLR layouts. Keep file bytes, N02 state
 images/diffs, and transport frames as separate formats even where fields overlap.
 Storage adapters provide byte I/O and failures; the portable operation owns
 publication and partial effects. Validation and staged writes are useful only
@@ -1045,10 +1029,10 @@ identities without adding mandatory fields. Handle role changes and host transfe
 inside the mode/authority adapter while keeping client bindings and pending
 interactions consistent with the new authority.
 
-Browsers cannot directly connect to arbitrary TCP sockets; WebSockets and proxy
-services are the relevant Emscripten mechanisms. See
-[Emscripten networking](https://emscripten.org/docs/porting/networking.html).
-The planned browser path is an explicit WebSocket-to-native transport bridge:
+The browser host uses browser-supported networking through a platform adapter;
+it cannot open arbitrary native TCP/UDP sockets. The planned path remains an
+explicit WebSocket-to-native transport bridge. Changing the language does not
+remove this platform boundary:
 
 - The original peer speaks unchanged classic TCP/UDP; install nothing in it.
 - The bridge carries transport bytes/events and discovery results, not gameplay
@@ -1064,68 +1048,54 @@ ship as an explicitly limited preview while the bridge is built. Full browser
 multiplayer claims require bridge-backed interoperability evidence; do not
 silently reinterpret WebSockets as native TCP/UDP or declare the gap optional.
 
-For browser storage, stage imports and asset reads in a virtual filesystem and
-persist saves/preferences through IndexedDB-backed storage with explicit flush
-completion and export/download. Never report a durable save before persistence
-succeeds. The
-[Emscripten filesystem API](https://emscripten.org/docs/api_reference/Filesystem-API.html#filesystem-api-idbfs)
-documents IDBFS synchronization. Desktop and browser path adapters must preserve
-classic resource-name lookup without depending on host case sensitivity.
+For browser storage, stage imports and asset bytes through browser adapters and
+persist saves/preferences in IndexedDB-backed storage with explicit completion
+and export/download. A virtual filesystem is an adapter choice, not a core
+requirement. Never report a durable save before persistence succeeds. Browser JS
+interop stays outside Core and Formats. Desktop and browser resource lookup must
+preserve classic name matching without depending on host case sensitivity.
 
 ## 9. Build, tests, and delivery
 
-Require CMake 4.5 or newer and use target-based CMake with `cxx_std_23`,
-extensions disabled, and separate build directories per native or Emscripten
-toolchain. Enable Objective-C only for the AppKit adapter, which communicates
-with the C++ menu implementation through a narrow C ABI. Enable C++ module
-scanning for all owned targets, including tools and tests. Use the pinned
-standard-library module sources, headers and runtime as one matching set. C++23 library facilities must be available on every pinned platform;
-language-mode support alone does not establish standard-library support.
-Commit portable presets for debug, release, sanitizers, headless,
-and web; keep machine paths in untracked user presets. Record exact dependency
-and emsdk versions in [dependencies.json](../dependencies.json), updating the
-tested set together. M0 also pins CI CMake/compiler baselines and emits a
-configuration identity report; `OC2_VERIFY_TOOLCHAIN` enforces those versions.
-See [M0 execution evidence](m0-validation.md) for actual runs and platform gaps.
-Use pinned FetchContent inputs or explicit compatible installed packages,
-with downloads opt-in and cached/offline operation supported. Never track a
-dependency's moving branch as a reproducible build input.
+Use an SDK-style managed solution with pinned SDK/runtime/workloads and package
+locks, nullable reference checking, analyzers and deterministic build identities.
+The root `global.json`, shared MSBuild files and `Directory.Packages.props`
+pin the SDK, runtime and NuGet versions; see the [build guide](BUILDING.md). Record all native dependency versions
+and notices alongside NuGet inputs. Restore locked dependencies in CI; permit
+cached/offline builds. Test upgrades as a set, not by silently selecting latest.
 
-Use the pinned clang-format version and root `.clang-format` for owned C/C++/
-Objective-C code. Format and review changes before staging; the repository hook
-checks staged contents and CI checks all owned sources. Preserve include order,
-and exclude generated/dependency files. Formatting targets are explicit and add
-no mandatory dependency or source mutation to ordinary builds. Setup and commands
-are in [the build guide](BUILDING.md#formatting-and-commits).
+Keep Core, Formats, Query, Session and the base CLI independent of Avalonia, Skia,
+Lua, SQLite, display servers and graphic assets. Optional features use separate
+composition projects/build configurations. The console parser works without Lua;
+SQLite remains native-only initially. No package restore for a base tools build
+should pull GUI or optional native-runtime packages transitively.
 
-Keep graphical, test-engine, original-comparison, and bridge dependencies opt-in.
-`OC2_BUILD_GUI=OFF` must configure and run Catch2/conformance tests without SDL,
-ImGui, graphics assets, display servers, or an original installation. Runtime
-packaging carries only the selected data, application, and dependency notices.
-macOS app bundles, Windows packages, Linux packages, and web JS/WASM/data outputs
-are produced from the same source and locked content inputs.
+Use explicit byte codecs and reviewed JSON readers/writers. Where serialization
+is generated, enumerate supported shapes and converters so trimming/AOT cannot
+silently remove required behavior. No runtime assembly scanning or arbitrary
+reflection dispatch is needed for commands or Lua. Browser publication and smoke
+tests run from the first managed foundations slice; desktop Native AOT is an
+optional later optimization.
 
-When implemented, gate native tools with `OC2_BUILD_TOOLS` and Lua bindings with
-`OC2_ENABLE_SCRIPTING`, independently of `OC2_BUILD_GUI` and `BUILD_TESTING`.
-These are planned options, not current presets. A tools-only build must run save
-inspection without GUI or Lua packages; enabling scripts in headless tests must
-not acquire SDL. The console parser remains usable with scripting disabled.
+The [build guide](BUILDING.md) gives root-based .NET commands. C# formatting,
+nullable analysis, warnings-as-errors and locked restores are checked in CI.
+The optional Lua bridge uses native sanitizer/resource checks. Builds do not rewrite source files. GUI test instrumentation must remain
+explicitly separated from player-facing behavior.
 
-Gate `oc2_export_sqlite` with the planned `OC2_ENABLE_SQLITE_EXPORT` option,
-default OFF, independently of scripting and GUI support. Pin and record SQLite
-and its notices when implementing the exporter. Fetch/link it only for enabled
-export consumers and their tests. Core libraries, basic CLI inspection and the
-normal WASM build must configure without SQLite; the initial exporter is native.
-
-Catch2 v3 owns unit and portable integration tests. CTest groups fast mechanics,
-formats, replay, network, UI, and external interoperability suites. Use native
-test discovery there; cross-compiled WASM tests need an explicit JS/browser
-runner rather than executing a target binary during CMake configuration.
+xUnit and shared native/browser cases verify the implemented contracts.
+Keep the independent Python CLI/conformance/content drivers, changing
+executable selection and provenance support deliberately. Native CI covers Linux,
+macOS and Windows; browser tests execute the same portable contracts through a
+WASM host rather than assuming a desktop test runner can run in the browser.
+Publish self-contained native CLI packages and separately versioned desktop/web
+application artifacts from the same locked source/content inputs.
 
 Implement the existing X02 version 3 fixture format and its operation/state
 registry, controlled-choice and implementation-replay modes, dependency-aware
-trace comparison, provenance, and coverage ledger. Start with the three fixtures
-already in `docs/algorithms/conformance/`. Missing scripted inputs fail; they
+trace comparison, provenance, and coverage ledger. Preserve the scope of the
+current 57 fixtures and 15 registered operations, with deliberate versioning of
+policy-dependent replay expectations. The bounded M1 domain remains explicit.
+Missing scripted inputs fail; they
 never fall back to random values or real clocks. Hash explicit logical state,
 not native object memory. Separate gameplay, file/content, peer interoperability
 and optional executable-reference claims. Internal API/provider regression tests
@@ -1143,20 +1113,23 @@ controlled content choices, pending-interaction restore, and gameplay callbacks
 triggered by dialogs. Do not require unchanged game state when adding or removing
 a semantic operation that the specifications say recalculates or mutates it.
 
-Use ImGui Test Engine for dialogs, menus, custom item interactions, focus,
-keyboard routing, accept/cancel, and changing targets. Catch2 checks the same
-portable view models and command semantics. Native menu behavior also needs
-platform adapter tests and real desktop smoke tests; ImGui tests cannot validate
-AppKit or Win32 menus. Visual regression images of our UI supplement semantic
+Use managed view-model and Avalonia control tests for dialogs, custom hit regions,
+focus, keyboard routing, accept/cancel and changing targets. Add browser interaction
+checks over the real host. Native menu behavior also needs platform adapter tests
+and real desktop smoke tests; headless control tests cannot validate native menus,
+IME, accessibility or mixed-DPI/fullscreen behavior. Visual regression images of
+our UI supplement semantic
 checks, with original screenshots used only as optional comparisons.
 
-Catch2 also covers stored versus loaded inspection, malformed/unsupported saves,
+Managed tests also cover stored versus supported loaded inspection,
+malformed/unsupported saves,
 lossless JSON, stable diffs, query non-mutation/privacy and descriptor validation.
 Drive a supported operation through direct session calls, console input and Lua
 and compare semantic outcomes, including stale targets and partial effects.
 Test instruction/memory limits, bounded host calls, cancellation, task restore,
 missing script metadata, event order and duplicate-command prevention on native
-and WASM. ImGui tests cover console focus, history, completion, interaction
+and WASM. Avalonia integration tests cover console focus, history, completion,
+interaction
 replies and hotseat concealment. Mixed-peer tests prove that automation uses the
 ordinary protocol and preserves authority through reconnect/host transfer.
 
@@ -1176,13 +1149,12 @@ contents rather than requiring byte-identical SQLite files. Exercise builds
 with export enabled and disabled, including a headless tools build, and verify
 the optional dependency never reaches core targets.
 
-Pin ImGui and its test engine as a tested pair. The test engine has its own
-[license](https://github.com/ocornut/imgui_test_engine/blob/main/imgui_test_engine/LICENSE.txt);
-record its notice and applicable terms separately from ImGui's MIT license,
-and keep test instrumentation out of release builds.
+Package inventories include Avalonia/Skia, fonts and optional Lua/SQLite adapters;
+test-only dependencies remain distinct from releases. Record SDK, runtime,
+workload, native compiler and source identities for each build. Conformance
+reports bind executed artifacts and fixture/specification inputs. Never relabel
+older results as execution of changed sources.
 
-CI uses pinned Linux Clang, macOS AppleClang, Windows clang-cl with Microsoft's
-SDK/libraries, and Emscripten. Other developer compilers need separate validation.
 Run portable arithmetic/replay vectors across native and WASM builds, sanitizers
 on suitable native jobs, decoder/protocol fuzzing, browser smoke tests, and
 display-backed UI tests. Original-game file/peer tests use separately provisioned

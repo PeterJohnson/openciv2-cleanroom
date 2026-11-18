@@ -1,0 +1,132 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "Avalonia": {
+        "type": "Direct",
+        "requested": "[12.1.6, )",
+        "resolved": "12.1.6",
+        "contentHash": "juogZu7ASS2KMtSqOMa8nGJ5I1Ile/3PG3JR+tD73liDr30qgilEsqNVQw3KIXJvuFc9m3Mf9NzGWc3sQvnlXA==",
+        "dependencies": {
+          "Avalonia.BuildServices": "11.3.2",
+          "Avalonia.Remote.Protocol": "12.1.6",
+          "MicroCom.Runtime": "0.11.6"
+        }
+      },
+      "Avalonia.Fonts.Inter": {
+        "type": "Direct",
+        "requested": "[12.1.6, )",
+        "resolved": "12.1.6",
+        "contentHash": "sb0jH+oKHCWGo5PHuYtsK3cJ2dcsiE7PQEJJ94ZrFewxwwyeUn0+EsvnzKPEfL2c4cvRXInL0O741yUf3aHX2Q==",
+        "dependencies": {
+          "Avalonia": "12.1.6"
+        }
+      },
+      "Avalonia.Themes.Fluent": {
+        "type": "Direct",
+        "requested": "[12.1.6, )",
+        "resolved": "12.1.6",
+        "contentHash": "CafSFU8q6I2ij7VRWy3D5qw3ObrDEOXRqIvFqVuEh7vqk1EC9ob94KYRmbHLZRsyj3Ob2xsF/tgcF5YF2uiKzQ==",
+        "dependencies": {
+          "Avalonia": "12.1.6"
+        }
+      },
+      "Avalonia.BuildServices": {
+        "type": "Transitive",
+        "resolved": "11.3.2",
+        "contentHash": "qHDToxto1e3hci5YqbG9n0Ty8mlp3zBUN5wT66wKqaDVzXyQ0do3EnRILd4Ke9jpvsktaPpgE0YjEk7hornryQ=="
+      },
+      "Avalonia.Remote.Protocol": {
+        "type": "Transitive",
+        "resolved": "12.1.6",
+        "contentHash": "55fcjPpzkzPaSSMczUjpKHKWcuJo6dJHHkLXgT8nMP80ijYASzdPdf86173R7CqPitw8E8nJ229Jqpu/EyUVow=="
+      },
+      "MicroCom.Runtime": {
+        "type": "Transitive",
+        "resolved": "0.11.6",
+        "contentHash": "NdNWGDiZ6eS/Mf/9+QHR91cj1K7Hy+PX9yrHI/zM7xFYuj9IWT2uxtB6sCHjrnxAeLV9fut1R6zHDUGKX6f9lQ=="
+      },
+      "RandN.Core": {
+        "type": "Transitive",
+        "resolved": "0.5.0",
+        "contentHash": "OhiLvvC2lQyZPnBnNOTAJz9Q57wwx8gWI9wmTLIxMYJAL+lC+kmsQIqJtvDAemITL2IaQ3zfvKAVJd1AQDy4IA=="
+      },
+      "openciv2.base": {
+        "type": "Project",
+        "dependencies": {
+          "RandN.Pcg32": "[0.5.0, )"
+        }
+      },
+      "openciv2.console": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "openciv2.contracts": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "openciv2.core": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )",
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "openciv2.formats": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.IO": "[1.0.0, )"
+        }
+      },
+      "openciv2.io": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "openciv2.network": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.IO": "[1.0.0, )"
+        }
+      },
+      "openciv2.query": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.Formats": "[1.0.0, )"
+        }
+      },
+      "openciv2.session": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.Formats": "[1.0.0, )",
+          "OpenCiv2.Network": "[1.0.0, )",
+          "OpenCiv2.Query": "[1.0.0, )"
+        }
+      },
+      "openciv2.viewmodels": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "RandN.Pcg32": {
+        "type": "CentralTransitive",
+        "requested": "[0.5.0, )",
+        "resolved": "0.5.0",
+        "contentHash": "rbvbu9rbGgWzKA9Ni2XPNKUWwvZKpD520K+K47ARST+RQCfrpy36Ej8zyLJo2GymYjZCXlBlY354WG6s2TdvYg==",
+        "dependencies": {
+          "RandN.Core": "[0.5.0, 0.6.0)"
+        }
+      }
+    }
+  }
+}

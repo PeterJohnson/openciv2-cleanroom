@@ -1,57 +1,30 @@
 # M1 finite closeout contract
 
-Status: all seven gates passed at source `56be096`; see [final evidence](m1-validation.md).
-The baseline status column below retains the scope-setting historical state.
-Baseline: `b125df5` (2026-11-14). This document fixes the remaining M1 scope at
-that revision. The original scope definition alone was not completion evidence;
-the final audit linked above records the subsequent implementation and checks.
-
 ## Authority and stopping rule
 
-This is the authoritative **M1 work list**. The implementation plan describes
-the milestone, the [audit](m1-validation.md) records evidence, and the operation
-registry describes implemented coverage. Older slice documents, generic coverage
-gaps and references to an entire specification do not add work to this list.
-X01 and the owning specifications still govern correctness; this document limits
-delivery scope, not the eventual gameplay or interchange contract.
+This document fixes the bounded foundation contract. The current C# implementation
+and tests are mapped in [coverage](testing/coverage.md), with executed platform
+results in [validation](validation/README.md). Continue with M2 and later milestones
+without recursively implementing every gameplay child reachable from these APIs.
+X01 and the owning specifications govern correctness; this page limits delivered
+scope, not the eventual gameplay or interchange contract.
 
-Only M1-01 through M1-07 below are completion gates. Each is either `open`,
-`passed`, or `blocked-external`, with a revision and evidence reference. Existing
-implemented features are regression obligations, not invitations to expand them.
-Implement the smallest production boundary needed by each listed gate. Test-only
-operations/providers remain in tests; original executable trace emulation stays
-outside production. No graphical flow, allocator trace or native ABI is a gate.
-
-Complete M1 only when all seven gates pass. If a required original-game run,
-independent review or hosted platform is unavailable, finish the other gates and
-report the exact external blocker; do not mark M1 complete or invent substitute
-evidence. Retry external work when access or evidence changes, not indefinitely.
-Missing code, a failing test or difficult implementation is not an external blocker.
-
-New findings are handled as follows:
-
-- Fix defects needed to pass a listed gate or preserve the frozen regression
-  surface. Add the smallest meaningful regression case.
-- Record other work with its owning later milestone. Do not recursively implement
-  a gameplay child, add another file version, register every helper with X02, or
-  enlarge a supported profile merely because it is reachable from M1 code.
-- If a listed gate cannot be completed without changing its declared domain,
-  document that specific dependency for a scope decision. Do not silently widen
-  the task or weaken an owning behavioral requirement.
-- Run the required checks on the final candidate. Repeat affected checks after
-  changes; do not keep adding demonstrations after the gates pass.
+Preserve meaningful failure prefixes, continuation/cancellation behavior and
+independent evidence. Fix defects within the admitted surface. Record additional
+features under their owning milestone rather than weakening a contract or silently
+expanding a completed foundation task. Test-only services remain in tests.
 
 ## Closed work list
 
-| ID | Deliverable | Baseline status | Completion evidence |
-| --- | --- | --- | --- |
-| M1-01 | Bounded local continuation checkpoint proof | Open: RNG snapshots exist; suspended commands are not serialized | The checkpoint profile and eight scenarios below pass on native and WASM |
-| M1-02 | Three classic-to-native content conversions | Open: readers, typed models and validators exist | Each matrix row has paired semantic comparisons, rejection cases and source/output receipts |
-| M1-03 | Review and inventory the frozen conformance surface | Open: 57 X02 vectors execute; independent review remains | Review disposition for each vector, family-to-test mapping, fresh native/WASM reports |
-| M1-04 | Current-candidate original-file evidence | Open: retained original observations predate the latest save refactor | The finite file procedure below passes; an external blocker is not a pass |
-| M1-05 | Preserve implemented foundation contracts | Open: implemented, final regression verification required | Existing suites plus listed repair/isolation checks pass without adding gameplay children |
-| M1-06 | Fixed build and test matrix | Open: local Windows/WASM evidence exists; final matrix is outstanding | Revision-bound results for every required configuration below |
-| M1-07 | Final closeout audit | Open; last step | One evidence table for M1-01–M1-06, unresolved/deferred issues and an explicit completion decision |
+| Contract | Current scope |
+| --- | --- |
+| M1-01 | Bounded local checkpoint profile and suspended authored continuation |
+| M1-02 | Three classic-to-native content conversions with receipts and rejection checks |
+| M1-03 | Fifteen registered X02 operations, 57 selected fixtures and eight integration evidence families |
+| M1-04 | Bounded original-file procedure; repeat against the current binary before claiming fresh interoperability |
+| M1-05 | Arithmetic/state/map, content, queries, I/O and session regression obligations |
+| M1-06 | Native .NET and browser matrix; actual platform UX has separate M2 gates |
+| M1-07 | Explicit status, coverage and evidence gaps in the validation/implementation guides |
 
 ## M1-01: checkpoint profile
 
@@ -137,7 +110,7 @@ navigation, drawing and text storage are not conversion acceptance criteria.
 
 ## M1-03: finite conformance and review
 
-The X02 denominator is the **57 fixture IDs** in the baseline registry and these
+The X02 denominator is the **57 fixture IDs** in the selected registry and these
 **15 operation IDs**. Corrections may revise a fixture and add a narrowly required
 regression; they do not authorize new operation families.
 
@@ -157,7 +130,7 @@ Map the existing integration tests to exactly eight evidence families: fresh-gam
 isolation; commands/authority/queries and M1-01; content/parsing and M1-02;
 save/preferences/semantic file choice; bounded stack repair; stored inspection and
 SQLite export; N05 framing/envelopes; N02 sections/checksums/compression. Identify
-test files and checks, not merely assertion totals. Catch2/CLI evidence is valid
+test files and checks, not merely assertion totals. shared-case/CLI evidence is valid
 for these families; no additional X02 adapter is required for every helper.
 
 Run the 57 vectors on native and WASM and compare observations and consumed prefixes.
@@ -177,10 +150,10 @@ Keep these support claims separate:
 | Peer evidence | Retain existing ID greeting/discovery observations and the failed TCP ping; full TCP sessions, mixed-peer codec/state application and reverse-role play are M6 |
 
 Recheck the seven raw maps and 21 current saves named by the retained
-[map](conformance/reports/original-maps-native.json) and
-[save](conformance/reports/original-saves-windows.json) reports through current
+[map](https://github.com/PeterJohnson/openciv2-cleanroom/blob/6e58a59e841760e7d3a5706e727d4bb8090bb224/docs/conformance/reports/original-maps-native.json) and
+[save](https://github.com/PeterJohnson/openciv2-cleanroom/blob/6e58a59e841760e7d3a5706e727d4bb8090bb224/docs/conformance/reports/original-saves-windows.json) reports through current
 stored codecs; keep source hashes unchanged. The earlier
-[live-save report](conformance/reports/original-live-save-windows.json) records
+[live-save observation](m1-original-live-save.md) records
 the existing observation method, not a pass for a changed exporter. For actual
 execution, export one of those maps and one single-player save with a declared
 treasury edit. Have the unmodified target original accept the map through its
@@ -190,7 +163,7 @@ current codec. Record the exact candidate/source/executable hashes, observed
 outcomes and limitations. The original supplies its own gameplay; no missing
 cleanroom mechanic must be implemented to run this check.
 
-Retained pre-refactor observations remain historical evidence, not a pass for the
+Recorded original-program observations remain dated evidence, not a pass for the
 current save exporter. Missing executable/files/UI access is an external blocker.
 Do not change the original executable, consult reconstruction code, repair its
 TCP implementation or acquire more versions to close this gate. No new scenario,
@@ -198,7 +171,7 @@ hotseat, email or legacy executable run is required by M1.
 
 ## M1-05 and M1-06: regression and build matrix
 
-M1-05 preserves the baseline arithmetic/records/map, content and query contracts,
+M1-05 preserves the implemented arithmetic/records/map, content and query contracts,
 fresh-game/reset and authority guards, classic codecs, inspection/export and
 network primitives. In particular, retain cold/reused/cancelled/failed-entry
 equivalence, stale-client rejection, pending-command/output guards, RNG isolation,
@@ -208,15 +181,6 @@ no live world, AI turn, renderer or protocol handler completion is implied.
 
 M1-06 requires this finite matrix, using the pinned tools in `dependencies.json`:
 
-| Configuration | Required checks |
-| --- | --- |
-| Windows, Linux, macOS native headless, SQLite enabled | Complete applicable CTest suite, inspection/SQLite CLI checks and X02 reports |
-| Windows native headless, SQLite disabled | Complete applicable CTest suite; configuration/linkage excludes SQLite |
-| Pinned WASM/Node headless | Portable Catch2 suite, metadata and X02 execution/rejection checks; compare X02 results with native |
-| Linux ASan/UBSan headless | Applicable foundation and added checkpoint/conversion tests without sanitizer findings |
-| One native tools-only configuration | GUI, tests, dependency fetching and Python discovery disabled; absent runtime assets; inspect a supported authored map/save and run content validation |
-| Developer checks | Pinned formatter, metadata/content-schema checks and the existing Python test suite; record justified OS-dependent skips |
-
 Existing CI jobs may supply these results. A GUI job, browser UI automation,
 shipping bundle, extra compiler or additional OS version is not an M1 gate.
 Hosted execution can be an external blocker; a compile/test failure cannot be
@@ -224,22 +188,10 @@ reclassified as missing evidence. Identify the tested source revision and releva
 artifacts. Evidence may be reused when its implementation/build inputs are
 unchanged; documentation-only edits do not force another platform run.
 
-## M1-07: final audit and execution instruction
+## M1-07: status and continuation
 
-Update [m1-validation.md](m1-validation.md) with one row per gate containing status,
-tested revision, evidence and any remaining blocker. Reconcile the coverage ledger
-and slice documents with that table. Mark deferred issues with the owning milestone;
-retain unknown `view_civ` sentinel interpretation, non-ASCII comparison coverage,
-F05 application reload-policy arguments, broader loaded-state diagnostics and
-incomplete original-peer work honestly. These remain M3–M6 owning work, not extra
-M1 implementation gates.
-No percentage over mixed fixture/test/operation counts is a completion argument.
-
-The bounded instruction for a subsequent implementation run is:
-
-> Complete only M1-01 through M1-07 in docs/m1-closeout.md, starting from their
-> recorded status. Preserve the baseline regression surface. Use owning specs for
-> correctness, but do not expand the closed domains or implement later gameplay
-> dependencies. Finish available work, report exact external blockers, and stop
-> when every gate passes or only external evidence remains. Report those two
-> outcomes distinctly; only the first completes M1.
+The [validation guide](validation/README.md) records executed C# evidence and
+remaining platform gates. The [implementation plan](implementation-plan.md) is
+the next-work entry point. Preserve distinct denominators for shared cases, X02
+fixtures, CLI tests and external observations; do not report whole-game completion
+from this finite foundation surface.

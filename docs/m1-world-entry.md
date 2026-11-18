@@ -1,6 +1,6 @@
 # F05 new-world entry composition
 
-`session/world_entry.cppm` implements the section 2 parent after selection of
+`src/OpenCiv2.Session/WorldEntry.cs` implements the section 2 parent after selection of
 Random World, Premade World or Customize World. It first prepares a fresh game:
 replace old world/workspace state, clear mutable rules/text and file scratch,
 revoke previous clients, and retain only preferences/configuration/identity
@@ -39,20 +39,7 @@ requires explicit admission of new client bindings.
 
 ## Validation and open bindings
 
-The isolation revision passes 560 native CTests, all six WASM CTests and 115
-Python tests (two platform skips). Both native and WASM reports rerun all 54
-registered foundation vectors against the updated specification pins. The new
-entry tests compare fresh state with a completed game, cancelled setup and failed
-premade load, including poisoned goals, free-slot payloads, mutable names/rules,
-passwords and file scratch. They also reject old clients and preserve explicitly
-supplied RNG contexts. Goal tests no longer invent query mutations/reentry or
-assert pure-query call traces. Full W02/V01 gameplay remains supplied in these
-foundation tests. Logs are `build/isolation-{native,wasm}-ctest.log` and
-`build/isolation-python-tests.log`.
-
-Before the isolation revision, twelve portable integration cases passed 201 assertions. They use independently
-authored complete RULES
-sections, the actual F03 parser/reloaders, binary premade input, real preference
+Shared integration cases use independently authored complete RULES sections, the actual F03 parser/reloaders, binary premade input, real preference
 encoding and exact controlled choices. They cover stage ordering, the two
 custom-world saves, size/map/parameter/player cancellation, partial premade
 input, both premade topology modes, preference failures, partial reloads,
@@ -60,12 +47,6 @@ retained negative acceleration, old-client rejection, fresh-game
 isolation and introduction filtering/order/live labels. W02, V01, balancing,
 acceleration and presentation are explicitly supplied children in these cases,
 not completed gameplay implementations or original-program captures.
-
-That earlier revision passed 539 default-off and 541 SQLite-enabled Windows CTests. Pinned
-Emscripten passes all six CTests, including 516 portable cases with 192,940
-assertions. All 54 registered native/WASM observations match. The retained logs
-are `build/world-entry-{native,sqlite,wasm}-final-build.log` and
-`build/world-entry-{native,sqlite,wasm}-final-ctest.log`.
 
 Fresh-game reset is implemented. Non-new-world menu choices, application dialogs
 and content selection adapters, full W02/V01/F05 gameplay children, cooperative
@@ -80,3 +61,8 @@ about original parser flags or allocation traces. Tests change the backing sourc
 after its one load and verify final definitions, name retention and closed readers.
 The interactive choice adapters and full owning gameplay children still belong
 to their later milestones.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

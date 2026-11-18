@@ -1,8 +1,13 @@
-# M1-03 independent fixture review
+# Reference fixture review
+
+This dated review covers the reference fixture set, including its seven MT replay
+vectors. The active C# selection uses seven independently generated PCG32 variants;
+see [the selection contract](README.md). This review establishes fixture reasoning,
+not execution of a current application binary.
 
 Reviewer: **agent `/root/m1_fixture_review`**, acting solely as reviewer, not
-author of these expectations. Review date: **2026-11-14**. Reviewed candidate:
-`2827676d4e50ea0eea09a355baca8a49d6ce81b3`; implementation inputs were `d65e659`.
+author of these expectations. Review date: **2026-11-14**. Reviewed fixture revision:
+`2827676d4e50ea0eea09a355baca8a49d6ce81b3`.
 The fixed scope is the 57 fixture IDs and 15 operation IDs from `b125df5`.
 
 Disposition: **review complete; all 57 fixtures accepted within their stated

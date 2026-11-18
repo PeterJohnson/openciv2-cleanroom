@@ -1,322 +1,91 @@
 # Implementation plan
 
-Status: roadmap for the [architecture](architecture.md), with an initial SDL3
-application shell and build/test infrastructure integrated. The repository also
-contains 65 algorithm specifications and 57 portable conformance fixtures.
-M1 slices add F01 arithmetic/random contexts, F02 entity/civilization/global records,
-W01 map foundations, F06 stored-save/map codecs, N05/N02 transport primitives and a
-bounded X02 runner. Initial session/controller ownership, scoped queries, commands
-and continuations are implemented, alongside stored inspection and optional SQLite
-export. The six gameplay components now load into immutable typed operands through
-pinned jart/json.cpp; pack inheritance and mounted component selection are resolved
-with exact hashes. Native rules now decode into typed definitions with exact
-normalization, fixed identities and gameplay advance bindings. Complete
-lifecycle/content integration, the general runner,
-playable gameplay, the in-game console and Lua automation remain outstanding.
-Milestones describe delivery gates, not completed compatibility
-claims.
-
-Deliver vertical slices through the portable game and graphical frontend while
-growing the same conformance corpus. Establish file/wire formats and external
-interoperability experiments early, even though complete sessions depend on
-later mechanics. Keep all four platform builds active from the first shell.
+The implementation is C#/.NET with Avalonia desktop and browser hosts. Develop
+from the repository specifications and [architecture](architecture.md), preserving
+the cleanroom boundary. A specification describes required behavior; it does not
+establish that its entire family has been implemented or validated.
 
 ## Milestones and dependencies
 
-| Milestone | Result | Depends on |
+| Milestone | Delivery | Current state |
 | --- | --- | --- |
-| M0 | Cleanroom workflow, content inventory, build/test skeleton | Existing specs |
-| M1 | Portable state, session service/controller contracts, arithmetic, fixtures, rule/file foundations and save inspection | M0 |
-| M2 | SDL/ImGui shell, native menus, asset adapter on four platforms | M0; M1 interfaces |
-| M3 | Embedded single-player session, interactive map, bounded city/unit turn slice and command console | M1 + M2 |
-| M4 | Complete single-player mechanics/classic AI; initial Lua player automation | M3 |
-| M5 | Scenarios, editors, complete semantic UI and hotseat | M4; incremental work after M3 |
-| M6 | Original-compatible native multiplayer and browser bridge | M1 protocol foundations + M4/M5 integration |
-| M7 | Conformance closure, packaging, release evidence | M5 + M6 |
+| M0 | Reproducible build, specification/content inventories and evidence boundaries | Implemented with pinned .NET tooling and cross-platform CI |
+| M1 | Finite portable foundations, classic codecs, content/inspection CLI, session ownership and bounded checkpoints | Implemented; current test families and exclusions are in the coverage and validation guides |
+| M2 | Avalonia rendering, real interaction, platform menus/storage and content installation | Bounded session host exists; full graphics/platform acceptance is next |
+| M3 | First playable local game slice | Planned; depends on M1 and the required M2 surfaces |
+| M4 | Complete single-player mechanics, AI and expanded automation | Planned |
+| M5 | Scenarios, editors, complete UI and hotseat | Planned |
+| M6 | Original-peer multiplayer and browser transport | Planned |
+| M7 | Complete conformance evidence and distributable releases | Planned |
 
-M2 can progress alongside M1. N05 framing and mixed-peer handshake experiments
-start during M1/M2; do not wait for M6 to discover protocol problems. Implement
-each mechanic's UI and network publication contracts as it arrives, and maintain
-the M6 integration backlog throughout M3–M5. This is a dependency plan, not a
-calendar estimate.
-
-The [tools and automation architecture](architecture.md#5-inspection-tools-console-and-user-automation)
-adds clients of the portable implementation. Deliver stored-save inspection in
-M1 and the console in M3; start Lua automation once M3's query, command-result and
-interaction contracts work. The automation slice can progress alongside M4
-mechanics. It does not require moving classic AI or map generation out of C++.
-Track these extension features separately from evidence of original-game
-compatibility; they must preserve the owning operation's classic behavior.
-
-Runtime state uses ordinary C++ records and containers. Add optional native
-[SQLite export](architecture.md#optional-sqlite-analysis-export) after M1's
-decoded-record/query foundation; extend it to loaded and selected live snapshots
-with M3. SQLite remains a derived analysis output, with no core dependency and
-no requirement to keep a second live state store synchronized.
-
-Make `oc2_session` the [embedded session service](architecture.md#embedded-session-service).
-M1 establishes lifecycle/client contracts and independent participant/controller
-identities. M3 connects the frontend and headless drivers to the same local
-runtime; M4 schedules classic AI policies within it. M5 adds hotseat bindings
-and concealment; M6 completes the classic network mode/authority adapter. Local
-play needs no transport or separate server process. Network mode preserves
-per-operation executor assignments rather than moving all simulation to the host.
+Platform checks grow with each slice. CI passes core/CLI, Lua/SQLite and package
+checks on Linux x64, macOS ARM64 and Windows x64; Chromium executes portable,
+Lua and application-input tests. Native Windows/macOS desktop input/shutdown,
+OS interruption behavior and target-hardware performance remain open. See
+[validation](validation/README.md) and the [platform checklist](testing/platforms.md).
 
 ## Current implementation status
 
-The shell was integrated from `codex/sdl3-core` through `c01bcef`, preserving the
-current algorithm specifications rather than merging that branch's older copies.
-See [application-shell.md](application-shell.md) for the code boundaries and
-imported commit range, and [BUILDING.md](BUILDING.md) for reproducible commands.
+The [source guide](code-guide.md) maps existing projects and APIs. The
+[coverage inventory](testing/coverage.md) maps implemented families to specifications
+and tests. The root solution builds headless libraries and the CLI; optional
+solutions build Avalonia, automation, SQLite export and performance probes.
 
-| Milestone | Implemented subset | Remaining before the exit gate |
-| --- | --- | --- |
-| M0 — complete | Build/test skeleton and formatting workflow; pinned CI CMake/compilers; validated X02 operation/state registry, fixture provenance and coverage ledger; verified asset release and source inventory; pack/font/layout contract with explicit gaps; asset-directory inspection; stock-content and original-access plan; all 11 hosted CI jobs pass | None for M0; see the [completion review and retained reports](m0-validation.md#m0-completion-review--2026-11-13-utc). Graphics/layout readers and playable-content work remain M1/M2/M5; runtime TrueType fonts have a separate pinned dependency. |
-| M1 — complete | All seven [finite closeout gates](m1-closeout.md) passed at source `56be096`: bounded checkpoint, three converters, independent 57-fixture review, current original-file acceptance, foundation regressions, pinned hosted matrix and final audit | None within M1; broader gameplay/providers, full mode/wire integration and loaded queries retain their later milestone ownership in the [completion audit](m1-validation.md). |
-| M2 — partial | SDL3 callback shell, SDL_Renderer/ImGui, native AppKit/Win32 menu sources, Linux/web menu bar, pinned DejaVu TrueType runtime rasterization, custom modal content, shared action state, input ownership, high-DPI regression coverage | Assets/representative map, platform storage/time/media services, real custom game hit regions, changed gameplay targets/deadlines, native menu tracking/service strategy and native menu/display interaction validation |
-| M3–M7 — not implemented | No gameplay or compatibility claim | Playable mechanics, console/Lua automation, AI, scenarios/editors, hotseat, original file/peer interoperability, browser bridge, conformance closure and packaging |
+The application host exposes one bounded production command over an authored
+world. It proves the scoped-client, console and asynchronous interaction path.
+It is not a playable game or a completed renderer. The optional Lua bridge
+exercises the same session APIs with explicit resource and authority limits.
 
-[CI run 43493400894](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/43493400894)
-at `a2592a0` passes all 11 jobs. Linux, macOS and Windows each pass 13 desktop
-CTests and seven headless CTests; each desktop also passes seven ImGui scenarios
-at three densities. The sanitizer job passes, and Emscripten 4.0.23 builds the
-shell/test targets and passes Node tests and Chromium smoke. Formatting,
-inventories, schemas and all 73 Python checks pass on each native platform.
-The [M0 completion review](m0-validation.md#m0-completion-review--2026-11-13-utc)
-records verified compiler/SDK identities, reports and the headless dependency
-boundary. These results cover infrastructure and the shell; native menu/display
-interaction and gameplay compatibility remain separate gates.
+## M0 — Build and evidence infrastructure
 
-## M0 — Establish the project and its evidence boundary
+Preserve locked builds, project dependency checks, source-identity verification,
+metadata/content validators, publication notices and reproducible package tests.
+The [build guide](BUILDING.md) is the human entry point; CI executes the same
+commands. Test upgrades to SDK/runtime/packages together. Original-game evidence
+remains distinct from authored contract vectors and implementation regression tests.
 
-- Add the architecture's CMake target skeleton, dependency lock mechanism,
-  presets, formatting/warnings policy, and minimal CI jobs. Select and pin
-  compatible CMake, compiler, SDL3, ImGui, Catch2 v3, test-engine, and emsdk
-  versions; prove that they build together rather than choosing moving latest
-  versions at every configure.
-- Keep the pinned clang-format policy, explicit format/check commands, staged
-  pre-commit check and CI enforcement active as sources grow. Review formatting
-  before staging and verify partial staging remains untouched. Normal builds
-  do not run formatters or require their development dependencies.
-- Make headless configuration independent of GUI dependencies and assets.
-  Introduce the proposed `src/`, `include/`, `tests/`, `tools/`, and `cmake/`
-  organization only as their first targets need them. Group game code by
-  foundation/world/unit/city/civilization/AI/scenario ownership.
-- Create the X02 operation/state registry and coverage-ledger structure, with
-  specification anchors, fixture provenance, affected domains, and unresolved
-  gaps. Keep specification coverage, implemented operations, and executed tests
-  as different statuses. Implementation work references repo specs, never their
-  reconstruction-source links.
-- Inventory runtime asset files and document the pack/font/layout data contract.
-  Specify the new cleanroom reader and `OC2_ASSETS_DIR` integration; do not reuse
-  the old game's renderer or package resolver. Choose a runtime package pin
-  only after verifying it exists and matches the inspected contracts.
-- Inventory stock rules/text and approved distribution inputs. Record authored
-  test data separately from user-supplied classic content. Plan external test
-  access to the target original executable without adding it to source packages.
+## M1 — Portable foundations
 
-**Exit gate:** a fresh checkout configures and runs one owned Catch2 smoke case
-on native platforms and compiles a WASM test target. A headless build needs no
-SDL, ImGui, graphics clone, reconstruction checkout, or original game. All
-dependency and content gaps have named follow-up work.
+Maintain the finite implemented surface rather than recursively implementing all
+reachable gameplay children. Supported services include explicit arithmetic and
+PCG32 contexts; entity/world state; classic binary/text codecs; content validation,
+resolution and conversion; stored inspection/diff/SQLite; network primitives;
+scoped clients and continuations; setup/load/save; and bounded local checkpoints.
+The X02 adapter executes fifteen registered operations and 57 selected fixtures.
 
-**Completed 2026-11-13 UTC:** the [completion review](m0-validation.md#m0-completion-review--2026-11-13-utc)
-maps these requirements to passing hosted reports and the existing inventories.
-
-## M1 — Build the portable foundations
-
-Owners: F01–F03, F06, W01, X02; early N02/N05 contracts.
-
-The [initial foundation slices](m1-foundations.md) and [random policy](random-policy.md)
-are implemented. The [finite closeout contract](m1-closeout.md) is the authoritative
-remaining work list: M1-01 through M1-07, frozen at `b125df5`. The requirements below
-describe the milestone's foundation responsibilities within that contract's exact
-domains; they do not authorize recursively extending M1. The
-[audit](m1-validation.md) records gate status and evidence. Passing leaf vectors
-alone does not close M1.
-
-- Implement arithmetic and logical types, F02 pools/lifetimes and retained state,
-  W01 topology/coordinates, and explicit process/new-game/load boundaries.
-  Use C++ records, arrays/stable slot pools and contiguous map storage with typed
-  identities. Represent scan bounds, retained summaries, knowledge layers and
-  operation workspaces explicitly. Keep file/wire layouts in codecs and verify
-  that state/mechanics targets have no database dependency.
-- Define the versioned random policy and controlled-choice injection. Implement
-  [separate gameplay, presentation-content and cosmetic contexts](architecture.md#randomness-ownership),
-  with independent initialization and no gameplay sampler exposed to rendering.
-  Classify sites by their effects, retaining gameplay ownership for shared
-  gameplay/presentation outcomes and for gameplay callbacks invoked by dialogs.
-  Preserve the existing sampling-law, tie, retry and numeric-boundary tests.
-  Complete replay and pending-interaction restore only for M1-01's declared local
-  foundation profile, without requiring original seed-to-sequence equality.
-- Implement the X02 v3 loader, operation adapters, scripted external services,
-  comparator, and bounded run reports. M1-03 freezes the 15 implemented operations
-  and 57 fixture IDs for execution and independent review. Other foundation
-  families may retain Catch2/CLI evidence without new per-helper X02 adapters.
-- Load and validate the [six built-in gameplay components](content/gameplay-format.md)
-  through portable typed interfaces; bind each to its owning mechanic in M3/M4.
-  Default JSON, schemas, source pins, normalization, offline validation and portable
-  C++ bundle loading exist. M1-01 bounds checkpoint/profile admission; original-peer
-  joins are M6. Keep original
-  defaults, AI heuristics and map generation unchanged.
-- Implement the [native JSON content contract](content/data-format.md), using the
-  existing [schemas and structural checks](content/schemas/README.md) as the file
-  boundary and adding semantic pack validation: versioned
-  manifests, explicit dependency/hash resolution, rules/names/preferences and
-  diagnostics. Implement F03/C01 classic text compatibility adapters into the same
-  logical models, accepting nominal custom content and retaining specified
-  conversions, fallback and accepted configuration effects. Native parser
-  scratch/allocation traces and failed-load partial memory are not gates; staged
-  parsing is allowed. Test equivalent authored inputs
-  through both paths, including movement/HP scaling exactly once, stable classic
-  slots, city-name order and retained NoDefend. Native validation does not narrow
-  the classic adapter's required domain. M1-02 enumerates the validation surface
-  and three classic-to-native converters with separate outputs/provenance receipts.
-  Complete playable packs and other component/export families join M2–M5.
-- Implement classic record codecs, raw maps, and the first supported save
-  load/export path. Keep content IDs/hashes outside classic payloads and original
-  peer negotiation. Freeze version/mode coverage at M1-04's matrix; label unsupported
-  domains and expand them only in the later owning milestones.
-- Separate decoded file records from F06's ordered session load. Add native
-  `oc2 inspect`, `oc2 validate` and `oc2 diff` for the supported record domain,
-  with human-readable and versioned, lossless JSON output, documented exit
-  statuses, format/field diagnostics and no input writes. Report unsupported
-  sections and missing rules explicitly; keep stored values distinct from
-  computed interpretations. Compare both bytes and decoded fields by file slots.
-- Introduce `oc2_query` with owned records, stable ordering and provenance for
-  file inspection and live-state queries. Establish observer/authority contexts
-  and prove queries neither mutate retained state nor consume gameplay RNG.
-  Expose live queries to graphical and other clients through scoped session
-  bindings; share value types without exposing mutable world state.
-- Add optional `oc2_export_sqlite` and `oc2 export ... --sqlite ...` for the
-  supported stored-record domain. Gate it with `OC2_ENABLE_SQLITE_EXPORT`,
-  default OFF, and pin SQLite when adding the implementation. Export a
-  separate analysis file with versioned schema, source hash/view mode/access
-  scope and coverage metadata. Preserve identities, slots, retained values and
-  exact integers; label unknown values and distinguish computed fields. Make
-  export failure leave source files/state intact and no completed output claim.
-- Introduce `SessionRuntime` with local world/session ownership and an injected
-  F02 process context. Define lifecycle operations separately from participant
-  bindings, and distinguish civilization, participant, controller and optional
-  connection identities. Controller changes must not implicitly change the
-  effective human set. Give bindings explicit session/lifetime/access scope.
-- Define command/effect/interaction records and cooperative continuation APIs.
-  Prove a supplied decision can resume an operation, an admitted game/peer
-  event can change a subsequent live read, and cancellation retains an already
-  accepted effect. Do not invent reentry through allocation, painting or parsing
-  solely to match an original helper trace.
-  Add descriptor schemas for semantic names, typed arguments, access classes
-  and help, plus correlated submission/pending/interaction/completion results.
-  Keep descriptor parsing separate from the owning execution checks.
-- Define mode/authority adapter contracts for local sequencing and N01–N03
-  routing, with separate request-execution and resolved-result application
-  paths. Use direct C++ calls/owned queues for local clients and injected
-  services for headless drivers. Prove pending decisions, stale-binding rejection
-  and revocation without losing committed effects or required replies; do not
-  serialize local calls through a socket or replace the specified turn loops.
-- Preserve N05 incremental framing plus N02 envelope/state-image primitives
-  against fake streams. Existing original discovery/greeting and failed-ping
-  observations satisfy M1's peer-evidence boundary; full sessions remain M6.
-
-**Exit gate:** all seven [closeout gates](m1-closeout.md#closed-work-list) pass.
-Exact arithmetic/codec vectors and controlled-choice fixtures pass
-on native and WASM builds. M1-01's checkpoint profile repeats/restores under the
-chosen policy. Presentation initialization and draws cannot advance gameplay
-contexts; cosmetic draws also leave presentation-content contexts unchanged.
-Controlled semantic operations agree with and without a presentation consumer.
-Partial I/O and fragmented/coalesced frame cases pass.
-Save success requires successful writes and finalization; file providers cannot
-create game interleavings. Codec tests use only logical payload bytes, reject
-unsafe tokens and preserve images on failure. Stack repair requires no fabricated
-records or diagnostic callbacks. Portable chooser tests use semantic results and
-owned presentation arguments; original ABI/allocator traces are not M1 gates.
-Complete only M1-04's named original raw-map/save exchanges; record unavailable
-access as an external blocker and broader domains as deferred gaps. A tools-only build runs
-basic save inspection without SDL, ImGui, assets, Lua or SQLite. Catch2 covers
-truncated and unsupported records, unchanged input bytes, stable diffs, exact
-JSON integers, and stored-state inspection without load-time identity/counter
-transformations.
-Do not advertise a loaded-state view before its actual load path exists.
-With SQLite export enabled, its logical rows agree with the source query records,
-including holes, numeric boundaries and stale retained summaries. Schema/source
-metadata and failure/cancellation tests pass. Disabling export removes SQLite
-from configuration and linkage without disabling text/JSON inspection.
-Session contract tests distinguish acceptance from completion and reject stale
-or unauthorized client contexts. Independent virtual peers have isolated process
-contexts. Starting a second game isolates all simulation state and mutable
-content, preserving only the explicit X01 preference/configuration/identity
-allowlist. These are foundation tests, not completed mode conformance.
-
-### Text and presentation acceptance
-
-M1 text gates compare parsed/resolved content, reload policy and codec semantics.
-P04 prompt state machines, shared edit buffers, native navigation and drawing
-are not M1 objectives. Resource layout directives are decoded as hints; source
-choice identities, substitutions and real field constraints remain content.
-Later UI milestones design their own flows under the P01–P10 contracts.
-Original pool IDs, padding/capacities and allocation/widget traces are not gates.
-Production adapters translate classic resource indices and signed save markers;
-optional comparison tools retain original-storage evidence without game linkage.
-M2–M5 presentation work follows this same boundary.
+Key contracts are [foundations](m1-foundations.md), [state/session ownership](m1-session-foundations.md),
+[commands](m1-command-contract.md), [checkpoint profile](m1-checkpoint.md),
+[stored saves](m1-stored-saves.md), [content conversion](m1-content-conversion.md),
+[inspection](m1-inspection.md) and [network primitives](m1-network-foundations.md).
+The [finite scope](m1-closeout.md) records exclusions. Complete terrain generation,
+civilization creation, balancing, acceleration, event execution, turn processing
+and multiplayer sessions remain the responsibilities of later owning milestones.
 
 ### Compatibility scope for every milestone
 
-Use each of the 65 owners' Production contract scope and X01's three surfaces.
-Gameplay gates test meaningful rules, state, ties, sampling and real event
-dependencies. Interchange gates test original content/files and required peer
-behavior through their adapters. Original private layout, ABI/helper traces,
-native error codes and arbitrary backing bytes are optional comparison work,
-never baseline objectives or reasons to add live globals/fields.
-
-M1 need not reproduce original parser/writer/allocator APIs or I/O damage. Test
-coherent failure handling, successful restoration and exact external definitions;
-lossless stored-file round trips and live game exports are distinct claims.
-Internal regressions may keep stricter implementation-specific checks, labeled
-as such. A passing historical trace is not gameplay or interoperability coverage.
-Later milestones preserve actual retained decision inputs and real protocol
-effects; they do not assume all caches are pure or discard meaningful state.
-
-### M1 scope after the compatibility review
-
-M1 proves foundation mechanisms and the supported content/file boundaries. Its
-new-game requirement is an isolated, callable session boundary, fresh mutable
-content and cold-versus-reused-runtime checks, with old client rejection and safe
-handling of unfinished commands/required network output. No AI goal refresh or
-turn-policy implementation is a prerequisite for opening a menu or clearing a game.
-The implemented F05 composition may use explicitly supplied W02/V01/acceleration
-children in foundation tests; these do not count as implemented gameplay.
-
-Complete playable creation/balancing, turn flow, owning mechanics, application
-dialogs, AI policies and their consumer bindings belong to M3/M4 (mode-specific
-joins to M5/M6). Preserve useful existing foundation and setup work, but do not
-recursively implement every child merely to finish an M1 parent. M1 X02 adapters
-cover M1-03's enumerated operations; whole-game adapter/provider coverage is a
-later conformance obligation. Content loading/validation is M1; full mechanic
-consumption is delivered with those mechanics. Unknown original stack values,
-incidental native call order and artificial query callbacks are not exit gates.
-
-The review adds an explicit acceptance test: after prior gameplay, cancelled
-setup or failed load, equal chosen content/preferences/setup inputs and controlled
-choices produce the same new-game gameplay state as a fresh process. Only identity
-generations may differ. Retain original file codec checks separately; imported
-save/scenario state is not prior-game leakage. Track unimplemented safe repairs
-under their owning milestone; do not call a diagnostic stop completed gameplay.
+Implement each owning specification's admitted domain, meaningful failure prefixes,
+ordering, lifecycle and sampling laws. Use explicit codecs for classic bytes and
+protocol values. Public projections are owned and observer-filtered; mutations
+enter through scoped Session commands. A GUI callback or script does not bypass
+authority or expose mutable records. New features require native/browser behavior
+checks and independent provenance for compatibility claims.
 
 ## M2 — Prove the graphical and platform boundaries
 
 Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
 
-- Create the SDL3 callback-based shell, SDL_Renderer drawing path, and ImGui
-  integration. Render a representative map region, text, and a custom dialog
+- Extend the existing Avalonia desktop/browser hosts with custom
+  batched Skia map drawing. Render a representative map region, text, and a custom dialog
   using the asset package through the new CPU reader and texture cache.
 - Use the pinned DejaVu Sans/Serif/Mono TrueType faces and runtime glyph
-  rasterization already connected to the shell. Exclude the asset package's
+  rasterization through the Avalonia text stack. Exclude the asset package's
   historical bitmap font caches. Extend font roles/measurement to custom dialogs;
   verify DPI/zoom, glyph fallback, size/cache lifetime, native/WASM rendering and
   required text coverage. Font metrics and window geometry must not select
   simulation work; do not infer full shaping from glyph availability.
-- Implement the single action/menu model and native AppKit/Win32 menu adapters;
-  use ImGui main menus on Linux/web. Route native and ImGui selections to the
+- Implement the single action/menu model with macOS NativeMenu and
+  in-window Avalonia menus on Windows/Linux/web, with optional
+  Linux global-menu export. Route native and drawn selections to the
   same semantic commands, with P05 availability and execution rules distinct.
 - Implement dialog lifecycle and stable testable custom hit regions. Exercise
   keyboard/focus routing, double-dispatch prevention, accept/cancel, and a target
@@ -325,15 +94,17 @@ Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
   flow. Check high DPI, window resizing, menu insets, atlas/texture limits,
   browser startup/download costs, and case-independent classic resource lookup.
 - Keep a pending interaction responsive to fake network traffic and deadlines.
-  Test real native menu tracking rather than assuming the ordinary SDL frame
-  loop keeps running inside platform menu loops. Test ImGui file dialogs and
+  Test real native menu tracking rather than assuming the ordinary application
+  dispatcher keeps running inside platform menu loops. Test desktop file dialogs and
   asynchronous browser file selection through their respective adapters.
 - Introduce silent media and fake-clock services; verify that unavailable audio
   or skipped cosmetics cannot suppress semantic completion.
 
 **Exit gate:** the same shell and content run on macOS, Windows, Linux, and in a
-browser. Menu selections produce the expected action once. ImGui automation
-can operate the custom dialog. Headless tests still link no graphical library.
+browser. Menu selections produce the expected action once. Avalonia and browser
+automation can operate the custom dialog; real desktops validate native menus,
+IME, accessibility and mixed-DPI/fullscreen transitions. Headless tests still
+reference no graphical library. Resolve the comparison's browser dropdown issue.
 Any renderer or native-loop issue has a resolved approach before full UI work.
 
 ## M3 — Deliver the first playable slice
@@ -360,7 +131,7 @@ for the chosen domain; keep unsupported mechanics visibly unavailable.
   rather than driving upkeep or independently advancing turns.
 - Save and reload the slice through F06. Continue after reload and compare its
   specified transformations. Keep replay checkpoints separate from classic saves.
-- Add the portable console parser and an ImGui console panel with help, queries,
+- Add the portable console parser and an Avalonia console panel with help, queries,
   completion, history and structured command results. Expose the slice's normal
   player actions through the same registry/dispatch as menus, including pending
   interactions and replies. Verify typed input cannot leak into map shortcuts.
@@ -434,7 +205,7 @@ Owners: the extension API, with P05 player dispatch, W03 query privacy, F04 even
 boundaries and each command's existing mechanic. This work depends on M3's
 contracts, not on the completion of every classic AI policy.
 
-- Add optional `oc2_automation` and `OC2_ENABLE_SCRIPTING`; pin a stock Lua
+- Extend the optional `OpenCiv2.Automation` integration; pin a stock Lua
   runtime and binding API for native/WASM in the dependency manifest. Keep
   basic console and tools builds independent of the interpreter.
 - Bind permitted queries, events, commands and correlated results. Implement
@@ -622,24 +393,20 @@ and does not replace, X02's operation-level coverage ledger.
 
 ## Immediate implementation backlog
 
-M0 and M1 are complete under the [finite closeout audit](m1-validation.md).
-Preserve the [registries/ledger](conformance/README.md) and
-[content inventory](content/README.md) as later operations and inputs arrive:
+1. Finish actual Windows/macOS desktop input/shutdown and OS interruption checks
+   using [the platform checklist](testing/platforms.md); retain explicit evidence
+   for target-hardware performance and additional runtime identifiers.
+2. Deliver M2's first coherent Avalonia map/content slice: P01 coordinates and hit
+   testing, P02 custom map rendering, required P03 asset decoding and P05 input,
+   backed by real scoped observations. Include zoomed-out/half-world visibility,
+   object counts, cached/dirty redraws and 4K/5K physical resolutions.
+3. Connect owned file-choice/load/save workflows to native and browser storage,
+   preserving cancellation, asynchronous replies and session deadlines. Add native
+   macOS menus and Avalonia Windows/Linux menus with real platform acceptance.
+4. Continue M3's smallest playable vertical slice, then expand mechanics and AI
+   through the owning specifications and milestone gates below.
 
-1. Finish M2 graphics/platform and content installation. Drive the new owned
-   file-choice/save workflow from ImGui/browser adapters; keep native menu
-   tracking, fake traffic and deadlines responsive.
-2. Maintain fresh-game isolation and the registered cold/reused-runtime checks.
-   Cancel pending owner workflows before replacement, drain command notifications,
-   and retire completed local results at explicit consumer boundaries.
-3. Deliver the M3 authored-map playable slice through the shared client API:
-   movement, founding a city, production/research, end turn, save and resume.
-   Migrate setup interactions to explicit resumable phases as their UI arrives.
-4. Complete W02/V01/setup balancing, AI and remaining gameplay in M4; replace
-   supplied children with real mechanics and validate their observable joins.
-5. Add the M4 Lua production-policy slice, then hotseat/scenario and mixed-peer
-   integration in M5/M6. Whole-game conformance closes at M7.
-
-For each change: cite the owning specification, implement the smallest coherent
-operation, test its meaningful boundary and failures, update its coverage row,
-and integrate a real caller before treating the family as delivered.
+For each slice, read the owning specification, record any gap, implement the
+smallest coherent operation, test its boundary and failures, update coverage and
+integrate a real caller before declaring the family delivered. Do not count source
+files, assertions or green headless CI as proof of complete gameplay or desktop UX.

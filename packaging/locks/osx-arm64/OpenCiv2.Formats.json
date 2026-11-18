@@ -1,0 +1,47 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "RandN.Core": {
+        "type": "Transitive",
+        "resolved": "0.5.0",
+        "contentHash": "OhiLvvC2lQyZPnBnNOTAJz9Q57wwx8gWI9wmTLIxMYJAL+lC+kmsQIqJtvDAemITL2IaQ3zfvKAVJd1AQDy4IA=="
+      },
+      "openciv2.base": {
+        "type": "Project",
+        "dependencies": {
+          "RandN.Pcg32": "[0.5.0, )"
+        }
+      },
+      "openciv2.contracts": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "openciv2.core": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )",
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "openciv2.io": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "RandN.Pcg32": {
+        "type": "CentralTransitive",
+        "requested": "[0.5.0, )",
+        "resolved": "0.5.0",
+        "contentHash": "rbvbu9rbGgWzKA9Ni2XPNKUWwvZKpD520K+K47ARST+RQCfrpy36Ej8zyLJo2GymYjZCXlBlY354WG6s2TdvYg==",
+        "dependencies": {
+          "RandN.Core": "[0.5.0, 0.6.0)"
+        }
+      }
+    },
+    "net10.0/osx-arm64": {}
+  }
+}

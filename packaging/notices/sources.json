@@ -1,0 +1,43 @@
+{
+  "Avalonia": {
+    "url": "https://github.com/AvaloniaUI/Avalonia/blob/cf8e564674700348947e93ab19105f27afe859a9/licence.md",
+    "file": "Avalonia-LICENSE.txt",
+    "sha256": "213814d306090074d234d760239ff0f67eb9b8d20eefb4d5631bb39dbe0b769b"
+  },
+  "AvaloniaNotice": {
+    "url": "https://github.com/AvaloniaUI/Avalonia/blob/cf8e564674700348947e93ab19105f27afe859a9/NOTICE.md",
+    "file": "Avalonia-NOTICE.md",
+    "sha256": "f75c841fda7e00671cc0e305cbcb727e526c131e19ea4b5990cbfaa76884f858"
+  },
+  "MicroCom": {
+    "url": "https://github.com/kekekeks/MicroCom/blob/76785efcafd91b5902fd19dd11145f6dd655b7b4/LICENSE",
+    "file": "MicroCom-LICENSE.txt",
+    "sha256": "6ee769c9ac4dac9abb16b98b1341e9528ff9f4ab685481410d3376d14148f3a9"
+  },
+  "Tmds": {
+    "url": "https://github.com/tmds/Tmds.DBus/blob/b4a7fed0b878f74cb54f7cca84d2889af4e596ba/COPYING",
+    "file": "Tmds-LICENSE.txt",
+    "sha256": "2a86afd8f0173998b01c9af8bdfd7c703cae1db6cc5e57e7043a2b67fa0b2116"
+  },
+  "BuildServices": {
+    "url": "https://github.com/AvaloniaUI/Avalonia.BuildServices/blob/777f975b0a0cecf0311273711d56697212c558c0/LICENSE",
+    "file": "BuildServices-LICENSE.txt",
+    "sha256": "94162c40c663bd96ec1b870e6aba6ef0a43f44c9eb500807e7965e7078f6dc47"
+  },
+  "Inter": {
+    "url": "https://github.com/rsms/inter/blob/0a5106e0b/LICENSE.txt",
+    "file": "Inter-OFL.txt",
+    "sha256": "4d7d9c95e7d7f2f0ebf76d5e0b344826b74e903a34028ee18ab54bb639e45906"
+  },
+  "Apache": {
+    "url": "git:6d96bc7986902819cdf33ecbfbb3cb4081cb4540:third_party/jart-json/APACHE-2.0.txt",
+    "file": "Apache-2.0.txt",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  "RandN": {
+    "url": "https://github.com/ociaw/RandN/blob/v0.5.0/LICENSE.txt",
+    "file": "RandN-LICENSE.txt",
+    "sha256": "b0072c83082f674e9b33b272f5447e3882833f08a35ba45ca61b946401c00924"
+  },
+  "normalization": "UTF-8, BOM removed, LF line endings and trailing whitespace stripped; license wording preserved."
+}

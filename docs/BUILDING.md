@@ -1,355 +1,180 @@
-# Building the application
+# Building and testing
 
-This builds the application shell described in
-[application-shell.md](application-shell.md) and the portable
-[M1 foundation libraries](m1-foundations.md). Playable gameplay, graphics-pack
-loading, full save/wire codecs and the general X02 runner remain plan work.
+Run commands from the repository root. `global.json` pins **.NET SDK 10.0.404**
+and Microsoft Testing Platform; projects pin runtime **10.0.15**. Install that
+SDK on Windows, macOS or Linux; SDK roll-forward is disabled. Python **3.12+**
+runs independent validators, CLI drivers and packaging. Use `python` instead of
+`python3` on Windows. Commands below work in a terminal with the SDK on `PATH`.
 
-## Dependencies and presets
+The root `OpenCiv2.slnx` builds the core and CLI without a display, native compiler,
+assets or optional UI/runtime packages. Optional solutions are in `solutions/`.
+Package versions and hashes are locked; restore explicitly before `--no-restore`.
 
-Use CMake 4.5+, a C++23 compiler, and Ninja for the supplied presets. macOS
-requires the Xcode command-line tools/AppKit; Windows needs a Visual Studio
-developer shell for Ninja, or the Visual Studio generator shown below.
-
-[dependencies.json](../dependencies.json) pins source archives and SHA-256 values
-for SDL3 3.4.2, Dear ImGui 1.93.0, Catch2 3.8.1, the matching ImGui Test Engine
-revision, and the DejaVu 2.37 TrueType data archive. It also records the Emscripten, Playwright and clang-format versions
-used by CI.
-The optional native analysis exporter pins SQLite 3.54.1; it is configured only
-with `OC2_ENABLE_SQLITE_EXPORT=ON`, which defaults OFF.
-Source downloads are disabled unless `OC2_FETCH_DEPENDENCIES=ON` is explicit.
-A preset whose name ends in `-fetch`, plus `gui-tests` and `web`, opts into downloads.
-
-| Preset | Purpose |
-| --- | --- |
-| `desktop` | Debug GUI; installed SDL3 3.4.2+ and offline source dependencies |
-| `desktop-fetch` | Debug GUI; download and build the pinned dependencies, including SDL3 |
-| `gui-tests` | Same as desktop-fetch, with ImGui Test Engine enabled |
-| `release` | Release GUI; offline dependencies, no tests or test-engine instrumentation |
-| `headless` | SDL/ImGui-free Catch2 tests; installed pinned Catch2 or offline source |
-| `headless-fetch` | Same headless build, allowing the pinned Catch2 download |
-| `sanitize` | Native headless ASan/UBSan; offline dependencies |
-| `web` | Release browser shell and WASM Catch2 tests, using the activated emsdk |
-
-All presets have matching build/test presets except `release`, which has no test
-preset. Keep machine-specific paths in ignored `CMakeUserPresets.json` or pass
-cache settings explicitly. Relevant switches are `OC2_BUILD_GUI`, `OC2_BUILD_TOOLS`,
-`OC2_FETCH_DEPENDENCIES`, `OC2_FETCH_SDL`, `OC2_GUI_TESTS`, `OC2_SANITIZERS`, and
-standard `BUILD_TESTING`. GUI automation is opt-in and native-only.
-
-For an offline build, supply upstream source trees matching the pins:
+## Core and command-line tools
 
 ```sh
-cmake --preset desktop \
-  -DFETCHCONTENT_SOURCE_DIR_IMGUI=/path/to/imgui-1.93.0 \
-  -DFETCHCONTENT_SOURCE_DIR_CATCH2=/path/to/Catch2-3.8.1 \
-  -DFETCHCONTENT_SOURCE_DIR_DEJAVU=/path/to/dejavu-fonts-ttf-2.37
+dotnet restore --locked-mode
+dotnet build -c Release --no-restore
+dotnet test --project tests/OpenCiv2.Base.Tests -c Release --no-build --no-restore
+dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- --help
+dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- inspect path/to/game.sav --json
 ```
 
-Supply `FETCHCONTENT_SOURCE_DIR_SDL3` to build SDL from a local source tree, and
-`FETCHCONTENT_SOURCE_DIR_IMGUI_TEST_ENGINE` with `OC2_GUI_TESTS=ON` for offline GUI
-tests. A populated build's dependency cache also works with downloads disabled.
-GUI builds embed twelve hash-verified DejaVu TrueType faces, then rasterize
-glyphs at runtime with ImGui. The extracted font root contains `ttf/` and
-`LICENSE`; the build checks these bytes even for a local override. Fonts add no
-Python or graphics-pack dependency.
-Source overrides for code libraries are explicit trusted developer inputs: URL hashes verify
-fetched archives, not the contents of an override directory. Invalid explicit
-paths fail rather than falling back to a download. Installed Catch2 must match
-3.8.1; installed SDL3 may be a compatible newer version. Record such overrides
-when reporting results.
+The suite contains 454 tests: 432 portable groups, twenty native I/O checks and
+two API-boundary checks. Test counts describe the current bounded implementation,
+not whole-game compatibility. The CLI supports stored inspection, validation,
+diff, content resolution/validation and classic rule/name/preference conversion.
+It does not expose live commands or playable gameplay.
 
-`OC2_BUILD_GUI=OFF` configures without SDL, ImGui, the asset clone, or a display.
-The portable formats target uses the vendored, hash-pinned `jart/json.cpp` and its
-bundled double-conversion. No download or package-manager setup is needed for
-those sources; CMake checks them against `dependencies.json`. Base/game mechanics
-remain independent of the JSON library. With tests enabled, Catch2 is the only
-additional headless dependency. With
-`BUILD_TESTING=OFF` as well, this builds the portable base, game, formats, query
-and view-model libraries plus the native `oc2` inspection CLI, using only the
-vendored JSON dependency. `OC2_BUILD_TOOLS=OFF` omits CLI executables. The native `oc2_io_native` library
-remains available to the graphical application and other native clients; its
-public format dependencies propagate to consumers. Native tools
-default ON; Emscripten defaults them OFF while retaining the portable query API.
-See [inspection commands and output](m1-inspection.md) for a tools-only build.
-See [SQLite export](m1-sqlite-export.md) for the optional dependency and schema.
-The seven owned builtin gameplay JSON files are embedded in `oc2_formats`, with
-ledger/manifest hashes checked at configure time. Native and WASM clients can
-select builtin revision 1 without a filesystem, checkout or Python runtime.
-See [content resolution commands](m1-content-runtime.md#pack-inheritance-and-mounted-inputs).
+Apphosts are `src/OpenCiv2.Cli/bin/Release/net10.0/oc2` (`oc2.exe` on Windows).
+Framework-dependent apphosts require the runtime discoverable; set `DOTNET_ROOT`
+when using an SDK outside the normal installation location. You can always invoke
+`dotnet src/OpenCiv2.Cli/bin/Release/net10.0/oc2.dll`. See
+[packaging](packaging.md) for tested self-contained archives.
 
-## Pinned CI toolchains and inventories
-
-CI installs CMake **4.5.0** and enforces the versions in `dependencies.json`
-with `OC2_VERIFY_TOOLCHAIN=ON`. The toolchain action downloads Kitware's release
-binaries directly; availability does not depend on the Python package release.
-Linux uses Clang 20.1.8 in an `ubuntu:26.04` container, with the distribution's
-libstdc++ module sources. Windows uses clang-cl 20.1.8 with Visual Studio 2022's
-SDK/libraries. macOS uses Homebrew LLVM 20.1.8, its matching libc++ module sources,
-headers and runtime, and the Xcode 16.4 SDK. WebAssembly uses emsdk 7.0.0 /
-Clang 24.0.0 and the SDK's libc++ modules. Runner labels remain `ubuntu-24.04`,
-`windows-2022`, and `macos-15`; the web job uses the host and emsdk directly.
-Compiler drift fails strict CI configuration. Developer builds may use other
-compatible C++23/module toolchains with CMake 4.5+ and Ninja.
-
-All owned C++ targets use named modules and `import std`, including tools-only
-builds and tests. CMake scans imports and builds the standard-library module.
-The project enables emsdk's `CMAKE_CXX_MODULE_STD` opt-in before toolchain loading.
-The AppKit adapter is Objective-C behind a C ABI; it does not consume C++ BMIs.
-See [module conventions and toolchain setup](modules.md) and the
-[completed feasibility experiment](modules-experiment.md).
-WebAssembly targets reserve a 1 MiB stack for save-decoding temporaries and
-diagnostic calls; Debug builds enable stack-overflow checks.
-
-Every configure writes `build-identity.txt` with the actual compiler, CMake,
-platform, lock hash, source overrides and build options. It records
-`configured-only`, not a successful build/test claim. CI uploads it alongside
-CTest JUnit/logs and GUI reports, associated with the workflow's source revision.
-[M0 validation](m0-validation.md) records the locally tested scope and gaps.
-The CI matrix selects the baseline; presets remain portable developer workflows.
-
-M0's stdlib-only metadata checks need no external checkout or content:
+## Avalonia desktop
 
 ```sh
-python3 tools/check_conformance.py
-python3 tools/check_assets.py
-cmake --build --preset desktop --target inventory-check
+dotnet restore solutions/OpenCiv2.App.slnx --locked-mode
+dotnet build solutions/OpenCiv2.App.slnx -c Release --no-restore
+dotnet run --project src/OpenCiv2.Desktop -c Release --no-build
+dotnet publish src/OpenCiv2.Desktop -c Release --no-restore
 ```
 
-Use `python` on Windows. CMake adds the metadata target/tests only when Python
-3.9+ is available. These checks validate bookkeeping and hashes; they do not run
-X02 algorithms or establish gameplay compatibility.
+This opens the [bounded session application](application.md). A graphical desktop
+and Avalonia's platform runtime dependencies are required. The authored three-unit
+world demonstrates observation, selection, console input and asynchronous command
+confirmation. It is not a map renderer or a playable scenario.
 
-With `BUILD_TESTING=ON` and Python available, CTest also runs `conformance_foundations`:
-the [M1 runner](m1-foundations.md) invokes the test-only C++ adapter for
-three F01, seven F02 and ten W01 fixtures and writes `conformance-results.json`.
-WASM runs the same adapter under Node. This is separate from metadata checks and has no GUI
-or asset dependency. Ordinary library builds and Catch2 tests still work with
-Python discovery disabled.
-
-The adapter embeds its compiled-input hashes and build identity. The runner
-checks `--identity` before executing any fixtures and rejects an old executable
-after source changes. Rebuild the adapter before rerunning conformance; supplying
-a newer `--build-identity` file cannot substitute for rebuilding.
-
-The full developer Python suite also checks content schemas and formatter/hooks.
-Use Python **3.11+**, install the pinned formatter below and the separate schema
-dependencies, then run:
+Linux input automation uses an isolated X11 display (install `xvfb` and `libxtst6`):
 
 ```sh
-python -m pip install -r tools/requirements-schemas.txt
-python tools/check_content_schemas.py
-python tools/check_gameplay.py
-python -m unittest discover -s tests -p 'test_*.py' -v
+python3 tools/dotnet/run_xvfb.py python3 tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net10.0/OpenCiv2.Desktop.dll
 ```
 
-The [schema guide](content/schemas/README.md) describes document validation and
-its semantic limits. These packages are not needed for ordinary builds or the
-stdlib-only metadata checks above.
+Use the [platform checklist](testing/platforms.md) for actual Mac/Windows desktop
+acceptance. Compilation or headless CI cannot establish native input, menus,
+shutdown, IME, accessibility or mixed-DPI/fullscreen behavior.
 
-The [M1 stored-save checks](m1-stored-saves.md) add native read-only
-`oc2_save_roundtrip INPUT.SAV` comparisons. They currently support stored version
-`0x2c`, including optional scenario, multiplayer and event blocks; they do not
-perform session loading or replace the planned inspection CLI.
+## Browser
 
-`OC2_ASSETS_DIR` can explicitly name the approved asset source root or an extracted
-runtime package in GUI configurations. This enables `asset-check` and requires
-Python for that optional check. It does not yet load/copy/install graphics.
-Invalid explicit GUI paths fail; headless builds do not inspect the path. See the
-[asset contract](content/asset-format.md#cmake-and-runtime-integration) and
-[inventory](content/README.md) for exact scope, the graphics/font pins and
-remaining layout/text work. The legacy bitmap font caches are not consumed.
-No automatic sibling lookup, asset downloads or old-game tools run during builds.
+Install the workload matching the pinned SDK, then publish the application:
+
+```sh
+dotnet workload install wasm-tools --skip-manifest-update
+dotnet restore src/OpenCiv2.Browser --locked-mode
+dotnet publish src/OpenCiv2.Browser -c Release --no-restore
+python3 -m http.server 8000 --directory src/OpenCiv2.Browser/bin/Release/net10.0-browser/publish/wwwroot
+```
+
+Open `http://localhost:8000`. Serve the published directory over HTTP; opening
+`index.html` as a local file will not load the WebAssembly application correctly.
+Stop the server before continuing if using the same terminal.
+
+Browser automation uses Node **24.19.0** and Playwright **1.58.2**:
+
+```sh
+npm install --prefix build/browser --no-save --package-lock=false playwright@1.58.2
+node build/browser/node_modules/playwright/cli.js install chromium
+```
+
+On Linux CI use `install --with-deps chromium`. Set `NODE_PATH` to the absolute
+`build/browser/node_modules` path (`export NODE_PATH="$PWD/build/browser/node_modules"`
+in bash; `$env:NODE_PATH = "$PWD/build/browser/node_modules"` in PowerShell).
+`OC2_CHROMIUM_EXECUTABLE` can select an existing compatible Chromium; reports
+record its actual version. Execute the portable tests and real application input:
+
+```sh
+dotnet restore tests/OpenCiv2.Browser.Tests --locked-mode
+dotnet publish tests/OpenCiv2.Browser.Tests -c Release --no-restore
+node tools/dotnet/run_browser.cjs tests/OpenCiv2.Browser.Tests/bin/Release/net10.0-browser/publish/wwwroot build/test-results/browser.json
+python3 tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net10.0-browser/publish/wwwroot
+```
+
+The portable suite runs the same 432 groups as native. Browser hosts exclude
+native filesystem, process CLI and SQLite projects. Release publication trims
+assemblies and includes source-generated JSON; AOT is not an acceptance claim.
+
+## Optional SQLite and Lua
+
+Build either native dependency independently:
+
+```sh
+python3 tools/dotnet/build_sqlite.py
+python3 tools/dotnet/build_lua.py
+```
+
+These builders verify the archive hashes in `dependencies.json`; `--archive PATH`
+uses an offline download. Use a native C compiler (`cc` on Linux/macOS, Visual
+Studio Developer Command Prompt/PowerShell on Windows). `--cc PATH` selects another
+compiler. Lua supports Unix `--sanitize` checks. The small bridge contains no game
+model; build receipts and notices accompany the optional library.
+
+```sh
+dotnet restore solutions/OpenCiv2.Sqlite.slnx --locked-mode
+dotnet build solutions/OpenCiv2.Sqlite.slnx -c Release --no-restore
+dotnet test --project tests/OpenCiv2.Sqlite.Tests -c Release --no-build --no-restore
+dotnet restore solutions/OpenCiv2.Automation.slnx --locked-mode
+dotnet build solutions/OpenCiv2.Automation.slnx -c Release --no-restore
+dotnet test --project tests/OpenCiv2.Automation.Tests -c Release --no-build --no-restore
+```
+
+SQLite adds four tests and the independent export CLI driver. Lua adds thirteen
+production-session/resource groups. To test the stock Lua bridge in WebAssembly:
+
+```sh
+python3 tools/dotnet/prepare_lua_wasm.py
+dotnet restore tests/OpenCiv2.AutomationBrowser --locked-mode
+dotnet publish tests/OpenCiv2.AutomationBrowser -c Release --no-restore
+python3 tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net10.0/OpenCiv2.AutomationProbe.dll
+python3 tools/dotnet/run_automation.py --report build/test-results/lua-browser.json --browser-bundle tests/OpenCiv2.AutomationBrowser/bin/Release/net10.0-browser/publish/wwwroot
+python3 tools/dotnet/compare_automation.py build/test-results/lua-native.json build/test-results/lua-browser.json
+```
+
+The browser command uses the Node/Playwright environment above. See the
+[Lua contract](automation.md) for budgets, permissions and lifetime rules.
+
+## Independent CLI and conformance checks
+
+[Test instructions](testing/README.md) list all eight CLI/helper suites, X02
+execution and rejection checks, source-identity verification and package tests.
+Round-trip helpers under `tests/` are test executables, not product CLI commands.
 
 ## Formatting and commits
 
-Use **clang-format 20.1.8**, pinned in `dependencies.json`, and Python 3.9+ for
-development formatting. [.clang-format](../.clang-format) defines four-space
-indentation, a 100-column limit, attached braces and preserved include order.
-The formatter covers owned C/C++/Objective-C sources and headers under `src/`,
-`include/`, `tests/` and `tools/`, including new untracked files. It excludes
-ignored files, other roots, generated builds and downloaded dependencies.
-Source and hook line endings are LF on every platform.
+```sh
+dotnet format OpenCiv2.slnx --no-restore
+dotnet format solutions/OpenCiv2.App.slnx --no-restore
+```
 
-An existing matching LLVM installation works. Otherwise, install the pinned
-[clang-format package](https://pypi.org/project/clang-format/20.1.8/) in a local
-virtual environment:
+Format the optional solution/project you changed too. Use `--verify-no-changes`
+in checks. Review the diff before staging; formatting never authorizes unrelated
+changes. Nullable analysis, checked arithmetic and warnings-as-errors are enabled.
+
+The optional native Lua bridge follows its existing C style. Its sanitizer and
+native/browser resource tests validate that boundary. Do not format dependency
+downloads or generated files.
+
+## CI and metadata
+
+[Build and test](../.github/workflows/ci.yml) runs core/CLI, optional Lua/SQLite,
+packages and desktop compilation on Linux, macOS ARM64 and Windows x64; Chromium
+runs portable, conformance, Lua and actual application input checks. Linux also
+runs X11 input and signal-cancellation checks. [Repository checks](../.github/workflows/repository.yml)
+validate specifications and content on all three operating systems.
 
 ```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install clang-format==20.1.8
-git config --local core.hooksPath .githooks
+python3 -m pip install -r tools/requirements-schemas.txt
+python3 tools/check_conformance.py
+python3 tools/check_assets.py
+python3 tools/check_content_schemas.py
+python3 tools/check_gameplay.py
+python3 tools/dotnet/check_graph.py
+python3 tools/dotnet/check_coverage.py
+python3 -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
-On Windows, use `python -m venv .venv` and activate with
-`.venv\Scripts\Activate.ps1` in PowerShell; use `python` for the commands below.
-Hook setup is once per clone and is not automatic on checkout. If another
-`core.hooksPath` or custom pre-commit hook is already configured, integrate
-`python tools/format.py --staged` there instead of replacing it.
-
-Before committing:
-
-```sh
-python3 tools/format.py          # Format working-tree sources.
-python3 tools/format.py --check  # Read-only full check, also run by CI.
-git add <intended-files>
-python3 tools/format.py --staged # Read-only check of the proposed commit.
-git commit
-```
-
-The pre-commit hook runs the staged check automatically. It reads source blobs,
-style and the version pin from the index, so unstaged edits cannot hide a
-formatting error in the proposed commit. Changes to the style, manifest or
-formatting script check all indexed sources. The hook never rewrites files or
-stages changes; after formatting, review and restage the intended edits, taking
-care with partially staged files. Commits with no relevant changes need no
-formatter executable. Missing/wrong formatter versions otherwise fail clearly.
-
-The script tries `clang-format` and `clang-format-20` and requires the exact
-pinned version. Set `CLANG_FORMAT` or pass `--clang-format /path/to/clang-format`
-to select another installation. It performs no downloads.
-
-Configured builds with Python available also provide `format` and `format-check`
-targets, for example `cmake --build --preset desktop --target format-check`.
-Formatting is an explicit development step, not a source mutation during normal
-compilation. Ordinary builds require neither Python nor clang-format.
-CI checks formatting and the staged-file/hook regression tests on Linux, macOS
-and Windows; a local hook does not replace that check.
-
-## Desktop
-
-For a fresh checkout with network access:
-
-```sh
-cmake --preset desktop-fetch
-cmake --build --preset desktop-fetch --parallel 4
-ctest --preset desktop-fetch
-```
-
-Use `gui-tests` in all three commands to include GUI automation. To use installed
-SDL3, use `desktop` and supply the offline sources above (or explicitly enable
-`OC2_FETCH_DEPENDENCIES`). `SDL3_DIR`/`CMAKE_PREFIX_PATH` can locate an installed
-SDL package. Linux source builds need X11/Wayland development libraries for the
-backend being shipped; CI lists the Ubuntu packages.
-
-Run `build/desktop-fetch/openciv2` on Linux, the `.exe` on Windows, or
-`open build/desktop-fetch/openciv2.app` on macOS. Substitute the selected preset's
-build directory. For Visual Studio without Ninja:
-
-```powershell
-cmake -S . -B build/windows -DOC2_FETCH_SDL=ON -DOC2_FETCH_DEPENDENCIES=ON -DOC2_GUI_TESTS=ON
-cmake --build build/windows --config Debug --parallel 4
-ctest --test-dir build/windows -C Debug --output-on-failure
-.\build\windows\Debug\openciv2.exe
-```
-
-Source builds use static SDL. For installed shared SDL on Windows, the build
-copies its DLL beside the executable. Installed shared SDL on macOS must remain
-available at runtime. These are development builds; relocatable packaging,
-signing/notarization, assets, and release installers remain M7 work.
-
-## WebAssembly
-
-Activate the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html)
-version in `dependencies.json` (currently 4.0.23). `EMSDK` must name its root; the
-preset uses its toolchain file and test-time Node runner.
-
-```sh
-cmake --preset web
-cmake --build --preset web --parallel 4
-ctest --preset web
-python3 -m http.server 8000 --directory build/web
-```
-
-Open `http://localhost:8000/openciv2.html`. Deploy `openciv2.html`, `openciv2.js`,
-`openciv2.wasm`, and `THIRD_PARTY_NOTICES.txt` together, serving WASM as
-`application/wasm`. The Catch2 JS/WASM test executable is not a deployment asset.
-Do not open the application through `file://`. The shell supplies loading/error
-status and Restart; Quit exits to the page instead of closing the browser tab.
-
-SDL callbacks yield to the browser. The build uses C++ exceptions, memory growth,
-and a single browser thread. No Asyncify or cross-origin isolation is needed
-for this shell. Browser-reserved shortcuts remain accessible through drawn menus
-and buttons. Asset preloading, persistent saves, and the network bridge are not
-implemented. WASM tests run under Node at test time; CMake does not try to
-execute WASM test discovery during configuration.
-
-## Tests and diagnostic runs
-
-```sh
-cmake --preset headless-fetch
-cmake --build --preset headless-fetch --parallel 4
-ctest --preset headless-fetch
-cmake --preset sanitize -DOC2_FETCH_DEPENDENCIES=ON
-cmake --build --preset sanitize --parallel 4
-ctest --preset sanitize
-```
-
-`oc2_tests` uses Catch2 for five portable shell/menu cases. `oc2_runtime_tests`
-uses Catch2 for SDL event ownership, input routing, modal blocking, fractional
-framebuffer density, and context/backend teardown. CTest also exercises startup
-and clean initialization failure. Runtime/startup tests use dummy video and
-software rendering, without a display server. These are application tests, not
-classic simulation conformance fixtures.
-
-```sh
-SDL_VIDEO_DRIVER=dummy SDL_RENDER_DRIVER=software \
-  ./build/desktop/openciv2 --smoke-test --screenshot /tmp/openciv2.bmp
-```
-
-`--smoke-test` uses the drawn menu and exits after three frames. `--screenshot`
-saves the next frame as BMP. Native menu integration needs actual desktop checks:
-macOS application menu placement, Command keys, Dock Quit and Retina behavior;
-Windows Alt/menu selection, Ctrl shortcuts, menu insets and DPI; Linux X11/Wayland,
-F10/keyboard navigation, resizing and focus loss. Confirm responsiveness while
-tracking native menus before adding gameplay/network deadlines.
-
-## GUI automation
-
-Enable `OC2_GUI_TESTS=ON` or use the `gui-tests` preset. The separate
-`oc2_ui_tests` executable contains ImGui Test Engine hooks; production
-`openciv2` and `oc2_frontend` link the uninstrumented ImGui library. Seven
-scenarios run at 1x, 1.65x, and 2x framebuffer density, using widget paths and
-semantic state. The fractional dimming regression is retained.
-
-```sh
-ctest --preset gui-tests -L gui
-./build/gui-tests/oc2_ui_tests --visible --filter about_dialog
-./build/gui-tests/oc2_ui_tests --density 1.65 --filter modal_blocks_background \
-  --output build/gui-tests/gui-results/manual
-```
-
-JUnit reports and failure captures appear under `gui-results/<density>/`.
-An unmatched filter, timeout, or failed scenario returns nonzero. Visible tests
-use the OS display scale; synthetic headless densities exercise geometry, not
-native DPI event delivery. Assertions stay active in the GUI test engine even
-for Release builds. See its upstream
-[setup guide](https://github.com/ocornut/imgui_test_engine/wiki/Setting-Up).
-
-ImGui Test Engine has a separate
-[license](https://github.com/ocornut/imgui_test_engine/blob/176a41dd07985ccb65287a569047ab93f2c7f5d0/imgui_test_engine/LICENSE.txt).
-CMake copies it as `IMGUI_TEST_ENGINE_LICENSE.txt`; fetched Catch2's license is
-copied as `CATCH2_LICENSE.txt`. Neither library is linked into the shipped game.
-
-The browser smoke test drives real Chromium, including modal/menu interactions,
-resizing, 2x pixel density, and Quit/Restart:
-
-```sh
-npm install --no-save --package-lock=false playwright@1.58.2
-npx playwright install chromium
-node tests/web_smoke.cjs build/web
-```
-
-Node/Playwright are test-only dependencies. Screenshots go under
-`build/web/screenshots/`. CI reads tool versions from `dependencies.json`.
-
-## Validation scope
-
-The workflow builds macOS, Windows, Linux, and WASM, including a separate headless
-matrix and sanitizer job. A configured CI job is not evidence that it ran.
-Current merge verification is recorded in the
-[implementation plan](implementation-plan.md#current-implementation-status).
-Native AppKit/Win32 interactions and real desktop DPI behavior remain platform
-checks; dummy-driver and browser tests cannot establish them. No existing test
-establishes X02 gameplay or original-peer/file interoperability.
+[Validation status](validation/README.md) distinguishes executed evidence from
+pending platform work. Publication includes verified full package/runtime/native
+and font notices. SDK/package upgrades require updated locks and complete affected
+checks; changing source or build inputs invalidates older compiled-source reports.

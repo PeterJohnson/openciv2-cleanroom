@@ -1,0 +1,15 @@
+<Solution>
+  <Project Path="../src/OpenCiv2.Base/OpenCiv2.Base.csproj" />
+  <Project Path="../src/OpenCiv2.IO/OpenCiv2.IO.csproj" />
+  <Project Path="../src/OpenCiv2.Contracts/OpenCiv2.Contracts.csproj" />
+  <Project Path="../src/OpenCiv2.Core/OpenCiv2.Core.csproj" />
+  <Project Path="../src/OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
+  <Project Path="../src/OpenCiv2.Query/OpenCiv2.Query.csproj" />
+  <Project Path="../src/OpenCiv2.Network/OpenCiv2.Network.csproj" />
+  <Project Path="../src/OpenCiv2.Session/OpenCiv2.Session.csproj" />
+  <Project Path="../src/OpenCiv2.Console/OpenCiv2.Console.csproj" />
+  <Project Path="../src/OpenCiv2.Automation/OpenCiv2.Automation.csproj" />
+  <Project Path="../tests/OpenCiv2.AutomationCases/OpenCiv2.AutomationCases.csproj" />
+  <Project Path="../tests/OpenCiv2.Automation.Tests/OpenCiv2.Automation.Tests.csproj" />
+  <Project Path="../tests/OpenCiv2.AutomationProbe/OpenCiv2.AutomationProbe.csproj" />
+</Solution>

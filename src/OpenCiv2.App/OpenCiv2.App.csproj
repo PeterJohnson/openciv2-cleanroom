@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Avalonia" /><PackageReference Include="Avalonia.Themes.Fluent" /><PackageReference Include="Avalonia.Fonts.Inter" />
+    <ProjectReference Include="../OpenCiv2.Session/OpenCiv2.Session.csproj" />
+    <ProjectReference Include="../OpenCiv2.ViewModels/OpenCiv2.ViewModels.csproj" /><ProjectReference Include="../OpenCiv2.Console/OpenCiv2.Console.csproj" />
+  </ItemGroup>
+</Project>

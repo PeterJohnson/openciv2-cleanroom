@@ -2,8 +2,8 @@
 
 Status: unreleased version 1 data formats. Complete first-wave classic defaults,
 JSON Schemas, provenance checks, an offline developer loader and a
-[portable C++ bundle loader](../m1-content-runtime.md) are implemented.
-C++ gameplay consumers, session profile selection, full rule-reference resolution
+[portable C# bundle loader](../m1-content-runtime.md) are implemented.
+Gameplay consumers, session profile selection, full rule-reference resolution
 and multiplayer/save integration remain implementation-plan work. This does not
 provide the missing text-backed stock rules or a playable pack.
 
@@ -244,7 +244,7 @@ numerator/denominator pairs by their greatest common divisor (zero becomes 0/1).
 Preserve array order. Manifest ID/revision/mode, descriptor paths/hashes and
 provenance are outside this effective-value digest. Hash the resulting bytes
 with SHA-256. The developer loader returns the same normalized operands it hashes;
-the C++ loader also returns normalized typed operands rather than unnormalized fractions from the original file.
+the C# loader also returns normalized typed operands rather than unnormalized fractions from the original file.
 
 Byte hashes still independently protect every selected file. Whitespace, object
 member order, equivalent integer tokens, metadata and equal rational spellings

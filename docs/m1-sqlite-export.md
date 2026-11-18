@@ -1,48 +1,27 @@
 # Optional SQLite analysis export
 
-`oc2 export` writes an analysis database from the same immutable stored snapshot
+`oc2-sqlite export` writes an analysis database from the same immutable stored snapshot
 used by inspection. It supports the current save/raw-map domain and limitations
 in [m1-inspection.md](m1-inspection.md). The database is a disposable analysis
-artifact; the game never loads it as a save, checkpoint or replay. M1 is still in
-progress.
+artifact; the game never loads it as a save, checkpoint or replay. The implemented domain is bounded by M1.
 
 ## Build and run
 
-SQLite export defaults OFF. Enabling it creates `oc2_export_sqlite` and its private
-SQLite dependency, with no SQLite link from `oc2_base`, game, formats, query, GUI
-or session targets. It is native-only; ordinary WASM builds retain portable
-queries and do not configure SQLite.
+SQLite is an optional native-only project. Core, Formats, Query, Session and the
+base CLI do not depend on it. Build from the repository root:
 
-```powershell
-cmake -S . -B build/sqlite-export -G Ninja -DOC2_BUILD_GUI=OFF -DBUILD_TESTING=OFF -DOC2_ENABLE_SQLITE_EXPORT=ON -DOC2_FETCH_DEPENDENCIES=ON
-cmake --build build/sqlite-export
-.\build\sqlite-export\oc2.exe export 'C:\Games\Civ2\EXAMPLE.SAV' --sqlite analysis.sqlite
+```sh
+python3 tools/dotnet/build_sqlite.py
+dotnet restore solutions/OpenCiv2.Sqlite.slnx --locked-mode
+dotnet build solutions/OpenCiv2.Sqlite.slnx -c Release --no-restore
+dotnet src/OpenCiv2.Cli.Sqlite/bin/Release/net10.0/oc2-sqlite.dll export path/to/game.sav --sqlite analysis.sqlite
 ```
 
-For an offline build, supply `FETCHCONTENT_SOURCE_DIR_SQLITE` pointing to the
-extracted pinned amalgamation. The build checks its version; the explicit source
-override has the same trust boundary as other library overrides. Downloads use
-the SHA-256 pin in `dependencies.json`. SQLite 3.54.1's official amalgamation was
-also checked against the publisher's SHA3-256 digest before pinning it:
-`92281c86e2957f9b9305890f9ac04204caa7b677cc868dc326d942689df28e30`.
-The [official download](https://www.sqlite.org/download.html) and
-[public-domain notice](https://www.sqlite.org/copyright.html) describe the upstream
-dependency. Extension loading is disabled. Source archives are not checked in.
-
-`--json` produces an `openciv2-export-receipt/1` receipt after publication, with
-source hash, analysis schema, output byte count and `complete: true`. This means
-the export is complete, not that gameplay validation is complete. The command
-retains inspection's exit codes: 0 available checks passed; 1 semantic errors
-retained in a completed analysis; 2 usage/I/O failure; 3 unsupported feature or
-version; 4 malformed input. Cancellation before publication returns 130.
-Unsupported/malformed inputs produce diagnostics and no database. Export disabled
-at build time returns 3 without reading the source or creating the destination.
-
-The destination must be new. Existing files, including the source itself or a
-hard-link alias, are never overwritten. The exporter has no replacement flag.
-Use another destination for another observation. The usual `--format` and
-`--view stored` options apply; loaded/live views and section-filtered export are
-not implemented.
+Use `python` on Windows and a native C compiler environment for the dependency.
+`--archive PATH` selects an offline archive with the same mandatory hash check.
+See [packaging](packaging.md) for self-contained archives, notices and extracted
+package tests. The exporter rejects an existing destination and preserves source
+files; cancellation/publication rules below remain part of its contract.
 
 ## Schema 1
 
@@ -117,24 +96,21 @@ standard-output error can also leave the completed database with exit 2.
 
 ## Evidence and remaining scope
 
-The Windows MSVC SQLite-enabled build passes 72 CTests, including 67 Catch2 cases,
-inspection CLI tests, five independent Python SQLite tests, metadata and twenty
-conformance vectors. The default-off native build passes 70 CTests; its tools-only
-build graph contains no SQLite target/source and still passes inspection tests.
-Pinned WASM passes four CTests. Native CI headless configurations now enable the
-exporter on Linux, macOS and Windows; desktop configurations keep it disabled.
-Hosted results for this change remain pending.
-
 The Python SQLite reader compares every exported field with lossless query JSON,
 including full `u64`, negative/retained counts, high-bit tokens, holes, nulls and
 empty BLOBs. It independently checks source bytes/hash, diagnostics, coverage,
 foreign keys and database integrity. Tests cover existing/source/alias destinations,
 failed paths, unsupported/malformed input and retained semantic errors.
 
-The [original-file report](conformance/reports/original-sqlite-windows.json) records
+The [original-file report](validation/README.md) records
 28 exports (21 current saves and seven raw maps), exact byte reconstruction,
 matching source hashes, unchanged inputs and independent SQLite integrity checks.
 Three legacy files publish no output. Proprietary contents and derived databases
 remain outside the repository. These are file observations, not original-program
 execution or gameplay compatibility evidence. Live observer-filtered export and
 loaded-state analysis await their owning session/query implementations.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.

@@ -1,0 +1,1640 @@
+{
+  "format": "openciv2-implementation-coverage/1",
+  "scope": "Current bounded APIs, specification ownership and test mapping. This inventory is not execution or whole-game compatibility evidence.",
+  "families": [
+    {
+      "id": "base",
+      "contract": "F01 \u00a7\u00a71\u20136; X02 controlled choices; architecture ownership",
+      "publicSurface": "Arithmetic/WrappingI32; cancellation; content hashes and names; identity counters; generated/controlled random contexts, samples, traces and restore",
+      "review": "Full integer/binary64 boundary vectors and sampling populations, constant zero-draw cases, choice failure prefixes, independent restore and overflow limits. Versioned PCG32 policy; normal .NET floating environment is required. Callbacks use delegates and interfaces.",
+      "sharedGroups": [
+        "Base.content-identity-and-names",
+        "Base.poll-only-cancellation",
+        "F01.choice-checkpoint-admission",
+        "F01.choice-failure-prefix",
+        "F01.clamps-and-shifts",
+        "F01.clock-and-map-seed",
+        "F01.controlled-semantic-order",
+        "F01.generated-trace-restore",
+        "F01.integer-wrap",
+        "F01.primary-population",
+        "F01.secondary-binary64",
+        "F01.secondary-range",
+        "F01.signed-division",
+        "F01.wrapping-expressions",
+        "PCG.capture-restore",
+        "PCG.constant-decisions",
+        "PCG.context-policy-vector",
+        "PCG.culture-independence",
+        "PCG.domain-isolation",
+        "PCG.reference-vector",
+        "PCG.rejection-preserves-state"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Base/Arithmetic.cs",
+        "src/OpenCiv2.Base/BuildIdentity.cs",
+        "src/OpenCiv2.Base/Cancellation.cs",
+        "src/OpenCiv2.Base/ContentIdentity.cs",
+        "src/OpenCiv2.Base/OwnedList.cs",
+        "src/OpenCiv2.Base/Randomness/Choices.cs",
+        "src/OpenCiv2.Base/Randomness/Pcg32Source.cs",
+        "src/OpenCiv2.Base/Randomness/RandomContext.cs",
+        "src/OpenCiv2.Base/Randomness/RandomPolicy.cs",
+        "src/OpenCiv2.Base/SessionIds.cs",
+        "src/OpenCiv2.Base/WrappingI32.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ChoiceCases.cs",
+        "tests/OpenCiv2.FoundationCases/FoundationSuite.cs",
+        "tests/OpenCiv2.FoundationCases/UtilityCases.cs"
+      ]
+    },
+    {
+      "id": "io",
+      "contract": "F03/F06 byte storage contracts",
+      "publicSurface": "ByteReader/Writer; explicit endian fields; CoreInput/Output Close/Item/Byte; IFileStorage read/replace/remove",
+      "review": "Bounds and truncation offsets, short accepted prefixes, close once, disposal after failure. Explicit IDisposable lifetimes and owned results.",
+      "sharedGroups": [
+        "Contracts.descriptor-validation",
+        "Contracts.owned-observations",
+        "IO.close-once-and-short-prefix",
+        "IO.explicit-byte-images",
+        "IO.truncation-offsets"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.IO/Bytes.cs",
+        "src/OpenCiv2.IO/Storage.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/IoContractCases.cs"
+      ]
+    },
+    {
+      "id": "contracts",
+      "contract": "M1 command/session contracts; F05 accepted choices",
+      "publicSurface": "Player identities, command schemas and typed values, closed choices, own-unit/city observations, setup/provider interfaces",
+      "review": "Owned observation copies, descriptor validation and client isolation. Native public-API reflection and project checks replace move-only/static link assertions.",
+      "sharedGroups": [
+        "Contracts.descriptor-validation",
+        "Contracts.owned-observations",
+        "IO.close-once-and-short-prefix",
+        "IO.explicit-byte-images",
+        "IO.truncation-offsets"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Contracts/Clients.cs",
+        "src/OpenCiv2.Contracts/Commands.cs",
+        "src/OpenCiv2.Contracts/Identities.cs",
+        "src/OpenCiv2.Contracts/LiveRecords.cs",
+        "src/OpenCiv2.Contracts/Setup.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.Base.Tests/BoundaryTests.cs",
+        "tests/OpenCiv2.FoundationCases/IoContractCases.cs"
+      ]
+    },
+    {
+      "id": "configuration",
+      "contract": "F03 \u00a78; N03 \u00a711; F06 CIV2.DAT",
+      "publicSurface": "Accepted game/graphics/message options; double movement; multiplayer option continuation begin/poll/cancel/dispose and proposal",
+      "review": "All 31 predecessor cases mapped in configuration-coverage.md: exact bytes, child ordering, retained failure prefixes, host gates, signed deadlines, cancellation and cleanup. Owned proposal text replaces presentation scratch.",
+      "sharedGroups": [
+        "F03.configuration-cancellation-admission",
+        "F03.configuration-failure-prefixes",
+        "F03.configuration-game-bits",
+        "F03.configuration-graphics-warning",
+        "F03.configuration-message-replacement",
+        "F03.configuration-music-transitions",
+        "F03.configuration-world-pin-publication",
+        "F03.double-movement-byte-laws",
+        "F03.double-movement-gates-failure",
+        "N03.options-admission",
+        "N03.options-cancellation",
+        "N03.options-child-failures",
+        "N03.options-handoff-live-effects",
+        "N03.options-local-gates",
+        "N03.options-rejection-deadlines",
+        "N03.options-yield-apply"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Contracts/Configuration.cs",
+        "src/OpenCiv2.Core/Rules/DoubleMovement.cs",
+        "src/OpenCiv2.Session/Configuration.cs",
+        "src/OpenCiv2.Session/MultiplayerOptions.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ConfigurationCases.cs",
+        "tests/OpenCiv2.FoundationCases/MultiplayerOptionCases.cs"
+      ]
+    },
+    {
+      "id": "entity-state",
+      "contract": "F02 \u00a7\u00a72\u20134; F05/F06 lifetime boundaries",
+      "publicSurface": "Stable unit/city pools, reservations/deletion/reset/renewal, tokens, retained scan bounds, cached city workspace",
+      "review": "First holes, extension limits and unsupported admission; retained payload and copied values; token wrap including zero; independent world lifetimes; mood workspace dispatch.",
+      "sharedGroups": [
+        "F02.entity-mood-dispatch",
+        "F02.entity-pool-deletion",
+        "F02.entity-pool-renewal",
+        "F02.entity-pool-reservation",
+        "F02.entity-pool-resets",
+        "F02.entity-record-copies",
+        "F02.entity-reservation-admission",
+        "F02.entity-reservation-first-hole",
+        "F02.entity-reservation-retained-scan",
+        "F02.entity-reservation-thresholds",
+        "F02.entity-token-sequences"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/State/Entities.cs",
+        "src/OpenCiv2.Core/State/EntityAllocation.cs",
+        "src/OpenCiv2.Core/State/FixedArrays.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/EntityCases.cs"
+      ]
+    },
+    {
+      "id": "world-state",
+      "contract": "F02 ownership; X01 fresh-world/text repair; F05/F06 retained values",
+      "publicSurface": "ProcessContext/GameState, world lifetime, history/layout/scenario/setup/text state, TextPool",
+      "review": "Independent process/world values and explicit reset/default behavior. Logical text IDs retain complete names beyond classic signed ordinals; historical allocation extents and pointer lifetimes are intentionally not reproduced.",
+      "sharedGroups": [
+        "F02.entity-mood-dispatch",
+        "F02.entity-pool-deletion",
+        "F02.entity-pool-renewal",
+        "F02.entity-pool-reservation",
+        "F02.entity-pool-resets",
+        "F02.entity-record-copies",
+        "F02.entity-reservation-admission",
+        "F02.entity-reservation-first-hole",
+        "F02.entity-reservation-retained-scan",
+        "F02.entity-reservation-thresholds",
+        "F02.entity-token-sequences",
+        "F02.text-and-label-state",
+        "F02.world-ownership",
+        "F02.world-value-copies",
+        "F03.advance-fixup",
+        "F03.classic-text-exact",
+        "F03.numeric-normalization",
+        "F03.preference-defaults",
+        "F03.reload-dependencies-and-prefix",
+        "F03.retained-installation",
+        "F03.rule-identity-order",
+        "F03.rule-rejection"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Rules/RuleState.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Core/State/WorldValues.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/EntityCases.cs",
+        "tests/OpenCiv2.FoundationCases/RuleCases.cs",
+        "tests/OpenCiv2.FoundationCases/WorldStateCases.cs"
+      ]
+    },
+    {
+      "id": "civilizations",
+      "contract": "F02 civilization fields; V03 knowledge; F06 census/post-load",
+      "publicSurface": "Civilization/global records; knowledge sentinels; loaded-unit counts and real post-load cleanup",
+      "review": "Owned copies, exact ordered census failure prefixes and knowledge bounds; changing scan limits and supplied elimination/deletion effects.",
+      "sharedGroups": [
+        "F04.calendar-custom",
+        "F04.calendar-launch",
+        "F04.calendar-observation",
+        "F04.calendar-periods",
+        "F04.calendar-profiles",
+        "F04.calendar-scenario",
+        "F04.calendar-signed-turns",
+        "F06.city-live-conversion",
+        "F06.civilization-census-counts",
+        "F06.civilization-census-failures",
+        "F06.civilization-live-conversion",
+        "F06.civilization-value-copies",
+        "F06.globals-live-conversion",
+        "F06.load-dialog-alternative-bounds",
+        "F06.load-dialog-alternative-choices",
+        "F06.load-dialog-cancellation-and-admission",
+        "F06.load-dialog-cleanup-and-publication",
+        "F06.load-dialog-core-statuses",
+        "F06.load-dialog-events-and-options",
+        "F06.load-dialog-failure-prefixes",
+        "F06.load-dialog-live-children",
+        "F06.loaded-units-live-tail-and-failure",
+        "F06.loaded-units-scan-and-repair",
+        "F06.unit-live-conversion",
+        "V03.knowledge-sentinels"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Calendar.cs",
+        "src/OpenCiv2.Core/State/Civilizations.cs",
+        "src/OpenCiv2.Session/ClassicLoadedUnits.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CalendarCases.cs",
+        "tests/OpenCiv2.FoundationCases/CivilizationCases.cs",
+        "tests/OpenCiv2.FoundationCases/LoadDialogCases.cs"
+      ]
+    },
+    {
+      "id": "events",
+      "contract": "F02/S02 \u00a72; F06 event block",
+      "publicSurface": "Event presence/aliases, append/copy/compact/install; stored events and live output",
+      "review": "Absent versus present-empty text, alias holes, stable IDs and staged install; truncations and opaque retained metadata. S02 parser/executor remains a required supplied child.",
+      "sharedGroups": [
+        "F06.event-admission",
+        "F06.fixed-field-offsets",
+        "F06.fixed-record-roundtrips",
+        "F06.legacy-layouts",
+        "F06.live-entity-writers",
+        "F06.live-event-failures",
+        "F06.live-event-writers",
+        "F06.live-layout-writers",
+        "F06.live-leader-writers",
+        "F06.live-map-writer-failures",
+        "F06.live-map-writers",
+        "F06.live-persistent-writers",
+        "F06.live-save-composition",
+        "F06.live-scenario-multiplayer-writers",
+        "F06.optional-blocks",
+        "F06.required-block-truncation",
+        "F06.scan-bounds-and-encoding-admission",
+        "F06.stored-stream-order",
+        "F06.tile-bit-domains",
+        "S02.event-compact-identity",
+        "S02.event-copy-aliases",
+        "S02.event-copy-nonempty",
+        "S02.event-installation",
+        "S02.event-presence"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/State/Events.cs",
+        "src/OpenCiv2.Formats/ClassicLive.cs",
+        "src/OpenCiv2.Formats/StoredFiles.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/EventCases.cs",
+        "tests/OpenCiv2.FoundationCases/LiveWriterCases.cs",
+        "tests/OpenCiv2.FoundationCases/SaveCases.cs"
+      ]
+    },
+    {
+      "id": "preferences",
+      "contract": "F03 \u00a78; F06 CIV2.DAT",
+      "publicSurface": "Ordinary/multiplayer preference values/defaults, stored codecs/live conversions, load/save/default staging",
+      "review": "Every bit/offset and partial item, opaque text tails, default/close failure, output failures/removal, snapshots before I/O, once-only cleanup and publication.",
+      "sharedGroups": [
+        "F02.world-ownership",
+        "F02.world-value-copies",
+        "F03.preference-defaults",
+        "F03.preference-file-load-defaults-and-staging",
+        "F03.preference-file-load-failures",
+        "F03.preference-file-publication-and-isolation",
+        "F03.preference-file-save-exceptions",
+        "F03.preference-file-save-results",
+        "F03.preference-file-snapshots-before-io",
+        "F06.binary-multiplayer-preferences",
+        "F06.binary-ordinary-preferences",
+        "F06.binary-preference-live-conversion",
+        "F06.binary-preference-prefixes",
+        "F06.binary-preference-round-trips",
+        "F06.binary-preference-text-and-shape"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/State/Preferences.cs",
+        "src/OpenCiv2.Formats/ClassicPreferences.cs",
+        "src/OpenCiv2.Formats/PreferenceConversion.cs",
+        "src/OpenCiv2.Formats/PreferenceRecords.cs",
+        "src/OpenCiv2.Session/PreferenceFiles.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/BinaryPreferenceCases.cs",
+        "tests/OpenCiv2.FoundationCases/PreferenceFileCases.cs",
+        "tests/OpenCiv2.FoundationCases/WorldStateCases.cs"
+      ]
+    },
+    {
+      "id": "multiplayer-state",
+      "contract": "F06 \u00a7\u00a76,9",
+      "publicSurface": "Saved/live multiplayer values, password encode/decode/reset/flags and loaded-mode adaptation",
+      "review": "All source password bits and circular seam, semantic choice failure prefix and retained byte 255, equal-mode gate and retained current values; PCG generated policy intentionally changed.",
+      "sharedGroups": [
+        "F06.event-values-live-conversion",
+        "F06.live-entity-writers",
+        "F06.live-event-failures",
+        "F06.live-event-writers",
+        "F06.live-layout-writers",
+        "F06.live-leader-writers",
+        "F06.live-map-writer-failures",
+        "F06.live-map-writers",
+        "F06.live-persistent-writers",
+        "F06.live-save-composition",
+        "F06.live-scenario-multiplayer-writers",
+        "F06.map-view-live-conversion",
+        "F06.multiplayer-live-conversion",
+        "F06.multiplayer-mode-adaptation",
+        "F06.names-live-conversion",
+        "F06.password-refresh",
+        "F06.password-replay",
+        "F06.password-reset",
+        "F06.password-reset-failure",
+        "F06.password-rotation",
+        "F06.scenario-history-live-conversion"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/State/Multiplayer.cs",
+        "src/OpenCiv2.Formats/ClassicLive.cs",
+        "src/OpenCiv2.Formats/FixedCodecs.cs",
+        "src/OpenCiv2.Formats/StateAuxConversion.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AuxStateCases.cs",
+        "tests/OpenCiv2.FoundationCases/LiveWriterCases.cs",
+        "tests/OpenCiv2.FoundationCases/MultiplayerStateCases.cs"
+      ]
+    },
+    {
+      "id": "map",
+      "contract": "W01 geometry/spatial state; F06 map input",
+      "publicSurface": "Geometry indices/canonical coordinates/wrap/distance/neighbors/regions; MapStorage allocate/release/swap/layers/lookup/features/mutate/sync; staged MapInput install",
+      "review": "Parity aliases, signed wrapping/overflow, half-open rectangles, ordered duplicate neighborhoods, allocation/admission, retained direct layers, current resource seed, synchronization routes and failure prefixes.",
+      "sharedGroups": [
+        "F06.game-restoration-admission",
+        "F06.game-restoration-leader-selection",
+        "F06.game-restoration-legacy-occupancy",
+        "F06.game-restoration-optional-inputs",
+        "F06.game-restoration-values",
+        "F06.map-input-admission",
+        "F06.map-input-staged-installation",
+        "F06.raw-map-restoration",
+        "Query.lossless-json-and-raw-maps",
+        "Query.owned-records-and-diffs",
+        "Query.semantic-diagnostics",
+        "W01.geometry-contract",
+        "W01.map-allocation-and-release",
+        "W01.map-coordinate-patterns",
+        "W01.map-direct-layer-indices",
+        "W01.map-mutation-fields",
+        "W01.map-replacement-and-swap",
+        "W01.map-retained-spatial-reads",
+        "W01.map-synchronization"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Geometry.cs",
+        "src/OpenCiv2.Core/MapInput.cs",
+        "src/OpenCiv2.Core/MapStorage.cs",
+        "src/OpenCiv2.Core/Tiles.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MapCases.cs",
+        "tests/OpenCiv2.FoundationCases/QueryCases.cs",
+        "tests/OpenCiv2.FoundationCases/RestorationCases.cs"
+      ]
+    },
+    {
+      "id": "rules",
+      "contract": "F03 \u00a7\u00a72\u20137; X01 semantic names",
+      "publicSurface": "Typed rule operands/tables, all normalization helpers, ordered per-table installation and reload/name retention",
+      "review": "All cosmic limits, signed byte/word wrapping, disabled advance fixup, order/dependencies and failure prefixes; full-width semantic names and marker conversion replace original pool ordinals.",
+      "sharedGroups": [
+        "F02.text-and-label-state",
+        "F03.advance-fixup",
+        "F03.classic-text-exact",
+        "F03.numeric-normalization",
+        "F03.reload-dependencies-and-prefix",
+        "F03.retained-installation",
+        "F03.rule-identity-order",
+        "F03.rule-rejection"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Rules/RuleInstaller.cs",
+        "src/OpenCiv2.Core/Rules/RuleNormalization.cs",
+        "src/OpenCiv2.Core/Rules/RuleState.cs",
+        "src/OpenCiv2.Core/Rules/RuleValues.cs",
+        "src/OpenCiv2.Formats/Content/RuleContent.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RuleCases.cs"
+      ]
+    },
+    {
+      "id": "city-content",
+      "contract": "C01 \u00a72; F03 \u00a78",
+      "publicSurface": "Layered name catalog selection and city preference admission/apply; classic/native readers",
+      "review": "Owned layers and cursors, exact NoDefend/list retention, unknown tokens/capacity limits, section retries and close-once/failure prefixes.",
+      "sharedGroups": [
+        "C01.classic-name-layers",
+        "C01.classic-name-prefixes-and-cleanup",
+        "C01.name-admission",
+        "C01.name-catalog-selection",
+        "C01.name-layer-ownership",
+        "F03.city-preference-admission",
+        "F03.city-preference-updates",
+        "F03.classic-preference-decoding",
+        "F03.classic-preference-snapshot-and-cleanup"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/City/Content.cs",
+        "src/OpenCiv2.Formats/Classic/CityContent.cs",
+        "src/OpenCiv2.Formats/Content/CityContent.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityContentCases.cs",
+        "tests/OpenCiv2.FoundationCases/ClassicCityCases.cs"
+      ]
+    },
+    {
+      "id": "city-names",
+      "contract": "C01 \u00a72; X01 text repair",
+      "publicSurface": "Default city-name selection over native/classic catalogs and owned rule names",
+      "review": "All local/shared/fallback cursor paths, duplicate-name retries and failed publication; complete byte names and repaired full-width IDs, not allocation timing.",
+      "sharedGroups": [
+        "C01.city-naming-cursors",
+        "C01.city-naming-installed-rules",
+        "C01.city-naming-live-references",
+        "C01.city-naming-missing-and-retry",
+        "C01.city-naming-text-and-failure"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/City/Names.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityNamingCases.cs"
+      ]
+    },
+    {
+      "id": "goals",
+      "contract": "A01 shared goals; F01 arithmetic; U04 supplied movement queries",
+      "publicSurface": "Priority negate/lookup, standing reset, add current/standing, refresh, clear nearby goals",
+      "review": "Gaps/order/ties, duplicate roles, signed priorities and distances, child query failures, retained redirects. No complete AI claim.",
+      "sharedGroups": [
+        "A01.goal-backing-and-wrapping",
+        "A01.goal-duplicate-admission",
+        "A01.goal-full-lists",
+        "A01.goal-gap-rules",
+        "A01.goal-negation-and-query",
+        "A01.goal-priority-insertion",
+        "A01.goal-record-retention",
+        "A01.goal-redirection-capacity",
+        "A01.goal-redirection-failures",
+        "A01.goal-redirection-gates",
+        "A01.goal-refresh-ordering",
+        "A01.goal-standing-distance"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/SharedGoals.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GoalCases.cs"
+      ]
+    },
+    {
+      "id": "calendar",
+      "contract": "F04 calendar; V03 knowledge",
+      "publicSurface": "CalendarYear over classic/custom profiles and scenario/launch adjustments",
+      "review": "Every profile boundary, signed wrapping and negative input, explicit custom values and pure observation without random draws.",
+      "sharedGroups": [
+        "F04.calendar-custom",
+        "F04.calendar-launch",
+        "F04.calendar-observation",
+        "F04.calendar-periods",
+        "F04.calendar-profiles",
+        "F04.calendar-scenario",
+        "F04.calendar-signed-turns",
+        "V03.knowledge-sentinels"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Calendar.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CalendarCases.cs"
+      ]
+    },
+    {
+      "id": "unit-stacks",
+      "contract": "U01 \u00a7\u00a72\u20134,6; W01 spatial inputs",
+      "publicSurface": "Stack traversal/repair, detach/attach/front/bottom/relocate and whole-stack ordering",
+      "review": "2048 repair bound, cycles/missing links, valid-prefix effects, captured successors, optional diagnostics and independently gated synchronization.",
+      "sharedGroups": [
+        "U01.stack-animation-lookup",
+        "U01.stack-authority-and-failure",
+        "U01.stack-backing-failures",
+        "U01.stack-bottom-guards",
+        "U01.stack-coordinate-width",
+        "U01.stack-dead-passes",
+        "U01.stack-execution-stops",
+        "U01.stack-full-repair",
+        "U01.stack-middle-placement",
+        "U01.stack-non-repairs",
+        "U01.stack-ordering-permutations",
+        "U01.stack-owner-width",
+        "U01.stack-passive-diagnostics",
+        "U01.stack-placement-synchronization",
+        "U01.stack-position-cuts",
+        "U01.stack-repair-authority",
+        "U01.stack-self-loop",
+        "U01.stack-singleton-detach",
+        "U01.stack-traversal",
+        "U01.stack-whole-relocation"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Units/StackOperations.cs",
+        "src/OpenCiv2.Core/Units/Stacks.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/StackCases.cs"
+      ]
+    },
+    {
+      "id": "unit-deletion",
+      "contract": "U01 \u00a79 bounded basic deletion",
+      "publicSurface": "UnitDeletion erase and supplied order/production/elimination effects",
+      "review": "Signed bookkeeping, sleepers and link cleanup, captured observations, required providers and failure prefixes. No unimplemented U04/V01 expansion.",
+      "sharedGroups": [
+        "U01.deletion-backing-and-signed-owner",
+        "U01.deletion-bookkeeping",
+        "U01.deletion-captured-selectors",
+        "U01.deletion-counter-arithmetic",
+        "U01.deletion-failure-prefixes",
+        "U01.deletion-guards-and-authority",
+        "U01.deletion-nested-activity",
+        "U01.deletion-notifications",
+        "U01.deletion-scan-bounds",
+        "U01.deletion-settlement-check",
+        "U01.deletion-sleeping-references"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Units/Deletion.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DeletionCases.cs"
+      ]
+    },
+    {
+      "id": "unit-operation",
+      "contract": "U01 \u00a7\u00a72\u20134,6,9; M1 command contract",
+      "publicSurface": "Bounded local/remote primitive and whole-stack operation poll/cancel/result; command composition",
+      "review": "Normalized request padding, yielded replies, signed deadlines and post-timeout drain, ownership changes, callback cancellation, explicit world pin release.",
+      "sharedGroups": [
+        "U01.operation-admission-and-raw-arguments",
+        "U01.operation-callback-cancellation",
+        "U01.operation-cancellation-and-failures",
+        "U01.operation-command-composition",
+        "U01.operation-local-mechanics-and-guards",
+        "U01.operation-remote-primitives",
+        "U01.operation-stack-successors-and-authority",
+        "U01.operation-stack-timeout-and-partial-failure",
+        "U01.operation-timeout-drain-and-markers"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/UnitOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitOperationCases.cs"
+      ]
+    },
+    {
+      "id": "stored-records",
+      "contract": "F06 explicit byte records",
+      "publicSurface": "Fixed text and unit/city/tile/region/global record codecs, raw field inventory, stored/live compatibility metadata",
+      "review": "Exact field offsets, signed and unsigned views, unused bits and text tails; reject truncation/extra bytes and out-of-range logical exports without truncation.",
+      "sharedGroups": [
+        "F06.binary-multiplayer-preferences",
+        "F06.binary-ordinary-preferences",
+        "F06.binary-preference-live-conversion",
+        "F06.binary-preference-prefixes",
+        "F06.binary-preference-round-trips",
+        "F06.binary-preference-text-and-shape",
+        "F06.city-live-conversion",
+        "F06.civilization-census-counts",
+        "F06.civilization-census-failures",
+        "F06.civilization-live-conversion",
+        "F06.civilization-value-copies",
+        "F06.event-admission",
+        "F06.event-values-live-conversion",
+        "F06.fixed-field-offsets",
+        "F06.fixed-record-roundtrips",
+        "F06.globals-live-conversion",
+        "F06.legacy-layouts",
+        "F06.map-view-live-conversion",
+        "F06.multiplayer-live-conversion",
+        "F06.names-live-conversion",
+        "F06.optional-blocks",
+        "F06.required-block-truncation",
+        "F06.scan-bounds-and-encoding-admission",
+        "F06.scenario-history-live-conversion",
+        "F06.stored-stream-order",
+        "F06.tile-bit-domains",
+        "F06.unit-live-conversion"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Formats/ClassicRecords.cs",
+        "src/OpenCiv2.Formats/ClassicText.cs",
+        "src/OpenCiv2.Formats/FixedCodecs.cs",
+        "src/OpenCiv2.Formats/RecordCompatibility.cs",
+        "src/OpenCiv2.Formats/StoredRecords.cs",
+        "src/OpenCiv2.Query/RecordFields.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AuxStateCases.cs",
+        "tests/OpenCiv2.FoundationCases/BinaryPreferenceCases.cs",
+        "tests/OpenCiv2.FoundationCases/CivilizationCases.cs",
+        "tests/OpenCiv2.FoundationCases/SaveCases.cs"
+      ]
+    },
+    {
+      "id": "stored-save",
+      "contract": "F06 stored save/map streams",
+      "publicSurface": "Classify/decode/encode admitted saves and raw maps; exact stream/header order and optional blocks",
+      "review": "All byte truncations, versions 0x26/27/28/2c, opaque separator/trailers and optional events; 0x2c-only inspection remains distinct from low-level codec domain.",
+      "sharedGroups": [
+        "F06.event-admission",
+        "F06.fixed-field-offsets",
+        "F06.fixed-record-roundtrips",
+        "F06.legacy-layouts",
+        "F06.optional-blocks",
+        "F06.required-block-truncation",
+        "F06.scan-bounds-and-encoding-admission",
+        "F06.stored-stream-order",
+        "F06.tile-bit-domains"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Formats/ClassicFiles.cs",
+        "src/OpenCiv2.Formats/FixedCodecs.cs",
+        "src/OpenCiv2.Formats/StoredFiles.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SaveCases.cs"
+      ]
+    },
+    {
+      "id": "live-codecs",
+      "contract": "F06 stored/live adapters and output sections",
+      "publicSurface": "Entity/global/leader/history/layout/scenario/multiplayer conversions; owned GameInput and live section writers",
+      "review": "Opaque metadata bound to actual world lifetime, semantic custom-name sign restoration/export, selected-tribe repeated effects; staged validation and byte-prefix failures.",
+      "sharedGroups": [
+        "F06.city-live-conversion",
+        "F06.civilization-census-counts",
+        "F06.civilization-census-failures",
+        "F06.civilization-live-conversion",
+        "F06.civilization-value-copies",
+        "F06.event-values-live-conversion",
+        "F06.game-restoration-admission",
+        "F06.game-restoration-leader-selection",
+        "F06.game-restoration-legacy-occupancy",
+        "F06.game-restoration-optional-inputs",
+        "F06.game-restoration-values",
+        "F06.globals-live-conversion",
+        "F06.live-entity-writers",
+        "F06.live-event-failures",
+        "F06.live-event-writers",
+        "F06.live-layout-writers",
+        "F06.live-leader-writers",
+        "F06.live-map-writer-failures",
+        "F06.live-map-writers",
+        "F06.live-persistent-writers",
+        "F06.live-save-composition",
+        "F06.live-scenario-multiplayer-writers",
+        "F06.map-input-admission",
+        "F06.map-input-staged-installation",
+        "F06.map-view-live-conversion",
+        "F06.multiplayer-live-conversion",
+        "F06.names-live-conversion",
+        "F06.raw-map-restoration",
+        "F06.scenario-history-live-conversion",
+        "F06.unit-live-conversion"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/State/GameInput.cs",
+        "src/OpenCiv2.Formats/ClassicLive.cs",
+        "src/OpenCiv2.Formats/LiveSaveConversion.cs",
+        "src/OpenCiv2.Formats/RestorationInput.cs",
+        "src/OpenCiv2.Formats/StateAuxConversion.cs",
+        "src/OpenCiv2.Formats/StateConversion.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AuxStateCases.cs",
+        "tests/OpenCiv2.FoundationCases/CivilizationCases.cs",
+        "tests/OpenCiv2.FoundationCases/LiveWriterCases.cs",
+        "tests/OpenCiv2.FoundationCases/RestorationCases.cs"
+      ]
+    },
+    {
+      "id": "classic-text",
+      "contract": "F03 classic byte-text readers",
+      "publicSurface": "Owned read windows, physical seek, token/number/section/indexed search and selected/home fallback",
+      "review": "Repeated headers/current cursor versus indexed lookup, byte controls, non-ASCII fold policy, source ownership, malformed tokens and failure-state retention.",
+      "sharedGroups": [
+        "F03.classic-case-and-request-ownership",
+        "F03.classic-indexed-search",
+        "F03.classic-read-failure-state",
+        "F03.classic-read-windows",
+        "F03.classic-section-search",
+        "F03.classic-service-admission",
+        "F03.classic-source-fallback",
+        "F03.classic-tokens-and-numbers"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Formats/Classic/TextReader.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ClassicTextCases.cs"
+      ]
+    },
+    {
+      "id": "classic-rules",
+      "contract": "F03 \u00a7\u00a72\u20137",
+      "publicSurface": "Classic rule section decoding to typed operands; semantic rule validation",
+      "review": "All sections, vocabularies/defaults and numeric normalization; reload/retained names, titles/text and selection/child failure prefixes.",
+      "sharedGroups": [
+        "F02.text-and-label-state",
+        "F03.advance-fixup",
+        "F03.classic-rule-operands-and-reload",
+        "F03.classic-rule-rejection",
+        "F03.classic-rule-retained-names",
+        "F03.classic-rule-selection-failures",
+        "F03.classic-rule-text-and-titles",
+        "F03.classic-rule-vocabulary-and-defaults",
+        "F03.classic-rules-complete",
+        "F03.classic-text-exact",
+        "F03.numeric-normalization",
+        "F03.reload-dependencies-and-prefix",
+        "F03.retained-installation",
+        "F03.rule-identity-order",
+        "F03.rule-rejection"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Formats/Classic/RuleLoader.cs",
+        "src/OpenCiv2.Formats/Content/RuleContent.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ClassicRuleCases.cs",
+        "tests/OpenCiv2.FoundationCases/RuleCases.cs"
+      ]
+    },
+    {
+      "id": "labels",
+      "contract": "P04 \u00a72; F02 logical text",
+      "publicSurface": "Label catalog decode/load/install; popup defaults; language/cache initialization",
+      "review": "Owned staged inputs, declared count and backed indices, cached fallback, cleanup, full-width text references and language wrapping; no native dialog implementation.",
+      "sharedGroups": [
+        "P04.classic-label-admission-and-cleanup",
+        "P04.classic-label-catalog",
+        "P04.classic-label-fallback",
+        "P04.classic-label-missing-and-retained-names",
+        "P04.label-installation-full-width-and-deduplication",
+        "P04.text-language-configuration"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/Rules/LabelCatalog.cs",
+        "src/OpenCiv2.Core/Rules/RuleState.cs",
+        "src/OpenCiv2.Formats/Classic/Labels.cs",
+        "src/OpenCiv2.Session/TextConfiguration.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LabelCases.cs"
+      ]
+    },
+    {
+      "id": "content",
+      "contract": "Content data/gameplay format; F03 native operands",
+      "publicSurface": "Strict JSON values/integers, trusted gameplay definitions, explicit source identities and descriptor admission",
+      "review": "Duplicate/unknown fields, exact large integers, classic restrictions/custom gate, canonical normalization and owned content.",
+      "sharedGroups": [
+        "Content.canonical-normalization",
+        "Content.custom-gameplay-gate",
+        "Content.descriptor-admission",
+        "Content.exact-integers",
+        "Content.invalid-documents",
+        "Content.strict-json-admission",
+        "Content.trusted-gameplay-values"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/GameplayValues.cs",
+        "src/OpenCiv2.Formats/Content/ContentJson.cs",
+        "src/OpenCiv2.Formats/Content/ContentSource.cs",
+        "src/OpenCiv2.Formats/Content/GameplayContent.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ContentCases.cs"
+      ]
+    },
+    {
+      "id": "packs",
+      "contract": "Content pack contract",
+      "publicSurface": "Ordered mount/parent/locale resolution, pinned content receipts and budgets",
+      "review": "Parent cycles/revisions, whole-group fallback, nested gameplay, hash validation, owned media and deterministic precedence.",
+      "sharedGroups": [
+        "Pack.budgets-and-revisions",
+        "Pack.declaration-admission",
+        "Pack.locale-admission",
+        "Pack.nested-gameplay",
+        "Pack.overlay-order",
+        "Pack.owned-media-and-hashes",
+        "Pack.owned-receipts",
+        "Pack.parent-admission"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Formats/Content/ContentPack.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PackCases.cs"
+      ]
+    },
+    {
+      "id": "conversion",
+      "contract": "M1 content conversion; F03/C01 classic inputs",
+      "publicSurface": "Classic rules/names/preferences to versioned native components and receipts",
+      "review": "Complete typed output, reload rejection, all cursor windows and effects, limits/admission and truthful partial publication; formatting differences explicitly normalized in differential evidence.",
+      "sharedGroups": [
+        "Conversion.names-admission",
+        "Conversion.names-cursors",
+        "Conversion.names-windows",
+        "Conversion.preference-effects",
+        "Conversion.preference-limits",
+        "Conversion.preference-rejection",
+        "Conversion.preference-text",
+        "Conversion.rules-complete",
+        "Conversion.rules-rejection",
+        "Conversion.rules-reload"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Formats/Content/ContentConversion.cs",
+        "src/OpenCiv2.Formats/Content/RuleConversion.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ConversionCases.cs"
+      ]
+    },
+    {
+      "id": "query",
+      "contract": "M1 inspection and command contracts",
+      "publicSurface": "Owned stored record projections/selectors/validation/diff/JSON/TSV; own-unit/city live projection",
+      "review": "Current stored 0x2c/map only, lossless integer strings/raw bytes, stable field diffs and diagnostic order; live privacy/holes/token values/independent ownership.",
+      "sharedGroups": [
+        "Base.content-identity-and-names",
+        "Base.poll-only-cancellation",
+        "Query.live-query-admission",
+        "Query.live-query-field-domains",
+        "Query.live-query-no-side-effects",
+        "Query.live-query-own-entities",
+        "Query.live-query-owned-snapshots",
+        "Query.lossless-json-and-raw-maps",
+        "Query.owned-records-and-diffs",
+        "Query.semantic-diagnostics",
+        "W01.geometry-contract"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Query/LiveProjection.cs",
+        "src/OpenCiv2.Query/Output.cs",
+        "src/OpenCiv2.Query/RecordFields.cs",
+        "src/OpenCiv2.Query/StoredInspection.cs",
+        "src/OpenCiv2.Query/StoredTypes.cs",
+        "src/OpenCiv2.Query/StoredValidation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LiveQueryCases.cs",
+        "tests/OpenCiv2.FoundationCases/QueryCases.cs",
+        "tests/OpenCiv2.FoundationCases/UtilityCases.cs"
+      ]
+    },
+    {
+      "id": "network-messages",
+      "contract": "N02 envelopes; N05 datagrams",
+      "publicSurface": "Classic message encode/decode, fragment headers, datagram payloads",
+      "review": "Exact golden fields/offsets, payload bounds, malformed/unsupported sizes and retained padding; no complete peer session.",
+      "sharedGroups": [
+        "N02.argument-envelope-bytes",
+        "N02.message-broadcast-live-size",
+        "N02.message-envelope-admission",
+        "N02.message-envelope-bytes",
+        "N02.message-send-sequencing",
+        "N02.section-checksums",
+        "N02.section-descriptor-and-image-bytes",
+        "N02.section-image-application-extents",
+        "N02.section-image-checksum-ordering",
+        "N02.section-image-production-failures",
+        "N02.section-image-sequential-application",
+        "N02.section-mirror-failure-prefixes",
+        "N02.section-mirror-semantics",
+        "N02.section-registration-and-sizes",
+        "N02.section-registration-failure-prefixes",
+        "N05.datagram-bytes-and-retention",
+        "N05.stream-callback-boundaries",
+        "N05.stream-fragmentation",
+        "N05.stream-frame-bytes",
+        "N05.stream-oversized-callbacks",
+        "N05.stream-receive-admission",
+        "N05.stream-send-backlog",
+        "N05.stream-send-error-domains",
+        "N05.stream-send-failure-retention",
+        "N05.stream-send-queue-progress"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Network/Messages.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NetworkCases.cs",
+        "tests/OpenCiv2.FoundationCases/SectionCases.cs"
+      ]
+    },
+    {
+      "id": "network-stream",
+      "contract": "N05 stream framing and send queues",
+      "publicSurface": "FrameReceiver and SendQueue admission/feed/poll/cancel/drain",
+      "review": "Every fragmentation boundary, coalescing, alignment/padding, impossible frames, backpressure/short accepted prefixes, partial transport failures and cancellation.",
+      "sharedGroups": [
+        "N02.argument-envelope-bytes",
+        "N02.message-broadcast-live-size",
+        "N02.message-envelope-admission",
+        "N02.message-envelope-bytes",
+        "N02.message-send-sequencing",
+        "N05.datagram-bytes-and-retention",
+        "N05.stream-callback-boundaries",
+        "N05.stream-fragmentation",
+        "N05.stream-frame-bytes",
+        "N05.stream-oversized-callbacks",
+        "N05.stream-receive-admission",
+        "N05.stream-send-backlog",
+        "N05.stream-send-error-domains",
+        "N05.stream-send-failure-retention",
+        "N05.stream-send-queue-progress"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Network/SendQueue.cs",
+        "src/OpenCiv2.Network/Stream.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NetworkCases.cs"
+      ]
+    },
+    {
+      "id": "network-compression",
+      "contract": "N02 bounded compression",
+      "publicSurface": "Byte/word run codecs, full/byte image compression/expansion and receipt selection",
+      "review": "Marker/length boundaries, maximum outputs, every partial input, bit images and rejects before publication.",
+      "sharedGroups": [
+        "N02.compression-boundaries-and-tails",
+        "N02.compression-byte-zero-and-tail",
+        "N02.compression-exact-tokens",
+        "N02.compression-image-failure-retention",
+        "N02.compression-receipt-selection",
+        "N02.compression-safe-word-runs",
+        "N02.compression-scratch-prefixes",
+        "N02.compression-word-validation",
+        "N02.section-checksums",
+        "N02.section-descriptor-and-image-bytes",
+        "N02.section-image-application-extents",
+        "N02.section-image-checksum-ordering",
+        "N02.section-image-production-failures",
+        "N02.section-image-sequential-application",
+        "N02.section-mirror-failure-prefixes",
+        "N02.section-mirror-semantics",
+        "N02.section-registration-and-sizes",
+        "N02.section-registration-failure-prefixes"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Network/Compression.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CompressionCases.cs",
+        "tests/OpenCiv2.FoundationCases/SectionCases.cs"
+      ]
+    },
+    {
+      "id": "network-sections",
+      "contract": "N02 section images; F06 stored records",
+      "publicSurface": "Classic section keys, scatter/gather and checksum byte images",
+      "review": "Required backed extents, aligned/signed keys, last-block clipping, padding/opaque bytes and failure-prefix application.",
+      "sharedGroups": [
+        "N02.section-checksums",
+        "N02.section-descriptor-and-image-bytes",
+        "N02.section-image-application-extents",
+        "N02.section-image-checksum-ordering",
+        "N02.section-image-production-failures",
+        "N02.section-image-sequential-application",
+        "N02.section-mirror-failure-prefixes",
+        "N02.section-mirror-semantics",
+        "N02.section-registration-and-sizes",
+        "N02.section-registration-failure-prefixes"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Network/Sections.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SectionCases.cs"
+      ]
+    },
+    {
+      "id": "session",
+      "contract": "M1 session and command contracts",
+      "publicSurface": "Session/participant/controller leases, owned queries/updates, command registration/admission/continuation/interaction, peer routes and retirement",
+      "review": "Stale capabilities, owned retained replies, FIFO/reentry, wrapping deadlines, cancellation after effects, controller/peer authority changes and failed publication/cleanup.",
+      "sharedGroups": [
+        "Session.command-admission-changes",
+        "Session.command-cleanup-and-allocation-failures",
+        "Session.command-controlled-choice-failure",
+        "Session.command-decisions-and-timeouts",
+        "Session.command-descriptor-admission",
+        "Session.command-execution-revalidation",
+        "Session.command-explicit-continuation",
+        "Session.command-failures-and-committed-effects",
+        "Session.command-fifo-and-owned-inputs",
+        "Session.command-invalid-steps-and-reentry",
+        "Session.command-linear-effects-and-retirement",
+        "Session.command-peer-admission-and-obligations",
+        "Session.command-peer-execution-and-results",
+        "Session.command-peer-failure-and-changed-binding",
+        "Session.command-pending-effect-rebind",
+        "Session.command-pending-replacement-and-pins",
+        "Session.command-retained-choices-across-interaction",
+        "Session.command-revocation-and-privacy",
+        "Session.session-disconnect-and-disposal",
+        "Session.session-grant-admission",
+        "Session.session-private-bindings",
+        "Session.session-random-domains",
+        "Session.session-reassignment-and-lifetimes",
+        "Session.session-retained-ownership",
+        "Session.session-world-pins"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/CommandRuntime.cs",
+        "src/OpenCiv2.Session/Operations.cs",
+        "src/OpenCiv2.Session/RuntimeState.cs",
+        "src/OpenCiv2.Session/SessionRuntime.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CommandCases.cs",
+        "tests/OpenCiv2.FoundationCases/CommandPeerCases.cs",
+        "tests/OpenCiv2.FoundationCases/SessionCases.cs"
+      ]
+    },
+    {
+      "id": "fresh-world",
+      "contract": "X01 fresh isolation; F05 \u00a7\u00a74\u20135",
+      "publicSurface": "PrepareNewGame and bounded inner initialization",
+      "review": "Cold/reused equivalence, explicit process allowlist, pending work rejection, retained inner reset, opponent draws/rates/treasury and supplied child failure prefixes.",
+      "sharedGroups": [
+        "F03.rule-state-content-transfer",
+        "F05.new-game-bounds-map-and-identity-retention",
+        "F05.new-game-failure-prefixes",
+        "F05.new-game-live-child-order",
+        "F05.new-game-options-rates-and-masks",
+        "F05.new-game-publication-random-and-admission",
+        "F05.new-game-reset-and-retained-records",
+        "Session.fresh-game-process-allowlist",
+        "Session.fresh-game-rejects-pending-work",
+        "Session.fresh-game-rejects-pins-and-resets-again",
+        "Session.fresh-game-world-isolation"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/FreshGame.cs",
+        "src/OpenCiv2.Session/NewGameInitialization.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/FreshGameCases.cs",
+        "tests/OpenCiv2.FoundationCases/NewGameCases.cs"
+      ]
+    },
+    {
+      "id": "restoration",
+      "contract": "F06 restoration and core load",
+      "publicSurface": "GameInput validate/install, leader-name restoration/scenario marker prep, core load",
+      "review": "Admission before effects, lifetime renewal, live rule/name/census/mode order, partial installs and close-once input failures; no post-load algorithm expansion.",
+      "sharedGroups": [
+        "F06.game-file-live-roundtrip-and-opaque-lifetimes",
+        "F06.game-file-load-failures-and-publication",
+        "F06.game-file-load-guards-and-paths",
+        "F06.game-file-load-rejected-inputs",
+        "F06.game-file-load-versions",
+        "F06.game-file-save-admission-and-hotseat",
+        "F06.game-file-save-complete-image",
+        "F06.game-file-save-failures",
+        "F06.game-file-save-scenario-and-events",
+        "F06.game-install-admission",
+        "F06.game-install-failure-prefixes",
+        "F06.game-install-multiplayer-and-scenario",
+        "F06.game-install-name-markers",
+        "F06.game-install-rule-reload-and-layout",
+        "F06.game-install-scenario-export-names",
+        "F06.game-install-values-and-lifetimes"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicGameFiles.cs",
+        "src/OpenCiv2.Session/GameInstallation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GameFileCases.cs",
+        "tests/OpenCiv2.FoundationCases/GameInstallationCases.cs"
+      ]
+    },
+    {
+      "id": "game-files",
+      "contract": "F06 core files",
+      "publicSurface": "Guarded load/save over selected classic storage, scenario/raw modes and file scratch",
+      "review": "Status distinctions, counters/names/opaque output, world guards, ordinary write prefixes and exactly-once close; outer dialogues separate.",
+      "sharedGroups": [
+        "F04.calendar-custom",
+        "F04.calendar-launch",
+        "F04.calendar-observation",
+        "F04.calendar-periods",
+        "F04.calendar-profiles",
+        "F04.calendar-scenario",
+        "F04.calendar-signed-turns",
+        "F06.game-file-live-roundtrip-and-opaque-lifetimes",
+        "F06.game-file-load-failures-and-publication",
+        "F06.game-file-load-guards-and-paths",
+        "F06.game-file-load-rejected-inputs",
+        "F06.game-file-load-versions",
+        "F06.game-file-save-admission-and-hotseat",
+        "F06.game-file-save-complete-image",
+        "F06.game-file-save-failures",
+        "F06.game-file-save-scenario-and-events",
+        "F06.live-entity-writers",
+        "F06.live-event-failures",
+        "F06.live-event-writers",
+        "F06.live-layout-writers",
+        "F06.live-leader-writers",
+        "F06.live-map-writer-failures",
+        "F06.live-map-writers",
+        "F06.live-persistent-writers",
+        "F06.live-save-composition",
+        "F06.live-scenario-multiplayer-writers",
+        "V03.knowledge-sentinels"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicGameFiles.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CalendarCases.cs",
+        "tests/OpenCiv2.FoundationCases/GameFileCases.cs",
+        "tests/OpenCiv2.FoundationCases/LiveWriterCases.cs"
+      ]
+    },
+    {
+      "id": "load-dialog",
+      "contract": "F06 accepted-file load; S01/S02; U01",
+      "publicSurface": "Accepted input selection/admission, scenario alternatives/events/options/music/title, cleanup",
+      "review": "Scaled choices/enumeration limits, changing scan bounds, current live effects, observed prefix failures and supplied S02/V01 children.",
+      "sharedGroups": [
+        "F06.load-dialog-alternative-bounds",
+        "F06.load-dialog-alternative-choices",
+        "F06.load-dialog-cancellation-and-admission",
+        "F06.load-dialog-cleanup-and-publication",
+        "F06.load-dialog-core-statuses",
+        "F06.load-dialog-events-and-options",
+        "F06.load-dialog-failure-prefixes",
+        "F06.load-dialog-live-children",
+        "F06.loaded-units-live-tail-and-failure",
+        "F06.loaded-units-scan-and-repair"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicLoadDialog.cs",
+        "src/OpenCiv2.Session/ClassicLoadedUnits.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LoadDialogCases.cs"
+      ]
+    },
+    {
+      "id": "save-menu",
+      "contract": "F06 file choice/save menu; M1 ownership",
+      "publicSurface": "Semantic file types/extension/validation and async save choice/poll/cancel/dispose",
+      "review": "Ordered filters, missing paths, deferred live capture, pending command deadlines, failed chooser/notice children and released pins.",
+      "sharedGroups": [
+        "F06.file-choice-types-and-admission",
+        "F06.save-menu-admission-and-provider-failures",
+        "F06.save-menu-cancellation-and-output-failures",
+        "F06.save-menu-deferred-acceptance-and-pin",
+        "F06.save-menu-deferred-cleanup-and-failure-precedence",
+        "F06.save-menu-names-and-mode-notices",
+        "F06.save-menu-owned-notices-and-formatting",
+        "F06.save-menu-pending-commands-remain-responsive"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicFileChoice.cs",
+        "src/OpenCiv2.Session/ClassicSaveMenu.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SaveMenuCases.cs"
+      ]
+    },
+    {
+      "id": "rule-context",
+      "contract": "F03 selected/home rule loading",
+      "publicSurface": "Owned selected/home input composition and parser/provider lifetime",
+      "review": "Correct chosen source and fallback, failure cleanup and retained rule state; native source behavior separately tested.",
+      "sharedGroups": [
+        "F03.classic-rule-context-failure-cleanup",
+        "F03.classic-rule-context-selection-and-ownership"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicRuleContext.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RuleContextCases.cs"
+      ]
+    },
+    {
+      "id": "world-setup",
+      "contract": "F05 \u00a72; F04 acceleration-year labels",
+      "publicSurface": "World-size choice/retry, random/custom parameters and acceleration label preparation",
+      "review": "Cyclic decimal dimensions, Back/Cancel effects, choice order/RNG isolation, current scenario labels, failed preferences/child providers and pins.",
+      "sharedGroups": [
+        "F05.setup-calendar-retention",
+        "F05.setup-calendar-scenario-and-magnitude",
+        "F05.world-parameters-cancellation-prefixes",
+        "F05.world-parameters-failure-prefixes",
+        "F05.world-parameters-ordinary-persistence",
+        "F05.world-parameters-persistence-failures-and-live-choices",
+        "F05.world-parameters-random-order-and-law",
+        "F05.world-setup-admission-and-inactive-use",
+        "F05.world-setup-publication-and-pins",
+        "F05.world-size-cancellation-and-failures",
+        "F05.world-size-decimal-and-boundaries",
+        "F05.world-size-presets"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/SetupCalendar.cs",
+        "src/OpenCiv2.Session/WorldSetupOperations.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/WorldSetupCases.cs"
+      ]
+    },
+    {
+      "id": "premade-world",
+      "contract": "F05 \u00a72; F06 raw map; W01",
+      "publicSurface": "Load/prepare selected premade world and parameter dispatch",
+      "review": "Every byte truncation, staged install/normalization, clock/seed/hint laws, partial effects, transfer admission, close-once and pending-command rejection.",
+      "sharedGroups": [
+        "F05.premade-admission-and-publication",
+        "F05.premade-input-failures-and-staging",
+        "F05.premade-installation-and-retention",
+        "F05.premade-live-choices-and-failures",
+        "F05.premade-normalization-and-hint-scan",
+        "F05.premade-parameter-dispatch",
+        "F05.premade-seed-and-response-laws",
+        "F06.premade-transfer-ownership"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicPremadeWorldSource.cs",
+        "src/OpenCiv2.Session/PremadeWorld.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PremadeWorldCases.cs"
+      ]
+    },
+    {
+      "id": "player-setup",
+      "contract": "F05 \u00a72",
+      "publicSurface": "Player wizard with advanced rules, roster, names/title/portrait choices",
+      "review": "All advanced combinations, Back/Cancel retained values, owned inputs, complete semantic choice keys, preference failures and explicit callbacks.",
+      "sharedGroups": [
+        "F05.player-setup-acceleration-retention",
+        "F05.player-setup-admission-and-publication",
+        "F05.player-setup-advanced-combinations",
+        "F05.player-setup-cancellation-routes",
+        "F05.player-setup-name-bounds-and-partial-copies",
+        "F05.player-setup-name-cancellation-and-unavailable",
+        "F05.player-setup-name-children",
+        "F05.player-setup-opponent-retries-and-roster",
+        "F05.player-setup-ordinary-and-restored-names",
+        "F05.player-setup-random-branches-and-retries"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/PlayerSetup.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PlayerSetupCases.cs"
+      ]
+    },
+    {
+      "id": "world-entry",
+      "contract": "F05 \u00a7\u00a72,4\u20135; X01 fresh boundary",
+      "publicSurface": "Starting-advance list and composed fresh rules/setup/source/inner entry",
+      "review": "Fresh reset before selected content, owned reinstall, ordered creation/intro, partial failure prefixes; W02/V01/balance/acceleration remain required supplied children.",
+      "sharedGroups": [
+        "F05.world-entry-acceleration-and-child-failures",
+        "F05.world-entry-admission-and-inactive-pins",
+        "F05.world-entry-cancellation-prefixes",
+        "F05.world-entry-introduction-and-common-source",
+        "F05.world-entry-isolation-and-classic-scratch",
+        "F05.world-entry-order-and-preference-saves",
+        "F05.world-entry-premade-and-owned-rules"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicWorldEntry.cs",
+        "src/OpenCiv2.Session/WorldEntry.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/WorldEntryCases.cs"
+      ]
+    },
+    {
+      "id": "checkpoints",
+      "contract": "F01 new PCG policy; M1 checkpoint profile",
+      "publicSurface": "Logical random codec and bounded local session/continuation checkpoint capture/restore",
+      "review": "Exact u64 seeds and counters/closed values, resource/replay limits, staged admission, stale-client revoke, once-only continuation restore and failed cleanup. Version 2 deliberately rejects old MT representation.",
+      "sharedGroups": [
+        "M1.local-checkpoint-codec-malformed-envelope",
+        "M1.local-checkpoint-codec-malformed-payload",
+        "M1.local-checkpoint-codec-resource-limits",
+        "M1.local-checkpoint-codec-rng",
+        "M1.local-checkpoint-codec-round-trips",
+        "M1.random-checkpoint-controlled-keys-and-prefix",
+        "M1.random-checkpoint-generated-domains",
+        "M1.random-checkpoint-malformed-admission",
+        "M1.random-checkpoint-resource-limits",
+        "M1.random-checkpoint-trace-capacity-and-replay",
+        "M1.session-checkpoint-bad-admission",
+        "M1.session-checkpoint-bindings",
+        "M1.session-checkpoint-cancel-timeout",
+        "M1.session-checkpoint-idle",
+        "M1.session-checkpoint-owner-reentry-cleanup",
+        "M1.session-checkpoint-peer-work",
+        "M1.session-checkpoint-resumes-once",
+        "M1.session-checkpoint-unsupported-state"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Formats/LocalCheckpoint.cs",
+        "src/OpenCiv2.Formats/LocalCheckpointCodec.cs",
+        "src/OpenCiv2.Formats/RandomCheckpointCodec.cs",
+        "src/OpenCiv2.Session/Checkpoint.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalCheckpointCodecCases.cs",
+        "tests/OpenCiv2.FoundationCases/RandomCheckpointCases.cs",
+        "tests/OpenCiv2.FoundationCases/SessionCheckpointCases.cs"
+      ]
+    },
+    {
+      "id": "native-io",
+      "contract": "Native I/O/content and F03/F06 storage contracts",
+      "publicSurface": "Read-only mounts/containment/hashes, classic file/text storage, new-output atomic publication and stdout",
+      "review": "Actual aliases/Unicode/symlinks, physical seek and cursors, cancellation and exactly-one-winner concurrent publishers. Unix no-overwrite race corrected with link publication; unsupported filesystems fail without partial copies.",
+      "sharedGroups": [],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.IO.Native/ClassicStorage.cs",
+        "src/OpenCiv2.IO.Native/ContentDirectory.cs",
+        "src/OpenCiv2.IO.Native/NativeFiles.cs",
+        "src/OpenCiv2.IO.Native/StandardOutput.cs",
+        "src/OpenCiv2.Platform.Native/ClassicTextFiles.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.Base.Tests/NativeClassicTests.cs",
+        "tests/OpenCiv2.Base.Tests/NativeFilesTests.cs",
+        "tests/content_cli.py",
+        "tests/roundtrip_helpers_cli.py"
+      ]
+    },
+    {
+      "id": "sqlite",
+      "contract": "M1 inspection SQLite schema and publication",
+      "publicSurface": "Optional native SQLite export over owned query values",
+      "review": "Exact schema/rows/receipts, all value types, cancellation/close/stdout failures and no-overwrite. Base CLI and browser exclude native SQLite.",
+      "sharedGroups": [],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Cli.Sqlite/Program.cs",
+        "src/OpenCiv2.Export.Sqlite/NativeSqlite.cs",
+        "src/OpenCiv2.Export.Sqlite/Schema.cs",
+        "src/OpenCiv2.Export.Sqlite/SqliteSnapshot.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.Sqlite.Tests/ExportTests.cs",
+        "tests/sqlite_cli.py"
+      ]
+    },
+    {
+      "id": "cli",
+      "contract": "M1 inspection/content/conversion CLI contracts",
+      "publicSurface": "inspect/validate/diff; content validate/resolve/validate-rules/validate-names/validate-preferences/convert-rules/convert-names/convert-preferences; optional export",
+      "review": "Exact command/exit/stdout matrix, unsupported domains, selectors and lossless JSON, -- and Unicode paths, failed output and partial publication. Independent Python drivers retained.",
+      "sharedGroups": [],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Cli/ContentCli.cs",
+        "src/OpenCiv2.Cli/ContentConvert.cs",
+        "src/OpenCiv2.Cli/ContentResolve.cs",
+        "src/OpenCiv2.Cli/Program.cs"
+      ],
+      "tests": [
+        "tests/content_cli.py",
+        "tests/content_pack_cli.py",
+        "tests/inspection_cli.py",
+        "tests/rules_cli.py",
+        "tests/sqlite_cli.py"
+      ]
+    },
+    {
+      "id": "helpers",
+      "contract": "F03/F06/N02/N05; helper-coverage.md",
+      "publicSurface": "Five actual helper executables: stored save/map/wire/preferences and live load-edit-save",
+      "review": "Exact byte tails/padding, coherent preference reads, fragmented/coalesced wire input and 512-byte datagram limit, no-overwrite races, native selected content. See helper-specific audit.",
+      "sharedGroups": [],
+      "status": "implemented",
+      "sources": [
+        "tests/OpenCiv2.LiveSave/Program.cs",
+        "tests/OpenCiv2.MapRoundTrip/Program.cs",
+        "tests/OpenCiv2.PreferenceRoundTrip/Program.cs",
+        "tests/OpenCiv2.SaveRoundTrip/Program.cs",
+        "tests/OpenCiv2.WireRoundTrip/Program.cs"
+      ],
+      "tests": [
+        "tests/inspection_cli.py",
+        "tests/live_save_cli.py",
+        "tests/preference_cli.py",
+        "tests/roundtrip_helpers_cli.py"
+      ]
+    },
+    {
+      "id": "conformance",
+      "contract": "X02; M1 closeout 15 operations/57 fixtures",
+      "publicSurface": "Source-identified native/browser adapter, controlled choices and operation observations",
+      "review": "All 15 registered operations and 57 fixtures; seven explicit PCG replacements, unchanged controlled fixtures, full observation/consumed-prefix equality, stale/missing-input rejection. No whole-game claim.",
+      "sharedGroups": [],
+      "status": "implemented",
+      "sources": [
+        "tests/OpenCiv2.Conformance/Adapter.cs",
+        "tests/OpenCiv2.Conformance/FreshGame.cs",
+        "tests/OpenCiv2.Conformance/Random.cs",
+        "tests/OpenCiv2.Conformance/Workspace.cs",
+        "tests/OpenCiv2.ConformanceAdapter/Program.cs",
+        "tests/OpenCiv2.ConformanceBrowser/Program.cs"
+      ],
+      "tests": [
+        "tools/dotnet/compare_conformance.py",
+        "tools/dotnet/run_conformance.py",
+        "tools/dotnet/test_conformance.py"
+      ]
+    },
+    {
+      "id": "test-support",
+      "contract": "Authored test providers, not production API",
+      "publicSurface": "Fake files, callbacks, clocks and owned channel/service fixtures",
+      "review": "Behavioral assertions are now in shared managed case providers; no source-derived harness reuse. Support declarations are not extra gameplay requirements.",
+      "sharedGroups": [
+        "F03.preference-file-load-defaults-and-staging",
+        "F03.preference-file-load-failures",
+        "F03.preference-file-publication-and-isolation",
+        "F03.preference-file-save-exceptions",
+        "F03.preference-file-save-results",
+        "F03.preference-file-snapshots-before-io",
+        "F06.game-file-live-roundtrip-and-opaque-lifetimes",
+        "F06.game-file-load-failures-and-publication",
+        "F06.game-file-load-guards-and-paths",
+        "F06.game-file-load-rejected-inputs",
+        "F06.game-file-load-versions",
+        "F06.game-file-save-admission-and-hotseat",
+        "F06.game-file-save-complete-image",
+        "F06.game-file-save-failures",
+        "F06.game-file-save-scenario-and-events",
+        "F06.load-dialog-alternative-bounds",
+        "F06.load-dialog-alternative-choices",
+        "F06.load-dialog-cancellation-and-admission",
+        "F06.load-dialog-cleanup-and-publication",
+        "F06.load-dialog-core-statuses",
+        "F06.load-dialog-events-and-options",
+        "F06.load-dialog-failure-prefixes",
+        "F06.load-dialog-live-children",
+        "F06.loaded-units-live-tail-and-failure",
+        "F06.loaded-units-scan-and-repair",
+        "Session.session-disconnect-and-disposal",
+        "Session.session-grant-admission",
+        "Session.session-private-bindings",
+        "Session.session-random-domains",
+        "Session.session-reassignment-and-lifetimes",
+        "Session.session-retained-ownership",
+        "Session.session-world-pins"
+      ],
+      "status": "implemented",
+      "sources": [
+        "tests/OpenCiv2.FoundationCases/GameFileCases.cs",
+        "tests/OpenCiv2.FoundationCases/LoadDialogCases.cs",
+        "tests/OpenCiv2.FoundationCases/PreferenceFileCases.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GameFileCases.cs",
+        "tests/OpenCiv2.FoundationCases/LoadDialogCases.cs",
+        "tests/OpenCiv2.FoundationCases/PreferenceFileCases.cs",
+        "tests/OpenCiv2.FoundationCases/SessionCases.cs"
+      ]
+    },
+    {
+      "id": "m2-shell",
+      "contract": "Bounded application; M2 full rendering/platform integration deferred",
+      "publicSurface": "Avalonia session host; future map rendering, menus, fonts and platform adapters",
+      "review": "The bounded production session host has native/browser input coverage. Full M2 rendering, menus, windowing, DPI and accessibility remain open.",
+      "sharedGroups": [],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.App/ApplicationIdentity.cs",
+        "src/OpenCiv2.App/SeamApp.cs",
+        "src/OpenCiv2.App/SeamSession.cs",
+        "src/OpenCiv2.App/SeamView.cs",
+        "src/OpenCiv2.Browser/Program.cs",
+        "src/OpenCiv2.Desktop/Program.cs"
+      ],
+      "tests": [
+        "tools/dotnet/run_application.py",
+        "tools/dotnet/run_application_browser.cjs"
+      ]
+    },
+    {
+      "id": "python-validation",
+      "contract": "Repository validation tools and CLI contracts",
+      "publicSurface": "Independent Python CLI drivers, conformance/schema/gameplay validation, legacy build/source checks",
+      "review": "Independent CLI/helper drivers, specification/content validators, project/package boundaries and source-identity admission. These checks support implementation evidence; they do not execute additional gameplay.",
+      "sharedGroups": [],
+      "status": "implemented",
+      "sources": [
+        "tools/dotnet/check_graph.py",
+        "tools/dotnet/write_identity.py"
+      ],
+      "tests": [
+        "tests/test_conformance_runner.py",
+        "tests/test_conformance_script.py",
+        "tests/test_conformance_values.py",
+        "tests/test_content_schemas.py",
+        "tests/test_gameplay_data.py",
+        "tools/dotnet/test_identity.py"
+      ]
+    },
+    {
+      "id": "application-clients",
+      "status": "implemented",
+      "contract": "Scoped Session commands and application contract",
+      "publicSurface": "LocalUnitCommands.StackBottom; SessionPanel; CommandText",
+      "sources": [
+        "src/OpenCiv2.Console/CommandText.cs",
+        "src/OpenCiv2.Session/LocalUnitCommands.cs",
+        "src/OpenCiv2.ViewModels/SessionPanel.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ClientModelCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalUnitCommandCases.cs"
+      ],
+      "sharedGroups": [
+        "P5.client-model-cancel-revoke",
+        "P5.client-model-command-parity",
+        "P5.client-model-privacy-rebind",
+        "P5.console-admission",
+        "P5.console-typed-grammar",
+        "P5.local-unit-admission",
+        "P5.local-unit-cancellation",
+        "P5.local-unit-confirmation",
+        "P5.local-unit-finite-bounds",
+        "P5.local-unit-stale-target"
+      ],
+      "review": "Production command, observer privacy, asynchronous confirmation/cancellation and descriptor-based console admission. Full M2 rendering and platform integration remain open."
+    }
+  ]
+}

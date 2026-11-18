@@ -1,11 +1,11 @@
 # M1 native rule definitions
 
-`oc2_formats::content::load_rules` now decodes a resolved pack's complete native
+`OpenCiv2.Formats.Content.NativeRules.Load` now decodes a resolved pack's complete native
 rule definitions into immutable typed values. It checks all ten fixed identity
 collections, cosmic parameters, wonder expiry, rule references, government-title
 overrides and the selected gameplay bundle's government advance references.
 It returns no result on failure and performs no file writes or session updates.
-The model lives in `oc2_game`; JSON decoding uses the pinned jart/json.cpp through
+The model lives in `OpenCiv2.Core`; JSON decoding uses System.Text.Json through
 the [shared admission wrapper](m1-content-runtime.md#json-and-operand-admission).
 
 The implementation follows [data-format.md sections 2/4 and appendices A/B](content/data-format.md)
@@ -20,18 +20,15 @@ The separate [classic text reader and preference adapters](m1-classic-text.md)
 now supply F03's byte grammar, section services and native/classic city-production
 preferences and all twelve classic rule-table readers.
 
-## Text representation refactor
+## Text ownership
 
-Current production text uses unpadded owned strings and local references with
-explicit custom-name flags. The F06 stored leader codec is a separate type;
-live export translates flags without narrowing text IDs. Label rebuilds preserve
-unrelated rule references. Synthetic text-allocation callbacks, padding checks
-and matching allocation traces have been removed from production interfaces/tests.
-Original ordinal calculation remains only in `tools/check_original_rule_labels.py`,
-using original data and the lossless stored inspector. The former C++ ordinal
-comparison executable is removed. Earlier allocation/ordinal results below are
-historical evidence, not current implementation or milestone requirements.
-Semantic regression checks replace the historical allocation-trace assertions.
+Production text uses unpadded owned strings and local references with explicit
+custom-name flags. F06 stored leaders use a separate lossless record type;
+live export translates name flags without narrowing text IDs. Label rebuilds
+preserve unrelated rule references. Semantic tests cover names, flags, retained
+references and publication. `tools/check_original_rule_labels.py` independently
+checks original data using the stored inspector; original ordinals do not define
+runtime allocation or text ownership.
 
 ## Identity and normalization
 
@@ -65,11 +62,11 @@ leader state or city-name cursor is reset by decoding.
 
 ## Retained rule installation
 
-`formats::content::RuleInstaller` owns an immutable `load_rules` result and applies
+`OpenCiv2.Core.Rules.RuleInstaller` owns an immutable `RuleInput` from `NativeRules.Load` and applies
 it directly to `RuleState`, without virtual files or classic token serialization.
 Its full load follows F03's twelve-table order and explicit leader-replacement
 policy. The individual advance, improvement and unit methods also support
-`keep_names`. Native identity IDs are installed independently of display-name
+`keepNames`. Native identity IDs are installed independently of display-name
 preservation. The shared pool must already be initialized by its owning setup.
 
 The decoder now retains advance/improvement prerequisites before fixup, whole
@@ -115,7 +112,7 @@ definition stage itself performs no case-insensitive name lookup.
 
 An [original Windows observation](m1-original-text-observations.md) selected
 `@pRoBeÉ` for the pooled plural `ProbeÉ` in an ordered three-header CITY input,
-and repeated the proposal after loading a C++ export. Duplicate equivalent
+and repeated the proposal after loading an exported save. Duplicate equivalent
 headers and section-index behavior prevent treating this as a complete or
 isolated comparison test. Single-candidate controls and the broader byte/locale
 domain remain open; no comparison algorithm is inferred here.
@@ -123,8 +120,8 @@ domain remain open; no comparison algorithm is inferred here.
 ## Command and checks
 
 ```powershell
-build/headless-fetch/oc2.exe content validate-rules path/to/content.json --json
-build/headless-fetch/oc2.exe content validate-rules path/to/overlay/content.json --parent path/to/base/content.json --require-classic --json
+src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-rules path/to/content.json --json
+src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-rules path/to/overlay/content.json --parent path/to/base/content.json --require-classic --json
 ```
 
 The command accepts the same explicit parent mounts, locale selection and classic
@@ -135,7 +132,7 @@ operands. Exit codes remain 0 for success, 1 for semantic rejection, 2 for
 usage/source failure and 4 for malformed JSON. The deliberately incomplete
 repository format example resolves but fails this rule-validation stage.
 
-Eight portable Catch2 cases check identity order, normalization, exact integers,
+Eight portable shared cases check identity order, normalization, exact integers,
 reference fixup, names/titles, codec round trips and invalid inputs. Four native
 CLI rule cases load independently authored complete definitions from real files and
 check readonly behavior, inheritance, receipts and rejection. These are
@@ -158,3 +155,8 @@ Existing rule installation/reload behavior is regression coverage. Complete
 comparison profiles, other components, reverse conversion, application startup/
 GAME-cache construction and owning consumers join M2–M5. Bounded original-file
 evidence follows M1-04; this slice does not add another interoperability gate.
+
+
+Current C# sources and tests are mapped in [implementation coverage](testing/coverage.md).
+Run the [native/browser and CLI checks](testing/README.md);
+[validation status](validation/README.md) records executed evidence and remaining gates.
