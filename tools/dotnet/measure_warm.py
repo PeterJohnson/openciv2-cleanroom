@@ -37,7 +37,7 @@ def validate(report, inputs, repetitions, browser):
     runtime = ET.parse(ROOT / 'Directory.Build.props').findtext('PropertyGroup/RuntimeFrameworkVersion')
     for entry in report['Build']:
         name = entry['Assembly']
-        target = 'net10.0-browser' if name == 'OpenCiv2.PerformanceBrowser' else 'net10.0'
+        target = 'net11.0-browser' if name == 'OpenCiv2.PerformanceBrowser' else 'net11.0'
         if entry['Sources'] != expected_inputs(ROOT, name) or (entry['Sdk'], entry['Runtime'], entry['Target'], entry['Configuration']) != (sdk, runtime, target, 'Release'):
             raise ValueError('Stale, incomplete or unpinned workload assembly: ' + name)
     summaries = {}
@@ -110,7 +110,7 @@ def main():
         with log.open('wb') as output:
             subprocess.run([str(dotnet), 'build', str(project), '-c', 'Release', '--no-restore', '-m:1', '-nr:false'], cwd=ROOT,
                            env=environment, stdout=output, stderr=subprocess.STDOUT, check=True, timeout=180)
-        executable = project.parent / 'bin/Release/net10.0' / host
+        executable = project.parent / 'bin/Release/net11.0' / host
         artifact_paths = [p for p in executable.parent.iterdir() if p.is_file()] + [dotnet]
     artifacts = {p.as_posix(): sha(p) for p in artifact_paths}
     load = os.getloadavg() if hasattr(os, 'getloadavg') else None

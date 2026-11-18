@@ -27,10 +27,10 @@ class PublicationTests(unittest.TestCase):
         self.assets = self.root / 'assets.json'
         self.assets.write_text(json.dumps({
             'libraries': {'Example/1.0': {'type': 'package', 'sha512': self.content_hash, 'path': 'example/1.0'}},
-            'targets': {'net10.0': {'Example/1.0': {'type': 'package', 'runtime': {}}}},
+            'targets': {'net11.0': {'Example/1.0': {'type': 'package', 'runtime': {}}}},
             'packageFolders': {str(self.root / 'cache'): {}}}))
         self.lock = self.root / 'lock.json'
-        self.lock.write_text(json.dumps({'dependencies': {'net10.0': {'Example': {'resolved': '1.0', 'contentHash': self.content_hash}}}}))
+        self.lock.write_text(json.dumps({'dependencies': {'net11.0': {'Example': {'resolved': '1.0', 'contentHash': self.content_hash}}}}))
         self.sdk = self.root / 'sdk'
         self.sdk.mkdir()
         for name in ['LICENSE.txt', 'ThirdPartyNotices.txt']:
@@ -39,7 +39,7 @@ class PublicationTests(unittest.TestCase):
 
     def generate(self):
         notices.generate(self.project, self.assets, self.lock, self.output,
-                         self.sdk, '10.0.404', '10.0.15', '', False)
+                         self.sdk, '11.0.100', '11.0.0', '', False)
         return notices.verify(self.output)
 
     def test_republish_and_tampered_notice_rejection(self):
@@ -58,7 +58,7 @@ class PublicationTests(unittest.TestCase):
 
     def test_restored_graph_cannot_override_lock(self):
         locked = json.loads(self.lock.read_text())
-        locked['dependencies']['net10.0']['Example']['contentHash'] = 'wrong'
+        locked['dependencies']['net11.0']['Example']['contentHash'] = 'wrong'
         self.lock.write_text(json.dumps(locked))
         with self.assertRaisesRegex(ValueError, 'does not match lock'):
             self.generate()

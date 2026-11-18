@@ -151,7 +151,7 @@ def main():
             'OpenCiv2 finite M1 command-line tools\n\n'
             f'Run {command}{".exe" if rid.startswith("win-") else ""} --help\n'
             'Includes the .NET runtime; no .NET installation is required.\n'
-            'Requires the operating system libraries supported by .NET 10 (including ICU).\n'
+            'Requires the operating system libraries supported by .NET 11 (including ICU).\n'
             'This is an unsigned development package, not a full playable game.\n'
             'Input game/content files are supplied separately.\n'
             'LICENSE.txt and notices/ contain license terms; SQLite packages also include SQLITE-NOTICE.txt.\n', encoding='utf-8')

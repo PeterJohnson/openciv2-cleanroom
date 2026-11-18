@@ -120,8 +120,8 @@ domain remain open; no comparison algorithm is inferred here.
 ## Command and checks
 
 ```powershell
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-rules path/to/content.json --json
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-rules path/to/overlay/content.json --parent path/to/base/content.json --require-classic --json
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content validate-rules path/to/content.json --json
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content validate-rules path/to/overlay/content.json --parent path/to/base/content.json --require-classic --json
 ```
 
 The command accepts the same explicit parent mounts, locale selection and classic

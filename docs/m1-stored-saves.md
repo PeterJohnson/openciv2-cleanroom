@@ -232,8 +232,8 @@ stored representations, not complete gameplay compatibility.
 The native comparison driver can be run with:
 
 ```powershell
-.\tests\OpenCiv2.SaveRoundTrip\bin\Release\net10.0\OpenCiv2.SaveRoundTrip.exe 'C:\Games\Civ2\EXAMPLE.SAV'
-.\tests\OpenCiv2.SaveRoundTrip\bin\Release\net10.0\OpenCiv2.SaveRoundTrip.exe 'C:\Games\Civ2\EXAMPLE.SAV' 'C:\Scratch\NEW_OUTPUT.SAV'
+.\tests\OpenCiv2.SaveRoundTrip\bin\Release\net11.0\OpenCiv2.SaveRoundTrip.exe 'C:\Games\Civ2\EXAMPLE.SAV'
+.\tests\OpenCiv2.SaveRoundTrip\bin\Release\net11.0\OpenCiv2.SaveRoundTrip.exe 'C:\Games\Civ2\EXAMPLE.SAV' 'C:\Scratch\NEW_OUTPUT.SAV'
 ```
 
 It reads the input, decodes/re-encodes it with the C# codec, compares every byte and prints

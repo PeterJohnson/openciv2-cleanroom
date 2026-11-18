@@ -26,7 +26,7 @@ def validate(build):
     sources = {}
     for entry in build['build']:
         name = entry['Assembly']; expected = identity.expected_inputs(ROOT, name)
-        target = 'net10.0-browser' if name == 'OpenCiv2.Browser' else 'net10.0'
+        target = 'net11.0-browser' if name == 'OpenCiv2.Browser' else 'net11.0'
         if entry['Sources'] != expected or (entry['Sdk'], entry['Runtime'], entry['Target'], entry['Configuration']) != (sdk, runtime, target, 'Release'):
             raise ValueError('Stale or unpinned application assembly: ' + name)
         sources.update(expected)

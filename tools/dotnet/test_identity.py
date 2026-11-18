@@ -15,14 +15,14 @@ class IdentityTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        (self.root / "global.json").write_text('{"sdk":{"version":"10.0.404"}}')
+        (self.root / "global.json").write_text('{"sdk":{"version":"11.0.100"}}')
         (self.root / "Directory.Build.props").write_text(
-            '<Project><PropertyGroup><RuntimeFrameworkVersion>10.0.15</RuntimeFrameworkVersion></PropertyGroup></Project>')
+            '<Project><PropertyGroup><RuntimeFrameworkVersion>11.0.0</RuntimeFrameworkVersion></PropertyGroup></Project>')
         self.expected = {"src/Example.cs": "a" * 64}
         self.report = {
             "Format": "openciv2-managed-foundations/2", "Passed": True,
             "Cases": [{"Passed": True}], "Build": [
-                {"Assembly": name, "Sdk": "10.0.404", "Runtime": "10.0.15", "Target": "net10.0",
+                {"Assembly": name, "Sdk": "11.0.100", "Runtime": "11.0.0", "Target": "net11.0",
                  "Configuration": "Release", "Sources": dict(self.expected)}
                 for name in sorted(identity.LIBRARIES | {"OpenCiv2.FoundationProbe"})]
         }

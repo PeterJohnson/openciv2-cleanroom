@@ -1,6 +1,6 @@
 # Production application startup measurements
 
-The production Avalonia desktop and browser seam passes its fixed startup,
+The measured Avalonia desktop and browser seam passed its fixed startup,
 transfer and memory budgets on the Linux reference machine. The
 [receipt](application.json) preserves 54 verified launches/navigations:
 three warmups and fifteen measured samples for each of desktop, cold browser and
@@ -23,7 +23,9 @@ launch. With fifteen samples, nearest-rank p95 is the maximum.
 
 ## What was measured
 
-The current Release artifacts use SDK 10.0.404/runtime 10.0.15 and Avalonia 12.1.6.
+The measured Release artifacts used SDK 10.0.404/runtime 10.0.15 and Avalonia 12.1.6.
+These measurements predate the .NET 11 upgrade and its graphics packages;
+rerun the full procedure below for current-build performance acceptance.
 The browser is Chromium 151.0.7922.34 with Playwright 1.58.2. The machine is the
 same Linux x64 Ryzen AI 9 HX 370 reference used by the CLI and warmed workloads.
 Compiled identities, artifact hashes, source manifests, host details, load and
@@ -90,11 +92,11 @@ Build the current Release desktop and publish the browser host, then run:
 NODE_PATH=/path/to/pinned-playwright/node_modules \
 OC2_CHROMIUM_EXECUTABLE=/path/to/pinned-chromium \
 python3 tools/dotnet/measure_application.py --node /path/to/node \
-  --browser-bundle src/OpenCiv2.Browser/bin/Release/net10.0-browser/publish/wwwroot \
+  --browser-bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot \
   --report build/test-results/performance-application-browser.json
 DOTNET_ROOT=/path/to/pinned-dotnet \
 python3 tools/dotnet/measure_application.py --xvfb /path/to/Xvfb \
-  --desktop src/OpenCiv2.Desktop/bin/Release/net10.0/OpenCiv2.Desktop \
+  --desktop src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop \
   --report build/test-results/performance-application-native.json
 python3 tools/dotnet/test_application_performance.py \
   --report build/test-results/performance-application-browser.json

@@ -51,7 +51,7 @@ def validate(report):
     sources = {}
     for entry in report['Build']:
         name = entry['Assembly']; expected = expected_inputs(name)
-        target = 'net10.0-browser' if name == 'OpenCiv2.AutomationBrowser' else 'net10.0'
+        target = 'net11.0-browser' if name == 'OpenCiv2.AutomationBrowser' else 'net11.0'
         if entry['Sources'] != expected or (entry['Sdk'], entry['Runtime'], entry['Target'], entry['Configuration']) != (sdk, runtime, target, 'Release'):
             raise ValueError('Stale, incomplete or unpinned Lua assembly: ' + name)
         sources.update(expected)

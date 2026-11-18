@@ -186,9 +186,9 @@ def main():
     if source_inventory() != sources:
         raise ValueError('Build modified measured sources')
     executables = {
-        'cli': ROOT / 'src/OpenCiv2.Cli/bin/Release/net10.0/oc2',
-        'roundtrip': ROOT / 'tests/OpenCiv2.SaveRoundTrip/bin/Release/net10.0/OpenCiv2.SaveRoundTrip',
-        'sqlite': ROOT / 'src/OpenCiv2.Cli.Sqlite/bin/Release/net10.0/oc2-sqlite',
+        'cli': ROOT / 'src/OpenCiv2.Cli/bin/Release/net11.0/oc2',
+        'roundtrip': ROOT / 'tests/OpenCiv2.SaveRoundTrip/bin/Release/net11.0/OpenCiv2.SaveRoundTrip',
+        'sqlite': ROOT / 'src/OpenCiv2.Cli.Sqlite/bin/Release/net11.0/oc2-sqlite',
     }
     before = {str(p): artifacts(p) for p in set(executables.values())}
     report = {'format': 'openciv2-cli-performance/1', 'createdUtc': datetime.now(timezone.utc).isoformat(),

@@ -8,6 +8,9 @@ manufacture a pass. Investigate repeatable regressions against comparable C# run
 
 ## Recorded reference results
 
+The recorded studies predate the .NET 11 upgrade. Rerun their full sampling
+procedures before claiming performance acceptance for the current build.
+
 The Linux x64 Ryzen AI 9 HX 370 study used .NET 10.0.404/runtime 10.0.15 and
 Chromium/Playwright. [Warmed workloads](workloads.md) and [application startup](application.md)
 retain their exact C# measurement receipts. They describe the recorded revisions,
@@ -47,7 +50,7 @@ python3 tools/dotnet/measure_cli.py --report build/test-results/cli-performance.
 python3 tools/dotnet/measure_warm.py --report build/test-results/core-performance.json
 dotnet restore tests/OpenCiv2.PerformanceBrowser --locked-mode
 dotnet publish tests/OpenCiv2.PerformanceBrowser -c Release --no-restore
-python3 tools/dotnet/measure_warm.py --browser-bundle tests/OpenCiv2.PerformanceBrowser/bin/Release/net10.0-browser/publish/wwwroot --report build/test-results/core-browser-performance.json
+python3 tools/dotnet/measure_warm.py --browser-bundle tests/OpenCiv2.PerformanceBrowser/bin/Release/net11.0-browser/publish/wwwroot --report build/test-results/core-browser-performance.json
 ```
 
 CLI resource collection currently requires Linux GNU `time`. Browser collectors

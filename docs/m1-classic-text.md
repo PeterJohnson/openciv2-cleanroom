@@ -164,7 +164,7 @@ The native command accepts the same explicit parent mounts, locale and gameplay
 profile gate as other content commands:
 
 ```powershell
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-preferences path/to/content.json --json
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content validate-preferences path/to/content.json --json
 ```
 
 Its report format is `openciv2-city-preferences-validation/1`, with scope
@@ -230,7 +230,7 @@ a successful original-file round trip. Its optional output is a separate new
 516-byte file; ignored trailing input is reported separately:
 
 ```powershell
-tests/OpenCiv2.PreferenceRoundTrip/bin/Release/net10.0/OpenCiv2.PreferenceRoundTrip path/to/CIV2.DAT path/to/new-copy.dat
+tests/OpenCiv2.PreferenceRoundTrip/bin/Release/net11.0/OpenCiv2.PreferenceRoundTrip path/to/CIV2.DAT path/to/new-copy.dat
 ```
 
 On 2026-11-14 UTC, the driver read the existing 516-byte `CIV2.DAT` from the

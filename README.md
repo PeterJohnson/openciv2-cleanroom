@@ -14,7 +14,7 @@ integration; M3 delivers the first playable slice.
 
 ## Build and run
 
-Install the pinned **.NET SDK 10.0.404**. Run from the repository root:
+Install the pinned **.NET SDK 11.0.100**. Run from the repository root:
 
 ```sh
 dotnet restore --locked-mode

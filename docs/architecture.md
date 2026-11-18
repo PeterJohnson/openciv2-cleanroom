@@ -1,6 +1,6 @@
 # Architecture
 
-The application uses C#/.NET 10, Avalonia desktop/browser hosts and portable
+The application uses C#/.NET 11, Avalonia desktop/browser hosts and portable
 core libraries. The bounded foundations, CLI, session application and Lua bridge
 are implemented; [validation](validation/README.md) records native and browser
 evidence and the remaining desktop gates. The [implementation plan](implementation-plan.md)

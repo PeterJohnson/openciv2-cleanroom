@@ -17,7 +17,7 @@ The existing automatic native input driver is X11-specific. On macOS/Windows run
 the real desktop host, without routing input through the Linux driver:
 
 ```sh
-dotnet src/OpenCiv2.Desktop/bin/Release/net10.0/OpenCiv2.Desktop.dll --observe build/test-results/desktop-observation.json
+dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll --observe build/test-results/desktop-observation.json
 ```
 
 The observation option is read-only and writes the latest permitted view plus
@@ -45,7 +45,7 @@ output-file hashes from the repository root:
 
 ```sh
 python -c 'import json,sys; sys.path.insert(0,"../tools/dotnet"); from run_application import validate; print("Validated compiled inputs:",len(validate(json.load(open("build/test-results/desktop-observation.json.identity.json")))))'
-python -c 'import hashlib,json,pathlib; p=pathlib.Path("src/OpenCiv2.Desktop/bin/Release/net10.0"); d={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(p.rglob("*")) if f.is_file()}; pathlib.Path("build/test-results/desktop-artifacts.json").write_text(json.dumps(d,indent=2))'
+python -c 'import hashlib,json,pathlib; p=pathlib.Path("src/OpenCiv2.Desktop/bin/Release/net11.0"); d={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(p.rglob("*")) if f.is_file()}; pathlib.Path("build/test-results/desktop-artifacts.json").write_text(json.dumps(d,indent=2))'
 ```
 
 A manual observation record must identify its exact

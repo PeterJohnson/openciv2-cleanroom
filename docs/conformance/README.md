@@ -25,7 +25,7 @@ From the repository root:
 ```sh
 python3 tools/check_conformance.py
 python3 tools/dotnet/pcg_fixtures.py
-python3 tools/dotnet/run_conformance.py --report build/test-results/conformance-native.json --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net10.0/OpenCiv2.ConformanceAdapter.dll
+python3 tools/dotnet/run_conformance.py --report build/test-results/conformance-native.json --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net11.0/OpenCiv2.ConformanceAdapter.dll
 ```
 
 Use the [test guide](../testing/README.md#x02-execution) for builds, browser runs,

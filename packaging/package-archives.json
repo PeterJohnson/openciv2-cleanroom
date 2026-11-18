@@ -1,7 +1,7 @@
 {
   "format": "openciv2-package-archives/1",
   "verification": {
-    "sdk": "10.0.404",
+    "sdk": "11.0.100",
     "platform": "linux-x64",
     "method": "Raw SHA-512 equals the lock content hash, or dotnet nuget verify --all succeeds and reports the exact locked content hash.",
     "source": "https://api.nuget.org/v3/index.json"
@@ -67,37 +67,37 @@
       "contentHash": "sZbD5MAVBbeXqNZ8uBLg6p38uen+nNTWUZPJLPA5NSKbNrBT9Yg9lbqk24btEGsuLs4Uqqj3+C5Pa5oD0d2iVg==",
       "archiveSha512": "/ZVrsk8Jj8EbSY9cfcsOW6tzHKMPGUNSI+6jqaD7hutS23ePyzo2cgCZAE+KnnqtpIskqAJpJg/WkntRUajDuw=="
     },
-    "harfbuzzsharp.8.3.1.3.nupkg": {
-      "contentHash": "NGZ2+ZVNPM+NdHB/asW0/ykWngyHWwcqjrbN2nDeH1B/aptPGlCUl8wkQ2cSJxw5fdWgdmIPmNuTPWpLwNVXWg==",
-      "archiveSha512": "hJOzboi+7fyA4S8T47mG+x5VYMTI34bmcsHK0kpiP6Nq3JoagvVm/aN4T3otWJddECc+plt7yxGa/BJrEaRSyA=="
+    "harfbuzzsharp.14.4.0.101.nupkg": {
+      "contentHash": "FK6o62exz9q/McUzZKhA3zHUzPTV07sFYrGAXYVeVFHdUdwKWYoyPUr/veXzzJ7iFjergfN6spfZ0aHu4xGCYQ==",
+      "archiveSha512": "OYRllWM3I9rxKXZNMAw7ii7PQFPGAzx2rYdgKI/eQGUYcYOJkBQrZwUvadSK68XIaNgEXssGCZ80GlmswOnlwQ=="
     },
-    "harfbuzzsharp.nativeassets.linux.8.3.1.3.nupkg": {
-      "contentHash": "RI6A1LgmooU30+4QIyFt5rmBCzP0VzTR+587IJSGvYIsHHWlahFufihYxtraLfsIhW7I8dn6+xX+DZGygOPKWQ==",
-      "archiveSha512": "xBOkJE8fzwyt3Y4Dn36WMkzuRewJcKriP8Mkv0CogIxfz54rOGvlqSD5XjfMLuA6aNPdcJL7kJHBVeUqcprI1w=="
+    "harfbuzzsharp.nativeassets.linux.14.4.0.101.nupkg": {
+      "contentHash": "HXEBUae/OsEpSIc+cbhMvAkPpjbFE03cV8eyaVO2fvvuZNNwjYPxYKkTpnNMbrl/u7buPosjT2A2Dku5SgYjRA==",
+      "archiveSha512": "uA6VLMikbVCTLSJAZ3chgdYV/5vdQ3gwajkLVWoJ+Ae8cykNB7FeeKGZnFtv5zjTK0NoqPpG/MXCdePZVw62MA=="
     },
-    "harfbuzzsharp.nativeassets.macos.8.3.1.3.nupkg": {
-      "contentHash": "KPTq0xnslkI6nAo0jh3ptcQPJvZZr7MWYXa2jUe4SnHc9q+JlHElmNXp0sfFoiTgoCX7WOYpYsurypuH9Gehxw==",
-      "archiveSha512": "ZCIuEE+UXMKEwI/Zj+qk27NVuSmQ63eFjUF5q26hEtHmoScZgHXpJ0dFBE/UHpn2kcTGihON39Q4xevbsFcWAg=="
+    "harfbuzzsharp.nativeassets.macos.14.4.0.101.nupkg": {
+      "contentHash": "FnaKLzXSyP0OZ5TS7IGCyrM044QWJ30CdaSg8ZVxpf0it/xsO/Yuyrt8zZuk72Fq+xCo1RL4FDmlmZu0WgKObA==",
+      "archiveSha512": "F9GxBdGe5mtHfxpJjYyaQT5GrS8Hu0iPuSw0nEyrszHSmxZrkoyB8/MAiNAqgZC1hL2GpXjrtnajqgOaWIPIbA=="
     },
-    "harfbuzzsharp.nativeassets.webassembly.8.3.1.3.nupkg": {
-      "contentHash": "w2QfdNm9Uz/sUa0B5D+OnVQhyq3G/fBq6ibQMdWBlQqqwh0g0/5j3RFvYqZAmRZ5+RzvjVe8o8SFFnWYUSkuxA==",
-      "archiveSha512": "p5kdyZPkLvLhB4XUEZPN1zHAPBNejbTAnLSTo9NkpjSgf0erA1y2OtpB5kP/CJzUYfGrWERAL0zTDuzTrWiyAA=="
+    "harfbuzzsharp.nativeassets.webassembly.14.4.0.101.nupkg": {
+      "contentHash": "U17dKOM0gkN+XOwSH2+o8kL06SLfWnlHShhaut6wUSuTJv1blHNAUR5fUpIEIWEBQAZdiNgy5TIp8Yo48RAdbg==",
+      "archiveSha512": "AhVBcHxFiY6CyXs8bz6+wc6p0cxSUAsgQ+w808k+/jjjNQMPfiDYuzL6Q+8NcNI5ktHf1GqbFmazVSfruKusGw=="
     },
-    "harfbuzzsharp.nativeassets.win32.8.3.1.3.nupkg": {
-      "contentHash": "bx8CE8Js+XGX8PUxAHCBDEORt5aaBYtMN4Hr9QFs57Xithh6yjUyYqksizH6eRDhJkwsGI+SXWmPmMm8lZC9Pw==",
-      "archiveSha512": "FWqyRqea61CWcrEMEJofop5Zs60euXE6wzHi8RtrrEt6lry3Zaji2k0/WbtU1bZI6HCurk0iVDusoosXywRvzw=="
+    "harfbuzzsharp.nativeassets.win32.14.4.0.101.nupkg": {
+      "contentHash": "LSeB6oWsmG3IbzDKL9srXviYAQu8dPjCurbszorvGOyzEbvy715LJVsbEynEP5OZFRVN+P3wHMZWrvxGrWoJVg==",
+      "archiveSha512": "P4l3l+Aft5lstaWQTDGgLHuCfM0PN4YEetnAfuAxhmf+xwjm1611xzQBgkhuQUR9RPYWCi/OiLvlP2CXdiIAMA=="
     },
     "microcom.runtime.0.11.6.nupkg": {
       "contentHash": "NdNWGDiZ6eS/Mf/9+QHR91cj1K7Hy+PX9yrHI/zM7xFYuj9IWT2uxtB6sCHjrnxAeLV9fut1R6zHDUGKX6f9lQ==",
       "archiveSha512": "Y1fibjW9zDGhrbRY8euhJzAm4TiGW39wmM4M3ykTXDF/WK+gqMAVtkxbYxXOAsSWQTvBeL/XJpNdjTKvY/cywQ=="
     },
-    "microsoft.net.illink.tasks.10.0.15.nupkg": {
-      "contentHash": "u0WnRcZgBZYHlVFpbe/3Adpmb9rmNJ8/fmEwqc/xjB7fFppq+gfaLJd3Sdaw+J02zV0eP/T9dneQ3Dv5jWw6bw==",
-      "archiveSha512": "q/cuZxi8XPwa4dpK+7y9t3KoL7T6qQZUtIqqN96YKx1Kcgr/bhD0K3U+OaLlrWVn6R23UrsEr8FARqKYVuE3Zg=="
+    "microsoft.net.illink.tasks.11.0.0.nupkg": {
+      "contentHash": "gK2aq4XvChj5kvozpPHrkfKkr7zc5Z4xoTrJb4GPZzDEPMlCk0TX632bwY3LsWcX2UVcVRQBBGzsBGC2lq6YhA==",
+      "archiveSha512": "RkPFHxgjzoPhOne9ujHLjGj1PnxtWTUbuntGPA0tRp4mXzvTamWNqO5h5JUj2FmPsPWlj73wY5JBUVWtWi13/A=="
     },
-    "microsoft.net.sdk.webassembly.pack.10.0.15.nupkg": {
-      "contentHash": "7CKLQNBPbCtKGba+OljoWAi4awMyM5E6ORtqkW5avCfNd8beVf9zNmyha3JZT0vztXJnKgdjUOAV5tvqZvmXTQ==",
-      "archiveSha512": "sPAdbG/myETd/zjCLatWgAyas/7a+Z8W7p09JVakswEOVfZjLkSNTLmSGbH507cFNR0YbtTGwj3z0z3/ZYH02g=="
+    "microsoft.net.sdk.webassembly.pack.11.0.0.nupkg": {
+      "contentHash": "fvNAQsY36JwF/UNNkcPw+jEbcfHCNVkqKlgL7PBlolyXa+rSODtI5bQ4QLl3jr3QyRIAC6bIXGpXghH35+jI0w==",
+      "archiveSha512": "ZhyMyJhJzuPhm9+4YIzpSsTIZ+WQ+tX8PKLog5e8ITg9809Kkurqu25mwLU4cY7AoxT/JxBrfbFECTI+hGAz6g=="
     },
     "randn.core.0.5.0.nupkg": {
       "contentHash": "OhiLvvC2lQyZPnBnNOTAJz9Q57wwx8gWI9wmTLIxMYJAL+lC+kmsQIqJtvDAemITL2IaQ3zfvKAVJd1AQDy4IA==",
@@ -107,25 +107,25 @@
       "contentHash": "rbvbu9rbGgWzKA9Ni2XPNKUWwvZKpD520K+K47ARST+RQCfrpy36Ej8zyLJo2GymYjZCXlBlY354WG6s2TdvYg==",
       "archiveSha512": "SH1ojLf1w9HLlKLFhDFSpESS2lQOmgV7v9gZJuFkrjJHk6KQH/mGrE4P8U4VQK/614m4H97liWSyoPBI8EMiLw=="
     },
-    "skiasharp.3.119.4.nupkg": {
-      "contentHash": "53NOSUZ1Us+91Sm0uCkIivh/k7jOowRErZT2sIWwPFN9mLUvdxnE6rS4sWo4255+Rd2MWUSF+j0NMZHD6Cke+Q==",
-      "archiveSha512": "cSkl+6zfvTTF18Brzlsq4ZxQYtz0AAqlfsLERrS2zWgnxYFTAn4cYJDsJk8Jl7NH9EWZlciMIdsJTE2SQMqVpQ=="
+    "skiasharp.4.156.1.nupkg": {
+      "contentHash": "DFlbYk/Rxnqm+UM/EaynxLlucc07+fuWzT84KsyT8aCDAT1PZOPlp5eATD7eYczTgV771bnxQKSrLbNmUCaSLQ==",
+      "archiveSha512": "t9+JOfJjBTgiMRQ9DWcB3SdDksTGsUDsMPc/5PZTjt+up73zhI0zFjaJlKkbPPjjTxPt2JJxaaFJ4swiQ0AtvA=="
     },
-    "skiasharp.nativeassets.linux.3.119.4.nupkg": {
-      "contentHash": "UAyVzbqNfZsZbKbzj68zXLyUyF/SbTKmzTfOO6qDu++dtIUMMTzPBe8oOuzU/DiewpfKoUUlOSsJmqWc6blxBw==",
-      "archiveSha512": "+DnMNYJrhlrUUYBCehbi13l76DgZIzWq/PPc/aixEMoE188a6/XzAMStv4dUVGONR2/oxE6bMrOIViveDVWPcg=="
+    "skiasharp.nativeassets.linux.4.156.1.nupkg": {
+      "contentHash": "l9GWuJzlDd+xZ4gXahlsoDYI0oZkhmibA9ZxMOxJO1uKmDYGlQA3DFkUfLH1ksobGhuVLD4cUbQff3G43XcD1g==",
+      "archiveSha512": "p5W9iga/zB6j9nY0Kxuzl+XcIhiGMGdoLwao6ZxykhYUgn6TLjgBaphBdYnq66/p0XrORyAWCOgdESd4WC5vfg=="
     },
-    "skiasharp.nativeassets.macos.3.119.4.nupkg": {
-      "contentHash": "fgBOWEqbY012x7gMfJU4ezgz6dfhJb30Z6YdW35h85Zoe39+a8YNbAAwL29ihPfWoppg5AjvyKNzD1oCvlqWwA==",
-      "archiveSha512": "UYhxM3U3o/ogRTDXAmW4/cyBvinejIhxtqIFJpgjcsxPVuIY5VLgxs83ePuOBfNBu7t/WehTF+w4EL5sdiBkDg=="
+    "skiasharp.nativeassets.macos.4.156.1.nupkg": {
+      "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw==",
+      "archiveSha512": "XpP7vfKTomrRwhNKGL67PaKSgrKUw5DdND+89K0CWyJxla9nsu8DfpIrKMHpWrt6WfNi1sFiR6//QC5nN8AWSg=="
     },
-    "skiasharp.nativeassets.webassembly.3.119.4.nupkg": {
-      "contentHash": "S1HOxtBbD4bYDtA2e9WH5TX+lxqRrTPvKjrjttRhxnHNNu7YY8VFo/LeCP7tNqoTA6PV+8vsvNbmRUEC2ip8RQ==",
-      "archiveSha512": "cpCijt2WNGNa0JjPg5SY0a1dQ37zq2ayK29MsmFkA9Lj0Fe/DcPZZTvOQTO0mjOW9JPbTaNQ/4uMHBFd1W4oUQ=="
+    "skiasharp.nativeassets.webassembly.4.156.1.nupkg": {
+      "contentHash": "WH6uGXunw6lGivYW+tVlZm2vAXZrgQrgATpH5fUSRg8Yda3ZDLWvb45UFSVPft+nLDkXF6IkR+HrypaHcJMTFQ==",
+      "archiveSha512": "8+QTdQiCaLQahXD2wzYxT+zrXX8mqZ40WTabsODGFT1OoPN+mSRCVU/rses7KvhOkArfKF4x8fyulbwJMH1+Lg=="
     },
-    "skiasharp.nativeassets.win32.3.119.4.nupkg": {
-      "contentHash": "XOpbx/4CReO2wYsq2s6rbvdauc6dntG4Zv499sHGTJ87bwZaFXszFkwql3+FIZMc8kUPeaj3Mx2ezIJmo8a1Kg==",
-      "archiveSha512": "RFv9fJMFUi44URCmcqQ/Fay/s2tcmFxa9UDbU0+ZzrOn3fkzogWH7gUnsU7fGxnLmxZ+eBvqJ1yis7d9mgJZzw=="
+    "skiasharp.nativeassets.win32.4.156.1.nupkg": {
+      "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA==",
+      "archiveSha512": "gqTWajblLiihRYVsKFo3vK2Br7Qu//r8pjajifc9hWcroo+J6Gl6nn0R9FmNqTNaeIDA+Mil0cOB7aV+ctH2Lw=="
     },
     "tmds.dbus.protocol.0.94.1.nupkg": {
       "contentHash": "11YMr7FnAbL83bQmVxlhbIKHvSLxjO81D12Ej0QMSGXMDTxNA9MTOa4MQxx43nv5el/efuPHwzyrj6a5ha2gug==",

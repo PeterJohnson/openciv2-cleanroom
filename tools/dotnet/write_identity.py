@@ -87,7 +87,7 @@ def validate_report(report, root=ROOT):
         expected = expected_inputs(root, name)
         if entry["Sources"] != expected:
             raise ValueError(f"Stale or incomplete compiled sources for {name}; rebuild and rerun")
-        target = "net10.0-browser" if name == "OpenCiv2.Browser.Tests" else "net10.0"
+        target = "net11.0-browser" if name == "OpenCiv2.Browser.Tests" else "net11.0"
         if (entry["Sdk"], entry["Runtime"], entry["Target"], entry["Configuration"]) != (sdk, runtime, target, "Release"):
             raise ValueError(f"Unpinned or non-release managed build: {name}")
         sources.update(expected)

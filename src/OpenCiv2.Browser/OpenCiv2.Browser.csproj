@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.WebAssembly">
   <PropertyGroup>
-    <TargetFramework>net10.0-browser</TargetFramework><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>net11.0-browser</TargetFramework><AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <InvariantGlobalization>true</InvariantGlobalization><OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
     <WasmFingerprintDotnetJs>false</WasmFingerprintDotnetJs><JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>

@@ -61,7 +61,7 @@ def validate_identity(identity, root=ROOT):
         name = entry["Assembly"]
         expected = write_identity.expected_inputs(root, name)
         runner.require(entry["Sources"] == expected, f"Stale or incomplete compiled adapter sources: {name}")
-        target = "net10.0-browser" if name == "OpenCiv2.ConformanceBrowser" else "net10.0"
+        target = "net11.0-browser" if name == "OpenCiv2.ConformanceBrowser" else "net11.0"
         runner.require((entry["Sdk"], entry["Runtime"], entry["Target"], entry["Configuration"]) == (sdk, runtime, target, "Release"), f"Unpinned/non-release adapter build: {name}")
         sources.update(expected)
     return sources

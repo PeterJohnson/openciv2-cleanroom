@@ -14,7 +14,7 @@ base CLI do not depend on it. Build from the repository root:
 python3 tools/dotnet/build_sqlite.py
 dotnet restore solutions/OpenCiv2.Sqlite.slnx --locked-mode
 dotnet build solutions/OpenCiv2.Sqlite.slnx -c Release --no-restore
-dotnet src/OpenCiv2.Cli.Sqlite/bin/Release/net10.0/oc2-sqlite.dll export path/to/game.sav --sqlite analysis.sqlite
+dotnet src/OpenCiv2.Cli.Sqlite/bin/Release/net11.0/oc2-sqlite.dll export path/to/game.sav --sqlite analysis.sqlite
 ```
 
 Use `python` on Windows and a native C compiler environment for the dependency.

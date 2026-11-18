@@ -108,7 +108,7 @@ entry points are used.
   --host 127.0.0.1 --port 4993 `
   --original-exe build/original-peer-runtime/civ2.exe `
   --original-transport build/original-peer-runtime/XDaemon.dll `
-  --checker tests/OpenCiv2.WireRoundTrip/bin/Release/net10.0/OpenCiv2.WireRoundTrip `
+  --checker tests/OpenCiv2.WireRoundTrip/bin/Release/net11.0/OpenCiv2.WireRoundTrip `
   --output build/original-peer-capture
 ```
 

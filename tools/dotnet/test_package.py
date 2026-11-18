@@ -45,7 +45,7 @@ def main():
         if manifest['rid'] != host_rid():
             raise ValueError('Package is for another host')
         executable = directory / (manifest['command'] + ('.exe' if os.name == 'nt' else ''))
-        # The .NET 10 host trace must show this extracted coreclr, rather than an
+        # The .NET 11 host trace must show this extracted coreclr, rather than an
         # installed runtime. Empty roots disable environment-based discovery too.
         empty = root / 'no-installed-dotnet'
         empty.mkdir()

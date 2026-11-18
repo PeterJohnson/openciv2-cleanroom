@@ -1,7 +1,7 @@
 # Building and testing
 
-Run commands from the repository root. `global.json` pins **.NET SDK 10.0.404**
-and Microsoft Testing Platform; projects pin runtime **10.0.15**. Install that
+Run commands from the repository root. `global.json` pins **.NET SDK 11.0.100**
+and Microsoft Testing Platform; projects pin runtime **11.0.0**. Install that
 SDK on Windows, macOS or Linux; SDK roll-forward is disabled. Python **3.12+**
 runs independent validators, CLI drivers and packaging. Use `python` instead of
 `python3` on Windows. Commands below work in a terminal with the SDK on `PATH`.
@@ -26,10 +26,10 @@ not whole-game compatibility. The CLI supports stored inspection, validation,
 diff, content resolution/validation and classic rule/name/preference conversion.
 It does not expose live commands or playable gameplay.
 
-Apphosts are `src/OpenCiv2.Cli/bin/Release/net10.0/oc2` (`oc2.exe` on Windows).
+Apphosts are `src/OpenCiv2.Cli/bin/Release/net11.0/oc2` (`oc2.exe` on Windows).
 Framework-dependent apphosts require the runtime discoverable; set `DOTNET_ROOT`
 when using an SDK outside the normal installation location. You can always invoke
-`dotnet src/OpenCiv2.Cli/bin/Release/net10.0/oc2.dll`. See
+`dotnet src/OpenCiv2.Cli/bin/Release/net11.0/oc2.dll`. See
 [packaging](packaging.md) for tested self-contained archives.
 
 ## Avalonia desktop
@@ -49,7 +49,7 @@ confirmation. It is not a map renderer or a playable scenario.
 Linux input automation uses an isolated X11 display (install `xvfb` and `libxtst6`):
 
 ```sh
-python3 tools/dotnet/run_xvfb.py python3 tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net10.0/OpenCiv2.Desktop.dll
+python3 tools/dotnet/run_xvfb.py python3 tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
 ```
 
 Use the [platform checklist](testing/platforms.md) for actual Mac/Windows desktop
@@ -58,13 +58,22 @@ shutdown, IME, accessibility or mixed-DPI/fullscreen behavior.
 
 ## Browser
 
+All Avalonia hosts use centrally pinned SkiaSharp **4.156.1** and HarfBuzzSharp
+**14.4.0.101**, including matching Linux, macOS, Windows and WebAssembly native
+assets. Central transitive pinning applies these versions to Avalonia's dependency
+graph. The browser assets support the .NET 11 workload's Emscripten 6.0.2 linker.
+Avalonia 12.1 supports explicitly selecting SkiaSharp 4;
+its default SkiaSharp 3 WebAssembly assets reference older `setjmp` helpers and
+cannot link with this workload. See the [Avalonia compatibility guidance](https://github.com/AvaloniaUI/Avalonia/issues/21696)
+and [SkiaSharp package guidance](https://github.com/mono/SkiaSharp/blob/main/documentation/dev/packages.md).
+
 Install the workload matching the pinned SDK, then publish the application:
 
 ```sh
 dotnet workload install wasm-tools --skip-manifest-update
 dotnet restore src/OpenCiv2.Browser --locked-mode
 dotnet publish src/OpenCiv2.Browser -c Release --no-restore
-python3 -m http.server 8000 --directory src/OpenCiv2.Browser/bin/Release/net10.0-browser/publish/wwwroot
+python3 -m http.server 8000 --directory src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
 ```
 
 Open `http://localhost:8000`. Serve the published directory over HTTP; opening
@@ -87,8 +96,8 @@ record its actual version. Execute the portable tests and real application input
 ```sh
 dotnet restore tests/OpenCiv2.Browser.Tests --locked-mode
 dotnet publish tests/OpenCiv2.Browser.Tests -c Release --no-restore
-node tools/dotnet/run_browser.cjs tests/OpenCiv2.Browser.Tests/bin/Release/net10.0-browser/publish/wwwroot build/test-results/browser.json
-python3 tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net10.0-browser/publish/wwwroot
+node tools/dotnet/run_browser.cjs tests/OpenCiv2.Browser.Tests/bin/Release/net11.0-browser/publish/wwwroot build/test-results/browser.json
+python3 tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
 ```
 
 The portable suite runs the same 432 groups as native. Browser hosts exclude
@@ -126,8 +135,8 @@ production-session/resource groups. To test the stock Lua bridge in WebAssembly:
 python3 tools/dotnet/prepare_lua_wasm.py
 dotnet restore tests/OpenCiv2.AutomationBrowser --locked-mode
 dotnet publish tests/OpenCiv2.AutomationBrowser -c Release --no-restore
-python3 tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net10.0/OpenCiv2.AutomationProbe.dll
-python3 tools/dotnet/run_automation.py --report build/test-results/lua-browser.json --browser-bundle tests/OpenCiv2.AutomationBrowser/bin/Release/net10.0-browser/publish/wwwroot
+python3 tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net11.0/OpenCiv2.AutomationProbe.dll
+python3 tools/dotnet/run_automation.py --report build/test-results/lua-browser.json --browser-bundle tests/OpenCiv2.AutomationBrowser/bin/Release/net11.0-browser/publish/wwwroot
 python3 tools/dotnet/compare_automation.py build/test-results/lua-native.json build/test-results/lua-browser.json
 ```
 

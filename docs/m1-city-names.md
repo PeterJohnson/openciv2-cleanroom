@@ -71,7 +71,7 @@ it does not substitute Unicode folding or the Windows host locale.
 ## Validation command and evidence
 
 ```powershell
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate-names path/to/content.json --json
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content validate-names path/to/content.json --json
 ```
 
 The command accepts explicit parent mounts, locale selection and `--require-classic`.

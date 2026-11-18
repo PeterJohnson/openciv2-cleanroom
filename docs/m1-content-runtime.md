@@ -76,8 +76,8 @@ rejects alternate data streams. Containment is checked when each source is
 resolved.
 
 ```powershell
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate data/gameplay/classic-mge-5.4.0f/gameplay.json --json
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content validate path/to/gameplay.json --require-classic
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content validate data/gameplay/classic-mge-5.4.0f/gameplay.json --json
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content validate path/to/gameplay.json --require-classic
 ```
 
 The JSON report format is `openciv2-gameplay-validation/1`. Success reports scope
@@ -129,8 +129,8 @@ limits; JSON documents still have the 16 MiB/20-level parser limits above.
 Exceeding a limit fails without returning a partial resolved pack.
 
 ```powershell
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content resolve docs/content/examples/content.json --json
-src/OpenCiv2.Cli/bin/Release/net10.0/oc2 content resolve path/to/overlay/content.json --parent path/to/base/content.json --locale fr --require-classic --json
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content resolve docs/content/examples/content.json --json
+src/OpenCiv2.Cli/bin/Release/net11.0/oc2 content resolve path/to/overlay/content.json --parent path/to/base/content.json --locale fr --require-classic --json
 ```
 
 `--parent` is repeatable and supplies exact manifests; there is no neighboring

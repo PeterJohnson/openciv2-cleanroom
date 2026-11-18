@@ -41,41 +41,41 @@ jobs:
       - name: X02 fixtures and rejection paths
         run: |
           python tools/dotnet/pcg_fixtures.py
-          python tools/dotnet/run_conformance.py --report build/test-results/conformance-native.json --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net10.0/OpenCiv2.ConformanceAdapter.dll
-          python tools/dotnet/test_conformance.py --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net10.0/OpenCiv2.ConformanceAdapter.dll
-          python tests/conformance_script_adapter.py dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net10.0/OpenCiv2.ConformanceAdapter.dll
-          python tests/conformance_session_adapter.py dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net10.0/OpenCiv2.ConformanceAdapter.dll
+          python tools/dotnet/run_conformance.py --report build/test-results/conformance-native.json --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net11.0/OpenCiv2.ConformanceAdapter.dll
+          python tools/dotnet/test_conformance.py --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net11.0/OpenCiv2.ConformanceAdapter.dll
+          python tests/conformance_script_adapter.py dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net11.0/OpenCiv2.ConformanceAdapter.dll
+          python tests/conformance_session_adapter.py dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net11.0/OpenCiv2.ConformanceAdapter.dll
       - name: Inspection CLI and stored roundtrip integration
         run: |
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
-          python tests/inspection_cli.py "src/OpenCiv2.Cli/bin/Release/net10.0/oc2$suffix" "tests/OpenCiv2.SaveRoundTrip/bin/Release/net10.0/OpenCiv2.SaveRoundTrip$suffix"
+          python tests/inspection_cli.py "src/OpenCiv2.Cli/bin/Release/net11.0/oc2$suffix" "tests/OpenCiv2.SaveRoundTrip/bin/Release/net11.0/OpenCiv2.SaveRoundTrip$suffix"
       - name: Preference map and wire helper integration
         run: |
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
-          python tests/preference_cli.py "tests/OpenCiv2.PreferenceRoundTrip/bin/Release/net10.0/OpenCiv2.PreferenceRoundTrip$suffix"
-          python tests/roundtrip_helpers_cli.py "tests/OpenCiv2.MapRoundTrip/bin/Release/net10.0/OpenCiv2.MapRoundTrip$suffix" "tests/OpenCiv2.WireRoundTrip/bin/Release/net10.0/OpenCiv2.WireRoundTrip$suffix"
+          python tests/preference_cli.py "tests/OpenCiv2.PreferenceRoundTrip/bin/Release/net11.0/OpenCiv2.PreferenceRoundTrip$suffix"
+          python tests/roundtrip_helpers_cli.py "tests/OpenCiv2.MapRoundTrip/bin/Release/net11.0/OpenCiv2.MapRoundTrip$suffix" "tests/OpenCiv2.WireRoundTrip/bin/Release/net11.0/OpenCiv2.WireRoundTrip$suffix"
       - name: Live load edit and save integration
         run: |
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
-          python tests/live_save_cli.py "tests/OpenCiv2.LiveSave/bin/Release/net10.0/OpenCiv2.LiveSave$suffix"
+          python tests/live_save_cli.py "tests/OpenCiv2.LiveSave/bin/Release/net11.0/OpenCiv2.LiveSave$suffix"
       - name: Gameplay content CLI integration
         run: |
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
-          python tests/content_cli.py "src/OpenCiv2.Cli/bin/Release/net10.0/oc2$suffix"
+          python tests/content_cli.py "src/OpenCiv2.Cli/bin/Release/net11.0/oc2$suffix"
       - name: Content pack CLI integration
         run: |
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
-          python tests/content_pack_cli.py "src/OpenCiv2.Cli/bin/Release/net10.0/oc2$suffix"
+          python tests/content_pack_cli.py "src/OpenCiv2.Cli/bin/Release/net11.0/oc2$suffix"
       - name: Rule and city validation and conversion CLI integration
         run: |
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
-          python tests/rules_cli.py "src/OpenCiv2.Cli/bin/Release/net10.0/oc2$suffix"
+          python tests/rules_cli.py "src/OpenCiv2.Cli/bin/Release/net11.0/oc2$suffix"
       - name: Configure MSVC for optional native libraries
         if: runner.os == 'Windows'
         shell: pwsh
@@ -89,7 +89,7 @@ jobs:
           dotnet build solutions/OpenCiv2.Automation.slnx -c Release --no-restore
           dotnet test --project tests/OpenCiv2.Automation.Tests -c Release --no-build --no-restore
           dotnet format solutions/OpenCiv2.Automation.slnx --verify-no-changes --no-restore
-          python tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net10.0/OpenCiv2.AutomationProbe.dll
+          python tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net11.0/OpenCiv2.AutomationProbe.dll
           python tools/dotnet/prepare_lua_wasm.py
           python tools/dotnet/test_automation.py --report build/test-results/lua-native.json
       - name: Build pinned optional SQLite native library
@@ -101,10 +101,10 @@ jobs:
         run: |
           suffix=""
           if [[ "$RUNNER_OS" == "Windows" ]]; then suffix=".exe"; fi
-          python tests/sqlite_cli.py "src/OpenCiv2.Cli.Sqlite/bin/Release/net10.0/oc2-sqlite$suffix"
+          python tests/sqlite_cli.py "src/OpenCiv2.Cli.Sqlite/bin/Release/net11.0/oc2-sqlite$suffix"
       - name: Cooperative CLI signal cancellation
         if: runner.os == 'Linux'
-        run: python tools/dotnet/test_sqlite_signals.py src/OpenCiv2.Cli.Sqlite/bin/Release/net10.0/oc2-sqlite
+        run: python tools/dotnet/test_sqlite_signals.py src/OpenCiv2.Cli.Sqlite/bin/Release/net11.0/oc2-sqlite
       - run: dotnet format solutions/OpenCiv2.Sqlite.slnx --verify-no-changes --no-restore
       - run: dotnet format OpenCiv2.slnx --verify-no-changes --no-restore
       - run: python tools/dotnet/check_graph.py
@@ -119,12 +119,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y xvfb libxtst6
-          python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net10.0/OpenCiv2.Desktop.dll
+          python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
       - name: Record native results
         run: |
           mkdir -p build/test-results
           dotnet --info > build/test-results/dotnet-info.txt
-          dotnet tests/OpenCiv2.FoundationProbe/bin/Release/net10.0/OpenCiv2.FoundationProbe.dll > build/test-results/native.json
+          dotnet tests/OpenCiv2.FoundationProbe/bin/Release/net11.0/OpenCiv2.FoundationProbe.dll > build/test-results/native.json
           python tools/dotnet/write_identity.py build/test-results/build-identity.json --report build/test-results/native.json
           cp build/sqlite/native/oc2-sqlite-build.json build/test-results/
           cp build/lua/native/oc2-lua-build.json build/test-results/
@@ -188,8 +188,8 @@ jobs:
           dotnet restore tests/OpenCiv2.AutomationBrowser --locked-mode
           dotnet publish tests/OpenCiv2.AutomationBrowser -c Release --no-restore
           dotnet format tests/OpenCiv2.AutomationBrowser/OpenCiv2.AutomationBrowser.csproj --verify-no-changes --no-restore
-          python tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net10.0/OpenCiv2.AutomationProbe.dll
-          python tools/dotnet/run_automation.py --report build/test-results/lua-browser.json --browser-bundle tests/OpenCiv2.AutomationBrowser/bin/Release/net10.0-browser/publish/wwwroot
+          python tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net11.0/OpenCiv2.AutomationProbe.dll
+          python tools/dotnet/run_automation.py --report build/test-results/lua-browser.json --browser-bundle tests/OpenCiv2.AutomationBrowser/bin/Release/net11.0-browser/publish/wwwroot
           python tools/dotnet/test_automation.py --report build/test-results/lua-native.json
           python tools/dotnet/test_automation.py --report build/test-results/lua-browser.json
           python tools/dotnet/compare_automation.py build/test-results/lua-native.json build/test-results/lua-browser.json
@@ -201,11 +201,11 @@ jobs:
       - name: Production browser pointer and keyboard input
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
-        run: python tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net10.0-browser/publish/wwwroot
+        run: python tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
       - name: Run real WASM foundation cases
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
-        run: node tools/dotnet/run_browser.cjs tests/OpenCiv2.Browser.Tests/bin/Release/net10.0-browser/publish/wwwroot build/test-results/browser.json
+        run: node tools/dotnet/run_browser.cjs tests/OpenCiv2.Browser.Tests/bin/Release/net11.0-browser/publish/wwwroot build/test-results/browser.json
       - name: Record workload identity
         if: always()
         run: |
@@ -217,9 +217,9 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
         run: |
-          python tools/dotnet/run_conformance.py --report build/test-results/conformance-native.json --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net10.0/OpenCiv2.ConformanceAdapter.dll
-          python tools/dotnet/run_conformance.py --report build/test-results/conformance-browser.json --browser-bundle tests/OpenCiv2.ConformanceBrowser/bin/Release/net10.0-browser/publish/wwwroot
-          python tools/dotnet/test_conformance.py --browser-bundle tests/OpenCiv2.ConformanceBrowser/bin/Release/net10.0-browser/publish/wwwroot
+          python tools/dotnet/run_conformance.py --report build/test-results/conformance-native.json --adapter dotnet tests/OpenCiv2.ConformanceAdapter/bin/Release/net11.0/OpenCiv2.ConformanceAdapter.dll
+          python tools/dotnet/run_conformance.py --report build/test-results/conformance-browser.json --browser-bundle tests/OpenCiv2.ConformanceBrowser/bin/Release/net11.0-browser/publish/wwwroot
+          python tools/dotnet/test_conformance.py --browser-bundle tests/OpenCiv2.ConformanceBrowser/bin/Release/net11.0-browser/publish/wwwroot
           python tools/dotnet/compare_conformance.py build/test-results/conformance-native.json build/test-results/conformance-browser.json
       - uses: actions/upload-artifact@v7.0.2
         if: always()

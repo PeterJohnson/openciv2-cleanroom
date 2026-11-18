@@ -7,11 +7,13 @@ and whole-game compatibility. Build and test commands are in the
 
 ## Current local validation
 
-The root C# project and updated tooling passed [local Linux/Chromium validation](local-2026-11-17.md)
-on 2026-11-17 UTC, including native/browser behavior, actual application input,
-extracted CLI packages and collector smoke checks. That record identifies the
-uncommitted tested tree and report hashes. The updated hosted workflows require
-a fresh run after commit/push; actual Windows/macOS desktop checks remain open.
+The .NET 11 and shared SkiaSharp 4 upgrade passed
+[local Linux/Chromium validation](dotnet11-2026-11-18.md) on 2026-11-18 UTC,
+including native/browser behavior, actual application input, extracted CLI
+packages and collector smoke checks. That record identifies the uncommitted
+tested tree and report hashes. The [previous .NET 10 run](local-2026-11-17.md)
+remains historical evidence. The updated hosted workflows require a fresh run
+after commit/push; actual Windows/macOS desktop checks remain open.
 
 ## Executed cross-platform CI
 

@@ -1,6 +1,6 @@
 # CLI packaging
 
-The base `oc2` and optional `oc2-sqlite` are self-contained .NET 10 native
+The base `oc2` and optional `oc2-sqlite` are self-contained .NET 11 native
 command-line packages. They implement the finite M1 inspection/content contract;
 they are not a playable game. Game files and content packs are separate inputs.
 The default CLI graph contains no Avalonia, Lua or SQLite dependencies.
@@ -8,7 +8,7 @@ The default CLI graph contains no Avalonia, Lua or SQLite dependencies.
 ## Build and check on the target host
 
 Install the exact SDK in `global.json`, Python 3.12 or newer, and the
-operating-system prerequisites for .NET 10. A self-contained package carries the
+operating-system prerequisites for .NET 11. A self-contained package carries the
 .NET runtime, but still requires its native OS libraries (including ICU on Linux).
 For SQLite, also use a native C compiler: a Visual Studio Developer Command Prompt
 on Windows, Xcode command-line tools on macOS, or `cc` on Linux. Packages are
