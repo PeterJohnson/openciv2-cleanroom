@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -19,6 +21,8 @@ public static class ApplicationIdentity
         return new JsonObject
         {
             ["format"] = "openciv2-application-seam/1",
+            ["dynamicCodeSupported"] = RuntimeFeature.IsDynamicCodeSupported,
+            ["runtimeIdentifier"] = RuntimeInformation.RuntimeIdentifier,
             ["build"] = new JsonArray(assemblies.Distinct()
             .Select(a => JsonSerializer.SerializeToNode(BuildIdentity.Read(a), AppJson.Default.CompiledInputs)).ToArray())
         }.ToJsonString();

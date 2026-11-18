@@ -1,4 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <!-- Opt in on this host only; ordinary builds retain the managed restore graph. -->
+  <PropertyGroup Condition="'$(Oc2DesktopAot)' == 'true'">
+    <PublishAot>true</PublishAot>
+    <Oc2DesktopAotRid Condition="'$(Oc2DesktopAotRid)' == ''">$(NETCoreSdkPortableRuntimeIdentifier)</Oc2DesktopAotRid>
+    <RuntimeIdentifier>$(Oc2DesktopAotRid)</RuntimeIdentifier>
+    <NuGetLockFilePath>$(MSBuildThisFileDirectory)../../packaging/locks/desktop-aot/$(RuntimeIdentifier).json</NuGetLockFilePath>
+    <RestoreLockedMode>true</RestoreLockedMode>
+  </PropertyGroup>
   <ItemGroup><PackageReference Include="Avalonia.Desktop" /><ProjectReference Include="../OpenCiv2.App/OpenCiv2.App.csproj" /></ItemGroup>
 </Project>

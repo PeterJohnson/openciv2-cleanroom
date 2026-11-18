@@ -10,13 +10,14 @@
     <PropertyGroup>
       <_Oc2NoticeOutput>$(PublishDir)</_Oc2NoticeOutput>
       <_Oc2NoticeLock>$(MSBuildProjectDirectory)/packages.lock.json</_Oc2NoticeLock>
-      <_Oc2NoticeLock Condition="'$(Oc2PackageRid)' != ''">$(NuGetLockFilePath)</_Oc2NoticeLock>
+      <_Oc2NoticeLock Condition="'$(NuGetLockFilePath)' != ''">$(NuGetLockFilePath)</_Oc2NoticeLock>
       <_Oc2SelfContainedArg Condition="'$(SelfContained)' == 'true'">--self-contained</_Oc2SelfContainedArg>
+      <_Oc2AotArg Condition="'$(PublishAot)' == 'true'">--native-aot</_Oc2AotArg>
       <_Oc2BrowserArg></_Oc2BrowserArg>
       <_Oc2NoticeOutput Condition="'$(TargetPlatformIdentifier)' == 'browser'">$(PublishDir)wwwroot</_Oc2NoticeOutput>
       <_Oc2BrowserArg Condition="'$(TargetPlatformIdentifier)' == 'browser'">--browser</_Oc2BrowserArg>
     </PropertyGroup>
     <!-- End directory arguments in a dot so a Windows trailing backslash cannot escape the closing quote. -->
-    <Exec Command="&quot;$(Oc2Python)&quot; &quot;$(MSBuildThisFileDirectory)../tools/dotnet/publish_notices.py&quot; --project &quot;$(MSBuildProjectFullPath)&quot; --assets &quot;$(ProjectAssetsFile)&quot; --lock &quot;$(_Oc2NoticeLock)&quot; --output &quot;$(_Oc2NoticeOutput)/.&quot; --dotnet-root &quot;$(NetCoreRoot)/.&quot; --sdk &quot;$(NETCoreSdkVersion)&quot; --runtime &quot;$(RuntimeFrameworkVersion)&quot; --rid &quot;$(RuntimeIdentifier)&quot; $(_Oc2BrowserArg) $(_Oc2SelfContainedArg)" />
+    <Exec Command="&quot;$(Oc2Python)&quot; &quot;$(MSBuildThisFileDirectory)../tools/dotnet/publish_notices.py&quot; --project &quot;$(MSBuildProjectFullPath)&quot; --assets &quot;$(ProjectAssetsFile)&quot; --lock &quot;$(_Oc2NoticeLock)&quot; --output &quot;$(_Oc2NoticeOutput)/.&quot; --dotnet-root &quot;$(NetCoreRoot)/.&quot; --sdk &quot;$(NETCoreSdkVersion)&quot; --runtime &quot;$(RuntimeFrameworkVersion)&quot; --rid &quot;$(RuntimeIdentifier)&quot; $(_Oc2BrowserArg) $(_Oc2SelfContainedArg) $(_Oc2AotArg)" />
   </Target>
 </Project>

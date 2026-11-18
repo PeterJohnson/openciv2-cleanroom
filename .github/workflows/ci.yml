@@ -118,8 +118,15 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y xvfb libxtst6
+          sudo apt-get install --no-install-recommends -y xvfb libxtst6 clang
           python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+      - name: Publish opt-in Native AOT desktop
+        run: |
+          dotnet restore src/OpenCiv2.Desktop -p:Oc2DesktopAot=true --locked-mode
+          dotnet publish src/OpenCiv2.Desktop -c Release -p:Oc2DesktopAot=true --no-restore
+      - name: Native AOT application input on isolated X11
+        if: runner.os == 'Linux'
+        run: python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --native-aot --report build/test-results/application-aot.json --adapter src/OpenCiv2.Desktop/bin/Release/net11.0/linux-x64/publish/OpenCiv2.Desktop
       - name: Record native results
         run: |
           mkdir -p build/test-results

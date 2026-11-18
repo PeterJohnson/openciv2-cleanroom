@@ -56,6 +56,49 @@ Use the [platform checklist](testing/platforms.md) for actual Mac/Windows deskto
 acceptance. Compilation or headless CI cannot establish native input, menus,
 shutdown, IME, accessibility or mixed-DPI/fullscreen behavior.
 
+### Opt-in Native AOT desktop
+
+The commands above remain managed. To compile the desktop host to native machine
+code, use `Oc2DesktopAot=true` on **both restore and publish**:
+
+```sh
+dotnet restore src/OpenCiv2.Desktop -p:Oc2DesktopAot=true --locked-mode
+dotnet publish src/OpenCiv2.Desktop -c Release -p:Oc2DesktopAot=true --no-restore
+```
+
+The build selects the SDK's portable host RID. Checked-in AOT locks cover
+`linux-x64`, `osx-arm64` and `win-x64`. Build on the target OS with the pinned SDK
+and a native toolchain: Clang on Linux, Xcode command-line tools on macOS, or
+Visual Studio's Desktop development with C++ workload on Windows. See the
+[.NET Native AOT prerequisites](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/).
+If Clang has a versioned executable name, append, for example,
+`-p:CppCompilerAndLinker=clang-22` to the publish command.
+Avalonia's OS libraries are still required. `Oc2DesktopAotRid` can select the RID
+for intentional lock maintenance; cross-OS compilation is not supported.
+
+Run `src/OpenCiv2.Desktop/bin/Release/net11.0/<rid>/publish/OpenCiv2.Desktop`
+(`OpenCiv2.Desktop.exe` on Windows) directly. Keep the accompanying native graphics
+libraries and dependency notices. The publication needs no installed .NET runtime.
+`dotnet run` is still a managed development command; use the published executable
+to run Native AOT.
+
+On Linux, verify real pointer input, confirmation/cancellation and clean shutdown:
+
+```sh
+python3 tools/dotnet/run_xvfb.py python3 tools/dotnet/run_application.py --native-aot --report build/test-results/application-aot.json --adapter src/OpenCiv2.Desktop/bin/Release/net11.0/linux-x64/publish/OpenCiv2.Desktop
+```
+
+This also requires Native AOT dependency metadata, disabled dynamic code support,
+and a publication without a managed entry assembly or CoreCLR library. CI publishes
+AOT on all three listed hosts and runs this interaction check on Linux; macOS and
+Windows interactive acceptance remains in the platform checklist. Local executed
+evidence is recorded in [validation](validation/README.md).
+
+AOT restore uses `packaging/locks/desktop-aot/<rid>.json` for the desktop host;
+referenced libraries retain their ordinary locks. Restore assets are shared, so
+run the ordinary application restore before returning to managed builds. Neither
+mode changes the other mode's checked-in dependency graph.
+
 ## Browser
 
 All Avalonia hosts use centrally pinned SkiaSharp **4.156.1** and HarfBuzzSharp

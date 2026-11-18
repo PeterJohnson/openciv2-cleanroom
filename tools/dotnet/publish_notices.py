@@ -92,10 +92,12 @@ def supplements(name, version, meta):
     return rule[2]
 
 
-def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime, rid, browser, self_contained=False):
+def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime, rid, browser, self_contained=False, native_aot=False):
     if sdk != json.loads((ROOT / 'global.json').read_text())['sdk']['version']:
         raise ValueError('Unpinned publication SDK')
-    pins_path = ROOT / 'packaging/runtime-packs.json'
+    if native_aot and (browser or not self_contained or not rid):
+        raise ValueError('Native AOT publication requires a self-contained desktop RID')
+    pins_path = ROOT / ('packaging/aot-runtime-packs.json' if native_aot else 'packaging/runtime-packs.json')
     pins = json.loads(pins_path.read_text())
     if runtime != pins['version']:
         raise ValueError('Unpinned publication runtime')
@@ -139,7 +141,7 @@ def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime,
                     add(destination, bundle.read(entry)); files.append(destination)
             for supplement in supplements(name, version, meta):
                 files.append(vendor(supplement))
-            if name in ('Microsoft.NET.ILLink.Tasks', 'Microsoft.NET.Sdk.WebAssembly.Pack'):
+            if name in ('Microsoft.NET.ILLink.Tasks', 'Microsoft.NET.Sdk.WebAssembly.Pack', 'Microsoft.DotNet.ILCompiler'):
                 if version != runtime:
                     raise ValueError('Unpinned SDK dependency')
                 add('dotnet/SDK-LICENSE.txt', (dotnet_root / 'LICENSE.txt').read_bytes())
@@ -151,7 +153,8 @@ def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime,
             packages.append({'id': name, 'version': version, 'contentHash': expected, 'archiveSha512': archive_hash,
                              'declaredLicense': meta.get('license', {}), 'repository': meta.get('repository', {}),
                              'restoredAssetKinds': roles, 'notices': sorted(set(files))})
-    runtime_info = {'version': runtime, 'redistributed': bool(browser or self_contained)}
+    runtime_info = {'version': runtime, 'redistributed': bool(browser or self_contained),
+                    'kind': 'native-aot' if native_aot else ('mono' if browser else 'coreclr')}
     if browser:
         pack = dotnet_root / 'packs/Microsoft.NETCore.App.Runtime.Mono.browser-wasm' / runtime
         archive = pack / 'Microsoft.NETCore.App.Runtime.Mono.browser-wasm.nupkg'
@@ -159,7 +162,7 @@ def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime,
     elif self_contained:
         if not rid:
             raise ValueError('Self-contained publication requires a RID')
-        package = 'microsoft.netcore.app.runtime.' + rid
+        package = ('microsoft.netcore.app.runtime.nativeaot.' if native_aot else 'microsoft.netcore.app.runtime.') + rid
         pack = next((Path(folder) / package / runtime for folder in assets['packageFolders']
                      if (Path(folder) / package / runtime).is_dir()), None)
         if pack is None:
@@ -236,6 +239,7 @@ if __name__ == '__main__':
     parser.add_argument('--dotnet-root', type=Path, required=True)
     parser.add_argument('--sdk', required=True); parser.add_argument('--runtime', required=True)
     parser.add_argument('--self-contained', action='store_true')
+    parser.add_argument('--native-aot', action='store_true')
     parser.add_argument('--rid', default=''); parser.add_argument('--browser', action='store_true')
     args = parser.parse_args()
-    generate(args.project, args.assets, args.lock, args.output, args.dotnet_root, args.sdk, args.runtime, args.rid, args.browser, args.self_contained)
+    generate(args.project, args.assets, args.lock, args.output, args.dotnet_root, args.sdk, args.runtime, args.rid, args.browser, args.self_contained, args.native_aot)

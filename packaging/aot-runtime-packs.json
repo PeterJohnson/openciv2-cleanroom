@@ -1,0 +1,8 @@
+{
+  "version": "11.0.0",
+  "sha512": {
+    "linux-x64": "16cihOE7A495QuTyafvX5omOfHhTKMsWGMjz/YcL+X5xo6eSaPLz0xGXCLnKK71JH5b4gtTa6pcU0K2GqNPtTg==",
+    "osx-arm64": "m+K+2uqcmGRUYCLuy3yhbPAEaggNQAn8nrYogADqf1MtnosytxLihutOeMZ5zSSSjvs9VhEyrbnfH5/VdAkcRQ==",
+    "win-x64": "TxRXlVbdDsRJs2lvz6shwGv6PEJVPxRInv4vcvzrSl3DwZkW8OlQMN4a13nlmQPq8WIIeC03kBwY4XAi4tnAZA=="
+  }
+}

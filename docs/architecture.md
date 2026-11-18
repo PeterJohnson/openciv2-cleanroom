@@ -1074,8 +1074,9 @@ Use explicit byte codecs and reviewed JSON readers/writers. Where serialization
 is generated, enumerate supported shapes and converters so trimming/AOT cannot
 silently remove required behavior. No runtime assembly scanning or arbitrary
 reflection dispatch is needed for commands or Lua. Browser publication and smoke
-tests run from the first managed foundations slice; desktop Native AOT is an
-optional later optimization.
+tests run from the first managed foundations slice. Desktop builds remain managed
+by default; `Oc2DesktopAot=true` opts into Native AOT publication with separate
+locked inputs and the same application-input acceptance checks.
 
 The [build guide](BUILDING.md) gives root-based .NET commands. C# formatting,
 nullable analysis, warnings-as-errors and locked restores are checked in CI.

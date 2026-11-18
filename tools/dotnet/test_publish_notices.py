@@ -116,6 +116,37 @@ class PublicationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'verifier exit -9'):
                 notices.verify_archive(self.archive, 'expected', self.sdk)
 
+    def test_native_aot_uses_pinned_aot_runtime_not_coreclr(self):
+        package = 'microsoft.netcore.app.runtime.nativeaot.linux-x64'
+        archive = self.root / 'cache' / package / '11.0.0' / (package + '.11.0.0.nupkg')
+        archive.parent.mkdir(parents=True)
+        with zipfile.ZipFile(archive, 'w') as bundle:
+            bundle.writestr('LICENSE.TXT', 'Native AOT license fixture')
+            bundle.writestr('THIRD-PARTY-NOTICES.TXT', 'Native AOT notices fixture')
+        (self.root / 'global.json').write_bytes((notices.ROOT / 'global.json').read_bytes())
+        (self.root / 'LICENSE').write_text('Project license fixture')
+        (self.root / 'packaging').mkdir()
+        pins = self.root / 'packaging/aot-runtime-packs.json'
+        pins.write_text(json.dumps({'version': '11.0.0', 'sha512': {'linux-x64': notices.sha512(archive.read_bytes())}}))
+        with patch.object(notices, 'ROOT', self.root):
+            notices.generate(self.project, self.assets, self.lock, self.output,
+                             self.sdk, '11.0.100', '11.0.0', 'linux-x64', False, True, True)
+            report = notices.verify(self.output)
+            self.assertEqual(report['runtime']['kind'], 'native-aot')
+            self.assertTrue(report['runtime']['redistributed'])
+            self.assertEqual((self.output / 'DEPENDENCY-NOTICES/dotnet/LICENSE.TXT').read_text(), 'Native AOT license fixture')
+            archive.write_bytes(archive.read_bytes() + b'tampered')
+            with self.assertRaisesRegex(ValueError, 'Runtime archive differs from pin'):
+                notices.generate(self.project, self.assets, self.lock, self.output,
+                                 self.sdk, '11.0.100', '11.0.0', 'linux-x64', False, True, True)
+
+    def test_native_aot_rejects_browser_and_framework_dependent_metadata(self):
+        for rid, browser, self_contained in [('', False, True), ('linux-x64', True, True), ('linux-x64', False, False)]:
+            with self.subTest(rid=rid, browser=browser, self_contained=self_contained):
+                with self.assertRaisesRegex(ValueError, 'requires a self-contained desktop RID'):
+                    notices.generate(self.project, self.assets, self.lock, self.output,
+                                     self.sdk, '11.0.100', '11.0.0', rid, browser, self_contained, True)
+
 
 if __name__ == '__main__':
     unittest.main()

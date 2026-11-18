@@ -144,10 +144,21 @@ notices come from separately pinned runtime archives. Framework-dependent deskto
 publications include SDK host notices and record that CoreCLR is not distributed.
 Lua browser publications must contain the Lua notice or publication fails.
 
+Opt-in desktop Native AOT publication uses a separate desktop lock and
+`packaging/aot-runtime-packs.json`. Its runtime inventory is labeled `native-aot`
+and its full runtime notices come from the pinned .NET Native AOT runtime archive,
+rather than the CoreCLR distribution. The AOT compiler package is included in the
+locked dependency inventory. To update a desktop AOT lock deliberately, restore
+the desktop project with `-p:Oc2DesktopAot=true -p:Oc2DesktopAotRid=<rid>
+-p:RestoreLockedMode=false --force-evaluate`. Update the runtime archive SHA-512
+pins and reviewed signed-package pins with the same verification procedure above,
+then republish and execute the application-input checks on the target host.
+
 Local Release publication checks passed for Avalonia desktop (28 locked packages),
 Avalonia browser (23) and Lua/WASM (4), including real signed-package hash checks.
-Seven regression groups cover changed/missing notices, lock mismatches, license
+Nine regression groups cover changed/missing notices, lock mismatches, license
 expressions without full text, stale source attribution and failed/mismatched
 signature verification, plus exact archive pins, tampered bytes and silent
-verifier failures. The [executed CI receipt](validation/README.md) records
+verifier failures, plus Native AOT runtime pins and invalid publication modes.
+The [executed CI receipt](validation/README.md) records
 the tested CLI archives and platform gates.

@@ -7,6 +7,12 @@ and whole-game compatibility. Build and test commands are in the
 
 ## Current local validation
 
+The opt-in desktop Native AOT build passed
+[Linux validation](desktop-aot-2026-11-17.md) on 2026-11-17 Pacific: publication,
+six actual pointer checks and normal shutdown, plus the same checks for the
+managed default and all 454 core tests. AOT locks cover Linux x64, macOS ARM64 and
+Windows x64; only Linux AOT compilation/execution was exercised locally.
+
 The .NET 11 and shared SkiaSharp 4 upgrade passed
 [local Linux/Chromium validation](dotnet11-2026-11-18.md) on 2026-11-18 UTC,
 including native/browser behavior, actual application input, extracted CLI

@@ -8,6 +8,7 @@
   <Target Name="Oc2EmbedBuildIdentity" BeforeTargets="AssignTargetPaths">
     <ItemGroup>
       <_Oc2IdentityInput Include="$(NuGetLockFilePath)" Condition="'$(Oc2PackageRid)' != ''" />
+      <_Oc2IdentityInput Include="$(NuGetLockFilePath)" Condition="'$(Oc2DesktopAot)' == 'true' and '$(MSBuildProjectName)' == 'OpenCiv2.Desktop'" />
       <_Oc2IdentityInput Include="$(MSBuildProjectDirectory)/**/*.cs"
           Exclude="$(MSBuildProjectDirectory)/obj/**;$(MSBuildProjectDirectory)/bin/**" />
       <_Oc2IdentityInput Include="$(MSBuildProjectDirectory)/wwwroot/**/*" />
