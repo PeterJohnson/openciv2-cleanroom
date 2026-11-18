@@ -11,7 +11,7 @@ in the original executable or a historical test.
 | Gameplay | Truthful known map/city/unit information and observer concealment. |
 | Original files/content | P03 source assets and F03/F06 terrain/unit/city meanings. |
 | Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
-| Executable comparison only | Pixels, layer/draw order, minimap projection, blink and display stack representatives. |
+| Executable comparison only | Exact pixels, native draw traversal, original minimap projection, blink cadence and display stack representatives. Product visual completeness is specified below. |
 
 The explicit presentation contract below selects the required definitions;
 its detailed original procedures remain reference. The table above adds no
@@ -24,8 +24,8 @@ feel and support for original configuration and scenario content. It is **not
 an exact recreation of the original interface**. Apply [X01's presentation
 policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-The requirements are the semantic obligations and external-data definitions
-explicitly adopted below. All numbered sections and appendices under
+The requirements are the semantic obligations, minimum visual features and
+external-data definitions explicitly adopted below. All numbered sections and appendices under
 [Original behavior reference](#original-behavior-reference) describe the old
 interface. Their imperative wording, including historical “required” and
 “conformance” lists, does not make their UI procedures mandatory. An adopted
@@ -52,8 +52,9 @@ storage and documented diagnostics for unsupported or invalid input.
 - Present known terrain, resources, improvements, cities, units and ownership
   with their actual rule/state identities. Use W03's current versus remembered
   knowledge and N04's observer restrictions, including concealed hotseat views.
-  Reference §§2–7 describe the information inventory; texture layering, icon
-  positions, text placement, blink and preferred *display* unit are optional.
+  The minimum visual feature set below makes the required inventory explicit.
+  Exact layer calls, icon positions, text placement, blink cadence and preferred
+  *display* unit remain design choices, subject to legibility and composition.
 - Distinguish unknown, explored and currently visible information, selected or
   active objects, and meaningful city/unit status. Do not infer unseen live state
   from unrestricted records. Preserve unit/city facts and named custom content;
@@ -64,6 +65,150 @@ storage and documented diagnostics for unsupported or invalid input.
 - Map and overview rendering are read-only projections. Full/partial redraw,
   cache eviction, clipping and visibility of a widget cannot trigger simulation,
   change gameplay random state or decide which commands are admitted.
+
+## Minimum map visual feature set
+
+This is a **product completeness requirement**, in addition to X01's gameplay,
+privacy and interchange requirements. Presentation freedom permits new art,
+geometry, controls and rasterization; it does not permit omitting the visual
+capabilities below. The baseline covers the HD map's documented features,
+including its optional map overlays and camera. Appendix E records the comparison
+scope; implementation uses this contract and the owned asset definitions only.
+
+The stock HD theme uses [exact map asset bindings](../content/map-assets.md)
+and its [semantic catalog](../content/map-asset-bindings.json). These define
+image identity and registration, not a required graphics API or memory layout.
+A different theme must cover the same roles. A generic marker or one city/unit
+image for every type is a prototype fallback, not completed visual coverage.
+
+Each feature must be exercisable with an authored, observer-filtered input during
+M2. Its live gameplay producer may arrive later; report that integration gap
+separately. Hiding an unsupported feature behind a setting or a zoom cutoff does
+not implement it. A user's preference can disable a supported feature. Reduced
+motion and low-detail views can simplify it under the rules below.
+
+### Terrain and knowledge
+
+| ID | Required capability | Required distinctions and combinations |
+| --- | --- | --- |
+| MV01 | Base terrain | All eleven classic terrain identities and their selected/custom art: Desert, Plains, Grassland, Forest, Hills, Mountains, Tundra, Glacier, Swamp, Jungle and Ocean. Preserve terrain under overlays. |
+| MV02 | Shorelines | Ocean/land outlines with all four coast quadrants and all eight combinations of each quadrant’s three neighbor contacts; islands, channels, corners and peninsulas must join without gaps. Resolve horizontal wrap and flat-world edges. |
+| MV03 | Terrain transitions and connected relief | Neighboring terrain edge blends, including land/Ocean transitions, and all four-direction Forest, Hills and Mountains connections. One disconnected relief sprite does not cover every neighborhood. |
+| MV04 | Rivers | Connected four-direction rivers, branches, endpoints and direction-specific river mouths into Ocean. Rivers remain distinguishable from roads and borders. |
+| MV05 | Resources | Both special-resource identities for each terrain, including Ocean, plus the Grassland production shield. Use W01's resolved predicates; neither invent resources nor substitute one generic resource icon. |
+| MV06 | Agriculture and mines | Distinct Irrigation, Farmland and Mine, with terrain/rivers/resources still legible. Support agricultural art under/around city art without manufacturing an improvement in game state. |
+| MV07 | Transport networks | All eight road and rail directions, isolated road/rail marks, city connections and mixed road/rail junctions. A rail connection requires the permitted rail/city endpoint facts; a road into a rail tile must not disappear. |
+| MV08 | Other tile features | Distinct huts, pollution, fortresses and empty/occupied airbases. Occupied airbases include a recognizable aircraft with the permitted occupant color. Fortification of a unit and a terrain fortress are separate facts. |
+| MV09 | Knowledge boundaries | Opaque unknown terrain and directional feathered unexplored edges, including city-resource-map clipping when that view is implemented. Distinguish unknown data from remembered or currently disclosed data. Feathering may soften the known side; it cannot reveal hidden images through alpha or sampling. |
+
+Adjacency uses W01 topology and the permitted observation, including any explicitly
+published boundary context. Do not query unrestricted neighbors from the frontend
+to finish a coastline or road. Unknown contacts, world edges and wrapped neighbors
+are distinct inputs. Roads/rails use remembered improvements where W03 requires
+them; scenery, labels, route hints and dirty-region updates must obey the same
+observer policy. Reference neighbor reads are not permission to disclose hidden
+state through a new rendering path.
+
+### Cities, units and ownership
+
+| ID | Required capability | Required distinctions and combinations |
+| --- | --- | --- |
+| MV10 | Unit bodies | Every supported unit-art identity, including the separate barbarian-leader appearance and scenario replacements. A stack representative is a display choice; it does not activate a unit. |
+| MV11 | Unit owner and stack | Owner-colored primary/secondary shield or equivalent banner, visible stack multiplicity, and dark body/banner stack shadows. Resolve live civilization color separately from civilization or tribe slot. Preserve narrow poles, trim and alpha edges. |
+| MV12 | Unit health | Remaining health and green/yellow/red severity bands from permitted health/rule inputs; distinguish damage from a healthy unit. Do not mutate or silently normalize imported gameplay values for drawing. |
+| MV13 | Unit orders and status | Waiting-for-input, no order, each published order, goto, automation and veteran state. Order/status text fits its banner area below the health display; alternative icons may convey the same distinct states. Hidden AI orders remain hidden. |
+| MV14 | Sleeping and fortified units | A neutral silhouette mode and a detailed greyscale mode for sentry/sleep and eligible aircraft at bases; preserve shape/alpha and the background. A separate fortified overlay must coexist with banners and a terrain fortress. |
+| MV15 | City appearances | All configured city styles, size classes and walled/unwalled variants. Appearance selection follows a documented policy using disclosed style/era, population and wall facts; the stock policy and exact variant keys are in the asset contract. |
+| MV16 | City annotations | Owner-colored garrison flags, ordinary/dark flag art, population badge, disorder marker and authored city name. Preserve permitted remembered foreign size; a generic remembered-site symbol is only for observations that lack the city's fuller identity. Do not invent a current foreign population. |
+| MV17 | Civilization colors | All eight stock color roles across flags, shields, disorder, occupied airbases, labels, ownership/radius indications and minimap legends. Changing a civilization's configured color updates every dependent appearance. Color is not the sole way to inspect owner identity. |
+| MV18 | Selection and focus | Distinguishable inspected tile, selected object and active gameplay unit, with an optional blink/pulse/inversion treatment and a stable reduced-motion alternative. Moving/combat participants can be emphasized without changing stack order or gameplay activation. |
+
+The observation must supply enough permitted data to select these appearances.
+In particular, unit type/owner alone does not supply health, orders, veteran state
+or worker progress; city name/size alone does not supply style, walls, garrison,
+disorder or owner color. Represent withheld/unavailable facts explicitly. Do not
+fill a missing health field with “healthy,” or a missing wall field with “absent,”
+and claim a complete projection. Own, foreign, remembered and authorized reveal
+views can expose different facts. W03/N04 own that admission, not the painter.
+
+### Overlays, overview and effects
+
+| ID | Required capability | Required distinctions and combinations |
+| --- | --- | --- |
+| MV19 | Map display modes | Tile grid, own-city workable-radius indication, permitted ownership colors, and bare-terrain mode. Radius uses W01 geometry, not screen distance. A visual ownership mode adds no new territorial rule. Bare terrain suppresses object/network clutter while retaining terrain, resources and pollution; expose ordinary/full detail again without losing state. |
+| MV20 | Unit and trade paths | Observer-safe active-unit route preview, known trade-partner lines, and the road/rail trade-bonus path with satisfied/unsatisfied distinction. Consume a declared read-only projection based on U03/C07; do not run an unrestricted path search or substitute an arbitrary shortest path for the trade-bonus test. The painter receives ordered points/segments and their meaning, not a command to move. |
+| MV21 | Worker progress and quick information | Own settlers/engineers' accumulated terrain-work counter, plus an inspect/hover equivalent for permitted city and unit details. W04 owns work units; a work counter is not a turns-remaining estimate. Work or route details unavailable to the observer cannot be inferred from live foreign records. |
+| MV22 | Map notifications | A viewport-anchored channel for eligible informational messages, readable while panning/zooming. Preserve required information and P04/P10 completion effects; a message that requires a decision cannot silently become a transient notice. |
+| MV23 | Overview/minimap | Unknown, land, Ocean, permitted city ownership, selection and the displayed viewport footprint, including wrapped-seam splitting. Use the overview's own disclosure rules; do not expose units simply because the main map can show them. The footprint describes the displayed camera, not an invisible backing image. |
+| MV24 | Movement and combat effects | Moving unit/banner/shadow composition, combat participants, ordinary explosion frames and nuclear effect frames. Effects share the map transform and clip. Completion, interruption, skipped/reduced animation and observer change restore a correct settled view; no trails or stale banners remain. P10/U02/U06 own gameplay effects. |
+
+Paths, work counters and quick information are presentation capabilities, not
+authorization to change AI, movement, trade or worker algorithms. If a required
+safe projection is unimplemented, record that provider gap. Use authored values
+to exercise the renderer; do not label those values as live game computation.
+
+### Camera, detail and composition
+
+| ID | Required capability | Acceptance condition |
+| --- | --- | --- |
+| MV25 | Pan, zoom and tracking | Smooth drag/continuous zoom, fixed-step or preset access, pointer-anchored zoom except where world bounds intervene, flat-map clamping and horizontal wrapping. Track an eligible active unit against the displayed viewport; preserve the camera when it is already comfortably visible. Exact gestures, zoom range and easing are design choices under P01. |
+| MV26 | Detail levels | Declare full, reduced and overview detail bands using displayed scale, independently of backing resolution and display density. Full detail can show every feature. Simplify small resources/networks/status text at distant scales; retain recognizable coastlines, connected rivers, knowledge boundaries, city/unit presence, health indication and selection. Detail changes cannot alter game state or picking. |
+| MV27 | Labels and display density | Readable city names, population, orders and worker counters at final physical resolution, including fractional zoom. City names have a legibility floor and a documented crowded-label policy. Tiny badges/status text may be omitted only in declared reduced-detail bands; remain inspectable. Keep glyphs within their allowed region and keep HUD/notifications independent of world scale. |
+| MV28 | Alpha, tint and layering | Correct source alpha, transparent holes, selective faction colors, greyscale/silhouettes and dark shadows; no colored halos or erased background. Overlapping terrain, features, city/unit art, banners, labels and effects remain correctly occluded. Batching by texture must not reorder overlapping translucent content incorrectly. |
+| MV29 | Clipping, redraw and lifetime | Map content cannot paint over foreground panels, dialogs or controls. Clip without shifting the source sample origin. Cached/partial rendering must match a fresh rendering of the same visual state; invalidate old and new overhangs on movement, flags, labels, effects, content/color/options, observer, zoom, resize and density changes. Blank map/window margins remain stable during blinking and scrolling. |
+| MV30 | Display adjustments and fallbacks | Support display color correction and disabled/reduced cosmetic effects without changing source assets or gameplay. Backend/cache/resource recovery must preserve feature coverage and target identity, or declare an explicit limited/error state. A CPU or browser path cannot silently drop required map layers. |
+
+The feature set does not mandate SDL/Avalonia/Skia, GPU-only camera support,
+integer backing zooms, legacy screen metrics, exact detail cutoffs, cache sizes,
+message-pump order, original animation timing or pixel equality. It does require
+actual visible results. Atlas decoding, a populated binding table, a nonblank
+screenshot, or a successful click test alone does not establish feature coverage.
+
+## Map visual acceptance
+
+The [M2 map-rendering acceptance matrix](../testing/map-rendering.md) defines the
+mandatory authored case families, complete stock/custom-content domain, separate
+native/browser gates and stopping rule for MV01–MV30. Its
+[interactive performance contract](../performance/map-rendering.md) requires
+changed-camera and dirty-world workloads, not just unchanged-frame blits or a
+moving selection outline. These documents operationalize this feature set; they
+do not authorize dropping a row or narrowing it to one demonstration scene.
+
+Maintain [per-feature coverage](../validation/map-visual-coverage.md) for MV01–MV30.
+For each claim retain the authored input, observer/content/theme identity,
+enabled options, displayed zoom/detail band, physical density, backend and
+evidence. Distinguish rendering an authored observation from live producer
+integration and from actual desktop/browser execution.
+
+- Exercise every terrain/resource and city/unit variant, all directional
+  connection cases, road/rail mixtures, isolated networks, all owner colors,
+  differing city sizes/walls/garrisons/disorder and combined unit states.
+- Exercise unknown/remembered/visible information separately; substitute
+  undisclosed foreign state while holding the permitted observation fixed and
+  require unchanged output. Include observer handoff, route previews, quick
+  information and every cache/detail path.
+- Test full/reduced/overview detail, fractional zoom, at least 1× and 2× density,
+  wrapped and flat edges, multiple windows, clipped tall art, long/custom names,
+  color changes, scene replacement and skipped/interrupted effects.
+- Compare cached/dirty output to independently produced fresh output from the
+  same cleanroom renderer, with a declared backend tolerance where needed.
+  Also perform visual review for missing/illegible/incorrectly connected layers;
+  cache equality can reproduce the same omission on both paths.
+- Prove redraw, zoom, inspection and cosmetics preserve world/session state and
+  gameplay/presentation-content RNG contexts. Accepted commands still follow
+  their owning semantic operations.
+
+These are cleanroom feature and rendering tests, not original pixel goldens.
+Performance reports keep visible correctness, cold/warm work, frame composition,
+presentation and target-hardware scope explicit.
+
+All renderer rows are M2 work even where a live gameplay producer is later work.
+Publish explicit read-only observations for available facts and authored values
+for unimplemented producers through the same rendering contract. Track that
+distinction per row; authored effects or trade paths are not evidence of live
+combat or C07 computation. Neither a generic placeholder nor an unavailable
+provider closes the renderer capability. Unavailable target hardware leaves its
+execution gate pending without reducing the required implementation.
 
 ## Original-file input contract
 
@@ -471,7 +616,7 @@ palette/flag choices; they do not require a matching memory model.
 | ShowCityRadius grid | gameFlags `0x20`. |
 | Bare-terrain gate | Shared DWORD `0062bcd8` in the primary map-view evidence; use its canonical backing mapping when validating. |
 | Components | City=`0x02`, Irrigation=`0x04`, Mine=`0x08`, Road=`0x10`, Railroad=`0x20`, Fortress=`0x40`, Pollution=`0x80`. Farmland and Airbase are component combinations. |
-| Terrain/river | Low terrain nibble; River=`0x80` in the terrain byte. Ocean=10, Grassland=2, Forest=3, Mountains=4, Hills=5, Tundra=7. |
+| Terrain/river | Low terrain nibble; River=`0x80` in the terrain byte. Ocean=10, Grassland=2, Forest=3, Hills=4, Mountains=5, Tundra=6 (W01 terrain identities). |
 | Blend families | Unexplored=11, Ocean=12; ordinary terrain families 0–10. |
 | Shared coast contacts | Preceding=1, axial=2, following=4. |
 | Unit special sprite | Diplomat type 46 owned by barbarian 0 uses sprite 62. |
@@ -1208,3 +1353,29 @@ scan cities
 
 query; first success ends the scan. Draw city-radius grid on success, ordinary
 grid otherwise, at the captured tile pixels, then reset scale. This grid pass
+
+### Appendix E. HD map feature comparison provenance
+
+**Comparison/provenance only.** This section records why the product inventory
+was expanded. Implementation inputs are the self-contained required contract
+and the owned asset catalog; this does not authorize consulting reconstruction
+code or importing its harnesses. No original pixel/RNG equality is adopted.
+
+The documented map feature baseline is OpenCiv2 revision
+`174e547c3e35bd3a776c18d68b6ca292a5a8e333` on `hd-graphics-runtime`, inspected
+on 2026-11-17 Pacific. The feature audit used its public documentation, not
+renderer implementation bodies:
+
+| Comparison description | Required coverage |
+| --- | --- |
+| [HD renderer scope](https://github.com/PeterJohnson/openciv2/blob/174e547c3e35bd3a776c18d68b6ca292a5a8e333/docs/HD-GRAPHICS.md#renderer-scope): tile/coast/river/road/border art, feathered edges, owner colors, sleeping styles, status/shadows and alpha filtering | MV01–MV19, MV28 |
+| [Camera description](https://github.com/PeterJohnson/openciv2/blob/174e547c3e35bd3a776c18d68b6ca292a5a8e333/docs/HD-GRAPHICS.md#gpu-camera-prototype): pan/zoom/tracking, detail bands, final-resolution labels, view clipping and cache correctness | MV23, MV25–MV29 |
+| [Interface additions](https://github.com/PeterJohnson/openciv2/blob/174e547c3e35bd3a776c18d68b6ca292a5a8e333/docs/EXTRAS.md#on-and-off): work counter, quick information, paths/trade paths, map messages, sentry detail and display correction | MV14, MV20–MV22, MV30 |
+| P02/P03/P10's existing in-repository terrain/object/effect inventory | MV01–MV24 and the exact stock asset selectors |
+
+Non-map panoramas, advisors, throne room, spaceship and diplomacy content remain
+with their owners. The HD documentation's excluded review-renderer enhancements
+are not silently added as mandatory algorithms. Its GPU-only camera restriction,
+legacy cache sizes, backing-view minimap mismatch, palette/RNG coupling and stock
+art overriding custom scenario sheets are not adopted. New art, backend and
+control choices remain possible while meeting the explicit feature inventory.

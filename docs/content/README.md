@@ -42,6 +42,13 @@ masters, and original text are not approved runtime distribution inputs merely
 because they exist in an asset repository. The complete notice remains with the
 package; software dependency notices are separate.
 
+The [stock map art contract](map-assets.md) and its
+[semantic binding catalog](map-asset-bindings.json) define the exact map-image
+keys, selector families, dimensions, anchors and owner colors for this release.
+P02 defines the [minimum visual feature set](../algorithms/P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set);
+its [coverage ledger](../validation/map-visual-coverage.md) separates available
+art from implemented and verified rendering.
+
 ## Stock TrueType fonts
 
 The new UI uses the DejaVu Sans, Serif and Sans Mono families identified by the

@@ -6,6 +6,12 @@ ceilings. Keep raw samples, warmups, result identities, hardware, toolchain and
 artifact hashes. Do not raise budgets, omit slow samples or reduce output to
 manufacture a pass. Investigate repeatable regressions against comparable C# runs.
 
+The [M2 map interaction contract](map-rendering.md) adds separate complete-renderer
+workloads and fixed frame/latency targets. It distinguishes unchanged repaint,
+actual cached pan, continuous zoom, dirty world changes and replacement/recovery.
+Use the [visual acceptance matrix](../testing/map-rendering.md) alongside it;
+timing a scene with missing layers cannot establish renderer performance.
+
 ## Recorded reference results
 
 The recorded studies predate the .NET 11 upgrade. Rerun their full sampling
@@ -36,7 +42,9 @@ The application study uses software rendering and localhost. It establishes
 bounded startup/transfer/input behavior, not compositor FPS, full-map performance
 or real-network latency. M2 must measure actual scoped model production plus
 zoomed-out/half-world maps, visible object counts, full/cached/dirty redraws and
-4K/5K physical resolutions. Avoid per-tile controls and whole-world frame copies.
+4K/5K physical resolutions. Use the map contract's changing-camera/world cases;
+the Riverbend selection-only dirty timings do not cover them. Avoid per-tile
+controls and whole-world frame copies.
 
 ## Reproduce
 

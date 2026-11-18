@@ -9,6 +9,7 @@ import struct
 import sys
 
 from check_conformance import ROOT, read_json, require
+from check_map_assets import validate as check_map_bindings
 
 PACKAGE_FILES = {
     "data/atlas-hd.pack", "data/fonts.bin", "data/fonts_aa.bin",
@@ -93,7 +94,8 @@ def check_inventory(root=ROOT):
     for info in [*fonts["faces"], fonts["license"]]:
         require(type(info["size"]) is int and 0 < info["size"] < 2147483647, "invalid font input size")
         require(re.fullmatch(r"[0-9a-f]{64}", info["sha256"]), "invalid font input hash")
-    return "Asset and TrueType inventories agree with dependency pins; no external files required."
+    check_map_bindings(root)
+    return "Asset, map-binding and TrueType inventories agree with dependency pins; no external files required."
 
 
 def check_fonts(root, manifest):

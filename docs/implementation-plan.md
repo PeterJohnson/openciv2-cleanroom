@@ -11,7 +11,7 @@ establish that its entire family has been implemented or validated.
 | --- | --- | --- |
 | M0 | Reproducible build, specification/content inventories and evidence boundaries | Implemented with pinned .NET tooling and cross-platform CI |
 | M1 | Finite portable foundations, classic codecs, content/inspection CLI, session ownership and bounded checkpoints | Implemented; current test families and exclusions are in the coverage and validation guides |
-| M2 | Avalonia rendering, real interaction, platform menus/storage and content installation | Bounded session host exists; full graphics/platform acceptance is next |
+| M2 | Complete map renderer, Avalonia interaction, platform menus/storage and content installation | In-progress Linux slice; MV01–MV30 completeness, browser content and full platform gates remain open |
 | M3 | First playable local game slice | Planned; depends on M1 and the required M2 surfaces |
 | M4 | Complete single-player mechanics, AI and expanded automation | Planned |
 | M5 | Scenarios, editors, complete UI and hotseat | Planned |
@@ -74,9 +74,46 @@ checks and independent provenance for compatibility claims.
 
 Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
 
-- Extend the existing Avalonia desktop/browser hosts with custom
-  batched Skia map drawing. Render a representative map region, text, and a custom dialog
-  using the asset package through the new CPU reader and texture cache.
+The in-progress Riverbend slice supplies rendering infrastructure: scoped
+W01/W03 observations, pinned atlas/fonts, Skia drawing, pan/zoom, picking and the
+shared local stack interaction on Linux. Its local results cover that finite
+scope and simulated 4K/5K workloads. The slice and its execution report remain
+separate implementation work; they do not complete the map renderer. Browser
+content, visual coverage, interactive performance and the full platform/services
+gate below remain open.
+
+Map completeness is [P02 MV01–MV30](algorithms/P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set),
+with the mandatory [acceptance matrix](testing/map-rendering.md), tracked in the
+[visual coverage ledger](validation/map-visual-coverage.md). The stock theme uses
+the [exact atlas mapping](content/map-assets.md). All thirty rows, their enumerated
+selectors and combined cases are required; a loaded pack or representative scene
+does not close a row. Small implementation slices are progress checkpoints, not
+permission to stop the complete-renderer task early.
+
+- Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
+  terrain/coasts/relief, every feature/network/resource, all supported unit/city
+  art and annotations, ownership/status, knowledge edges, overlays, overview,
+  effects, camera, labels, clipping and recovery. Deliver a reproducible authored
+  scene gallery and a mixed large map using the same production renderer as the
+  actual application. Preserve visible results and target identity at full,
+  reduced and overview detail. Generic placeholders are not completed coverage.
+- Extend owned observations with the permitted facts each visual needs, including
+  huts, compound improvements, health/orders, city appearance/status, color roles,
+  routes, work and effects. Integrate existing production facts through scoped
+  clients now. Exercise missing producers with explicitly authored observations;
+  track their W/U/C/P owners and M3–M5 joins separately. Do not infer hidden world
+  state, synthesize game rules, or require playable combat/trade to test drawing.
+- Complete stock and map-facing native/classic scenario content selection,
+  including authored BMP/GIF sheet overrides, exact bindings, registration,
+  transparency and F03/P03 precedence. Stage the pinned content/fonts in the
+  browser and execute real WASM rendering/input tests; compilation is not an
+  execution gate. Keep non-map screens/media/editor formats in their own scope.
+- Implement and test incremental redraw against fresh output for every layer.
+  Satisfy the [map interaction workloads and budgets](performance/map-rendering.md):
+  full/unchanged frames, actual cached panning, continuous zoom, dirty world
+  changes and replacement/recovery, including half-world 4K/5K views. Record
+  complete frame work, input latency, allocations, GC and cache/resource lifetime.
+  Fast unchanged blits or selection-only updates cannot substitute for navigation.
 - Use the pinned DejaVu Sans/Serif/Mono TrueType faces and runtime glyph
   rasterization through the Avalonia text stack. Exclude the asset package's
   historical bitmap font caches. Extend font roles/measurement to custom dialogs;
@@ -100,7 +137,21 @@ Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
 - Introduce silent media and fake-clock services; verify that unavailable audio
   or skipped cosmetics cannot suppress semantic completion.
 
-**Exit gate:** the same shell and content run on macOS, Windows, Linux, and in a
+**Renderer functional gate:** all MV01–MV30 rows pass the acceptance matrix on
+the production native and browser paths, with semantic assertions, visual review,
+input/lifecycle cases and reproducible source/content-bound evidence. Exact
+art-key validation and aggregate test counts are not renderer acceptance. Live
+producer joins may remain explicitly assigned to later milestones; required
+rendering capabilities and available backend tests may not. Report unavailable
+OS/hardware execution separately without calling it passed.
+
+**Renderer performance gate:** run the prescribed changing-camera/world workloads
+and pass the fixed budgets on measured target hardware. Software/offscreen
+correctness measurements remain separately labeled. Measured failures require
+resolution; unmeasured targets remain pending rather than weakening the budgets.
+
+**Full M2 exit gate:** both renderer gates and the remaining services pass; the
+same shell and content run on macOS, Windows, Linux, and in a
 browser. Menu selections produce the expected action once. Avalonia and browser
 automation can operate the custom dialog; real desktops validate native menus,
 IME, accessibility and mixed-DPI/fullscreen transitions. Headless tests still
@@ -387,26 +438,32 @@ and does not replace, X02's operation-level coverage ledger.
 | S01–S04 | Foundations/hooks in M1/M4; full scenario/editor domain in M5 |
 | N01–N03, N05 | M1/M2 protocol experiments; ongoing hooks; M6 mixed peers |
 | N04 | M5 hotseat and mode adaptation |
-| P01–P05 | M2 shell; M3 interactive map; M5 semantic completeness |
+| P01–P03 | M2 complete map-rendering capabilities, interactions and map-facing content; M3–M5 live mechanics/editor joins and wider content |
+| P04–P05 | M2 map text, input, shell and dialogs; M3 live player-command joins; M5 remaining screens and interactions |
 | P06–P10 | M3 city UI; M4 caller integration; M5 reports/media/content |
 | X01–X02 | M0 boundary; M1 runner; every milestone; M7 claim audit |
 
 ## Immediate implementation backlog
 
-1. Finish actual Windows/macOS desktop input/shutdown and OS interruption checks
-   using [the platform checklist](testing/platforms.md); retain explicit evidence
-   for target-hardware performance and additional runtime identifiers.
-2. Deliver M2's first coherent Avalonia map/content slice: P01 coordinates and hit
-   testing, P02 custom map rendering, required P03 asset decoding and P05 input,
-   backed by real scoped observations. Include zoomed-out/half-world visibility,
-   object counts, cached/dirty redraws and 4K/5K physical resolutions.
-3. Connect owned file-choice/load/save workflows to native and browser storage,
-   preserving cancellation, asynchronous replies and session deadlines. Add native
-   macOS menus and Avalonia Windows/Linux menus with real platform acceptance.
-4. Continue M3's smallest playable vertical slice, then expand mechanics and AI
+1. Complete every MV01–MV30 row in the [map acceptance matrix](testing/map-rendering.md)
+   on the production native/browser paths, with complete observations, stock and
+   scenario bindings, authored gallery, mixed scenes and per-row evidence. The
+   Riverbend infrastructure slice is the starting point, not the acceptance bar.
+2. Close [interactive map performance](performance/map-rendering.md) on available
+   target hardware and complete browser content/startup/resource validation.
+   Exercise pan, zoom and real world updates; retain failed/pending gates honestly.
+3. Connect file-choice/load/save workflows to native and browser storage and
+   verify cancellation, asynchronous replies and session deadlines. Add macOS
+   native menus and Avalonia Windows/Linux menus with real platform acceptance.
+4. Finish actual Windows/macOS desktop input/shutdown, OS interruption and full
+   platform acceptance using [the checklist](testing/platforms.md); retain explicit
+   evidence for target-hardware performance and additional runtime identifiers.
+5. Continue M3's smallest playable vertical slice, then expand mechanics and AI
    through the owning specifications and milestone gates below.
 
 For each slice, read the owning specification, record any gap, implement the
 smallest coherent operation, test its boundary and failures, update coverage and
 integrate a real caller before declaring the family delivered. Do not count source
 files, assertions or green headless CI as proof of complete gameplay or desktop UX.
+When the assigned task is the complete renderer, continue through all its matrix
+rows and gates; completing one coherent slice does not complete that assignment.

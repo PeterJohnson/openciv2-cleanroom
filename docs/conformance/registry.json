@@ -202,21 +202,21 @@
     {
       "id": "P01",
       "path": "docs/algorithms/P01-map-projection-and-interaction.md",
-      "sha256": "76b4f7eae3642eb919ab4835113d6159784cccea17884adba1046b4a14ad122c",
+      "sha256": "d163dae5489c4920d011c1c176c0d951518b9c30847773ae6d6344b014a436d0",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P02",
       "path": "docs/algorithms/P02-map-rendering-and-minimap.md",
-      "sha256": "1e454c2b557bbbb34bab60981d4820c21a345a1725201dc05d3174da4d75c20b",
+      "sha256": "229b40078acfbacadf029eb335597bee98bc339c2d3a4408cfe264e78fdee205",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
     {
       "id": "P03",
       "path": "docs/algorithms/P03-graphics-and-asset-processing.md",
-      "sha256": "3cdc5b5f9e638baf1b2b61222af750fb41a8f6724751e10b13b7e06ea9ebd3a5",
+      "sha256": "e7497b86f4902e1aa19e17963af2d266f78655bfe26c99cf7d9794d93c170bd7",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },

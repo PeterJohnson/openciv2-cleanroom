@@ -107,6 +107,17 @@ To inspect an extracted upstream TTF archive separately:
 python3 tools/check_assets.py --fonts /path/to/dejavu-fonts-ttf-2.37
 ```
 
+## Map image bindings
+
+[map-assets.md](map-assets.md) and [map-asset-bindings.json](map-asset-bindings.json)
+define the stock map theme independently of the container: exact keys and image
+hashes, semantic selector families, logical registration, annotation anchors and
+faction colors. All 368 referenced PNG bindings are present in this pinned pack.
+`tools/check_assets.py` validates the catalog metadata;
+`tools/check_map_assets.py --pack /path/to/data/atlas-hd.pack` additionally checks
+the image records and registration metadata against explicitly selected bytes.
+Catalog coverage is not renderer feature acceptance.
+
 ## Layout and identity data
 
 `cityview-rects.json` contains exactly 62 ordered nonnegative integer rectangles

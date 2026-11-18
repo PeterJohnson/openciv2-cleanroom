@@ -73,6 +73,10 @@ the original LZW loop or pixel copier. Preserve original editor export formats
 and test interoperability for the advertised domain. Safely diagnose failed or
 unsupported loads; do not extract a previous image as if it were the new asset.
 The native pack has its own [asset-format contract](../content/asset-format.md).
+The stock HD map uses the exact [map binding contract](../content/map-assets.md)
+and [semantic catalog](../content/map-asset-bindings.json), including all
+selectors, logical sizes, annotation anchors, colors and effect frames. Complete
+atlas decoding is distinct from implementing [P02’s visual feature set](P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set).
 
 ## Presentation freedom
 
@@ -83,6 +87,15 @@ discovery. No missing file requires the original dialog or native failure trace.
 Do not silently replace successfully supplied scenario content with stock art.
 
 ## Required verification
+
+For M2's map-facing domain, follow the
+[map-rendering acceptance matrix](../testing/map-rendering.md). Exercise stock
+bindings and authored native/scenario BMP/GIF replacements through their real
+selection/decoding adapters, with F03/P03 precedence, dimensions, registration and
+transparency checks. Enumerate rendered selector coverage separately from decoded
+image coverage. Missing required bindings need a diagnostic or explicit limited
+state; a fallback marker cannot be reported as successful feature acceptance.
+Non-map media/editor formats retain their owning milestone scope.
 
 Test the adopted content definitions and semantic operations, including custom
 content, observer restrictions, changed/deleted targets, accept/cancel, real

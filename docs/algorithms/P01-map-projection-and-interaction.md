@@ -11,7 +11,7 @@ in the original executable or a historical test.
 | Gameplay | Map target identity, exploration/privacy and access to actual activation/movement commands. |
 | Original files/content | W01 map coordinates and F06 saved preference translations. |
 | Original peers | N02/N05 encode any resulting synchronized state or commands; no additional native callback ABI is required here. |
-| Executable comparison only | Projection, camera, hit regions, zoom/cursors and navigation. |
+| Executable comparison only | Exact original projection, camera, hit regions, zoom/cursors and navigation procedures. Required camera/interaction capabilities follow P02 and the M2 acceptance matrix. |
 
 The explicit presentation contract below selects the required definitions;
 its detailed original procedures remain reference. The table above adds no
@@ -24,8 +24,8 @@ feel and support for original configuration and scenario content. It is **not
 an exact recreation of the original interface**. Apply [X01's presentation
 policy](X01-classic-compatibility-contract.md#presentation-and-semantic-interaction-policy).
 
-The requirements are the semantic obligations and external-data definitions
-explicitly adopted below. All numbered sections and appendices under
+The requirements are the semantic obligations, adopted visual capabilities and
+external-data definitions explicitly adopted below. All numbered sections and appendices under
 [Original behavior reference](#original-behavior-reference) describe the old
 interface. Their imperative wording, including historical “required” and
 “conformance” lists, does not make their UI procedures mandatory. An adopted
@@ -64,8 +64,11 @@ storage and documented diagnostics for unsupported or invalid input.
   command meanings, not required clicks, hold delays, mode toggles, cursor flags,
   stack display order or automatically chosen focus targets. Any automatic
   *gameplay* activation still follows U04; visual focus does not replace it.
-- A readable tile map and navigable overview support the intended feel. Exact
-  isometric metrics, window arrangement and saved screen coordinates are optional.
+- A readable tile map and navigable overview support the intended feel.
+  [P02’s minimum visual features](P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set)
+  require pan/zoom, displayed-viewport tracking, readable labels and correct
+  wrapped/flat edges. Exact gestures, isometric metrics, window arrangement and
+  saved screen coordinates remain optional.
 
 ## Original-file input contract
 
@@ -76,6 +79,13 @@ adds no required screen-coordinate or native-window format. Reference projection
 and geometry constants do not become external map coordinates.
 
 ## Required verification
+
+The [M2 map acceptance matrix](../testing/map-rendering.md) defines the required
+camera, picking, inspection, overview and lifecycle cases, especially MV18–MV29.
+Run them against the displayed transform and real host input on native and browser
+paths. A six-control shell check or an offscreen coordinate round trip alone
+does not establish complete map interaction. Future gameplay commands keep their
+own milestone gates; supported inspection/navigation must work now.
 
 Test the adopted content definitions and semantic operations, including custom
 content, observer restrictions, changed/deleted targets, accept/cancel, real

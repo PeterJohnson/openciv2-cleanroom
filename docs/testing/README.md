@@ -6,6 +6,22 @@ and the browser host. Native I/O/API boundary tests are in `OpenCiv2.Base.Tests`
 Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 [implementation coverage](coverage.md) for admitted APIs and exclusions.
 
+## Complete M2 map renderer
+
+Follow the [map-rendering acceptance matrix](map-rendering.md) for all P02
+MV01–MV30 rows, [interactive workloads/budgets](../performance/map-rendering.md)
+for performance, and the [visual ledger](../validation/map-visual-coverage.md)
+for separate native, browser and live-provider status. Extend the production
+renderer tests/scene gallery and wire their regression checks into the optional
+application/browser CI jobs before claiming acceptance. The current MapProbe and
+Riverbend input checks cover only a subset of the matrix.
+
+`python3 tools/check_map_assets.py` validates binding metadata; supplying
+`--pack /path/to/runtime/data/atlas-hd.pack` also checks the pinned bytes. Neither
+command executes the renderer. Keep root headless tests independent of graphics
+packages/displays; optional renderer jobs use explicitly pinned content and the
+production host. Retain per-feature visible evidence as well as semantic tests.
+
 ## Independent CLI/helper drivers
 
 After the root Release build, run the following. Append `.exe` to executable

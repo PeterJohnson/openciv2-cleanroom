@@ -21,6 +21,15 @@ tested tree and report hashes. The [previous .NET 10 run](local-2026-11-17.md)
 remains historical evidence. The updated hosted workflows require a fresh run
 after commit/push; actual Windows/macOS desktop checks remain open.
 
+## M2 map-rendering acceptance
+
+Complete-renderer acceptance is separately tracked for
+[P02 MV01–MV30](map-visual-coverage.md) against the
+[M2 matrix](../testing/map-rendering.md) and
+[interactive performance contract](../performance/map-rendering.md). All complete
+native/browser feature gates remain pending; expanding the specification does
+not extend the scope of earlier test reports.
+
 ## Executed cross-platform CI
 
 Commit `7a3a3199f90ab0bb98bb425590e04ab17b311c4f` passed the

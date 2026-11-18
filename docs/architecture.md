@@ -853,6 +853,16 @@ objects out of view models and mechanics. Preserve full redraw, cached pan and
 dirty update cases in performance checks, including half-world views at 4K/5K.
 Measure model preparation, allocations and GC stalls as well as drawing time.
 
+[P02 MV01–MV30](algorithms/P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set)
+and the [M2 acceptance matrix](testing/map-rendering.md) define the complete map
+renderer. A small authored scene proves integration, not visual completeness.
+Implement each capability against explicit owned, observer-filtered inputs; use
+authored inputs for later gameplay producers without a second test-only renderer.
+The [map performance contract](performance/map-rendering.md) separates unchanged
+repaint, cached pan, continuous zoom, dirty world changes and resource replacement.
+Native and browser backends must retain the same feature coverage. Actual platform
+and hardware evidence remains separately scoped.
+
 The comparison established feasibility, not production renderer provenance or
 complete platform acceptance. Write the production renderer from permitted
 asset contracts; the experiment's source-reuse exception remains isolated.
