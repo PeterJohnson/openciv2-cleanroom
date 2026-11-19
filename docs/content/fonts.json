@@ -3,7 +3,7 @@
   "dependency": "DejaVu",
   "version": "2.37",
   "provenance": "DejaVu Serif/Sans/Sans Mono are the families identified in openciv2-assets THIRD-PARTY.txt. The historical cache input versions/hashes were not recorded; 2.37 is an explicit cleanroom content pin, not a recovered cache-source identity.",
-  "rasterizer": "Dear ImGui 1.93.0 bundled stb_truetype; runtime glyph atlases",
+  "rasterizer": "Avalonia text stack and Skia runtime glyph rasterization for the M2 map slice",
   "defaultFace": "sans.regular",
   "faces": [
     {

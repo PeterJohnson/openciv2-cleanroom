@@ -19,6 +19,7 @@ public interface IPlayerClient
     ClientIdentity Identity { get; }
     LiveRecords<OwnUnit> OwnUnits();
     LiveRecords<OwnCity> OwnCities();
+    MapObservation? ObserveMap();
     OwnedList<CommandDescriptor> Commands();
     CommandUpdate Submit(CommandRequest request);
     OwnedList<CommandUpdate> Updates();

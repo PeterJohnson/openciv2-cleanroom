@@ -8,5 +8,5 @@
     <NuGetLockFilePath>$(MSBuildThisFileDirectory)../../packaging/locks/desktop-aot/$(RuntimeIdentifier).json</NuGetLockFilePath>
     <RestoreLockedMode>true</RestoreLockedMode>
   </PropertyGroup>
-  <ItemGroup><PackageReference Include="Avalonia.Desktop" /><ProjectReference Include="../OpenCiv2.App/OpenCiv2.App.csproj" /></ItemGroup>
+  <ItemGroup><PackageReference Include="Avalonia.Desktop" /><ProjectReference Include="../OpenCiv2.App/OpenCiv2.App.csproj" /><ProjectReference Include="../OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" /></ItemGroup>
 </Project>

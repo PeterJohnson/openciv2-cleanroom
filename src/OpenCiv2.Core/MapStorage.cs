@@ -122,9 +122,12 @@ public sealed class MapStorage
         int shift = (PatternSeed / 16) & 3;
         return (Arithmetic.ShiftSigned(pattern.U, -shift) & 1) == (Arithmetic.ShiftSigned(pattern.V, -shift) & 1) ? (byte)2 : (byte)1;
     }
-    public bool Hut(Position position)
+    public bool Hut(Position position) => HutCandidate(position) && TileAt(position).Owner is null;
+
+    /// <summary>W01 coordinate and terrain test independent of the live occupant.</summary>
+    public bool HutCandidate(Position position)
     {
-        if (!Geometry.InBounds(position) || TileAt(position).Ocean || TileAt(position).Owner is not null) return false;
+        if (!Geometry.InBounds(position) || TileAt(position).Ocean) return false;
         var pattern = PatternAt(position); return pattern.Cell == (unchecked((uint)(pattern.Pattern + 8)) & 31);
     }
     public void Mutate(TileMutation mutation, TileSyncControls controls = default, Action<TileSyncEffect>? publish = null)

@@ -1570,22 +1570,45 @@
     },
     {
       "id": "m2-shell",
-      "contract": "Bounded application; M2 full rendering/platform integration deferred",
-      "publicSurface": "Avalonia session host; future map rendering, menus, fonts and platform adapters",
-      "review": "The bounded production session host has native/browser input coverage. Full M2 rendering, menus, windowing, DPI and accessibility remain open.",
-      "sharedGroups": [],
+      "contract": "P01\u2013P05 presentation contracts; W01 \u00a7\u00a72,8; W03 \u00a71; F03 scoped runtime content",
+      "publicSurface": "Owned observer map; pinned atlas and DejaVu admission; Avalonia batched map, viewport/texture caches, picking and local stack confirmation",
+      "review": "Authored map and local stack command on Linux. Portable privacy and malformed-format cases; native pointer/keyboard input and CPU raster measurements. Browser content behavior, full knowledge and graphic binding coverage, and remaining desktop acceptance are open.",
+      "sharedGroups": [
+        "P03.atlas-admission",
+        "P03.pinned-package-admission",
+        "P03.png-filters-and-failures",
+        "P05.map-target-command",
+        "W03.map-observer-privacy"
+      ],
       "status": "partial",
       "sources": [
         "src/OpenCiv2.App/ApplicationIdentity.cs",
+        "src/OpenCiv2.App/GraphicsFonts.cs",
+        "src/OpenCiv2.App/Map/MapCamera.cs",
+        "src/OpenCiv2.App/Map/MapControl.cs",
+        "src/OpenCiv2.App/Map/MapPainter.cs",
+        "src/OpenCiv2.App/Map/MapScene.cs",
+        "src/OpenCiv2.App/Map/MapTextures.cs",
         "src/OpenCiv2.App/SeamApp.cs",
         "src/OpenCiv2.App/SeamSession.cs",
         "src/OpenCiv2.App/SeamView.cs",
         "src/OpenCiv2.Browser/Program.cs",
-        "src/OpenCiv2.Desktop/Program.cs"
+        "src/OpenCiv2.Contracts/MapObservation.cs",
+        "src/OpenCiv2.Desktop/Program.cs",
+        "src/OpenCiv2.Formats/Graphics/AssetAtlas.cs",
+        "src/OpenCiv2.Formats/Graphics/AtlasPng.cs",
+        "src/OpenCiv2.Formats/Graphics/PinnedGraphics.cs",
+        "src/OpenCiv2.IO.Native/ContentDirectory.cs",
+        "src/OpenCiv2.Query/MapProjection.cs",
+        "src/OpenCiv2.Session/SessionRuntime.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/GraphicsCases.cs",
+        "tests/OpenCiv2.FoundationCases/MapObservationCases.cs",
+        "tests/OpenCiv2.MapProbe/Program.cs",
         "tools/dotnet/run_application.py",
-        "tools/dotnet/run_application_browser.cjs"
+        "tools/dotnet/run_application_browser.cjs",
+        "tools/dotnet/run_application_native.py"
       ]
     },
     {

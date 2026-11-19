@@ -20,15 +20,15 @@ Projects live in `src/`; case libraries and executable hosts live in `tests/`.
 | `OpenCiv2.Base`, `OpenCiv2.IO` | Arithmetic, PCG32/choices, owned values and byte/storage contracts | `Arithmetic.cs`, `Randomness/RandomContext.cs`, `Storage.cs` |
 | `OpenCiv2.Contracts` | Immutable client observations, commands and setup values | `Clients.cs`, `Commands.cs` |
 | `OpenCiv2.Core` | Live state, map geometry/storage, rules and implemented gameplay leaves | `State/GameState.cs`, `MapStorage.cs`, `Rules/RuleInstaller.cs` |
-| `OpenCiv2.Formats` | Classic codecs, content decoding/conversion and versioned checkpoints | `ClassicFiles.cs`, `Content/ContentPack.cs`, `LocalCheckpointCodec.cs` |
+| `OpenCiv2.Formats` | Classic codecs, content decoding/conversion, portable graphics readers and versioned checkpoints | `ClassicFiles.cs`, `Content/ContentPack.cs`, `LocalCheckpointCodec.cs` |
 | `OpenCiv2.Session` | Authority, clients, continuations, setup/load/save and checkpoint ownership | `SessionRuntime.cs`, `CommandRuntime.cs`, `Checkpoint.cs` |
 | `OpenCiv2.Network` | Messages, framing, queues, compression and state images | `Stream.cs`, `SendQueue.cs`, `Sections.cs` |
-| `OpenCiv2.Query` | Stored inspection/diffs and observer-filtered live values | `StoredInspection.cs`, `LiveProjection.cs` |
+| `OpenCiv2.Query` | Stored inspection/diffs and observer-filtered live entity/map values | `StoredInspection.cs`, `LiveProjection.cs` |
 | `OpenCiv2.IO.Native`, `OpenCiv2.Platform.Native` | Native filesystem and classic text adapters | `NativeFiles.cs`, `ClassicStorage.cs`, `ClassicTextFiles.cs` |
 | `OpenCiv2.Cli`, `OpenCiv2.Export.Sqlite`, `OpenCiv2.Cli.Sqlite` | CLI composition and optional native export | `Program.cs`, `SqliteSnapshot.cs` |
 | `OpenCiv2.Automation` | Optional stock Lua interpreter, scoped player API and resource budgets | `LuaMachine.cs`, `ScriptTask.cs` |
 | `OpenCiv2.ViewModels`, `OpenCiv2.Console` | UI-independent player-client model and command parser | `SessionPanel.cs`, `CommandText.cs` |
-| `OpenCiv2.App`, `OpenCiv2.Desktop`, `OpenCiv2.Browser` | In-progress production Avalonia integration host | `SeamSession.cs`, `SeamView.cs`, `Program.cs` |
+| `OpenCiv2.App`, `OpenCiv2.Desktop`, `OpenCiv2.Browser` | Avalonia integration host, authored map, renderer and input | `SeamSession.cs`, `SeamView.cs`, `Program.cs` |
 
 Shared cases are in `tests/OpenCiv2.FoundationCases`; native and browser
 hosts execute the same portable cases. Native I/O and optional SQLite have their
@@ -36,6 +36,24 @@ own tests. `OpenCiv2.Conformance` and its two hosts exercise the selected X02
 fixtures. Build commands and evidence checks are in the
 [build guide](BUILDING.md). Public client APIs expose owned values;
 mutable Core records and borrowed spans stay behind the session boundary.
+
+The two desktop renderer options share `MapRendererOptions`; the native host
+owns preference I/O in `RendererPreferences`. `MapRendererSession` owns per-window
+fallback/retry and context replacement. `MapGpuComposition` owns the shared
+context cache policy without owning Avalonia's context. The GPU implementation is in `OpenCiv2.App/Map/MapGpuComposition.cs`.
+`MapPainter` remains the common selector/drawing implementation. The
+[prototype report](validation/m2-gpu-composition-prototype.md) records its
+historical environment switches, matched benchmarks and correctness limits; the software
+compositor remains the default.
+The [follow-up experiments](validation/m2-gpu-experiments.md) add sprite batching,
+deferred GPU preparation, retained pictures, instrumented GL replay and native
+input-to-window-image measurements. `GpuUploadChecks` verifies CPU raster updates
+through actual GPU readback, covering the aliased-worker snapshot invalidation.
+The [staged optimization report](validation/m2-gpu-optimization.md) covers
+`MapForegroundCommands` (ordered per-frame commands), shared atlas masks,
+`MapObservationDelta` (disclosed snapshot changes), and the experimental
+`MapPainter.GpuRegions` / ground topology caches. These remain feature-gated;
+failed visual or performance experiments do not change the supported defaults.
 
 ## Adding behavior
 
@@ -58,7 +76,12 @@ integer wrapping and sampling laws rather than replacing them based on names.
 No reflection-driven command dispatcher, global mutable service locator or generic
 ECS is required. Avoid per-frame world copies and one UI control per map tile.
 
-Native interop is limited to the optional stock Lua bridge and SQLite API. Keep
+Game/runtime native interop is limited to the optional stock Lua bridge and SQLite API.
+The independent Linux map GPU test probe additionally uses system EGL/OpenGL to
+create its test context; production hosts continue to use Avalonia's context. Keep
 protected native calls, safe-handle lifetimes and resource budgets intact. Tools
 under `tools/dotnet/` build dependencies, execute hosts and verify evidence; root
 Python tools validate specification/content data independently of the application.
+
+Renderer integration and its Linux-only validation are recorded in
+[the renderer-options report](validation/m2-renderer-options.md).

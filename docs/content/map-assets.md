@@ -79,10 +79,10 @@ Direction sets include diagonals and axial neighbors in W01's doubled coordinate
 
 Under normal detail, preserve the visual dependencies: base/coast below edge
 blends and connected relief, agriculture/river/resource/network overlays above
-their base, tall improvements/cities/units above their supporting tile, and
-banners/status above their object. A suitable depth/compositing policy can
-replace legacy call order, but overlapping translucent images must remain
-correct. Fog clips every affected world layer and never samples hidden art.
+their base, and display grids and fills below all tall improvements, cities
+and units. Draw each cell's tall objects and banners in floor-row order,
+followed by city captions and transient effects. Fog clips every affected
+world layer and never samples hidden art.
 
 ## Unit, city and owner selection
 
@@ -96,7 +96,11 @@ Do not map only the six unit kinds used by an authored demonstration.
 owner-colored shield/border treatment, dark shadow and offset secondary stack
 shield; do not multiply its near-black RGB by the owner color. Unit body art
 keeps its own colors. Health bands, order/veteran/automation markers and stack
-counts are composed separately. The unit shield anchor is `(48,4)` within the
+counts are composed separately. Stock shields use the resolved palette color
+for both masks. The classic CITIES loader retains primary and secondary shield
+colors separately from the label and overview color. A stack's second mask
+extends outward from its representative's registration, with its own shadow.
+The unit shield anchor is `(48,4)` within the
 64×48 body box, except rule slots 32..43 use `(2,0)`. These registrations are
 included per variant in the catalog, including the default for the leader appearance.
 
@@ -114,6 +118,9 @@ King. City Walls or an active Great Wall supplies walled appearance where that
 fact is admitted. The projection may publish the resolved appearance instead
 of its source inputs. It must not disclose hidden advances or current foreign
 population to let the frontend calculate it. Appearance never changes city size.
+When appearance is withheld, the generic city marker can still carry admitted
+population, garrison and disorder. The fallback population badge sits to
+the left of the marker and above the city caption.
 
 Use the catalog's `factions` record for the resolved **color role** 0..7, not
 the raw player/tribe slot. Its RGB is the pinned palette value at `208+3*color`;
@@ -154,6 +161,10 @@ The catalog records these frames in sequence. P10 owns their semantic event,
 position, completion and cancellation; frame cadence may change. Moving units
 reuse their chosen body and annotations under the same camera transform.
 
+Use the city-radius sprite's alpha with the observer's resolved civilization
+color. The ordinary grid keeps its source colors and applies where the radius
+grid is absent when both modes are enabled.
+
 The atlas does **not** need separate sprites for runtime city names, population,
 orders, work counters, stack counts, health bars, path/trade lines, ownership
 fills, minimap marks/viewport, hover information, notifications, clipping,
@@ -162,6 +173,15 @@ roles**, listed in `proceduralRoles`, using the pinned TrueType font contract.
 They remain required visual capabilities. Stock health green/yellow/red and
 neutral/shadow colors are recorded in `displayColors`; they are not gameplay
 thresholds. No missing-art fallback may impersonate a successful image lookup.
+
+Map captions use 10–22 device-independent pixels according to world zoom.
+The first caption in visible map-row order reserves its layout cells, and later
+captions use free cells. Oversize captions end with an ellipsis at a text
+element boundary. Full names stay available in inspection. Population badges
+keep an 8-pixel logical font floor, and order and work badges keep a 7-pixel
+floor at full detail. Numeric badge widths grow to fit. Scale glyphs once by
+the backing density. HUD notices use a fixed 13-pixel logical font, with
+clipping and ellipsizing at the viewport boundary.
 
 ## Validation and data provenance
 

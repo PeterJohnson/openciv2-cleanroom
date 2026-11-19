@@ -20,7 +20,7 @@ GUI_PACKAGES = {
 EDGES = {
     "OpenCiv2.Automation": {"OpenCiv2.Console"},
     "OpenCiv2.App": {"OpenCiv2.Session", "OpenCiv2.ViewModels", "OpenCiv2.Console"},
-    "OpenCiv2.Desktop": {"OpenCiv2.App"},
+    "OpenCiv2.Desktop": {"OpenCiv2.App", "OpenCiv2.IO.Native"},
     "OpenCiv2.Browser": {"OpenCiv2.App"},
     "OpenCiv2.ViewModels": {"OpenCiv2.Contracts"},
     "OpenCiv2.Console": {"OpenCiv2.Contracts"},

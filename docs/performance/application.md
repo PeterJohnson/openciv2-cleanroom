@@ -61,7 +61,9 @@ Both graphics runs use software rendering: isolated Xvfb for desktop and
 SwiftShader for headless Chromium. The desktop environment logs unavailable AMD
 acceleration before falling back; the window/input checks pass. These results
 make no display-FPS, native-compositor, macOS, Windows or mixed-DPI claim. Existing
-1×/2× browser input evidence are distinct from future 4K/5K map-rendering acceptance.
+1×/2× browser input evidence are distinct from map rendering. The
+[Riverbend validation](../validation/m2-map-slice.md#software-raster-workloads)
+records simulated 4K/5K CPU workloads. Physical display acceptance stays open.
 One desktop attempt terminated before its final report after 14 completed samples;
 its log is retained, but no samples from it are included in the accepted population.
 

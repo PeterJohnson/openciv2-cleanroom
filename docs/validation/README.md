@@ -18,10 +18,28 @@ The .NET 11 and shared SkiaSharp 4 upgrade passed
 including native/browser behavior, actual application input, extracted CLI
 packages and collector smoke checks. That record identifies the uncommitted
 tested tree and report hashes. The [previous .NET 10 run](local-2026-11-17.md)
-remains historical evidence. The updated hosted workflows require a fresh run
-after commit/push; actual Windows/macOS desktop checks remain open.
+remains historical evidence. The upgraded hosted workflows have now passed for
+the signed Native AOT lock correction, as recorded below; actual Windows/macOS
+desktop checks remain open.
 
-## M2 map-rendering acceptance
+## M2 map slice
+
+The [staged GPU optimization record](m2-gpu-optimization.md) evaluates command
+reuse, shared tint masks, stable placement, sparse damage and retained map
+regions against the preserved renderer. Its experimental visual failures and
+target-hardware measurements remain separate from complete M2 acceptance.
+
+The [GPU composition experiments](m2-gpu-experiments.md) compare batching,
+preparation offload, retained content, cache budgets, pipelining and native input
+latency at 1080p, 4K and 5K. They repair a stale-upload error in the CPU baseline
+and supersede the [first prototype's](m2-gpu-composition-prototype.md) performance
+conclusion and earlier warm hardware-Xwayland timings using the affected path.
+GPU composition remains experimental; the measurements and pixel comparisons
+are separate from full M2 acceptance.
+
+The [Riverbend validation record](m2-map-slice.md) covers pinned graphics and
+fonts, the Linux interaction and the CPU raster workloads. Browser behavior and
+unavailable platform checks remain open for the map slice.
 
 Complete-renderer acceptance is separately tracked for
 [P02 MV01–MV30](map-visual-coverage.md) against the
@@ -31,6 +49,19 @@ native/browser feature gates remain pending; expanding the specification does
 not extend the scope of earlier test reports.
 
 ## Executed cross-platform CI
+
+Commit `9bc6e0176872d63504b2a206ecadbe3a3c9624b4` passed the
+[build and test workflow](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44235017302)
+and [repository checks](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44235017244).
+All five build/test jobs succeeded: implementation coverage, browser/Lua/application
+input, and the Linux x64, macOS ARM64 and Windows x64 core/CLI/package jobs.
+The native jobs include successful managed desktop builds and Native AOT
+publication with the corrected signed-package locks. Linux additionally passed
+managed and AOT X11 input; Windows/macOS desktop interaction remains unverified.
+This is a workflow/job-status check of the .NET 11 revision, not a new downloaded
+artifact receipt or target-hardware performance measurement.
+
+### Earlier artifact receipt
 
 Commit `7a3a3199f90ab0bb98bb425590e04ab17b311c4f` passed the
 [application/core CI run](https://github.com/PeterJohnson/openciv2-cleanroom/actions/runs/44027604903)
@@ -71,3 +102,7 @@ Use [platform acceptance](../testing/platforms.md) to record results and failure
 Headless tests, emulated density and restore-only checks cannot close native
 interaction or hardware-performance gates. Authored fixtures and C# regression
 cases cannot replace independently captured original-game observations.
+
+The [two-renderer integration](m2-renderer-options.md) adds desktop preferences,
+GPU fallback/retry and deterministic atlas placement. Its scope is Linux only;
+other-platform execution is explicitly deferred.

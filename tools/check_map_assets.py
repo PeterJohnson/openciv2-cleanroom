@@ -2,6 +2,7 @@
 """Validate the owned stock-map binding contract; optionally inspect a pinned pack."""
 import argparse
 import hashlib
+import json
 from pathlib import Path
 import re
 import struct
@@ -11,7 +12,7 @@ from check_conformance import read_json, require
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def validate(root=ROOT, pack=None):
+def validate(root=ROOT, pack=None, decoded_report=None):
     catalog = read_json(root / "docs/content/map-asset-bindings.json")
     assets = read_json(root / "docs/content/assets.json")
     require(catalog["schemaVersion"] == 1 and catalog["profile"] == "classic-hd-map-2026.11.07.1", "unknown map binding profile")
@@ -86,6 +87,13 @@ def validate(root=ROOT, pack=None):
         require(data[:8] == b"C2ATLAS1", "invalid atlas signature")
         entries = {}
         records = {}
+        decoded = None
+        if decoded_report is not None:
+            from io import BytesIO
+            from PIL import Image
+            report = json.loads(Path(decoded_report).read_text())
+            require(report.get('format') == 'openciv2-atlas-pixels/1', 'unknown decoder receipt format')
+            decoded = report['sprites']
         for i in range(struct.unpack_from("<I", data, 8)[0]):
             pos = 780 + 180 * i
             key = data[pos:pos+160].split(b"\0")[0].decode("utf-8")
@@ -94,6 +102,12 @@ def validate(root=ROOT, pack=None):
             records[key] = (w, h, proxy)
             entries[key] = {"logicalSize": [w,h], "physicalSize": list(struct.unpack_from(">II", data, png+16)),
                             "pngSha256": hashlib.sha256(data[png:png+length]).hexdigest()}
+            if decoded is not None:
+                with Image.open(BytesIO(data[png:png+length])) as raster:
+                    require(raster.mode == 'RGBA' and hashlib.sha256(raster.tobytes()).hexdigest() == decoded.get(key),
+                            f'independent straight-alpha pixel comparison differs: {key}')
+        if decoded is not None:
+            require(set(decoded) == set(entries), 'decoder receipt does not cover the exact atlas inventory')
         for key, description in images.items():
             require(entries.get(key) == description, f"published atlas binding differs: {key}")
         # P03's declared sheet-marker format independently checks the owned
@@ -118,14 +132,20 @@ def validate(root=ROOT, pack=None):
         for faction in catalog["factions"]:
             pos = 12 + 3 * (208 + 3 * faction["colorRole"])
             require('#' + data[pos:pos+3].hex() == faction["rgb"], "faction RGB differs from pack")
-    return f"Validated {len(images)} exact map image bindings and all selector families" + (" against the pinned pack." if pack else "; pack bytes not supplied.")
+    message = f"Validated {len(images)} exact map image bindings and all selector families" + (" against the pinned pack." if pack else "; pack bytes not supplied.")
+    if decoded_report is not None:
+        message += f" Compared all {len(entries)} decoded RGBA images with Pillow."
+    return message
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pack", type=Path)
+    parser.add_argument("--decoded-report", type=Path, help="Compare the production atlas pixel receipts with Pillow")
     args = parser.parse_args()
+    if args.decoded_report is not None and args.pack is None:
+        parser.error("--decoded-report requires --pack")
     try:
-        print(validate(pack=args.pack))
+        print(validate(pack=args.pack, decoded_report=args.decoded_report))
     except (OSError, ValueError, KeyError, TypeError, struct.error) as error:
         parser.exit(1, f"Map asset contract: {error}\n")

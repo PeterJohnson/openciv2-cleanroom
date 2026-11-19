@@ -31,6 +31,19 @@ edges, and 1×/2× density without multiplying physical resolution twice.
 | Dirty world | Move a unit; change health/order/owner color; change a city label/walls/size; change terrain, a road and its neighbors; advance an effect. Include old/new bounds and dependent layers. Changing only the selection outline is a separate workload. |
 | Replacement/recovery | Replace observer, world or content; resize/change density; evict/recreate resources. Verify stale data disappears, resources are released and the next correct frame is presented. |
 
+The Linux cold-frame receipt splits the interval after content admission into
+framework setup, renderer and font setup, showcase construction, window setup
+and waiting for the first map draw, and the map draw through the end of the
+Skia lease. Board assembly and scene binding are also reported within showcase
+construction. The driver checks that the measured phases account for the same
+first frame and reads the native window after timing.
+
+The desktop can prepare an initial set of CPU map textures after content
+admission while the host starts. The cold receipt records that work, the
+resulting texture bytes and the time spent joining it. These overlap the
+sequential startup phases. Timing from the start of admission through the
+first draw is available alongside the post-admission timing.
+
 For every changed frame compare against a fresh rendering of the same permitted
 state and camera. Correctness failures invalidate timing acceptance. Include
 actual host drawing/composition rather than timing only command recording or an
@@ -81,7 +94,7 @@ Unmeasured hardware/platforms stay pending. Keep implementation, functional
 acceptance, software measurements and target-hardware performance as distinct
 claims in the [coverage ledger](../validation/map-visual-coverage.md).
 
-The in-progress Riverbend slice's reported results measure software full
-frames, unchanged-frame blits and selection-only dirty updates. They remain
+The existing [Riverbend results](../validation/m2-map-slice.md) measure software
+full frames, unchanged-frame blits and selection-only dirty updates. They remain
 historical measurements of that slice and do not pass these pan/zoom/world-change
 workloads or the new complete-renderer budgets.

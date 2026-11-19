@@ -11,7 +11,7 @@ establish that its entire family has been implemented or validated.
 | --- | --- | --- |
 | M0 | Reproducible build, specification/content inventories and evidence boundaries | Implemented with pinned .NET tooling and cross-platform CI |
 | M1 | Finite portable foundations, classic codecs, content/inspection CLI, session ownership and bounded checkpoints | Implemented; current test families and exclusions are in the coverage and validation guides |
-| M2 | Complete map renderer, Avalonia interaction, platform menus/storage and content installation | In-progress Linux slice; MV01–MV30 completeness, browser content and full platform gates remain open |
+| M2 | Complete map renderer, Avalonia interaction, platform menus/storage and content installation | Linux rendering infrastructure exists; MV01–MV30 completeness, browser content and full platform gates remain open |
 | M3 | First playable local game slice | Planned; depends on M1 and the required M2 surfaces |
 | M4 | Complete single-player mechanics, AI and expanded automation | Planned |
 | M5 | Scenarios, editors, complete UI and hotseat | Planned |
@@ -74,13 +74,12 @@ checks and independent provenance for compatibility claims.
 
 Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
 
-The in-progress Riverbend slice supplies rendering infrastructure: scoped
-W01/W03 observations, pinned atlas/fonts, Skia drawing, pan/zoom, picking and the
-shared local stack interaction on Linux. Its local results cover that finite
-scope and simulated 4K/5K workloads. The slice and its execution report remain
-separate implementation work; they do not complete the map renderer. Browser
-content, visual coverage, interactive performance and the full platform/services
-gate below remain open.
+The Riverbend slice establishes rendering infrastructure: scoped W01/W03
+observations, pinned atlas/fonts, Skia drawing, pan/zoom, picking and the shared
+local stack interaction on Linux. Its [validation record](validation/m2-map-slice.md)
+retains that finite scope and simulated 4K/5K results. It does not complete the
+map renderer. Browser content, visual coverage, interactive performance and the
+full platform/services gate below remain open.
 
 Map completeness is [P02 MV01–MV30](algorithms/P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set),
 with the mandatory [acceptance matrix](testing/map-rendering.md), tracked in the
@@ -89,6 +88,142 @@ the [exact atlas mapping](content/map-assets.md). All thirty rows, their enumera
 selectors and combined cases are required; a loaded pack or representative scene
 does not close a row. Small implementation slices are progress checkpoints, not
 permission to stop the complete-renderer task early.
+
+The Linux showcase now has one authored board per MV row plus the large mixed
+world. Stock and classic replacement selectors run through the same painter as
+Riverbend. Pixel comparisons cover every terrain and special resource,
+all coast, edge-blend, relief, river and mouth variants, agricultural
+combinations, remembered route updates, and river/road/rail/resource crossings.
+The authored Riverbend map also demonstrates a continuous river with a
+tributary, a road crossing and a wrapped gulf mouth, with resource art chosen
+from the projected W01 facts.
+They also cover localized world changes with label reflow and whole-pixel
+terrain scrolling with foreground recomposition. Isolated Linux input exercised both
+1× and 2× backing density, including same-process windows with independent
+cameras and a window moved between virtual monitors. The local selection,
+route, notification, overview, camera, detail-band and effect checks pass,
+including native navigation during effects and decision completion under
+reduced motion.
+The Linux application CI step verifies the archive pins and runs the software
+matrix, native gallery, scoped map input and fresh-frame comparisons for
+startup and recovery.
+Exact unit, stack, health, order and city comparisons cover the stock theme,
+native-only replacements and classic sheets. City annotations remain visible
+when the body selector is withheld, and dirty redraw clears a custom stack
+shield's overhang.
+Flat and wrapped map-region replays preserve admitted pixels and inspection
+after changes outside the region. Native pointer and keyboard inspection reach
+the same worker and city facts, including withheld and unavailable work.
+Configured role changes update flags, shields, aircraft, annotations, overlays
+and overview in place. Ownership edges match fresh frames after clipped
+repaints, and W01 radius overlays match the flat and wrapped city footprints.
+Crowded captions use a documented size floor and complete text elements.
+The pinned font fallback, numerical badges and overlapping translucent layers
+match independent compositions at both Linux backing densities.
+The live theme selector replaces terrain, foreground, textures and overview
+resources together. Recovery keeps the selected target and camera and shows
+an explicit limited frame when resources cannot be recreated.
+Current evidence and outstanding combinations are
+recorded in the [visual coverage ledger](validation/map-visual-coverage.md).
+Parallel chunk rasterization shortened the large overview transition. Bounded
+viewport-sized cache caps retain the active backing tiers during repeated
+4K and 5K zoom changes. The renderer prepares missing ground textures in
+bounded batches from the admitted images needed by the frame. Large warm
+redraws, first-time high-tier construction and cold resource replacement still
+exceed the interactive budgets. Parallel foreground replay reduces warm
+half-world pan time at 4K and 5K. Padded redraw clips preserve the serial
+pixels across parallel band edges and around dirty-world updates.
+Vectorized Paeth and Adler calculations and grouped CRC checks reduce
+cold PNG preparation. The scoped renderer still validates each image
+before preparing textures.
+Full redraws prepare missing visible body images in parallel. A camera move
+can expose additional bodies within an existing backing tier. The cache
+uses its resident keys to find those misses. Ground workers use resident
+textures to draw their chunks directly when the batch fits the cache.
+Compatible ground sprites use a temporary atlas with padded alpha bounds.
+Workers keep world draw order. On Linux x64, integer-aligned sprites can blend
+one-to-one into an opaque chunk with the pinned Skia rounding rule. The
+portable Native AOT build uses SSE2 and AVX2 uses wider lanes where available.
+The regular Skia atlas path handles other layouts and formats.
+Double-size chunks also use aligned packing in parallel batches of two or
+three when the textures qualify. In software X11 zoom trials the signed
+Native AOT build meets the 4K p95 and p99 budgets and the 5K p99 budget.
+The 5K p95 remains open.
+At the half-size terrain tier, exactly registered sprites can be sampled
+once per build and then use the same aligned compositor. The full Skia
+sampling path handles other registrations. Vectorized PNG row reconstruction
+preserves the exact decoded atlas pixels and reduces cold decode work. Bulk
+inflation and checksum validation allow in-place row compaction in one bounded
+buffer.
+Cold full draws can prepare visible unit and city textures while building
+ground chunks. The simulated 4K and 5K replacement trials now meet the
+250 ms p95 budget. Large redraws of a retained viewport can replay ground and
+foreground in the same worker bands. Backing regions of at least eight
+million pixels can use up to twelve bands with independent edge repairs.
+When the bands also paint ground, they clear their own rows and initialize
+the repair strips without copying the previous background. The final native
+texture reload workload met the 250 ms p95 target at 1080p, 4K and 5K under
+X11 software rendering.
+The process-cold desktop workload measures through the first map draw after
+admission, with separate timings for content validation, authored observation
+creation and scene binding. It compares the native window's map pixels with a
+fresh serial frame at each tested detail level. Keep process startup, resource
+reload and physical presentation timings separate.
+The signed Linux Native AOT publish meets the 1080p first-frame budget at full
+detail, half-world scale and overview in the measured X11 software trials.
+Straight-RGBA sprite tints now use SSE2 in portable x64 builds and share their
+immutable bitmap with the texture cache. Desktop painter setup and bounded
+CPU texture preparation now overlap platform and window setup after content
+admission. Large viewports prepare visible unit and city textures during
+first layout and admit them for the matching draw generation. Accelerated
+virtual-display startup meets 250 ms p95 at all three detail levels in the
+1080p, 4K and 5K trials. Physical presentation timing remains pending.
+Large first frames replay ground and foreground into the same worker bands.
+The first eligible pan prepares the separate terrain-scroll raster. Combined
+replay clears only the background outside guaranteed opaque ground coverage.
+Large full draws share one scratch surface between seam repair and terrain
+scroll. Viewport replacement and resource recovery release those backings.
+Separated dirty chunk misses prepare in bounded batches, and large damage
+patches preserve the viewport outside the patch. Repeated edits in a banded
+view can retain one immutable 4 MiB terrain atlas within the ground cache cap.
+At a settled camera, the viewport updates its composed terrain by changed
+chunk and uses it to initialize the foreground bands. Near sampling ties
+it uses the full ordered replay. Camera changes and resource replacement
+release the settled terrain. Flat and wrapped 1080p dirty-world runs meet the
+combined p95 and p99 budgets on Radeon virtual Xwayland. The 4K and 5K
+update-and-draw p95 budgets remain open.
+Texture reloads at 1080p, 4K and 5K meet the 250 ms draw budget on that
+accelerated virtual output. The 5K pan, zoom and world-change trials still
+exceed the warm draw p95 budget. Physical presentation remains open.
+Inward zooms on large desktop viewports can prepare the next unit and city
+texture tier in bounded background batches. The 4× texture crossing is shorter
+in paired native diagnostics. The full continuous zoom runs meet the draw
+p99 budget at all three sizes. Draw p95 exceeds the budget at 4K and 5K.
+Dirty-world receipts now measure authored update
+construction and production scene binding alongside rendering. Same-layout
+publication can advance while the renderer is busy. The render generation
+guards canvas submission, and observer replacement still releases old
+resources synchronously. The scene indexes full object records only for
+occupied cells. On the isolated Radeon display, 5K dirty binding now takes
+1.17–1.25 ms p95, with the combined p95 still at 30.30–31.70 ms.
+Native startup receipts include framework initialization, font and renderer
+setup, draw scheduling and first-map-draw time. The receipts capture admission
+start through draw completion and the time spent joining background work.
+Independently clipped dirty patches matched fresh 5K pixels with full-width
+ground and exceeded the cost of the full redraw.
+
+The opt-in [GPU experiments](validation/m2-gpu-experiments.md) reuse the same
+art, selectors and foreground ordering and compare batching, preparation offload,
+retained content, cache budgets and pipelining at 1080p, 4K and 5K. They exposed
+and repaired stale GPU uploads after aliased CPU viewport writes. The first
+prototype's performance conclusion and earlier warm hardware-Xwayland timings
+using that path are superseded as evidence of correctly updated frames.
+Software-only and independently read-back cold-frame measurements retain their
+stated scope. CPU composition remains the default. The desktop now offers a saved,
+startup-only experimental GPU option with controlled CPU fallback and context
+cache ownership; see [integration evidence](validation/m2-renderer-options.md).
+This integration defers other-platform tests at the user's request. Full M2
+visual, performance and platform acceptance remains open.
 
 - Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
   terrain/coasts/relief, every feature/network/resource, all supported unit/city

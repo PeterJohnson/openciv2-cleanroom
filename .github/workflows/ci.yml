@@ -118,15 +118,55 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y xvfb libxtst6 clang
+          sudo apt-get install --no-install-recommends -y xvfb libxtst6 clang imagemagick
           python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+      - name: Verify pinned map graphics and exercise Linux renderer
+        if: runner.os == 'Linux'
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          content=build/map-ci
+          results=build/test-results
+          mkdir -p "$content/runtime" "$content/fonts" "$results"
+          read -r atlas_url atlas_hash < <(python -c 'import json; p = json.load(open("dependencies.json"))["assets"]; print(p["url"], p["sha256"])')
+          read -r fonts_url fonts_hash < <(python -c 'import json; p = json.load(open("dependencies.json"))["libraries"]["DejaVu"]; print(p["url"], p["sha256"])')
+          curl -fLsS --retry 3 "$atlas_url" -o "$content/atlas.zip"
+          curl -fLsS --retry 3 "$fonts_url" -o "$content/fonts.tar.bz2"
+          printf '%s  %s\n' "$atlas_hash" "$content/atlas.zip" "$fonts_hash" "$content/fonts.tar.bz2" | sha256sum --check
+          unzip -q "$content/atlas.zip" -d "$content/runtime"
+          tar -xf "$content/fonts.tar.bz2" -C "$content/fonts" --strip-components=1
+          python -m pip install Pillow==12.1.1
+          python tools/dotnet/build_map_art_cases.py "$content/art-cases"
+          desktop=src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+          probe=tests/OpenCiv2.MapProbe/bin/Release/net11.0/OpenCiv2.MapProbe.dll
+          map_inputs=(--assets "$content/runtime" --fonts "$content/fonts")
+          gallery=(python tools/dotnet/run_map_showcase_native.py "${map_inputs[@]}" --art-cases "$content/art-cases")
+          dotnet "$probe" "$content/runtime" "$content/fonts" "$results/map-matrix" --matrix "$content/art-cases"
+          python tools/dotnet/run_xvfb.py "${gallery[@]}" --expected-density 1 --output "$results/map-gallery-1x" --adapter dotnet "$desktop"
+          AVALONIA_GLOBAL_SCALE_FACTOR=2 python tools/dotnet/run_xvfb.py --screen 3000x2100x24 "${gallery[@]}" --interaction-only --expected-density 2 --output "$results/map-gallery-2x" --adapter dotnet "$desktop"
+          python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --map-assets "$content/runtime" --map-fonts "$content/fonts" --report "$results/application-map-native.json" --adapter dotnet "$desktop"
+          python tools/dotnet/run_xvfb.py python tools/dotnet/measure_map_native.py "${map_inputs[@]}" --output "$results/map-recovery" --size 1920x1080 --mode resource-recovery --diagnostic --diagnostic-warmup 0 --diagnostic-frames 3 --adapter dotnet "$desktop"
+          dotnet "$probe" "$content/runtime" "$content/fonts" "$results/map-recovery/replay.json" --replay-native-map "$results/map-recovery/native-performance.json"
+          python tools/dotnet/run_xvfb.py python tools/dotnet/measure_map_native.py "${map_inputs[@]}" --output "$results/map-cold" --size 1920x1080 --mode cold-first-frame --diagnostic --diagnostic-frames 1 --adapter dotnet "$desktop"
+          dotnet "$probe" "$content/runtime" "$content/fonts" "$results/map-cold/replay.json" --replay-native-map "$results/map-cold/native-performance.json"
       - name: Publish opt-in Native AOT desktop
         run: |
           dotnet restore src/OpenCiv2.Desktop -p:Oc2DesktopAot=true --locked-mode
           dotnet publish src/OpenCiv2.Desktop -c Release -p:Oc2DesktopAot=true --no-restore
       - name: Native AOT application input on isolated X11
         if: runner.os == 'Linux'
-        run: python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --native-aot --report build/test-results/application-aot.json --adapter src/OpenCiv2.Desktop/bin/Release/net11.0/linux-x64/publish/OpenCiv2.Desktop
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          set -euo pipefail
+          content=build/map-ci
+          results=build/test-results
+          desktop=src/OpenCiv2.Desktop/bin/Release/net11.0/linux-x64/publish/OpenCiv2.Desktop
+          probe=tests/OpenCiv2.MapProbe/bin/Release/net11.0/OpenCiv2.MapProbe.dll
+          python tools/dotnet/run_xvfb.py python tools/dotnet/run_application.py --native-aot --map-assets "$content/runtime" --map-fonts "$content/fonts" --report "$results/application-aot.json" --adapter "$desktop"
+          python tools/dotnet/run_xvfb.py python tools/dotnet/measure_map_native.py --native-aot --assets "$content/runtime" --fonts "$content/fonts" --output "$results/map-cold-aot" --size 1920x1080 --mode cold-first-frame --diagnostic --diagnostic-frames 1 --adapter "$desktop"
+          dotnet "$probe" "$content/runtime" "$content/fonts" "$results/map-cold-aot/replay.json" --replay-native-map "$results/map-cold-aot/native-performance.json"
       - name: Record native results
         run: |
           mkdir -p build/test-results

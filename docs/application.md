@@ -1,10 +1,10 @@
 # Avalonia application
 
-Status: the production command is implemented. Portable view-model/console clients
-and a small Avalonia desktop/browser host pass local input checks. The optional
-[Lua adapter](automation.md) passes matching Linux/Chromium command/resource
-checks. Native macOS/Windows acceptance remains open. This is the bounded foundation application,
-not playable-turn, full console (M3), or automation (M4) completion.
+The Riverbend map is the first integrated M2 graphics and interaction slice.
+The managed desktop host accepts the pinned graphics package and DejaVu faces.
+Local play is limited to inspecting the map and reordering a coherent own unit stack.
+See the [M2 validation record](validation/m2-map-slice.md) for the tested Linux
+profile, measured CPU workloads and open platform gates.
 
 `LocalUnitCommands.StackBottom()` optionally registers version 1 of
 `unit.stack-bottom`. Its only argument is an owned unit slot/lifetime token. It
@@ -49,31 +49,28 @@ GUI or scripting dependency. Five shared native/WASM groups cover direct/text
 command parity, cancellation, observer changes, revocation, typed quoting and
 malformed input without submissions.
 
-`OpenCiv2.App` composes the existing session and an authored three-unit own stack,
-plus one foreign unit excluded from the presentation. Desktop and browser roots
-use the same Avalonia controls and portable model. The owner advances at most one
-queued operation per tick and refreshes observations only when session work runs,
-rather than copying the world at every idle UI tick. Completed command records
-are retired after the model consumes their updates.
+`OpenCiv2.App` composes an authored 56×32 doubled-coordinate world with known
+terrain, remembered improvements, a named own city, a remembered city site, an
+own stack and independently filtered foreign units. The map observation includes
+its controller binding, revision and topology. The model rebuilds on publication;
+idle ticks, painting, panning, zoom and inspection submit no commands.
 
-Local evidence includes six native pointer-input checks on isolated Xvfb/X11 and
-sixteen Chromium pointer/keyboard checks at actual 1× and 2× browser density.
-They cover the asynchronous prompt, explicit cancellation, confirmation, repeated
-no-op, decline and observer filtering; the browser additionally types a console
-command, confirms by keyboard and rejects a foreign target. Native shutdown uses
-the normal window-close protocol. `tools/dotnet/run_application.py` validates
-compiled source/package/toolchain identities and binds all invoked artifacts and
-reporting inputs before/after the checks. These are real rendered windows/canvas
-controls over the production engine, not the comparison's toy core.
+Drag or use the arrow keys to pan. Scroll to zoom around the pointer. Click a
+city, unit or tile to inspect it. The own-unit list selects a specific stack
+member. Enter on the map or **Send to bottom of stack** opens the same correlated
+confirmation as the command console. Escape dismisses a pending confirmation.
+An accepted reorder updates the visible representative without moving a unit.
+Hit tests resolve diamonds to canonical W01 coordinates and repeat the horizontal
+world only when it wraps. With the pinned graphics, Riverbend shows a tributary
+joining the main river, a road crossing and the river reaching the gulf across
+the wrapped seam. Visible river contacts and remembered routes select the
+package's sprites. Special resources and grassland shields use the W01
+predicates and their own pinned sprites.
 
-Native evidence is **isolated X11 at actual scale 1**. Synthetic input on the
-existing desktop did not reach the controls; that desktop delivery remains
-unverified. An Xvfb server DPI override did not change Avalonia's actual scale,
-so it supplies no high-DPI evidence. Browser checks use software WebGL and make no
-rendering-performance claim. Native macOS/Windows interaction, native menus,
-accessibility and full display/DPI acceptance remain explicit platform/M2 gates.
-The normal headless solution and CLI do not restore Avalonia packages.
-
+The historical shell checks include pointer and keyboard input in Chromium at
+1× and 2×. Current map/content behavior in the browser, native macOS/Windows UI,
+accessibility and display acceptance remain open. The headless solution and CLI
+have no Avalonia dependencies.
 
 The optional Lua native/browser hosts now run 13 matching production-session
 case groups. Direct API, console and Lua compare actual stack links, command
@@ -82,3 +79,28 @@ same production registration. Lua cancellation/errors preserve completed effects
 and malformed UTF-8 produces a stable error on both platforms. Artifact-bound
 reports and the [bridge contract](automation.md) record the evidence. No automation
 editor, subscription system or VM checkpoint support is implied by this application boundary.
+
+
+## Desktop map renderer selection
+
+The desktop host offers **CPU** (default) and **GPU (experimental)**. In Riverbend,
+open **Map options → Renderer after restart**; the gallery has a **Renderer**
+button. Saving a choice applies on the next launch. The same panel shows the
+active renderer and a reason if GPU rendering fell back to CPU. **Reload map
+textures** retries the requested renderer. Selection does not add a frame queue
+or change input, visibility, hit testing or gameplay.
+
+Preferences live in the platform application-data directory at
+`OpenCiv2/renderer.json`. `--renderer-settings PATH` redirects that file.
+`--map-renderer cpu|gpu` and `--map-gpu-cache-mib 128..1024` override saved values
+for that launch without writing them. The default GPU cache ceiling is 512 MiB.
+Unreadable or malformed preferences produce a diagnostic and use defaults;
+invalid command-line values reject the launch. The settings file is replaced
+atomically only when the user changes the preference.
+
+GPU uses CPU terrain preparation plus GPU sprite composition, atlas batching and
+deferred sprite resizing/tinting. Other research feature combinations require
+`OPENCIV2_MAP_EXPERIMENT=1`; ordinary launches ignore those environment switches.
+The GPU option remains experimental. Linux validation and explicit backend pixel
+tolerances are recorded in [renderer integration](validation/m2-renderer-options.md).
+Browser, Windows and macOS testing is deferred for this integration.

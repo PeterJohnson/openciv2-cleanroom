@@ -777,15 +777,15 @@
       "id": "runtime-font-platforms",
       "milestone": "M2",
       "domain": "DejaVu TrueType runtime text on all supported platforms and future custom dialogs.",
-      "knownPrefix": "Pinned DejaVu 2.37 families replace the bitmap-cache reader; the shell uses ImGui runtime rasterization. Historical cache source versions were not recorded.",
-      "closureEvidence": "Verify native macOS/Windows rendering, custom-dialog font selection/measurement and supported text coverage at required DPI/zoom. Keep logical gameplay admission independent of raster metrics; no bitmap cache schema is needed."
+      "knownPrefix": "The Avalonia map slice admits all twelve pinned DejaVu 2.37 faces. The Linux slice integrates all three font roles and draws runtime glyphs in the authored map and stack confirmation.",
+      "closureEvidence": "Verify macOS, Windows and browser rendering, shared measurement, fallback, accessibility and text coverage at required DPI and zoom. Keep admission independent of raster metrics."
     },
     {
       "id": "asset-runtime-release",
       "milestone": "M2",
       "domain": "Runtime graphics package, layouts and decoder.",
-      "knownPrefix": "Published 2026.11.07.1 archive and per-file hashes verified; pack index checked. Runtime decoding is not implemented.",
-      "closureEvidence": "Implement independent PNG/layout readers and confirm semantic consumption of the selected graphics files. Exclude legacy bitmap fonts from new-engine packaging and use the separately pinned TrueType font dependency."
+      "knownPrefix": "The portable reader verifies the pinned 2026.11.07.1 inventory and C2ATLAS1 index. Independent RGBA8 PNG decoding and Linux Skia rendering cover the authored map bindings. All original package members are hashed; legacy font caches are opaque.",
+      "closureEvidence": "Validate browser staging and memory limits, remaining layout and atlas bindings, supported classic/scenario graphic overrides and notices for the distributed selection."
     },
     {
       "id": "stock-content",

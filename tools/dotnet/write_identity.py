@@ -25,6 +25,12 @@ COMMON = (
     "docs/algorithms/F05-game-setup-and-starting-positions.md",
     "docs/algorithms/S01-scenario-loading-and-parameters.md",
     "docs/algorithms/S02-event-language-and-execution.md",
+    "docs/algorithms/P01-map-projection-and-interaction.md", "docs/algorithms/P02-map-rendering-and-minimap.md",
+    "docs/algorithms/P03-graphics-and-asset-processing.md", "docs/algorithms/P05-input-and-command-dispatch.md",
+    "docs/algorithms/W03-visibility-and-exploration.md",
+    "docs/content/asset-format.md", "docs/content/assets.json", "docs/content/fonts.json",
+    "docs/content/map-assets.md", "docs/content/map-asset-bindings.json",
+    "docs/testing/map-rendering.md", "docs/performance/map-rendering.md",
     "docs/algorithms/P04-text-and-dialogs.md",
     "docs/algorithms/A01-ai-strategy-and-assessment.md",
     "docs/algorithms/F04-turn-sequencing.md",
@@ -57,7 +63,7 @@ def unique_object(pairs):
 
 
 def expected_inputs(root, name):
-    kind = "src" if name in (LIBRARIES - {"OpenCiv2.FoundationCases"}) | {"OpenCiv2.App", "OpenCiv2.Desktop", "OpenCiv2.Browser", "OpenCiv2.Automation"} else "tests"
+    kind = "src" if name in (LIBRARIES - {"OpenCiv2.FoundationCases"}) | {"OpenCiv2.App", "OpenCiv2.Desktop", "OpenCiv2.Browser", "OpenCiv2.Automation", "OpenCiv2.IO.Native"} else "tests"
     directory = root / kind / name
     paths = [root / p for p in COMMON]
     paths += [directory / f"{name}.csproj", directory / "packages.lock.json"]

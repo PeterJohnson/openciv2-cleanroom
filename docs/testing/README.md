@@ -11,10 +11,13 @@ Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 Follow the [map-rendering acceptance matrix](map-rendering.md) for all P02
 MV01–MV30 rows, [interactive workloads/budgets](../performance/map-rendering.md)
 for performance, and the [visual ledger](../validation/map-visual-coverage.md)
-for separate native, browser and live-provider status. Extend the production
-renderer tests/scene gallery and wire their regression checks into the optional
-application/browser CI jobs before claiming acceptance. The current MapProbe and
-Riverbend input checks cover only a subset of the matrix.
+for separate native, browser and live-provider status. The optional Linux
+application CI step verifies the pinned archives, runs the full software raster
+matrix, exercises the desktop gallery and scoped Riverbend controls, and checks
+the first draw after texture recovery against a fresh frame. The 1× gallery run
+captures every board. The 2× run repeats input and lifecycle checks. Full
+performance trials and physical presentation measurements use the separate
+performance protocol.
 
 `python3 tools/check_map_assets.py` validates binding metadata; supplying
 `--pack /path/to/runtime/data/atlas-hd.pack` also checks the pinned bytes. Neither
@@ -88,3 +91,20 @@ The [CI matrix](../../.github/workflows/ci.yml) runs the integrated commands.
 [Platform acceptance](platforms.md), [packaging](../packaging.md) and
 [performance](../performance/README.md) supply their own procedures. Keep authored
 contract tests separate from external original-game observations and claims.
+
+
+The optional renderer integration checks (`MapProbe --renderer-options`) exercise
+MV29/MV30 fallback, retry, context replacement and bounded caches for 100 warmed
+observer replacements. They require Linux hardware EGL. The CPU and experimental
+GPU choices retain the existing native interaction and raster matrix suites;
+[the integration report](../validation/m2-renderer-options.md) declares the GPU
+pixel tolerance and distinguishes local evidence from deferred platform gates.
+
+`MapProbe --gpu-optimization-checks ART_FIXTURES` adds navigation-history,
+shared-mask alpha/opacity, sparse-delta and separated-damage regressions.
+Experimental matrices record rejected history differences; require zero
+`historyFailures` before treating a candidate as pixel-correct. Set
+`OPENCIV2_REPLAY_ALL=1` for strict fresh-GPU comparison of every saved native
+frame and warmup in `--replay-gpu-experiment`. The staged native, profiling,
+pipeline and latency drivers and their evidence are described in the
+[optimization report](../validation/m2-gpu-optimization.md).

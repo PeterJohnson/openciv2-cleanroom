@@ -52,12 +52,18 @@ index and PNG headers, and verifies manifest hashes. These limits describe this
 inspector, not the accepted game-content domain. It does not decode PNG streams,
 check every PNG chunk/CRC, validate proxy semantics or allocate textures.
 
-M2 should expose a portable read-only catalog of semantic IDs, logical/physical
-size, palette and encoded image bytes. Select and pin an independent PNG decoder,
-apply decoded-pixel budgets before allocation, then pass decoded pixels to frontend-owned Skia resources. The game and queries
-receive no GPU objects or Avalonia controls.
-Test the parser using small owned valid and malformed containers; validate the
-real package separately from graphics-independent tests.
+The M2 reader exposes owned binding IDs, logical and physical sizes, palette
+values and read-only PNG/proxy streams. Atlas bytes are capped at 256 MiB, each
+encoded image at 32 MiB and each logical or decoded image at 5 million pixels.
+All entries in the pinned release use non-interlaced RGBA8 PNG. The managed
+reader uses .NET's zlib and validates PNG framing, chunk CRCs, scanlines and
+filters before handing straight-alpha pixels to the frontend. It inflates
+into one bounded buffer with one filter byte per row, validates Adler-32,
+and compacts the reconstructed rows in place. `Pixels` and `CopyPixels`
+expose the contiguous RGBA data. Other PNG
+profiles and the classic sheet codecs remain outside this slice.
+The frontend creates bounded Skia images for the selected map bindings.
+The game and query libraries have no Skia or Avalonia dependencies.
 
 ## TrueType fonts and runtime rasterization
 
@@ -80,13 +86,13 @@ versions or hashes. Version 2.37 is our reproducible content selection, not a cl
 that these exact bytes produced the historical caches. Noto fonts in the asset
 checkout belong to authoring/review and are a different font source.
 
-Avalonia owns frontend font measurement, rasterization and GPU caches. The current
-host uses the packaged Inter font; its SIL OFL license and dependency notices are
-verified during publication. DejaVu remains the designated graphics-content font
-input for M2, with exact face/license hashes in the asset inventory. Runtime font
-integration must keep immutable source bytes separate from size/density-specific
-caches and share text measurements between widgets and custom drawing. macOS
-native menus use platform typography; Windows/Linux menus use Avalonia.
+The configured map host checks the license and all twelve exact face pins before
+registering the three families in Avalonia. The map labels use the same pinned
+Sans regular source through Skia. Map measurement and drawing share a run
+layout that tries the pinned Serif and Sans Mono faces for missing glyphs and
+uses the pinned replacement character when none supplies the glyph. Avalonia
+and Skia own their runtime glyph caches independently of the source bytes.
+Asset-free shell launches retain packaged Inter under its SIL OFL license.
 
 The asset release still contains `fonts.bin` (`C2FONTS2`) and `fonts_aa.bin`
 (`C2FONTAA`). They are opaque legacy package members, **excluded from the new
@@ -95,9 +101,9 @@ their inventory hashes when validating the original eight-file release, but
 neither parses nor renders their contents. There is no bitmap-font-schema
 implementation task. The source-selection check does not require these caches.
 
-Only the pinned stock fonts are loaded today. Font-role selection in future game
-dialogs, supported text coverage, fallback, accessibility and shaping are separate
-M2/P04 work; having a glyph does not establish complex-script/bidirectional layout.
+The stack-order confirmation uses the configured Avalonia text family. Broader
+dialog roles, supported text coverage, fallback, accessibility and shaping remain
+M2/P04 work.
 Keep game decisions, classic UI admission inputs, file fields and network outcomes
 independent of the new raster metrics. Do not promise original pixel/metric parity.
 
@@ -151,9 +157,10 @@ python3 tools/check_assets.py /path/to/extracted/runtime
 ```
 
 Without a directory, the tool validates repository metadata only. Verify the
-pinned archive checksum before extraction; package inspection is not image/font
-decoding. M2 introduces the C# content loader and Avalonia resource ownership,
-explicit scenario selection and native/browser storage adapters. Browser packages
-must stage or asynchronously fetch selected immutable data under the same manifest.
-There is no baked-in developer path. Headless builds do not require a graphics
-checkout, installed fonts, display or rasterizer.
+pinned archive checksum before extraction. The desktop host accepts explicit
+asset and font roots, checks the manifest against the compiled pins, validates
+all eight sizes and hashes, and retains the atlas through CPU sprite decoding.
+Native opens use the contained regular-file adapter. Browser packages still need
+to stage or asynchronously fetch selected immutable data under the same manifest.
+Headless builds require no graphics checkout, installed fonts, display or rasterizer.
+See [desktop launch and validation](../BUILDING.md#avalonia-desktop).

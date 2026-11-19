@@ -39,10 +39,9 @@ public sealed class ContentDirectory
         }
         throw new ArgumentException("Content path leaves its mounted directory");
     }
-    public NativeContentSource Read(string relative, int maximumBytes = 16 * 1024 * 1024, string requiredDirectory = "")
+    private string Resolve(string relative, string requiredDirectory)
     {
         Relative(relative);
-        if (maximumBytes < 0) throw new ArgumentOutOfRangeException(nameof(maximumBytes));
         string path = FileMetadata.Canonical(Path.Combine(root, relative));
         Contained(path, root);
         if (requiredDirectory.Length != 0)
@@ -51,6 +50,32 @@ public sealed class ContentDirectory
             Contained(path, FileMetadata.Canonical(Path.Combine(root, requiredDirectory)));
         }
         FileMetadata.RequireRegular(path);
+        return path;
+    }
+
+    /// <summary>Opens a contained regular file for a caller that owns its read budget and stream lifetime.</summary>
+    public Stream OpenRead(string relative) => new FileStream(Resolve(relative, ""), FileMode.Open, FileAccess.Read, FileShare.Read);
+
+    /// <summary>F03 classic case-independent leaf lookup inside the explicitly selected mount.</summary>
+    public Stream? OpenClassicLeaf(string leaf)
+    {
+        Relative(leaf);
+        if (leaf.Contains('/')) throw new ArgumentException("Expected a single classic filename", nameof(leaf));
+        string? match = null;
+        foreach (string file in Directory.EnumerateFileSystemEntries(root))
+        {
+            var name = Path.GetFileName(file);
+            if (!name.Equals(leaf, StringComparison.OrdinalIgnoreCase)) continue;
+            if (match is not null) throw new IOException($"Ambiguous classic content filename '{leaf}'");
+            match = name;
+        }
+        return match is not null ? OpenRead(match) : null;
+    }
+
+    public NativeContentSource Read(string relative, int maximumBytes = 16 * 1024 * 1024, string requiredDirectory = "")
+    {
+        if (maximumBytes < 0) throw new ArgumentOutOfRangeException(nameof(maximumBytes));
+        string path = Resolve(relative, requiredDirectory);
         using var input = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         string identity = FileMetadata.HandleIdentity(input.SafeFileHandle);
         using var output = new MemoryStream(); var buffer = new byte[8192];

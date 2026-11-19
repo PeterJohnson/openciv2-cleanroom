@@ -20,7 +20,7 @@ dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- --help
 dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- inspect path/to/game.sav --json
 ```
 
-The suite contains 454 tests: 432 portable groups, twenty native I/O checks and
+The suite contains 459 tests: 437 portable groups, twenty native I/O checks and
 two API-boundary checks. Test counts describe the current bounded implementation,
 not whole-game compatibility. The CLI supports stored inspection, validation,
 diff, content resolution/validation and classic rule/name/preference conversion.
@@ -37,19 +37,190 @@ when using an SDK outside the normal installation location. You can always invok
 ```sh
 dotnet restore solutions/OpenCiv2.App.slnx --locked-mode
 dotnet build solutions/OpenCiv2.App.slnx -c Release --no-restore
-dotnet run --project src/OpenCiv2.Desktop -c Release --no-build
 dotnet publish src/OpenCiv2.Desktop -c Release --no-restore
 ```
 
-This opens the [bounded session application](application.md). A graphical desktop
-and Avalonia's platform runtime dependencies are required. The authored three-unit
-world demonstrates observation, selection, console input and asynchronous command
-confirmation. It is not a map renderer or a playable scenario.
+To see Riverbend with its river, road, rail and resource sprites, verify the
+pinned archives against `dependencies.json`, extract them, and pass the package
+root containing `package.json` and the font root containing `LICENSE` and `ttf/`.
+
+```sh
+dotnet run --project src/OpenCiv2.Desktop -c Release --no-build -- \
+  --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37
+```
+
+The host validates the input pins before drawing. With stock graphics loaded,
+Riverbend shows a blue river crossing a brown road and small resource sprites,
+including pale Grassland shields. The header reads **Authored map / Riverbend**.
+A launch without content opens **Riverbend / Limited graphics preview**, which
+uses a fallback terrain palette. The
+[bounded application](application.md) exposes one authored stack-order command.
+
+Add `--showcase MV04`, `--showcase MV05`, or `--showcase MV07` to open the
+authored river, resource, or road/rail board in the same desktop renderer. The
+showcase selector also offers the other MV boards and the large `Mixed` world.
+
+`--map-art ROOT` selects a native theme directory with `map-art.json`. Its
+`openciv2-map-art/1` manifest lists exact catalog keys in an `images` object.
+Each entry has a relative PNG `path`, `sha256`, and optional two-integer `marker`
+and `flag` anchors. For classic map sheets use `--scenario-art ROOT`. Each
+sheet tries the scenario BMP, scenario GIF, and then the installation GIF from
+`--installation-art ROOT` if supplied. A successfully selected sheet provides
+its declared bindings over native and pinned stock art. A malformed candidate
+produces a diagnostic before fallback.
+
+With art overrides loaded, **Use supplied art** in Map options or the showcase
+switches between the admitted art and stock within the open window. **Reload
+map textures** recreates drawing resources for the current selection.
 
 Linux input automation uses an isolated X11 display (install `xvfb` and `libxtst6`):
 
 ```sh
 python3 tools/dotnet/run_xvfb.py python3 tools/dotnet/run_application.py --report build/test-results/application-native.json --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+```
+
+To exercise the pinned content, pass `--map-assets ROOT --map-fonts ROOT` before
+`--adapter` in the input command above. Run the software raster probe with the same
+two extracted roots to measure preparation and redraw workloads:
+
+```sh
+dotnet run --project tests/OpenCiv2.MapProbe -c Release --no-build -- \
+  /path/to/runtime-package /path/to/dejavu-fonts-ttf-2.37 build/test-results/map-raster.json
+```
+
+Generate the authored P03 map-sheet cases with Python and Pillow, then run the
+Skia matrix. The same fixtures are accepted by the native window driver.
+
+```sh
+python3 tools/dotnet/build_map_art_cases.py build/test-results/map-art-cases
+dotnet run --project tests/OpenCiv2.MapProbe -c Release --no-build -- \
+  /path/to/runtime-package /path/to/dejavu-fonts-ttf-2.37 build/test-results/map-gallery \
+  --matrix build/test-results/map-art-cases
+```
+
+To compare every pixel decoded by the production PNG reader with Pillow,
+generate an atlas receipt and check it against the pinned pack:
+
+```sh
+dotnet run --project tests/OpenCiv2.MapProbe -c Release --no-build -- \
+  /path/to/runtime-package /path/to/dejavu-fonts-ttf-2.37 build/test-results/atlas-pixels.json \
+  --atlas-pixels
+python3 tools/check_map_assets.py --pack /path/to/runtime-package/data/atlas-hd.pack \
+  --decoded-report build/test-results/atlas-pixels.json
+```
+
+Reproduce the Linux window captures and input checks with the authored art
+fixtures. To rerun input at 2× backing density, set
+`AVALONIA_GLOBAL_SCALE_FACTOR=2`, pass `--screen 3000x2100x24` to Xvfb's
+launcher, and add `--interaction-only --expected-density 2` before
+`--adapter`. This exercises the Avalonia backing scale on a virtual display.
+
+```sh
+LIBGL_ALWAYS_SOFTWARE=1 python3 tools/dotnet/run_xvfb.py \
+  python3 tools/dotnet/run_map_showcase_native.py \
+  --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37 \
+  --art-cases build/test-results/map-art-cases --output build/test-results/map-gallery-native \
+  --expected-density 1 --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+```
+
+With RandR's `xrandr` command installed, the mixed-density run opens two maps
+in one desktop process on independent 1× and 2× Xvfb monitors. It checks
+the actual draw receipts after resize and display migration and compares
+overview footprint and selection pixels.
+
+```sh
+LIBGL_ALWAYS_SOFTWARE=1 python3 tools/dotnet/run_xvfb.py --mixed-dpi \
+  python3 tools/dotnet/run_map_showcase_native.py \
+  --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37 \
+  --art-cases build/test-results/map-art-cases --output build/test-results/map-gallery-mixed-dpi \
+  --mixed-dpi-only --expected-density 1 --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+```
+
+For the scoped offscreen workloads, append `--performance` to the raster probe
+command and use a separate output path. Append a workload name such as
+`dirty-world` to repeat one series. For shorter software diagnostics, use
+`--diagnostic-performance pan` and `--diagnostic-direct-performance pan` with
+separate output files to compare retained-viewport rendering and the supported
+direct fallback against independent fresh frames. Run Linux host timing separately to
+observe actual pointer and world-update events through the desktop window:
+
+```sh
+LIBGL_ALWAYS_SOFTWARE=1 python3 tools/dotnet/run_xvfb.py --screen 5600x3300x24 \
+  python3 tools/dotnet/measure_map_native.py \
+  --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37 \
+  --output build/test-results/native-map-timing \
+  --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+```
+
+The Linux timing driver records event-to-draw receipts and the actual viewport
+pixel dimensions. The draw receipt includes ground chunk build time, the time
+within that build spent selecting and grouping sprites, and texture preparation
+time across all layers. It also records demand raster loads, tint preparation
+time and retained texture bytes. `--diagnostic` runs one short trial.
+For `--mode dirty-world`, the receipt separates construction of the authored
+update, production scene binding and map draw by observation revision. It
+also reports the sum of those measured stages, the scene index's allocations,
+renderer wait and ground invalidation on either side of the UI handoff.
+Foreground band timings cover backing setup, command recording, parallel
+replay and edge repair.
+Add `--diagnostic-warmup 30 --diagnostic-frames 36` to observe the first
+high-resolution body transition during pointer zoom. Texture preparation
+can overlap the chunk-build measurement. Set `AVALONIA_GLOBAL_SCALE_FACTOR=2` and pass
+`--expected-density 2` before `--adapter` for a 2× backing run at the same
+physical dimensions. If half the world needs a scale below the minimum zoom,
+the receipt records the limit and the actual visible tile count. Xvfb measures
+software execution.
+
+On Linux with KWin, Xwayland, `glxinfo`, `xrandr` and DRM graphics counters,
+the same driver can exercise hardware acceleration on an isolated virtual
+output. `--virtual-gpu` requires accelerated direct GLX and checks graphics
+engine activity in the desktop process itself. The counters cover whole
+workloads. Physical display presentation and per-frame GPU timing remain
+separate checks under the [performance contract](performance/map-rendering.md).
+
+```sh
+AVALONIA_GLOBAL_SCALE_FACTOR=2 python3 tools/dotnet/run_xwayland_virtual.py \
+  --compositor-log build/test-results/virtual-gpu/compositor.log \
+  python3 tools/dotnet/measure_map_native.py --virtual-gpu --expected-density 2 \
+  --size 5120x2880 --mode pan \
+  --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37 \
+  --output build/test-results/virtual-gpu \
+  --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+```
+
+Pass `--flat` to measure the flat Mixed board at half-world scale. Use
+`--flat-edge` for a separate pan that stages the same board near the camera
+limit. The edge trial records its smaller starting tile count and requires
+the measured gesture to reach the clamp.
+
+Use `--mode resource-recovery` to repeat the native **Reload textures**
+action at the measured camera. Each of three regular trials reloads
+ground and textures 20 times while keeping the selected target. This
+measures first redraw after resource loss within the running application.
+
+Use `--mode cold-first-frame` to start a new desktop process for each sample.
+It opens Mixed directly at full, half-world or overview detail and at the
+requested backing size. Use `--cold-detail` to select a specific view. Three
+regular trials take 20 first frames each per view and size. The receipt times
+content validation separately from the interval through the end of the host's
+Skia map draw. It also reports authored observation creation, scene binding
+and inner map draw time. The benchmark uses reduced motion to keep the active
+marker stable for screenshots. X11 readback happens after the measured interval.
+Pass `--native-aot --adapter /path/to/published/OpenCiv2.Desktop` to verify
+and measure the Linux Native AOT executable built from the signed lock.
+
+Replay the first frames, pan and zoom cameras, dirty-world revisions and
+resource recoveries from the Linux timing receipt against fresh serial renders.
+The replay uses the authored Mixed scene, recorded backing dimensions,
+dirty-world effect phases and any selected target recorded during recovery.
+For cold startup it also compares the native map pixels outside the inset
+overview. GPU and physical display presentation require separate measurements.
+
+```sh
+dotnet run --project tests/OpenCiv2.MapProbe -c Release --no-build -- \
+  /path/to/runtime-package /path/to/dejavu-fonts-ttf-2.37 \
+  build/test-results/native-map-replay.json \
+  --replay-native-map build/test-results/native-map-timing/native-performance.json
 ```
 
 Use the [platform checklist](testing/platforms.md) for actual Mac/Windows desktop
@@ -146,7 +317,7 @@ node tools/dotnet/run_browser.cjs tests/OpenCiv2.Browser.Tests/bin/Release/net11
 python3 tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
 ```
 
-The portable suite runs the same 432 groups as native. Browser hosts exclude
+The portable suite runs the same 437 groups as native. Browser hosts exclude
 native filesystem, process CLI and SQLite projects. Release publication trims
 assemblies and includes source-generated JSON; AOT is not an acceptance claim.
 
@@ -233,3 +404,31 @@ python3 -m unittest discover -s tests -p 'test_*.py' -v
 pending platform work. Publication includes verified full package/runtime/native
 and font notices. SDK/package upgrades require updated locks and complete affected
 checks; changing source or build inputs invalidates older compiled-source reports.
+
+
+### Selecting the desktop map renderer
+
+Pass `--map-renderer cpu` or `--map-renderer gpu` to the desktop executable (or
+after `--` with `dotnet run`). GPU is experimental; CPU is the default. Use
+`--map-gpu-cache-mib 512` to select a 128–1024 MiB Skia resource-cache ceiling and
+`--renderer-settings build/renderer-test.json` to isolate preferences in tests.
+The UI saves a choice for the next launch. CLI overrides do not rewrite it.
+Research scripts additionally set `OPENCIV2_MAP_EXPERIMENT=1` before using
+`OPENCIV2_MAP_COMPOSITION`, `OPENCIV2_MAP_GPU_FEATURES`, `OPENCIV2_MAP_GPU_SYNC`
+and `OPENCIV2_MAP_GPU_CACHE_MIB`. Such experiments fail if GPU timing or the GPU
+renderer is unavailable; they never silently benchmark CPU fallback as GPU.
+
+After building the optional App solution, run `OpenCiv2.MapProbe ASSETS FONTS
+OUTPUT --renderer-options` under `tools/dotnet/run_xwayland_virtual.py` for Linux
+hardware context, preference codec, fallback and 100 warmed replacement checks.
+`--gpu-experiment-matrix ART_FIXTURES` now requires exact fresh/retained frames
+for the supported GPU configuration, as well as the declared cross-backend
+raster tolerance. See [the integration report](validation/m2-renderer-options.md).
+
+For opt-in optimization experiments, `--gpu-optimization-checks ART_FIXTURES`
+exercises history, mask and sparse-damage cases. Use
+`tools/dotnet/run_map_optimization.py` for separate `native`, `cold`, `profile`,
+`pipeline`, `latency` and strict `replay` stages. Pass `--source-root` when
+validating a frozen executable against archived sources. The
+[optimization report](validation/m2-gpu-optimization.md) lists feature gates,
+rejected experiments and exact local reproduction commands.

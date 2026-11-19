@@ -7,4 +7,9 @@
   <ItemGroup>
     <EmbeddedResource Include="../../data/gameplay/classic-mge-5.4.0f/*.json" LogicalName="OpenCiv2.Gameplay.%(Filename)%(Extension)" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../docs/content/assets.json" LogicalName="OpenCiv2.Graphics.assets.json" />
+    <EmbeddedResource Include="../../docs/content/fonts.json" LogicalName="OpenCiv2.Graphics.fonts.json" />
+    <EmbeddedResource Include="../../docs/content/map-asset-bindings.json" LogicalName="OpenCiv2.Graphics.map-asset-bindings.json" />
+  </ItemGroup>
 </Project>

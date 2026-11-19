@@ -10,7 +10,7 @@ namespace OpenCiv2.App;
 
 public static class ApplicationIdentity
 {
-    public static string Read(Assembly host)
+    public static string Read(Assembly host, params Assembly[] platformAssemblies)
     {
         var assemblies = new[] { typeof(Arithmetic).Assembly, typeof(OpenCiv2.IO.CoreFile).Assembly,
             typeof(OpenCiv2.Contracts.CommandRequest).Assembly, typeof(OpenCiv2.Core.Geometry).Assembly,
@@ -23,7 +23,7 @@ public static class ApplicationIdentity
             ["format"] = "openciv2-application-seam/1",
             ["dynamicCodeSupported"] = RuntimeFeature.IsDynamicCodeSupported,
             ["runtimeIdentifier"] = RuntimeInformation.RuntimeIdentifier,
-            ["build"] = new JsonArray(assemblies.Distinct()
+            ["build"] = new JsonArray(assemblies.Concat(platformAssemblies).Distinct()
             .Select(a => JsonSerializer.SerializeToNode(BuildIdentity.Read(a), AppJson.Default.CompiledInputs)).ToArray())
         }.ToJsonString();
     }

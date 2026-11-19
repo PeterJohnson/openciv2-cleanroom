@@ -132,5 +132,10 @@ public sealed partial class SessionRuntime : IDisposable
         {
             var (current, grant) = Checked(); return LiveProjection.OwnCities(current.World.Entities, new(current.Identity, current.Session, current.Revision, grant.Identity.Observer));
         }
+        public MapObservation? ObserveMap()
+        {
+            var (current, grant) = Checked();
+            return MapProjection.Observe(current.World, grant.Identity, current.Revision, current.Process.Rules);
+        }
     }
 }

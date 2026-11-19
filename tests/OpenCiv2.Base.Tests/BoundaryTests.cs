@@ -11,8 +11,9 @@ public sealed class BoundaryTests
     public void Public_contract_values_only_expose_owned_or_immutable_types()
     {
         Assembly contracts = typeof(CommandRequest).Assembly;
-        foreach (Type type in contracts.GetExportedTypes())
+        foreach (Type exported in contracts.GetExportedTypes())
         {
+            Type type = exported == typeof(MapFact<>) ? typeof(MapFact<MapPresence>) : exported;
             // Provider methods have explicit lifetimes; inspect observation storage here.
             if (type.IsInterface || type.IsEnum || typeof(Exception).IsAssignableFrom(type)) continue;
             foreach (PropertyInfo property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
@@ -30,7 +31,8 @@ public sealed class BoundaryTests
         if (type.IsGenericType)
         {
             Type definition = type.GetGenericTypeDefinition();
-            return (definition == typeof(OwnedList<>) || definition == typeof(LiveRecords<>) || definition == typeof(Nullable<>)) &&
+            return (definition == typeof(OwnedList<>) || definition == typeof(LiveRecords<>) || definition == typeof(Nullable<>) ||
+                definition == typeof(MapFact<>)) &&
                 type.GetGenericArguments().All(Immutable);
         }
         return type.Assembly == typeof(CommandRequest).Assembly ||

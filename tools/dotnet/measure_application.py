@@ -87,7 +87,8 @@ def main():
     repetitions = 1 if args.smoke else 15
     host = 'OpenCiv2.Browser' if browser else 'OpenCiv2.Desktop'
     sources = {}
-    for name in LIBRARIES | {host}: sources.update(expected_inputs(ROOT, name))
+    hosts = {host} if browser else {host, 'OpenCiv2.IO.Native'}
+    for name in LIBRARIES | hosts: sources.update(expected_inputs(ROOT, name))
     sources.update({p.relative_to(ROOT).as_posix(): sha(p) for p in (ROOT / 'tools/dotnet').glob('*') if p.is_file()})
     sources['docs/performance/budgets.json'] = sha(BUDGET_PATH)
     root = args.browser_bundle.resolve() if browser else args.desktop.resolve().parent

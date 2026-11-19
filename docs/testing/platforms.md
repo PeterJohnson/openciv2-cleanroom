@@ -9,7 +9,9 @@ archives with installed-runtime roots empty.
 
 [Executed CI](../validation/README.md) already covers Linux x64, macOS ARM64 and
 Windows x64 core/CLI, Lua/SQLite, desktop compilation/publication and packages.
-Actual Windows/macOS desktop and OS delivery checks below remain pending.
+Actual Windows/macOS desktop and OS delivery checks below remain pending. The
+[Riverbend slice](../validation/m2-map-slice.md) adds Linux X11 validation with
+pinned content and software raster results for simulated 4K/5K surfaces.
 
 ## Actual desktop input
 
@@ -44,7 +46,7 @@ After closing the host, validate its identity against the checkout and record
 output-file hashes from the repository root:
 
 ```sh
-python -c 'import json,sys; sys.path.insert(0,"../tools/dotnet"); from run_application import validate; print("Validated compiled inputs:",len(validate(json.load(open("build/test-results/desktop-observation.json.identity.json")))))'
+python -c 'import json,sys; sys.path.insert(0,"tools/dotnet"); from run_application import validate; print("Validated compiled inputs:",len(validate(json.load(open("build/test-results/desktop-observation.json.identity.json")))))'
 python -c 'import hashlib,json,pathlib; p=pathlib.Path("src/OpenCiv2.Desktop/bin/Release/net11.0"); d={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(p.rglob("*")) if f.is_file()}; pathlib.Path("build/test-results/desktop-artifacts.json").write_text(json.dumps(d,indent=2))'
 ```
 

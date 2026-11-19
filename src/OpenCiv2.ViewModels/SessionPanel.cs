@@ -4,14 +4,14 @@ using OpenCiv2.Contracts;
 namespace OpenCiv2.ViewModels;
 
 public sealed record SessionView(ClientIdentity? Identity, LiveRecords<OwnUnit>? Units, LiveRecords<OwnCity>? Cities,
-    OwnedList<CommandDescriptor> Commands, CommandUpdate? Command, string Message)
+    OwnedList<CommandDescriptor> Commands, CommandUpdate? Command, string Message, MapObservation? Map = null)
 {
     public static SessionView Empty { get; } = new(null, null, null, OwnedList<CommandDescriptor>.Empty, null, "No active session.");
 }
 
 /// <summary>Single-command presentation model over owned player observations. Binding changes discard
 /// retained observations/results; the host owns client revocation and the mutation-lane pump.</summary>
-public sealed class SessionPanel
+public sealed class SessionPanel(bool observeMap = false)
 {
     private IPlayerClient? client;
     private CommandId? command;
@@ -30,7 +30,9 @@ public sealed class SessionPanel
             var current = command is { } id ? client.Result(id) : null;
             // This model displays the complete current result, not an unbounded event history.
             client.Updates();
-            View = new(identity, units, cities, descriptors, current ?? View.Command, View.Message);
+            var map = observeMap && (View.Map?.Identity != identity || View.Map.Revision != units.Observation.Revision)
+                ? client.ObserveMap() : View.Map;
+            View = new(identity, units, cities, descriptors, current ?? View.Command, View.Message, map);
         }
         catch (AccessException) { ClearRevoked(); }
     }
