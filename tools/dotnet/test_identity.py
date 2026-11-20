@@ -109,7 +109,8 @@ class IdentityTests(unittest.TestCase):
                  'src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js',
                  'tests/OpenCiv2.MapProbe/NativeMapMatrix.Binding.cs',
                  'tests/OpenCiv2.MapProbe/RendererLibraryChecks.cs',
-                 'tests/OpenCiv2.MapProbe/MapPresentationChecks.cs']
+                 'tests/OpenCiv2.MapProbe/MapPresentationChecks.cs',
+                 'tests/OpenCiv2.MapProbe/ScopedMapPerformanceWorld.cs']
         for name in names:
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)

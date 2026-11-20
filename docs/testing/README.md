@@ -26,7 +26,11 @@ content/resource failures, and compares presented pixels with fresh WebGL frames
 The overview footprint is independently checked in each screenshot. See the
 [browser commands](../BUILDING.md#browser) and [execution record](../validation/m2-browser-map.md).
 This test host retains reflection metadata for evidence serialization; the
-separate production browser publication remains trimmed.
+separate production browser publication remains trimmed. The
+[browser performance diagnostics](../validation/m2-browser-performance.md) compare
+Software2D/CPU, WebGL/CPU and WebGL/GPU with real input and the shared scoped
+large-world fixture. They preserve correctness and timing failures separately
+from the completed CPU-composition functional matrix.
 
 `python3 tools/check_map_assets.py` validates binding metadata; supplying
 `--pack /path/to/runtime/data/atlas-hd.pack` also checks the pinned bytes. Neither

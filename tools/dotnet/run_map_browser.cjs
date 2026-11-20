@@ -10,6 +10,9 @@ async function main() {
     if (require('playwright/package.json').version !== require('../../dependencies.json').tools.playwright) throw Error('Unpinned Playwright');
     const [bundleArg, outputArg, ...flags] = process.argv.slice(2);
     if (!bundleArg || !outputArg) throw Error('Usage: run_map_browser.cjs BUNDLE OUTPUT [--matrix-only|--gallery-only|--lifecycle-only|--transitions-only|--smoke]');
+    const hardware = flags.includes('--hardware');
+    const renderer = flags.find(flag => flag.startsWith('--renderer='))?.split('=')[1] ?? 'cpu';
+    if (!['cpu', 'gpu'].includes(renderer)) throw Error('Unknown renderer');
     const lifecycleOnly = flags.includes('--lifecycle-only');
     const transitionsOnly = flags.includes('--transitions-only');
     const selectedDensity = flags.find(flag => flag.startsWith('--density='))?.split('=')[1];
@@ -38,7 +41,7 @@ async function main() {
     let browser, page, identity;
     const persist = completed => {
         const report = { format: 'openciv2-browser-map-acceptance/1', completed, flags, browser: browser.version(),
-            backend: 'WebGL2 / SwiftShader; functional fallback evidence, no physical performance claim',
+            backend: hardware ? 'WebGL2 / hardware; functional evidence, no physical presentation claim' : 'WebGL2 / SwiftShader; functional fallback evidence, no physical performance claim', renderer,
             identity, checks, captures, requests, errors, driverSha256 };
         const temporary = path.join(output, 'browser.json.tmp');
         fs.writeFileSync(temporary, JSON.stringify(report, null, 2));
@@ -48,7 +51,8 @@ async function main() {
         for (const density of selectedDensity ? [Number(selectedDensity)] : flags.includes('--matrix-only') || lifecycleOnly ? [1] : [1, 2]) {
             if (browser) await browser.close();
             browser = await chromium.launch({ headless: true, executablePath: process.env.OC2_CHROMIUM_EXECUTABLE,
-                args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', `--force-device-scale-factor=${density}`] });
+                args: [...(hardware ? ['--enable-gpu', '--ignore-gpu-blocklist', '--disable-software-rasterizer', '--use-angle=gl']
+                    : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']), `--force-device-scale-factor=${density}`] });
             for (const theme of selectedTheme ? [selectedTheme] : flags.includes('--smoke') || flags.includes('--matrix-only') || lifecycleOnly || transitionsOnly ? ['stock'] : ['stock', 'native', 'classic']) {
                 const context = await browser.newContext({ viewport: gallerySize, deviceScaleFactor: density });
                 page = await context.newPage();
@@ -80,7 +84,7 @@ async function main() {
                     };
                 });
                 const started = performance.now();
-                await page.goto(`http://127.0.0.1:${server.address().port}/?showcase=MV01&observe=1${theme === 'stock' ? '' : '&art=' + theme}`);
+                await page.goto(`http://127.0.0.1:${server.address().port}/?showcase=MV01&observe=1&renderer=${renderer}${theme === 'stock' ? '' : '&art=' + theme}`);
                 await page.waitForFunction(() => globalThis.openCiv2Failure || globalThis.openCiv2Snapshot?.().draw?.tiles > 0, undefined, { timeout: 180000 });
                 if (await page.evaluate(() => globalThis.openCiv2Failure)) throw Error(await page.evaluate(() => globalThis.openCiv2Failure));
                 const currentIdentity = await page.evaluate(() => globalThis.openCiv2Identity());
@@ -131,17 +135,19 @@ async function main() {
                     await page.screenshot({ path: path.join(output, name + '.png') });
                     const state = await read(), id = state.case;
                     fs.writeFileSync(path.join(output, name + '.json'), JSON.stringify(state, null, 2));
-                    const fresh = await page.evaluate(async () => {
+                    const fresh = await page.evaluate(async renderer => {
+                        if (renderer === 'gpu') return globalThis.openCiv2FreshRendererFrame();
                         const bytes = await globalThis.openCiv2FreshFrame();
                         let binary = ''; for (let i = 0; i < bytes.length; i += 32768) binary += String.fromCharCode(...bytes.subarray(i, i + 32768));
                         return btoa(binary);
-                    });
+                    }, renderer);
                     fs.writeFileSync(path.join(output, name + '-fresh.png'), Buffer.from(fresh, 'base64'));
                     captures.push({ id, theme, density, name, state });
-                    await assert(label + ' production frame', s => s.case === id && s.draw.tiles > 0 && s.draw.error === null && s.scaling === density);
+                    await assert(label + ' production frame', s => s.case === id && s.draw.tiles > 0 && s.draw.error === null && s.scaling === density && s.draw.composition === renderer && !s.draw.rendererFallback);
                 };
                 const gl = await page.evaluate(() => globalThis.mapWebGl);
                 if (!gl.length) throw Error('Production canvas did not create WebGL2');
+                if (hardware && gl.some(g => /SwiftShader|llvmpipe/i.test(g.renderer))) throw Error('Hardware WebGL required');
                 checks.push({ name: 'pinned-content-and-WebGL2', theme, density, startupMs: performance.now() - started, gl });
                 console.log(`Loaded ${theme} at ${density}×: ${gl[0].renderer}`);
                 if (density === 1 && theme === 'stock' && !flags.includes('--gallery-only') && !flags.includes('--smoke') && !lifecycleOnly && !transitionsOnly) {
@@ -263,14 +269,15 @@ async function main() {
                     if (theme === 'stock' && density === 1) {
                         state = await read();
                         const companionBrowser = await chromium.launch({ headless: true, executablePath: process.env.OC2_CHROMIUM_EXECUTABLE,
-                            args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--force-device-scale-factor=2'] });
+                            args: [...(hardware ? ['--enable-gpu', '--ignore-gpu-blocklist', '--disable-software-rasterizer', '--use-angle=gl']
+                                : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']), '--force-device-scale-factor=2'] });
                         const companionContext = await companionBrowser.newContext({ viewport: { width: 840, height: 620 }, deviceScaleFactor: 2 });
                         try {
                             const companion = await companionContext.newPage();
-                            await companion.goto(`http://127.0.0.1:${server.address().port}/?showcase=MV23&observe=1`);
+                            await companion.goto(`http://127.0.0.1:${server.address().port}/?showcase=MV23&observe=1&renderer=${renderer}`);
                             await companion.waitForFunction(() => globalThis.openCiv2Snapshot?.().draw?.tiles > 0, undefined, { timeout: 180000 });
                             const second = await companion.evaluate(() => globalThis.openCiv2Snapshot());
-                            if (second.scaling !== 2 || second.case !== 'MV23') throw Error('Independent browser map has the wrong density or world');
+                            if (second.scaling !== 2 || second.case !== 'MV23' || second.draw.composition !== renderer || second.draw.rendererFallback) throw Error('Independent browser map has the wrong density or world');
                             await companion.setViewportSize({ width: 960, height: 720 });
                             await companion.waitForFunction(() => globalThis.openCiv2Snapshot().viewport.width === 960);
                             await assert('simultaneous browser maps retain independent worlds and densities', s => s.scaling === 1 && s.case === state.case && s.x === state.x && s.y === state.y && s.revision === state.revision);

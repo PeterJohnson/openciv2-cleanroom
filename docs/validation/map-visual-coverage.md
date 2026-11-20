@@ -33,6 +33,16 @@ review, hashes, commands and limitations. This closes the named browser function
 gate; hardware performance, other platforms and the named live-provider joins
 remain separate. Historical entries below retain their original scope.
 
+**Hardware browser follow-up, 2026-11-20:** the
+[performance study](m2-browser-performance.md) compares browser Software2D/CPU,
+WebGL/CPU and WebGL/GPU, and promotes ordered GPU foreground commands after
+exact comparison with the original GPU path. The stock hardware GPU gallery
+passes all 39 presented/fresh captures, backed by 294 native GPU matrix cases.
+Long-pan and 4K/5K endpoint/resource-reload checks also match exactly after the
+fresh reference adopts the host target size, origin and clip. These checks extend
+GPU evidence; the earlier complete six-batch CPU-composition matrix and the
+still-open performance/platform gates keep their distinct scope.
+
 **GPU presentation correction, 2026-11-18 Pacific:** the
 [GPU follow-up experiments](m2-gpu-experiments.md) found that aliased CPU
 foreground workers could leave Skia's uploaded viewport texture stale. Earlier

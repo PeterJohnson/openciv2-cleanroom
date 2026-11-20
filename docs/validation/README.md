@@ -29,6 +29,11 @@ reuse, shared tint masks, stable placement, sparse damage and retained map
 regions against the preserved renderer. Its experimental visual failures and
 target-hardware measurements remain separate from complete M2 acceptance.
 
+The [browser performance record](m2-browser-performance.md) compares Software2D
+and WebGL with CPU/GPU composition at 1080p, 4K and 5K. Ordered foreground
+commands improve sustained 1080p GPU pan with exact paired endpoints; terrain
+rebuilds, world updates and dense overviews retain failed performance gates.
+
 The [GPU composition experiments](m2-gpu-experiments.md) compare batching,
 preparation offload, retained content, cache budgets, pipelining and native input
 latency at 1080p, 4K and 5K. They repair a stale-upload error in the CPU baseline

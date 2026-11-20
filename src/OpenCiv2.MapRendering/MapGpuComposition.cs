@@ -31,7 +31,7 @@ internal static class MapGpuComposition
 {
     internal const MapGpuFeatures SupportedFeatures = MapGpuFeatures.Atlas | MapGpuFeatures.Direct
         | MapGpuFeatures.Textures
-        | MapGpuFeatures.Encoded;
+        | MapGpuFeatures.Encoded | MapGpuFeatures.Commands;
     internal static readonly bool Experiment = Environment.GetEnvironmentVariable("OPENCIV2_MAP_EXPERIMENT") == "1";
     internal static readonly bool Synchronize = Experiment
         && Environment.GetEnvironmentVariable("OPENCIV2_MAP_GPU_SYNC") == "1";

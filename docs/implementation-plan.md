@@ -262,8 +262,13 @@ Software-only and independently read-back cold-frame measurements retain their
 stated scope. CPU composition remains the default. The desktop now offers a saved,
 startup-only experimental GPU option with controlled CPU fallback and context
 cache ownership; see [integration evidence](validation/m2-renderer-options.md).
-This integration defers other-platform tests at the user's request. Full M2
-visual, performance and platform acceptance remains open.
+That integration's other-platform tests were deferred. The subsequent
+[browser performance study](validation/m2-browser-performance.md) compares
+Software2D/CPU, WebGL/CPU and WebGL/GPU at 1080p, 4K and 5K. Ordered foreground
+commands now join the supported opt-in GPU configuration: three sustained 1080p
+pan runs improve p95 from 13.6–14.1 ms to 10.5–11.9 ms with exact paired
+endpoints. Large zoom/dirty updates and dense overviews still miss budget.
+Full M2 visual, performance and platform acceptance remains open.
 
 - Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
   terrain/coasts/relief, every feature/network/resource, all supported unit/city
@@ -630,7 +635,10 @@ and does not replace, X02's operation-level coverage ledger.
    target hardware and complete browser startup/download optimization and resource
    budgets. Browser content admission and functional resource checks have
    [their own executed record](validation/m2-browser-map.md).
-   Exercise pan, zoom and real world updates; retain failed/pending gates honestly.
+   The [three-backend measurements](validation/m2-browser-performance.md) identify
+   terrain rebuilds and projection/binding as remaining costs after GPU command
+   batching. Extend the diagnostic pan/zoom/world-update coverage to the complete
+   protocol; retain failed/pending gates honestly.
 3. Connect file-choice/load/save workflows to native and browser storage and
    verify cancellation, asynchronous replies and session deadlines. Add macOS
    native menus and Avalonia Windows/Linux menus with real platform acceptance.

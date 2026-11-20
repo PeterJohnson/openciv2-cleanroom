@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 
@@ -19,6 +20,8 @@ internal sealed class MapGalleryView : UserControl
 {
     private readonly MapControl map;
     internal MapControl Map => map;
+    // Optional authored test provider; the gallery has no gameplay command lane.
+    internal Func<MapObservation, MapObservation>? ChangeObservation { get; set; }
     private readonly MapOverview overview;
     private readonly TextBlock details = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock title = new() { FontWeight = FontWeight.Bold };
@@ -71,6 +74,7 @@ internal sealed class MapGalleryView : UserControl
                 return;
             }
 
+            ChangeObservation = null;
             board = MapGallery.Open(id);
             Show();
         };
@@ -109,13 +113,13 @@ internal sealed class MapGalleryView : UserControl
 
             board = board with
             {
-                Map = board.Id switch
+                Map = ChangeObservation?.Invoke(board.Map) ?? (board.Id switch
                 {
                     "MV09" => MapGallery.ChangeKnowledgeRegion(board.Map),
                     "MV17" => MapGallery.ChangeOwnerColors(board.Map),
                     "MV30" => MapGallery.ChangeColorSupport(board.Map),
                     _ => MapGallery.Changed(board.Map, focus)
-                }
+                })
             };
             lastUpdate = focus;
             long bindStarted = changeStarted == 0 ? 0 : Stopwatch.GetTimestamp();
@@ -301,6 +305,12 @@ internal sealed class MapGalleryView : UserControl
 
     public bool CanObserve => startup is null || map.FirstDraw is not null || map.LastDraw?.Stats.Error is not null;
 
+    internal void SetObservation(MapObservation observation)
+    {
+        board = board with { Map = observation };
+        map.Show(observation);
+    }
+
     public JsonObject Snapshot()
     {
         JsonObject BoundsFor(Control control)
@@ -339,6 +349,8 @@ internal sealed class MapGalleryView : UserControl
             ["sequence"] = draw.Sequence,
             ["epoch"] = draw.Epoch,
             ["ms"] = draw.Milliseconds,
+            ["callbackMs"] = draw.CompletedAt == 0 ? null
+                : Stopwatch.GetElapsedTime(draw.StartedAt, draw.CompletedAt).TotalMilliseconds,
             ["composition"] = draw.Stats.Composition,
             ["requestedRenderer"] = draw.Stats.RequestedRenderer,
             ["rendererFallback"] = draw.Stats.RendererFallback,

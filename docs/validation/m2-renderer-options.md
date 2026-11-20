@@ -7,6 +7,12 @@ The earlier [experiment report](m2-gpu-experiments.md) retains its historical
 source identities and measurements. This integration does not complete M2.
 Windows, macOS and browser testing is deferred at the user's request.
 
+Subsequent [browser measurements](m2-browser-performance.md) add `Commands` to
+the opt-in GPU configuration and verify native regressions. Browser startup
+selectors now independently choose Software2D/WebGL and CPU/GPU composition.
+The configuration and receipts below describe the original integration; their
+hashes and measured results are retained unchanged.
+
 ## Configuration, fallback and ownership
 
 `MapRendererOptions` validates immutable startup values. The desktop loads saved

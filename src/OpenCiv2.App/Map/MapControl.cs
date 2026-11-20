@@ -53,7 +53,8 @@ internal sealed class MapControl : Control
             return;
         }
 
-        long completedAt = traceFirstDraw && firstReceipt is null && stats.Tiles > 0 && stats.Error is null
+        bool measure = tracePresentation || (traceFirstDraw && firstReceipt is null);
+        long completedAt = measure && stats.Tiles > 0 && stats.Error is null
             ? Stopwatch.GetTimestamp() : 0;
         var draw = new DrawReceipt(
             Interlocked.Increment(ref drawSequence),

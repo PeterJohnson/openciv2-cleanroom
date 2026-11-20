@@ -8,6 +8,9 @@ using SkiaSharp;
 
 internal static class GpuMapMatrix
 {
+    // Keep an independent pre-command baseline after Commands joins the supported set.
+    private const MapGpuFeatures CommandBaseline = MapGpuFeatures.Atlas | MapGpuFeatures.Direct |
+        MapGpuFeatures.Textures | MapGpuFeatures.Encoded;
     internal sealed record Difference(long Pixels, long DifferentPixels, long PixelsOver8, int MaxChannelError, double MeanChannelError);
 
     public static void Run(AssetAtlas atlas, PinnedFonts fonts, string output, string contentCases, bool experiment = false)
@@ -73,7 +76,7 @@ internal static class GpuMapMatrix
                     var cpu = serial.Draw(expected.Canvas, referenceEpoch, camera, 1920, 1080, density, pick, board.Display, visual);
                     if (currentPainter is not null)
                         MapGpuComposition.Draw(currentPainter, gl.Context, currentGpu!.Canvas, currentPainter.SetScene(scene), camera,
-                            1920, 1080, density, pick, board.Display, visual, features: MapGpuComposition.SupportedFeatures);
+                            1920, 1080, density, pick, board.Display, visual, features: CommandBaseline);
                     NativeMapMatrix.Require(gpu.Error is null && cpu.Error is null && gpu.Tiles == cpu.Tiles && gpu.Objects == cpu.Objects &&
                         gpu.Labels == cpu.Labels && gpu.Effects == cpu.Effects, $"GPU semantic counts {id}");
                     using var read = Read(actual);
@@ -116,6 +119,7 @@ internal static class GpuMapMatrix
             gl.Version,
             experiment,
             features = MapGpuComposition.Features.ToString(),
+            commandBaseline = CommandBaseline.ToString(),
             scope = "Existing gallery, art replacements and change fixtures. Exact GPU retained/fresh and semantic comparisons; CPU/GPU pixel differences are reported, not silently accepted.",
             identity = JsonDocument.Parse(ApplicationIdentity.Read(typeof(GpuMapMatrix).Assembly)).RootElement,
             results

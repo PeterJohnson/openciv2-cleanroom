@@ -2,6 +2,7 @@ using System.Runtime.InteropServices.JavaScript;
 using Avalonia;
 using Avalonia.Browser;
 using OpenCiv2.App;
+using OpenCiv2.MapRendering;
 
 internal static partial class Program
 {
@@ -22,6 +23,19 @@ internal static partial class Program
 
     public static async Task Main()
     {
+        var backend = Option("backend") switch
+        {
+            null or "webgl" => BrowserRenderingMode.WebGL2,
+            "software" => BrowserRenderingMode.Software2D,
+            _ => throw new ArgumentException("Browser backend must be software or webgl")
+        };
+        var renderer = new MapRendererOptions(MapRendererOptions.ParseMode(Option("renderer") ?? "cpu"));
+        if (backend == BrowserRenderingMode.Software2D && renderer.Mode == MapRendererMode.Gpu)
+        {
+            throw new ArgumentException("GPU map composition requires the WebGL browser backend");
+        }
+
+        SeamApp.ConfigureMapRenderer(new(renderer, renderer));
         using var client = new HttpClient { BaseAddress = new Uri(BaseUrl()) };
         Content = await BrowserContent.LoadAsync(client, Option("art"));
         SeamApp.ConfigureGraphics(Content.Atlas, Content.Fonts, Content.Art);
@@ -36,6 +50,6 @@ internal static partial class Program
         }
 
         await AppBuilder.Configure<SeamApp>().WithInterFont()
-            .StartBrowserAppAsync("out", new BrowserPlatformOptions { RenderingMode = [BrowserRenderingMode.WebGL2] });
+            .StartBrowserAppAsync("out", new BrowserPlatformOptions { RenderingMode = [backend] });
     }
 }

@@ -391,6 +391,44 @@ runs retain an explicitly incomplete checkpoint and cannot pass the pixel checke
 The native worker-race check is inapplicable to this single-thread browser host;
 stale-generation, observer replacement and cache privacy cases still execute.
 
+The browser also accepts `?backend=software` or `?backend=webgl` (default),
+and `renderer=cpu` (default) or `renderer=gpu`. GPU map composition requires
+WebGL. These choices are independent: WebGL can present a CPU-composed map.
+For example, `?showcase=Mixed&observe=1&backend=webgl&renderer=gpu` opens the
+large authored gallery with GPU composition and draw receipts.
+
+Browser performance diagnostics use the same scoped authored world as the native
+probe. Run configurations sequentially on an otherwise idle machine:
+
+```sh
+node tools/dotnet/measure_map_browser.cjs \
+  tests/OpenCiv2.MapBrowser/bin/Release/net11.0-browser/publish/wwwroot \
+  build/test-results/browser-map-performance \
+  --backend=webgl --renderer=gpu --size=1920x1080 --density=1 \
+  --runs=3 --warmup=30 --samples=300 --pan-pattern=travel --recover-check
+python3 tools/dotnet/check_map_browser_performance.py build/test-results/browser-map-performance
+```
+
+Select `--backend=software --renderer=cpu` for Software2D, or
+`--backend=webgl --renderer=cpu` for CPU composition in the WebGL host. Dimensions
+are the physical map viewport; `--density=2` divides the logical extent once.
+Hardware WebGL runs reject SwiftShader/llvmpipe. `OC2_CHROMIUM_EXECUTABLE` can select
+the pinned Chromium executable. The test host alone accepts `--gpu-features=...`
+for controlled feature experiments; production ignores these experiment switches.
+`--pan-pattern=oscillate` (the default) screens two nearby warmed positions;
+`travel` crosses tile boundaries and includes a one-physical-pixel change.
+`--recover-check` also compares the actual host after reloading textures.
+
+The driver records raw warmups and measured frames, source identities, per-run
+quantiles, browser callback/GPU-query observations and WASM capacity. Its fresh
+pixel checks sample workload endpoints. Even the larger sampling command above
+is **not** the complete acceptance protocol: effects, edge/replacement/lifetime
+workloads, every-changed-frame comparison and physical presentation remain
+separate. See the [browser performance record](validation/m2-browser-performance.md)
+for measured results and limitations. `run_map_browser.cjs --hardware
+--renderer=gpu` also exercises the existing gallery on the hardware GPU path;
+its ordinary default remains CPU composition on WebGL/SwiftShader.
+
 ## Optional SQLite and Lua
 
 SQLite needs its optional native dependency; Lua-CSharp restores through NuGet:

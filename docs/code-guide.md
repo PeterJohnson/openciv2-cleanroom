@@ -46,7 +46,9 @@ atlas, cache and GPU experiment types remain internal, with friend access for
 MapProbe and MapBrowser acceptance. App retains inspection text, gallery fixtures,
 settings/persistence and Avalonia controls. MapProbe remains a native integration
 host over both projects. MapBrowser links the production browser entry point and
-the shared matrix, with read-only result and fresh WebGL frame exports. BrowserContent
+the shared matrix, with read-only result and fresh frame exports. Its performance-only exports
+install the shared `ScopedMapPerformanceWorld` fixture; real gallery input then
+drives production scoped projection, scene binding and drawing. BrowserContent
 supplies asynchronous HTTP streams to Formats' pinned graphics/font readers.
 
 The host owns each painter's lifetime and lends a current Skia canvas/context to
@@ -69,8 +71,11 @@ through actual GPU readback, covering the aliased-worker snapshot invalidation.
 The [staged optimization report](validation/m2-gpu-optimization.md) covers
 `MapForegroundCommands` (ordered per-frame commands), shared atlas masks,
 `MapObservationDelta` (disclosed snapshot changes), and the experimental
-`MapPainter.GpuRegions` / ground topology caches. These remain feature-gated;
-failed visual or performance experiments do not change the supported defaults.
+`MapPainter.GpuRegions` / ground topology caches. Ordered commands are now
+included in the opt-in GPU renderer after the
+[browser measurements](validation/m2-browser-performance.md). The remaining
+prototypes stay feature-gated; failed visual or performance experiments do not
+change their supported defaults.
 
 ## Adding behavior
 
