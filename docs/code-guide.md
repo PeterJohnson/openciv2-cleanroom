@@ -71,6 +71,33 @@ failed visual or performance experiments do not change the supported defaults.
 
 ## Adding behavior
 
+### Readable implementation and documentation
+
+Production C# uses braces for control-flow bodies and puts each statement on its
+own line. Keep short, pure forwarding members and simple computed properties as
+expressions when they are easy to scan. Give mutations, validation sequences and
+resource handling ordinary blocks. Use blank lines to separate steps with distinct
+purposes rather than compressing several steps onto one line.
+
+Aim for lines no longer than 120 characters. Wrap long parameter lists and calls
+with one item per line; break conditions at logical operators and keep related
+arithmetic together. Prefer a named intermediate value when it explains a concept,
+but preserve evaluation order, checked/wrapping arithmetic and short-circuiting.
+Long literal data, URLs and format definitions may justify an exception.
+`.editorconfig` enforces braces and separate statements in `src/`; its line-length
+setting is an editor guide, not a wrapping guarantee from `dotnet format`.
+
+Use XML summaries on types and operations to explain their role and contract.
+Document ownership, mutation, lifetime, failure behavior and meaningful return
+values, especially at public boundaries. Add parameter/return details when the
+names and types do not convey them. Private helpers benefit from documentation
+when they encode a policy or invariant; avoid comments that just repeat a name.
+Implementation comments explain why ordering, bounds checks, retained state or
+apparently unusual arithmetic are required. Preserve specification references and
+state the implemented scope without implying that a whole subsystem is complete.
+
+### Implementation checklist
+
 1. Choose the owning subsystem inside Core, Formats, Network or Session. Keep
    portable algorithms independent of filesystem, UI, database and Lua packages.
 2. Put player-visible values and command descriptors in Contracts. Session owns

@@ -5,6 +5,9 @@ using OpenCiv2.Core.State;
 
 namespace OpenCiv2.Session;
 
+/// <summary>
+/// A controller grant with its private update queue and per-command effect-delivery cursor.
+/// </summary>
 internal sealed class Lease(ClientIdentity identity)
 {
     public ClientIdentity Identity { get; } = identity;
@@ -12,7 +15,18 @@ internal sealed class Lease(ClientIdentity identity)
     public Queue<CommandUpdate> Updates { get; } = new();
     public Dictionary<CommandId, int> DeliveredEffects { get; } = new();
 }
-internal sealed class CommandRecord(CommandActor actor, CommandRequest request, CommandDefinition definition, CommandUpdate update)
+/// <summary>
+/// Retained command lifecycle state, including authority routing, continuation ownership and committed effects.
+/// </summary>
+/// <remarks>
+/// Effects remain available after failure or cancellation. A continuation is detached before disposal to
+/// prevent double release.
+/// </remarks>
+internal sealed class CommandRecord(
+    CommandActor actor,
+    CommandRequest request,
+    CommandDefinition definition,
+    CommandUpdate update)
 {
     public CommandActor Actor { get; } = actor;
     public CommandRequest Request { get; } = request;
@@ -25,7 +39,17 @@ internal sealed class CommandRecord(CommandActor actor, CommandRequest request, 
     public OwnedList<NamedValue> Resolved = OwnedList<NamedValue>.Empty;
     public List<Effect> Effects { get; } = [];
 }
+/// <summary>
+/// One queued continuation input; admission and execution occur at separate points in the session lane.
+/// </summary>
 internal sealed record Work(CommandId Command, OperationInput Input);
+/// <summary>
+/// Mutable bookkeeping behind one trusted runtime, accessed only on its cooperative mutation lane.
+/// </summary>
+/// <remarks>
+/// Checkpoint restore stages a replacement instance. Counters survive replacement so old controller and command
+/// identities are not reused.
+/// </remarks>
 internal sealed class RuntimeState(ProcessContext process, RuntimeId identity)
 {
     public ProcessContext Process { get; } = process;
@@ -46,31 +70,69 @@ internal sealed class RuntimeState(ProcessContext process, RuntimeId identity)
     public List<RoutedRequest> Requests { get; } = [];
     public List<RoutedReply> Replies { get; } = [];
     public Dictionary<(ConnectionId, CommandCorrelation), CommandId> Received { get; } = new();
+
+    /// <summary>
+    /// Rejects client work during checkpoint callbacks or after the client session has ended.
+    /// </summary>
     public void RequireActive()
     {
         RequireOutsideCheckpoint();
-        if (!Active || Disposed) throw new AccessException(AccessFailure.SessionEnded);
+        if (!Active || Disposed)
+        {
+            throw new AccessException(AccessFailure.SessionEnded);
+        }
     }
+
+    /// <summary>
+    /// Prevents codec callbacks from observing or mutating the session during checkpoint staging.
+    /// </summary>
     public void RequireOutsideCheckpoint()
     {
-        if (Checkpointing) throw new InvalidOperationException("Checkpoint codecs must not reenter the session");
+        if (Checkpointing)
+        {
+            throw new InvalidOperationException("Checkpoint codecs must not reenter the session");
+        }
     }
+
     public bool Pending => Commands.Values.Any(c => !c.Update.Status.Terminal());
+
+    /// <summary>
+    /// Requires no in-flight steps, pinned workflows, pending commands or untransferred network output.
+    /// </summary>
     public void RequireQuiescent()
     {
         RequireOutsideCheckpoint();
         ObjectDisposedException.ThrowIf(Disposed, this);
         if (Advancing || Activities != 0 || Pending || Requests.Count != 0 || Replies.Count != 0)
-            throw new InvalidOperationException("Finish owner workflows/commands and transfer required outboxes before replacing a session");
+        {
+            throw new InvalidOperationException(
+                "Finish owner workflows/commands and transfer required outboxes before replacing a session");
+        }
     }
+
+    /// <summary>
+    /// Increments the world observation revision, failing instead of wrapping into an older revision.
+    /// </summary>
     public void Publish()
     {
-        if (Revision == ulong.MaxValue) throw new OverflowException("World observation revision exhausted");
+        if (Revision == ulong.MaxValue)
+        {
+            throw new OverflowException("World observation revision exhausted");
+        }
+
         ++Revision;
     }
+
+    /// <summary>
+    /// Consumes a monotonically increasing identity and refuses to wrap or issue the exhausted sentinel.
+    /// </summary>
     public static ulong Assign(ref ulong next)
     {
-        if (next == ulong.MaxValue) throw new OverflowException("Session identity space exhausted");
+        if (next == ulong.MaxValue)
+        {
+            throw new OverflowException("Session identity space exhausted");
+        }
+
         return next++;
     }
 }

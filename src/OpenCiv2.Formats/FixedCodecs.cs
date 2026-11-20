@@ -13,6 +13,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadStoredGlobals(ref r);
     }
+
     internal static StoredGlobals ReadStoredGlobals(ref ByteReader r)
     {
         var rules = r.U16();
@@ -81,14 +82,59 @@ public static partial class ClassicRecords
             items5[i5] = r.U8();
         }
         var civ_by_rank = new OwnedList<byte>(items5);
-        return new() { Rules = rules, GameOptions = game_options, TransientFlags = transient_flags, GameFlags = game_flags, MessageOptions = message_options, ShownEventFlags = shown_event_flags, Retained0e = retained_0e, Turn = turn, Year = year, FirstLaunchTurn = first_launch_turn, ActiveUnit = active_unit, MovingUnit = moving_unit, Multiplayer = multiplayer, PlayerCiv = player_civ, SavedCurrentCiv = saved_current_civ, TurnCiv = turn_civ, ViewCiv = view_civ, RevealMap = reveal_map, Difficulty = difficulty, BarbarianActivity = barbarian_activity, CivsAlive = civs_alive, HumanPlayers = human_players, CivsAtStart = civs_at_start, NumEnemies = num_enemies, WarmingCounter = warming_counter, GlobalWarmings = global_warmings, WarmingPollution = warming_pollution, PollutedTiles = polluted_tiles, PeaceTurns = peace_turns, UnitEnd = unit_end, CityEnd = city_end, NumAdvances = num_advances, Retained34 = retained_34, FirstDiscoverer = first_discoverer, AdvanceKnownBy = advance_known_by, WonderCity = wonder_city, NextHistoryTurn = next_history_turn, BestHumanRank = best_human_rank, WorstHumanRank = worst_human_rank, PowerRank = power_rank, CivByRank = civ_by_rank };
+        return new()
+        {
+            Rules = rules,
+            GameOptions = game_options,
+            TransientFlags = transient_flags,
+            GameFlags = game_flags,
+            MessageOptions = message_options,
+            ShownEventFlags = shown_event_flags,
+            Retained0e = retained_0e,
+            Turn = turn,
+            Year = year,
+            FirstLaunchTurn = first_launch_turn,
+            ActiveUnit = active_unit,
+            MovingUnit = moving_unit,
+            Multiplayer = multiplayer,
+            PlayerCiv = player_civ,
+            SavedCurrentCiv = saved_current_civ,
+            TurnCiv = turn_civ,
+            ViewCiv = view_civ,
+            RevealMap = reveal_map,
+            Difficulty = difficulty,
+            BarbarianActivity = barbarian_activity,
+            CivsAlive = civs_alive,
+            HumanPlayers = human_players,
+            CivsAtStart = civs_at_start,
+            NumEnemies = num_enemies,
+            WarmingCounter = warming_counter,
+            GlobalWarmings = global_warmings,
+            WarmingPollution = warming_pollution,
+            PollutedTiles = polluted_tiles,
+            PeaceTurns = peace_turns,
+            UnitEnd = unit_end,
+            CityEnd = city_end,
+            NumAdvances = num_advances,
+            Retained34 = retained_34,
+            FirstDiscoverer = first_discoverer,
+            AdvanceKnownBy = advance_known_by,
+            WonderCity = wonder_city,
+            NextHistoryTurn = next_history_turn,
+            BestHumanRank = best_human_rank,
+            WorstHumanRank = worst_human_rank,
+            PowerRank = power_rank,
+            CivByRank = civ_by_rank
+        };
     }
+
     public static byte[] Encode(StoredGlobals value)
     {
         var w = new ByteWriter();
         WriteStoredGlobals(w, value);
         return w.ToArray();
     }
+
     internal static void WriteStoredGlobals(ByteWriter w, StoredGlobals v)
     {
         w.U16(v.Rules);
@@ -160,6 +206,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadStoredCivilization(ref r);
     }
+
     internal static StoredCivilization ReadStoredCivilization(ref ByteReader r)
     {
         var flags = r.U16();
@@ -335,14 +382,76 @@ public static partial class ClassicRecords
             items33[i33] = ReadCivilizationGoal(ref r);
         }
         var standing_goals = new OwnedList<CivilizationGoal>(items33);
-        return new() { Flags = flags, Gold = gold, Tribe = tribe, ResearchProgress = research_progress, Researching = researching, CapitalX = capital_x, LastCityTurn = last_city_turn, NumAdvances = num_advances, FutureTechs = future_techs, ResearchCostAdvances = research_cost_advances, ScienceRate = science_rate, TaxRate = tax_rate, Government = government, DiploRandom = diplo_random, WondersByGroup = wonders_by_group, Retained1b = retained_1b, SubversionCount = subversion_count, Reputation = reputation, DiploRequestCount = diplo_request_count, Treaties = treaties, Attitude = attitude, ReputationCredit = reputation_credit, AggressionCounter = aggression_counter, Advances = advances, Retained65 = retained_65, MilitaryCount = military_count, CityCount = city_count, ShipCount = ship_count, TotalCitySize = total_city_size, MilitaryStrength = military_strength, TotalAttack = total_attack, PopulationMilestone = population_milestone, AdvanceSource = advance_source, UnitsActive = units_active, UnitsLost = units_lost, UnitsInProduction = units_in_production, ContinentMilitary = continent_military, ContinentAttack = continent_attack, ContinentCities = continent_cities, ContinentCitySize = continent_city_size, ContinentTradeUnits = continent_trade_units, ContinentFlags = continent_flags, ContinentPolicy = continent_policy, BestShieldSurplus = best_shield_surplus, GovernmentScore = government_score, LastContactTurn = last_contact_turn, LeaderPortrait = leader_portrait, ThroneRoom = throne_room, Retained3fd = retained_3fd, ThroneRoomUpgrades = throne_room_upgrades, SpaceshipFlags = spaceship_flags, Retained401 = retained_401, SpaceshipArrivalYear = spaceship_arrival_year, SpaceshipLaunchYear = spaceship_launch_year, SpaceshipPopulation = spaceship_population, SpaceshipParts = spaceship_parts, Goals = goals, StandingGoals = standing_goals };
+        return new()
+        {
+            Flags = flags,
+            Gold = gold,
+            Tribe = tribe,
+            ResearchProgress = research_progress,
+            Researching = researching,
+            CapitalX = capital_x,
+            LastCityTurn = last_city_turn,
+            NumAdvances = num_advances,
+            FutureTechs = future_techs,
+            ResearchCostAdvances = research_cost_advances,
+            ScienceRate = science_rate,
+            TaxRate = tax_rate,
+            Government = government,
+            DiploRandom = diplo_random,
+            WondersByGroup = wonders_by_group,
+            Retained1b = retained_1b,
+            SubversionCount = subversion_count,
+            Reputation = reputation,
+            DiploRequestCount = diplo_request_count,
+            Treaties = treaties,
+            Attitude = attitude,
+            ReputationCredit = reputation_credit,
+            AggressionCounter = aggression_counter,
+            Advances = advances,
+            Retained65 = retained_65,
+            MilitaryCount = military_count,
+            CityCount = city_count,
+            ShipCount = ship_count,
+            TotalCitySize = total_city_size,
+            MilitaryStrength = military_strength,
+            TotalAttack = total_attack,
+            PopulationMilestone = population_milestone,
+            AdvanceSource = advance_source,
+            UnitsActive = units_active,
+            UnitsLost = units_lost,
+            UnitsInProduction = units_in_production,
+            ContinentMilitary = continent_military,
+            ContinentAttack = continent_attack,
+            ContinentCities = continent_cities,
+            ContinentCitySize = continent_city_size,
+            ContinentTradeUnits = continent_trade_units,
+            ContinentFlags = continent_flags,
+            ContinentPolicy = continent_policy,
+            BestShieldSurplus = best_shield_surplus,
+            GovernmentScore = government_score,
+            LastContactTurn = last_contact_turn,
+            LeaderPortrait = leader_portrait,
+            ThroneRoom = throne_room,
+            Retained3fd = retained_3fd,
+            ThroneRoomUpgrades = throne_room_upgrades,
+            SpaceshipFlags = spaceship_flags,
+            Retained401 = retained_401,
+            SpaceshipArrivalYear = spaceship_arrival_year,
+            SpaceshipLaunchYear = spaceship_launch_year,
+            SpaceshipPopulation = spaceship_population,
+            SpaceshipParts = spaceship_parts,
+            Goals = goals,
+            StandingGoals = standing_goals
+        };
     }
+
     public static byte[] Encode(StoredCivilization value)
     {
         var w = new ByteWriter();
         WriteStoredCivilization(w, value);
         return w.ToArray();
     }
+
     internal static void WriteStoredCivilization(ByteWriter w, StoredCivilization v)
     {
         w.U16(v.Flags);
@@ -503,6 +612,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadStoredCivilizationNames(ref r);
     }
+
     internal static StoredCivilizationNames ReadStoredCivilizationNames(ref ByteReader r)
     {
         var city_style = r.I16();
@@ -517,26 +627,43 @@ public static partial class ClassicRecords
         var titles = new OwnedList<OwnedList<byte>>(items57);
         return new() { CityStyle = city_style, Leader = leader, Tribe = tribe, Adjective = adjective, Titles = titles };
     }
+
     public static byte[] Encode(StoredCivilizationNames value)
     {
         var w = new ByteWriter();
         WriteStoredCivilizationNames(w, value);
         return w.ToArray();
     }
+
     internal static void WriteStoredCivilizationNames(ByteWriter w, StoredCivilizationNames v)
     {
         w.I16(v.CityStyle);
         RequireCount(v.Leader, 24);
-        foreach (byte b in v.Leader) w.U8(b);
+        foreach (byte b in v.Leader)
+        {
+            w.U8(b);
+        }
+
         RequireCount(v.Tribe, 24);
-        foreach (byte b in v.Tribe) w.U8(b);
+        foreach (byte b in v.Tribe)
+        {
+            w.U8(b);
+        }
+
         RequireCount(v.Adjective, 24);
-        foreach (byte b in v.Adjective) w.U8(b);
+        foreach (byte b in v.Adjective)
+        {
+            w.U8(b);
+        }
+
         RequireCount(v.Titles, 7);
         foreach (var item58 in v.Titles)
         {
             RequireCount(item58, 24);
-            foreach (byte b in item58) w.U8(b);
+            foreach (byte b in item58)
+            {
+                w.U8(b);
+            }
         }
     }
 
@@ -546,6 +673,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadStoredLeader(ref r);
     }
+
     internal static StoredLeader ReadStoredLeader(ref ByteReader r)
     {
         var attack = r.I8();
@@ -576,14 +704,31 @@ public static partial class ClassicRecords
             items60[i60] = new OwnedList<short>(items61);
         }
         var titles = new OwnedList<OwnedList<short>>(items60);
-        return new() { Attack = attack, Expand = expand, Civilize = civilize, TimesUsed = times_used, Female = female, CityNameIndex = city_name_index, Color = color, CityStyle = city_style, LeaderName = leader_name, Plural = plural, Adjective = adjective, Names = names, Titles = titles };
+        return new()
+        {
+            Attack = attack,
+            Expand = expand,
+            Civilize = civilize,
+            TimesUsed = times_used,
+            Female = female,
+            CityNameIndex = city_name_index,
+            Color = color,
+            CityStyle = city_style,
+            LeaderName = leader_name,
+            Plural = plural,
+            Adjective = adjective,
+            Names = names,
+            Titles = titles
+        };
     }
+
     public static byte[] Encode(StoredLeader value)
     {
         var w = new ByteWriter();
         WriteStoredLeader(w, value);
         return w.ToArray();
     }
+
     internal static void WriteStoredLeader(ByteWriter w, StoredLeader v)
     {
         w.I8(v.Attack);
@@ -619,6 +764,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadSavedRectangle(ref r);
     }
+
     internal static SavedRectangle ReadSavedRectangle(ref ByteReader r)
     {
         var left = r.I16();
@@ -627,12 +773,14 @@ public static partial class ClassicRecords
         var bottom = r.I16();
         return new() { Left = left, Top = top, Right = right, Bottom = bottom };
     }
+
     public static byte[] Encode(SavedRectangle value)
     {
         var w = new ByteWriter();
         WriteSavedRectangle(w, value);
         return w.ToArray();
     }
+
     internal static void WriteSavedRectangle(ByteWriter w, SavedRectangle v)
     {
         w.I16(v.Left);
@@ -647,6 +795,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadSavedLayout(ref r);
     }
+
     internal static SavedLayout ReadSavedLayout(ref ByteReader r)
     {
         var valid = r.I16();
@@ -658,12 +807,14 @@ public static partial class ClassicRecords
         var rectangles = new OwnedList<SavedRectangle>(items65);
         return new() { Valid = valid, Rectangles = rectangles };
     }
+
     public static byte[] Encode(SavedLayout value)
     {
         var w = new ByteWriter();
         WriteSavedLayout(w, value);
         return w.ToArray();
     }
+
     internal static void WriteSavedLayout(ByteWriter w, SavedLayout v)
     {
         w.I16(v.Valid);
@@ -680,6 +831,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadSavedMapView(ref r);
     }
+
     internal static SavedMapView ReadSavedMapView(ref ByteReader r)
     {
         var open = r.I16();
@@ -689,12 +841,14 @@ public static partial class ClassicRecords
         var zoom = r.I16();
         return new() { Open = open, TrackMoves = track_moves, X = x, Y = y, Zoom = zoom };
     }
+
     public static byte[] Encode(SavedMapView value)
     {
         var w = new ByteWriter();
         WriteSavedMapView(w, value);
         return w.ToArray();
     }
+
     internal static void WriteSavedMapView(ByteWriter w, SavedMapView v)
     {
         w.I16(v.Open);
@@ -710,6 +864,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadScenarioParameters(ref r);
     }
+
     internal static ScenarioParameters ReadScenarioParameters(ref ByteReader r)
     {
         var flags = r.U16();
@@ -725,19 +880,35 @@ public static partial class ClassicRecords
             items67[i67] = r.I16();
         }
         var victory_thresholds = new OwnedList<short>(items67);
-        return new() { Flags = flags, Name = name, TechnologyParadigm = technology_paradigm, YearIncrement = year_increment, StartYear = start_year, MaximumTurns = maximum_turns, ObjectiveCiv = objective_civ, VictoryThresholds = victory_thresholds };
+        return new()
+        {
+            Flags = flags,
+            Name = name,
+            TechnologyParadigm = technology_paradigm,
+            YearIncrement = year_increment,
+            StartYear = start_year,
+            MaximumTurns = maximum_turns,
+            ObjectiveCiv = objective_civ,
+            VictoryThresholds = victory_thresholds
+        };
     }
+
     public static byte[] Encode(ScenarioParameters value)
     {
         var w = new ByteWriter();
         WriteScenarioParameters(w, value);
         return w.ToArray();
     }
+
     internal static void WriteScenarioParameters(ByteWriter w, ScenarioParameters v)
     {
         w.U16(v.Flags);
         RequireCount(v.Name, 80);
-        foreach (byte b in v.Name) w.U8(b);
+        foreach (byte b in v.Name)
+        {
+            w.U8(b);
+        }
+
         w.I16(v.TechnologyParadigm);
         w.I16(v.YearIncrement);
         w.I16(v.StartYear);
@@ -756,6 +927,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadEliminationHistory(ref r);
     }
+
     internal static EliminationHistory ReadEliminationHistory(ref ByteReader r)
     {
         var count = r.I16();
@@ -785,12 +957,14 @@ public static partial class ClassicRecords
         var names = new OwnedList<OwnedList<byte>>(items72);
         return new() { Count = count, Turns = turns, Killers = killers, Portraits = portraits, Names = names };
     }
+
     public static byte[] Encode(EliminationHistory value)
     {
         var w = new ByteWriter();
         WriteEliminationHistory(w, value);
         return w.ToArray();
     }
+
     internal static void WriteEliminationHistory(ByteWriter w, EliminationHistory v)
     {
         w.I16(v.Count);
@@ -813,7 +987,10 @@ public static partial class ClassicRecords
         foreach (var item76 in v.Names)
         {
             RequireCount(item76, 24);
-            foreach (byte b in item76) w.U8(b);
+            foreach (byte b in item76)
+            {
+                w.U8(b);
+            }
         }
     }
 
@@ -823,6 +1000,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadMultiplayerRecord(ref r);
     }
+
     internal static MultiplayerRecord ReadMultiplayerRecord(ref ByteReader r)
     {
         var items77 = new short[8];
@@ -898,14 +1076,41 @@ public static partial class ClassicRecords
             items86[i86] = r.U8();
         }
         var retained_472 = new OwnedList<byte>(items86);
-        return new() { CenterX = center_x, CenterY = center_y, Introduced = introduced, TurnTimeLimit = turn_time_limit, EncodedPasswords = encoded_passwords, OpenGame = open_game, KillOnRetirement = kill_on_retirement, ShowHumanStarts = show_human_starts, ChatFromStart = chat_from_start, Simultaneous = simultaneous, CheatTurnTime = cheat_turn_time, Retained142 = retained_142, Emails = emails, PlayerSetup = player_setup, ResumeCiv = resume_civ, Retained465 = retained_465, ResumeEvent = resume_event, AutoplayActive = autoplay_active, AutoplayTurns = autoplay_turns, DoubleProduction = double_production, DoubleMovement = double_movement, ClaimedHumans = claimed_humans, Retained472 = retained_472 };
+        return new()
+        {
+            CenterX = center_x,
+            CenterY = center_y,
+            Introduced = introduced,
+            TurnTimeLimit = turn_time_limit,
+            EncodedPasswords = encoded_passwords,
+            OpenGame = open_game,
+            KillOnRetirement = kill_on_retirement,
+            ShowHumanStarts = show_human_starts,
+            ChatFromStart = chat_from_start,
+            Simultaneous = simultaneous,
+            CheatTurnTime = cheat_turn_time,
+            Retained142 = retained_142,
+            Emails = emails,
+            PlayerSetup = player_setup,
+            ResumeCiv = resume_civ,
+            Retained465 = retained_465,
+            ResumeEvent = resume_event,
+            AutoplayActive = autoplay_active,
+            AutoplayTurns = autoplay_turns,
+            DoubleProduction = double_production,
+            DoubleMovement = double_movement,
+            ClaimedHumans = claimed_humans,
+            Retained472 = retained_472
+        };
     }
+
     public static byte[] Encode(MultiplayerRecord value)
     {
         var w = new ByteWriter();
         WriteMultiplayerRecord(w, value);
         return w.ToArray();
     }
+
     internal static void WriteMultiplayerRecord(ByteWriter w, MultiplayerRecord v)
     {
         RequireCount(v.CenterX, 8);
@@ -979,6 +1184,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadEventRecord(ref r);
     }
+
     internal static EventRecord ReadEventRecord(ref ByteReader r)
     {
         var triggers = r.U32();
@@ -1056,14 +1262,68 @@ public static partial class ClassicRecords
         var destroy_civ = r.I32();
         var give_tech = r.I32();
         var give_tech_civ = r.I32();
-        return new() { Triggers = triggers, Actions = actions, UnitName = unit_name, UnitType = unit_type, CityName = city_name, WhoName = who_name, WhoCiv = who_civ, TalkerType = talker_type, WhomName = whom_name, WhomCiv = whom_civ, ListenerType = listener_type, Turn = turn, Denominator = denominator, Technology = technology, Text = text, MoveOwnerName = move_owner_name, MoveOwnerCiv = move_owner_civ, MoveUnitName = move_unit_name, MoveUnitType = move_unit_type, MoveCount = move_count, MoveRectangle = move_rectangle, MoveX = move_x, MoveY = move_y, AggressionWhomName = aggression_whom_name, AggressionWhomCiv = aggression_whom_civ, AggressionWhoName = aggression_who_name, AggressionWhoCiv = aggression_who_civ, CreateOwnerName = create_owner_name, CreateOwnerCiv = create_owner_civ, CreateUnitName = create_unit_name, CreateUnitType = create_unit_type, CreateLocations = create_locations, CreateLocationCount = create_location_count, CreateVeteran = create_veteran, CreateHomecity = create_homecity, AuxiliaryCivName = auxiliary_civ_name, AuxiliaryScalar = auxiliary_scalar, AuxiliaryUnitName = auxiliary_unit_name, Retained = retained, MoneyReceiverName = money_receiver_name, MoneyReceiverCiv = money_receiver_civ, MoneyAmount = money_amount, NegotiationFlag = negotiation_flag, WaveFile = wave_file, CdTrack = cd_track, TerrainType = terrain_type, TerrainRectangle = terrain_rectangle, DestroyCiv = destroy_civ, GiveTech = give_tech, GiveTechCiv = give_tech_civ };
+        return new()
+        {
+            Triggers = triggers,
+            Actions = actions,
+            UnitName = unit_name,
+            UnitType = unit_type,
+            CityName = city_name,
+            WhoName = who_name,
+            WhoCiv = who_civ,
+            TalkerType = talker_type,
+            WhomName = whom_name,
+            WhomCiv = whom_civ,
+            ListenerType = listener_type,
+            Turn = turn,
+            Denominator = denominator,
+            Technology = technology,
+            Text = text,
+            MoveOwnerName = move_owner_name,
+            MoveOwnerCiv = move_owner_civ,
+            MoveUnitName = move_unit_name,
+            MoveUnitType = move_unit_type,
+            MoveCount = move_count,
+            MoveRectangle = move_rectangle,
+            MoveX = move_x,
+            MoveY = move_y,
+            AggressionWhomName = aggression_whom_name,
+            AggressionWhomCiv = aggression_whom_civ,
+            AggressionWhoName = aggression_who_name,
+            AggressionWhoCiv = aggression_who_civ,
+            CreateOwnerName = create_owner_name,
+            CreateOwnerCiv = create_owner_civ,
+            CreateUnitName = create_unit_name,
+            CreateUnitType = create_unit_type,
+            CreateLocations = create_locations,
+            CreateLocationCount = create_location_count,
+            CreateVeteran = create_veteran,
+            CreateHomecity = create_homecity,
+            AuxiliaryCivName = auxiliary_civ_name,
+            AuxiliaryScalar = auxiliary_scalar,
+            AuxiliaryUnitName = auxiliary_unit_name,
+            Retained = retained,
+            MoneyReceiverName = money_receiver_name,
+            MoneyReceiverCiv = money_receiver_civ,
+            MoneyAmount = money_amount,
+            NegotiationFlag = negotiation_flag,
+            WaveFile = wave_file,
+            CdTrack = cd_track,
+            TerrainType = terrain_type,
+            TerrainRectangle = terrain_rectangle,
+            DestroyCiv = destroy_civ,
+            GiveTech = give_tech,
+            GiveTechCiv = give_tech_civ
+        };
     }
+
     public static byte[] Encode(EventRecord value)
     {
         var w = new ByteWriter();
         WriteEventRecord(w, value);
         return w.ToArray();
     }
+
     internal static void WriteEventRecord(ByteWriter w, EventRecord v)
     {
         w.U32(v.Triggers);
@@ -1144,6 +1404,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadStoredUnit(ref r);
     }
+
     internal static StoredUnit ReadStoredUnit(ref ByteReader r)
     {
         var x = r.I16();
@@ -1167,14 +1428,39 @@ public static partial class ClassicRecords
         var next = r.I16();
         var token = new UnitToken(r.U32());
         var retained_word = r.U16();
-        return new() { X = x, Y = y, Flags = flags, Type = type, Owner = owner, MovesUsed = moves_used, Visibility = visibility, Damage = damage, LastDirection = last_direction, AiTask = ai_task, Counter = counter, AuxiliaryTimer = auxiliary_timer, Orders = orders, Home = home, RetainedByte = retained_byte, DestinationX = destination_x, DestinationY = destination_y, Previous = previous, Next = next, Token = token, RetainedWord = retained_word };
+        return new()
+        {
+            X = x,
+            Y = y,
+            Flags = flags,
+            Type = type,
+            Owner = owner,
+            MovesUsed = moves_used,
+            Visibility = visibility,
+            Damage = damage,
+            LastDirection = last_direction,
+            AiTask = ai_task,
+            Counter = counter,
+            AuxiliaryTimer = auxiliary_timer,
+            Orders = orders,
+            Home = home,
+            RetainedByte = retained_byte,
+            DestinationX = destination_x,
+            DestinationY = destination_y,
+            Previous = previous,
+            Next = next,
+            Token = token,
+            RetainedWord = retained_word
+        };
     }
+
     public static byte[] Encode(StoredUnit value)
     {
         var w = new ByteWriter();
         WriteStoredUnit(w, value);
         return w.ToArray();
     }
+
     internal static void WriteStoredUnit(ByteWriter w, StoredUnit v)
     {
         w.I16(v.X);
@@ -1206,6 +1492,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadStoredCity(ref r);
     }
+
     internal static StoredCity ReadStoredCity(ref ByteReader r)
     {
         var x = r.I16();
@@ -1269,14 +1556,49 @@ public static partial class ClassicRecords
         var happy = r.U8();
         var unhappy = r.U8();
         var token = new CityToken(r.U32());
-        return new() { X = x, Y = y, Flags = flags, Owner = owner, Size = size, Founder = founder, TurnsCaptured = turns_captured, KnownTo = known_to, RememberedSize = remembered_size, RetainedByte = retained_byte, SpecialistKinds = specialist_kinds, FoodBox = food_box, ShieldBox = shield_box, BaseTrade = base_trade, Name = name, WorkedTiles = worked_tiles, Improvements = improvements, Production = production, RouteCount = route_count, Supplies = supplies, Demands = demands, RouteGoods = route_goods, RoutePartners = route_partners, Science = science, Tax = tax, Trade = trade, TotalFood = total_food, TotalShields = total_shields, Happy = happy, Unhappy = unhappy, Token = token };
+        return new()
+        {
+            X = x,
+            Y = y,
+            Flags = flags,
+            Owner = owner,
+            Size = size,
+            Founder = founder,
+            TurnsCaptured = turns_captured,
+            KnownTo = known_to,
+            RememberedSize = remembered_size,
+            RetainedByte = retained_byte,
+            SpecialistKinds = specialist_kinds,
+            FoodBox = food_box,
+            ShieldBox = shield_box,
+            BaseTrade = base_trade,
+            Name = name,
+            WorkedTiles = worked_tiles,
+            Improvements = improvements,
+            Production = production,
+            RouteCount = route_count,
+            Supplies = supplies,
+            Demands = demands,
+            RouteGoods = route_goods,
+            RoutePartners = route_partners,
+            Science = science,
+            Tax = tax,
+            Trade = trade,
+            TotalFood = total_food,
+            TotalShields = total_shields,
+            Happy = happy,
+            Unhappy = unhappy,
+            Token = token
+        };
     }
+
     public static byte[] Encode(StoredCity value)
     {
         var w = new ByteWriter();
         WriteStoredCity(w, value);
         return w.ToArray();
     }
+
     internal static void WriteStoredCity(ByteWriter w, StoredCity v)
     {
         w.I16(v.X);
@@ -1298,7 +1620,11 @@ public static partial class ClassicRecords
         w.I16(v.ShieldBox);
         w.I16(v.BaseTrade);
         RequireCount(v.Name, 16);
-        foreach (byte b in v.Name) w.U8(b);
+        foreach (byte b in v.Name)
+        {
+            w.U8(b);
+        }
+
         w.U32(v.WorkedTiles);
         RequireCount(v.Improvements, 5);
         foreach (var item114 in v.Improvements)
@@ -1343,6 +1669,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadMapHeader(ref r);
     }
+
     internal static MapHeader ReadMapHeader(ref ByteReader r)
     {
         var width = r.I16();
@@ -1352,14 +1679,25 @@ public static partial class ClassicRecords
         var seed = r.U16();
         var coarse_width = r.I16();
         var coarse_height = r.I16();
-        return new() { Width = width, Height = height, Area = area, Topology = topology, Seed = seed, CoarseWidth = coarse_width, CoarseHeight = coarse_height };
+        return new()
+        {
+            Width = width,
+            Height = height,
+            Area = area,
+            Topology = topology,
+            Seed = seed,
+            CoarseWidth = coarse_width,
+            CoarseHeight = coarse_height
+        };
     }
+
     public static byte[] Encode(MapHeader value)
     {
         var w = new ByteWriter();
         WriteMapHeader(w, value);
         return w.ToArray();
     }
+
     internal static void WriteMapHeader(ByteWriter w, MapHeader v)
     {
         w.I16(v.Width);
@@ -1377,6 +1715,7 @@ public static partial class ClassicRecords
         var r = new ByteReader(bytes);
         return ReadCivilizationGoal(ref r);
     }
+
     internal static CivilizationGoal ReadCivilizationGoal(ref ByteReader r)
     {
         var x = r.I16();
@@ -1385,12 +1724,14 @@ public static partial class ClassicRecords
         var priority = r.I8();
         return new() { X = x, Y = y, Role = role, Priority = priority };
     }
+
     public static byte[] Encode(CivilizationGoal value)
     {
         var w = new ByteWriter();
         WriteCivilizationGoal(w, value);
         return w.ToArray();
     }
+
     internal static void WriteCivilizationGoal(ByteWriter w, CivilizationGoal v)
     {
         w.I16(v.X);

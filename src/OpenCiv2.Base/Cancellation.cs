@@ -5,7 +5,9 @@ public sealed class CancellationSource
 {
     private int requested;
     public StopToken Token => new(this);
+
     public bool RequestStop() => Interlocked.Exchange(ref requested, 1) == 0;
+
     internal bool Requested => Volatile.Read(ref requested) != 0;
 }
 
@@ -13,11 +15,17 @@ public sealed class CancellationSource
 public readonly struct StopToken
 {
     private readonly CancellationSource? source;
+
     internal StopToken(CancellationSource source) => this.source = source;
+
     public bool StopRequested => source?.Requested ?? false;
+
     public void CheckStop()
     {
-        if (StopRequested) throw new CancelledException();
+        if (StopRequested)
+        {
+            throw new CancelledException();
+        }
     }
 }
 

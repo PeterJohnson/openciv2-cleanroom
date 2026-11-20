@@ -9,21 +9,33 @@ namespace OpenCiv2.MapRendering;
 internal sealed class MapText : IDisposable
 {
     private readonly List<SKTypeface> faces = [];
+
     internal readonly record struct Run(int Face, string Text, float Width);
+
     internal readonly record struct Line(string Text, float Width, List<Run>? Runs = null);
 
     public MapText(PinnedFonts? sources)
     {
-        if (sources is null) return;
+        if (sources is null)
+        {
+            return;
+        }
+
         try
         {
             foreach (string name in new[] { "sans.regular", "serif.regular", "mono.regular" })
             {
                 using var stream = sources.OpenFace(name);
-                faces.Add(SKTypeface.FromStream(stream) ?? throw new InvalidDataException($"Skia rejected pinned map face '{name}'"));
+                faces.Add(
+                    SKTypeface.FromStream(stream)
+                        ?? throw new InvalidDataException($"Skia rejected pinned map face '{name}'"));
             }
         }
-        catch { Dispose(); throw; }
+        catch
+        {
+            Dispose();
+            throw;
+        }
     }
 
     public SKFont Font(float size) => new(faces.Count == 0 ? null : faces[0], size) { Edging = SKFontEdging.Antialias };
@@ -31,7 +43,9 @@ internal sealed class MapText : IDisposable
     public Line Measure(string text, SKFont font, SKPaint paint)
     {
         if (faces.Count == 0 || text.AsSpan().IndexOfAnyExceptInRange(' ', '~') < 0 || font.ContainsGlyphs(text))
+        {
             return new(text, font.MeasureText(text, paint));
+        }
 
         var runs = new List<Run>();
         var current = new StringBuilder();
@@ -61,7 +75,11 @@ internal sealed class MapText : IDisposable
 
         void AddRun()
         {
-            if (current.Length == 0) return;
+            if (current.Length == 0)
+            {
+                return;
+            }
+
             string value = current.ToString();
             var selected = face switch { 1 => serif, 2 => mono, _ => font };
             float advance = selected.MeasureText(value, paint);
@@ -74,9 +92,17 @@ internal sealed class MapText : IDisposable
     public Line Fit(string text, float maximum, SKFont font, SKPaint paint)
     {
         var full = Measure(text, font, paint);
-        if (full.Width <= maximum + .001f) return full;
+        if (full.Width <= maximum + .001f)
+        {
+            return full;
+        }
+
         var ellipsis = Measure("…", font, paint);
-        if (ellipsis.Width > maximum) return new("", 0);
+        if (ellipsis.Width > maximum)
+        {
+            return new("", 0);
+        }
+
         int[] elements = StringInfo.ParseCombiningCharacters(text);
         int low = 1, high = elements.Length - 1;
         while (low <= high)
@@ -88,7 +114,10 @@ internal sealed class MapText : IDisposable
                 ellipsis = candidate;
                 low = middle + 1;
             }
-            else high = middle - 1;
+            else
+            {
+                high = middle - 1;
+            }
         }
         return ellipsis;
     }
@@ -113,7 +142,11 @@ internal sealed class MapText : IDisposable
 
     public void Dispose()
     {
-        foreach (var face in faces) face.Dispose();
+        foreach (var face in faces)
+        {
+            face.Dispose();
+        }
+
         faces.Clear();
     }
 }

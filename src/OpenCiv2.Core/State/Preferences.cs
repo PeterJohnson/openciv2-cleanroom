@@ -7,6 +7,7 @@ namespace OpenCiv2.Core.State;
 public record struct OrdinaryPreferences
 {
     public OrdinaryPreferences() { }
+
     public ushort Rules;
     public short DefaultLevel, Tribe;
     public Difficulty Difficulty;
@@ -20,6 +21,7 @@ public record struct OrdinaryPreferences
     public OwnedList<byte> Text = OwnedList<byte>.Empty;
     public short AcceleratedStart;
     public RuleSelection RulesChoice;
+
     public void SetDefaults(int screenWidth, bool animationsAvailable)
     {
         this = new()
@@ -37,6 +39,7 @@ public record struct OrdinaryPreferences
 public record struct MultiplayerPreferences
 {
     public MultiplayerPreferences() { }
+
     public bool KillOnRetirement, ShowHumanStarts, ChatFromStart, Simultaneous;
     public short MainMenu, Type, HotseatMenu, LanMenu, EmailMenu;
     public NetworkProtocol Protocol;
@@ -48,5 +51,6 @@ public record struct MultiplayerPreferences
     public short HotseatPlayers;
     public Rectangle Parley, Chat;
     public bool ClearChatNewGame, ClearChatBoot, DoubleProduction, DoubleMovement;
+
     public void SetDefaults() => this = new() { CustomTimer = new("60"u8.ToArray()) };
 }

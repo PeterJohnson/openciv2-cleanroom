@@ -3,6 +3,9 @@ using SkiaSharp;
 
 namespace OpenCiv2.MapRendering;
 
+/// <summary>
+/// Identifies a GPU resource failure that the renderer policy may handle by switching to CPU drawing.
+/// </summary>
 internal sealed class MapGpuResourceException(string message) : Exception(message);
 
 /// <summary>Timing and diagnostics for a completed draw; timestamps use Stopwatch ticks.</summary>
@@ -14,9 +17,14 @@ public sealed class MapRendererSession(MapRendererOptions options)
     private WeakReference<GRContext>? previous;
     private string? fallback;
     private int retry;
+
+    /// <summary>
+    /// Schedules a resource reset and GPU retry for the next draw inside the render thread's Skia lease.
+    /// </summary>
     public void Retry() => Interlocked.Exchange(ref retry, 1);
 
-    /// <summary>Whether the host should capture input timestamps for the explicitly enabled latency experiment.</summary>
+    /// <summary>Whether the host should capture input timestamps for the explicitly enabled latency
+    /// experiment.</summary>
     public static bool TraceLatency { get; } = MapGpuComposition.Experiment &&
         Environment.GetEnvironmentVariable("OPENCIV2_MAP_LATENCY") == "1";
 
@@ -29,13 +37,22 @@ public sealed class MapRendererSession(MapRendererOptions options)
         int inputCode = 0, long inputAt = 0)
     {
         if ((MapGpuComposition.Synchronize || TraceLatency) && context is null)
+        {
             throw new MapGpuResourceException("GPU timing requires a hardware Skia context");
+        }
         // Explicit experiments apply the same ceiling to CPU upload
         // and GPU composition, including asynchronous timing runs.
         // Ordinary CPU sessions keep the host's existing policy.
         if ((MapGpuComposition.Experiment || TraceLatency) && context is not null)
+        {
             MapGpuComposition.PrepareContext(context!, (long)painter.Options.GpuCacheMiB * 1024 * 1024);
-        if (MapGpuComposition.Synchronize) context!.Flush(submit: true, synchronous: true);
+        }
+
+        if (MapGpuComposition.Synchronize)
+        {
+            context!.Flush(submit: true, synchronous: true);
+        }
+
         long startedAt = Stopwatch.GetTimestamp();
         var stats = Draw(context, gpu => gpu
             ? MapGpuComposition.Draw(painter, context!, canvas, epoch, camera,
@@ -53,14 +70,20 @@ public sealed class MapRendererSession(MapRendererOptions options)
             for (int bit = 0; bit < 32; bit++)
             {
                 marker.Color = (code & (1u << bit)) == 0 ? SKColors.Black : SKColors.White;
-                canvas.DrawRect(SKRect.Create((float)(bit * 2 / scaling), 0, (float)(2 / scaling), (float)(3 / scaling)), marker);
+                canvas.DrawRect(
+                    SKRect.Create((float)(bit * 2 / scaling), 0, (float)(2 / scaling), (float)(3 / scaling)),
+                    marker);
             }
         }
         if (MapGpuComposition.Synchronize)
         {
             long waiting = Stopwatch.GetTimestamp();
             context!.Flush(submit: true, synchronous: true);
-            stats = stats with { GpuWaitMs = Stopwatch.GetElapsedTime(waiting).TotalMilliseconds, GpuSynchronized = true };
+            stats = stats with
+            {
+                GpuWaitMs = Stopwatch.GetElapsedTime(waiting).TotalMilliseconds,
+                GpuSynchronized = true
+            };
         }
         if (context is { IsAbandoned: false })
         {
@@ -69,10 +92,24 @@ public sealed class MapRendererSession(MapRendererOptions options)
         }
         double elapsed = Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds;
         if (TraceLatency && inputAt != 0)
-            stats = stats with { InputToDrawMs = Stopwatch.GetElapsedTime(inputAt).TotalMilliseconds, InputCode = inputCode };
+        {
+            stats = stats with
+            {
+                InputToDrawMs = Stopwatch.GetElapsedTime(inputAt).TotalMilliseconds,
+                InputCode = inputCode
+            };
+        }
+
         return new(stats, elapsed, startedAt);
     }
 
+    /// <summary>
+    /// Applies per-window retry, context replacement and fallback policy around one rendering callback.
+    /// </summary>
+    /// <remarks>
+    /// A recoverable GPU failure resets resources and retries on CPU. Strict experiments propagate the failure
+    /// so a fallback cannot be reported as a GPU measurement.
+    /// </remarks>
     internal MapDrawStats Draw(GRContext? context, Func<bool, MapDrawStats> render, Action reset, bool strict = false)
     {
         if (Interlocked.Exchange(ref retry, 0) != 0)
@@ -87,14 +124,28 @@ public sealed class MapRendererSession(MapRendererOptions options)
         }
         bool gpu = options.Mode == MapRendererMode.Gpu && fallback is null;
         if (gpu && (context is null || context.IsAbandoned))
+        {
             Fail(context is null ? "No GPU Skia context is available" : "The GPU context was lost");
-        if (context is not null) previous = new(context);
+        }
+
+        if (context is not null)
+        {
+            previous = new(context);
+        }
+
         MapDrawStats result;
         try
         {
-            if (gpu) MapGpuComposition.PrepareContext(context!, (long)options.GpuCacheMiB * 1024 * 1024);
+            if (gpu)
+            {
+                MapGpuComposition.PrepareContext(context!, (long)options.GpuCacheMiB * 1024 * 1024);
+            }
+
             result = render(gpu);
-            if (gpu && context!.IsAbandoned) throw new MapGpuResourceException("The GPU context was lost during drawing");
+            if (gpu && context!.IsAbandoned)
+            {
+                throw new MapGpuResourceException("The GPU context was lost during drawing");
+            }
         }
         catch (MapGpuResourceException error) when (gpu)
         {
@@ -110,7 +161,11 @@ public sealed class MapRendererSession(MapRendererOptions options)
 
         void Fail(string reason)
         {
-            if (strict) throw new MapGpuResourceException(reason);
+            if (strict)
+            {
+                throw new MapGpuResourceException(reason);
+            }
+
             reset();
             fallback = reason;
             gpu = false;

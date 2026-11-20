@@ -11,13 +11,20 @@ public static class SetupCalendar
     /// selected calendar at turns 0/21/41. Retains scenario inputs, stored year and random contexts.</summary>
     public static AccelerationYears PrepareAccelerationYears(SessionRuntime runtime, CalendarValues calendar)
     {
-        ArgumentNullException.ThrowIfNull(calendar); var world = runtime.World; world.Globals.FirstLaunchTurn = -1;
+        ArgumentNullException.ThrowIfNull(calendar);
+        var world = runtime.World;
+        world.Globals.FirstLaunchTurn = -1;
         uint Magnitude(int turn)
         {
             int year = GameCalendar.Year(turn, world.Globals, world.Scenario, calendar);
             return year < 0 ? unchecked(0U - (uint)year) : (uint)year;
         }
         var years = new AccelerationYears(Magnitude(0), Magnitude(21), Magnitude(41));
-        if (runtime.Active) runtime.Publish(); return years;
+        if (runtime.Active)
+        {
+            runtime.Publish();
+        }
+
+        return years;
     }
 }

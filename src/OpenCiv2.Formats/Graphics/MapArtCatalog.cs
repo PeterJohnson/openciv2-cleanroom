@@ -45,12 +45,21 @@ public sealed class MapArtCatalog
     private MapArtCatalog(JsonElement root)
     {
         if (root.GetProperty("schemaVersion").GetInt32() != 1)
+        {
             throw new InvalidDataException("Unsupported stock map art catalog");
+        }
+
         var registration = root.GetProperty("registration");
         var diagonals = Strings(registration.GetProperty("diagonalOrder"));
         var directions = Strings(registration.GetProperty("routeOrder"));
-        Images = root.GetProperty("images").EnumerateObject().ToFrozenDictionary(p => p.Name, p =>
-            new MapImage(Point(p.Value.GetProperty("logicalSize")), Point(p.Value.GetProperty("physicalSize")), Read(p.Value, "pngSha256")), StringComparer.Ordinal);
+        Images = root.GetProperty("images").EnumerateObject().ToFrozenDictionary(
+            p => p.Name,
+            p =>
+            new MapImage(
+                Point(p.Value.GetProperty("logicalSize")),
+                Point(p.Value.GetProperty("physicalSize")),
+                Read(p.Value, "pngSha256")),
+            StringComparer.Ordinal);
         Terrain = new(root.GetProperty("terrain").EnumerateArray().Select(t =>
         {
             var resources = t.GetProperty("specialResources");
@@ -90,12 +99,20 @@ public sealed class MapArtCatalog
         FlagAnchor = Point(city.GetProperty("flagAnchor"));
         Disorder = Read(city, "disorderMask");
         Factions = new(root.GetProperty("factions").EnumerateArray().Select(f =>
-            new FactionArt(Rgb(Read(f, "rgb")), Read(f, "brightFlag"), Read(f, "darkFlag"), Read(f, "occupiedAirbase"))));
+            new FactionArt(
+                Rgb(Read(f, "rgb")),
+                Read(f, "brightFlag"),
+                Read(f, "darkFlag"),
+                Read(f, "occupiedAirbase"))));
         Overlays = Lookup(root.GetProperty("overlays"));
         var effects = root.GetProperty("effects");
         Explosion = Strings(effects.GetProperty("explosion"));
         Nuclear = Strings(effects.GetProperty("nuclear"));
-        DisplayColors = root.GetProperty("displayColors").EnumerateObject().ToFrozenDictionary(p => p.Name, p => Rgb(p.Value.GetString()!), StringComparer.Ordinal);
+        DisplayColors = root.GetProperty("displayColors").EnumerateObject()
+            .ToFrozenDictionary(
+                p => p.Name,
+                p => Rgb(p.Value.GetString()!),
+                StringComparer.Ordinal);
     }
 
     /// <summary>Check the full stock semantic catalog before admitting its theme. No image paths are opened.</summary>
@@ -106,29 +123,45 @@ public sealed class MapArtCatalog
             var sprite = atlas.Sprite(key);
             if (new ArtPoint(sprite.LogicalWidth, sprite.LogicalHeight) != expected.Logical ||
                 new ArtPoint(sprite.PixelWidth, sprite.PixelHeight) != expected.Physical)
+            {
                 throw new InvalidDataException($"Stock map binding '{key}' has unexpected dimensions");
+            }
+
             using var png = atlas.OpenPng(key);
             if (Convert.ToHexStringLower(SHA256.HashData(png)) != expected.Sha256)
+            {
                 throw new InvalidDataException($"Stock map binding '{key}' has unexpected pixels");
+            }
         }
     }
 
     private static MapArtCatalog ReadStock()
     {
-        using var stream = typeof(MapArtCatalog).Assembly.GetManifestResourceStream("OpenCiv2.Graphics.map-asset-bindings.json")!;
+        using var stream = typeof(MapArtCatalog).Assembly.GetManifestResourceStream(
+            "OpenCiv2.Graphics.map-asset-bindings.json")!;
         using var catalog = JsonDocument.Parse(stream);
         return new(catalog.RootElement);
     }
 
     private static string Read(JsonElement row, string name) => row.GetProperty(name).GetString()!;
+
     private static ArtPoint Point(JsonElement row) => new(row[0].GetInt32(), row[1].GetInt32());
+
     private static uint Rgb(string value) => Convert.ToUInt32(value[1..], 16);
+
     private static UnitArt Unit(JsonElement row) => new(Read(row, "atlasKey"), Point(row.GetProperty("shieldAnchor")));
+
     private static OwnedList<string> Strings(JsonElement row) => new(row.EnumerateArray().Select(p => p.GetString()!));
-    private static OwnedList<string> Bindings(JsonElement row) => new(row.EnumerateArray().Select(p => Read(p, "atlasKey")));
-    private static OwnedList<string> ForDirections(JsonElement row, OwnedList<string> directions) => new(directions.Select(d => Read(row, d)));
+
+    private static OwnedList<string> Bindings(JsonElement row) =>
+        new(row.EnumerateArray().Select(p => Read(p, "atlasKey")));
+
+    private static OwnedList<string> ForDirections(JsonElement row, OwnedList<string> directions) =>
+        new(directions.Select(d => Read(row, d)));
+
     private static OwnedList<string> Routes(JsonElement row, OwnedList<string> directions) =>
         new(directions.Select(d => Read(row.GetProperty("directions"), d)).Prepend(Read(row, "isolated")));
+
     private static FrozenDictionary<string, string> Lookup(JsonElement row) =>
         row.EnumerateObject().ToFrozenDictionary(p => p.Name, p => p.Value.GetString()!, StringComparer.Ordinal);
 }

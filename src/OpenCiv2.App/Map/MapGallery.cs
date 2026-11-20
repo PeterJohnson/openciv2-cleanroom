@@ -17,8 +17,8 @@ internal static class MapGallery
 
     public static IReadOnlyList<string> Cases { get; } =
         ["MV01", "MV02", "MV03", "MV04", "MV05", "MV06", "MV07", "MV08", "MV09", "MV10", "MV11", "MV12",
-         "MV13", "MV14", "MV15", "MV16", "MV17", "MV18", "MV19", "MV20", "MV21", "MV22", "MV23", "MV24", "MV25",
-         "MV26", "MV27", "MV28", "MV29", "MV30", "Mixed"];
+            "MV13", "MV14", "MV15", "MV16", "MV17", "MV18", "MV19", "MV20", "MV21", "MV22", "MV23", "MV24", "MV25",
+            "MV26", "MV27", "MV28", "MV29", "MV30", "Mixed"];
 
     public static GalleryBoard Open(string id) => id switch
     {
@@ -60,7 +60,10 @@ internal static class MapGallery
     {
         var board = new Builder("MV01", "Eleven terrain types", 11);
         for (byte terrain = 0; terrain < 11; terrain++)
+        {
             board.Art(terrain, Tile(terrain), $"terrain/{terrain}");
+        }
+
         return board.Finish();
     }
 
@@ -73,9 +76,18 @@ internal static class MapGallery
             {
                 int spot = q * 8 + mask;
                 board.Art(spot, Tile(10), $"coast/{q}/{mask}");
-                for (int d = 0; d < 8; d++) board.Neighbor(spot, d, Tile(10));
+                for (int d = 0; d < 8; d++)
+                {
+                    board.Neighbor(spot, d, Tile(10));
+                }
+
                 for (int bit = 0; bit < 3; bit++)
-                    if ((mask & (1 << bit)) != 0) board.Neighbor(spot, (2 * q + 6 + bit) & 7, Tile(2));
+                {
+                    if ((mask & (1 << bit)) != 0)
+                    {
+                        board.Neighbor(spot, (2 * q + 6 + bit) & 7, Tile(2));
+                    }
+                }
             }
         }
         return board.Finish();
@@ -93,7 +105,12 @@ internal static class MapGallery
                 byte terrain = (byte)(t + 3);
                 board.Art(spot, Tile(terrain), $"feature/{kind[t]}/{mask}");
                 for (int q = 0; q < 4; q++)
-                    if ((mask & (1 << q)) != 0) board.Neighbor(spot, q * 2, Tile(terrain));
+                {
+                    if ((mask & (1 << q)) != 0)
+                    {
+                        board.Neighbor(spot, q * 2, Tile(terrain));
+                    }
+                }
             }
         }
         for (int t = 0; t <= 10; t++)
@@ -117,8 +134,12 @@ internal static class MapGallery
             var features = mask % 3 == 0 ? MapImprovements.Railroad : mask % 3 == 1 ? MapImprovements.Road : default;
             board.Art(mask, Tile(2, features, river: true), $"river/{mask}");
             for (int q = 0; q < 4; q++)
+            {
                 if ((mask & (1 << q)) != 0)
+                {
                     board.Neighbor(mask, q * 2, Tile(2, features, river: true));
+                }
+            }
         }
         for (int q = 0; q < 4; q++)
         {
@@ -132,8 +153,16 @@ internal static class MapGallery
     {
         var board = new Builder("MV05", "Both resources per terrain and the grassland shield", 23);
         for (int t = 0; t < 11; t++)
+        {
             for (byte s = 1; s <= 2; s++)
-                board.Art(t * 2 + s - 1, Tile((byte)t, MapImprovements.Road, river: true) with { Resource = s }, $"resource/{t * 2 + s - 1}");
+            {
+                board.Art(
+                    t * 2 + s - 1,
+                    Tile((byte)t, MapImprovements.Road, river: true) with { Resource = s },
+                    $"resource/{t * 2 + s - 1}");
+            }
+        }
+
         board.Art(22, Tile(2) with { GrasslandShield = true }, "resource/shield");
         return board.Finish();
     }
@@ -188,8 +217,11 @@ internal static class MapGallery
         board.Put(board.At(3), Tile(2, MapImprovements.CitySite | MapImprovements.Fortification) with
         { AirbaseOccupant = MapFact<MapTileOwnership>.Known(new(null)) });
         for (byte owner = 0; owner < 8; owner++)
+        {
             board.Put(board.At(4 + owner), Tile(2, MapImprovements.CitySite | MapImprovements.Fortification) with
             { AirbaseOccupant = MapFact<MapTileOwnership>.Known(new(new(owner))) });
+        }
+
         return board.Finish();
     }
 
@@ -201,7 +233,11 @@ internal static class MapGallery
         {
             for (int q = 0; q < 4; q++)
             {
-                if ((mask & (1 << q)) == 0) continue;
+                if ((mask & (1 << q)) == 0)
+                {
+                    continue;
+                }
+
                 board.Neighbor(mask, q * 2, default);
                 board.Expect(mask, $"fog/{q}");
             }
@@ -272,7 +308,11 @@ internal static class MapGallery
         {
             byte owner = (byte)(i % 8);
             int type = i % 63;
-            if (i == 63) { owner = 0; type = 46; }
+            if (i == 63)
+            {
+                owner = 0;
+                type = 46;
+            }
             var state = Status(i);
             if (sleeping)
             {
@@ -284,7 +324,10 @@ internal static class MapGallery
                 };
             }
             board.Unit(i, owner, type, state);
-            if (stacks) board.Unit(i, owner, (type + 15) % 63, Status(i + 1));
+            if (stacks)
+            {
+                board.Unit(i, owner, (type + 15) % 63, Status(i + 1));
+            }
         }
         return board.Finish(sleeping ? new(Sentry: SentryAppearance.Greyscale) : default);
     }
@@ -313,7 +356,9 @@ internal static class MapGallery
             board.City(i, (byte)(i % 8), appearance / 8, appearance % 8 / 2, (appearance & 1) != 0,
                 i % 4 == 0 ? 0 : 2 + i % 23, crowds ? "North Bank · Château du Vent and the Eastern Port" : null);
             if (crowds)
+            {
                 board.Unit(i, (byte)(i % 8), (i + 32) % 63, Status(i));
+            }
         }
         return board.Finish();
     }
@@ -325,13 +370,29 @@ internal static class MapGallery
         for (int i = 0; i < area; i++)
         {
             int y = i / (w / 2), x = 2 * (i % (w / 2)) + (y & 1);
-            if (x > w * 3 / 4 && (y < h / 4 || y > h * 3 / 4)) continue;
+            if (x > w * 3 / 4 && (y < h / 4 || y > h * 3 / 4))
+            {
+                continue;
+            }
+
             byte terrain = (byte)((x / 11 + y / 9) % 11);
             MapImprovements improvements = (x % 16 < 2 ? MapImprovements.Railroad : default) |
                 (y % 11 < 2 ? MapImprovements.Road : default);
-            if (i % 73 == 0) improvements |= MapImprovements.Irrigation | MapImprovements.Mine;
-            if (i % 89 == 0) improvements |= MapImprovements.Fortification;
-            if (i % 137 == 0) improvements |= MapImprovements.Pollution;
+            if (i % 73 == 0)
+            {
+                improvements |= MapImprovements.Irrigation | MapImprovements.Mine;
+            }
+
+            if (i % 89 == 0)
+            {
+                improvements |= MapImprovements.Fortification;
+            }
+
+            if (i % 137 == 0)
+            {
+                improvements |= MapImprovements.Pollution;
+            }
+
             tiles[i] = Tile(terrain, improvements, river: x - y / 2 is >= 6 and <= 8) with
             {
                 Resource = (byte)(i % 29 == 0 ? 1 : i % 31 == 0 ? 2 : 0),
@@ -349,7 +410,11 @@ internal static class MapGallery
             int index = (64 + i * 101) % area;
             byte owner = (byte)(i % 8);
             bool own = owner == identity.Observer.Value;
-            if (!own && tiles[index].Terrain is null) continue;
+            if (!own && tiles[index].Terrain is null)
+            {
+                continue;
+            }
+
             units.Add(new(Coordinate(index, w), new((byte)(i % 63)), new(owner),
                 own ? new UnitTarget(new((ushort)i), new((uint)i + 1)) : null,
                 own ? Status(i) : MapUnitDetails.Withheld));
@@ -358,13 +423,21 @@ internal static class MapGallery
         {
             int index = (96 + i * 173) % area;
             byte owner = (byte)(i % 8);
-            if (tiles[index].Terrain is null) continue;
+            if (tiles[index].Terrain is null)
+            {
+                continue;
+            }
+
             var p = Coordinate(index, w);
             tiles[index] = tiles[index] with { Improvements = tiles[index].Improvements | MapImprovements.CitySite };
             cities.Add(City(p, i, owner, i % 6, i % 4, i % 3 == 0, i % 23, $"Harbor {i + 1}"));
         }
         UnitTarget? active = units.FirstOrDefault(u => u.Target is not null).Target;
-        if (id is "MV22" or "MV24") active = units.First(u => u.Target?.Slot.Value == 33).Target;
+        if (id is "MV22" or "MV24")
+        {
+            active = units.First(u => u.Target?.Slot.Value == 33).Target;
+        }
+
         OwnedList<MapPath>? routes = null;
         if (id is "MV20" or "Mixed")
         {
@@ -373,13 +446,18 @@ internal static class MapGallery
             active = actor.Target;
             var start = actor.Position;
             routes = new(
-            [
-                new(MapPathKind.ActiveRoute, new([start, new(start.X - 1, start.Y + 1), new(start.X - 2, start.Y + 2)]), active),
-                new(MapPathKind.TradePartner, new([new MapPoint(4, 6), new(14, 6)])),
-                new(MapPathKind.TradeBonusSatisfied, new([new MapPoint(4, 8), new(12, 8)])),
-                new(MapPathKind.TradeBonusUnsatisfied, new([new MapPoint(4, 10), new(16, 10)])),
-                new(MapPathKind.TradeBonusUnsatisfied, new([new MapPoint(w - 2, h / 2 + (h / 2 & 1)), new(0, h / 2 + (h / 2 & 1))]))
-            ]);
+                [
+                    new(
+                        MapPathKind.ActiveRoute,
+                        new([start, new(start.X - 1, start.Y + 1), new(start.X - 2, start.Y + 2)]),
+                        active),
+                    new(MapPathKind.TradePartner, new([new MapPoint(4, 6), new(14, 6)])),
+                    new(MapPathKind.TradeBonusSatisfied, new([new MapPoint(4, 8), new(12, 8)])),
+                    new(MapPathKind.TradeBonusUnsatisfied, new([new MapPoint(4, 10), new(16, 10)])),
+                    new(
+                        MapPathKind.TradeBonusUnsatisfied,
+                        new([new MapPoint(w - 2, h / 2 + (h / 2 & 1)), new(0, h / 2 + (h / 2 & 1))]))
+                ]);
         }
         var display = id switch
         {
@@ -404,7 +482,10 @@ internal static class MapGallery
         var changed = tiles[at];
         byte terrain = (byte)(((changed.Terrain ?? 1) + 1) % 11);
         tiles[at] = changed with { Terrain = terrain, Improvements = changed.Improvements ^ MapImprovements.Road };
-        tiles[alternate] = tiles[alternate] with { Improvements = tiles[alternate].Improvements ^ MapImprovements.Railroad };
+        tiles[alternate] = tiles[alternate] with
+        {
+            Improvements = tiles[alternate].Improvements ^ MapImprovements.Railroad
+        };
         if (units.Length != 0)
         {
             int index = focus is null ? 0 : Enumerable.Range(0, units.Length)
@@ -414,13 +495,19 @@ internal static class MapGallery
             units[index] = current with
             {
                 Position = pos.X < map.Width ? pos : current.Position,
-                Details = current.Details with { Health = MapFact<MapHealth>.Known(new(30, (int)(map.Revision % 31))), Order = MapFact<UnitOrder>.Known(UnitOrder.GoTo) }
+                Details = current.Details with
+                {
+                    Health = MapFact<MapHealth>.Known(new(30, (int)(map.Revision % 31))),
+                    Order = MapFact<UnitOrder>.Known(UnitOrder.GoTo)
+                }
             };
         }
         if (cities.Length != 0)
         {
             int index = focus is null ? 0 : Enumerable.Range(0, cities.Length)
-                .Where(i => cities[i].Details?.Knowledge == CityKnowledge.Own).DefaultIfEmpty(0).MinBy(i => Distance(cities[i].Position));
+                .Where(i => cities[i].Details?.Knowledge == CityKnowledge.Own).DefaultIfEmpty(0)
+                .MinBy(
+                    i => Distance(cities[i].Position));
             if (cities[index].Details is { } info && info.Appearance.Value is { } appearance)
             {
                 int size = 3 + (int)(map.Revision % 17);
@@ -450,7 +537,11 @@ internal static class MapGallery
         int Distance(MapPoint other)
         {
             int dx = Math.Abs(other.X - point.X);
-            if (!map.Flat) dx = Math.Min(dx, map.Width - dx);
+            if (!map.Flat)
+            {
+                dx = Math.Min(dx, map.Width - dx);
+            }
+
             return 2 * dx + Math.Abs(other.Y - point.Y);
         }
     }
@@ -458,9 +549,14 @@ internal static class MapGallery
     public static MapEffect[] Effects(MapObservation map)
     {
         var eligible = map.Units.Where(u => u.Target is not null && u.Position.X >= 2 && u.Position.X < map.Width - 3 &&
-            u.Position.Y < map.Height * 3 / 4 && map.Tiles[u.Position.Y * (map.Width / 2) + u.Position.X / 2].Terrain is not null);
+            u.Position.Y < map.Height * 3 / 4
+            && map.Tiles[u.Position.Y * (map.Width / 2) + u.Position.X / 2].Terrain is not null);
         var unit = eligible.FirstOrDefault(u => u.Target == map.Annotations?.ActiveUnit);
-        if (unit.Target is null) unit = eligible.FirstOrDefault();
+        if (unit.Target is null)
+        {
+            unit = eligible.FirstOrDefault();
+        }
+
         var from = unit.Position;
         MapEffect[] stationary =
         [
@@ -473,21 +569,38 @@ internal static class MapGallery
             : stationary;
     }
 
-    private static ClientIdentity Identity(string id) => new(new(7242), new((ulong)(100 + Array.IndexOf(Cases.ToArray(), id))),
-        new(1), new(1), new(1), ControllerKind.Frontend);
+    private static ClientIdentity Identity(string id) =>
+        new(new(7242), new((ulong)(100 + Array.IndexOf(Cases.ToArray(), id))),
+            new(1), new(1), new(1), ControllerKind.Frontend);
+
     private static ObservedTile Tile(byte terrain, MapImprovements improvements = default, bool river = false) =>
         new(terrain, improvements, river, 0, false);
+
     private static MapPoint Coordinate(int index, int width)
     {
         int row = index / (width / 2);
         return new(2 * (index % (width / 2)) + (row & 1), row);
     }
 
-    private static MapFact<MapPresence> Present(bool available) => MapFact<MapPresence>.Known(available ? MapPresence.Present : MapPresence.Absent);
+    private static MapFact<MapPresence> Present(bool available) =>
+        MapFact<MapPresence>.Known(available ? MapPresence.Present : MapPresence.Absent);
+
     private static MapUnitDetails Status(int index)
     {
-        UnitOrder[] orders = [UnitOrder.None, UnitOrder.Fortifying, UnitOrder.Fortified, UnitOrder.Sleeping, UnitOrder.Fortress,
-            UnitOrder.Road, UnitOrder.Irrigate, UnitOrder.Mine, UnitOrder.Transform, UnitOrder.Clean, UnitOrder.Airbase, UnitOrder.GoTo];
+        UnitOrder[] orders = [
+            UnitOrder.None,
+            UnitOrder.Fortifying,
+            UnitOrder.Fortified,
+            UnitOrder.Sleeping,
+            UnitOrder.Fortress,
+            UnitOrder.Road,
+            UnitOrder.Irrigate,
+            UnitOrder.Mine,
+            UnitOrder.Transform,
+            UnitOrder.Clean,
+            UnitOrder.Airbase,
+            UnitOrder.GoTo
+        ];
         var health = (index % 12) switch
         {
             0 => new MapHealth(0, 0),
@@ -500,19 +613,40 @@ internal static class MapGallery
             7 => new(-8, 5),
             _ => new MapHealth(30, 0)
         };
-        var mightKnow = index % 12 == 8 ? default : index % 12 == 9 ? MapFact<MapHealth>.Withheld : MapFact<MapHealth>.Known(health);
+        var mightKnow = index % 12 == 8
+            ? default
+            : index % 12 == 9 ? MapFact<MapHealth>.Withheld : MapFact<MapHealth>.Known(health);
         return new(mightKnow, MapFact<UnitOrder>.Known(orders[index % orders.Length]), Present(index % 13 == 12),
             Present(index % 3 == 0), Present(index % 13 == 11), index % 4 == 0 ? default :
             MapFact<int>.Known(index % 4 == 1 ? 0 : index % 4 == 2 ? 9 : 231));
     }
 
-    private static ObservedMapCity City(MapPoint point, int index, byte owner, int style, int sizeClass, bool walls, int size, string name)
+    private static ObservedMapCity City(
+        MapPoint point,
+        int index,
+        byte owner,
+        int style,
+        int sizeClass,
+        bool walls,
+        int size,
+        string name)
     {
-        var knowledge = owner == 1 ? CityKnowledge.Own : index % 5 == 0 ? CityKnowledge.AuthorizedReveal : CityKnowledge.Remembered;
-        return new(point, new((ushort)index), new((uint)index + 1),
-            new(OpenCiv2.Formats.ClassicText.EncodeWindows1252(name, "authored gallery label")), (sbyte)size,
-            new(new(owner), knowledge, MapFact<MapCityAppearance>.Known(new(style, sizeClass, walls)), MapFact<int>.Known(size),
-                index % 4 == 3 ? MapFact<MapPresence>.Withheld : Present(index % 2 == 0), Present(index % 3 == 0)));
+        var knowledge = owner == 1
+            ? CityKnowledge.Own
+            : index % 5 == 0 ? CityKnowledge.AuthorizedReveal : CityKnowledge.Remembered;
+        return new(
+            point,
+            new((ushort)index),
+            new((uint)index + 1),
+            new(OpenCiv2.Formats.ClassicText.EncodeWindows1252(name, "authored gallery label")),
+            (sbyte)size,
+            new(
+                new(owner),
+                knowledge,
+                MapFact<MapCityAppearance>.Known(new(style, sizeClass, walls)),
+                MapFact<int>.Known(size),
+                index % 4 == 3 ? MapFact<MapPresence>.Withheld : Present(index % 2 == 0),
+                Present(index % 3 == 0)));
     }
 
     private sealed class Builder
@@ -532,20 +666,31 @@ internal static class MapGallery
             height = (count + Columns - 1) / Columns * spacing + 8;
             tiles = Enumerable.Repeat(Tile(terrain), width / 2 * height).ToArray();
         }
+
         public MapPoint At(int i) => new(4 + i % Columns * spacing, 4 + i / Columns * spacing);
+
         public void Put(MapPoint p, ObservedTile tile) => tiles[p.Y * (width / 2) + p.X / 2] = tile;
-        public void Art(int i, ObservedTile tile, string key) { Put(At(i), tile); Expect(i, key); }
+
+        public void Art(int i, ObservedTile tile, string key)
+        {
+            Put(At(i), tile);
+            Expect(i, key);
+        }
+
         public void Expect(int i, string key) => expected.Add(new(At(i), key));
+
         public void Neighbor(int i, int d, ObservedTile tile)
         {
             var center = At(i);
             Put(new(center.X + Directions[d].X, center.Y + Directions[d].Y), tile);
         }
+
         public void Unit(int i, byte owner, int type, MapUnitDetails details)
         {
             var target = new UnitTarget(new((ushort)units.Count), new((uint)(units.Count + 1)));
             units.Add(new(At(i), new((byte)type), new(owner), owner == 1 ? target : null, details));
         }
+
         public void City(int i, byte owner, int style, int sizeClass, bool walls, int size, string? name = null) =>
             cities.Add(MapGallery.City(At(i), i, owner, style, sizeClass, walls, size, name ?? $"Harbor {i + 1}"));
 

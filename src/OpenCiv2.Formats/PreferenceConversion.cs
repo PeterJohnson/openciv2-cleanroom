@@ -8,7 +8,8 @@ public static partial class StateConversion
 {
     public static OrdinaryPreferences ToLive(StoredOrdinaryPreferences value)
     {
-        ArgumentNullException.ThrowIfNull(value); var result = new OrdinaryPreferences();
+        ArgumentNullException.ThrowIfNull(value);
+        var result = new OrdinaryPreferences();
         result.Rules = value.Rules;
         result.DefaultLevel = value.DefaultLevel;
         result.Difficulty = (Difficulty)value.Difficulty;
@@ -27,6 +28,7 @@ public static partial class StateConversion
         result.AcceleratedStart = value.AcceleratedStart;
         return result;
     }
+
     public static StoredOrdinaryPreferences ToStored(in OrdinaryPreferences value) => new()
     {
         Rules = value.Rules,
@@ -46,9 +48,11 @@ public static partial class StateConversion
         RulesChoice = unchecked((short)value.RulesChoice),
         AcceleratedStart = value.AcceleratedStart,
     };
+
     public static MultiplayerPreferences ToLive(StoredMultiplayerPreferences value)
     {
-        ArgumentNullException.ThrowIfNull(value); var result = new MultiplayerPreferences();
+        ArgumentNullException.ThrowIfNull(value);
+        var result = new MultiplayerPreferences();
         result.MainMenu = value.MainMenu;
         result.Type = value.Type;
         result.HotseatMenu = value.HotseatMenu;
@@ -75,6 +79,7 @@ public static partial class StateConversion
         result.DoubleMovement = value.DoubleMovement != 0;
         return result;
     }
+
     public static StoredMultiplayerPreferences ToStored(in MultiplayerPreferences value) => new()
     {
         MainMenu = value.MainMenu,
@@ -102,11 +107,15 @@ public static partial class StateConversion
         DoubleProduction = value.DoubleProduction ? (short)1 : (short)0,
         DoubleMovement = value.DoubleMovement ? (short)1 : (short)0,
     };
-    public static StoredMultiplayerPreferences PreserveOpaque(StoredMultiplayerPreferences output, StoredMultiplayerPreferences imported) => output with
-    {
-        LegacySetting1 = imported.LegacySetting1,
-        LegacySetting5 = imported.LegacySetting5,
-        LegacySettings = imported.LegacySettings,
-        Settings = imported.Settings,
-    };
+
+    public static StoredMultiplayerPreferences PreserveOpaque(
+        StoredMultiplayerPreferences output,
+        StoredMultiplayerPreferences imported) =>
+        output with
+        {
+            LegacySetting1 = imported.LegacySetting1,
+            LegacySetting5 = imported.LegacySetting5,
+            LegacySettings = imported.LegacySettings,
+            Settings = imported.Settings,
+        };
 }

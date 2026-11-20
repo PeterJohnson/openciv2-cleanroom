@@ -12,19 +12,36 @@ public static partial class StateConversion
         for (int i = 0; i < rectangles.Length; ++i)
         {
             var from = layout.Rectangles[i];
-            rectangles[i] = new() { Left = unchecked((short)from.Left), Top = unchecked((short)from.Top), Right = unchecked((short)from.Right), Bottom = unchecked((short)from.Bottom) };
+            rectangles[i] = new()
+            {
+                Left = unchecked((short)from.Left),
+                Top = unchecked((short)from.Top),
+                Right = unchecked((short)from.Right),
+                Bottom = unchecked((short)from.Bottom)
+            };
         }
         return new() { Valid = layout.Valid ? (short)1 : (short)0, Rectangles = new(rectangles) };
     }
+
     public static Layout ToLive(SavedLayout packed)
     {
         ArgumentNullException.ThrowIfNull(packed);
-        if (packed.Rectangles.Count != 13) throw new ArgumentException("Layout requires thirteen rectangles", nameof(packed));
+        if (packed.Rectangles.Count != 13)
+        {
+            throw new ArgumentException("Layout requires thirteen rectangles", nameof(packed));
+        }
+
         var layout = new Layout { Valid = packed.Valid != 0 };
-        for (int i = 0; i < 13; ++i) { var from = packed.Rectangles[i]; layout.Rectangles[i] = new(from.Left, from.Top, from.Right, from.Bottom); }
+        for (int i = 0; i < 13; ++i)
+        {
+            var from = packed.Rectangles[i];
+            layout.Rectangles[i] = new(from.Left, from.Top, from.Right, from.Bottom);
+        }
         return layout;
     }
+
     private static short NameMarker(NameReference name) => name.Custom ? (short)-1 : (short)1;
+
     public static StoredLeader ToStored(Leader live) => new()
     {
         Attack = live.Attack,
@@ -41,6 +58,7 @@ public static partial class StateConversion
         Names = new(live.Names.Select(NameMarker)),
         Titles = new(live.Titles.Select(row => new OwnedList<short>(row.Select(NameMarker)))),
     };
+
     public static EventRecord ToStored(Event entry)
     {
         uint Present(int field) => entry.Strings[field].Present ? 1U : 0U;

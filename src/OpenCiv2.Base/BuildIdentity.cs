@@ -15,13 +15,22 @@ public static class BuildIdentity
         {
             int separator = line.IndexOf('=');
             if (separator < 1 || !fields.TryAdd(line[..separator].Replace('\\', '/'), line[(separator + 1)..]))
+            {
                 throw new InvalidOperationException("Malformed compiled source identity.");
+            }
         }
         if (!fields.Remove("format", out string? format) || format != "openciv2-compiled-inputs/1")
+        {
             throw new InvalidOperationException("Unknown compiled source identity.");
+        }
+
         string Take(string name) => fields.Remove(name, out string? value) && value.Length != 0
             ? value : throw new InvalidOperationException($"Missing build identity {name}.");
-        string sdk = Take("sdk"), runtime = Take("runtime"), target = Take("target"), configuration = Take("configuration");
+        string sdk = Take(
+            "sdk"), runtime = Take(
+                "runtime"), target = Take(
+                    "target"), configuration = Take(
+                        "configuration");
         return new(assembly.GetName().Name!, sdk, runtime, target, configuration,
             fields.ToDictionary(p => p.Key, p => p.Value.ToLowerInvariant(), StringComparer.Ordinal));
     }

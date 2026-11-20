@@ -7,9 +7,24 @@ namespace OpenCiv2.Session;
 /// classic path/file scratch is reset here after runtime isolation and before loading that content.</summary>
 public static class ClassicWorldEntry
 {
-    public static bool Enter(SessionRuntime runtime, ClassicFileState files, GameplayRandom random, string call, NewWorldChoice choice, CalendarValues calendar, WorldEntryServices services)
+    public static bool Enter(
+        SessionRuntime runtime,
+        ClassicFileState files,
+        GameplayRandom random,
+        string call,
+        NewWorldChoice choice,
+        CalendarValues calendar,
+        WorldEntryServices services)
     {
-        ArgumentNullException.ThrowIfNull(files); ArgumentNullException.ThrowIfNull(services);
-        return WorldEntry.Enter(runtime, ref files.Starts, random, call, choice, calendar, services with { ResetSource = files.PrepareNewWorld });
+        ArgumentNullException.ThrowIfNull(files);
+        ArgumentNullException.ThrowIfNull(services);
+        return WorldEntry.Enter(
+            runtime,
+            ref files.Starts,
+            random,
+            call,
+            choice,
+            calendar,
+            services with { ResetSource = files.PrepareNewWorld });
     }
 }

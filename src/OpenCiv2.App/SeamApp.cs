@@ -20,15 +20,23 @@ public sealed class SeamApp : Application
     private static (AssetAtlas Atlas, PinnedFonts Fonts, MapArtSelection? Selected)? content;
     private static Task<PreparedPainter>? desktopPreparation;
     internal static MapRendererPreferences RendererPreferences { get; private set; } = new(new(), new());
+
     public static void ConfigureMapRenderer(MapRendererPreferences preferences) => RendererPreferences = preferences;
+
     private sealed record PreparedPainter(MapPainter Painter, long Started, long Completed);
+
     private static string? showcase;
     private static (int Width, int Height)? showcaseSize;
     private static (string Detail, long AdmissionStart, long AdmissionEnd)? coldView;
+
     public static void ConfigureShowcase(string id, (int Width, int Height)? size = null,
         (string Detail, long AdmissionStart, long AdmissionEnd)? startup = null)
     {
-        if (!MapGallery.Cases.Contains(id)) throw new ArgumentException($"Unknown showcase case '{id}'");
+        if (!MapGallery.Cases.Contains(id))
+        {
+            throw new ArgumentException($"Unknown showcase case '{id}'");
+        }
+
         showcase = id;
         showcaseSize = size;
         coldView = startup;
@@ -37,17 +45,25 @@ public sealed class SeamApp : Application
     public static Action<string>? Observe { get; set; }
     public static SeamView? CurrentView { get; private set; }
 
-    public static void ConfigureGraphics(AssetAtlas atlas, PinnedFonts fonts, MapArtSelection? selected = null) => content = (atlas, fonts, selected);
+    public static void ConfigureGraphics(AssetAtlas atlas, PinnedFonts fonts, MapArtSelection? selected = null) =>
+        content = (atlas, fonts, selected);
 
     public static void BeginDesktopMapPreparation()
     {
-        if (content is not { } assets || desktopPreparation is not null || Environment.ProcessorCount < 8) return;
+        if (content is not { } assets || desktopPreparation is not null || Environment.ProcessorCount < 8)
+        {
+            return;
+        }
         // Content has been admitted. CPU images can be prepared while the
         // desktop thread initializes Avalonia and constructs the first window.
         desktopPreparation = Task.Run(() =>
         {
             long started = Stopwatch.GetTimestamp();
-            var renderer = new MapPainter(assets.Atlas, assets.Fonts, assets.Selected, options: RendererPreferences.Startup);
+            var renderer = new MapPainter(
+                assets.Atlas,
+                assets.Fonts,
+                assets.Selected,
+                options: RendererPreferences.Startup);
             try
             {
                 renderer.BeginStartupGroundPreparation();
@@ -65,8 +81,15 @@ public sealed class SeamApp : Application
     {
         var pending = desktopPreparation;
         desktopPreparation = null;
-        if (pending is null) return;
-        try { pending.GetAwaiter().GetResult().Painter.Dispose(); }
+        if (pending is null)
+        {
+            return;
+        }
+
+        try
+        {
+            pending.GetAwaiter().GetResult().Painter.Dispose();
+        }
         catch (InvalidDataException) { } // Startup exited before consuming the renderer.
     }
 
@@ -90,7 +113,10 @@ public sealed class SeamApp : Application
         var pending = desktopPreparation;
         desktopPreparation = null;
         MapStartupPreparation preparation = default;
-        if (pending is null) painter = new(selected?.Atlas, selected?.Fonts, selected?.Selected, options: RendererPreferences.Startup);
+        if (pending is null)
+        {
+            painter = new(selected?.Atlas, selected?.Fonts, selected?.Selected, options: RendererPreferences.Startup);
+        }
         else
         {
             long waiting = Stopwatch.GetTimestamp();
@@ -111,18 +137,41 @@ public sealed class SeamApp : Application
         CurrentView = view;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new Window { Title = "OpenCiv2 · Riverbend", Width = 1020, Height = 720, MinWidth = 640, MinHeight = 640, Content = view };
+            desktop.MainWindow = new Window
+            {
+                Title = "OpenCiv2 · Riverbend",
+                Width = 1020,
+                Height = 720,
+                MinWidth = 640,
+                MinHeight = 640,
+                Content = view
+            };
             desktop.Exit += (_, _) => Stop();
         }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime single) single.MainView = view;
+        else if (ApplicationLifetime is ISingleViewApplicationLifetime single)
+        {
+            single.MainView = view;
+        }
+
         timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(25) };
-        timer.Tick += (_, _) => { owner.Tick(); view.Refresh(); view.AdvancePresentation(); Observe?.Invoke(view.Snapshot()); };
+        timer.Tick += (_, _) =>
+        {
+            owner.Tick();
+            view.Refresh();
+            view.AdvancePresentation();
+            Observe?.Invoke(view.Snapshot());
+        };
         timer.Start();
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void StartShowcase(IClassicDesktopStyleApplicationLifetime desktop, MapPainter primaryPainter, string caseId,
-        (AssetAtlas Atlas, PinnedFonts Fonts, MapArtSelection? Selected)? assets, long frameworkReady, MapStartupPreparation preparation)
+    private void StartShowcase(
+        IClassicDesktopStyleApplicationLifetime desktop,
+        MapPainter primaryPainter,
+        string caseId,
+        (AssetAtlas Atlas, PinnedFonts Fonts, MapArtSelection? Selected)? assets,
+        long frameworkReady,
+        MapStartupPreparation preparation)
     {
         Window? companion = null;
         MapGalleryView? companionView = null;
@@ -130,8 +179,14 @@ public sealed class SeamApp : Application
         var cold = coldView;
         showcaseSize = null;
         coldView = null;
-        var gallery = new MapGalleryView(primaryPainter, caseId, OpenCompanion, assets?.Selected,
-            cold is { } start ? (start.Detail, size.Height, start.AdmissionStart, start.AdmissionEnd, frameworkReady, preparation) : null);
+        var gallery = new MapGalleryView(
+            primaryPainter,
+            caseId,
+            OpenCompanion,
+            assets?.Selected,
+            cold is { } start
+                ? (start.Detail, size.Height, start.AdmissionStart, start.AdmissionEnd, frameworkReady, preparation)
+                : null);
         var main = CreateWindow(gallery, "Map showcase", size);
         if (cold is not null)
         {
@@ -162,7 +217,11 @@ public sealed class SeamApp : Application
                 companion.Activate();
                 return;
             }
-            var renderer = new MapPainter(assets?.Atlas, assets?.Fonts, assets?.Selected, options: RendererPreferences.Startup);
+            var renderer = new MapPainter(
+                assets?.Atlas,
+                assets?.Fonts,
+                assets?.Selected,
+                options: RendererPreferences.Startup);
             companionView = new MapGalleryView(renderer, "MV23", selection: assets?.Selected);
             var window = CreateWindow(companionView, "Map companion", (840, 620));
             window.Closed += (_, _) =>
@@ -193,7 +252,11 @@ public sealed class SeamApp : Application
         owner = null;
         painter?.Dispose();
         painter = null;
-        if (fonts is not null) FontManager.Current.RemoveFontCollection(fonts.Key);
+        if (fonts is not null)
+        {
+            FontManager.Current.RemoveFontCollection(fonts.Key);
+        }
+
         fonts = null;
         CurrentView = null;
     }

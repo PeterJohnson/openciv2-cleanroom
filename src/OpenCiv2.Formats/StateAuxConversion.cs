@@ -7,11 +7,20 @@ namespace OpenCiv2.Formats;
 
 public static partial class StateConversion
 {
-    private static OwnedList<OwnedList<byte>> TextFields(OwnedList<OwnedList<byte>> source, int count, int width, bool stored)
+    private static OwnedList<OwnedList<byte>> TextFields(
+        OwnedList<OwnedList<byte>> source,
+        int count,
+        int width,
+        bool stored)
     {
-        if (source.Count != count) throw new ArgumentException("Text field group has an incorrect extent", nameof(source));
+        if (source.Count != count)
+        {
+            throw new ArgumentException("Text field group has an incorrect extent", nameof(source));
+        }
+
         return new(source.Select(text => stored ? StoredText(text, width) : LiveText(text, width)));
     }
+
     public static CivilizationNames ToLive(StoredCivilizationNames value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -23,6 +32,7 @@ public static partial class StateConversion
         result.Titles = TextFields(value.Titles, 7, 24, false);
         return result;
     }
+
     public static StoredCivilizationNames ToStored(in CivilizationNames value) => new()
     {
         CityStyle = value.CityStyle,
@@ -31,6 +41,7 @@ public static partial class StateConversion
         Adjective = StoredText(value.Adjective, 24),
         Titles = TextFields(value.Titles, 7, 24, true),
     };
+
     public static RuntimeScenario ToLive(ScenarioParameters value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -45,6 +56,7 @@ public static partial class StateConversion
         Copy(value.VictoryThresholds, result.VictoryThresholds);
         return result;
     }
+
     public static ScenarioParameters ToStored(in RuntimeScenario value) => new()
     {
         Flags = value.Flags,
@@ -56,6 +68,7 @@ public static partial class StateConversion
         ObjectiveCiv = value.ObjectiveCiv,
         VictoryThresholds = new(((ReadOnlySpan<short>)value.VictoryThresholds).ToArray()),
     };
+
     public static RuntimeEliminations ToLive(EliminationHistory value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -67,6 +80,7 @@ public static partial class StateConversion
         result.Names = TextFields(value.Names, 12, 24, false);
         return result;
     }
+
     public static EliminationHistory ToStored(in RuntimeEliminations value) => new()
     {
         Count = value.Count,
@@ -75,14 +89,23 @@ public static partial class StateConversion
         Portraits = new(((ReadOnlySpan<byte>)value.Portraits).ToArray()),
         Names = TextFields(value.Names, 12, 24, true),
     };
+
     public static MultiplayerValues ToLive(MultiplayerRecord value)
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new MultiplayerValues();
         Copy(value.CenterX, result.CenterX);
         Copy(value.CenterY, result.CenterY);
-        if (value.Introduced.Count != 8) throw new ArgumentException("Introductions require eight flags", nameof(value));
-        for (int i = 0; i < 8; ++i) result.Introduced[i] = value.Introduced[i] != 0;
+        if (value.Introduced.Count != 8)
+        {
+            throw new ArgumentException("Introductions require eight flags", nameof(value));
+        }
+
+        for (int i = 0; i < 8; ++i)
+        {
+            result.Introduced[i] = value.Introduced[i] != 0;
+        }
+
         result.TurnTimeLimit = value.TurnTimeLimit;
         Copy(value.EncodedPasswords, result.EncodedPasswords);
         result.OpenGame = value.OpenGame != 0;
@@ -101,6 +124,7 @@ public static partial class StateConversion
         result.ClaimedHumans = value.ClaimedHumans;
         return result;
     }
+
     public static MultiplayerRecord ToStored(in MultiplayerValues value) => new()
     {
         CenterX = new(((ReadOnlySpan<short>)value.CenterX).ToArray()),
@@ -123,6 +147,7 @@ public static partial class StateConversion
         DoubleMovement = value.DoubleMovement ? (short)1 : (short)0,
         ClaimedHumans = value.ClaimedHumans,
     };
+
     public static MultiplayerRecord PreserveOpaque(MultiplayerRecord output, MultiplayerRecord imported) => output with
     {
         Retained142 = imported.Retained142,
@@ -130,6 +155,7 @@ public static partial class StateConversion
         Retained465 = imported.Retained465,
         Retained472 = imported.Retained472,
     };
+
     public static MapView ToLive(SavedMapView value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -141,6 +167,7 @@ public static partial class StateConversion
         result.Zoom = value.Zoom;
         return result;
     }
+
     public static SavedMapView ToStored(in MapView value) => new()
     {
         Open = value.Open ? (short)1 : (short)0,
@@ -149,6 +176,7 @@ public static partial class StateConversion
         Y = value.Y,
         Zoom = value.Zoom,
     };
+
     public static EventValues ToLive(EventRecord value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -188,6 +216,7 @@ public static partial class StateConversion
         result.GiveTechCiv = value.GiveTechCiv;
         return result;
     }
+
     public static EventRecord ToStored(in EventValues value) => new()
     {
         Triggers = value.Triggers,

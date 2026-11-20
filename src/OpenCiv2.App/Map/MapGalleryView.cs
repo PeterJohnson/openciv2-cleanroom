@@ -29,16 +29,35 @@ internal sealed class MapGalleryView : UserControl
     private OpenCiv2.Contracts.MapPoint? lastUpdate;
     private (ulong Revision, double AuthoredMs, double BindMs)? updateWork;
     private ulong sequence;
-    private sealed record StartupTiming(string Detail, long AdmissionStart, long AdmissionEnd, long FrameworkReady,
-        long ViewStart, long ViewReady, double BoardMs, double BindMs, MapStartupPreparation Preparation, MapPainter Painter);
+
+    private sealed record StartupTiming(
+        string Detail,
+        long AdmissionStart,
+        long AdmissionEnd,
+        long FrameworkReady,
+        long ViewStart,
+        long ViewReady,
+        double BoardMs,
+        double BindMs,
+        MapStartupPreparation Preparation,
+        MapPainter Painter);
+
     private readonly StartupTiming? startup;
 
-    public MapGalleryView(MapPainter painter, string initial, Action? openCompanion = null, MapArtSelection? selection = null,
+    public MapGalleryView(
+        MapPainter painter,
+        string initial,
+        Action? openCompanion = null,
+        MapArtSelection? selection = null,
         (string Detail, int Height, long AdmissionStart, long AdmissionEnd, long FrameworkReady, MapStartupPreparation Preparation)? coldView = null)
     {
         long boardStart = Stopwatch.GetTimestamp();
         board = MapGallery.Open(initial);
-        if (coldView is not null) board = board with { Display = board.Display with { ReducedMotion = true } };
+        if (coldView is not null)
+        {
+            board = board with { Display = board.Display with { ReducedMotion = true } };
+        }
+
         double boardMs = Stopwatch.GetElapsedTime(boardStart).TotalMilliseconds;
         map = new(painter, tracePresentation: SeamApp.Observe is not null, traceFirstDraw: coldView is not null);
         overview = new(map, painter);
@@ -46,7 +65,11 @@ internal sealed class MapGalleryView : UserControl
         AutomationProperties.SetAutomationId(selector, "gallery-case");
         selector.SelectionChanged += (_, _) =>
         {
-            if (selector.SelectedItem is not string id || id == board.Id) return;
+            if (selector.SelectedItem is not string id || id == board.Id)
+            {
+                return;
+            }
+
             board = MapGallery.Open(id);
             Show();
         };
@@ -63,7 +86,10 @@ internal sealed class MapGalleryView : UserControl
             map.Queue(++sequence, "Authored preview · movement and combat", 8000);
             map.Queue(++sequence, "No gameplay command is attached", 6000);
             foreach (var effect in MapGallery.Effects(board.Map))
+            {
                 map.Queue(effect with { Id = ++sequence, Milliseconds = effect.Milliseconds * 3 });
+            }
+
             map.AdvancePresentation(Environment.TickCount64);
         };
         clear = new Button { Content = "Clear presentation" };
@@ -75,7 +101,11 @@ internal sealed class MapGalleryView : UserControl
             long changeStarted = SeamApp.Observe is null ? 0 : Stopwatch.GetTimestamp();
             var focus = board.Id is "Mixed" or "MV29"
                 ? map.Camera.Hit(map.Bounds.Width * .48, map.Bounds.Height * .52, board.Map) : null;
-            if (focus is { } tile && map.Scene?.Tile(tile).Terrain is null) focus = null;
+            if (focus is { } tile && map.Scene?.Tile(tile).Terrain is null)
+            {
+                focus = null;
+            }
+
             board = board with
             {
                 Map = board.Id switch
@@ -90,8 +120,13 @@ internal sealed class MapGalleryView : UserControl
             long bindStarted = changeStarted == 0 ? 0 : Stopwatch.GetTimestamp();
             map.Show(board.Map);
             if (bindStarted != 0)
-                updateWork = (board.Map.Revision, Stopwatch.GetElapsedTime(changeStarted, bindStarted).TotalMilliseconds,
+            {
+                updateWork = (
+                    board.Map.Revision,
+                    Stopwatch.GetElapsedTime(changeStarted, bindStarted).TotalMilliseconds,
                     Stopwatch.GetElapsedTime(bindStarted).TotalMilliseconds);
+            }
+
             if (focus is { } center)
             {
                 map.Queue(new MapEffect(++sequence, MapEffectKind.Explosion, center, center, 250));
@@ -108,23 +143,37 @@ internal sealed class MapGalleryView : UserControl
             Grid = !map.Display.Grid,
             Ownership = !map.Display.Ownership,
             CityRadius = !map.Display.CityRadius,
-            Color = map.Display.Color == MapColorCorrection.Normal ? MapColorCorrection.HighContrast : MapColorCorrection.Normal
+            Color = map.Display.Color == MapColorCorrection.Normal
+                ? MapColorCorrection.HighContrast
+                : MapColorCorrection.Normal
         };
         recover = new Button { Content = "Reload textures" };
         recover.Click += (_, _) => map.RecoverResources();
         bare = new CheckBox { Content = "Bare terrain" };
         bare.IsCheckedChanged += (_, _) => map.Display = map.Display with { Bare = bare.IsChecked == true };
-        suppliedArt = new CheckBox { Content = "Use supplied art", IsVisible = selection is not null, IsChecked = selection is not null };
+        suppliedArt = new CheckBox
+        {
+            Content = "Use supplied art",
+            IsVisible = selection is not null,
+            IsChecked = selection is not null
+        };
         suppliedArt.IsCheckedChanged += (_, _) => map.SelectArt(suppliedArt.IsChecked == true ? selection : null);
         follow = new CheckBox { Content = "Follow active unit" };
         follow.IsCheckedChanged += (_, _) => map.Display = map.Display with { FollowActive = follow.IsChecked == true };
         reducedMotion = new CheckBox { Content = "Reduced motion" };
-        reducedMotion.IsCheckedChanged += (_, _) => map.Display = map.Display with { ReducedMotion = reducedMotion.IsChecked == true };
+        reducedMotion.IsCheckedChanged += (_, _) => map.Display = map.Display with
+        {
+            ReducedMotion = reducedMotion.IsChecked == true
+        };
         flat = new CheckBox { Content = "Flat map" };
         flat.IsCheckedChanged += (_, _) =>
         {
             bool enabled = flat.IsChecked == true;
-            if (board.Map.Flat == enabled) return;
+            if (board.Map.Flat == enabled)
+            {
+                return;
+            }
+
             board = board with { Map = board.Map with { Flat = enabled, Revision = board.Map.Revision + 1 } };
             map.Show(board.Map);
         };
@@ -132,8 +181,25 @@ internal sealed class MapGalleryView : UserControl
         companion.Click += (_, _) => openCompanion?.Invoke();
         companion.IsEnabled = openCompanion is not null;
         var header = new WrapPanel { Margin = new Thickness(10, 6), ItemSpacing = 8, LineSpacing = 3 };
-        foreach (Control control in new Control[] { selector, title, play, change, flip, recover, bare, suppliedArt, follow, clear, reducedMotion, flat, companion })
+        foreach (Control control in new Control[] {
+            selector,
+            title,
+            play,
+            change,
+            flip,
+            recover,
+            bare,
+            suppliedArt,
+            follow,
+            clear,
+            reducedMotion,
+            flat,
+            companion
+            })
+        {
             header.Children.Add(control);
+        }
+
         rendererSettings = new(map, SeamApp.RendererPreferences);
         rendererButton = new Button { Content = "Renderer", Flyout = new Flyout { Content = rendererSettings } };
         header.Children.Add(rendererButton);
@@ -165,7 +231,8 @@ internal sealed class MapGalleryView : UserControl
         Content = layout;
 
         void Inspect(MapPick? pick) => details.Text = pick is { } selected && map.Scene is { } scene
-            ? MapInspection.Describe(scene, selected) : "Authored map. Drag to pan, use the wheel to zoom and click the overview to recenter.";
+            ? MapInspection.Describe(scene, selected)
+            : "Authored map. Drag to pan, use the wheel to zoom and click the overview to recenter.";
         map.SelectionChanged += Inspect;
         map.HoverChanged += Inspect;
         long bindStart = Stopwatch.GetTimestamp();
@@ -173,13 +240,26 @@ internal sealed class MapGalleryView : UserControl
         if (coldView is { } setup)
         {
             long ready = Stopwatch.GetTimestamp();
-            startup = new(setup.Detail, setup.AdmissionStart, setup.AdmissionEnd, setup.FrameworkReady, boardStart, ready,
-                boardMs, Stopwatch.GetElapsedTime(bindStart, ready).TotalMilliseconds, setup.Preparation, painter);
+            startup = new(
+                setup.Detail,
+                setup.AdmissionStart,
+                setup.AdmissionEnd,
+                setup.FrameworkReady,
+                boardStart,
+                ready,
+                boardMs,
+                Stopwatch.GetElapsedTime(bindStart, ready).TotalMilliseconds,
+                setup.Preparation,
+                painter);
         }
 
         void PlaceColdCamera(object? sender, SizeChangedEventArgs e)
         {
-            if (e.NewSize.Width <= 0 || e.NewSize.Height <= 0 || coldView is not { } setup) return;
+            if (e.NewSize.Width <= 0 || e.NewSize.Height <= 0 || coldView is not { } setup)
+            {
+                return;
+            }
+
             map.SizeChanged -= PlaceColdCamera;
             var world = board.Map;
             double zoom = setup.Detail switch
@@ -224,12 +304,23 @@ internal sealed class MapGalleryView : UserControl
         JsonObject BoundsFor(Control control)
         {
             var position = control.TranslatePoint(default, this) ?? default;
-            return new() { ["x"] = position.X, ["y"] = position.Y, ["width"] = control.Bounds.Width, ["height"] = control.Bounds.Height };
+            return new()
+            {
+                ["x"] = position.X,
+                ["y"] = position.Y,
+                ["width"] = control.Bounds.Width,
+                ["height"] = control.Bounds.Height
+            };
         }
         JsonObject? RendererChoiceBounds()
         {
             var choice = rendererSettings.Choice;
-            if (rendererButton.Flyout?.IsOpen != true || TopLevel.GetTopLevel(choice) is null || choice.Bounds.Width <= 0) return null;
+            if (rendererButton.Flyout?.IsOpen != true || TopLevel.GetTopLevel(choice) is null
+                || choice.Bounds.Width <= 0)
+            {
+                return null;
+            }
+
             var origin = this.PointToScreen(default);
             var point = choice.PointToScreen(default);
             double scale = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1;
@@ -406,9 +497,12 @@ internal sealed class MapGalleryView : UserControl
             {
                 ["detail"] = start.Detail,
                 ["admissionMs"] = Stopwatch.GetElapsedTime(start.AdmissionStart, start.AdmissionEnd).TotalMilliseconds,
-                ["afterAdmissionMs"] = Stopwatch.GetElapsedTime(start.AdmissionEnd, first.CompletedAt).TotalMilliseconds,
-                ["admissionStartToDrawMs"] = Stopwatch.GetElapsedTime(start.AdmissionStart, first.CompletedAt).TotalMilliseconds,
-                ["frameworkSetupMs"] = Stopwatch.GetElapsedTime(start.AdmissionEnd, start.FrameworkReady).TotalMilliseconds,
+                ["afterAdmissionMs"] = Stopwatch.GetElapsedTime(start.AdmissionEnd, first.CompletedAt)
+                    .TotalMilliseconds,
+                ["admissionStartToDrawMs"] = Stopwatch.GetElapsedTime(start.AdmissionStart, first.CompletedAt)
+                    .TotalMilliseconds,
+                ["frameworkSetupMs"] = Stopwatch.GetElapsedTime(start.AdmissionEnd, start.FrameworkReady)
+                    .TotalMilliseconds,
                 ["rendererSetupMs"] = Stopwatch.GetElapsedTime(start.FrameworkReady, start.ViewStart).TotalMilliseconds,
                 ["viewSetupMs"] = Stopwatch.GetElapsedTime(start.ViewStart, start.ViewReady).TotalMilliseconds,
                 ["windowAndDrawQueueMs"] = Stopwatch.GetElapsedTime(start.ViewReady, first.StartedAt).TotalMilliseconds,

@@ -50,23 +50,61 @@ internal static class MapTileArt
         int step = terrain == 10 || showRoute ? 1 : 2;
         for (int d = 0; d < improvements.Length; d += step)
         {
-            if (scene.Neighbor(point, d) is not { } neighbor) continue;
+            if (scene.Neighbor(point, d) is not { } neighbor)
+            {
+                continue;
+            }
+
             int direction = 1 << d;
             fog |= direction & diagonals;
-            if (!scene.InRegion(neighbor)) continue;
+            if (!scene.InRegion(neighbor))
+            {
+                continue;
+            }
+
             var observed = scene.Tile(neighbor);
-            if (observed.Terrain is not byte adjacent || adjacent >= Catalog.Terrain.Count) continue;
+            if (observed.Terrain is not byte adjacent || adjacent >= Catalog.Terrain.Count)
+            {
+                continue;
+            }
+
             improvements[d] = observed.Improvements;
             fog &= ~direction;
-            if (adjacent != 10) land |= direction;
-            if (showRoute && HasCity(scene, neighbor, observed)) neighborCities |= direction;
-            if ((d & 1) != 0) continue;
+            if (adjacent != 10)
+            {
+                land |= direction;
+            }
+
+            if (showRoute && HasCity(scene, neighbor, observed))
+            {
+                neighborCities |= direction;
+            }
+
+            if ((d & 1) != 0)
+            {
+                continue;
+            }
+
             int q = d / 2;
-            if (adjacent == terrain) same |= 1 << q;
-            if (observed.River || adjacent == 10) rivers |= 1 << q;
-            if (observed.River) mouths |= 1 << q;
+            if (adjacent == terrain)
+            {
+                same |= 1 << q;
+            }
+
+            if (observed.River || adjacent == 10)
+            {
+                rivers |= 1 << q;
+            }
+
+            if (observed.River)
+            {
+                mouths |= 1 << q;
+            }
+
             if (terrain != 10 && adjacent != terrain && detailed)
+            {
                 output.Add(new(TileArtLayer.Blend, Catalog.Terrain[adjacent].Edge[q], Catalog.EdgeOffsets[q]));
+            }
         }
 
         if (terrain == 10)
@@ -79,15 +117,27 @@ internal static class MapTileArt
                 int mask = ((land | land << 8) >> start) & 7;
                 var coast = Catalog.Coasts[q];
                 output.Add(new(TileArtLayer.Coast, coast.Variants[mask], coast.Offset));
-                if ((mouths & (1 << q)) != 0) output.Add(new(TileArtLayer.River, Catalog.Mouths[q]));
+                if ((mouths & (1 << q)) != 0)
+                {
+                    output.Add(new(TileArtLayer.River, Catalog.Mouths[q]));
+                }
             }
         }
         else if (detailed && Catalog.Relief.TryGetValue(terrain, out var relief))
+        {
             output.Add(new(TileArtLayer.Relief, relief[same]));
-        if (tile.River && terrain != 10)
-            output.Add(new(TileArtLayer.River, Catalog.Rivers[rivers]));
+        }
 
-        if (showRoute) AddRoutes(output, tile.Improvements, city, improvements, neighborCities);
+        if (tile.River && terrain != 10)
+        {
+            output.Add(new(TileArtLayer.River, Catalog.Rivers[rivers]));
+        }
+
+        if (showRoute)
+        {
+            AddRoutes(output, tile.Improvements, city, improvements, neighborCities);
+        }
+
         if (!bare && detail == MapDetail.Full)
         {
             const MapImprovements work = MapImprovements.Irrigation | MapImprovements.Mine;
@@ -102,27 +152,51 @@ internal static class MapTileArt
             {
                 var southeast = improvements[2] & work;
                 var southwest = improvements[4] & work;
-                if (southeast == work || southwest == work) agriculture = "farmland";
-                else if (southeast == MapImprovements.Irrigation || southwest == MapImprovements.Irrigation) agriculture = "irrigation";
+                if (southeast == work || southwest == work)
+                {
+                    agriculture = "farmland";
+                }
+                else if (southeast == MapImprovements.Irrigation || southwest == MapImprovements.Irrigation)
+                {
+                    agriculture = "irrigation";
+                }
             }
             if (agriculture == "mine")
+            {
                 output.Add(new(TileArtLayer.Mine, Catalog.Improvements[agriculture]));
+            }
             else if (agriculture is not null)
+            {
                 output.Add(new(TileArtLayer.Agriculture, Catalog.Improvements[agriculture]));
-            if (tile.Hut.Value == MapPresence.Present) output.Add(new(TileArtLayer.Village, Catalog.Improvements["village"]));
+            }
+
+            if (tile.Hut.Value == MapPresence.Present)
+            {
+                output.Add(new(TileArtLayer.Village, Catalog.Improvements["village"]));
+            }
         }
         if (detail != MapDetail.Overview || bare)
         {
             string? resource = tile.GrasslandShield ? Catalog.GrasslandShield : tile.Resource switch
             { 1 => terrainArt.FirstResource, 2 => terrainArt.SecondResource, _ => null };
-            if (resource is not null) output.Add(new(TileArtLayer.Resource, resource));
+            if (resource is not null)
+            {
+                output.Add(new(TileArtLayer.Resource, resource));
+            }
+
             if ((tile.Improvements & MapImprovements.Pollution) != 0)
+            {
                 output.Add(new(TileArtLayer.Pollution, Catalog.Improvements["pollution"]));
+            }
         }
 
         for (int q = 0; q < 4; q++)
+        {
             if ((fog & (1 << (2 * q))) != 0)
+            {
                 output.Add(new(TileArtLayer.Fog, Catalog.FogEdges[q], Catalog.EdgeOffsets[q]));
+            }
+        }
     }
 
     private static void AddRoutes(List<TileSprite> output, MapImprovements flags, bool city,
@@ -134,11 +208,18 @@ internal static class MapTileArt
         {
             bool otherCity = (neighborCities & (1 << d)) != 0;
             var other = neighbors[d];
-            if (!otherCity && (other & Transport) == 0) continue;
+            if (!otherCity && (other & Transport) == 0)
+            {
+                continue;
+            }
+
             bool railArm = rail && (otherCity || (other & MapImprovements.Railroad) != 0);
             output.Add(new(TileArtLayer.RouteNE + d, railArm ? Catalog.Rails[d + 1] : Catalog.Roads[d + 1]));
             connected = true;
         }
-        if (!connected && !city) output.Add(new(TileArtLayer.RouteNE, rail ? Catalog.Rails[0] : Catalog.Roads[0]));
+        if (!connected && !city)
+        {
+            output.Add(new(TileArtLayer.RouteNE, rail ? Catalog.Rails[0] : Catalog.Roads[0]));
+        }
     }
 }

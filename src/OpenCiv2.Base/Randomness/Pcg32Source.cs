@@ -23,7 +23,10 @@ public sealed class Pcg32Source
     public uint NextUInt32()
     {
         if (draws == ulong.MaxValue)
+        {
             throw new OverflowException("Random source draw counter exhausted.");
+        }
+
         uint value = engine.NextUInt32();
         ++draws;
         return value;
@@ -35,10 +38,16 @@ public sealed class Pcg32Source
     public static Pcg32Source Restore(Pcg32Position position, ulong replayLimit)
     {
         if (position.Stream > 0x7FFFFFFFFFFFFFFFUL || position.Draws > replayLimit)
+        {
             throw new ArgumentException("Invalid stream or checkpoint replay budget exceeded.", nameof(position));
+        }
+
         var restored = new Pcg32Source(position.Seed, position.Stream);
         for (ulong i = 0; i < position.Draws; ++i)
+        {
             restored.NextUInt32();
+        }
+
         return restored;
     }
 }

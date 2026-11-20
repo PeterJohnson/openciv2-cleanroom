@@ -11,14 +11,29 @@ public sealed partial class SessionRuntime
     public void PrepareNewGame()
     {
         state.RequireQuiescent();
-        var world = new GameState(state.Process); var rules = new RuleState(); rules.Text.Initialize();
+        var world = new GameState(state.Process);
+        var rules = new RuleState();
+        rules.Text.Initialize();
         foreach (ref var civilization in world.Civilizations.AsSpan())
         {
-            foreach (ref var goal in (Span<CivilizationGoal>)civilization.Goals) goal = new(0, 0, -1, 0);
-            foreach (ref var goal in (Span<CivilizationGoal>)civilization.StandingGoals) goal = new(0, 0, -1, 0);
+            foreach (ref var goal in (Span<CivilizationGoal>)civilization.Goals)
+            {
+                goal = new(0, 0, -1, 0);
+            }
+
+            foreach (ref var goal in (Span<CivilizationGoal>)civilization.StandingGoals)
+            {
+                goal = new(0, 0, -1, 0);
+            }
         }
         // All preparation precedes revocation. No service callbacks interrupt replacement.
-        EndClientSession(); state.Requests.Clear(); state.Replies.Clear(); state.World = world;
-        state.Process.Rules.SwapContents(rules); state.Process.TextParameters.Clear(); state.Process.Fallback.Value = new(); state.Revision = 0;
+        EndClientSession();
+        state.Requests.Clear();
+        state.Replies.Clear();
+        state.World = world;
+        state.Process.Rules.SwapContents(rules);
+        state.Process.TextParameters.Clear();
+        state.Process.Fallback.Value = new();
+        state.Revision = 0;
     }
 }

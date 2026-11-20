@@ -13,7 +13,14 @@ public static partial class StandardOutput
     {
         nint raw = OperatingSystem.IsWindows() ? GetStdHandle(-11) : 1;
         var handle = new SafeFileHandle(raw, ownsHandle: false);
-        try { return new FileStream(handle, System.IO.FileAccess.Write, bufferSize: 4096, isAsync: false); }
-        catch { handle.Dispose(); throw; }
+        try
+        {
+            return new FileStream(handle, System.IO.FileAccess.Write, bufferSize: 4096, isAsync: false);
+        }
+        catch
+        {
+            handle.Dispose();
+            throw;
+        }
     }
 }

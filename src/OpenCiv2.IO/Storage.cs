@@ -13,6 +13,7 @@ public abstract class CoreFile : IDisposable
 {
     private bool closed;
     private bool finalized;
+
     public bool Close()
     {
         if (!closed)
@@ -22,14 +23,23 @@ public abstract class CoreFile : IDisposable
         }
         return finalized;
     }
+
     protected void RequireOpen()
     {
-        if (closed) throw new ObjectDisposedException(GetType().Name);
+        if (closed)
+        {
+            throw new ObjectDisposedException(GetType().Name);
+        }
     }
+
     protected abstract bool Finish();
+
     public void Dispose()
     {
-        try { Close(); }
+        try
+        {
+            Close();
+        }
         catch { /* Cleanup must preserve an earlier failure, including a failed explicit close. */ }
         GC.SuppressFinalize(this);
     }
@@ -43,14 +53,26 @@ public abstract class CoreInput : CoreFile
         ArgumentOutOfRangeException.ThrowIfNegative(size);
         return ReadItem(size);
     }
-    public byte? Byte() { RequireOpen(); return ReadByte(); }
+
+    public byte? Byte()
+    {
+        RequireOpen();
+        return ReadByte();
+    }
+
     protected abstract ReadResult ReadItem(int size);
+
     protected abstract byte? ReadByte();
 }
 
 public abstract class CoreOutput : CoreFile
 {
-    public bool Item(ReadOnlySpan<byte> bytes) { RequireOpen(); return WriteItem(bytes); }
+    public bool Item(ReadOnlySpan<byte> bytes)
+    {
+        RequireOpen();
+        return WriteItem(bytes);
+    }
+
     protected abstract bool WriteItem(ReadOnlySpan<byte> bytes);
 }
 
@@ -58,6 +80,8 @@ public abstract class CoreOutput : CoreFile
 public interface IFileStorage
 {
     CoreInput? Read(string path);
+
     CoreOutput? Replace(string path);
+
     bool Remove(string path);
 }

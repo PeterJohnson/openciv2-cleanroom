@@ -13,32 +13,72 @@ internal static class Program
     {
         try
         {
-            string? assets = null, fonts = null, observation = null, native = null, scenario = null, installation = null, showcase = null, coldView = null;
+            string? assets = null,
+                fonts = null,
+                observation = null,
+                native = null,
+                scenario = null,
+                installation = null,
+                showcase = null,
+                coldView = null;
             string? renderer = null, gpuCache = null, rendererSettings = null;
             (int Width, int Height)? size = null;
             for (int i = 0; i < args.Length; i += 2)
             {
-                if (i + 1 == args.Length) throw Usage();
+                if (i + 1 == args.Length)
+                {
+                    throw Usage();
+                }
+
                 switch (args[i])
                 {
-                    case "--assets" when assets is null: assets = args[i + 1]; break;
-                    case "--fonts" when fonts is null: fonts = args[i + 1]; break;
-                    case "--observe" when observation is null: observation = args[i + 1]; break;
-                    case "--map-art" when native is null: native = args[i + 1]; break;
-                    case "--scenario-art" when scenario is null: scenario = args[i + 1]; break;
-                    case "--installation-art" when installation is null: installation = args[i + 1]; break;
-                    case "--showcase" when showcase is null: showcase = args[i + 1]; break;
-                    case "--cold-view" when coldView is null: coldView = args[i + 1]; break;
-                    case "--map-renderer" when renderer is null: renderer = args[i + 1]; break;
-                    case "--map-gpu-cache-mib" when gpuCache is null: gpuCache = args[i + 1]; break;
-                    case "--renderer-settings" when rendererSettings is null: rendererSettings = args[i + 1]; break;
+                    case "--assets" when assets is null:
+                        assets = args[i + 1];
+                        break;
+                    case "--fonts" when fonts is null:
+                        fonts = args[i + 1];
+                        break;
+                    case "--observe" when observation is null:
+                        observation = args[i + 1];
+                        break;
+                    case "--map-art" when native is null:
+                        native = args[i + 1];
+                        break;
+                    case "--scenario-art" when scenario is null:
+                        scenario = args[i + 1];
+                        break;
+                    case "--installation-art" when installation is null:
+                        installation = args[i + 1];
+                        break;
+                    case "--showcase" when showcase is null:
+                        showcase = args[i + 1];
+                        break;
+                    case "--cold-view" when coldView is null:
+                        coldView = args[i + 1];
+                        break;
+                    case "--map-renderer" when renderer is null:
+                        renderer = args[i + 1];
+                        break;
+                    case "--map-gpu-cache-mib" when gpuCache is null:
+                        gpuCache = args[i + 1];
+                        break;
+                    case "--renderer-settings" when rendererSettings is null:
+                        rendererSettings = args[i + 1];
+                        break;
                     case "--window" when size is null:
                         string[] parts = args[i + 1].Split('x');
-                        if (parts.Length != 2 || !int.TryParse(parts[0], out int width) || !int.TryParse(parts[1], out int height) ||
-                            width is < 600 or > 5500 || height is < 500 or > 3200) throw Usage();
+                        if (parts.Length != 2 || !int.TryParse(parts[0], out int width)
+                            || !int.TryParse(parts[1], out int height)
+                            ||
+                            width is < 600 or > 5500 || height is < 500 or > 3200)
+                        {
+                            throw Usage();
+                        }
+
                         size = (width, height);
                         break;
-                    default: throw Usage();
+                    default:
+                        throw Usage();
                 }
             }
 
@@ -49,10 +89,19 @@ internal static class Program
             }
             SeamApp.ConfigureMapRenderer(RendererPreferences.Load(rendererSettings, renderer, gpuCache));
             bool overrides = native is not null || scenario is not null || installation is not null;
-            if ((assets is null) != (fonts is null) || overrides && assets is null) throw Usage();
-            if (size is not null && showcase is null || coldView is not null &&
-                (coldView is not ("full" or "half" or "overview") || showcase != "Mixed" || size is null || observation is null || assets is null))
+            if ((assets is null) != (fonts is null) || overrides && assets is null)
+            {
                 throw Usage();
+            }
+
+            if (size is not null && showcase is null || coldView is not null &&
+                (coldView is not ("full" or "half" or "overview") || showcase != "Mixed" || size is null
+                    || observation is null
+                    || assets is null))
+            {
+                throw Usage();
+            }
+
             long admissionStart = 0, admissionEnd = 0;
             if (assets is not null && fonts is not null)
             {
@@ -64,41 +113,81 @@ internal static class Program
                     scenario is not null ? new ContentDirectory(scenario).OpenClassicLeaf : null,
                     installation is not null ? new ContentDirectory(installation).OpenClassicLeaf : null) : null;
                 if (selected is not null)
-                    foreach (string warning in selected.Diagnostics) System.Console.Error.WriteLine(warning);
+                {
+                    foreach (string warning in selected.Diagnostics)
+                    {
+                        System.Console.Error.WriteLine(warning);
+                    }
+                }
+
                 SeamApp.ConfigureGraphics(atlas, fontBytes, selected);
                 admissionEnd = Stopwatch.GetTimestamp();
             }
 
             if (showcase is not null)
-                SeamApp.ConfigureShowcase(showcase, size, coldView is null ? null : (coldView, admissionStart, admissionEnd));
+            {
+                SeamApp.ConfigureShowcase(
+                    showcase,
+                    size,
+                    coldView is null ? null : (coldView, admissionStart, admissionEnd));
+            }
 
             // Explicit read-only test observation; ordinary launches perform no report-file writes.
             if (observation is not null)
             {
                 string path = Path.GetFullPath(observation);
                 Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-                void WriteIdentity() => File.WriteAllText(path + ".identity.json", ApplicationIdentity.Read(typeof(Program).Assembly, typeof(ContentDirectory).Assembly));
-                if (coldView is null) WriteIdentity();
+                void WriteIdentity() =>
+                    File.WriteAllText(
+                        path + ".identity.json",
+                        ApplicationIdentity.Read(typeof(Program).Assembly, typeof(ContentDirectory).Assembly));
+                if (coldView is null)
+                {
+                    WriteIdentity();
+                }
+
                 string? previous = null;
                 SeamApp.Observe = value =>
                 {
-                    if (value == previous) return;
-                    if (previous is null && coldView is not null) WriteIdentity();
+                    if (value == previous)
+                    {
+                        return;
+                    }
+
+                    if (previous is null && coldView is not null)
+                    {
+                        WriteIdentity();
+                    }
+
                     File.WriteAllText(path + ".tmp", value);
                     File.Move(path + ".tmp", path, true);
                     previous = value;
                 };
             }
             SeamApp.BeginDesktopMapPreparation();
-            try { return AppBuilder.Configure<SeamApp>().UsePlatformDetect().WithInterFont().StartWithClassicDesktopLifetime([]); }
-            finally { SeamApp.ReleasePendingDesktopMapPreparation(); }
+            try
+            {
+                return AppBuilder.Configure<SeamApp>().UsePlatformDetect().WithInterFont()
+                    .StartWithClassicDesktopLifetime(
+                        []);
+            }
+            finally
+            {
+                SeamApp.ReleasePendingDesktopMapPreparation();
+            }
         }
-        catch (Exception e) when (e is IOException or InvalidDataException or ArgumentException or UnauthorizedAccessException or ContentException or JsonException or FormatException)
+        catch (Exception e) when (e is IOException or InvalidDataException or ArgumentException
+            or UnauthorizedAccessException
+            or ContentException
+            or JsonException
+            or FormatException)
         {
             System.Console.Error.WriteLine(e.Message);
             return 2;
         }
     }
 
-    private static ArgumentException Usage() => new("Usage: OpenCiv2.Desktop [--assets ROOT --fonts ROOT] [--map-art ROOT] [--scenario-art ROOT] [--installation-art ROOT] [--showcase CASE [--window WIDTHxHEIGHT]] [--observe PATH] [--cold-view full|half|overview] [--map-renderer cpu|gpu] [--map-gpu-cache-mib 128..1024] [--renderer-settings PATH]");
+    private static ArgumentException Usage() =>
+        new(
+            "Usage: OpenCiv2.Desktop [--assets ROOT --fonts ROOT] [--map-art ROOT] [--scenario-art ROOT] [--installation-art ROOT] [--showcase CASE [--window WIDTHxHEIGHT]] [--observe PATH] [--cold-view full|half|overview] [--map-renderer cpu|gpu] [--map-gpu-cache-mib 128..1024] [--renderer-settings PATH]");
 }

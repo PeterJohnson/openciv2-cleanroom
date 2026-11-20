@@ -7,7 +7,8 @@ using OpenCiv2.ViewModels;
 
 namespace OpenCiv2.App;
 
-/// <summary>Composition of a bounded authored W01/W03 map. The only admitted action uses the existing U01 command.</summary>
+/// <summary>Composition of a bounded authored W01/W03 map. The only admitted action uses the existing U01
+/// command.</summary>
 internal sealed class SeamSession : IDisposable
 {
     internal SessionRuntime Runtime { get; } = new(new(), new(1));
@@ -38,7 +39,9 @@ internal sealed class SeamSession : IDisposable
             bool gulf = west < 4 + (y % 7) / 2 || y >= 26 - west % 5;
             bool valley = x < 16 && y is >= 1 and <= 10;
             var terrain = gulf ? Terrain.Ocean :
-                valley ? (x + y) % 5 == 0 ? Terrain.Forest : (x - y + 48) % 5 == 1 ? Terrain.Plains : Terrain.Grassland :
+                valley
+                    ? (x + y) % 5 == 0 ? Terrain.Forest : (x - y + 48) % 5 == 1 ? Terrain.Plains : Terrain.Grassland
+                    :
                 y <= 2 ? Terrain.Tundra : ((x + 7 * y) % 19) switch
                 {
                     0 or 1 => Terrain.Mountains,
@@ -49,8 +52,17 @@ internal sealed class SeamSession : IDisposable
                     10 or 11 => Terrain.Plains,
                     _ => Terrain.Grassland
                 };
-            var tile = new Tile { Terrain = terrain, Revelation = (byte)(y < 19 && (x < 23 - y / 2 || x > 51) ? 2 : 4), Owner = null };
-            if (y == 4 && x is >= 4 and <= 16) tile.Features = (byte)(x is 6 or 8 ? 0x14 : 0x10);
+            var tile = new Tile
+            {
+                Terrain = terrain,
+                Revelation = (byte)(y < 19 && (x < 23 - y / 2 || x > 51) ? 2 : 4),
+                Owner = null
+            };
+            if (y == 4 && x is >= 4 and <= 16)
+            {
+                tile.Features = (byte)(x is 6 or 8 ? 0x14 : 0x10);
+            }
+
             memory[i] = tile.Features;
             map.Tiles[i] = tile;
         }
@@ -64,7 +76,10 @@ internal sealed class SeamSession : IDisposable
         world.Globals.UnitEnd = 7;
         world.Globals.ActiveUnit = new(1);
         for (int i = 0; i < 3; i++)
+        {
             AddUnit(i, 1, 2, 2, i + 1, i - 1, i >= 2 ? -1 : i + 1, 0);
+        }
+
         AddUnit(3, 2, 2, 2, 0, -1, -1, 0); // Concealed on an explored tile.
         AddUnit(4, 2, 12, 6, 5, -1, -1, 2); // Independently seen by the observer.
         AddUnit(5, 2, 29, 9, 4, -1, -1, 2); // Seen bit alone cannot expose an unexplored tile.
@@ -74,8 +89,24 @@ internal sealed class SeamSession : IDisposable
         map.TileAt(new(2, 2)).Owner = 1;
         world.Entities.Cities.SetEnd(2);
         world.Globals.CityEnd = 2;
-        world.Entities.Cities.Storage[0] = new() { Token = new(200), Owner = new(1), X = 6, Y = 4, Size = 3, Name = new("Riverbend"u8.ToArray()) };
-        world.Entities.Cities.Storage[1] = new() { Token = new(201), Owner = new(2), X = 12, Y = 8, Size = 5, Name = new("Concealed"u8.ToArray()) };
+        world.Entities.Cities.Storage[0] = new()
+        {
+            Token = new(200),
+            Owner = new(1),
+            X = 6,
+            Y = 4,
+            Size = 3,
+            Name = new("Riverbend"u8.ToArray())
+        };
+        world.Entities.Cities.Storage[1] = new()
+        {
+            Token = new(201),
+            Owner = new(2),
+            X = 12,
+            Y = 8,
+            Size = 5,
+            Name = new("Concealed"u8.ToArray())
+        };
         map.TileAt(new(6, 4)).Features |= 2;
         map.TileAt(new(6, 4)).Owner = 1;
         map.TileAt(new(12, 8)).Features |= 2;
@@ -84,7 +115,10 @@ internal sealed class SeamSession : IDisposable
 
         void AddRiver(ReadOnlySpan<(int X, int Y)> course)
         {
-            foreach (var (x, y) in course) map.TileAt(new(x, y)).TerrainFlags |= 0x80;
+            foreach (var (x, y) in course)
+            {
+                map.TileAt(new(x, y)).TerrainFlags |= 0x80;
+            }
         }
 
         void AddUnit(int slot, byte owner, short x, short y, int type, int previous, int next, byte seen)
@@ -105,9 +139,20 @@ internal sealed class SeamSession : IDisposable
 
     public void Tick()
     {
-        if (Runtime.AdvanceOne()) Panel.Refresh();
-        if (Panel.View.Command is { } command && command.Status.Terminal()) Runtime.RetireCommand(command.Correlation.Command);
+        if (Runtime.AdvanceOne())
+        {
+            Panel.Refresh();
+        }
+
+        if (Panel.View.Command is { } command && command.Status.Terminal())
+        {
+            Runtime.RetireCommand(command.Correlation.Command);
+        }
     }
 
-    public void Dispose() { Panel.Bind(null); Runtime.Dispose(); }
+    public void Dispose()
+    {
+        Panel.Bind(null);
+        Runtime.Dispose();
+    }
 }

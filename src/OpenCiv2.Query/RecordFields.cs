@@ -13,6 +13,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(StoredGlobals v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "rules", "u16", new FieldValue.Unsigned(v.Rules)));
@@ -50,26 +51,46 @@ internal static class RecordFields
         fields.Add(new(prefix + "retained_34", "i16", new FieldValue.Signed(v.Retained34)));
         for (int i1 = 0; i1 < v.FirstDiscoverer.Count; ++i1)
         {
-            fields.Add(new(prefix + "first_discoverer" + "[" + i1.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.FirstDiscoverer[i1])));
+            fields.Add(
+                new(
+                    prefix + "first_discoverer" + "[" + i1.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.FirstDiscoverer[i1])));
         }
         for (int i2 = 0; i2 < v.AdvanceKnownBy.Count; ++i2)
         {
-            fields.Add(new(prefix + "advance_known_by" + "[" + i2.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.AdvanceKnownBy[i2])));
+            fields.Add(
+                new(
+                    prefix + "advance_known_by" + "[" + i2.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.AdvanceKnownBy[i2])));
         }
         for (int i3 = 0; i3 < v.WonderCity.Count; ++i3)
         {
-            fields.Add(new(prefix + "wonder_city" + "[" + i3.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.WonderCity[i3])));
+            fields.Add(
+                new(
+                    prefix + "wonder_city" + "[" + i3.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.WonderCity[i3])));
         }
         fields.Add(new(prefix + "next_history_turn", "i16", new FieldValue.Signed(v.NextHistoryTurn)));
         fields.Add(new(prefix + "best_human_rank", "u8", new FieldValue.Unsigned(v.BestHumanRank)));
         fields.Add(new(prefix + "worst_human_rank", "u8", new FieldValue.Unsigned(v.WorstHumanRank)));
         for (int i4 = 0; i4 < v.PowerRank.Count; ++i4)
         {
-            fields.Add(new(prefix + "power_rank" + "[" + i4.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.PowerRank[i4])));
+            fields.Add(
+                new(
+                    prefix + "power_rank" + "[" + i4.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.PowerRank[i4])));
         }
         for (int i5 = 0; i5 < v.CivByRank.Count; ++i5)
         {
-            fields.Add(new(prefix + "civ_by_rank" + "[" + i5.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.CivByRank[i5])));
+            fields.Add(
+                new(
+                    prefix + "civ_by_rank" + "[" + i5.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.CivByRank[i5])));
         }
     }
 
@@ -79,6 +100,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(StoredCivilization v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "flags", "u16", new FieldValue.Unsigned(v.Flags)));
@@ -97,7 +119,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "diplo_random", "u8", new FieldValue.Unsigned(v.DiploRandom)));
         for (int i6 = 0; i6 < v.WondersByGroup.Count; ++i6)
         {
-            fields.Add(new(prefix + "wonders_by_group" + "[" + i6.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.WondersByGroup[i6])));
+            fields.Add(
+                new(
+                    prefix + "wonders_by_group" + "[" + i6.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.WondersByGroup[i6])));
         }
         fields.Add(new(prefix + "retained_1b", "u8", new FieldValue.Unsigned(v.Retained1b)));
         fields.Add(new(prefix + "subversion_count", "i16", new FieldValue.Signed(v.SubversionCount)));
@@ -105,23 +131,43 @@ internal static class RecordFields
         fields.Add(new(prefix + "diplo_request_count", "i8", new FieldValue.Signed(v.DiploRequestCount)));
         for (int i7 = 0; i7 < v.Treaties.Count; ++i7)
         {
-            fields.Add(new(prefix + "treaties" + "[" + i7.ToString(CultureInfo.InvariantCulture) + "]", "u32", new FieldValue.Unsigned(v.Treaties[i7])));
+            fields.Add(
+                new(
+                    prefix + "treaties" + "[" + i7.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u32",
+                    new FieldValue.Unsigned(v.Treaties[i7])));
         }
         for (int i8 = 0; i8 < v.Attitude.Count; ++i8)
         {
-            fields.Add(new(prefix + "attitude" + "[" + i8.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Attitude[i8])));
+            fields.Add(
+                new(
+                    prefix + "attitude" + "[" + i8.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Attitude[i8])));
         }
         for (int i9 = 0; i9 < v.ReputationCredit.Count; ++i9)
         {
-            fields.Add(new(prefix + "reputation_credit" + "[" + i9.ToString(CultureInfo.InvariantCulture) + "]", "i8", new FieldValue.Signed(v.ReputationCredit[i9])));
+            fields.Add(
+                new(
+                    prefix + "reputation_credit" + "[" + i9.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i8",
+                    new FieldValue.Signed(v.ReputationCredit[i9])));
         }
         for (int i10 = 0; i10 < v.AggressionCounter.Count; ++i10)
         {
-            fields.Add(new(prefix + "aggression_counter" + "[" + i10.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.AggressionCounter[i10])));
+            fields.Add(
+                new(
+                    prefix + "aggression_counter" + "[" + i10.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.AggressionCounter[i10])));
         }
         for (int i11 = 0; i11 < v.Advances.Count; ++i11)
         {
-            fields.Add(new(prefix + "advances" + "[" + i11.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Advances[i11])));
+            fields.Add(
+                new(
+                    prefix + "advances" + "[" + i11.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Advances[i11])));
         }
         fields.Add(new(prefix + "retained_65", "u8", new FieldValue.Unsigned(v.Retained65)));
         fields.Add(new(prefix + "military_count", "i16", new FieldValue.Signed(v.MilitaryCount)));
@@ -133,61 +179,117 @@ internal static class RecordFields
         fields.Add(new(prefix + "population_milestone", "i16", new FieldValue.Signed(v.PopulationMilestone)));
         for (int i12 = 0; i12 < v.AdvanceSource.Count; ++i12)
         {
-            fields.Add(new(prefix + "advance_source" + "[" + i12.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.AdvanceSource[i12])));
+            fields.Add(
+                new(
+                    prefix + "advance_source" + "[" + i12.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.AdvanceSource[i12])));
         }
         for (int i13 = 0; i13 < v.UnitsActive.Count; ++i13)
         {
-            fields.Add(new(prefix + "units_active" + "[" + i13.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.UnitsActive[i13])));
+            fields.Add(
+                new(
+                    prefix + "units_active" + "[" + i13.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.UnitsActive[i13])));
         }
         for (int i14 = 0; i14 < v.UnitsLost.Count; ++i14)
         {
-            fields.Add(new(prefix + "units_lost" + "[" + i14.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.UnitsLost[i14])));
+            fields.Add(
+                new(
+                    prefix + "units_lost" + "[" + i14.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.UnitsLost[i14])));
         }
         for (int i15 = 0; i15 < v.UnitsInProduction.Count; ++i15)
         {
-            fields.Add(new(prefix + "units_in_production" + "[" + i15.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.UnitsInProduction[i15])));
+            fields.Add(
+                new(
+                    prefix + "units_in_production" + "[" + i15.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.UnitsInProduction[i15])));
         }
         for (int i16 = 0; i16 < v.ContinentMilitary.Count; ++i16)
         {
-            fields.Add(new(prefix + "continent_military" + "[" + i16.ToString(CultureInfo.InvariantCulture) + "]", "u16", new FieldValue.Unsigned(v.ContinentMilitary[i16])));
+            fields.Add(
+                new(
+                    prefix + "continent_military" + "[" + i16.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u16",
+                    new FieldValue.Unsigned(v.ContinentMilitary[i16])));
         }
         for (int i17 = 0; i17 < v.ContinentAttack.Count; ++i17)
         {
-            fields.Add(new(prefix + "continent_attack" + "[" + i17.ToString(CultureInfo.InvariantCulture) + "]", "u16", new FieldValue.Unsigned(v.ContinentAttack[i17])));
+            fields.Add(
+                new(
+                    prefix + "continent_attack" + "[" + i17.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u16",
+                    new FieldValue.Unsigned(v.ContinentAttack[i17])));
         }
         for (int i18 = 0; i18 < v.ContinentCities.Count; ++i18)
         {
-            fields.Add(new(prefix + "continent_cities" + "[" + i18.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.ContinentCities[i18])));
+            fields.Add(
+                new(
+                    prefix + "continent_cities" + "[" + i18.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.ContinentCities[i18])));
         }
         for (int i19 = 0; i19 < v.ContinentCitySize.Count; ++i19)
         {
-            fields.Add(new(prefix + "continent_city_size" + "[" + i19.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.ContinentCitySize[i19])));
+            fields.Add(
+                new(
+                    prefix + "continent_city_size" + "[" + i19.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.ContinentCitySize[i19])));
         }
         for (int i20 = 0; i20 < v.ContinentTradeUnits.Count; ++i20)
         {
-            fields.Add(new(prefix + "continent_trade_units" + "[" + i20.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.ContinentTradeUnits[i20])));
+            fields.Add(
+                new(
+                    prefix + "continent_trade_units" + "[" + i20.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.ContinentTradeUnits[i20])));
         }
         for (int i21 = 0; i21 < v.ContinentFlags.Count; ++i21)
         {
-            fields.Add(new(prefix + "continent_flags" + "[" + i21.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.ContinentFlags[i21])));
+            fields.Add(
+                new(
+                    prefix + "continent_flags" + "[" + i21.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.ContinentFlags[i21])));
         }
         for (int i22 = 0; i22 < v.ContinentPolicy.Count; ++i22)
         {
-            fields.Add(new(prefix + "continent_policy" + "[" + i22.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.ContinentPolicy[i22])));
+            fields.Add(
+                new(
+                    prefix + "continent_policy" + "[" + i22.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.ContinentPolicy[i22])));
         }
         fields.Add(new(prefix + "best_shield_surplus", "i16", new FieldValue.Signed(v.BestShieldSurplus)));
         for (int i23 = 0; i23 < v.GovernmentScore.Count; ++i23)
         {
-            fields.Add(new(prefix + "government_score" + "[" + i23.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.GovernmentScore[i23])));
+            fields.Add(
+                new(
+                    prefix + "government_score" + "[" + i23.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.GovernmentScore[i23])));
         }
         for (int i24 = 0; i24 < v.LastContactTurn.Count; ++i24)
         {
-            fields.Add(new(prefix + "last_contact_turn" + "[" + i24.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.LastContactTurn[i24])));
+            fields.Add(
+                new(
+                    prefix + "last_contact_turn" + "[" + i24.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.LastContactTurn[i24])));
         }
         fields.Add(new(prefix + "leader_portrait", "u8", new FieldValue.Unsigned(v.LeaderPortrait)));
         for (int i25 = 0; i25 < v.ThroneRoom.Count; ++i25)
         {
-            fields.Add(new(prefix + "throne_room" + "[" + i25.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.ThroneRoom[i25])));
+            fields.Add(
+                new(
+                    prefix + "throne_room" + "[" + i25.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.ThroneRoom[i25])));
         }
         fields.Add(new(prefix + "retained_3fd", "u8", new FieldValue.Unsigned(v.Retained3fd)));
         fields.Add(new(prefix + "throne_room_upgrades", "i16", new FieldValue.Signed(v.ThroneRoomUpgrades)));
@@ -198,15 +300,25 @@ internal static class RecordFields
         fields.Add(new(prefix + "spaceship_population", "i16", new FieldValue.Signed(v.SpaceshipPopulation)));
         for (int i26 = 0; i26 < v.SpaceshipParts.Count; ++i26)
         {
-            fields.Add(new(prefix + "spaceship_parts" + "[" + i26.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.SpaceshipParts[i26])));
+            fields.Add(
+                new(
+                    prefix + "spaceship_parts" + "[" + i26.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.SpaceshipParts[i26])));
         }
         for (int i27 = 0; i27 < v.Goals.Count; ++i27)
         {
-            Append(v.Goals[i27], prefix + "goals" + "[" + i27.ToString(CultureInfo.InvariantCulture) + "]" + ".", fields);
+            Append(
+                v.Goals[i27],
+                prefix + "goals" + "[" + i27.ToString(CultureInfo.InvariantCulture) + "]" + ".",
+                fields);
         }
         for (int i28 = 0; i28 < v.StandingGoals.Count; ++i28)
         {
-            Append(v.StandingGoals[i28], prefix + "standing_goals" + "[" + i28.ToString(CultureInfo.InvariantCulture) + "]" + ".", fields);
+            Append(
+                v.StandingGoals[i28],
+                prefix + "standing_goals" + "[" + i28.ToString(CultureInfo.InvariantCulture) + "]" + ".",
+                fields);
         }
     }
 
@@ -216,6 +328,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(StoredCivilizationNames v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "city_style", "i16", new FieldValue.Signed(v.CityStyle)));
@@ -224,7 +337,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "adjective", "classic-text", new FieldValue.Bytes(v.Adjective)));
         for (int i29 = 0; i29 < v.Titles.Count; ++i29)
         {
-            fields.Add(new(prefix + "titles" + "[" + i29.ToString(CultureInfo.InvariantCulture) + "]", "classic-text", new FieldValue.Bytes(v.Titles[i29])));
+            fields.Add(
+                new(
+                    prefix + "titles" + "[" + i29.ToString(CultureInfo.InvariantCulture) + "]",
+                    "classic-text",
+                    new FieldValue.Bytes(v.Titles[i29])));
         }
     }
 
@@ -234,6 +351,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(StoredLeader v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "attack", "i8", new FieldValue.Signed(v.Attack)));
@@ -249,13 +367,23 @@ internal static class RecordFields
         fields.Add(new(prefix + "adjective", "i16", new FieldValue.Signed(v.Adjective)));
         for (int i30 = 0; i30 < v.Names.Count; ++i30)
         {
-            fields.Add(new(prefix + "names" + "[" + i30.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.Names[i30])));
+            fields.Add(
+                new(
+                    prefix + "names" + "[" + i30.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.Names[i30])));
         }
         for (int i31 = 0; i31 < v.Titles.Count; ++i31)
         {
             for (int i32 = 0; i32 < v.Titles[i31].Count; ++i32)
             {
-                fields.Add(new(prefix + "titles" + "[" + i31.ToString(CultureInfo.InvariantCulture) + "]" + "[" + i32.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.Titles[i31][i32])));
+                fields.Add(
+                    new(
+                        prefix + "titles" + "[" + i31.ToString(
+                            CultureInfo.InvariantCulture) + "]" + "[" + i32.ToString(
+                                CultureInfo.InvariantCulture) + "]",
+                        "i16",
+                        new FieldValue.Signed(v.Titles[i31][i32])));
             }
         }
     }
@@ -266,6 +394,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(SavedRectangle v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "left", "i16", new FieldValue.Signed(v.Left)));
@@ -280,12 +409,16 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(SavedLayout v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "valid", "i16", new FieldValue.Signed(v.Valid)));
         for (int i33 = 0; i33 < v.Rectangles.Count; ++i33)
         {
-            Append(v.Rectangles[i33], prefix + "rectangles" + "[" + i33.ToString(CultureInfo.InvariantCulture) + "]" + ".", fields);
+            Append(
+                v.Rectangles[i33],
+                prefix + "rectangles" + "[" + i33.ToString(CultureInfo.InvariantCulture) + "]" + ".",
+                fields);
         }
     }
 
@@ -295,6 +428,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(SavedMapView v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "open", "i16", new FieldValue.Signed(v.Open)));
@@ -310,6 +444,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(ScenarioParameters v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "flags", "u16", new FieldValue.Unsigned(v.Flags)));
@@ -321,7 +456,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "objective_civ", "i16", new FieldValue.Signed(v.ObjectiveCiv)));
         for (int i34 = 0; i34 < v.VictoryThresholds.Count; ++i34)
         {
-            fields.Add(new(prefix + "victory_thresholds" + "[" + i34.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.VictoryThresholds[i34])));
+            fields.Add(
+                new(
+                    prefix + "victory_thresholds" + "[" + i34.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.VictoryThresholds[i34])));
         }
     }
 
@@ -331,24 +470,41 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(EliminationHistory v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "count", "i16", new FieldValue.Signed(v.Count)));
         for (int i35 = 0; i35 < v.Turns.Count; ++i35)
         {
-            fields.Add(new(prefix + "turns" + "[" + i35.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.Turns[i35])));
+            fields.Add(
+                new(
+                    prefix + "turns" + "[" + i35.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.Turns[i35])));
         }
         for (int i36 = 0; i36 < v.Killers.Count; ++i36)
         {
-            fields.Add(new(prefix + "killers" + "[" + i36.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Killers[i36])));
+            fields.Add(
+                new(
+                    prefix + "killers" + "[" + i36.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Killers[i36])));
         }
         for (int i37 = 0; i37 < v.Portraits.Count; ++i37)
         {
-            fields.Add(new(prefix + "portraits" + "[" + i37.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Portraits[i37])));
+            fields.Add(
+                new(
+                    prefix + "portraits" + "[" + i37.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Portraits[i37])));
         }
         for (int i38 = 0; i38 < v.Names.Count; ++i38)
         {
-            fields.Add(new(prefix + "names" + "[" + i38.ToString(CultureInfo.InvariantCulture) + "]", "classic-text", new FieldValue.Bytes(v.Names[i38])));
+            fields.Add(
+                new(
+                    prefix + "names" + "[" + i38.ToString(CultureInfo.InvariantCulture) + "]",
+                    "classic-text",
+                    new FieldValue.Bytes(v.Names[i38])));
         }
     }
 
@@ -358,24 +514,41 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(MultiplayerRecord v, string prefix, List<Field> fields)
     {
         for (int i39 = 0; i39 < v.CenterX.Count; ++i39)
         {
-            fields.Add(new(prefix + "center_x" + "[" + i39.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.CenterX[i39])));
+            fields.Add(
+                new(
+                    prefix + "center_x" + "[" + i39.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.CenterX[i39])));
         }
         for (int i40 = 0; i40 < v.CenterY.Count; ++i40)
         {
-            fields.Add(new(prefix + "center_y" + "[" + i40.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.CenterY[i40])));
+            fields.Add(
+                new(
+                    prefix + "center_y" + "[" + i40.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.CenterY[i40])));
         }
         for (int i41 = 0; i41 < v.Introduced.Count; ++i41)
         {
-            fields.Add(new(prefix + "introduced" + "[" + i41.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.Introduced[i41])));
+            fields.Add(
+                new(
+                    prefix + "introduced" + "[" + i41.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.Introduced[i41])));
         }
         fields.Add(new(prefix + "turn_time_limit", "i32", new FieldValue.Signed(v.TurnTimeLimit)));
         for (int i42 = 0; i42 < v.EncodedPasswords.Count; ++i42)
         {
-            fields.Add(new(prefix + "encoded_passwords" + "[" + i42.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.EncodedPasswords[i42])));
+            fields.Add(
+                new(
+                    prefix + "encoded_passwords" + "[" + i42.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.EncodedPasswords[i42])));
         }
         fields.Add(new(prefix + "open_game", "i16", new FieldValue.Signed(v.OpenGame)));
         fields.Add(new(prefix + "kill_on_retirement", "i16", new FieldValue.Signed(v.KillOnRetirement)));
@@ -385,20 +558,36 @@ internal static class RecordFields
         fields.Add(new(prefix + "cheat_turn_time", "i32", new FieldValue.Signed(v.CheatTurnTime)));
         for (int i43 = 0; i43 < v.Retained142.Count; ++i43)
         {
-            fields.Add(new(prefix + "retained_142" + "[" + i43.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Retained142[i43])));
+            fields.Add(
+                new(
+                    prefix + "retained_142" + "[" + i43.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Retained142[i43])));
         }
         for (int i44 = 0; i44 < v.Emails.Count; ++i44)
         {
             for (int i45 = 0; i45 < v.Emails[i44].Count; ++i45)
             {
-                fields.Add(new(prefix + "emails" + "[" + i44.ToString(CultureInfo.InvariantCulture) + "]" + "[" + i45.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Emails[i44][i45])));
+                fields.Add(
+                    new(
+                        prefix + "emails" + "[" + i44.ToString(
+                            CultureInfo.InvariantCulture) + "]" + "[" + i45.ToString(
+                                CultureInfo.InvariantCulture) + "]",
+                        "u8",
+                        new FieldValue.Unsigned(v.Emails[i44][i45])));
             }
         }
         for (int i46 = 0; i46 < v.PlayerSetup.Count; ++i46)
         {
             for (int i47 = 0; i47 < v.PlayerSetup[i46].Count; ++i47)
             {
-                fields.Add(new(prefix + "player_setup" + "[" + i46.ToString(CultureInfo.InvariantCulture) + "]" + "[" + i47.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.PlayerSetup[i46][i47])));
+                fields.Add(
+                    new(
+                        prefix + "player_setup" + "[" + i46.ToString(
+                            CultureInfo.InvariantCulture) + "]" + "[" + i47.ToString(
+                                CultureInfo.InvariantCulture) + "]",
+                        "u8",
+                        new FieldValue.Unsigned(v.PlayerSetup[i46][i47])));
             }
         }
         fields.Add(new(prefix + "resume_civ", "u8", new FieldValue.Unsigned(v.ResumeCiv)));
@@ -411,7 +600,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "claimed_humans", "i16", new FieldValue.Signed(v.ClaimedHumans)));
         for (int i48 = 0; i48 < v.Retained472.Count; ++i48)
         {
-            fields.Add(new(prefix + "retained_472" + "[" + i48.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Retained472[i48])));
+            fields.Add(
+                new(
+                    prefix + "retained_472" + "[" + i48.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Retained472[i48])));
         }
     }
 
@@ -421,6 +614,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(EventRecord v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "triggers", "u32", new FieldValue.Unsigned(v.Triggers)));
@@ -439,7 +633,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "technology", "i32", new FieldValue.Signed(v.Technology)));
         for (int i49 = 0; i49 < v.Text.Count; ++i49)
         {
-            fields.Add(new(prefix + "text" + "[" + i49.ToString(CultureInfo.InvariantCulture) + "]", "u32", new FieldValue.Unsigned(v.Text[i49])));
+            fields.Add(
+                new(
+                    prefix + "text" + "[" + i49.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u32",
+                    new FieldValue.Unsigned(v.Text[i49])));
         }
         fields.Add(new(prefix + "move_owner_name", "u32", new FieldValue.Unsigned(v.MoveOwnerName)));
         fields.Add(new(prefix + "move_owner_civ", "i32", new FieldValue.Signed(v.MoveOwnerCiv)));
@@ -448,7 +646,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "move_count", "i32", new FieldValue.Signed(v.MoveCount)));
         for (int i50 = 0; i50 < v.MoveRectangle.Count; ++i50)
         {
-            fields.Add(new(prefix + "move_rectangle" + "[" + i50.ToString(CultureInfo.InvariantCulture) + "]", "i32", new FieldValue.Signed(v.MoveRectangle[i50])));
+            fields.Add(
+                new(
+                    prefix + "move_rectangle" + "[" + i50.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i32",
+                    new FieldValue.Signed(v.MoveRectangle[i50])));
         }
         fields.Add(new(prefix + "move_x", "i32", new FieldValue.Signed(v.MoveX)));
         fields.Add(new(prefix + "move_y", "i32", new FieldValue.Signed(v.MoveY)));
@@ -462,7 +664,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "create_unit_type", "i32", new FieldValue.Signed(v.CreateUnitType)));
         for (int i51 = 0; i51 < v.CreateLocations.Count; ++i51)
         {
-            fields.Add(new(prefix + "create_locations" + "[" + i51.ToString(CultureInfo.InvariantCulture) + "]", "i32", new FieldValue.Signed(v.CreateLocations[i51])));
+            fields.Add(
+                new(
+                    prefix + "create_locations" + "[" + i51.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i32",
+                    new FieldValue.Signed(v.CreateLocations[i51])));
         }
         fields.Add(new(prefix + "create_location_count", "i32", new FieldValue.Signed(v.CreateLocationCount)));
         fields.Add(new(prefix + "create_veteran", "i32", new FieldValue.Signed(v.CreateVeteran)));
@@ -472,7 +678,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "auxiliary_unit_name", "u32", new FieldValue.Unsigned(v.AuxiliaryUnitName)));
         for (int i52 = 0; i52 < v.Retained.Count; ++i52)
         {
-            fields.Add(new(prefix + "retained" + "[" + i52.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Retained[i52])));
+            fields.Add(
+                new(
+                    prefix + "retained" + "[" + i52.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Retained[i52])));
         }
         fields.Add(new(prefix + "money_receiver_name", "u32", new FieldValue.Unsigned(v.MoneyReceiverName)));
         fields.Add(new(prefix + "money_receiver_civ", "i32", new FieldValue.Signed(v.MoneyReceiverCiv)));
@@ -483,7 +693,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "terrain_type", "i32", new FieldValue.Signed(v.TerrainType)));
         for (int i53 = 0; i53 < v.TerrainRectangle.Count; ++i53)
         {
-            fields.Add(new(prefix + "terrain_rectangle" + "[" + i53.ToString(CultureInfo.InvariantCulture) + "]", "i32", new FieldValue.Signed(v.TerrainRectangle[i53])));
+            fields.Add(
+                new(
+                    prefix + "terrain_rectangle" + "[" + i53.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i32",
+                    new FieldValue.Signed(v.TerrainRectangle[i53])));
         }
         fields.Add(new(prefix + "destroy_civ", "i32", new FieldValue.Signed(v.DestroyCiv)));
         fields.Add(new(prefix + "give_tech", "i32", new FieldValue.Signed(v.GiveTech)));
@@ -496,6 +710,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(StoredUnit v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "x", "i16", new FieldValue.Signed(v.X)));
@@ -527,6 +742,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(StoredCity v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "x", "i16", new FieldValue.Signed(v.X)));
@@ -539,7 +755,11 @@ internal static class RecordFields
         fields.Add(new(prefix + "known_to", "u8", new FieldValue.Unsigned(v.KnownTo)));
         for (int i54 = 0; i54 < v.RememberedSize.Count; ++i54)
         {
-            fields.Add(new(prefix + "remembered_size" + "[" + i54.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.RememberedSize[i54])));
+            fields.Add(
+                new(
+                    prefix + "remembered_size" + "[" + i54.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.RememberedSize[i54])));
         }
         fields.Add(new(prefix + "retained_byte", "u8", new FieldValue.Unsigned(v.RetainedByte)));
         fields.Add(new(prefix + "specialist_kinds", "u32", new FieldValue.Unsigned(v.SpecialistKinds)));
@@ -550,25 +770,45 @@ internal static class RecordFields
         fields.Add(new(prefix + "worked_tiles", "u32", new FieldValue.Unsigned(v.WorkedTiles)));
         for (int i55 = 0; i55 < v.Improvements.Count; ++i55)
         {
-            fields.Add(new(prefix + "improvements" + "[" + i55.ToString(CultureInfo.InvariantCulture) + "]", "u8", new FieldValue.Unsigned(v.Improvements[i55])));
+            fields.Add(
+                new(
+                    prefix + "improvements" + "[" + i55.ToString(CultureInfo.InvariantCulture) + "]",
+                    "u8",
+                    new FieldValue.Unsigned(v.Improvements[i55])));
         }
         fields.Add(new(prefix + "production", "i8", new FieldValue.Signed(v.Production)));
         fields.Add(new(prefix + "route_count", "u8", new FieldValue.Unsigned(v.RouteCount)));
         for (int i56 = 0; i56 < v.Supplies.Count; ++i56)
         {
-            fields.Add(new(prefix + "supplies" + "[" + i56.ToString(CultureInfo.InvariantCulture) + "]", "i8", new FieldValue.Signed(v.Supplies[i56])));
+            fields.Add(
+                new(
+                    prefix + "supplies" + "[" + i56.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i8",
+                    new FieldValue.Signed(v.Supplies[i56])));
         }
         for (int i57 = 0; i57 < v.Demands.Count; ++i57)
         {
-            fields.Add(new(prefix + "demands" + "[" + i57.ToString(CultureInfo.InvariantCulture) + "]", "i8", new FieldValue.Signed(v.Demands[i57])));
+            fields.Add(
+                new(
+                    prefix + "demands" + "[" + i57.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i8",
+                    new FieldValue.Signed(v.Demands[i57])));
         }
         for (int i58 = 0; i58 < v.RouteGoods.Count; ++i58)
         {
-            fields.Add(new(prefix + "route_goods" + "[" + i58.ToString(CultureInfo.InvariantCulture) + "]", "i8", new FieldValue.Signed(v.RouteGoods[i58])));
+            fields.Add(
+                new(
+                    prefix + "route_goods" + "[" + i58.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i8",
+                    new FieldValue.Signed(v.RouteGoods[i58])));
         }
         for (int i59 = 0; i59 < v.RoutePartners.Count; ++i59)
         {
-            fields.Add(new(prefix + "route_partners" + "[" + i59.ToString(CultureInfo.InvariantCulture) + "]", "i16", new FieldValue.Signed(v.RoutePartners[i59])));
+            fields.Add(
+                new(
+                    prefix + "route_partners" + "[" + i59.ToString(CultureInfo.InvariantCulture) + "]",
+                    "i16",
+                    new FieldValue.Signed(v.RoutePartners[i59])));
         }
         fields.Add(new(prefix + "science", "i16", new FieldValue.Signed(v.Science)));
         fields.Add(new(prefix + "tax", "i16", new FieldValue.Signed(v.Tax)));
@@ -586,6 +826,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(MapHeader v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "width", "i16", new FieldValue.Signed(v.Width)));
@@ -603,6 +844,7 @@ internal static class RecordFields
         Append(value, "", fields);
         return fields;
     }
+
     private static void Append(CivilizationGoal v, string prefix, List<Field> fields)
     {
         fields.Add(new(prefix + "x", "i16", new FieldValue.Signed(v.X)));
@@ -623,6 +865,7 @@ internal static class RecordFields
         new("fertility", "u8", new FieldValue.Unsigned(v.Fertility)),
         new("owner", "u8", v.Owner is { } owner ? new FieldValue.Unsigned(owner) : null)
     ];
+
     public static List<Field> Of(RegionSummary v) =>
     [
         new("land", "i16", new FieldValue.Signed(v.Land)),

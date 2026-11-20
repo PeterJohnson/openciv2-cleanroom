@@ -6,18 +6,38 @@ namespace OpenCiv2.Base;
 public sealed class OwnedList<T> : IReadOnlyList<T>, IEquatable<OwnedList<T>>
 {
     private readonly T[] values;
+
+    /// <summary>
+    /// Copies the input sequence so later changes to its collection cannot alter this list.
+    /// </summary>
+    /// <remarks>
+    /// Elements are not deep-cloned. Use immutable elements when sharing the list across ownership boundaries.
+    /// </remarks>
     public OwnedList(IEnumerable<T> values) => this.values = values.ToArray();
+
     public static OwnedList<T> Empty { get; } = new([]);
     public int Count => values.Length;
     public T this[int index] => values[index];
+
     public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)values).GetEnumerator();
+
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    /// <summary>
+    /// Compares elements in order using their default equality semantics.
+    /// </summary>
     public bool Equals(OwnedList<T>? other) => other is not null && values.SequenceEqual(other.values);
+
     public override bool Equals(object? obj) => obj is OwnedList<T> other && Equals(other);
+
     public override int GetHashCode()
     {
         var hash = new HashCode();
-        foreach (T value in values) hash.Add(value);
+        foreach (T value in values)
+        {
+            hash.Add(value);
+        }
+
         return hash.ToHashCode();
     }
 }

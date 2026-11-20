@@ -13,6 +13,7 @@ public sealed class AssetAtlas
     private const int HeaderSize = 780, RecordSize = 180, KeySize = 160;
     private readonly byte[] bytes;
     private readonly Dictionary<string, Entry> entries;
+
     private sealed record Entry(AtlasSprite Sprite, int Offset, int Length, int Proxy);
 
     private AssetAtlas(byte[] bytes, Dictionary<string, Entry> entries)
@@ -23,7 +24,9 @@ public sealed class AssetAtlas
     }
 
     public ReadOnlyCollection<AtlasSprite> Sprites { get; }
+
     public AtlasSprite Sprite(string key) => Find(key).Sprite;
+
     public (byte Red, byte Green, byte Blue) Palette(byte index)
     {
         int offset = 12 + index * 3;
@@ -52,16 +55,21 @@ public sealed class AssetAtlas
     private Entry Find(string key) => entries.TryGetValue(key, out var entry) ? entry :
         throw new InvalidDataException($"Missing atlas binding '{key}'");
 
-    public static AssetAtlas Read(Stream source, int size) => Parse(PinnedGraphics.ReadExact(source, size, MaxBytes, "atlas"));
+    public static AssetAtlas Read(Stream source, int size) =>
+        Parse(PinnedGraphics.ReadExact(source, size, MaxBytes, "atlas"));
 
     internal static AssetAtlas Parse(byte[] bytes)
     {
         if (bytes.Length < HeaderSize || !bytes.AsSpan(0, 8).SequenceEqual("C2ATLAS1"u8))
+        {
             throw new InvalidDataException("Invalid C2ATLAS1 header");
+        }
 
         uint count = BinaryPrimitives.ReadUInt32LittleEndian(bytes.AsSpan(8));
         if (count == 0 || count > 100_000 || count > (bytes.Length - HeaderSize) / RecordSize)
+        {
             throw new InvalidDataException("Invalid C2ATLAS1 entry count");
+        }
 
         int payload = HeaderSize + (int)count * RecordSize;
         var entries = new Dictionary<string, Entry>((int)count, StringComparer.Ordinal);
@@ -73,12 +81,24 @@ public sealed class AssetAtlas
             var row = bytes.AsSpan(HeaderSize + i * RecordSize, RecordSize);
             int end = row[..KeySize].IndexOf((byte)0);
             if (end <= 0 || row[end..KeySize].ContainsAnyExcept((byte)0))
+            {
                 throw new InvalidDataException($"Invalid atlas binding at entry {i}");
+            }
+
             string key;
-            try { key = utf8.GetString(row[..end]); }
-            catch (DecoderFallbackException e) { throw new InvalidDataException($"Invalid binding UTF-8 at entry {i}", e); }
+            try
+            {
+                key = utf8.GetString(row[..end]);
+            }
+            catch (DecoderFallbackException e)
+            {
+                throw new InvalidDataException($"Invalid binding UTF-8 at entry {i}", e);
+            }
             if (previous is not null && StringComparer.Ordinal.Compare(previous, key) >= 0)
+            {
                 throw new InvalidDataException($"Atlas bindings must be sorted and unique at '{key}'");
+            }
+
             previous = key;
             uint width = BinaryPrimitives.ReadUInt32LittleEndian(row[160..]);
             uint height = BinaryPrimitives.ReadUInt32LittleEndian(row[164..]);
@@ -88,17 +108,26 @@ public sealed class AssetAtlas
             if (width == 0 || height == 0 || (ulong)width * height > AtlasPng.MaxPixels ||
                 png < payload || length < 33 || (ulong)png + length > (uint)bytes.Length ||
                 (proxy != 0 && (proxy < payload || (ulong)proxy + (ulong)width * height > (uint)bytes.Length)))
+            {
                 throw new InvalidDataException($"Invalid atlas dimensions or payload range for '{key}'");
+            }
 
             var (x, y) = AtlasPng.Dimensions(bytes.AsSpan((int)png, (int)length));
             entries.Add(key, new(new(key, (int)width, (int)height, x, y), (int)png, (int)length, (int)proxy));
             ranges.Add(((int)png, (int)length, false));
-            if (proxy != 0) ranges.Add(((int)proxy, (int)(width * height), true));
+            if (proxy != 0)
+            {
+                ranges.Add(((int)proxy, (int)(width * height), true));
+            }
         }
         int endOfPrevious = payload;
         foreach (var range in ranges.OrderBy(r => r.Offset))
         {
-            if (range.Offset < endOfPrevious) throw new InvalidDataException("Atlas payloads overlap without sharing the same blob");
+            if (range.Offset < endOfPrevious)
+            {
+                throw new InvalidDataException("Atlas payloads overlap without sharing the same blob");
+            }
+
             endOfPrevious = range.Offset + range.Length;
         }
         return new(bytes, entries);

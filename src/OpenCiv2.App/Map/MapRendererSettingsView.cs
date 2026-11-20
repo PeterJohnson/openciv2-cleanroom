@@ -37,7 +37,11 @@ internal sealed class MapRendererSettingsView : StackPanel
         };
         Choice.SelectionChanged += (_, _) =>
         {
-            if (refreshing) return;
+            if (refreshing)
+            {
+                return;
+            }
+
             try
             {
                 preferences.Save(Choice.SelectedIndex == 1 ? MapRendererMode.Gpu : MapRendererMode.Cpu);
@@ -56,7 +60,9 @@ internal sealed class MapRendererSettingsView : StackPanel
             var stats = map.LastDraw?.Stats;
             active.Text = stats is null ? "Renderer: waiting for first frame" :
                 "Active renderer: " + (stats.Value.Composition == "gpu" ? "GPU (experimental)" : "CPU") +
-                (stats.Value.RendererFallback is { } reason ? ". GPU fallback: " + reason + ". Reload textures to retry." : "");
+                (stats.Value.RendererFallback is { } reason
+                    ? ". GPU fallback: " + reason + ". Reload textures to retry."
+                    : "");
         }
     }
 }

@@ -35,14 +35,21 @@ internal sealed class MapTextures : IDisposable
     private readonly List<SKImage> retiredImages = [];
     private long retiredBytes;
     public long CommandRetainedPeakBytes { get; private set; }
+
     internal void BeginCommandRead() => commandRead = true;
+
     internal void EndCommandRead()
     {
         commandRead = false;
-        foreach (var image in retiredImages) image.Dispose();
+        foreach (var image in retiredImages)
+        {
+            image.Dispose();
+        }
+
         retiredImages.Clear();
         retiredBytes = 0;
     }
+
     private void Retire(SKImage image)
     {
         if (commandRead)
@@ -51,55 +58,98 @@ internal sealed class MapTextures : IDisposable
             retiredBytes += 4L * image.Width * image.Height;
             CommandRetainedPeakBytes = Math.Max(CommandRetainedPeakBytes, retiredBytes);
         }
-        else image.Dispose();
+        else
+        {
+            image.Dispose();
+        }
     }
+
     public bool GpuPreparation { get; set; }
     public bool EncodedSources { get; set; }
     private readonly Dictionary<string, (SKImage Image, long Bytes)> encodedSources = [];
     public long EncodedBytes { get; private set; }
 
     private readonly record struct TextureKey(string Binding, int Tier, SKColor? Tint = null);
-    private readonly record struct TextureRequest(TextureKey Key, int Width, int Height, RgbaImage? Replacement, ArtPoint Logical, int OtherTier)
+
+    private readonly record struct TextureRequest(
+        TextureKey Key,
+        int Width,
+        int Height,
+        RgbaImage? Replacement,
+        ArtPoint Logical,
+        int OtherTier)
     {
         public long Bytes => 4L * (Width * Height + Logical.X * Logical.Y * OtherTier * OtherTier);
         public TextureKey OtherKey => new(Key.Binding, OtherTier);
     }
 
     private readonly record struct PreparedTexture(SKImage Image, SKImage? Other);
-    private sealed record TexturePreparation(TextureRequest[] Requests, PreparedTexture?[] Images, long Bytes, Task<long> Work);
+
+    private sealed record TexturePreparation(
+        TextureRequest[] Requests,
+        PreparedTexture?[] Images,
+        long Bytes,
+        Task<long> Work);
+
     private readonly record struct PreparationResult(int Count, long WorkTicks, long Bytes = 0);
+
     private sealed record CachedImage(TextureKey Key, SKImage Image)
     {
         public long Bytes => (long)Image.Width * Image.Height * 4;
     }
 
-    private static readonly uint[] TerrainColors = [0xffbe9c64, 0xffa1a65c, 0xff639754, 0xff387458, 0xff8c8757, 0xff8a8c87,
-        0xff969f8a, 0xffcad5dc, 0xff607d61, 0xff386d4b, 0xff3f7492];
+    private static readonly uint[] TerrainColors = [
+        0xffbe9c64,
+        0xffa1a65c,
+        0xff639754,
+        0xff387458,
+        0xff8c8757,
+        0xff8a8c87,
+        0xff969f8a,
+        0xffcad5dc,
+        0xff607d61,
+        0xff386d4b,
+        0xff3f7492
+    ];
 
     public MapTextures(AssetAtlas? atlas, MapArtSelection? selected = null)
     {
         this.atlas = atlas;
         this.selected = selected;
-        if (atlas is not null) catalog.Verify(atlas);
+        if (atlas is not null)
+        {
+            catalog.Verify(atlas);
+        }
     }
 
     public bool HasStock => atlas is not null;
+
     public bool SelectArt(MapArtSelection? selection)
     {
-        if (ReferenceEquals(selected, selection)) return false;
+        if (ReferenceEquals(selected, selection))
+        {
+            return false;
+        }
+
         selected = selection;
         return true;
     }
+
     public int Count => images.Count;
     public long PixelBytes { get; private set; }
     public long PreparationTicks { get; private set; }
     public long TintPreparationTicks { get; private set; }
     public long DemandRasterLoads { get; private set; }
     public StartupGroundWork? StartupGround => Volatile.Read(ref startupGroundWork);
+
     public ArtPoint Logical(string key) => catalog.Images[key].Logical;
+
     public ArtPoint Marker(string key, ArtPoint fallback) => selected?.Image(key)?.Marker ?? fallback;
+
     public ArtPoint Flag(string key, ArtPoint fallback) => selected?.Image(key)?.Flag ?? fallback;
+
     public uint Color(int role) => selected?.Color(role, catalog.Factions[role].Rgb) ?? catalog.Factions[role].Rgb;
+
     public (uint Primary, uint Secondary) ShieldColors(int role)
     {
         uint stock = catalog.Factions[role].Rgb;
@@ -111,7 +161,11 @@ internal sealed class MapTextures : IDisposable
         ObjectDisposedException.ThrowIf(disposed, this);
         int tier = RasterTier(pixelsPerWorldUnit);
         var key = new TextureKey("ownership", tier, color);
-        if (Find(key) is { } cached) return cached;
+        if (Find(key) is { } cached)
+        {
+            return cached;
+        }
+
         long starting = Stopwatch.GetTimestamp();
         // Rasterize the entire diamond once so an integer damage clip cannot
         // change the antialiasing of an unchanged neighboring tile.
@@ -124,7 +178,11 @@ internal sealed class MapTextures : IDisposable
     {
         ObjectDisposedException.ThrowIf(disposed, this);
         var request = Describe(key, pixelsPerWorldUnit, tint);
-        if (Find(request.Key) is { } cached) return cached;
+        if (Find(request.Key) is { } cached)
+        {
+            return cached;
+        }
+
         long starting = Stopwatch.GetTimestamp(), previous = PreparationTicks;
         try
         {
@@ -136,9 +194,16 @@ internal sealed class MapTextures : IDisposable
                 TintPreparationTicks += Stopwatch.GetTimestamp() - tintStart;
                 return image;
             }
-            if (atlas is null) return Add(request.Key, CreatePreview(key, request.Logical));
+            if (atlas is null)
+            {
+                return Add(request.Key, CreatePreview(key, request.Logical));
+            }
+
             if (GpuPreparation && EncodedSources && request.Key.Tier == 0)
+            {
                 return EncodedSource(key, request.Replacement);
+            }
+
             if (GpuPreparation && request.Key.Tier != 0)
             {
                 var source = Get(key, double.MaxValue);
@@ -148,7 +213,10 @@ internal sealed class MapTextures : IDisposable
                 canvas.DrawImage(source, SKRect.Create(request.Width, request.Height),
                     new SKSamplingOptions(new SKCubicResampler(1f / 3, 1f / 3)));
                 using var picture = recorder.EndRecording();
-                return Add(request.Key, SKImage.FromPicture(picture, new(request.Width, request.Height)) ?? throw new MapGpuResourceException("Could not prepare GPU sprite"));
+                return Add(
+                    request.Key,
+                    SKImage.FromPicture(picture, new(request.Width, request.Height))
+                        ?? throw new MapGpuResourceException("Could not prepare GPU sprite"));
             }
             DemandRasterLoads++;
             request = IncludeAdjacentTier(request);
@@ -174,17 +242,25 @@ internal sealed class MapTextures : IDisposable
             ..catalog.Terrain.SelectMany(terrain => terrain.Edge.Prepend(terrain.Body)),
             ..catalog.Coasts.SelectMany(coast => coast.Variants),
             ..catalog.Relief.OrderBy(entry => entry.Key).SelectMany(entry => entry.Value),
-            ..catalog.Rivers, ..catalog.Mouths, ..catalog.Roads, ..catalog.Rails,
+            ..catalog.Rivers,
+            ..catalog.Mouths,
+            ..catalog.Roads,
+            ..catalog.Rails,
             ..catalog.Terrain.SelectMany(terrain => new[] { terrain.FirstResource, terrain.SecondResource }),
-            catalog.GrasslandShield, ..catalog.Improvements.OrderBy(entry => entry.Key, StringComparer.Ordinal).Select(entry => entry.Value),
-            catalog.Fog, ..catalog.FogEdges
+            catalog.GrasslandShield,
+            ..catalog.Improvements.OrderBy(entry => entry.Key, StringComparer.Ordinal).Select(entry => entry.Value),
+            catalog.Fog,
+            ..catalog.FogEdges
         ];
         pendingStartup ??= BeginPreparation(bindings, 1, 1, StartupGroundBytes);
     }
 
     public void CompleteStartupGround()
     {
-        if (pendingStartup is null) return;
+        if (pendingStartup is null)
+        {
+            return;
+        }
         // Join on the painter lane, where the configured theme and the
         // cache budget still agree with the completed texture requests.
         long joinedAt = Stopwatch.GetTimestamp();
@@ -195,12 +271,19 @@ internal sealed class MapTextures : IDisposable
 
     public int Prepare(IEnumerable<string> bindings, double scale)
     {
-        if (atlas is null || !CanPrepare) return 0;
+        if (atlas is null || !CanPrepare)
+        {
+            return 0;
+        }
+
         long starting = Stopwatch.GetTimestamp();
         var missing = Missing(bindings, scale);
         // Do not evict a usable raster to speculate on a later lookup. Painting
         // can load misses in order if the set does not fit.
-        if (missing.Length == 0 || missing.Sum(request => request.Bytes) > BudgetBytes - PixelBytes) return 0;
+        if (missing.Length == 0 || missing.Sum(request => request.Bytes) > BudgetBytes - PixelBytes)
+        {
+            return 0;
+        }
         // Only active workers hold decoded source pixels. Completed output
         // fits within the cache headroom checked above. Publish in request order.
         var prepared = new PreparedTexture?[missing.Length];
@@ -226,12 +309,17 @@ internal sealed class MapTextures : IDisposable
         canvas.Clear(SKColors.Transparent);
         canvas.DrawImage(mask, 0, 0, new SKSamplingOptions(SKFilterMode.Nearest), paint);
         using var picture = recorder.EndRecording();
-        return SKImage.FromPicture(picture, new(mask.Width, mask.Height)) ?? throw new MapGpuResourceException("Could not prepare GPU tint");
+        return SKImage.FromPicture(picture, new(mask.Width, mask.Height))
+            ?? throw new MapGpuResourceException("Could not prepare GPU tint");
     }
 
     private SKImage EncodedSource(string key, RgbaImage? replacement)
     {
-        if (encodedSources.TryGetValue(key, out var existing)) return existing.Image;
+        if (encodedSources.TryGetValue(key, out var existing))
+        {
+            return existing.Image;
+        }
+
         SKImage image;
         long bytes;
         if (replacement is not null)
@@ -244,13 +332,18 @@ internal sealed class MapTextures : IDisposable
             using var input = atlas!.OpenPng(key);
             using var data = SKData.Create(input);
             bytes = data.Size;
-            image = SKImage.FromEncodedData(data) ?? throw new MapResourceException($"Could not prepare encoded sprite '{key}'");
+            image = SKImage.FromEncodedData(data)
+                ?? throw new MapResourceException($"Could not prepare encoded sprite '{key}'");
         }
         // Bounded source index. Pictures hold immutable references needed by
         // their own lifetime; Skia owns decoded pixel/texture residency.
         if (EncodedBytes + bytes > 64L * 1024 * 1024)
         {
-            if (commandRead) { image.Dispose(); throw new MapCommandCapacityException(); }
+            if (commandRead)
+            {
+                image.Dispose();
+                throw new MapCommandCapacityException();
+            }
             ClearEncoded();
         }
         encodedSources.Add(key, (image, bytes));
@@ -261,15 +354,27 @@ internal sealed class MapTextures : IDisposable
 
     private void ClearEncoded()
     {
-        foreach (var entry in encodedSources.Values) Retire(entry.Image);
+        foreach (var entry in encodedSources.Values)
+        {
+            Retire(entry.Image);
+        }
+
         encodedSources.Clear();
         EncodedBytes = 0;
     }
 
     public bool BeginBodyPreparation(IEnumerable<string> bindings, double scale)
     {
-        if (pendingBodies is not null) return false;
-        pendingBodies = BeginPreparation(bindings, scale, PreparationWorkers.MaxDegreeOfParallelism, OverlappingBodyBytes);
+        if (pendingBodies is not null)
+        {
+            return false;
+        }
+
+        pendingBodies = BeginPreparation(
+            bindings,
+            scale,
+            PreparationWorkers.MaxDegreeOfParallelism,
+            OverlappingBodyBytes);
         return pendingBodies is not null;
     }
 
@@ -283,21 +388,37 @@ internal sealed class MapTextures : IDisposable
     public (int Count, double WorkMs) PublishHigherBodies()
     {
         // A missed prediction never blocks a draw on speculative work.
-        if (pendingHigherBodies?.Work.IsCompleted != true) return default;
+        if (pendingHigherBodies?.Work.IsCompleted != true)
+        {
+            return default;
+        }
+
         var prepared = CompletePreparation(ref pendingHigherBodies, admit: true, optional: true);
         return (prepared.Count, Stopwatch.GetElapsedTime(0, prepared.WorkTicks).TotalMilliseconds);
     }
 
     public void DiscardHigherBodies() => CompletePreparation(ref pendingHigherBodies, admit: false);
 
-    private TexturePreparation? BeginPreparation(IEnumerable<string> bindings, double scale, int minimum, long maximumBytes,
+    private TexturePreparation? BeginPreparation(
+        IEnumerable<string> bindings,
+        double scale,
+        int minimum,
+        long maximumBytes,
         int maximumCount = int.MaxValue)
     {
-        if (atlas is null || !CanPrepare) return null;
+        if (atlas is null || !CanPrepare)
+        {
+            return null;
+        }
+
         long starting = Stopwatch.GetTimestamp();
         var missing = Missing(bindings, scale, maximumCount);
         long bytes = missing.Sum(request => request.Bytes);
-        if (missing.Length < minimum || bytes > Math.Min(maximumBytes, BudgetBytes - PixelBytes)) return null;
+        if (missing.Length < minimum || bytes > Math.Min(maximumBytes, BudgetBytes - PixelBytes))
+        {
+            return null;
+        }
+
         var prepared = new PreparedTexture?[missing.Length];
         // Workers own their decoded rasters. The painter can continue using
         // its texture cache while they work on these immutable requests.
@@ -314,23 +435,38 @@ internal sealed class MapTextures : IDisposable
     public int CompleteBodyPreparation(bool admit)
     {
         var result = CompletePreparation(ref pendingBodies, admit);
-        if (admit) PreparationTicks += result.WorkTicks;
+        if (admit)
+        {
+            PreparationTicks += result.WorkTicks;
+        }
+
         return result.Count;
     }
 
     private PreparationResult CompletePreparation(ref TexturePreparation? queued, bool admit, bool optional = false)
     {
         var pending = queued;
-        if (pending is null) return default;
+        if (pending is null)
+        {
+            return default;
+        }
+
         queued = null;
         try
         {
             long work = pending.Work.GetAwaiter().GetResult();
-            if (!admit) return default;
+            if (!admit)
+            {
+                return default;
+            }
+
             if (pending.Bytes > BudgetBytes - PixelBytes ||
                 pending.Requests.Any(request => images.ContainsKey(request.Key) ||
                     request.OtherTier != 0 && images.ContainsKey(request.OtherKey)))
+            {
                 return new(0, work);
+            }
+
             PublishBatch(pending.Requests, pending.Images);
             return new(pending.Requests.Length, work, pending.Bytes);
         }
@@ -348,16 +484,24 @@ internal sealed class MapTextures : IDisposable
 
     private TextureRequest[] Missing(IEnumerable<string> bindings, double scale, int maximumCount = int.MaxValue) =>
         bindings.Distinct().Select(key => Describe(key, scale, null))
-            .Where(request => !images.ContainsKey(request.Key)).Take(maximumCount).Select(IncludeAdjacentTier).ToArray();
+            .Where(request => !images.ContainsKey(request.Key)).Take(maximumCount).Select(IncludeAdjacentTier)
+            .ToArray();
 
     private static void PrepareBatch(AssetAtlas atlas, TextureRequest[] requests, PreparedTexture?[] prepared)
     {
         try
         {
-            if (requests.Length == 1) prepared[0] = Prepare(atlas, requests[0]);
-            else Parallel.For(0, requests.Length, PreparationWorkers, i => prepared[i] = Prepare(atlas, requests[i]));
+            if (requests.Length == 1)
+            {
+                prepared[0] = Prepare(atlas, requests[0]);
+            }
+            else
+            {
+                Parallel.For(0, requests.Length, PreparationWorkers, i => prepared[i] = Prepare(atlas, requests[i]));
+            }
         }
-        catch (AggregateException error) when (error.InnerExceptions.All(failure => failure is MapResourceException or InvalidDataException))
+        catch (AggregateException error) when (error.InnerExceptions.All(
+            failure => failure is MapResourceException or InvalidDataException))
         {
             throw new MapResourceException(error.InnerExceptions[0].Message);
         }
@@ -389,7 +533,11 @@ internal sealed class MapTextures : IDisposable
         foreach (string binding in bindings)
         {
             var key = Describe(binding, scale, null).Key;
-            if (Find(key) is not { } image) return null;
+            if (Find(key) is not { } image)
+            {
+                return null;
+            }
+
             borrowed.Add(binding, image);
         }
         return borrowed;
@@ -403,8 +551,14 @@ internal sealed class MapTextures : IDisposable
         int tier = RasterTier(pixelsPerWorldUnit);
         int width = Math.Min(physical.X, binding.Logical.X * tier);
         int height = Math.Min(physical.Y, binding.Logical.Y * tier);
-        if (atlas is null || width == physical.X && height == physical.Y) tier = 0;
-        int otherTier = tier is 1 or 2 && physical.X > binding.Logical.X * 2 && physical.Y > binding.Logical.Y * 2 ? 3 - tier : 0;
+        if (atlas is null || width == physical.X && height == physical.Y)
+        {
+            tier = 0;
+        }
+
+        int otherTier = tier is 1 or 2 && physical.X > binding.Logical.X * 2 && physical.Y > binding.Logical.Y * 2
+            ? 3 - tier
+            : 0;
         return new(new(key, tier, tint), width, height, replacement, binding.Logical, otherTier);
     }
 
@@ -412,21 +566,33 @@ internal sealed class MapTextures : IDisposable
     {
         // Navigation crosses the 1x/2x backing threshold frequently. Prepare
         // both small rasters from the same PNG decode while its pixels are in hand.
-        return request.OtherTier != 0 && images.ContainsKey(request.OtherKey) ? request with { OtherTier = 0 } : request;
+        return request.OtherTier != 0 && images.ContainsKey(request.OtherKey)
+            ? request with { OtherTier = 0 }
+            : request;
     }
 
     private static PreparedTexture Prepare(AssetAtlas atlas, TextureRequest request)
     {
         string key = request.Key.Binding;
         var source = ReadPixels(key, request.Replacement ?? atlas.Decode(key));
-        if (request.Key.Tier == 0) return new(source, null);
+        if (request.Key.Tier == 0)
+        {
+            return new(source, null);
+        }
+
         using (source)
         {
             var image = Scale(key, source, request.Width, request.Height);
-            if (request.OtherTier == 0) return new(image, null);
+            if (request.OtherTier == 0)
+            {
+                return new(image, null);
+            }
+
             try
             {
-                return new(image, Scale(key, source, request.Logical.X * request.OtherTier, request.Logical.Y * request.OtherTier));
+                return new(
+                    image,
+                    Scale(key, source, request.Logical.X * request.OtherTier, request.Logical.Y * request.OtherTier));
             }
             catch
             {
@@ -438,7 +604,11 @@ internal sealed class MapTextures : IDisposable
 
     private SKImage Publish(TextureRequest request, PreparedTexture prepared)
     {
-        if (prepared.Other is { } other) Add(request.OtherKey, other);
+        if (prepared.Other is { } other)
+        {
+            Add(request.OtherKey, other);
+        }
+
         return Add(request.Key, prepared.Image);
     }
 
@@ -446,7 +616,11 @@ internal sealed class MapTextures : IDisposable
 
     private SKImage? Find(TextureKey key)
     {
-        if (!images.TryGetValue(key, out var cached)) return null;
+        if (!images.TryGetValue(key, out var cached))
+        {
+            return null;
+        }
+
         recency.Remove(cached);
         recency.AddLast(cached);
         return cached.Value.Image;
@@ -477,7 +651,9 @@ internal sealed class MapTextures : IDisposable
 
     private static SKImage ReadPixels(string key, RgbaImage decoded)
     {
-        return SKImage.FromPixelCopy(new SKImageInfo(decoded.Width, decoded.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul), decoded.Pixels)
+        return SKImage.FromPixelCopy(
+            new SKImageInfo(decoded.Width, decoded.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul),
+            decoded.Pixels)
             ?? throw new MapResourceException($"Could not create Skia image '{key}'");
     }
 
@@ -488,17 +664,23 @@ internal sealed class MapTextures : IDisposable
         var info = new SKImageInfo(mask.Width, mask.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
         using var bitmap = new SKBitmap();
         if (!bitmap.TryAllocPixels(info, info.RowBytes))
+        {
             throw new MapResourceException($"Could not allocate tinted map texture '{key}'");
+        }
+
         using var target = bitmap.PeekPixels() ??
             throw new MapResourceException($"Could not write tinted map texture '{key}'");
         var output = target.GetPixelSpan<byte>();
         bool packed = source.ColorType is SKColorType.Rgba8888 or SKColorType.Bgra8888;
         if (packed && Sse2.IsSupported && BitConverter.IsLittleEndian && source.RowBytes % sizeof(uint) == 0)
+        {
             TintPacked(source, MemoryMarshal.Cast<byte, uint>(output), color);
+        }
         else
         {
             var pixels = source.GetPixelSpan();
             for (int y = 0; y < info.Height; y++)
+            {
                 for (int x = 0; x < info.Width; x++)
                 {
                     int i = y * info.RowBytes + x * 4;
@@ -508,6 +690,7 @@ internal sealed class MapTextures : IDisposable
                     output[i + 2] = color.Blue;
                     output[i + 3] = (byte)((alpha * color.Alpha + 127) / 255);
                 }
+            }
         }
         // Keep straight color through resampling. Baking premultiplied RGB
         // into the mask would round color twice at partially covered edges.
@@ -526,9 +709,13 @@ internal sealed class MapTextures : IDisposable
         {
             var input = pixels.Slice(y * stride, width);
             var target = output.Slice(y * width, width);
-            int x = Avx2.IsSupported ? TintWide(input, target, rgb, color.Alpha) : TintBaseline(input, target, rgb, color.Alpha);
+            int x = Avx2.IsSupported
+                ? TintWide(input, target, rgb, color.Alpha)
+                : TintBaseline(input, target, rgb, color.Alpha);
             for (; x < width; x++)
+            {
                 target[x] = rgb | (((input[x] >> 24) * color.Alpha + 127) / 255 << 24);
+            }
         }
     }
 
@@ -613,7 +800,11 @@ internal sealed class MapTextures : IDisposable
         CompletePreparation(ref pendingStartup, admit: false);
         CompleteBodyPreparation(admit: false);
         DiscardHigherBodies();
-        foreach (var item in recency) item.Image.Dispose();
+        foreach (var item in recency)
+        {
+            item.Image.Dispose();
+        }
+
         recency.Clear();
         images.Clear();
         PixelBytes = 0;
@@ -621,7 +812,11 @@ internal sealed class MapTextures : IDisposable
 
     public void Dispose()
     {
-        if (disposed) return;
+        if (disposed)
+        {
+            return;
+        }
+
         Clear();
         disposed = true;
     }

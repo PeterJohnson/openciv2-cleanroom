@@ -8,27 +8,82 @@ namespace OpenCiv2.MapRendering;
 
 public enum MapRedraw { Full, Cached, Dirty, Scrolled, Direct, Error }
 internal sealed class MapResourceException(string message) : Exception(message);
-public readonly record struct MapDrawStats(MapRedraw Redraw, int Tiles, int Objects, int Batches,
-    int GroundChunks = 0, int PreparedChunks = 0, int Labels = 0, string? Error = null, double GroundTier = 0,
-    long DamagePixels = 0, int Effects = 0, int Moving = 0, int Notices = 0, long GroundDamagePixels = 0,
-    double GroundBuildMs = 0, double GroundSelectorMs = 0, double TexturePrepareMs = 0, int ParallelGroundChunks = 0,
-    long GroundCacheBytes = 0, long GroundCacheLimitBytes = 0,
-    double TerrainMs = 0, double ForegroundMs = 0, double LabelLayoutMs = 0, double ViewportBlitMs = 0,
-    int ForegroundBands = 0, int PreparedBodyTextures = 0, int OverlappedBodyTextures = 0, int GroundReplayBands = 0,
-    int AlignedGroundChunks = 0, long TextureCacheBytes = 0, long DemandRasterLoads = 0,
-    double TintPrepareMs = 0, double BandSetupMs = 0, double BandRecordMs = 0, double BandReplayMs = 0, double BandRepairMs = 0,
-    double DeferredGroundInvalidateMs = 0, double EarlyBodyLeadMs = 0, int HigherBodyTextures = 0, double HigherBodyWorkMs = 0,
-    string Composition = "cpu", double GpuWaitMs = 0, bool GpuSynchronized = false,
-    long GpuCacheBytes = 0, long GpuCacheLimitBytes = 0,
-    string GpuFeatures = "None", int SpriteCalls = 0, int AtlasBatches = 0, long AtlasBytes = 0, int RetainedPatches = 0,
-    int InputCode = 0, double InputToDrawMs = 0, long EncodedSourceBytes = 0,
-    string RequestedRenderer = "cpu", string? RendererFallback = null,
-    double ForegroundPlanMs = 0, double AtlasPrepareMs = 0, double ForegroundSubmitMs = 0,
-    int ForegroundTraversals = 0, int ForegroundCommands = 0, long DrawAllocatedBytes = 0,
-    int AtlasAdmissions = 0, int AtlasEvictions = 0, int AtlasHits = 0,
-    int GroundComparedTiles = 0, int DamageComparedTiles = 0, int DamageRegions = 0,
-    int RegionBuilds = 0, int RegionHits = 0, int RegionEvictions = 0, long RegionBytes = 0,
-    int TopologyHits = 0, int TopologyBuilds = 0, int TopologyEvictions = 0, long TopologyBytes = 0);
+public readonly record struct MapDrawStats(
+    MapRedraw Redraw,
+    int Tiles,
+    int Objects,
+    int Batches,
+    int GroundChunks = 0,
+    int PreparedChunks = 0,
+    int Labels = 0,
+    string? Error = null,
+    double GroundTier = 0,
+    long DamagePixels = 0,
+    int Effects = 0,
+    int Moving = 0,
+    int Notices = 0,
+    long GroundDamagePixels = 0,
+    double GroundBuildMs = 0,
+    double GroundSelectorMs = 0,
+    double TexturePrepareMs = 0,
+    int ParallelGroundChunks = 0,
+    long GroundCacheBytes = 0,
+    long GroundCacheLimitBytes = 0,
+    double TerrainMs = 0,
+    double ForegroundMs = 0,
+    double LabelLayoutMs = 0,
+    double ViewportBlitMs = 0,
+    int ForegroundBands = 0,
+    int PreparedBodyTextures = 0,
+    int OverlappedBodyTextures = 0,
+    int GroundReplayBands = 0,
+    int AlignedGroundChunks = 0,
+    long TextureCacheBytes = 0,
+    long DemandRasterLoads = 0,
+    double TintPrepareMs = 0,
+    double BandSetupMs = 0,
+    double BandRecordMs = 0,
+    double BandReplayMs = 0,
+    double BandRepairMs = 0,
+    double DeferredGroundInvalidateMs = 0,
+    double EarlyBodyLeadMs = 0,
+    int HigherBodyTextures = 0,
+    double HigherBodyWorkMs = 0,
+    string Composition = "cpu",
+    double GpuWaitMs = 0,
+    bool GpuSynchronized = false,
+    long GpuCacheBytes = 0,
+    long GpuCacheLimitBytes = 0,
+    string GpuFeatures = "None",
+    int SpriteCalls = 0,
+    int AtlasBatches = 0,
+    long AtlasBytes = 0,
+    int RetainedPatches = 0,
+    int InputCode = 0,
+    double InputToDrawMs = 0,
+    long EncodedSourceBytes = 0,
+    string RequestedRenderer = "cpu",
+    string? RendererFallback = null,
+    double ForegroundPlanMs = 0,
+    double AtlasPrepareMs = 0,
+    double ForegroundSubmitMs = 0,
+    int ForegroundTraversals = 0,
+    int ForegroundCommands = 0,
+    long DrawAllocatedBytes = 0,
+    int AtlasAdmissions = 0,
+    int AtlasEvictions = 0,
+    int AtlasHits = 0,
+    int GroundComparedTiles = 0,
+    int DamageComparedTiles = 0,
+    int DamageRegions = 0,
+    int RegionBuilds = 0,
+    int RegionHits = 0,
+    int RegionEvictions = 0,
+    long RegionBytes = 0,
+    int TopologyHits = 0,
+    int TopologyBuilds = 0,
+    int TopologyEvictions = 0,
+    long TopologyBytes = 0);
 
 /// <summary>P02 read-only renderer. One batch per texture/layer, bounded viewport rasters,
 /// and a transient selection overlay. Raster ownership and scene publication use separate locks.</summary>
@@ -70,12 +125,25 @@ public sealed partial class MapPainter : IDisposable
     private int preparedBodyTextures, overlappedBodyTextures;
     private (long Epoch, FrameKey Frame, long QueuedAt)? earlyBodies;
 
-    private readonly record struct FrameKey(MapCamera Camera, double Width, double Height, double Scaling, MapDisplay Display, OwnedList<UnitTarget>? Moving);
+    private readonly record struct FrameKey(
+        MapCamera Camera,
+        double Width,
+        double Height,
+        double Scaling,
+        MapDisplay Display,
+        OwnedList<UnitTarget>? Moving);
+
     private sealed record SceneBinding(MapScene? Scene, long Epoch);
+
     public MapRendererOptions Options { get; }
 
-    public MapPainter(AssetAtlas? atlas, PinnedFonts? fonts, MapArtSelection? selected = null,
-        Func<SKImageInfo, SKSurface?>? allocateRaster = null, bool parallelForeground = true, bool packGroundTextures = true,
+    public MapPainter(
+        AssetAtlas? atlas,
+        PinnedFonts? fonts,
+        MapArtSelection? selected = null,
+        Func<SKImageInfo, SKSurface?>? allocateRaster = null,
+        bool parallelForeground = true,
+        bool packGroundTextures = true,
         MapRendererOptions? options = null)
     {
         Options = options ?? new();
@@ -83,8 +151,15 @@ public sealed partial class MapPainter : IDisposable
         this.parallelForeground = parallelForeground;
         this.packGroundTextures = packGroundTextures;
         textures = new(atlas, selected);
-        try { text = new(fonts); }
-        catch { textures.Dispose(); throw; }
+        try
+        {
+            text = new(fonts);
+        }
+        catch
+        {
+            textures.Dispose();
+            throw;
+        }
     }
 
     internal (int Count, long PixelBytes) TextureUsage => (textures.Count, textures.PixelBytes);
@@ -99,15 +174,29 @@ public sealed partial class MapPainter : IDisposable
         double scaling, MapDisplay display, VisualFrame? visual)
     {
         double pixels = Math.Ceiling(width * scaling) * Math.Ceiling(height * scaling);
-        if (Options.Mode == MapRendererMode.Gpu || OperatingSystem.IsBrowser() || pixels < LargeBandPixels || pixels > MaxFramePixels ||
-            !Monitor.TryEnter(gate)) return false;
+        if (Options.Mode == MapRendererMode.Gpu || OperatingSystem.IsBrowser() || pixels < LargeBandPixels
+            || pixels > MaxFramePixels
+            ||
+            !Monitor.TryEnter(gate))
+        {
+            return false;
+        }
+
         try
         {
             var current = Volatile.Read(ref binding);
             if (disposed || baseImage is not null || earlyBodies is not null || epoch != current.Epoch ||
-                current.Scene is not { } active || (sceneError ?? backendError) is not null) return false;
+                current.Scene is not { } active || (sceneError ?? backendError) is not null)
+            {
+                return false;
+            }
+
             var frame = FrameFor(camera, width, height, scaling, display, visual);
-            if (!BeginColdBodyPreparation(active, frame)) return false;
+            if (!BeginColdBodyPreparation(active, frame))
+            {
+                return false;
+            }
+
             earlyBodies = (epoch, frame, Stopwatch.GetTimestamp());
             return true;
         }
@@ -116,7 +205,10 @@ public sealed partial class MapPainter : IDisposable
             // The draw reports unsupported art when it resolves the bindings.
             return false;
         }
-        finally { Monitor.Exit(gate); }
+        finally
+        {
+            Monitor.Exit(gate);
+        }
     }
 
     internal (int Count, long PixelBytes) GroundUsage => (ground.Count, groundBytes + PackedGroundBytes);
@@ -138,10 +230,18 @@ public sealed partial class MapPainter : IDisposable
             // Observer and layout changes release old resources synchronously.
             lock (bindingGate)
             {
-                if (disposed || ReferenceEquals(value, binding.Scene)) return binding.Epoch;
+                if (disposed || ReferenceEquals(value, binding.Scene))
+                {
+                    return binding.Epoch;
+                }
+
                 if (value is not null && binding.Scene is { } current && SameLayout(current, value))
                 {
-                    if (measure) timing = new(Stopwatch.GetElapsedTime(requested).TotalMilliseconds, 0, Deferred: true);
+                    if (measure)
+                    {
+                        timing = new(Stopwatch.GetElapsedTime(requested).TotalMilliseconds, 0, Deferred: true);
+                    }
+
                     return PublishBinding(value);
                 }
             }
@@ -152,14 +252,21 @@ public sealed partial class MapPainter : IDisposable
             long epoch;
             lock (bindingGate)
             {
-                if (disposed) return binding.Epoch;
+                if (disposed)
+                {
+                    return binding.Epoch;
+                }
+
                 epoch = ReferenceEquals(value, binding.Scene) ? binding.Epoch : PublishBinding(value);
             }
             double wait = measure ? Stopwatch.GetElapsedTime(requested).TotalMilliseconds : 0;
             timing = new(wait, ApplyScene(value, measure));
             return epoch;
         }
-        finally { Monitor.Exit(gate); }
+        finally
+        {
+            Monitor.Exit(gate);
+        }
     }
 
     // The binding lock serializes publishers. The raster lock still owns all
@@ -173,9 +280,21 @@ public sealed partial class MapPainter : IDisposable
 
     private double ApplyScene(MapScene? value, bool measure = false)
     {
-        if (ReferenceEquals(value, scene)) return 0;
-        if (scene is not null && (value is null || scene.Map.Identity != value.Map.Identity)) ReleaseRasters();
-        if (settledUpdates is null) ClearTerrainFrame();
+        if (ReferenceEquals(value, scene))
+        {
+            return 0;
+        }
+
+        if (scene is not null && (value is null || scene.Map.Identity != value.Map.Identity))
+        {
+            ReleaseRasters();
+        }
+
+        if (settledUpdates is null)
+        {
+            ClearTerrainFrame();
+        }
+
         long invalidate = measure ? Stopwatch.GetTimestamp() : 0;
         InvalidateGround(scene, value);
         double groundMs = measure ? Stopwatch.GetElapsedTime(invalidate).TotalMilliseconds : 0;
@@ -190,7 +309,11 @@ public sealed partial class MapPainter : IDisposable
         scene = value;
         byte invalid = value?.Annotations.FactionRoles.FirstOrDefault(role => role >= Catalog.Factions.Count) ?? 0;
         sceneError = invalid == 0 ? null : $"Unsupported owner color role {invalid}";
-        if (sceneError is not null) ClearFrame();
+        if (sceneError is not null)
+        {
+            ClearFrame();
+        }
+
         ClearOverview();
         return groundMs;
     }
@@ -209,10 +332,17 @@ public sealed partial class MapPainter : IDisposable
     {
         lock (gate)
         {
-            if (disposed || !textures.SelectArt(selection)) return Volatile.Read(ref binding).Epoch;
+            if (disposed || !textures.SelectArt(selection))
+            {
+                return Volatile.Read(ref binding).Epoch;
+            }
+
             ReleaseRasters();
             backendError = null;
-            lock (bindingGate) return PublishBinding(binding.Scene);
+            lock (bindingGate)
+            {
+                return PublishBinding(binding.Scene);
+            }
         }
     }
 
@@ -220,7 +350,11 @@ public sealed partial class MapPainter : IDisposable
     {
         lock (gate)
         {
-            if (disposed) return;
+            if (disposed)
+            {
+                return;
+            }
+
             ReleaseRasters();
             backendError = null;
         }
@@ -242,25 +376,51 @@ public sealed partial class MapPainter : IDisposable
 
     private void DiscardEarlyBodies()
     {
-        if (earlyBodies is null) return;
+        if (earlyBodies is null)
+        {
+            return;
+        }
+
         earlyBodies = null;
         textures.CompleteBodyPreparation(admit: false);
     }
 
     /// <summary>Draws the CPU composition into a borrowed canvas. The caller retains canvas ownership.</summary>
-    public MapDrawStats Draw(SKCanvas output, long epoch, MapCamera camera, double width, double height,
-        double scaling, MapPick? selected, MapDisplay display = default, VisualFrame? visual = null, MapPick? inspected = null) =>
+    public MapDrawStats Draw(
+        SKCanvas output,
+        long epoch,
+        MapCamera camera,
+        double width,
+        double height,
+        double scaling,
+        MapPick? selected,
+        MapDisplay display = default,
+        VisualFrame? visual = null,
+        MapPick? inspected = null) =>
         DrawCore(output, epoch, camera, width, height, scaling, selected, display, visual, inspected);
 
-    internal MapDrawStats DrawCore(SKCanvas output, long epoch, MapCamera camera, double width, double height,
-        double scaling, MapPick? selected, MapDisplay display = default, VisualFrame? visual = null, MapPick? inspected = null,
-        bool gpuComposition = false, MapGpuFeatures gpuFeatures = MapGpuFeatures.None)
+    internal MapDrawStats DrawCore(
+        SKCanvas output,
+        long epoch,
+        MapCamera camera,
+        double width,
+        double height,
+        double scaling,
+        MapPick? selected,
+        MapDisplay display = default,
+        VisualFrame? visual = null,
+        MapPick? inspected = null,
+        bool gpuComposition = false,
+        MapGpuFeatures gpuFeatures = MapGpuFeatures.None)
     {
         lock (gate)
         {
             var current = Volatile.Read(ref binding);
             if (disposed || epoch != current.Epoch || current.Scene is not { } active || width <= 0 || height <= 0)
+            {
                 return ClearStale(output);
+            }
+
             double deferredGroundMs = ApplyScene(active, measure: true);
             var frame = FrameFor(camera, width, height, scaling, display, visual);
             double earlyLeadMs = 0;
@@ -271,9 +431,16 @@ public sealed partial class MapPainter : IDisposable
                     earlyBodies = null;
                     earlyLeadMs = Stopwatch.GetElapsedTime(scheduled.QueuedAt).TotalMilliseconds;
                 }
-                else DiscardEarlyBodies();
+                else
+                {
+                    DiscardEarlyBodies();
+                }
             }
-            if ((sceneError ?? backendError) is { } error) return PresentFailure(output, epoch, width, height, error);
+            if ((sceneError ?? backendError) is { } error)
+            {
+                return PresentFailure(output, epoch, width, height, error);
+            }
+
             try
             {
                 this.gpuComposition = gpuComposition;
@@ -283,7 +450,8 @@ public sealed partial class MapPainter : IDisposable
                     gpuResources = gpuComposition;
                     this.gpuFeatures = gpuFeatures;
                 }
-                textures.GpuPreparation = gpuComposition && (gpuFeatures & (MapGpuFeatures.Offload | MapGpuFeatures.Textures)) != 0;
+                textures.GpuPreparation = gpuComposition
+                    && (gpuFeatures & (MapGpuFeatures.Offload | MapGpuFeatures.Textures)) != 0;
                 textures.EncodedSources = gpuFeatures.HasFlag(MapGpuFeatures.Encoded);
                 spriteAtlas.ReuseBatchStorage = gpuFeatures.HasFlag(MapGpuFeatures.Commands);
                 spriteAtlas.StableLayout = gpuFeatures.HasFlag(MapGpuFeatures.StableAtlas);
@@ -302,20 +470,27 @@ public sealed partial class MapPainter : IDisposable
                 long tintTicks = textures.TintPreparationTicks;
                 long demandLoads = textures.DemandRasterLoads;
                 var (higherBodies, higherBodyWork) = textures.PublishHigherBodies();
-                bool zoomingIn = !gpuComposition && parallelForeground && baseImage is not null && ReferenceEquals(rasterScene, active) &&
+                bool zoomingIn = !gpuComposition && parallelForeground && baseImage is not null
+                    && ReferenceEquals(rasterScene, active)
+                    &&
                     key.Camera.Zoom < camera.Zoom && !display.Bare && textures.CanPrepare &&
                     width * height * scaling * scaling >= LargeBandPixels &&
                     camera.Zoom * scaling is >= HigherBodyPreparationStart and <= HigherBodyTierBoundary;
                 var drawn = DrawCurrent(output, active, epoch, frame, selected, visual, inspected, gpuComposition);
                 spriteAtlas.Flush();
                 if (zoomingIn && drawn.Error is null && CanPresent(epoch))
+                {
                     BeginHigherBodyPreparation(active, frame);
+                }
+
                 return drawn with
                 {
                     GroundBuildMs = Stopwatch.GetElapsedTime(0, groundBuildTicks).TotalMilliseconds,
                     GroundSelectorMs = Stopwatch.GetElapsedTime(0, groundSelectorTicks).TotalMilliseconds,
-                    TexturePrepareMs = Stopwatch.GetElapsedTime(textureTicks, textures.PreparationTicks).TotalMilliseconds,
-                    TintPrepareMs = Stopwatch.GetElapsedTime(tintTicks, textures.TintPreparationTicks).TotalMilliseconds,
+                    TexturePrepareMs = Stopwatch.GetElapsedTime(textureTicks, textures.PreparationTicks)
+                        .TotalMilliseconds,
+                    TintPrepareMs = Stopwatch.GetElapsedTime(tintTicks, textures.TintPreparationTicks)
+                        .TotalMilliseconds,
                     TextureCacheBytes = textures.PixelBytes,
                     DemandRasterLoads = textures.DemandRasterLoads - demandLoads,
                     ParallelGroundChunks = parallelGroundChunks,
@@ -367,7 +542,11 @@ public sealed partial class MapPainter : IDisposable
             catch (Exception failure) when (failure is MapResourceException or InvalidDataException)
             {
                 ReleaseRasters();
-                if (!CanPresent(epoch)) return ClearStale(output);
+                if (!CanPresent(epoch))
+                {
+                    return ClearStale(output);
+                }
+
                 backendError = failure.Message;
                 return DrawFailure(output, width, height, backendError);
             }
@@ -419,8 +598,20 @@ public sealed partial class MapPainter : IDisposable
         return new(MapRedraw.Error, 0, 0, 0, Error: error);
     }
 
-    private static FrameKey FrameFor(MapCamera camera, double width, double height, double scaling, MapDisplay display, VisualFrame? visual) =>
-        new(camera, width, height, scaling, display, !display.Bare && !display.ReducedMotion && visual?.Moving is { Count: > 0 } moving
+    private static FrameKey FrameFor(
+        MapCamera camera,
+        double width,
+        double height,
+        double scaling,
+        MapDisplay display,
+        VisualFrame? visual) =>
+        new(
+            camera,
+            width,
+            height,
+            scaling,
+            display,
+            !display.Bare && !display.ReducedMotion && visual?.Moving is { Count: > 0 } moving
             ? moving : null);
 
     private MapDrawStats DrawCurrent(SKCanvas output, MapScene scene, long epoch, FrameKey requested,
@@ -429,18 +620,28 @@ public sealed partial class MapPainter : IDisposable
         var (camera, width, height, scaling, display, moving) = requested;
         bool animate = !display.Bare && !display.ReducedMotion;
         int effects = animate ? visual?.Effects.Count ?? 0 : 0;
-        if (selected is { } pick && !scene.PermitsPick(pick)) selected = null;
+        if (selected is { } pick && !scene.PermitsPick(pick))
+        {
+            selected = null;
+        }
+
         double pixelWidth = Math.Ceiling(width * scaling), pixelHeight = Math.Ceiling(height * scaling);
         SetGroundBudget(pixelWidth * pixelHeight);
         if (directComposition && gpuFeatures.HasFlag(MapGpuFeatures.PanCache))
+        {
             return Present(() =>
             {
                 var result = DrawGpuRegions(output, scene, requested, LayoutLabels());
                 DrawSelection(output, scene, requested, selected);
                 return Finish(result);
             });
+        }
+
         if (directComposition && gpuFeatures.HasFlag(MapGpuFeatures.Retain))
+        {
             return DrawRetainedGpu();
+        }
+
         if (directComposition || pixelWidth * pixelHeight > MaxFramePixels)
         {
             ClearFrame();
@@ -454,14 +655,23 @@ public sealed partial class MapPainter : IDisposable
         {
             var labels = LayoutLabels();
             var damage = baseImage is not null && key == requested && rasterScene is { } former
-                ? MeasureDamage(former, scene, requested, rasterLabels, labels, (int)pixelWidth, (int)pixelHeight) : null;
+                ? MeasureDamage(former, scene, requested, rasterLabels, labels, (int)pixelWidth, (int)pixelHeight)
+                : null;
             // Local world changes repeatedly pack the same nearby art. A
             // camera change can need the full chunk budget for a new tier.
             bool settledView = baseImage is not null && key == requested;
-            var info = new SKImageInfo((int)pixelWidth, (int)pixelHeight, SKImageInfo.PlatformColorType, SKAlphaType.Opaque);
-            bool settleGround = settledView && CanPaintForegroundBands(scene, requested, new(0, 0, info.Width, info.Height));
+            var info = new SKImageInfo(
+                (int)pixelWidth,
+                (int)pixelHeight,
+                SKImageInfo.PlatformColorType,
+                SKAlphaType.Opaque);
+            bool settleGround = settledView
+                && CanPaintForegroundBands(scene, requested, new(0, 0, info.Width, info.Height));
             bool reuseGroundAtlas = settledView && (settleGround || pixelWidth * pixelHeight >= LargeBandPixels);
-            if (!reuseGroundAtlas) ClearRetainedGroundAtlas();
+            if (!reuseGroundAtlas)
+            {
+                ClearRetainedGroundAtlas();
+            }
             // Compose large first frames directly into viewport bands. A
             // later pan can establish the separate terrain-scroll backing.
             bool composeFirstFrame = baseImage is null && ground.Count == 0 &&
@@ -470,7 +680,11 @@ public sealed partial class MapPainter : IDisposable
             bool retainTerrain = !composeFirstFrame && damage is null && scene.Annotations.Region is null &&
                 (baseImage is null || ReferenceEquals(rasterScene, scene) && key.Camera.Zoom == camera.Zoom);
             bool replayGround = composeFirstFrame || baseImage is not null && viewportInfo == info;
-            if (damage is null) ClearFrame();
+            if (damage is null)
+            {
+                ClearFrame();
+            }
+
             key = requested;
             if (viewportRaster is null || viewportInfo != info)
             {
@@ -478,14 +692,19 @@ public sealed partial class MapPainter : IDisposable
                 viewportRaster = allocateRaster(info);
                 viewportInfo = info;
             }
-            if (viewportRaster is null) return DrawDirect(labels);
+            if (viewportRaster is null)
+            {
+                return DrawDirect(labels);
+            }
+
             if (damage is null || !damage.Value.IsEmpty)
             {
                 // Release our snapshot before modifying the surface to avoid
                 // copying the whole viewport for a small patch.
                 baseImage?.Dispose();
                 baseImage = null;
-                if (damage is { } pixels && TryPaintDamage(viewportRaster, scene, requested, labels, pixels, reuseGroundAtlas, out stats))
+                if (damage is { } pixels
+                    && TryPaintDamage(viewportRaster, scene, requested, labels, pixels, reuseGroundAtlas, out stats))
                 {
                     ClearTerrainFrame();
                     redraw = MapRedraw.Dirty;
@@ -494,12 +713,20 @@ public sealed partial class MapPainter : IDisposable
                 {
                     var canvas = viewportRaster.Canvas;
                     using var restore = new SKAutoCanvasRestore(canvas, true);
-                    if (damage is null) BeginColdBodyPreparation(scene, requested);
+                    if (damage is null)
+                    {
+                        BeginColdBodyPreparation(scene, requested);
+                    }
+
                     long start = Stopwatch.GetTimestamp();
                     var terrain = settleGround ? PrepareSettledTerrain(scene, requested, info, reuseGroundAtlas) :
                         retainTerrain ? PrepareTerrainFrame(scene, requested, info) : null;
                     terrainTicks += Stopwatch.GetTimestamp() - start;
-                    if (terrain is null && !retainTerrain) ClearTerrainFrame();
+                    if (terrain is null && !retainTerrain)
+                    {
+                        ClearTerrainFrame();
+                    }
+
                     canvas.Scale((float)scaling);
                     stats = DrawBase(canvas, scene, key, labels, terrain: terrain, raster: viewportRaster,
                         replayGround: replayGround, reuseGroundAtlas: reuseGroundAtlas) with
@@ -516,7 +743,11 @@ public sealed partial class MapPainter : IDisposable
         }
         return Present(() =>
         {
-            if (selected != highlighted && redraw == MapRedraw.Cached) redraw = MapRedraw.Dirty;
+            if (selected != highlighted && redraw == MapRedraw.Cached)
+            {
+                redraw = MapRedraw.Dirty;
+            }
+
             highlighted = selected;
             // Keep an exact pixel-to-DIP ratio even when the viewport rounds up a fraction of a pixel.
             long blit = Stopwatch.GetTimestamp();
@@ -524,7 +755,15 @@ public sealed partial class MapPainter : IDisposable
             viewportBlitTicks = Stopwatch.GetTimestamp() - blit;
             DrawSelection(output, scene, requested, selected);
             return Finish(paintedWorld ? stats with { Redraw = redraw }
-                : stats with { Redraw = redraw, PreparedChunks = 0, DamagePixels = 0, GroundDamagePixels = 0, ForegroundBands = 0, GroundReplayBands = 0 },
+                : stats with
+                {
+                    Redraw = redraw,
+                    PreparedChunks = 0,
+                    DamagePixels = 0,
+                    GroundDamagePixels = 0,
+                    ForegroundBands = 0,
+                    GroundReplayBands = 0
+                },
                 baseImage);
         });
 
@@ -544,8 +783,10 @@ public sealed partial class MapPainter : IDisposable
                 // Deferred pictures let Skia retain GPU pixels without application-owned
                 // context handles. Bound patch chains to four predecessors; a full
                 // redraw then releases every superseded viewport reference.
-                var damage = baseImage is not null && key == requested && rasterScene is { } former && retainedPatches < 4
-                    ? MeasureDamage(former, scene, requested, rasterLabels, labels, (int)pixelWidth, (int)pixelHeight) : null;
+                var damage = baseImage is not null && key == requested && rasterScene is { } former
+                    && retainedPatches < 4
+                    ? MeasureDamage(former, scene, requested, rasterLabels, labels, (int)pixelWidth, (int)pixelHeight)
+                    : null;
                 using var recorder = new SKPictureRecorder();
                 var canvas = recorder.BeginRecording(SKRect.Create((float)pixelWidth, (float)pixelHeight));
                 if (damage is { } patch)
@@ -582,7 +823,11 @@ public sealed partial class MapPainter : IDisposable
         {
             // A revision published during rasterization owns the next visible
             // frame. This draw only leaves its private raster.
-            if (!CanPresent(epoch)) return ClearStale(output);
+            if (!CanPresent(epoch))
+            {
+                return ClearStale(output);
+            }
+
             using var correction = display.Color switch
             {
                 MapColorCorrection.Greyscale => SKColorFilter.CreateColorMatrix(Greyscale),
@@ -592,7 +837,11 @@ public sealed partial class MapPainter : IDisposable
             };
             using var adjusted = correction is null ? null : new SKPaint { ColorFilter = correction };
             using var save = new SKAutoCanvasRestore(output, true);
-            if (adjusted is not null) output.SaveLayer(SKRect.Create((float)width, (float)height), adjusted);
+            if (adjusted is not null)
+            {
+                output.SaveLayer(SKRect.Create((float)width, (float)height), adjusted);
+            }
+
             return paint();
         }
 
@@ -618,19 +867,36 @@ public sealed partial class MapPainter : IDisposable
         double period = map.Width * MapCamera.HalfWidth * camera.Zoom;
         double origin = camera.ScreenX(selected.X), y = camera.ScreenY(selected.Y);
         double radius = 35 * camera.Zoom + 2;
-        if (y + radius < 0 || y - radius > frame.Height) yield break;
+        if (y + radius < 0 || y - radius > frame.Height)
+        {
+            yield break;
+        }
+
         int left = map.Flat ? 0 : (int)Math.Ceiling((-radius - origin) / period);
         int right = map.Flat ? 0 : (int)Math.Floor((frame.Width + radius - origin) / period);
-        for (int i = left; i <= right; i++) yield return new((float)(origin + i * period), (float)y);
+        for (int i = left; i <= right; i++)
+        {
+            yield return new((float)(origin + i * period), (float)y);
+        }
     }
 
     private void DrawSelection(SKCanvas canvas, MapScene scene, FrameKey frame, MapPick? selected)
     {
-        if (selected is not { } target) return;
+        if (selected is not { } target)
+        {
+            return;
+        }
+
         using var clip = new SKAutoCanvasRestore(canvas, true);
         ClipRegion(canvas, scene, frame);
         float zoom = (float)frame.Camera.Zoom;
-        using var paint = new SKPaint { IsAntialias = true, Color = Color("selectionHighlight"), StrokeWidth = 2, Style = SKPaintStyle.Stroke };
+        using var paint = new SKPaint
+        {
+            IsAntialias = true,
+            Color = Color("selectionHighlight"),
+            StrokeWidth = 2,
+            Style = SKPaintStyle.Stroke
+        };
         using var highlight = new SKPaint { Color = SKColors.White.WithAlpha(96) };
         using var builder = new SKPathBuilder();
         foreach (var center in SelectionCenters(scene.Map, frame, target.Position))
@@ -638,7 +904,14 @@ public sealed partial class MapPainter : IDisposable
             float x = center.X, y = center.Y;
             if (textures.HasStock && target.Kind == MapPickKind.Tile)
             {
-                Sprite(canvas, Catalog.Overlays["selection"], x - 32 * zoom, y - 16 * zoom, zoom, zoom * frame.Scaling, highlight);
+                Sprite(
+                    canvas,
+                    Catalog.Overlays["selection"],
+                    x - 32 * zoom,
+                    y - 16 * zoom,
+                    zoom,
+                    zoom * frame.Scaling,
+                    highlight);
                 continue;
             }
             builder.MoveTo(x, y - 16 * zoom);
@@ -673,7 +946,11 @@ public sealed partial class MapPainter : IDisposable
         {
             lock (bindingGate)
             {
-                if (disposed) return;
+                if (disposed)
+                {
+                    return;
+                }
+
                 disposed = true;
                 PublishBinding(null);
             }

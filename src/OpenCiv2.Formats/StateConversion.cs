@@ -11,21 +11,43 @@ public static partial class StateConversion
 {
     private static void Copy<T>(OwnedList<T> source, Span<T> target)
     {
-        if (source.Count != target.Length) throw new ArgumentException("Stored field has an incorrect extent", nameof(source));
-        for (int i = 0; i < target.Length; ++i) target[i] = source[i];
+        if (source.Count != target.Length)
+        {
+            throw new ArgumentException("Stored field has an incorrect extent", nameof(source));
+        }
+
+        for (int i = 0; i < target.Length; ++i)
+        {
+            target[i] = source[i];
+        }
     }
+
     private static OwnedList<byte> LiveText(OwnedList<byte> source, int length)
     {
-        if (source.Count != length) throw new ArgumentException("Stored text has an incorrect extent", nameof(source));
+        if (source.Count != length)
+        {
+            throw new ArgumentException("Stored text has an incorrect extent", nameof(source));
+        }
+
         return new(source.TakeWhile(value => value != 0));
     }
+
     private static OwnedList<byte> StoredText(OwnedList<byte> source, int length)
     {
-        if (source.Count > length || source.Contains((byte)0)) throw new ArgumentException("Text cannot be represented in the classic field", nameof(source));
+        if (source.Count > length || source.Contains((byte)0))
+        {
+            throw new ArgumentException("Text cannot be represented in the classic field", nameof(source));
+        }
+
         byte[] result = new byte[length];
-        for (int i = 0; i < source.Count; ++i) result[i] = source[i];
+        for (int i = 0; i < source.Count; ++i)
+        {
+            result[i] = source[i];
+        }
+
         return new(result);
     }
+
     public static Unit ToLive(StoredUnit value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -51,6 +73,7 @@ public static partial class StateConversion
         result.Token = value.Token;
         return result;
     }
+
     public static StoredUnit ToStored(in Unit value) => new()
     {
         X = value.X,
@@ -73,11 +96,13 @@ public static partial class StateConversion
         Next = value.Next.Value,
         Token = value.Token,
     };
+
     public static StoredUnit PreserveOpaque(StoredUnit output, StoredUnit imported) => output with
     {
         RetainedByte = imported.RetainedByte,
         RetainedWord = imported.RetainedWord,
     };
+
     public static RuntimeCity ToLive(StoredCity value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -103,8 +128,16 @@ public static partial class StateConversion
         Copy(value.Supplies, result.Supplies);
         Copy(value.Demands, result.Demands);
         Copy(value.RouteGoods, result.RouteGoods);
-        if (value.RoutePartners.Count != 3) throw new ArgumentException("Stored route partners require three values", nameof(value));
-        for (int i = 0; i < 3; ++i) result.RoutePartners[i] = new(value.RoutePartners[i]);
+        if (value.RoutePartners.Count != 3)
+        {
+            throw new ArgumentException("Stored route partners require three values", nameof(value));
+        }
+
+        for (int i = 0; i < 3; ++i)
+        {
+            result.RoutePartners[i] = new(value.RoutePartners[i]);
+        }
+
         result.Science = value.Science;
         result.Tax = value.Tax;
         result.Trade = value.Trade;
@@ -115,6 +148,7 @@ public static partial class StateConversion
         result.Token = value.Token;
         return result;
     }
+
     public static StoredCity ToStored(in RuntimeCity value) => new()
     {
         X = value.X,
@@ -148,10 +182,12 @@ public static partial class StateConversion
         Unhappy = value.Unhappy,
         Token = value.Token,
     };
+
     public static StoredCity PreserveOpaque(StoredCity output, StoredCity imported) => output with
     {
         RetainedByte = imported.RetainedByte,
     };
+
     public static GlobalValues ToLive(StoredGlobals value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -197,6 +233,7 @@ public static partial class StateConversion
         Copy(value.CivByRank, result.CivByRank);
         return result;
     }
+
     public static StoredGlobals ToStored(in GlobalValues value) => new()
     {
         Rules = value.Rules,
@@ -239,11 +276,13 @@ public static partial class StateConversion
         PowerRank = new(((ReadOnlySpan<byte>)value.PowerRank).ToArray()),
         CivByRank = new(((ReadOnlySpan<byte>)value.CivByRank).ToArray()),
     };
+
     public static StoredGlobals PreserveOpaque(StoredGlobals output, StoredGlobals imported) => output with
     {
         Retained0e = imported.Retained0e,
         Retained34 = imported.Retained34,
     };
+
     public static Civilization ToLive(StoredCivilization value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -304,6 +343,7 @@ public static partial class StateConversion
         Copy(value.StandingGoals, result.StandingGoals);
         return result;
     }
+
     public static StoredCivilization ToStored(in Civilization value) => new()
     {
         Flags = value.Flags,
@@ -361,11 +401,13 @@ public static partial class StateConversion
         Goals = new(((ReadOnlySpan<CivilizationGoal>)value.Goals).ToArray()),
         StandingGoals = new(((ReadOnlySpan<CivilizationGoal>)value.StandingGoals).ToArray()),
     };
-    public static StoredCivilization PreserveOpaque(StoredCivilization output, StoredCivilization imported) => output with
-    {
-        Retained1b = imported.Retained1b,
-        Retained65 = imported.Retained65,
-        Retained3fd = imported.Retained3fd,
-        Retained401 = imported.Retained401,
-    };
+
+    public static StoredCivilization PreserveOpaque(StoredCivilization output, StoredCivilization imported) =>
+        output with
+        {
+            Retained1b = imported.Retained1b,
+            Retained65 = imported.Retained65,
+            Retained3fd = imported.Retained3fd,
+            Retained401 = imported.Retained401,
+        };
 }

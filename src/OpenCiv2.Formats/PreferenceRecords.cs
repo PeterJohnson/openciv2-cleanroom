@@ -51,7 +51,9 @@ public sealed record StoredMultiplayerPreferences
     public short ClearChatBoot { get; init; }
     public short DoubleProduction { get; init; }
     public short DoubleMovement { get; init; }
-    public OwnedList<OwnedList<byte>> LegacySettings { get; init; } = new(Enumerable.Range(0, 3).Select(_ => new OwnedList<byte>(new byte[24])));
-    public OwnedList<OwnedList<byte>> Settings { get; init; } = new(Enumerable.Range(0, 7).Select(_ => new OwnedList<byte>(new byte[24])));
+    public OwnedList<OwnedList<byte>> LegacySettings { get; init; } = new(
+        Enumerable.Range(0, 3).Select(_ => new OwnedList<byte>(new byte[24])));
+    public OwnedList<OwnedList<byte>> Settings { get; init; } = new(
+        Enumerable.Range(0, 7).Select(_ => new OwnedList<byte>(new byte[24])));
     public short LegacySetting5 { get; init; }
 }

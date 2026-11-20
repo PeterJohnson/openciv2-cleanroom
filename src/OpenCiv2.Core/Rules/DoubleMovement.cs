@@ -9,17 +9,34 @@ public static class DoubleMovement
     public static void Apply(GameMode mode, bool enabled, RuleState rules, Action<int>? redraw)
     {
         ArgumentNullException.ThrowIfNull(rules);
-        if (mode == GameMode.SinglePlayer || enabled == rules.DoubleMovementApplied) return;
+        if (mode == GameMode.SinglePlayer || enabled == rules.DoubleMovementApplied)
+        {
+            return;
+        }
+
         rules.DoubleMovementApplied = enabled;
         var units = rules.Definitions.Units;
         for (int i = 0; i < units.Length; ++i)
         {
             var unit = units[i];
-            if (unit.Domain != RuleDomain.Land) continue;
-            units[i] = unit with { Movement = enabled ? unchecked((byte)(unit.Movement * 2)) : unchecked((byte)(unchecked((sbyte)unit.Movement) / 2)) };
+            if (unit.Domain != RuleDomain.Land)
+            {
+                continue;
+            }
+
+            units[i] = unit with
+            {
+                Movement = enabled
+                        ? unchecked((byte)(unit.Movement * 2))
+                        : unchecked((byte)(unchecked((sbyte)unit.Movement) / 2))
+            };
         }
         // A missing or failing child retains the already completed transform.
-        if (redraw is null) throw new InvalidOperationException("Double movement requires a redraw service");
+        if (redraw is null)
+        {
+            throw new InvalidOperationException("Double movement requires a redraw service");
+        }
+
         redraw(1);
     }
 }

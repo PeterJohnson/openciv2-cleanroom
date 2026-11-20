@@ -9,10 +9,19 @@ public sealed record MapRendererOptions
 {
     public MapRendererMode Mode { get; }
     public int GpuCacheMiB { get; }
+
     public MapRendererOptions(MapRendererMode mode = MapRendererMode.Cpu, int gpuCacheMiB = 512)
     {
-        if (!Enum.IsDefined(mode)) throw new ArgumentOutOfRangeException(nameof(mode));
-        if (gpuCacheMiB is < 128 or > 1024) throw new ArgumentOutOfRangeException(nameof(gpuCacheMiB), "GPU cache must be 128–1024 MiB");
+        if (!Enum.IsDefined(mode))
+        {
+            throw new ArgumentOutOfRangeException(nameof(mode));
+        }
+
+        if (gpuCacheMiB is < 128 or > 1024)
+        {
+            throw new ArgumentOutOfRangeException(nameof(gpuCacheMiB), "GPU cache must be 128–1024 MiB");
+        }
+
         Mode = mode;
         GpuCacheMiB = gpuCacheMiB;
     }
@@ -29,10 +38,16 @@ public sealed record MapRendererOptions
         using var document = JsonDocument.Parse(input);
         var root = document.RootElement;
         if (root.ValueKind != JsonValueKind.Object ||
-            !root.TryGetProperty("format", out var format) || format.ValueKind != JsonValueKind.String || format.GetString() != "openciv2-map-renderer/1" ||
+            !root.TryGetProperty("format", out var format) || format.ValueKind != JsonValueKind.String
+            || format.GetString() != "openciv2-map-renderer/1"
+            ||
             !root.TryGetProperty("renderer", out var mode) || mode.ValueKind != JsonValueKind.String ||
-            !root.TryGetProperty("gpuCacheMiB", out var cache) || cache.ValueKind != JsonValueKind.Number || !cache.TryGetInt32(out int mib))
+            !root.TryGetProperty("gpuCacheMiB", out var cache) || cache.ValueKind != JsonValueKind.Number
+            || !cache.TryGetInt32(out int mib))
+        {
             throw new InvalidDataException("Invalid map renderer preferences");
+        }
+
         return new(ParseMode(mode.GetString()!), mib);
     }
 

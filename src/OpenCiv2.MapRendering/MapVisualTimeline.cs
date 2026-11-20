@@ -10,9 +10,17 @@ public sealed record MapEffect(ulong Id, MapEffectKind Kind, MapPoint From, MapP
     ObservedMapUnit? Unit = null);
 public sealed record MapNotice(ulong Id, string Message, int Milliseconds);
 public readonly record struct EffectFrame(MapEffect Effect, double Progress, int WrappedDestinationX);
-public sealed record VisualFrame(OwnedList<EffectFrame> Effects, OwnedList<UnitTarget> Moving, OwnedList<string> Notices, bool Pulse)
+public sealed record VisualFrame(
+    OwnedList<EffectFrame> Effects,
+    OwnedList<UnitTarget> Moving,
+    OwnedList<string> Notices,
+    bool Pulse)
 {
-    public static VisualFrame Empty { get; } = new(OwnedList<EffectFrame>.Empty, OwnedList<UnitTarget>.Empty, OwnedList<string>.Empty, false);
+    public static VisualFrame Empty { get; } = new(
+        OwnedList<EffectFrame>.Empty,
+        OwnedList<UnitTarget>.Empty,
+        OwnedList<string>.Empty,
+        false);
 }
 
 /// <summary>MV22/MV24 disposable, binding-local presentation timelines. Decision-bearing
@@ -26,7 +34,11 @@ public sealed class MapVisualTimeline(Action<ulong, PresentationEnd>? completed 
 
     public void Bind(ClientIdentity? identity)
     {
-        if (identity == binding) return;
+        if (identity == binding)
+        {
+            return;
+        }
+
         binding = identity;
         sequence = 0;
         EndAll(PresentationEnd.Interrupted);
@@ -35,7 +47,11 @@ public sealed class MapVisualTimeline(Action<ulong, PresentationEnd>? completed 
     public bool Queue(ClientIdentity identity, MapEffect effect, long now)
     {
         if (effect.Milliseconds <= 0 || effect is { Kind: MapEffectKind.Move, Unit: null } ||
-            effects.Count >= 32 || !Admit(identity, effect.Id)) return false;
+            effects.Count >= 32 || !Admit(identity, effect.Id))
+        {
+            return false;
+        }
+
         effects.Add(effect.Id, (effect, now));
         return true;
     }
@@ -43,7 +59,11 @@ public sealed class MapVisualTimeline(Action<ulong, PresentationEnd>? completed 
     public bool Queue(ClientIdentity identity, MapNotice notice, long now)
     {
         if (notice.Milliseconds <= 0 || notice.Message.Length is < 1 or > 400 || notices.Count >= 8 ||
-            !Admit(identity, notice.Id)) return false;
+            !Admit(identity, notice.Id))
+        {
+            return false;
+        }
+
         notices.Add(notice.Id, (notice, now));
         return true;
     }
@@ -57,26 +77,41 @@ public sealed class MapVisualTimeline(Action<ulong, PresentationEnd>? completed 
         var pending = effects.Keys.Concat(notices.Keys).ToArray();
         effects.Clear();
         notices.Clear();
-        foreach (ulong id in pending) completed?.Invoke(id, reason);
+        foreach (ulong id in pending)
+        {
+            completed?.Invoke(id, reason);
+        }
     }
 
     private bool Admit(ClientIdentity identity, ulong id)
     {
-        if (binding != identity || id <= sequence) return false;
+        if (binding != identity || id <= sequence)
+        {
+            return false;
+        }
+
         sequence = id;
         return true;
     }
 
     private bool End(ulong id, PresentationEnd reason)
     {
-        if (!(effects.Remove(id) || notices.Remove(id))) return false;
+        if (!(effects.Remove(id) || notices.Remove(id)))
+        {
+            return false;
+        }
+
         completed?.Invoke(id, reason);
         return true;
     }
 
     public VisualFrame Sample(MapScene? scene, long now, bool reducedMotion)
     {
-        if (scene is null || binding != scene.Map.Identity) return VisualFrame.Empty;
+        if (scene is null || binding != scene.Map.Identity)
+        {
+            return VisualFrame.Empty;
+        }
+
         var visible = new List<EffectFrame>(effects.Count);
         var moving = new List<UnitTarget>();
         foreach (var (effect, start) in effects.Values.ToArray())
@@ -94,11 +129,19 @@ public sealed class MapVisualTimeline(Action<ulong, PresentationEnd>? completed 
             }
             double progress = Math.Max(0, ((double)now - start) / effect.Milliseconds);
             visible.Add(new(effect, progress, endX));
-            if (effect.Kind == MapEffectKind.Move && effect.Unit?.Target is UnitTarget hidden) moving.Add(hidden);
+            if (effect.Kind == MapEffectKind.Move && effect.Unit?.Target is UnitTarget hidden)
+            {
+                moving.Add(hidden);
+            }
         }
         foreach (var (notice, start) in notices.Values.ToArray())
+        {
             if (now >= start && (double)now - start >= notice.Milliseconds)
+            {
                 End(notice.Id, PresentationEnd.Finished);
+            }
+        }
+
         return new(new(visible), new(moving.Distinct().OrderBy(t => t.Slot.Value)),
             new(notices.Values.Select(n => n.Notice.Message)), reducedMotion || (now / 400 & 1) == 0);
     }

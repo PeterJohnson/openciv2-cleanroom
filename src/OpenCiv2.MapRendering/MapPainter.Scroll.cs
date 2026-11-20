@@ -9,22 +9,39 @@ public sealed partial class MapPainter
     private SKImage? terrainImage;
     private FrameKey terrainKey;
     private HashSet<MapPoint>? settledUpdates;
-    private sealed record TerrainFrame(SKImage Image, GroundWork Work, long Pixels, bool Scrolled, bool SeedBands = false);
+
+    private sealed record TerrainFrame(
+        SKImage Image,
+        GroundWork Work,
+        long Pixels,
+        bool Scrolled,
+        bool SeedBands = false);
 
     private TerrainFrame? PrepareSettledTerrain(MapScene scene, FrameKey frame, SKImageInfo info, bool reuseAtlas)
     {
         if (terrainKey != frame || settledUpdates is null)
         {
             ClearTerrainFrame();
-            if (!CanPatchSettledTerrain(scene.Map, frame, info)) return null;
+            if (!CanPatchSettledTerrain(scene.Map, frame, info))
+            {
+                return null;
+            }
         }
         terrainRaster ??= allocateRaster(info);
-        if (terrainRaster is null) return null;
+        if (terrainRaster is null)
+        {
+            return null;
+        }
+
         var updates = terrainImage is null ? null : settledUpdates;
         var canvas = terrainRaster.Canvas;
         using var restore = new SKAutoCanvasRestore(canvas, true);
         terrainImage?.Dispose();
-        if (updates is null) canvas.DrawColor(Background, SKBlendMode.Src);
+        if (updates is null)
+        {
+            canvas.DrawColor(Background, SKBlendMode.Src);
+        }
+
         canvas.Scale((float)frame.Scaling);
         var work = DrawGround(canvas, scene, frame, MapTileArt.Detail(frame.Camera.Zoom), null,
             reuseAtlas: reuseAtlas, settledUpdates: updates);
@@ -57,20 +74,34 @@ public sealed partial class MapPainter
                 for (int chunk = head; chunk <= tail; chunk++)
                 {
                     int start = chunk * ChunkSize, span = Math.Min(ChunkSize, extent - start);
-                    if (!wrap && start + span == extent) break;
+                    if (!wrap && start + span == extent)
+                    {
+                        break;
+                    }
+
                     double world = start + shift - margin;
                     float left = (float)(origin + world * zoom);
                     float edge = (float)(origin + (world + span) * zoom);
                     float right = left + (float)(span * zoom);
-                    if (right <= edge) continue;
+                    if (right <= edge)
+                    {
+                        continue;
+                    }
 
                     // The opaque nearest-sampled draws meet at this boundary.
                     // If float registration creates an overlap near a pixel
                     // boundary, keep the full ordered replay of both chunks.
                     double from = edge * (float)frame.Scaling, to = right * (float)frame.Scaling;
-                    if (to <= 0 || from >= physicalSize) continue;
+                    if (to <= 0 || from >= physicalSize)
+                    {
+                        continue;
+                    }
+
                     const double guard = 1d / 256;
-                    if (Math.Floor(2 * (from - guard)) != Math.Floor(2 * (to + guard))) return false;
+                    if (Math.Floor(2 * (from - guard)) != Math.Floor(2 * (to + guard)))
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
@@ -79,14 +110,22 @@ public sealed partial class MapPainter
 
     private TerrainFrame? PrepareTerrainFrame(MapScene scene, FrameKey frame, SKImageInfo info)
     {
-        if (settledUpdates is not null) ClearTerrainFrame();
+        if (settledUpdates is not null)
+        {
+            ClearTerrainFrame();
+        }
+
         if (!StableTerrainSampling(frame, info))
         {
             ClearTerrainRasters(keepScratch: (long)info.Width * info.Height >= LargeBandPixels);
             return null;
         }
         terrainRaster ??= allocateRaster(info);
-        if (terrainRaster is null) return null;
+        if (terrainRaster is null)
+        {
+            return null;
+        }
+
         using var damage = ScrollDamage(scene, frame, info, out int dx, out int dy);
         bool scrolled = false;
         if (damage is not null)
@@ -109,7 +148,10 @@ public sealed partial class MapPainter
             canvas.ClipRegion(damage!);
             painted = 0;
             using var rectangles = damage!.CreateRectIterator();
-            while (rectangles.Next(out var rect)) painted += (long)rect.Width * rect.Height;
+            while (rectangles.Next(out var rect))
+            {
+                painted += (long)rect.Width * rect.Height;
+            }
         }
         canvas.DrawColor(Background, SKBlendMode.Src);
         canvas.Scale((float)frame.Scaling);
@@ -124,7 +166,10 @@ public sealed partial class MapPainter
     {
         dx = dy = 0;
         if (terrainImage is null || next.Camera.Zoom != terrainKey.Camera.Zoom ||
-            terrainKey with { Camera = next.Camera } != next) return null;
+            terrainKey with { Camera = next.Camera } != next)
+        {
+            return null;
+        }
 
         double x = next.Camera.X - terrainKey.Camera.X;
         if (!scene.Map.Flat)
@@ -135,13 +180,19 @@ public sealed partial class MapPainter
         double physicalX = x * next.Scaling, physicalY = (next.Camera.Y - terrainKey.Camera.Y) * next.Scaling;
         dx = (int)Math.Round(physicalX);
         dy = (int)Math.Round(physicalY);
-        if (Math.Abs(physicalX - dx) > 1e-7 || Math.Abs(physicalY - dy) > 1e-7 || (dx == 0 && dy == 0)) return null;
+        if (Math.Abs(physicalX - dx) > 1e-7 || Math.Abs(physicalY - dy) > 1e-7 || (dx == 0 && dy == 0))
+        {
+            return null;
+        }
 
         const int gutter = 2;
         var overlap = new SKRectI(gutter + Math.Max(0, dx), gutter + Math.Max(0, dy),
             info.Width - gutter + Math.Min(0, dx), info.Height - gutter + Math.Min(0, dy));
-        if (overlap.Width <= 0 || overlap.Height <= 0 || (long)overlap.Width * overlap.Height <= (long)info.Width * info.Height / 2)
+        if (overlap.Width <= 0 || overlap.Height <= 0
+            || (long)overlap.Width * overlap.Height <= (long)info.Width * info.Height / 2)
+        {
             return null;
+        }
 
         var damage = new SKRegion(new SKRectI(0, 0, info.Width, info.Height));
         damage.Op(overlap, SKRegionOperation.Difference);
@@ -164,7 +215,10 @@ public sealed partial class MapPainter
             for (int i = 0; i < length; i++)
             {
                 double source = (i + .5 - origin) * sourcePerPixel;
-                if (Math.Abs(source - Math.Round(source)) < boundaryGuard) return false;
+                if (Math.Abs(source - Math.Round(source)) < boundaryGuard)
+                {
+                    return false;
+                }
             }
             return true;
         }
@@ -191,7 +245,10 @@ public sealed partial class MapPainter
     }
 
     private static void DrawRaster(SKCanvas canvas, SKImage image, double scaling) =>
-        canvas.DrawImage(image, new SKRect(0, 0, (float)(image.Width / scaling), (float)(image.Height / scaling)), CacheSampling);
+        canvas.DrawImage(
+            image,
+            new SKRect(0, 0, (float)(image.Width / scaling), (float)(image.Height / scaling)),
+            CacheSampling);
 
     private static SKRectI ToBacking(SKRect box, double scale) => new(
         (int)Math.Floor(box.Left * scale), (int)Math.Floor(box.Top * scale),

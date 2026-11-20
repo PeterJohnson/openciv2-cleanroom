@@ -7,12 +7,22 @@ public sealed partial class MapPainter
 {
     private const int RegionSide = 768, RegionGutter = 2;
     private const long RegionBudget = 128L * 1024 * 1024;
-    private readonly record struct RegionKey(int Column, int Row, double Zoom, double Scaling, MapDetail Detail, MapDisplay Display,
-        double PhaseX, double PhaseY);
+
+    private readonly record struct RegionKey(
+        int Column,
+        int Row,
+        double Zoom,
+        double Scaling,
+        MapDetail Detail,
+        MapDisplay Display,
+        double PhaseX,
+        double PhaseY);
+
     private sealed record RegionImage(RegionKey Key, FrameKey Frame, SKImage Image)
     {
         public long Bytes => 4L * Image.Width * Image.Height;
     }
+
     private readonly Dictionary<RegionKey, LinkedListNode<RegionImage>> gpuRegions = [];
     private readonly LinkedList<RegionImage> regionRecency = [];
     private MapScene? regionScene;
@@ -22,7 +32,11 @@ public sealed partial class MapPainter
 
     private void ClearGpuRegions()
     {
-        foreach (var region in regionRecency) region.Image.Dispose();
+        foreach (var region in regionRecency)
+        {
+            region.Image.Dispose();
+        }
+
         gpuRegions.Clear();
         regionRecency.Clear();
         regionBytes = 0;
@@ -42,21 +56,41 @@ public sealed partial class MapPainter
     {
         // Moving objects alter depth composition. Use the intact direct path for
         // that frame instead of compositing movers over stale stationary bodies.
-        if (displayed.Moving is not null) return DrawBase(output, scene, displayed, labels) with { Redraw = MapRedraw.Direct };
+        if (displayed.Moving is not null)
+        {
+            return DrawBase(output, scene, displayed, labels) with { Redraw = MapRedraw.Direct };
+        }
+
         if (regionScene is { } before && !ReferenceEquals(before, scene))
         {
             var changes = scene.Map.Delta;
-            if (!SameLayout(before, scene) || changes is null || !changes.Matches(before.Map, scene.Map) || changes.AnnotationsChanged)
+            if (!SameLayout(before, scene) || changes is null || !changes.Matches(before.Map, scene.Map)
+                || changes.AnnotationsChanged)
+            {
                 ClearGpuRegions();
+            }
             else
+            {
                 for (var entry = regionRecency.First; entry is not null;)
                 {
                     var next = entry.Next;
                     var region = entry.Value;
-                    var damage = MeasureDamageRegions(before, scene, region.Frame, [], [], region.Image.Width, region.Image.Height);
-                    if (damage is null || damage.Count != 0) DropRegion(entry);
+                    var damage = MeasureDamageRegions(
+                        before,
+                        scene,
+                        region.Frame,
+                        [],
+                        [],
+                        region.Image.Width,
+                        region.Image.Height);
+                    if (damage is null || damage.Count != 0)
+                    {
+                        DropRegion(entry);
+                    }
+
                     entry = next;
                 }
+            }
         }
         regionScene = scene;
         double backingZoom = gpuFeatures.HasFlag(MapGpuFeatures.TierCache)
@@ -74,11 +108,19 @@ public sealed partial class MapPainter
         long bytesPerRegion = 4L * (RegionSide + 2 * RegionGutter) * (RegionSide + 2 * RegionGutter);
         long visibleCount = (long)(lastX - firstX + 1) * (lastY - firstY + 1);
         if (visibleCount * bytesPerRegion > RegionBudget)
+        {
             return DrawBase(output, scene, displayed, labels) with { Redraw = MapRedraw.Direct };
+        }
+
         var required = new HashSet<RegionKey>();
         for (int y = firstY; y <= lastY; y++)
+        {
             for (int x = firstX; x <= lastX; x++)
+            {
                 required.Add(new(x, y, backingZoom, scale, detail, displayed.Display, phaseX, phaseY));
+            }
+        }
+
         output.DrawColor(Background, SKBlendMode.Src);
         int built = 0, chunks = 0, prepared = 0, batches = 0;
         foreach (var key in required)
@@ -88,8 +130,16 @@ public sealed partial class MapPainter
                 while (regionBytes + bytesPerRegion > RegionBudget)
                 {
                     var victim = regionRecency.First;
-                    while (victim is not null && required.Contains(victim.Value.Key)) victim = victim.Next;
-                    if (victim is null) throw new MapGpuResourceException("Visible map regions exceed their declared budget");
+                    while (victim is not null && required.Contains(victim.Value.Key))
+                    {
+                        victim = victim.Next;
+                    }
+
+                    if (victim is null)
+                    {
+                        throw new MapGpuResourceException("Visible map regions exceed their declared budget");
+                    }
+
                     DropRegion(victim);
                 }
                 int side = RegionSide + 2 * RegionGutter;
@@ -101,16 +151,25 @@ public sealed partial class MapPainter
                 canvas.Scale((float)scale);
                 MapDrawStats work;
                 paintingRegion = true;
-                try { work = DrawBase(canvas, scene, frame, [], detailOverride: detail); }
-                finally { paintingRegion = false; }
+                try
+                {
+                    work = DrawBase(canvas, scene, frame, [], detailOverride: detail);
+                }
+                finally
+                {
+                    paintingRegion = false;
+                }
                 using var picture = recorder.EndRecording();
-                var image = SKImage.FromPicture(picture, new(side, side)) ?? throw new MapGpuResourceException("Could not allocate map region");
+                var image = SKImage.FromPicture(picture, new(side, side))
+                    ?? throw new MapGpuResourceException("Could not allocate map region");
                 resident = regionRecency.AddLast(new RegionImage(key, frame, image));
                 gpuRegions.Add(key, resident);
                 regionBytes += resident.Value.Bytes;
                 regionBuilds++;
                 built++;
-                chunks += work.GroundChunks; prepared += work.PreparedChunks; batches += work.Batches;
+                chunks += work.GroundChunks;
+                prepared += work.PreparedChunks;
+                batches += work.Batches;
             }
             else
             {
@@ -119,9 +178,11 @@ public sealed partial class MapPainter
                 regionRecency.AddLast(resident);
             }
             var source = SKRect.Create(RegionGutter, RegionGutter, RegionSide, RegionSide);
-            var destination = SKRect.Create((float)(displayed.Camera.X + (key.Column * RegionSide - phaseX) * ratio / scale),
+            var destination = SKRect.Create(
+                (float)(displayed.Camera.X + (key.Column * RegionSide - phaseX) * ratio / scale),
                 (float)(displayed.Camera.Y + (key.Row * RegionSide - phaseY) * ratio / scale),
-                (float)(RegionSide * ratio / scale), (float)(RegionSide * ratio / scale));
+                (float)(RegionSide * ratio / scale),
+                (float)(RegionSide * ratio / scale));
             output.DrawImage(resident.Value.Image, source, destination, phaseAligned ? CacheSampling : Sampling);
         }
         using var paint = new SKPaint { IsAntialias = true };
@@ -130,12 +191,22 @@ public sealed partial class MapPainter
         var bounds = displayed.Camera.VisibleBounds(scene.Map, displayed.Width, displayed.Height);
         int objects = 0;
         if (!displayed.Display.Bare)
+        {
             foreach (var (point, _) in scene.VisibleForeground(bounds))
             {
                 var cell = scene.Objects(point);
-                if (cell.City is not null || MapScene.RememberedCity(scene.Tile(point))) objects++;
-                if (cell.Unit is not null) objects += cell.Count;
+                if (cell.City is not null || MapScene.RememberedCity(scene.Tile(point)))
+                {
+                    objects++;
+                }
+
+                if (cell.Unit is not null)
+                {
+                    objects += cell.Count;
+                }
             }
+        }
+
         return new(built == 0 ? MapRedraw.Cached : MapRedraw.Scrolled, bounds.TileCount(), objects, batches,
             chunks, prepared, labels.Count, GroundTier: GroundRasterTier(backingZoom * scale),
             DamagePixels: built * bytesPerRegion / 4, GroundDamagePixels: built * bytesPerRegion / 4);

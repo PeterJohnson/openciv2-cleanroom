@@ -108,8 +108,10 @@ public sealed record StoredCivilization
     public short SpaceshipLaunchYear { get; init; } = (short)0;
     public short SpaceshipPopulation { get; init; } = (short)0;
     public OwnedList<short> SpaceshipParts { get; init; } = new(Enumerable.Range(0, 6).Select(_ => (short)0));
-    public OwnedList<CivilizationGoal> Goals { get; init; } = new(Enumerable.Range(0, 48).Select(_ => new CivilizationGoal()));
-    public OwnedList<CivilizationGoal> StandingGoals { get; init; } = new(Enumerable.Range(0, 16).Select(_ => new CivilizationGoal()));
+    public OwnedList<CivilizationGoal> Goals { get; init; } = new(
+        Enumerable.Range(0, 48).Select(_ => new CivilizationGoal()));
+    public OwnedList<CivilizationGoal> StandingGoals { get; init; } = new(
+        Enumerable.Range(0, 16).Select(_ => new CivilizationGoal()));
 }
 
 public sealed record StoredCivilizationNames
@@ -118,7 +120,8 @@ public sealed record StoredCivilizationNames
     public OwnedList<byte> Leader { get; init; } = new(new byte[24]);
     public OwnedList<byte> Tribe { get; init; } = new(new byte[24]);
     public OwnedList<byte> Adjective { get; init; } = new(new byte[24]);
-    public OwnedList<OwnedList<byte>> Titles { get; init; } = new(Enumerable.Range(0, 7).Select(_ => new OwnedList<byte>(new byte[24])));
+    public OwnedList<OwnedList<byte>> Titles { get; init; } = new(
+        Enumerable.Range(0, 7).Select(_ => new OwnedList<byte>(new byte[24])));
 }
 
 public sealed record StoredLeader
@@ -135,7 +138,8 @@ public sealed record StoredLeader
     public short Plural { get; init; } = (short)0;
     public short Adjective { get; init; } = (short)0;
     public OwnedList<short> Names { get; init; } = new(Enumerable.Range(0, 2).Select(_ => (short)0));
-    public OwnedList<OwnedList<short>> Titles { get; init; } = new(Enumerable.Range(0, 7).Select(_ => new OwnedList<short>(Enumerable.Range(0, 2).Select(_ => (short)0))));
+    public OwnedList<OwnedList<short>> Titles { get; init; } = new(
+        Enumerable.Range(0, 7).Select(_ => new OwnedList<short>(Enumerable.Range(0, 2).Select(_ => (short)0))));
 }
 
 public sealed record SavedRectangle
@@ -149,7 +153,8 @@ public sealed record SavedRectangle
 public sealed record SavedLayout
 {
     public short Valid { get; init; } = (short)0;
-    public OwnedList<SavedRectangle> Rectangles { get; init; } = new(Enumerable.Range(0, 13).Select(_ => new SavedRectangle()));
+    public OwnedList<SavedRectangle> Rectangles { get; init; } = new(
+        Enumerable.Range(0, 13).Select(_ => new SavedRectangle()));
 }
 
 public sealed record SavedMapView
@@ -179,7 +184,8 @@ public sealed record EliminationHistory
     public OwnedList<short> Turns { get; init; } = new(Enumerable.Range(0, 12).Select(_ => (short)0));
     public OwnedList<byte> Killers { get; init; } = new(Enumerable.Range(0, 12).Select(_ => (byte)0));
     public OwnedList<byte> Portraits { get; init; } = new(Enumerable.Range(0, 12).Select(_ => (byte)0));
-    public OwnedList<OwnedList<byte>> Names { get; init; } = new(Enumerable.Range(0, 12).Select(_ => new OwnedList<byte>(new byte[24])));
+    public OwnedList<OwnedList<byte>> Names { get; init; } = new(
+        Enumerable.Range(0, 12).Select(_ => new OwnedList<byte>(new byte[24])));
 }
 
 public sealed record MultiplayerRecord
@@ -196,8 +202,10 @@ public sealed record MultiplayerRecord
     public short Simultaneous { get; init; } = (short)0;
     public int CheatTurnTime { get; init; } = (int)0;
     public OwnedList<byte> Retained142 { get; init; } = new(Enumerable.Range(0, 290).Select(_ => (byte)0));
-    public OwnedList<OwnedList<byte>> Emails { get; init; } = new(Enumerable.Range(0, 8).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
-    public OwnedList<OwnedList<byte>> PlayerSetup { get; init; } = new(Enumerable.Range(0, 8).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
+    public OwnedList<OwnedList<byte>> Emails { get; init; } = new(
+        Enumerable.Range(0, 8).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
+    public OwnedList<OwnedList<byte>> PlayerSetup { get; init; } = new(
+        Enumerable.Range(0, 8).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
     public byte ResumeCiv { get; init; } = (byte)0;
     public byte Retained465 { get; init; } = (byte)0;
     public short ResumeEvent { get; init; } = (short)0;

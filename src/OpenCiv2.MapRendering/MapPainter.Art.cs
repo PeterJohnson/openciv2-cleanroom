@@ -31,15 +31,24 @@ public sealed partial class MapPainter
         // first frames or a full repaint of a retained viewport. Resolve all
         // chunk misses before parallel playback begins.
         using var groundRecorder = banded && replayGround && terrain is null ? new SKPictureRecorder() : null;
-        if (terrain is null && groundRecorder is null) canvas.DrawColor(Background, SKBlendMode.Src);
+        if (terrain is null && groundRecorder is null)
+        {
+            canvas.DrawColor(Background, SKBlendMode.Src);
+        }
+
         using var clip = new SKAutoCanvasRestore(canvas, true);
         ClipRegion(canvas, value, frame);
         var groundCanvas = groundRecorder?.BeginRecording(PictureBounds(viewportInfo, frame), useRTree: true) ?? canvas;
         bool gpuPreparation = textures.GpuPreparation;
         // The texture-only experiment offloads foreground preparation. CPU
         // ground workers continue to consume the existing prepared CPU images.
-        if (!GpuGround) textures.GpuPreparation = false;
-        using var uncovered = groundRecorder is not null && (long)replayArea.Width * replayArea.Height >= LargeBandPixels
+        if (!GpuGround)
+        {
+            textures.GpuPreparation = false;
+        }
+
+        using var uncovered = groundRecorder is not null
+            && (long)replayArea.Width * replayArea.Height >= LargeBandPixels
             ? new SKRegion(replayArea) : null;
         var groundDraw = terrain?.Work ?? DrawGround(groundCanvas, value, frame, detail, logicalDamage,
             uncovered: uncovered, reuseAtlas: reuseGroundAtlas);
@@ -47,17 +56,31 @@ public sealed partial class MapPainter
         using var groundPicture = groundRecorder?.EndRecording();
         var seed = banded && terrain is { SeedBands: true } ? terrain.Image : null;
         if (terrain is not null && seed is null)
+        {
             DrawRaster(canvas, terrain.Image, frame.Scaling);
+        }
+
         long foregroundStart = Stopwatch.GetTimestamp();
         terrainTicks += foregroundStart - start;
         var bounds = camera.VisibleBounds(value.Map, frame.Width, frame.Height);
         if (paintingRegion)
-            bounds = new(bounds.Left - 2, Math.Max(0, bounds.Top - 4), bounds.Right + 2, Math.Min(value.Map.Height - 1, bounds.Bottom + 4));
+        {
+            bounds = new(
+                bounds.Left - 2,
+                Math.Max(0, bounds.Top - 4),
+                bounds.Right + 2,
+                Math.Min(value.Map.Height - 1, bounds.Bottom + 4));
+        }
+
         int bands = 0;
         if (!banded || !TryPaintForegroundBands(raster!, value, frame, labels, bounds, detail, groundPicture,
-                replayArea, logicalDamage, uncovered, seed, out int objects, out bands))
+            replayArea, logicalDamage, uncovered, seed, out int objects, out bands))
         {
-            if (seed is not null) DrawRaster(canvas, seed, frame.Scaling);
+            if (seed is not null)
+            {
+                DrawRaster(canvas, seed, frame.Scaling);
+            }
+
             if (groundPicture is not null)
             {
                 canvas.DrawColor(Background, SKBlendMode.Src);
@@ -67,9 +90,18 @@ public sealed partial class MapPainter
         }
         foregroundTicks = Stopwatch.GetTimestamp() - foregroundStart;
         var groundPixels = damage ?? ToBacking(SKRect.Create((float)frame.Width, (float)frame.Height), frame.Scaling);
-        return new(MapRedraw.Full, bounds.TileCount(), objects, groundDraw.Batches, groundDraw.Used, groundDraw.Prepared, labels.Count,
-            GroundTier: groundDraw.Tier, GroundDamagePixels: terrain?.Pixels ?? (long)groundPixels.Width * groundPixels.Height,
-            ForegroundBands: bands, GroundReplayBands: groundPicture is null ? 0 : bands);
+        return new(
+            MapRedraw.Full,
+            bounds.TileCount(),
+            objects,
+            groundDraw.Batches,
+            groundDraw.Used,
+            groundDraw.Prepared,
+            labels.Count,
+            GroundTier: groundDraw.Tier,
+            GroundDamagePixels: terrain?.Pixels ?? (long)groundPixels.Width * groundPixels.Height,
+            ForegroundBands: bands,
+            GroundReplayBands: groundPicture is null ? 0 : bands);
     }
 
     private bool batchingForeground;
@@ -88,7 +120,14 @@ public sealed partial class MapPainter
             try
             {
                 long started = Stopwatch.GetTimestamp();
-                int objects = PaintForegroundCore(new MapArtCanvas(foregroundCommands), value, frame, labels, bounds, detail, damage);
+                int objects = PaintForegroundCore(
+                    new MapArtCanvas(foregroundCommands),
+                    value,
+                    frame,
+                    labels,
+                    bounds,
+                    detail,
+                    damage);
                 long prepared = Stopwatch.GetTimestamp();
                 foregroundPlanTicks += prepared - started;
                 foregroundCommandCount += foregroundCommands.Count;
@@ -105,8 +144,14 @@ public sealed partial class MapPainter
                 textures.EndCommandRead();
                 var requestedFeatures = gpuFeatures;
                 gpuFeatures &= ~MapGpuFeatures.Commands;
-                try { return PaintForeground(canvas, value, frame, labels, bounds, detail, damage); }
-                finally { gpuFeatures = requestedFeatures; }
+                try
+                {
+                    return PaintForeground(canvas, value, frame, labels, bounds, detail, damage);
+                }
+                finally
+                {
+                    gpuFeatures = requestedFeatures;
+                }
             }
             finally
             {
@@ -119,12 +164,20 @@ public sealed partial class MapPainter
         {
             // Resolve all first-use sprites before submitting visible pixels.
             // Cold and warm frames then use the same atlas sampling path.
-            using var preparation = SKSurface.CreateNull((int)Math.Ceiling(frame.Width), (int)Math.Ceiling(frame.Height));
+            using var preparation = SKSurface.CreateNull(
+                (int)Math.Ceiling(frame.Width),
+                (int)Math.Ceiling(frame.Height));
             spriteAtlas.BeginPreparation();
             preparingAtlas = true;
             long start = Stopwatch.GetTimestamp();
-            try { PaintForegroundCore(preparation.Canvas, value, frame, labels, bounds, detail, damage); }
-            finally { preparingAtlas = false; }
+            try
+            {
+                PaintForegroundCore(preparation.Canvas, value, frame, labels, bounds, detail, damage);
+            }
+            finally
+            {
+                preparingAtlas = false;
+            }
             foregroundPlanTicks += Stopwatch.GetTimestamp() - start;
             start = Stopwatch.GetTimestamp();
             spriteAtlas.FinishPreparation();
@@ -149,14 +202,24 @@ public sealed partial class MapPainter
         float zoom = (float)camera.Zoom;
         double tier = zoom * frame.Scaling;
         if (frame.Display.Grid || frame.Display.CityRadius || frame.Display.Ownership)
+        {
             foreach (var (point, display) in camera.Visible(value.Map, frame.Width, frame.Height))
             {
-                if (!value.InRegion(point)) continue;
-                float x = (float)camera.ScreenX(display), y = (float)camera.ScreenY(point.Y);
-                if (damage is { } patch && !patch.IntersectsWith(SKRect.Create(x - 32 * zoom, y - 16 * zoom, 64 * zoom, 32 * zoom)))
+                if (!value.InRegion(point))
+                {
                     continue;
+                }
+
+                float x = (float)camera.ScreenX(display), y = (float)camera.ScreenY(point.Y);
+                if (damage is { } patch
+                    && !patch.IntersectsWith(SKRect.Create(x - 32 * zoom, y - 16 * zoom, 64 * zoom, 32 * zoom)))
+                {
+                    continue;
+                }
+
                 DrawTileOverlay(canvas, value, point, value.Tile(point), x, y, zoom, tier, frame.Display);
             }
+        }
 
         int objects = 0;
         if (!frame.Display.Bare)
@@ -166,18 +229,32 @@ public sealed partial class MapPainter
             // A previous view at this scale may have shown different bodies.
             // Prepare the actual misses among currently admitted bindings.
             if (damage is null && preparedBodyTextures == 0 && textures.CanPrepare)
+            {
                 preparedBodyTextures = textures.Prepare(VisibleBodyBindings(value, bounds, remaining), tier);
+            }
+
             foreach (var (point, display) in value.VisibleForeground(bounds))
             {
                 var tile = value.Tile(point);
                 var cell = ForegroundCell(value, point, remaining);
                 var unit = value.ShowsUnit(point) ? cell.Unit : null;
                 bool remembered = MapScene.RememberedCity(tile);
-                if (cell.City is not null || remembered) objects++;
-                if (unit is not null) objects += cell.Count;
+                if (cell.City is not null || remembered)
+                {
+                    objects++;
+                }
+
+                if (unit is not null)
+                {
+                    objects += cell.Count;
+                }
+
                 float x = (float)camera.ScreenX(display), y = (float)camera.ScreenY(point.Y);
                 // Include custom marker anchors, shadows, badges, and antialiasing.
-                if (damage is { } clipArea && !clipArea.IntersectsWith(BodyBounds(x, y, zoom))) continue;
+                if (damage is { } clipArea && !clipArea.IntersectsWith(BodyBounds(x, y, zoom)))
+                {
+                    continue;
+                }
 
                 float left = x - 32 * zoom, top = y - 32 * zoom;
                 DrawTallImprovements(canvas, value, tile, left, top, zoom, tier, detail);
@@ -196,7 +273,21 @@ public sealed partial class MapPainter
                 {
                     // Cell depth is in map-row order; stack/banner/body are layered together,
                     // so a later sprite cannot be promoted across an overlapping translucent one.
-                    DrawUnit(canvas, value, visibleUnit, cell.Count, left, top, zoom, tier, detail, frame.Display, paint, bodyPaint, font, greyscale);
+                    DrawUnit(
+                        canvas,
+                        value,
+                        visibleUnit,
+                        cell.Count,
+                        left,
+                        top,
+                        zoom,
+                        tier,
+                        detail,
+                        frame.Display,
+                        paint,
+                        bodyPaint,
+                        font,
+                        greyscale);
                 }
                 canvas.Flush(spriteAtlas);
             }
@@ -211,33 +302,67 @@ public sealed partial class MapPainter
     private bool BeginColdBodyPreparation(MapScene scene, FrameKey frame)
     {
         double tier = (float)frame.Camera.Zoom * frame.Scaling;
-        if (ground.Count != 0 || frame.Display.Bare || Environment.ProcessorCount < 8 || !textures.CanPrepare) return false;
+        if (ground.Count != 0 || frame.Display.Bare || Environment.ProcessorCount < 8 || !textures.CanPrepare)
+        {
+            return false;
+        }
+
         var bounds = frame.Camera.VisibleBounds(scene.Map, frame.Width, frame.Height);
         var remaining = frame.Moving is { } moving ? scene.StacksWithout(moving) : null;
         return textures.BeginBodyPreparation(VisibleBodyBindings(scene, bounds, remaining), tier);
     }
 
-    private static MapObjects ForegroundCell(MapScene scene, MapPoint point, Dictionary<MapPoint, MapObjects>? remaining) =>
-        remaining is not null && remaining.TryGetValue(point, out var withoutMoving) ? withoutMoving : scene.Objects(point);
+    private static MapObjects ForegroundCell(
+        MapScene scene,
+        MapPoint point,
+        Dictionary<MapPoint, MapObjects>? remaining) =>
+        remaining is not null && remaining.TryGetValue(point, out var withoutMoving)
+            ? withoutMoving
+            : scene.Objects(point);
 
-    private static IEnumerable<string> VisibleBodyBindings(MapScene scene, MapVisibleBounds bounds, Dictionary<MapPoint, MapObjects>? remaining)
+    private static IEnumerable<string> VisibleBodyBindings(
+        MapScene scene,
+        MapVisibleBounds bounds,
+        Dictionary<MapPoint, MapObjects>? remaining)
     {
         foreach (var (point, _) in scene.VisibleForeground(bounds))
         {
             var cell = ForegroundCell(scene, point, remaining);
-            if (cell.City is { } city && CityBinding(city) is { } art) yield return art.Body;
-            if (scene.ShowsUnit(point) && cell.Unit is { } unit) yield return UnitBinding(unit).Body;
+            if (cell.City is { } city && CityBinding(city) is { } art)
+            {
+                yield return art.Body;
+            }
+
+            if (scene.ShowsUnit(point) && cell.Unit is { } unit)
+            {
+                yield return UnitBinding(unit).Body;
+            }
         }
     }
 
     private static SKColor Rgb(uint value) => new(0xff000000 | value);
-    private SKColor Color(MapScene scene, CivilizationSlot slot) => Rgb(textures.Color(scene.Annotations.ColorRole(slot)));
+
+    private SKColor Color(MapScene scene, CivilizationSlot slot) =>
+        Rgb(textures.Color(scene.Annotations.ColorRole(slot)));
+
     private static SKColor Color(string role) => Rgb(Catalog.DisplayColors[role]);
 
-    private void Sprite(MapArtCanvas canvas, string key, float x, float y, float zoom, double tier, SKPaint? paint = null, SKColor? tint = null)
+    private void Sprite(
+        MapArtCanvas canvas,
+        string key,
+        float x,
+        float y,
+        float zoom,
+        double tier,
+        SKPaint? paint = null,
+        SKColor? tint = null)
     {
-        if (!textures.HasStock && !key.StartsWith("unit/", StringComparison.Ordinal) && !key.StartsWith("city/", StringComparison.Ordinal))
+        if (!textures.HasStock && !key.StartsWith("unit/", StringComparison.Ordinal)
+            && !key.StartsWith("city/", StringComparison.Ordinal))
+        {
             return;
+        }
+
         var logical = textures.Logical(key);
         bool mask = batchingForeground && tint is not null && gpuFeatures.HasFlag(MapGpuFeatures.Masks);
         // DrawAtlas's DstIn takes instance color as destination and image alpha
@@ -251,25 +376,41 @@ public sealed partial class MapPainter
             var atlasKey = new MapGpuSpriteAtlas.Key(key, image.Width, image.Height,
                 whiteMask ? uint.MaxValue : !mask && tint is SKColor color ? (uint)color : null);
             if (canvas.Commands is { } commands)
+            {
                 commands.Add(new(MapForegroundCommands.Kind.Sprite, destination, Image: image, Key: atlasKey,
                     Sampling: Sampling, Paint: commands.Capture(paint), Tint: mask ? tint : null));
+            }
             else if (preparingAtlas)
             {
-                if (MapGpuSpriteAtlas.CanBatch(image, destination, paint)) spriteAtlas.Collect(atlasKey, image);
+                if (MapGpuSpriteAtlas.CanBatch(image, destination, paint))
+                {
+                    spriteAtlas.Collect(atlasKey, image);
+                }
             }
-            else spriteAtlas.Draw(canvas.Immediate!, atlasKey, image, destination, Sampling, paint, mask ? tint : null);
+            else
+            {
+                spriteAtlas.Draw(canvas.Immediate!, atlasKey, image, destination, Sampling, paint, mask ? tint : null);
+            }
         }
-        else canvas.DrawImage(image, destination, Sampling, paint);
+        else
+        {
+            canvas.DrawImage(image, destination, Sampling, paint);
+        }
     }
 
     private void DrawTallImprovements(MapArtCanvas canvas, MapScene scene, ObservedTile tile, float x, float y,
         float zoom, double tier, MapDetail detail)
     {
-        if (detail != MapDetail.Full || tile.Terrain is null || (tile.Improvements & MapImprovements.Fortification) == 0)
+        if (detail != MapDetail.Full || tile.Terrain is null
+            || (tile.Improvements & MapImprovements.Fortification) == 0)
+        {
             return;
+        }
+
         string key = MapTileArt.Airbase(tile)
             ? tile.AirbaseOccupant.Value?.Owner is CivilizationSlot aircraft
-                ? Catalog.Factions[scene.Annotations.ColorRole(aircraft)].OccupiedAirbase : Catalog.Improvements["airbase"]
+                ? Catalog.Factions[scene.Annotations.ColorRole(aircraft)].OccupiedAirbase
+                : Catalog.Improvements["airbase"]
             : Catalog.Improvements["fortress"];
         Sprite(canvas, key, x, y, zoom, tier);
     }
@@ -285,8 +426,16 @@ public sealed partial class MapPainter
             paint.Color = info is null ? Unavailable : Color(scene, info.Owner);
             canvas.DrawRoundRect(x + 28 * zoom, y + 24 * zoom, 8 * zoom, 8 * zoom, 2, 2, paint);
         }
-        else Sprite(canvas, art.Body, x, y, zoom, tier);
-        if (info is null) return;
+        else
+        {
+            Sprite(canvas, art.Body, x, y, zoom, tier);
+        }
+
+        if (info is null)
+        {
+            return;
+        }
+
         var faction = Catalog.Factions[scene.Annotations.ColorRole(info.Owner)];
         SKColor owner = Color(scene, info.Owner);
         if (info.Garrison.Value == MapPresence.Present)
@@ -310,7 +459,9 @@ public sealed partial class MapPainter
             Badge(canvas, paint, font, number, badge, size, owner, PopulationInk(owner));
         }
         if (detail == MapDetail.Full && info.Disorder.Value == MapPresence.Present)
+        {
             Sprite(canvas, Catalog.Disorder, x + 16 * zoom, y + 6 * zoom, zoom, tier, tint: owner);
+        }
     }
 
     private static CityArt? CityBinding(ObservedMapCity city) =>
@@ -320,21 +471,44 @@ public sealed partial class MapPainter
         ? Catalog.Leader : unit.Type.Value < Catalog.Units.Count ? Catalog.Units[unit.Type.Value]
         : throw new InvalidDataException($"Unsupported unit-art identity {unit.Type.Value}");
 
-    private void DrawUnit(MapArtCanvas canvas, MapScene scene, ObservedMapUnit unit, int count, float x, float y, float zoom,
-        double tier, MapDetail detail, MapDisplay display, SKPaint paint, SKPaint bodyPaint, SKFont font, SKColorFilter greyscale)
+    private void DrawUnit(
+        MapArtCanvas canvas,
+        MapScene scene,
+        ObservedMapUnit unit,
+        int count,
+        float x,
+        float y,
+        float zoom,
+        double tier,
+        MapDetail detail,
+        MapDisplay display,
+        SKPaint paint,
+        SKPaint bodyPaint,
+        SKFont font,
+        SKColorFilter greyscale)
     {
         canvas.Flush(spriteAtlas);
         var art = UnitBinding(unit);
         var shieldColors = textures.ShieldColors(scene.Annotations.ColorRole(unit.Owner));
         var state = unit.Details;
         var rearShadow = Color("stackShadow");
-        bool sleeping = state.Order.Value == UnitOrder.Sleeping || state.StationaryAircraft.Value == MapPresence.Present;
+        bool sleeping = state.Order.Value == UnitOrder.Sleeping
+            || state.StationaryAircraft.Value == MapPresence.Present;
         if (detail != MapDetail.Overview)
         {
-            Sprite(canvas, art.Body, x + 2 * zoom, y + 2 * zoom, zoom, tier, tint: count > 1 ? rearShadow : Color("unitShadow"));
+            Sprite(
+                canvas,
+                art.Body,
+                x + 2 * zoom,
+                y + 2 * zoom,
+                zoom,
+                tier,
+                tint: count > 1 ? rearShadow : Color("unitShadow"));
         }
         if (sleeping && display.Sentry == SentryAppearance.Silhouette)
+        {
             Sprite(canvas, art.Body, x, y, zoom, tier, tint: Color("sentrySilhouette"));
+        }
         else
         {
             bodyPaint.ColorFilter = sleeping ? greyscale : null;
@@ -342,7 +516,9 @@ public sealed partial class MapPainter
         }
 
         if (detail != MapDetail.Overview && state.Order.Value == UnitOrder.Fortified)
+        {
             Sprite(canvas, Catalog.Improvements["fortified"], x, y, zoom, tier);
+        }
 
         var anchor = textures.Marker(art.Body, art.Shield);
         float shieldX = x + anchor.X * zoom, shieldY = y + anchor.Y * zoom;
@@ -382,16 +558,40 @@ public sealed partial class MapPainter
             {
                 font.Size = size;
                 float orderSize = Math.Clamp(size * (width - 2) / font.MeasureText(order, paint), 7, size);
-                Badge(canvas, paint, font, order, SKRect.Create(shieldX, orderTop, width, height), orderSize, HudBackground);
+                Badge(
+                    canvas,
+                    paint,
+                    font,
+                    order,
+                    SKRect.Create(shieldX, orderTop, width, height),
+                    orderSize,
+                    HudBackground);
             }
             if (count > 1)
             {
                 string total = count.ToString(CultureInfo.InvariantCulture);
                 float countWidth = BadgeWidth(font, paint, total, size, width);
-                Badge(canvas, paint, font, total, SKRect.Create(shieldX + width, shieldY, countWidth, height), size, HudBackground);
+                Badge(
+                    canvas,
+                    paint,
+                    font,
+                    total,
+                    SKRect.Create(shieldX + width, shieldY, countWidth, height),
+                    size,
+                    HudBackground);
             }
             if (work.Length != 0)
-                Badge(canvas, paint, font, work, SKRect.Create(shieldX, workTop, workWidth, height), size, HudBackground);
+            {
+                Badge(
+                    canvas,
+                    paint,
+                    font,
+                    work,
+                    SKRect.Create(shieldX, workTop, workWidth, height),
+                    size,
+                    HudBackground);
+            }
+
             if (state.Veteran.Value == MapPresence.Present)
             {
                 float radius = Math.Max(1, 1.3f * zoom);
@@ -404,8 +604,16 @@ public sealed partial class MapPainter
 
     internal static string OrderLabel(MapUnitDetails details)
     {
-        if (details.Waiting.Value == MapPresence.Present) return "?";
-        if (details.Automated.Value == MapPresence.Present) return "A";
+        if (details.Waiting.Value == MapPresence.Present)
+        {
+            return "?";
+        }
+
+        if (details.Automated.Value == MapPresence.Present)
+        {
+            return "A";
+        }
+
         return details.Order.Value switch
         {
             UnitOrder.None => "–",
@@ -426,8 +634,16 @@ public sealed partial class MapPainter
 
     internal static string? HealthBand(MapFact<MapHealth> fact)
     {
-        if (fact.Value is not { } hp) return null;
-        if (hp.Maximum <= 0 || hp.Remaining * 3 <= hp.Maximum) return "healthRed";
+        if (fact.Value is not { } hp)
+        {
+            return null;
+        }
+
+        if (hp.Maximum <= 0 || hp.Remaining * 3 <= hp.Maximum)
+        {
+            return "healthRed";
+        }
+
         return hp.Remaining * 3 <= 2L * hp.Maximum ? "healthYellow" : "healthGreen";
     }
 
@@ -460,12 +676,23 @@ public sealed partial class MapPainter
 
     private static float BadgeWidth(SKFont font, SKPaint paint, string value, float size, float minimum)
     {
-        if (value.Length == 0) return minimum;
+        if (value.Length == 0)
+        {
+            return minimum;
+        }
+
         font.Size = size;
         return Math.Max(minimum, MathF.Ceiling(font.MeasureText(value, paint) + 2));
     }
 
-    private void Badge(MapArtCanvas canvas, SKPaint paint, SKFont font, string value, SKRect box, float size, SKColor fill,
+    private void Badge(
+        MapArtCanvas canvas,
+        SKPaint paint,
+        SKFont font,
+        string value,
+        SKRect box,
+        float size,
+        SKColor fill,
         SKColor? foreground = null)
     {
         paint.Color = fill;
@@ -485,8 +712,12 @@ public sealed partial class MapPainter
     private List<CityLabel> PlanLabels(MapScene scene, FrameKey frame)
     {
         var labels = new List<CityLabel>();
-        if (frame.Display.Bare || MapTileArt.Detail(frame.Camera.Zoom) == MapDetail.Overview || scene.Map.Cities.Count == 0)
+        if (frame.Display.Bare || MapTileArt.Detail(frame.Camera.Zoom) == MapDetail.Overview
+            || scene.Map.Cities.Count == 0)
+        {
             return labels;
+        }
+
         using var paint = new SKPaint { IsAntialias = true };
         using var font = text.Font(11);
         var occupied = new HashSet<(int X, int Y)>();
@@ -498,22 +729,51 @@ public sealed partial class MapPainter
         foreach (var (point, display) in scene.VisibleLabels(bounds))
         {
             var cell = scene.Objects(point);
-            if (cell.City is not { } city || cell.Name is not { Length: > 0 } name) continue;
+            if (cell.City is not { } city || cell.Name is not { Length: > 0 } name)
+            {
+                continue;
+            }
+
             float x = (float)camera.ScreenX(display), y = (float)camera.ScreenY(point.Y) + 21 * zoom;
             var caption = text.Fit(name, maximum - 12, font, paint);
-            if (caption.Text.Length == 0) continue;
+            if (caption.Text.Length == 0)
+            {
+                continue;
+            }
+
             float width = caption.Width + 8;
             var box = SKRect.Create(x - width / 2, y - size, width, size + 4);
-            if (box.Left < 0 || box.Top < 0 || box.Right > frame.Width || box.Bottom > frame.Height) continue;
-            int left = (int)(box.Left / 20), right = (int)(box.Right / 20), top = (int)(box.Top / 10), bottom = (int)(box.Bottom / 10);
+            if (box.Left < 0 || box.Top < 0 || box.Right > frame.Width || box.Bottom > frame.Height)
+            {
+                continue;
+            }
+
+            int left = (int)(box.Left / 20),
+                right = (int)(box.Right / 20),
+                top = (int)(box.Top / 10),
+                bottom = (int)(box.Bottom / 10);
             bool free = true;
             for (int row = top; row <= bottom && free; row++)
+            {
                 for (int column = left; column <= right && free; column++)
+                {
                     free = !occupied.Contains((column, row));
-            if (!free) continue;
+                }
+            }
+
+            if (!free)
+            {
+                continue;
+            }
+
             for (int row = top; row <= bottom; row++)
+            {
                 for (int column = left; column <= right; column++)
+                {
                     occupied.Add((column, row));
+                }
+            }
+
             labels.Add(new(caption.Text, box, city.Details is { } info ? Color(scene, info.Owner) : Unavailable));
         }
         return labels;
@@ -521,12 +781,22 @@ public sealed partial class MapPainter
 
     private static float LabelFontSize(FrameKey frame) => Math.Clamp((float)frame.Camera.Zoom * 11, 10, 22);
 
-    private void PaintCityLabels(MapArtCanvas canvas, List<CityLabel> labels, FrameKey frame, SKPaint paint, SKFont font, SKRect? damage)
+    private void PaintCityLabels(
+        MapArtCanvas canvas,
+        List<CityLabel> labels,
+        FrameKey frame,
+        SKPaint paint,
+        SKFont font,
+        SKRect? damage)
     {
         float size = LabelFontSize(frame);
         foreach (var (text, box, owner) in labels)
         {
-            if (damage is { } clip && !clip.IntersectsWith(box)) continue;
+            if (damage is { } clip && !clip.IntersectsWith(box))
+            {
+                continue;
+            }
+
             Badge(canvas, paint, font, text, box, size, HudBackground);
             paint.Color = owner;
             canvas.DrawRect(box.Left, box.Top + 2, 2, box.Height - 4, paint);

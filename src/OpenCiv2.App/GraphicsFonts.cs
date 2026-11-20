@@ -16,10 +16,16 @@ internal sealed class GraphicsFonts : FontCollectionBase
 
     public static void VerifyRoles()
     {
-        foreach (var (family, name) in new[] { (Sans, "DejaVu Sans"), (Serif, "DejaVu Serif"), (Mono, "DejaVu Sans Mono") })
+        foreach (var (family, name) in new[] {
+            (Sans, "DejaVu Sans"),
+            (Serif, "DejaVu Serif"),
+            (Mono, "DejaVu Sans Mono")
+            })
         {
             if (!FontManager.Current.TryGetGlyphTypeface(new Typeface(family), out var face) || face.FamilyName != name)
+            {
                 throw new InvalidDataException($"Could not resolve pinned font family '{name}'");
+            }
         }
     }
 
@@ -29,7 +35,9 @@ internal sealed class GraphicsFonts : FontCollectionBase
         {
             using var stream = sources.OpenFace(id);
             if (!TryAddGlyphTypeface(stream, out _))
+            {
                 throw new InvalidDataException($"Avalonia rejected pinned face '{id}'");
+            }
         }
     }
 }

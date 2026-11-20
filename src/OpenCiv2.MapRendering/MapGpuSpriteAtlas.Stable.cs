@@ -15,14 +15,26 @@ internal sealed partial class MapGpuSpriteAtlas
     {
         foreach (var item in pending.Values)
         {
-            if (!current.Contains(item.Id) || entries.ContainsKey(item.Id)) continue;
+            if (!current.Contains(item.Id) || entries.ContainsKey(item.Id))
+            {
+                continue;
+            }
+
             int width = item.Width + 2 * Gutter, height = item.Height + 2 * Gutter;
             long bytes = 4L * width * height;
             while (Bytes + bytes > Budget)
             {
                 var victim = stableRecency.First;
-                while (victim is not null && current.Contains(victim.Value)) victim = victim.Next;
-                if (victim is null) break;
+                while (victim is not null && current.Contains(victim.Value))
+                {
+                    victim = victim.Next;
+                }
+
+                if (victim is null)
+                {
+                    break;
+                }
+
                 var page = entries[victim.Value].Page;
                 Bytes -= 4L * page.Width * page.Height;
                 page.Dispose();
@@ -31,21 +43,47 @@ internal sealed partial class MapGpuSpriteAtlas
                 stableRecency.Remove(victim);
                 Evictions++;
             }
-            if (Bytes + bytes > Budget) continue;
+            if (Bytes + bytes > Budget)
+            {
+                continue;
+            }
+
             var source = SKRect.Create(Gutter, Gutter, item.Width, item.Height);
             SKImage image;
             if (item.Pixels is not null)
             {
                 using var bitmap = new SKBitmap(new SKImageInfo(width, height, SKColorType.Rgba8888, item.Alpha));
                 using var pixels = bitmap.PeekPixels();
-                if (!item.Pixels.ReadPixels(bitmap.Info.WithSize(item.Width, item.Height), pixels.GetPixels(Gutter, Gutter), pixels.RowBytes, 0, 0))
+                if (!item.Pixels.ReadPixels(
+                    bitmap.Info.WithSize(item.Width, item.Height),
+                    pixels.GetPixels(Gutter, Gutter),
+                    pixels.RowBytes,
+                    0,
+                    0))
+                {
                     throw new MapGpuResourceException("Could not pack stable sprite pixels");
+                }
+
                 var words = pixels.GetPixelSpan<uint>();
                 int stride = pixels.RowBytes / 4;
                 for (int y = 0; y < height; y++)
+                {
                     for (int x = 0; x < width; x++)
+                    {
                         if (x < Gutter || y < Gutter || x >= width - Gutter || y >= height - Gutter)
-                            words[y * stride + x] = words[Math.Clamp(y, Gutter, height - Gutter - 1) * stride + Math.Clamp(x, Gutter, width - Gutter - 1)];
+                        {
+                            words[y * stride + x] = words[
+                                Math.Clamp(
+                                    y,
+                                    Gutter,
+                                    height - Gutter - 1) * stride + Math.Clamp(
+                                        x,
+                                        Gutter,
+                                        width - Gutter - 1)];
+                        }
+                    }
+                }
+
                 bitmap.SetImmutable();
                 image = SKImage.FromBitmap(bitmap);
             }
@@ -55,6 +93,7 @@ internal sealed partial class MapGpuSpriteAtlas
                 var canvas = recorder.BeginRecording(SKRect.Create(width, height));
                 canvas.Clear(SKColors.Transparent);
                 for (int gy = -1; gy <= 1; gy++)
+                {
                     for (int gx = -1; gx <= 1; gx++)
                     {
                         float sx = gx > 0 ? item.Width - 1 : 0, sy = gy > 0 ? item.Height - 1 : 0;
@@ -62,27 +101,39 @@ internal sealed partial class MapGpuSpriteAtlas
                         float dy = gy < 0 ? 0 : gy > 0 ? source.Bottom : source.Top;
                         float scaleX = gx == 0 ? 1 : Gutter, scaleY = gy == 0 ? 1 : Gutter;
                         canvas.Save();
-                        canvas.ClipRect(SKRect.Create(dx, dy, gx == 0 ? item.Width : Gutter, gy == 0 ? item.Height : Gutter));
+                        canvas.ClipRect(
+                            SKRect.Create(dx, dy, gx == 0 ? item.Width : Gutter, gy == 0 ? item.Height : Gutter));
                         canvas.Translate(dx - sx * scaleX, dy - sy * scaleY);
                         canvas.Scale(scaleX, scaleY);
                         canvas.DrawPicture(item.Picture);
                         canvas.Restore();
                     }
+                }
+
                 using var picture = recorder.EndRecording();
-                image = SKImage.FromPicture(picture, new(width, height)) ?? throw new MapGpuResourceException("Could not allocate stable sprite page");
+                image = SKImage.FromPicture(picture, new(width, height))
+                    ?? throw new MapGpuResourceException("Could not allocate stable sprite page");
             }
             entries.Add(item.Id, new(image, source));
             stableNodes.Add(item.Id, stableRecency.AddLast(item.Id));
             Bytes += bytes;
             Admissions++;
         }
-        foreach (var item in pending.Values) { item.Picture.Dispose(); item.Pixels?.Dispose(); }
+        foreach (var item in pending.Values)
+        {
+            item.Picture.Dispose();
+            item.Pixels?.Dispose();
+        }
         pending.Clear();
     }
 
     private void ClearStablePages()
     {
-        foreach (var id in stableRecency) entries[id].Page.Dispose();
+        foreach (var id in stableRecency)
+        {
+            entries[id].Page.Dispose();
+        }
+
         stableRecency.Clear();
         stableNodes.Clear();
     }

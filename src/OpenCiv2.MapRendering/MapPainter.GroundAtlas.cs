@@ -8,23 +8,39 @@ public sealed partial class MapPainter
     internal long PackedGroundBytes => retainedGroundAtlas?.Image is null ? 0 : GroundAtlasSide * GroundAtlasSide * 4L;
     private GroundAtlas? retainedGroundAtlas;
     private (double Tier, bool HalfSize) retainedGroundAtlasKey;
+
     private readonly record struct PackedGroundSprite(SKRect Source, SKPointI Offset, int OriginalWidth);
 
     private GroundAtlas? PackRetainedGround(IReadOnlyDictionary<string, SKImage> images, double tier, bool halfSize)
     {
         var key = (tier, halfSize);
-        if (retainedGroundAtlasKey != key) ClearRetainedGroundAtlas();
+        if (retainedGroundAtlasKey != key)
+        {
+            ClearRetainedGroundAtlas();
+        }
+
         bool extending = retainedGroundAtlas is not null;
         retainedGroundAtlasKey = key;
         retainedGroundAtlas ??= new(halfSize, immutableBacking: true);
-        if (retainedGroundAtlas.Include(images)) return retainedGroundAtlas;
+        if (retainedGroundAtlas.Include(images))
+        {
+            return retainedGroundAtlas;
+        }
 
         // The resident texture may fill after visiting more of the map.
         // Retry with only this batch's sources before falling back to separate images.
         ClearRetainedGroundAtlas();
-        if (!extending) return null;
+        if (!extending)
+        {
+            return null;
+        }
+
         retainedGroundAtlas = new(halfSize, immutableBacking: true);
-        if (retainedGroundAtlas.Include(images)) return retainedGroundAtlas;
+        if (retainedGroundAtlas.Include(images))
+        {
+            return retainedGroundAtlas;
+        }
+
         ClearRetainedGroundAtlas();
         return null;
     }
@@ -46,36 +62,74 @@ public sealed partial class MapPainter
 
         public bool Include(IReadOnlyDictionary<string, SKImage> images)
         {
-            if (Image is not null && !dirty && images.Keys.All(sources.ContainsKey)) return true;
+            if (Image is not null && !dirty && images.Keys.All(sources.ContainsKey))
+            {
+                return true;
+            }
+
             pixels ??= new();
             if (pixels.GetPixels() == IntPtr.Zero)
             {
-                var info = new SKImageInfo(GroundAtlasSide, GroundAtlasSide, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
+                var info = new SKImageInfo(
+                    GroundAtlasSide,
+                    GroundAtlasSide,
+                    SKImageInfo.PlatformColorType,
+                    SKAlphaType.Premul);
                 var flags = Image is null ? SKBitmapAllocFlags.ZeroPixels : SKBitmapAllocFlags.None;
                 if (!pixels.TryAllocPixels(info, flags) ||
                     Image is { } existing && !existing.ReadPixels(info, pixels.GetPixels(), pixels.RowBytes))
+                {
                     return false;
+                }
             }
             using var destination = pixels.PeekPixels();
-            if (destination is null) return false;
+            if (destination is null)
+            {
+                return false;
+            }
+
             foreach (var (binding, image) in images)
             {
-                if (sources.ContainsKey(binding)) continue;
+                if (sources.ContainsKey(binding))
+                {
+                    continue;
+                }
+
                 using var filtered = halfSize ? SampleAtHalfSize(image) : null;
-                if (halfSize && filtered is null) return false;
+                if (halfSize && filtered is null)
+                {
+                    return false;
+                }
+
                 using var source = (filtered ?? image).PeekPixels();
-                if (source is null) return false;
+                if (source is null)
+                {
+                    return false;
+                }
+
                 var crop = GroundSpriteBounds(source);
                 int paddedWidth = crop.Width + 2, paddedHeight = crop.Height + 2;
-                if (paddedWidth > GroundAtlasSide) return false;
+                if (paddedWidth > GroundAtlasSide)
+                {
+                    return false;
+                }
+
                 if (left + paddedWidth > GroundAtlasSide)
                 {
                     top += shelf;
                     left = shelf = 0;
                 }
-                if (top + paddedHeight > GroundAtlasSide) return false;
+                if (top + paddedHeight > GroundAtlasSide)
+                {
+                    return false;
+                }
+
                 var box = SKRectI.Create(left + 1, top + 1, crop.Width, crop.Height);
-                if (!CopyWithGutter(source, destination, crop, box)) return false;
+                if (!CopyWithGutter(source, destination, crop, box))
+                {
+                    return false;
+                }
+
                 sources.Add(binding, new(box, new(crop.Left, crop.Top), source.Width));
                 dirty = true;
                 shelf = Math.Max(shelf, paddedHeight);
@@ -91,7 +145,11 @@ public sealed partial class MapPainter
                 pixels.Dispose();
                 pixels = null;
             }
-            else snapshot = SKImage.FromPixelCopy(destination);
+            else
+            {
+                snapshot = SKImage.FromPixelCopy(destination);
+            }
+
             Image?.Dispose();
             Image = snapshot;
             dirty = Image is null;
@@ -102,8 +160,13 @@ public sealed partial class MapPainter
         {
             // Use the same linear atlas sampler against transparent pixels.
             // Keep the sampled pixels premultiplied for aligned compositing.
-            using var raster = SKSurface.Create(new SKImageInfo(image.Width / 2, image.Height / 2, image.ColorType, SKAlphaType.Premul));
-            if (raster is null) return null;
+            using var raster = SKSurface.Create(
+                new SKImageInfo(image.Width / 2, image.Height / 2, image.ColorType, SKAlphaType.Premul));
+            if (raster is null)
+            {
+                return null;
+            }
+
             raster.Canvas.Clear(SKColors.Transparent);
             raster.Canvas.DrawAtlas(image, [SKRect.Create(image.Width, image.Height)], [new(.5f, 0, 0, 0)], Sampling);
             return raster.Snapshot();
@@ -128,18 +191,31 @@ public sealed partial class MapPainter
         {
             var logical = textures.Logical(key);
             if (image.Width != logical.X || image.Height != logical.Y || ((image.Width | image.Height) & 1) != 0)
+            {
                 return false;
+            }
+
             using var space = image.ColorSpace;
-            if (space is not null) return false;
+            if (space is not null)
+            {
+                return false;
+            }
         }
         foreach (var plan in plans)
+        {
             foreach (var positions in plan.Groups.Values)
+            {
                 for (int i = 0; i < positions.Count; i++)
                 {
                     var position = positions[i];
                     if (position.X != MathF.Truncate(position.X) || position.Y != MathF.Truncate(position.Y))
+                    {
                         return false;
+                    }
                 }
+            }
+        }
+
         return true;
     }
 
@@ -153,14 +229,21 @@ public sealed partial class MapPainter
             var row = pixels.Slice(y * stride, width * 4);
             for (int x = 0; x < width; x++)
             {
-                if (row[x * 4 + 3] == 0) continue;
+                if (row[x * 4 + 3] == 0)
+                {
+                    continue;
+                }
+
                 left = Math.Min(left, x);
                 top = Math.Min(top, y);
                 right = Math.Max(right, x);
                 bottom = Math.Max(bottom, y);
             }
         }
-        if (right < 0) return SKRectI.Create(1, 1);
+        if (right < 0)
+        {
+            return SKRectI.Create(1, 1);
+        }
         // Leave transparent source texels around the visible region for
         // filtering and edge coverage. The offset restores the original anchor.
         const int margin = 2;
@@ -194,7 +277,11 @@ public sealed partial class MapPainter
     {
         var canvas = surface.Canvas;
         canvas.Clear(Background);
-        if (plan.Groups.Count == 0) return;
+        if (plan.Groups.Count == 0)
+        {
+            return;
+        }
+
         float zoom = (float)plan.Chunk.Camera.Zoom;
         int count = plan.Groups.Values.Sum(positions => positions.Count);
         var rects = new SKRect[count];

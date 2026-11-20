@@ -41,7 +41,12 @@ public record struct Civilization
 /// <summary>F02 §4/F06 §3 logical fields. Scan selectors here do not install a running session.</summary>
 public record struct GlobalValues
 {
-    public GlobalValues() { ActiveUnit = new(); MovingUnit = new(); }
+    public GlobalValues()
+    {
+        ActiveUnit = new();
+        MovingUnit = new();
+    }
+
     public ushort Rules;
     public uint GameOptions;
     public ushort TransientFlags, GameFlags, MessageOptions, ShownEventFlags;
@@ -67,7 +72,11 @@ public static class CivilizationCensus
     /// <summary>F06 §6 stage 17: rebuild only these two counters in civilization/slot order, modulo 256.</summary>
     public static void RebuildLoadedUnits(Span<Civilization> civilizations, EntityPools pools)
     {
-        if (civilizations.Length != 8) throw new ArgumentException("Loaded census requires eight civilizations", nameof(civilizations));
+        if (civilizations.Length != 8)
+        {
+            throw new ArgumentException("Loaded census requires eight civilizations", nameof(civilizations));
+        }
+
         ArgumentNullException.ThrowIfNull(pools);
         for (int civ = 0; civ < 8; ++civ)
         {
@@ -76,16 +85,34 @@ public static class CivilizationCensus
             current.UnitsInProduction = default;
             foreach (ref readonly var unit in pools.Units.Scanned)
             {
-                if (!unit.Token.Occupied || unit.Owner.Value != civ) continue;
+                if (!unit.Token.Occupied || unit.Owner.Value != civ)
+                {
+                    continue;
+                }
+
                 int type = unit.Type.Value;
-                if (type >= 62) throw new ArgumentOutOfRangeException(nameof(pools), "Loaded unit census has no type backing");
+                if (type >= 62)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(pools), "Loaded unit census has no type backing");
+                }
+
                 current.UnitsActive[type] = unchecked((byte)(current.UnitsActive[type] + 1));
             }
             foreach (ref readonly var city in pools.Cities.Scanned)
             {
-                if (!city.Token.Occupied || city.Owner.Value != civ || city.Production < 0) continue;
+                if (!city.Token.Occupied || city.Owner.Value != civ || city.Production < 0)
+                {
+                    continue;
+                }
+
                 int type = city.Production;
-                if (type >= 62) throw new ArgumentOutOfRangeException(nameof(pools), "Loaded production census has no type backing");
+                if (type >= 62)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        nameof(pools),
+                        "Loaded production census has no type backing");
+                }
+
                 current.UnitsInProduction[type] = unchecked((byte)(current.UnitsInProduction[type] + 1));
             }
         }

@@ -10,10 +10,15 @@ public sealed class MapRendererPreferences(MapRendererOptions startup, MapRender
     public MapRendererOptions Saved { get; private set; } = saved;
     public string? Warning { get; } = warning;
     public bool CanSave => save is not null;
+
     public void Save(MapRendererMode mode)
     {
         var next = new MapRendererOptions(mode, Startup.GpuCacheMiB);
-        if (save is null) throw new InvalidOperationException("Renderer preferences are unavailable in this host");
+        if (save is null)
+        {
+            throw new InvalidOperationException("Renderer preferences are unavailable in this host");
+        }
+
         save(next);
         Saved = next;
     }

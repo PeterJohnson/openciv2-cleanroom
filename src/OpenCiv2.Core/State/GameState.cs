@@ -12,6 +12,7 @@ public sealed class ProcessContext
     public OrdinaryPreferences OrdinaryPreferences = new();
     public TextParameters TextParameters { get; private set; } = new();
     public TileCell Fallback { get; private set; } = new();
+
     /// <summary>Install staged checkpoint contents without callbacks or allocation. Process, token and
     /// rule-provider identities remain stable. Old world/fallback/text references are invalidated.</summary>
     public void SwapContents(ProcessContext other)
@@ -26,11 +27,23 @@ public sealed class ProcessContext
         (Fallback, other.Fallback) = (other.Fallback, Fallback);
     }
 }
+/// <summary>
+/// An identity marker that distinguishes a world instance from replacements with otherwise equal values.
+/// </summary>
 public sealed class WorldLifetime;
 /// <summary>Logical world and retained workspaces. Session owns replacement, authority and fresh-game reset.</summary>
 public sealed class GameState
 {
-    public GameState(ProcessContext process) { ArgumentNullException.ThrowIfNull(process); Map = new(process.Fallback); }
+    /// <summary>
+    /// Creates empty world storage bound to the process fallback tile; setup and loading remain explicit
+    /// operations.
+    /// </summary>
+    public GameState(ProcessContext process)
+    {
+        ArgumentNullException.ThrowIfNull(process);
+        Map = new(process.Fallback);
+    }
+
     public WorldLifetime Lifetime { get; } = new();
     public EntityPools Entities { get; } = new();
     public UnitStackState UnitStacks { get; } = new();

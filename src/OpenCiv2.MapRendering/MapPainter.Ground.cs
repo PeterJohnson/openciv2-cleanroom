@@ -10,7 +10,10 @@ public sealed partial class MapPainter
     private const int ChunkSize = 256, ChunkMargin = 2;
     private const int MinimumGroundBatch = 2, MinimumPackedGroundBatch = 4;
     private const int GroundBatchLimit = 24, GroundPlacementLimit = 96, GroundBatchBytes = 8 * 1024 * 1024;
-    private static readonly ParallelOptions GroundWorkers = new() { MaxDegreeOfParallelism = Math.Min(12, Environment.ProcessorCount) };
+    private static readonly ParallelOptions GroundWorkers = new()
+    {
+        MaxDegreeOfParallelism = Math.Min(12, Environment.ProcessorCount)
+    };
     private const long StandardGroundBudget = 240L * 1024 * 1024;
     private readonly long machineGroundBudget = OperatingSystem.IsBrowser() ? StandardGroundBudget :
         Math.Max(StandardGroundBudget, GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 16);
@@ -22,12 +25,20 @@ public sealed partial class MapPainter
     private bool GpuGround => gpuComposition && (gpuFeatures & (MapGpuFeatures.Offload | MapGpuFeatures.Terrain)) != 0;
 
     private readonly record struct GroundKey(int Column, int Row, double Tier, MapDetail Detail, bool Bare);
+
     private readonly record struct GroundPlacement(GroundKey Key, SKRect Target, int Preparation);
+
     private readonly record struct GroundChunk(int Width, int Height, SKImageInfo Backing, MapCamera Camera);
-    private readonly record struct GroundPlan(GroundChunk Chunk, Dictionary<(TileArtLayer Layer, int Row, byte Piece, string Binding), GroundPositions> Groups,
+
+    private readonly record struct GroundPlan(
+        GroundChunk Chunk,
+        Dictionary<(TileArtLayer Layer, int Row, byte Piece, string Binding), GroundPositions> Groups,
         double PositionScale = 1);
+
     private readonly record struct TopologyKey(int Column, int Row, MapDetail Detail, bool Bare);
+
     private sealed record TopologyPlan(TopologyKey Key, GroundPlan Plan, long EstimatedBytes);
+
     private readonly Dictionary<TopologyKey, LinkedListNode<TopologyPlan>> topology = [];
     private readonly LinkedList<TopologyPlan> topologyRecency = [];
     private long topologyBytes;
@@ -41,6 +52,7 @@ public sealed partial class MapPainter
         public readonly int Count => 1 + (Additional?.Count ?? 0);
         public readonly SKPoint this[int index] => index == 0 ? First : Additional![index - 1];
     }
+
     private sealed record GroundImage(GroundKey Key, SKImage Image, int Width, int Height, int Batches)
     {
         public long Bytes => (long)Image.Width * Image.Height * 4;
@@ -71,8 +83,15 @@ public sealed partial class MapPainter
     // camera changes. Rasterize with a gutter for sprites that overlap chunks.
     private readonly record struct GroundWork(int Used, int Prepared, int Batches, double Tier, long PaintedPixels = 0);
 
-    private GroundWork DrawGround(SKCanvas output, MapScene scene, FrameKey frame,
-        MapDetail detail, SKRect? damage, SKRegion? scrollDamage = null, SKRegion? uncovered = null, bool reuseAtlas = false,
+    private GroundWork DrawGround(
+        SKCanvas output,
+        MapScene scene,
+        FrameKey frame,
+        MapDetail detail,
+        SKRect? damage,
+        SKRegion? scrollDamage = null,
+        SKRegion? uncovered = null,
+        bool reuseAtlas = false,
         HashSet<MapPoint>? settledUpdates = null)
     {
         textures.CompleteStartupGround();
@@ -116,18 +135,29 @@ public sealed partial class MapPainter
                 {
                     int width = Math.Min(ChunkSize, mapWidth - column * ChunkSize);
                     int height = Math.Min(ChunkSize, mapHeight - row * ChunkSize);
-                    if (settledUpdates is not null && !settledUpdates.Any(point => Touches(column, row, width, height, point, map)))
+                    if (settledUpdates is not null
+                        && !settledUpdates.Any(point => Touches(column, row, width, height, point, map)))
+                    {
                         continue;
+                    }
+
                     float x = (float)(camera.X + (column * ChunkSize + shift - 32) * zoom);
                     float y = (float)(camera.Y + (row * ChunkSize - 16) * zoom);
                     var box = SKRect.Create(x, y, (float)(width * zoom), (float)(height * zoom));
                     if (settledUpdates is not null)
                     {
-                        var coverage = SKRectI.Intersect(ToBacking(box, frame.Scaling),
-                            SKRectI.Create((int)Math.Ceiling(frame.Width * frame.Scaling), (int)Math.Ceiling(frame.Height * frame.Scaling)));
+                        var coverage = SKRectI.Intersect(
+                            ToBacking(box, frame.Scaling),
+                            SKRectI.Create(
+                                (int)Math.Ceiling(frame.Width * frame.Scaling),
+                                (int)Math.Ceiling(frame.Height * frame.Scaling)));
                         painted += (long)coverage.Width * coverage.Height;
                     }
-                    if (scrollDamage is not null && !scrollDamage.Intersects(ToBacking(box, frame.Scaling))) continue;
+                    if (scrollDamage is not null && !scrollDamage.Intersects(ToBacking(box, frame.Scaling)))
+                    {
+                        continue;
+                    }
+
                     var key = new GroundKey(column, row, tier, detail, frame.Display.Bare);
                     if (!batchMisses || pending is not { Count: > 0 } && ground.ContainsKey(key))
                     {
@@ -146,7 +176,10 @@ public sealed partial class MapPainter
                         missing.Add(key);
                     }
                     pending.Add(new(key, box, preparation));
-                    if (missing.Count == batchLimit || pending.Count == GroundPlacementLimit) FlushPending();
+                    if (missing.Count == batchLimit || pending.Count == GroundPlacementLimit)
+                    {
+                        FlushPending();
+                    }
                 }
             }
         }
@@ -156,7 +189,11 @@ public sealed partial class MapPainter
         void DrawOne(GroundKey key, SKRect box)
         {
             var entry = FindGround(scene, key, out bool created);
-            if (created) prepared++;
+            if (created)
+            {
+                prepared++;
+            }
+
             Paint(entry, box);
         }
 
@@ -171,25 +208,43 @@ public sealed partial class MapPainter
             // Bias only this experimental GPU lookup by 1/1000 of a source
             // texel, retaining the same extent, to give overview ties the same
             // direction. This is sampling policy, not a change to map geometry.
-            if (gpuComposition) source.Offset(-.001f, -.001f);
+            if (gpuComposition)
+            {
+                source.Offset(-.001f, -.001f);
+            }
+
             output.DrawImage(entry.Image, source, box, CacheSampling);
             if (uncovered is not null && entry.Image.AlphaType == SKAlphaType.Opaque)
             {
                 float scale = (float)frame.Scaling;
                 // Leave the edges to the clear even when a rounded Skia box
                 // would cover them. Interior pixels are wholly within the draw.
-                var covered = new SKRectI((int)MathF.Ceiling(box.Left * scale) + 1, (int)MathF.Ceiling(box.Top * scale) + 1,
-                    (int)MathF.Floor(box.Right * scale) - 1, (int)MathF.Floor(box.Bottom * scale) - 1);
-                if (covered.Width > 0 && covered.Height > 0) uncovered.Op(covered, SKRegionOperation.Difference);
+                var covered = new SKRectI(
+                    (int)MathF.Ceiling(box.Left * scale) + 1,
+                    (int)MathF.Ceiling(box.Top * scale) + 1,
+                    (int)MathF.Floor(box.Right * scale) - 1,
+                    (int)MathF.Floor(box.Bottom * scale) - 1);
+                if (covered.Width > 0 && covered.Height > 0)
+                {
+                    uncovered.Op(covered, SKRegionOperation.Difference);
+                }
             }
         }
 
         void FlushPending()
         {
-            if (pending is not { Count: > 0 } || missing is null) return;
+            if (pending is not { Count: > 0 } || missing is null)
+            {
+                return;
+            }
+
             if (missing.Count < MinimumGroundBatch)
             {
-                foreach (var item in pending) DrawOne(item.Key, item.Target);
+                foreach (var item in pending)
+                {
+                    DrawOne(item.Key, item.Target);
+                }
+
                 pending.Clear();
                 missing.Clear();
                 return;
@@ -202,7 +257,8 @@ public sealed partial class MapPainter
                 var plans = new GroundPlan[missing.Count];
                 Parallel.For(0, plans.Length, GroundWorkers, i => plans[i] = PlanGround(scene, missing[i]));
                 groundSelectorTicks += Stopwatch.GetTimestamp() - starting;
-                var bindings = plans.SelectMany(plan => plan.Groups.Keys.Select(key => key.Binding)).Distinct().ToArray();
+                var bindings = plans.SelectMany(plan => plan.Groups.Keys.Select(key => key.Binding)).Distinct()
+                    .ToArray();
                 textures.Prepare(bindings, tier);
                 var borrowed = textures.BorrowPrepared(bindings, tier);
                 GroundAtlas? readyAtlas = null;
@@ -210,17 +266,32 @@ public sealed partial class MapPainter
                     CanPackGroundTextures(borrowed, tier))
                 {
                     if (canPackHalf && CanSampleGroundAtHalfSize(borrowed, plans))
+                    {
                         readyAtlas = Pack(borrowed, halfSize: true);
+                    }
+
                     readyAtlas ??= Pack(borrowed, halfSize: false);
                 }
-                foreach (var plan in plans) jobs.Add(AllocateGroundJob(plan, record: borrowed is null));
+                foreach (var plan in plans)
+                {
+                    jobs.Add(AllocateGroundJob(plan, record: borrowed is null));
+                }
                 // Workers use separate CPU surfaces. A cache-constrained
                 // batch can resolve textures during recording on the painter lane.
                 Parallel.ForEach(jobs, GroundWorkers, job =>
                 {
-                    if (readyAtlas is not null) PaintPackedGround(job.Surface, job.Plan, readyAtlas);
-                    else if (borrowed is not null) PaintGround(job.Surface.Canvas, job.Plan, borrowed);
-                    else job.Surface.Canvas.DrawPicture(job.Picture!);
+                    if (readyAtlas is not null)
+                    {
+                        PaintPackedGround(job.Surface, job.Plan, readyAtlas);
+                    }
+                    else if (borrowed is not null)
+                    {
+                        PaintGround(job.Surface.Canvas, job.Plan, borrowed);
+                    }
+                    else
+                    {
+                        job.Surface.Canvas.DrawPicture(job.Picture!);
+                    }
                 });
                 groundBuildTicks += Stopwatch.GetTimestamp() - starting;
                 parallelGroundChunks += jobs.Count;
@@ -242,7 +313,11 @@ public sealed partial class MapPainter
             }
             finally
             {
-                foreach (var job in jobs) job.Dispose();
+                foreach (var job in jobs)
+                {
+                    job.Dispose();
+                }
+
                 pending.Clear();
                 missing.Clear();
             }
@@ -250,7 +325,11 @@ public sealed partial class MapPainter
 
         GroundAtlas? Pack(IReadOnlyDictionary<string, SKImage> images, bool halfSize)
         {
-            if (retainPacked) return PackRetainedGround(images, tier, halfSize);
+            if (retainPacked)
+            {
+                return PackRetainedGround(images, tier, halfSize);
+            }
+
             var atlas = halfSize ? halfPacked! : packed!;
             return atlas.Include(images) ? atlas : null;
         }
@@ -296,7 +375,11 @@ public sealed partial class MapPainter
     {
         var chunk = plan.Chunk;
         var surface = AllocateGround(chunk);
-        if (!record) return new(plan, surface, null);
+        if (!record)
+        {
+            return new(plan, surface, null);
+        }
+
         try
         {
             using var recorder = new SKPictureRecorder();
@@ -318,7 +401,11 @@ public sealed partial class MapPainter
         int height = Math.Min(ChunkSize, map.Height * 16 + 16 - top);
         var info = new SKImageInfo((int)((width + 2 * ChunkMargin) * key.Tier),
             (int)((height + 2 * ChunkMargin) * key.Tier), SKImageInfo.PlatformColorType, SKAlphaType.Opaque);
-        return new(width, height, info, new((32 + ChunkMargin - left) * key.Tier, (16 + ChunkMargin - top) * key.Tier, key.Tier));
+        return new(
+            width,
+            height,
+            info,
+            new((32 + ChunkMargin - left) * key.Tier, (16 + ChunkMargin - top) * key.Tier, key.Tier));
     }
 
     private SKSurface AllocateGround(GroundChunk chunk) => allocateRaster(chunk.Backing) ??
@@ -337,7 +424,11 @@ public sealed partial class MapPainter
     {
         // Keep adjacent backing tiers resident across repeated 4K/5K zooms
         // when memory allows. Smaller viewports return to the normal cap.
-        if (physicalPixels < MinimumBandPixels) ClearRetainedGroundAtlas();
+        if (physicalPixels < MinimumBandPixels)
+        {
+            ClearRetainedGroundAtlas();
+        }
+
         long viewportBudget = physicalPixels switch
         {
             >= 14_000_000 => 544L * 1024 * 1024,
@@ -347,9 +438,17 @@ public sealed partial class MapPainter
         // GPU-backed deferred chunks share Skia's 512 MiB cache with sprites,
         // viewport targets and the host. Reserve headroom instead of retaining
         // all zoom tiers up to the software cache's 544 MiB allowance.
-        if (GpuGround) viewportBudget = Math.Min(viewportBudget, 192L * 1024 * 1024);
+        if (GpuGround)
+        {
+            viewportBudget = Math.Min(viewportBudget, 192L * 1024 * 1024);
+        }
+
         long limit = Math.Min(viewportBudget, machineGroundBudget);
-        if (limit == groundBudget) return;
+        if (limit == groundBudget)
+        {
+            return;
+        }
+
         groundBudget = limit;
         TrimGround(0);
     }
@@ -357,12 +456,18 @@ public sealed partial class MapPainter
     private void TrimGround(long incomingBytes)
     {
         while (groundBytes + PackedGroundBytes + incomingBytes > groundBudget && groundRecency.First is { } victim)
+        {
             DropGround(victim);
+        }
     }
 
     private GroundPlan PlanGround(MapScene scene, GroundKey key)
     {
-        if (!GpuGround || !gpuFeatures.HasFlag(MapGpuFeatures.GroundPlans)) return PlanGroundUncached(scene, key);
+        if (!GpuGround || !gpuFeatures.HasFlag(MapGpuFeatures.GroundPlans))
+        {
+            return PlanGroundUncached(scene, key);
+        }
+
         var id = new TopologyKey(key.Column, key.Row, key.Detail, key.Bare);
         if (topology.TryGetValue(id, out var resident))
         {
@@ -375,8 +480,16 @@ public sealed partial class MapPainter
             var plan = PlanGroundUncached(scene, key with { Tier = 1 });
             // A conservative managed-storage estimate, not texture residency.
             long bytes = 256 + plan.Groups.Sum(group => 160L + group.Value.Count * 16L);
-            while (topologyBytes + bytes > TopologyBudget && topologyRecency.First is { } victim) DropTopology(victim);
-            if (bytes > TopologyBudget) return PlanGroundUncached(scene, key);
+            while (topologyBytes + bytes > TopologyBudget && topologyRecency.First is { } victim)
+            {
+                DropTopology(victim);
+            }
+
+            if (bytes > TopologyBudget)
+            {
+                return PlanGroundUncached(scene, key);
+            }
+
             resident = topologyRecency.AddLast(new TopologyPlan(id, plan, bytes));
             topology.Add(id, resident);
             topologyBytes += bytes;
@@ -400,17 +513,31 @@ public sealed partial class MapPainter
         foreach (var (point, display) in camera.Visible(scene.Map, width, height))
         {
             float x = (float)camera.ScreenX(display) - 32 * zoom, y = (float)camera.ScreenY(point.Y) - 16 * zoom;
-            if (x > width || y > height || x + 64 * zoom < 0 || y + 32 * zoom < 0) continue;
+            if (x > width || y > height || x + 64 * zoom < 0 || y + 32 * zoom < 0)
+            {
+                continue;
+            }
+
             MapTileArt.Select(selected, scene, point, key.Detail, key.Bare);
             pieces.Clear();
             foreach (var sprite in selected)
             {
-                if (!textures.HasStock && sprite.Layer != TileArtLayer.Ground) continue;
+                if (!textures.HasStock && sprite.Layer != TileArtLayer.Ground)
+                {
+                    continue;
+                }
+
                 var groupKey = (sprite.Layer, point.Y, pieces[(int)sprite.Layer]++, sprite.Key);
                 var position = new SKPoint(x + sprite.Offset.X * zoom, y + sprite.Offset.Y * zoom);
                 ref var group = ref CollectionsMarshal.GetValueRefOrAddDefault(groups, groupKey, out bool exists);
-                if (exists) (group.Additional ??= new(2)).Add(position);
-                else group.First = position;
+                if (exists)
+                {
+                    (group.Additional ??= new(2)).Add(position);
+                }
+                else
+                {
+                    group.First = position;
+                }
             }
         }
         return new(chunk, groups);
@@ -429,11 +556,20 @@ public sealed partial class MapPainter
             float scale = zoom * logical.X / texture.Width;
             int count = instances.Count;
             if (!buffers.TryGetValue(count, out var batch))
+            {
                 buffers.Add(count, batch = (new SKRect[count], new SKRotationScaleMatrix[count]));
+            }
+
             var (rects, transforms) = batch;
             Array.Fill(rects, SKRect.Create(texture.Width, texture.Height));
             for (int i = 0; i < transforms.Length; i++)
-                transforms[i] = new(scale, 0, (float)(instances[i].X * plan.PositionScale), (float)(instances[i].Y * plan.PositionScale));
+            {
+                transforms[i] = new(
+                    scale,
+                    0,
+                    (float)(instances[i].X * plan.PositionScale),
+                    (float)(instances[i].Y * plan.PositionScale));
+            }
             // A low-resolution replacement can have hard indexed-alpha edges.
             // Preserve those pixels when enlarging the registered sprite.
             canvas.DrawAtlas(texture, rects, transforms, scale > 1 ? CacheSampling : Sampling);
@@ -452,8 +588,15 @@ public sealed partial class MapPainter
     private void ClearGround()
     {
         ClearRetainedGroundAtlas();
-        while (groundRecency.First is { } entry) DropGround(entry);
-        while (topologyRecency.First is { } entry) DropTopology(entry);
+        while (groundRecency.First is { } entry)
+        {
+            DropGround(entry);
+        }
+
+        while (topologyRecency.First is { } entry)
+        {
+            DropTopology(entry);
+        }
     }
 
     private void DropTopology(LinkedListNode<TopologyPlan> entry)
@@ -471,7 +614,10 @@ public sealed partial class MapPainter
             ClearGround();
             return;
         }
-        if (ground.Count == 0 && topology.Count == 0 && settledUpdates is null) return;
+        if (ground.Count == 0 && topology.Count == 0 && settledUpdates is null)
+        {
+            return;
+        }
 
         var map = replacement.Map;
         var touched = new List<MapPoint>();
@@ -481,9 +627,17 @@ public sealed partial class MapPainter
             int row = i / (map.Width / 2);
             var point = new MapPoint(2 * (i % (map.Width / 2)) + (row & 1), row);
             if (SameGround(map.Tiles[i], previous.Map.Tiles[i]) &&
-                previous.HasCity(point) == replacement.HasCity(point)) continue;
+                previous.HasCity(point) == replacement.HasCity(point))
+            {
+                continue;
+            }
+
             touched.Add(point);
-            if (touched.Count <= 128) continue;
+            if (touched.Count <= 128)
+            {
+                continue;
+            }
+
             ClearGround();
             ClearTerrainFrame();
             return;
@@ -491,21 +645,38 @@ public sealed partial class MapPainter
         if (settledUpdates is not null)
         {
             settledUpdates.UnionWith(touched);
-            if (settledUpdates.Count > 128) ClearTerrainFrame();
+            if (settledUpdates.Count > 128)
+            {
+                ClearTerrainFrame();
+            }
         }
         for (var entry = groundRecency.First; entry is not null;)
         {
             var next = entry.Next;
             var chunk = entry.Value;
-            if (touched.Any(point => Touches(chunk.Key.Column, chunk.Key.Row, chunk.Width, chunk.Height, point, map))) DropGround(entry);
+            if (touched.Any(point => Touches(chunk.Key.Column, chunk.Key.Row, chunk.Width, chunk.Height, point, map)))
+            {
+                DropGround(entry);
+            }
+
             entry = next;
         }
         for (var entry = topologyRecency.First; entry is not null;)
         {
             var next = entry.Next;
             var plan = entry.Value;
-            if (touched.Any(point => Touches(plan.Key.Column, plan.Key.Row, plan.Plan.Chunk.Width, plan.Plan.Chunk.Height, point, map)))
+            if (touched.Any(
+                point => Touches(
+                    plan.Key.Column,
+                    plan.Key.Row,
+                    plan.Plan.Chunk.Width,
+                    plan.Plan.Chunk.Height,
+                    point,
+                    map)))
+            {
                 DropTopology(entry);
+            }
+
             entry = next;
         }
     }
@@ -515,7 +686,11 @@ public sealed partial class MapPainter
         int top = row * ChunkSize, y = point.Y * 16 + 16;
         // A changed center affects all W01 B[0..7] neighbors and the sprite
         // extents of those neighbors, plus the sampling gutter.
-        if (y + 48 + ChunkMargin < top || y - 48 - ChunkMargin > top + height) return false;
+        if (y + 48 + ChunkMargin < top || y - 48 - ChunkMargin > top + height)
+        {
+            return false;
+        }
+
         int x = point.X * 32 + 32, left = column * ChunkSize, period = map.Width * 32;
         return Contains(x) || !map.Flat && (Contains(x - period) || Contains(x + period));
 

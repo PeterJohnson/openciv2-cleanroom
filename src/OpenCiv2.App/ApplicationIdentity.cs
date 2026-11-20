@@ -24,7 +24,8 @@ public static class ApplicationIdentity
             ["dynamicCodeSupported"] = RuntimeFeature.IsDynamicCodeSupported,
             ["runtimeIdentifier"] = RuntimeInformation.RuntimeIdentifier,
             ["build"] = new JsonArray(assemblies.Concat(platformAssemblies).Distinct()
-            .Select(a => JsonSerializer.SerializeToNode(BuildIdentity.Read(a), AppJson.Default.CompiledInputs)).ToArray())
+            .Select(a => JsonSerializer.SerializeToNode(BuildIdentity.Read(a), AppJson.Default.CompiledInputs))
+                .ToArray())
         }.ToJsonString();
     }
 }

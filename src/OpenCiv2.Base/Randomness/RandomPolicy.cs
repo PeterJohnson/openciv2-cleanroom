@@ -20,8 +20,13 @@ public static class RandomPolicy
     public static void ValidateName(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
-        if (name.Length == 0 || name.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not '.' and not '-' and not '_' and not '/'))
-            throw new ArgumentException("Random context/site names require nonempty ASCII letters, digits or .-_/.", nameof(name));
+        if (name.Length == 0
+            || name.Any(c => !char.IsAsciiLetterOrDigit(c) && c is not '.' and not '-' and not '_' and not '/'))
+        {
+            throw new ArgumentException(
+                "Random context/site names require nonempty ASCII letters, digits or .-_/.",
+                nameof(name));
+        }
     }
 
     public static Pcg32Position InitialPosition(ulong seed, RandomDomain domain, string context)
@@ -38,7 +43,10 @@ public static class RandomPolicy
     {
         ulong hash = 14695981039346656037UL;
         foreach (char c in text)
+        {
             hash = unchecked((hash ^ (byte)c) * 1099511628211UL);
+        }
+
         return hash;
     }
 }
