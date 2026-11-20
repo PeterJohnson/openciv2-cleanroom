@@ -11,6 +11,10 @@ Its [WASM/WebGL acceptance record](m2-browser-map.md) remains distinct from this
 hardware performance study. These results do not establish physical presentation
 latency or complete performance acceptance.
 
+The subsequent [zoom stall investigation](m2-browser-stalls.md) isolates terrain
+cache/detail transitions and evaluates bounded single-thread ground batching.
+The measurements and hashes below retain their original pre-batching scope.
+
 ## Machine, build and workload
 
 Measurements on 2026-11-20 used Linux 7.0.0-43, Ryzen AI 9 HX 370 / Radeon 890M,

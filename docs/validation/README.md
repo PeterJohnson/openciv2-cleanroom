@@ -33,6 +33,8 @@ The [browser performance record](m2-browser-performance.md) compares Software2D
 and WebGL with CPU/GPU composition at 1080p, 4K and 5K. Ordered foreground
 commands improve sustained 1080p GPU pan with exact paired endpoints; terrain
 rebuilds, world updates and dense overviews retain failed performance gates.
+The [zoom stall investigation](m2-browser-stalls.md) follows those terrain rebuilds
+through raster/detail transitions and evaluates serial browser atlas batching.
 
 The [GPU composition experiments](m2-gpu-experiments.md) compare batching,
 preparation offload, retained content, cache budgets, pipelining and native input

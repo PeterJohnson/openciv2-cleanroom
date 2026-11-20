@@ -530,12 +530,13 @@ internal static partial class NativeMapMatrix
         var recovered = candidate.Draw(target.Canvas, epoch, camera, width, height, 1, null);
         using var reference = new MapPainter(atlas, fonts, packGroundTextures: false);
         var clean = reference.Draw(baseline.Canvas, reference.SetScene(new(map)), camera, width, height, 1, null);
-        bool hasWorkers = Environment.ProcessorCount > 1;
+        bool hasWorkers = !OperatingSystem.IsBrowser() && Environment.ProcessorCount > 1;
+        bool packsGround = hasWorkers || OperatingSystem.IsBrowser();
         bool aligned = hasWorkers && OperatingSystem.IsLinux() && System.Runtime.Intrinsics.X86.Sse2.IsSupported && BitConverter.IsLittleEndian;
         Require(recovered.Redraw == MapRedraw.Full && recovered.ParallelGroundChunks == clean.ParallelGroundChunks &&
             (recovered.ParallelGroundChunks > 0) == hasWorkers &&
             (recovered.AlignedGroundChunks > 0) == aligned && clean.AlignedGroundChunks == 0 &&
-            (hasWorkers ? recovered.Batches < clean.Batches : recovered.Batches == clean.Batches) &&
+            (packsGround ? recovered.Batches < clean.Batches : recovered.Batches == clean.Batches) &&
             Pixels(target) == Pixels(baseline),
             "ground batch recovery reproduces an independently built map");
         Encode(target, Path.Combine(output, "MV30-chunk-batch-recovered.png"));

@@ -115,8 +115,11 @@ public sealed partial class MapPainter
         int batchLimit = Math.Min(GroundBatchLimit, GroundBatchBytes / (backingSide * backingSide * 4));
         // Two double-size chunks already repay packing when the aligned compositor is available.
         int minimumPacked = tier == 2 && AlignedGroundSupported ? MinimumGroundBatch : MinimumPackedGroundBatch;
-        bool batchMisses = !GpuGround && batchLimit >= MinimumGroundBatch && !OperatingSystem.IsBrowser() &&
-            GroundWorkers.MaxDegreeOfParallelism > 1;
+        bool parallel = !OperatingSystem.IsBrowser() && GroundWorkers.MaxDegreeOfParallelism > 1;
+        // Packing also reduces Skia submissions on the single-thread WASM host.
+        // It does not require worker threads; preserve the same bounded batches.
+        bool batchMisses = !GpuGround && batchLimit >= MinimumGroundBatch &&
+            (parallel || OperatingSystem.IsBrowser() && packGroundTextures);
         bool canPack = batchMisses && packGroundTextures;
         bool canPackHalf = canPack && tier == .5 && AlignedGroundSupported;
         bool retainPacked = reuseAtlas && canPack && ground.Count != 0;
@@ -255,11 +258,31 @@ public sealed partial class MapPainter
             try
             {
                 var plans = new GroundPlan[missing.Count];
-                Parallel.For(0, plans.Length, GroundWorkers, i => plans[i] = PlanGround(scene, missing[i]));
+                if (parallel)
+                {
+                    Parallel.For(0, plans.Length, GroundWorkers, i => plans[i] = PlanGround(scene, missing[i]));
+                }
+                else
+                {
+                    for (int i = 0; i < plans.Length; i++)
+                    {
+                        plans[i] = PlanGround(scene, missing[i]);
+                    }
+                }
                 groundSelectorTicks += Stopwatch.GetTimestamp() - starting;
                 var bindings = plans.SelectMany(plan => plan.Groups.Keys.Select(key => key.Binding)).Distinct()
                     .ToArray();
-                textures.Prepare(bindings, tier);
+                if (parallel)
+                {
+                    textures.Prepare(bindings, tier);
+                }
+                else
+                {
+                    foreach (string binding in bindings)
+                    {
+                        textures.Get(binding, tier);
+                    }
+                }
                 var borrowed = textures.BorrowPrepared(bindings, tier);
                 GroundAtlas? readyAtlas = null;
                 if (plans.Length >= minimumPacked && canPack && borrowed is not null &&
@@ -278,7 +301,7 @@ public sealed partial class MapPainter
                 }
                 // Workers use separate CPU surfaces. A cache-constrained
                 // batch can resolve textures during recording on the painter lane.
-                Parallel.ForEach(jobs, GroundWorkers, job =>
+                void PaintJob(GroundJob job)
                 {
                     if (readyAtlas is not null)
                     {
@@ -292,9 +315,20 @@ public sealed partial class MapPainter
                     {
                         job.Surface.Canvas.DrawPicture(job.Picture!);
                     }
-                });
+                }
+                if (parallel)
+                {
+                    Parallel.ForEach(jobs, GroundWorkers, PaintJob);
+                    parallelGroundChunks += jobs.Count;
+                }
+                else
+                {
+                    foreach (var job in jobs)
+                    {
+                        PaintJob(job);
+                    }
+                }
                 groundBuildTicks += Stopwatch.GetTimestamp() - starting;
-                parallelGroundChunks += jobs.Count;
                 foreach (var item in pending)
                 {
                     if (item.Preparation < 0)

@@ -77,6 +77,11 @@ included in the opt-in GPU renderer after the
 prototypes stay feature-gated; failed visual or performance experiments do not
 change their supported defaults.
 
+Ground atlas batching runs serially in WASM and on the existing workers natively.
+Packing is independent of worker availability; the same bounded scratch batches
+and unpacked fresh reference are retained. See the
+[browser stall investigation](validation/m2-browser-stalls.md).
+
 ## Adding behavior
 
 ### Readable implementation and documentation

@@ -268,6 +268,9 @@ Software2D/CPU, WebGL/CPU and WebGL/GPU at 1080p, 4K and 5K. Ordered foreground
 commands now join the supported opt-in GPU configuration: three sustained 1080p
 pan runs improve p95 from 13.6–14.1 ms to 10.5–11.9 ms with exact paired
 endpoints. Large zoom/dirty updates and dense overviews still miss budget.
+The [zoom-stall investigation](validation/m2-browser-stalls.md) traces the
+multi-second browser frames to synchronous terrain construction at detail/backing
+transitions and tests serial atlas batching without increasing the cache budget.
 Full M2 visual, performance and platform acceptance remains open.
 
 - Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
