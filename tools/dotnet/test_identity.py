@@ -71,7 +71,7 @@ class IdentityTests(unittest.TestCase):
                     names |= {"OpenCiv2.IO.Native"}
                 report = {"format": "openciv2-application-seam/1", "build": [
                     {"Assembly": name, "Sdk": "11.0.100", "Runtime": "11.0.0",
-                     "Target": "net11.0-browser" if name == "OpenCiv2.Browser" else "net11.0",
+                     "Target": "net11.0-browser" if name in {"OpenCiv2.Browser", "OpenCiv2.MapBrowser"} else "net11.0",
                      "Configuration": "Release", "Sources": dict(self.expected)} for name in sorted(names)]}
                 with patch.object(identity, "expected_inputs", return_value=self.expected):
                     self.assertEqual(application.validate(report, source_root=self.root), self.expected)
@@ -101,6 +101,24 @@ class IdentityTests(unittest.TestCase):
                 self.assertEqual(set(actual), {
                     path.relative_to(self.root).as_posix() for path in directory.iterdir()
                 })
+
+    def test_map_browser_tracks_linked_production_and_matrix_inputs(self):
+        names = ['tests/OpenCiv2.MapBrowser/OpenCiv2.MapBrowser.csproj',
+                 'tests/OpenCiv2.MapBrowser/packages.lock.json',
+                 'src/OpenCiv2.Browser/Program.cs', 'src/OpenCiv2.Browser/wwwroot/index.html',
+                 'src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js',
+                 'tests/OpenCiv2.MapProbe/NativeMapMatrix.Binding.cs',
+                 'tests/OpenCiv2.MapProbe/RendererLibraryChecks.cs',
+                 'tests/OpenCiv2.MapProbe/MapPresentationChecks.cs']
+        for name in names:
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(name)
+        with patch.object(identity, 'COMMON', ()):
+            before = identity.expected_inputs(self.root, 'OpenCiv2.MapBrowser')
+            self.assertEqual(set(before), set(names))
+            (self.root / 'src/OpenCiv2.Browser/Program.cs').write_text('changed host')
+            self.assertNotEqual(before, identity.expected_inputs(self.root, 'OpenCiv2.MapBrowser'))
 
     def test_source_inventory_detects_added_deleted_and_changed_files(self):
         directory = self.root / "src/OpenCiv2.Base"

@@ -124,7 +124,64 @@ public static partial class FoundationSuite
                 return new MemoryStream(System.Text.Encoding.UTF8.GetBytes(invalid));
             }));
             Equal(1, opens);
+            opens = 0;
+            var input = new AsyncOnlyGraphicsStream(System.Text.Encoding.UTF8.GetBytes(invalid));
+            var pending = PinnedGraphics.LoadAtlasAsync((path, _) =>
+            {
+                Equal("package.json", path);
+                opens++;
+                return Task.FromResult<Stream>(input);
+            });
+            // This authored stream completes synchronously; never block the WASM
+            // main thread waiting for an actual asynchronous source.
+            Equal(true, pending.IsCompleted);
+            Throws<InvalidDataException>(() => pending.GetAwaiter().GetResult());
+            Equal(1, opens);
+            Equal(true, input.Disposed);
         }
+        var license = new AsyncOnlyGraphicsStream(new byte[8815]);
+        var fonts = PinnedGraphics.LoadFontsAsync((path, _) =>
+        {
+            Equal("LICENSE", path);
+            return Task.FromResult<Stream>(license);
+        });
+        Equal(true, fonts.IsCompleted);
+        Throws<InvalidDataException>(() => fonts.GetAwaiter().GetResult());
+        Equal(true, license.Disposed);
+
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        var cancelled = PinnedGraphics.LoadAtlasAsync((_, token) =>
+        {
+            Equal(cancellation.Token, token);
+            return Task.FromCanceled<Stream>(token);
+        }, cancellation.Token);
+        Equal(true, cancelled.IsCanceled);
+    }
+
+    private sealed class AsyncOnlyGraphicsStream(byte[] bytes) : Stream
+    {
+        private int offset;
+        internal bool Disposed { get; private set; }
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override int Read(byte[] buffer, int offset, int count) => throw new InvalidOperationException("Synchronous source read");
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            int count = Math.Min(7, Math.Min(buffer.Length, bytes.Length - offset));
+            bytes.AsMemory(offset, count).CopyTo(buffer);
+            offset += count;
+            return ValueTask.FromResult(count);
+        }
+        protected override void Dispose(bool disposing) { Disposed = true; base.Dispose(disposing); }
+        public override void Flush() => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
     }
 
     private static byte[] TinyPng(byte[] scanlines, int width = 1, int height = 1, bool corruptZlibTrailer = false)

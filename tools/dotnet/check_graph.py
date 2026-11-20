@@ -93,7 +93,7 @@ def main():
             pending.extend(Path(r.attrib["Include"]).stem for r in ET.parse(by_name[current]).iter("ProjectReference"))
         return seen
     browser_forbidden = {"OpenCiv2.IO.Native", "OpenCiv2.Platform.Native", "OpenCiv2.Cli", "OpenCiv2.Cli.Sqlite", "OpenCiv2.Export.Sqlite"}
-    for browser in ("OpenCiv2.Browser.Tests", "OpenCiv2.ConformanceBrowser", "OpenCiv2.Browser", "OpenCiv2.AutomationBrowser", "OpenCiv2.PerformanceBrowser"):
+    for browser in ("OpenCiv2.Browser.Tests", "OpenCiv2.ConformanceBrowser", "OpenCiv2.Browser", "OpenCiv2.MapBrowser", "OpenCiv2.AutomationBrowser", "OpenCiv2.PerformanceBrowser"):
         if dependencies(browser) & browser_forbidden:
             failures.append(f"{browser} graph includes a native filesystem/CLI/export dependency")
     for portable in ("OpenCiv2.Cli", "OpenCiv2.Session", "OpenCiv2.ViewModels", "OpenCiv2.Console", "OpenCiv2.Browser.Tests"):

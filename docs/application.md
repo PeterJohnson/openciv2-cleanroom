@@ -67,10 +67,13 @@ the wrapped seam. Visible river contacts and remembered routes select the
 package's sprites. Special resources and grassland shields use the W01
 predicates and their own pinned sprites.
 
-The historical shell checks include pointer and keyboard input in Chromium at
-1× and 2×. Current map/content behavior in the browser, native macOS/Windows UI,
-accessibility and display acceptance remain open. The headless solution and CLI
-have no Avalonia dependencies.
+The browser host now admits the pinned atlas and twelve DejaVu faces through
+bounded asynchronous HTTP streams and exposes the same authored gallery as desktop.
+Native/classic map replacements use the same selection reader and precedence.
+The browser acceptance host links the exhaustive map matrix and adds WebGL frame,
+input and lifecycle checks at 1× and 2×. Its execution evidence is separate from
+native macOS/Windows UI, accessibility, physical display and performance acceptance.
+The headless solution and CLI have no Avalonia dependencies.
 
 The optional Lua native/browser hosts now run 13 matching production-session
 case groups. Direct API, console and Lua compare actual stack links, command

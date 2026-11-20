@@ -6,4 +6,5 @@
     <ProjectReference Include="../OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
   </ItemGroup>
   <ItemGroup><InternalsVisibleTo Include="OpenCiv2.MapProbe" /></ItemGroup>
+  <ItemGroup><InternalsVisibleTo Include="OpenCiv2.MapBrowser" /></ItemGroup>
 </Project>

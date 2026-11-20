@@ -5,7 +5,7 @@ namespace OpenCiv2.Formats.Graphics;
 
 /// <summary>P03/F03. The caller provides read-once streams from a selected content root.
 /// Release identity is compiled from the reviewed inventories, independently of the input manifest.</summary>
-public static class PinnedGraphics
+public static partial class PinnedGraphics
 {
     private const string AtlasPath = "data/atlas-hd.pack";
 
@@ -20,7 +20,30 @@ public static class PinnedGraphics
                 f => f.Name,
                 f => Pin(f.Value),
                 StringComparer.Ordinal);
-        using var manifest = open("package.json");
+        using (var manifest = open("package.json"))
+        {
+            ValidateManifest(manifest, release, files);
+        }
+
+        byte[]? atlas = null;
+        foreach (var (path, pin) in files)
+        {
+            using var source = open(path);
+            if (path == AtlasPath)
+            {
+                atlas = ReadExact(source, pin.Size, AssetAtlas.MaxBytes, path);
+                CheckHash(SHA256.HashData(atlas), pin, path);
+            }
+            else
+            {
+                VerifyStream(source, pin, path);
+            }
+        }
+        return AssetAtlas.Parse(atlas!);
+    }
+
+    private static void ValidateManifest(Stream manifest, JsonElement release, Dictionary<string, FilePin> files)
+    {
         byte[] metadata = new byte[16385];
         int length = manifest.ReadAtLeast(metadata, metadata.Length, false);
         if (length == metadata.Length)
@@ -61,21 +84,6 @@ public static class PinnedGraphics
             throw new InvalidDataException("Invalid asset package manifest", e);
         }
 
-        byte[]? atlas = null;
-        foreach (var (path, pin) in files)
-        {
-            using var source = open(path);
-            if (path == AtlasPath)
-            {
-                atlas = ReadExact(source, pin.Size, AssetAtlas.MaxBytes, path);
-                CheckHash(SHA256.HashData(atlas), pin, path);
-            }
-            else
-            {
-                VerifyStream(source, pin, path);
-            }
-        }
-        return AssetAtlas.Parse(atlas!);
     }
 
     public static PinnedFonts LoadFonts(Func<string, Stream> open)

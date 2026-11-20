@@ -69,6 +69,13 @@ def expected_inputs(root, name):
     paths += [directory / f"{name}.csproj", directory / "packages.lock.json"]
     paths += sorted(p for p in directory.rglob("*.cs") if not {"bin", "obj"} & set(p.relative_to(directory).parts))
     paths += sorted(p for p in (directory / "wwwroot").rglob("*") if p.is_file())
+    if name == "OpenCiv2.MapBrowser":
+        paths += sorted((root / "src/OpenCiv2.Browser").glob("*.cs"))
+        paths += [root / "src/OpenCiv2.Browser/wwwroot/index.html"]
+        paths += [root / "src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js"]
+        paths += sorted((root / "tests/OpenCiv2.MapProbe").glob("NativeMapMatrix*.cs"))
+        paths += [root / "tests/OpenCiv2.MapProbe" / p for p in
+                  ("RendererLibraryChecks.cs", "MapPresentationChecks.cs")]
     return {p.relative_to(root).as_posix(): sha(p) for p in paths}
 
 

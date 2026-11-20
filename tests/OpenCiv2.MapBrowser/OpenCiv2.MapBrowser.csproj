@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net11.0-browser</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <WasmFingerprintDotnetJs>false</WasmFingerprintDotnetJs>
+    <!-- The shared native matrix serializes anonymous evidence records. Retain
+         their metadata only in this test host; production remains trimmed. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Browser" />
+    <ProjectReference Include="../../src/OpenCiv2.App/OpenCiv2.App.csproj" />
+    <Compile Include="../../src/OpenCiv2.Browser/*.cs" Link="Host/%(Filename)%(Extension)" />
+    <Compile Include="../OpenCiv2.MapProbe/NativeMapMatrix*.cs" Link="Matrix/%(Filename)%(Extension)" />
+    <Compile Include="../OpenCiv2.MapProbe/RendererLibraryChecks.cs;../OpenCiv2.MapProbe/MapPresentationChecks.cs" Link="Matrix/%(Filename)%(Extension)" />
+    <Content Include="../../src/OpenCiv2.Browser/wwwroot/index.html" Link="wwwroot/index.html" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../../src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js" Link="wwwroot/browser-lifecycle.js" CopyToOutputDirectory="PreserveNewest" />
+    <Oc2AdditionalIdentityInput Include="../../src/OpenCiv2.Browser/*.cs;../../src/OpenCiv2.Browser/wwwroot/index.html;../../src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js;../OpenCiv2.MapProbe/NativeMapMatrix*.cs;../OpenCiv2.MapProbe/RendererLibraryChecks.cs;../OpenCiv2.MapProbe/MapPresentationChecks.cs" />
+  </ItemGroup>
+</Project>

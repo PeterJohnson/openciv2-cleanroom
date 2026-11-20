@@ -127,7 +127,8 @@ internal static class MapPresentationChecks
                 byte[] Read(SKSurface target)
                 {
                     if (context is null) { using var pixels = target.PeekPixels(); return pixels.GetPixelSpan().ToArray(); }
-                    using var bitmap = GpuMapMatrix.Read(target);
+                    using var bitmap = new SKBitmap(new SKImageInfo(info.Width, info.Height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
+                    Require(target.ReadPixels(bitmap.Info, bitmap.GetPixels(), bitmap.RowBytes, 0, 0), "GPU readback succeeds");
                     return bitmap.GetPixelSpan().ToArray();
                 }
                 MapDrawStats Draw(MapPainter painter, SKSurface target, MapScene scene, MapDisplay display)

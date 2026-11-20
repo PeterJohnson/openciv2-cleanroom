@@ -42,9 +42,12 @@ mutable Core records and borrowed spans stay behind the session boundary.
 Contracts, Formats and SkiaSharp. It has no Avalonia or Session dependency;
 Formats still brings Core transitively for its existing content/codec ownership.
 App uses its public scene, camera, display, timeline and drawing APIs. Texture,
-atlas, cache and GPU experiment types remain internal, with friend access only
-for MapProbe. App retains inspection text, gallery fixtures, settings/persistence
-and Avalonia controls. MapProbe remains an integration host over both projects.
+atlas, cache and GPU experiment types remain internal, with friend access for
+MapProbe and MapBrowser acceptance. App retains inspection text, gallery fixtures,
+settings/persistence and Avalonia controls. MapProbe remains a native integration
+host over both projects. MapBrowser links the production browser entry point and
+the shared matrix, with read-only result and fresh WebGL frame exports. BrowserContent
+supplies asynchronous HTTP streams to Formats' pinned graphics/font readers.
 
 The host owns each painter's lifetime and lends a current Skia canvas/context to
 `MapRendererSession.Draw` inside its drawing lease. Observer replacement, render

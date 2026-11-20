@@ -38,15 +38,17 @@ GPU composition remains experimental; the measurements and pixel comparisons
 are separate from full M2 acceptance.
 
 The [Riverbend validation record](m2-map-slice.md) covers pinned graphics and
-fonts, the Linux interaction and the CPU raster workloads. Browser behavior and
-unavailable platform checks remain open for the map slice.
+fonts, the Linux interaction and the CPU raster workloads. The later
+[browser map record](m2-browser-map.md) covers pinned HTTP content admission,
+the full shared MV01–MV30 matrix in WASM and the production WebGL gallery.
+Unavailable platform checks remain open.
 
 Complete-renderer acceptance is separately tracked for
 [P02 MV01–MV30](map-visual-coverage.md) against the
 [M2 matrix](../testing/map-rendering.md) and
-[interactive performance contract](../performance/map-rendering.md). All complete
-native/browser feature gates remain pending; expanding the specification does
-not extend the scope of earlier test reports.
+[interactive performance contract](../performance/map-rendering.md). Backend
+functional evidence, hardware performance and complete platform gates are
+separate; expanding the specification does not extend earlier test reports.
 
 ## Executed cross-platform CI
 

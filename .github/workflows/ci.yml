@@ -238,10 +238,35 @@ jobs:
           dotnet restore src/OpenCiv2.Browser --locked-mode
           dotnet publish src/OpenCiv2.Browser -c Release --no-restore
           dotnet format src/OpenCiv2.Browser/OpenCiv2.Browser.csproj --verify-no-changes --no-restore
+      - name: Stage pinned browser graphics and fonts
+        run: |
+          set -euo pipefail
+          content=build/map-browser-ci
+          mkdir -p "$content/runtime" "$content/fonts"
+          read -r atlas_url atlas_hash < <(python -c 'import json; p = json.load(open("dependencies.json"))["assets"]; print(p["url"], p["sha256"])')
+          read -r fonts_url fonts_hash < <(python -c 'import json; p = json.load(open("dependencies.json"))["libraries"]["DejaVu"]; print(p["url"], p["sha256"])')
+          curl -fLsS --retry 3 "$atlas_url" -o "$content/atlas.zip"
+          curl -fLsS --retry 3 "$fonts_url" -o "$content/fonts.tar.bz2"
+          printf '%s  %s\n' "$atlas_hash" "$content/atlas.zip" "$fonts_hash" "$content/fonts.tar.bz2" | sha256sum --check
+          unzip -q "$content/atlas.zip" -d "$content/runtime"
+          tar -xf "$content/fonts.tar.bz2" -C "$content/fonts" --strip-components=1
+          python -m pip install Pillow==12.1.1
+          python tools/dotnet/build_map_art_cases.py "$content/art-cases"
+          python tools/dotnet/stage_browser_content.py --bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot --assets "$content/runtime" --fonts "$content/fonts" --art-cases "$content/art-cases"
       - name: Production browser pointer and keyboard input
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
         run: python tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
+      - name: Complete browser map matrix and WebGL gallery
+        env:
+          NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
+        run: |
+          dotnet restore tests/OpenCiv2.MapBrowser --locked-mode
+          dotnet publish tests/OpenCiv2.MapBrowser -c Release --no-restore
+          dotnet format tests/OpenCiv2.MapBrowser/OpenCiv2.MapBrowser.csproj --verify-no-changes --no-restore
+          python tools/dotnet/stage_browser_content.py --bundle tests/OpenCiv2.MapBrowser/bin/Release/net11.0-browser/publish/wwwroot --assets build/map-browser-ci/runtime --fonts build/map-browser-ci/fonts --art-cases build/map-browser-ci/art-cases --acceptance
+          node tools/dotnet/run_map_browser.cjs tests/OpenCiv2.MapBrowser/bin/Release/net11.0-browser/publish/wwwroot build/test-results/map-browser
+          python tools/dotnet/check_browser_map_pixels.py build/test-results/map-browser
       - name: Run real WASM foundation cases
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules

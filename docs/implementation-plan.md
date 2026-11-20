@@ -11,7 +11,7 @@ establish that its entire family has been implemented or validated.
 | --- | --- | --- |
 | M0 | Reproducible build, specification/content inventories and evidence boundaries | Implemented with pinned .NET tooling and cross-platform CI |
 | M1 | Finite portable foundations, classic codecs, content/inspection CLI, session ownership and bounded checkpoints | Implemented; current test families and exclusions are in the coverage and validation guides |
-| M2 | Complete map renderer, Avalonia interaction, platform menus/storage and content installation | Linux rendering infrastructure exists; MV01–MV30 completeness, browser content and full platform gates remain open |
+| M2 | Complete map renderer, Avalonia interaction, platform menus/storage and content installation | Linux and WASM/WebGL authored rendering evidence exists; performance, remaining platform/services and live-provider joins retain their separate gates |
 | M3 | First playable local game slice | Planned; depends on M1 and the required M2 surfaces |
 | M4 | Complete single-player mechanics, AI and expanded automation | Planned |
 | M5 | Scenarios, editors, complete UI and hotseat | Planned |
@@ -112,8 +112,9 @@ The Riverbend slice establishes rendering infrastructure: scoped W01/W03
 observations, pinned atlas/fonts, Skia drawing, pan/zoom, picking and the shared
 local stack interaction on Linux. Its [validation record](validation/m2-map-slice.md)
 retains that finite scope and simulated 4K/5K results. It does not complete the
-map renderer. Browser content, visual coverage, interactive performance and the
-full platform/services gate below remain open.
+map renderer. Pinned browser content and WASM/WebGL execution are now recorded
+in the [browser map acceptance report](validation/m2-browser-map.md).
+Interactive performance and the full platform/services gate below remain open.
 
 The shared Skia renderer now lives in the optional `OpenCiv2.MapRendering`
 library. App retains Avalonia controls, input, authored galleries and session
@@ -279,9 +280,10 @@ visual, performance and platform acceptance remains open.
   state, synthesize game rules, or require playable combat/trade to test drawing.
 - Complete stock and map-facing native/classic scenario content selection,
   including authored BMP/GIF sheet overrides, exact bindings, registration,
-  transparency and F03/P03 precedence. Stage the pinned content/fonts in the
-  browser and execute real WASM rendering/input tests; compilation is not an
-  execution gate. Keep non-map screens/media/editor formats in their own scope.
+  transparency and F03/P03 precedence. The browser now stages and asynchronously
+  admits the pinned graphics/fonts and selected art; the shared matrix and actual
+  WebGL gallery/input driver supply execution evidence. Keep non-map
+  screens/media/editor formats in their own scope.
 - Implement and test incremental redraw against fresh output for every layer.
   Satisfy the [map interaction workloads and budgets](performance/map-rendering.md):
   full/unchanged frames, actual cached panning, continuous zoom, dirty world
@@ -619,12 +621,15 @@ and does not replace, X02's operation-level coverage ledger.
 
 ## Immediate implementation backlog
 
-1. Complete every MV01–MV30 row in the [map acceptance matrix](testing/map-rendering.md)
-   on the production native/browser paths, with complete observations, stock and
-   scenario bindings, authored gallery, mixed scenes and per-row evidence. The
-   Riverbend infrastructure slice is the starting point, not the acceptance bar.
+1. Keep every MV01–MV30 row in the [map acceptance matrix](testing/map-rendering.md)
+   current as rendering changes. The [WASM/WebGL functional gate](validation/m2-browser-map.md)
+   now passes with pinned content, stock/native/classic bindings, the authored
+   gallery and exact presentation comparisons. Extend native evidence to the
+   remaining platforms; retain the explicit live-provider joins and their owners.
 2. Close [interactive map performance](performance/map-rendering.md) on available
-   target hardware and complete browser content/startup/resource validation.
+   target hardware and complete browser startup/download optimization and resource
+   budgets. Browser content admission and functional resource checks have
+   [their own executed record](validation/m2-browser-map.md).
    Exercise pan, zoom and real world updates; retain failed/pending gates honestly.
 3. Connect file-choice/load/save workflows to native and browser storage and
    verify cancellation, asynchronous replies and session deadlines. Add macOS

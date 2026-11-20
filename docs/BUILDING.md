@@ -303,12 +303,32 @@ Install the workload matching the pinned SDK, then publish the application:
 dotnet workload install wasm-tools --skip-manifest-update
 dotnet restore src/OpenCiv2.Browser --locked-mode
 dotnet publish src/OpenCiv2.Browser -c Release --no-restore
+python3 tools/dotnet/stage_browser_content.py \
+  --bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot \
+  --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37
 python3 -m http.server 8000 --directory src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
 ```
 
 Open `http://localhost:8000`. Serve the published directory over HTTP; opening
 `index.html` as a local file will not load the WebAssembly application correctly.
 Stop the server before continuing if using the same terminal.
+
+The browser requires the pinned content; missing or invalid content produces a
+visible startup error. The staging helper verifies the release manifest and every
+pinned file before copying. The browser independently validates the same pins
+through asynchronous HTTP streams, retaining the atlas once and verifying the
+remaining release files without keeping their payloads. The historical bitmap
+font caches are checked as release files but never used to render text. All twelve
+pinned DejaVu faces supply runtime text rendering.
+Graphics-context loss presents a visible **Reload preview** action outside the
+canvas. Reload reopens the preview and revalidates content; it does not restore
+an unsaved session in place.
+
+Append `?showcase=MV01&observe=1` to open the shared authored gallery and enable
+read-only draw receipts. Optional `--art-cases ROOT` staging admits the independently
+authored native/scenario/installation fixtures. `&art=native` selects native PNGs;
+`&art=classic` applies scenario BMP/GIF and installation fallback over native art.
+The index preserves filenames; lookup rejects ambiguous case collisions.
 
 Browser automation uses Node **24.19.0** and Playwright **1.58.2**:
 
@@ -333,6 +353,43 @@ python3 tools/dotnet/run_application.py --report build/test-results/application-
 The portable suite runs the same 447 groups as native. Browser hosts exclude
 native filesystem, process CLI and SQLite projects. Release publication trims
 assemblies and includes source-generated JSON; AOT is not an acceptance claim.
+
+For the complete map matrix, build the separate browser acceptance host. It
+links the production browser entry point and the existing exhaustive matrix,
+and adds read-only fresh-frame and result exports. Reflection metadata is retained
+only in this test host for its anonymous evidence records. Production remains
+trimmed. Both use the same App and MapRendering libraries.
+
+```sh
+dotnet restore tests/OpenCiv2.MapBrowser --locked-mode
+dotnet publish tests/OpenCiv2.MapBrowser -c Release --no-restore
+python3 tools/dotnet/build_map_art_cases.py build/test-results/map-art-cases
+python3 tools/dotnet/stage_browser_content.py \
+  --bundle tests/OpenCiv2.MapBrowser/bin/Release/net11.0-browser/publish/wwwroot \
+  --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37 \
+  --art-cases build/test-results/map-art-cases --acceptance
+node tools/dotnet/run_map_browser.cjs \
+  tests/OpenCiv2.MapBrowser/bin/Release/net11.0-browser/publish/wwwroot \
+  build/test-results/map-browser
+python3 tools/dotnet/check_browser_map_pixels.py build/test-results/map-browser
+```
+
+The WASM matrix runs the production CPU composition and semantic/pixel cases.
+The browser gallery separately exercises WebGL2 presentation, real input and
+resource lifecycle at both densities with stock/native/classic content. SwiftShader
+evidence is functional fallback coverage, not hardware performance acceptance.
+Presented frames after drag, wheel zoom, resize, texture reload and display-color
+changes also compare exactly with fresh WebGL frames. `--matrix-only`,
+`--gallery-only`, and `--transitions-only` can produce separate diagnostic receipts;
+the default command executes the complete set.
+For bounded runs, add `--gallery-only --theme=stock --density=1`, writing to
+`build/test-results/map-browser/stock-1x`. Repeat for `stock`, `native`, `classic`
+at both densities, then run `python3 tools/dotnet/merge_map_browser.py
+build/test-results/map-browser` before the pixel checker. Merging requires all six
+completed batches with identical compiled inputs, browser and driver. Interrupted
+runs retain an explicitly incomplete checkpoint and cannot pass the pixel checker.
+The native worker-race check is inapplicable to this single-thread browser host;
+stale-generation, observer replacement and cache privacy cases still execute.
 
 ## Optional SQLite and Lua
 

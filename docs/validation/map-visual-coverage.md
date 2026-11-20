@@ -17,10 +17,21 @@ existing path exercises some of the feature; no row claims full acceptance.
 “Open” means the full named capability has no retained acceptance evidence here.
 Update rows with concrete scenes/options/backend evidence as M2 progresses.
 
-**Acceptance baseline:** every row below is pending for complete native and
-browser acceptance. Existing partial Linux evidence does not pass an entire row.
+**Historical acceptance baseline (2026-11-17):** every row below was pending for
+complete native and browser acceptance. Partial Linux evidence did not pass an entire row.
 The initial Riverbend evidence predates the expanded matrix. The execution
 record below preserves which cases have run and which gates still need evidence.
+
+**Browser execution, 2026-11-20:** all MV01–MV30 rows passed the shared exhaustive
+WASM matrix and the production WebGL gallery on Chromium/SwiftShader. Six
+stock/native/classic × 1×/2× batches passed 367 browser checks and 229 exact
+presented/fresh map comparisons (186 gallery frames plus 43 state-change frames).
+Pinned HTTP content/fonts, selected art, actual input, privacy/inspection, resource
+reload, explicit context-loss recovery and content failures have retained evidence.
+The [browser execution record](m2-browser-map.md) gives per-row results, visual
+review, hashes, commands and limitations. This closes the named browser functional
+gate; hardware performance, other platforms and the named live-provider joins
+remain separate. Historical entries below retain their original scope.
 
 **GPU presentation correction, 2026-11-18 Pacific:** the
 [GPU follow-up experiments](m2-gpu-experiments.md) found that aliased CPU

@@ -128,6 +128,7 @@ internal static partial class NativeMapMatrix
             painter.Draw(surface.Canvas, binding, camera, width, height, density, null, board.Display);
     }
 
+    [System.Runtime.Versioning.UnsupportedOSPlatform("browser")]
     private static void ConcurrentSceneBindingChecks(AssetAtlas atlas, PinnedFonts fonts)
     {
         const int width = 360, height = 240;

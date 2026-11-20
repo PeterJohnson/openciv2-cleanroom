@@ -44,6 +44,7 @@ public sealed class SeamApp : Application
 
     public static Action<string>? Observe { get; set; }
     public static SeamView? CurrentView { get; private set; }
+    internal static MapGalleryView? CurrentGallery { get; private set; }
 
     public static void ConfigureGraphics(AssetAtlas atlas, PinnedFonts fonts, MapArtSelection? selected = null) =>
         content = (atlas, fonts, selected);
@@ -129,6 +130,25 @@ public sealed class SeamApp : Application
         {
             showcase = null;
             StartShowcase(galleryDesktop, painter, caseId, selected, frameworkReady, preparation);
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+        if (showcase is { } browserCase && ApplicationLifetime is ISingleViewApplicationLifetime galleryBrowser)
+        {
+            showcase = null;
+            var gallery = new MapGalleryView(painter, browserCase, selection: selected?.Selected);
+            CurrentGallery = gallery;
+            galleryBrowser.MainView = gallery;
+            timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(25) };
+            timer.Tick += (_, _) =>
+            {
+                gallery.Tick();
+                if (gallery.CanObserve)
+                {
+                    Observe?.Invoke(gallery.Snapshot().ToJsonString());
+                }
+            };
+            timer.Start();
             base.OnFrameworkInitializationCompleted();
             return;
         }
@@ -259,5 +279,6 @@ public sealed class SeamApp : Application
 
         fonts = null;
         CurrentView = null;
+        CurrentGallery = null;
     }
 }

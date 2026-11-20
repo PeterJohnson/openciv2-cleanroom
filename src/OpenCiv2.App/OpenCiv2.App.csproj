@@ -7,4 +7,5 @@
     <ProjectReference Include="../OpenCiv2.ViewModels/OpenCiv2.ViewModels.csproj" /><ProjectReference Include="../OpenCiv2.Console/OpenCiv2.Console.csproj" />
   </ItemGroup>
   <ItemGroup><InternalsVisibleTo Include="OpenCiv2.MapProbe" /></ItemGroup>
+  <ItemGroup><InternalsVisibleTo Include="OpenCiv2.MapBrowser" /></ItemGroup>
 </Project>

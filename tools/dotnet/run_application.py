@@ -12,7 +12,7 @@ import write_identity as identity
 
 ROOT = identity.ROOT
 LIBRARIES = identity.LIBRARIES - {'OpenCiv2.FoundationCases'} | {'OpenCiv2.App', 'OpenCiv2.MapRendering'}
-HOSTS = {'OpenCiv2.Desktop', 'OpenCiv2.Browser'}
+HOSTS = {'OpenCiv2.Desktop', 'OpenCiv2.Browser', 'OpenCiv2.MapBrowser'}
 
 
 def map_content_inputs(assets, fonts):
@@ -40,7 +40,7 @@ def validate(build, native_aot=False, source_root=None):
         if native_aot and name == 'OpenCiv2.Desktop':
             path = source_root / 'packaging/locks/desktop-aot' / (build['runtimeIdentifier'] + '.json')
             expected[path.relative_to(source_root).as_posix()] = identity.sha(path)
-        target = 'net11.0-browser' if name == 'OpenCiv2.Browser' else 'net11.0'
+        target = 'net11.0-browser' if name in {'OpenCiv2.Browser', 'OpenCiv2.MapBrowser'} else 'net11.0'
         if entry['Sources'] != expected or (entry['Sdk'], entry['Runtime'], entry['Target'], entry['Configuration']) != (sdk, runtime, target, 'Release'):
             raise ValueError('Stale or unpinned application assembly: ' + name)
         sources.update(expected)

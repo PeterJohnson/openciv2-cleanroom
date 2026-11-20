@@ -13,11 +13,12 @@ namespace OpenCiv2.App.Map;
 
 internal readonly record struct MapStartupPreparation(double WorkMs, double WaitMs);
 
-/// <summary>Native showcase for the same MapControl and painter as the scoped application.
+/// <summary>Desktop/browser showcase for the same MapControl and painter as the scoped application.
 /// All cases are clearly authored and this host exposes no gameplay command lane.</summary>
 internal sealed class MapGalleryView : UserControl
 {
     private readonly MapControl map;
+    internal MapControl Map => map;
     private readonly MapOverview overview;
     private readonly TextBlock details = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock title = new() { FontWeight = FontWeight.Bold };
@@ -290,7 +291,8 @@ internal sealed class MapGalleryView : UserControl
         flat.IsVisible = board.Id is "MV23" or "MV25" or "Mixed";
         flat.IsChecked = board.Map.Flat;
         companion.IsVisible = companion.IsEnabled && board.Id == "MV29";
-        reducedMotion.IsVisible = clear.IsVisible = board.Id is "MV22" or "MV24";
+        reducedMotion.IsVisible = true;
+        clear.IsVisible = board.Id is "MV22" or "MV24";
         reducedMotion.IsChecked = board.Display.ReducedMotion;
         details.Text = "Authored map. Drag to pan, use the wheel to zoom and click the overview to recenter.";
     }

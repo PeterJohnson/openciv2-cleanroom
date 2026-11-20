@@ -19,6 +19,15 @@ captures every board. The 2× run repeats input and lifecycle checks. Full
 performance trials and physical presentation measurements use the separate
 performance protocol.
 
+The optional `OpenCiv2.MapBrowser` host executes the same exhaustive matrix in
+WASM and the production Avalonia gallery in WebGL2. Its driver captures every
+board with stock, native and classic art at 1× and 2×, exercises actual input and
+content/resource failures, and compares presented pixels with fresh WebGL frames.
+The overview footprint is independently checked in each screenshot. See the
+[browser commands](../BUILDING.md#browser) and [execution record](../validation/m2-browser-map.md).
+This test host retains reflection metadata for evidence serialization; the
+separate production browser publication remains trimmed.
+
 `python3 tools/check_map_assets.py` validates binding metadata; supplying
 `--pack /path/to/runtime/data/atlas-hd.pack` also checks the pinned bytes. Neither
 command executes the renderer. Keep root headless tests independent of graphics
