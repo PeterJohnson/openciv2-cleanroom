@@ -101,8 +101,8 @@ densities, including independent display toggles. The 459 core
 tests passed, including W01 resource and hut predicates, W03 projection
 privacy, stale targets and RNG.
 
-The [gallery](../../src/OpenCiv2.App/Map/MapGallery.cs), [painter](../../src/OpenCiv2.App/Map/MapPainter.cs),
-[stock selectors](../../src/OpenCiv2.App/Map/MapTileArt.cs), and [matrix probe](../../tests/OpenCiv2.MapProbe/NativeMapMatrix.cs)
+The [gallery](../../src/OpenCiv2.App/Map/MapGallery.cs), [painter](../../src/OpenCiv2.MapRendering/MapPainter.cs),
+[stock selectors](../../src/OpenCiv2.MapRendering/MapTileArt.cs), and [matrix probe](../../tests/OpenCiv2.MapProbe/NativeMapMatrix.cs)
 share the production renderer. MV01–MV30 have passed local Linux software
 feature acceptance. Interactive performance, browser acceptance and physical
 backend/display checks remain open.

@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using OpenCiv2.Contracts;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
 [Flags]
 internal enum MapGpuFeatures { None = 0, Atlas = 1, Offload = 2, Retain = 4, Direct = 8, Textures = 16, Terrain = 32, Encoded = 64, Commands = 128, Masks = 256, StableAtlas = 512, Sparse = 1024, PanCache = 2048, TierCache = 4096, GroundPlans = 8192, MaskBatch = 16384, PanPhase = 32768 }
@@ -43,7 +43,7 @@ internal static class MapGpuComposition
         PrepareContext(context, cacheLimit);
         var selectedFeatures = features ?? Features;
         if (selectedFeatures.HasFlag(MapGpuFeatures.Direct))
-            return painter.Draw(output, epoch, camera, width, height, scaling, selected, display, visual, inspected,
+            return painter.DrawCore(output, epoch, camera, width, height, scaling, selected, display, visual, inspected,
                 gpuComposition: true, gpuFeatures: selectedFeatures) with
             { Composition = "gpu" };
         // A physical-pixel target keeps the map's origin independent of the
@@ -55,7 +55,7 @@ internal static class MapGpuComposition
         using var target = SKSurface.Create(context, true, info) ??
             throw new MapGpuResourceException("Could not allocate GPU map target");
         target.Canvas.Scale((float)scaling);
-        var result = painter.Draw(target.Canvas, epoch, camera, width, height, scaling, selected,
+        var result = painter.DrawCore(target.Canvas, epoch, camera, width, height, scaling, selected,
             display, visual, inspected, gpuComposition: true, gpuFeatures: selectedFeatures);
         using var image = target.Snapshot();
         if (!image.IsTextureBacked) throw new MapGpuResourceException("Map target is not GPU backed");

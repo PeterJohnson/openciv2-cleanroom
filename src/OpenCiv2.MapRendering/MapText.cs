@@ -3,7 +3,7 @@ using System.Text;
 using OpenCiv2.Formats.Graphics;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
 /// <summary>Shared measurement and painting for map text using the pinned regular faces.</summary>
 internal sealed class MapText : IDisposable

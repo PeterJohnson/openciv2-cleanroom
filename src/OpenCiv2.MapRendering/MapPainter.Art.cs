@@ -4,9 +4,9 @@ using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal sealed partial class MapPainter
+public sealed partial class MapPainter
 {
     private static readonly MapArtCatalog Catalog = MapArtCatalog.Stock;
     private static readonly SKColor HudBackground = new(0xd91a2427);

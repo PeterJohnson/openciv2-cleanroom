@@ -1,0 +1,75 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net11.0": {
+      "SkiaSharp": {
+        "type": "Direct",
+        "requested": "[4.156.1, )",
+        "resolved": "4.156.1",
+        "contentHash": "DFlbYk/Rxnqm+UM/EaynxLlucc07+fuWzT84KsyT8aCDAT1PZOPlp5eATD7eYczTgV771bnxQKSrLbNmUCaSLQ==",
+        "dependencies": {
+          "SkiaSharp.NativeAssets.Win32": "4.156.1",
+          "SkiaSharp.NativeAssets.macOS": "4.156.1"
+        }
+      },
+      "RandN.Core": {
+        "type": "Transitive",
+        "resolved": "0.5.0",
+        "contentHash": "OhiLvvC2lQyZPnBnNOTAJz9Q57wwx8gWI9wmTLIxMYJAL+lC+kmsQIqJtvDAemITL2IaQ3zfvKAVJd1AQDy4IA=="
+      },
+      "openciv2.base": {
+        "type": "Project",
+        "dependencies": {
+          "RandN.Pcg32": "[0.5.0, )"
+        }
+      },
+      "openciv2.contracts": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "openciv2.core": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )",
+          "OpenCiv2.Contracts": "[1.0.0, )"
+        }
+      },
+      "openciv2.formats": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.IO": "[1.0.0, )"
+        }
+      },
+      "openciv2.io": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "RandN.Pcg32": {
+        "type": "CentralTransitive",
+        "requested": "[0.5.0, )",
+        "resolved": "0.5.0",
+        "contentHash": "rbvbu9rbGgWzKA9Ni2XPNKUWwvZKpD520K+K47ARST+RQCfrpy36Ej8zyLJo2GymYjZCXlBlY354WG6s2TdvYg==",
+        "dependencies": {
+          "RandN.Core": "[0.5.0, 0.6.0)"
+        }
+      },
+      "SkiaSharp.NativeAssets.macOS": {
+        "type": "CentralTransitive",
+        "requested": "[4.156.1, )",
+        "resolved": "4.156.1",
+        "contentHash": "c05wS/CpRum9JKzk77bXrUsBdxIhv4QBk+sbE3nlEfoEV53Uq9VY4yxuae20lO42kE8PoLShuh6dbbvRrE4/iw=="
+      },
+      "SkiaSharp.NativeAssets.Win32": {
+        "type": "CentralTransitive",
+        "requested": "[4.156.1, )",
+        "resolved": "4.156.1",
+        "contentHash": "BFSUQxmxG9KI2UV7MW1Xb4XhCLSB7Rwsg9E94KelNi8L6ptGXnHIOm3yqU/y3djwg4ZNiBWhOB8XAGUVaF9LuA=="
+      }
+    }
+  }
+}

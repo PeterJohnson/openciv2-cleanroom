@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 import write_identity as identity
 
 ROOT = identity.ROOT
-LIBRARIES = identity.LIBRARIES - {'OpenCiv2.FoundationCases'} | {'OpenCiv2.App'}
+LIBRARIES = identity.LIBRARIES - {'OpenCiv2.FoundationCases'} | {'OpenCiv2.App', 'OpenCiv2.MapRendering'}
 HOSTS = {'OpenCiv2.Desktop', 'OpenCiv2.Browser'}
 
 

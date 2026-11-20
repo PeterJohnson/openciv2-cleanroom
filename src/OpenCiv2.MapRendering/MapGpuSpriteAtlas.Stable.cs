@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
 internal sealed partial class MapGpuSpriteAtlas
 {

@@ -7,6 +7,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 
 namespace OpenCiv2.App.Map;
 

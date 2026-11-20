@@ -1,23 +1,23 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal enum MapEffectKind { Move, CombatParticipant, Explosion, Nuclear }
-internal enum PresentationEnd { Finished, Cancelled, Interrupted, Skipped }
+public enum MapEffectKind { Move, CombatParticipant, Explosion, Nuclear }
+public enum PresentationEnd { Finished, Cancelled, Interrupted, Skipped }
 
-internal sealed record MapEffect(ulong Id, MapEffectKind Kind, MapPoint From, MapPoint To, int Milliseconds,
+public sealed record MapEffect(ulong Id, MapEffectKind Kind, MapPoint From, MapPoint To, int Milliseconds,
     ObservedMapUnit? Unit = null);
-internal sealed record MapNotice(ulong Id, string Message, int Milliseconds);
-internal readonly record struct EffectFrame(MapEffect Effect, double Progress, int WrappedDestinationX);
-internal sealed record VisualFrame(OwnedList<EffectFrame> Effects, OwnedList<UnitTarget> Moving, OwnedList<string> Notices, bool Pulse)
+public sealed record MapNotice(ulong Id, string Message, int Milliseconds);
+public readonly record struct EffectFrame(MapEffect Effect, double Progress, int WrappedDestinationX);
+public sealed record VisualFrame(OwnedList<EffectFrame> Effects, OwnedList<UnitTarget> Moving, OwnedList<string> Notices, bool Pulse)
 {
     public static VisualFrame Empty { get; } = new(OwnedList<EffectFrame>.Empty, OwnedList<UnitTarget>.Empty, OwnedList<string>.Empty, false);
 }
 
 /// <summary>MV22/MV24 disposable, binding-local presentation timelines. Decision-bearing
 /// messages use the normal command/interaction channel, rather than this cosmetic one.</summary>
-internal sealed class MapVisualTimeline(Action<ulong, PresentationEnd>? completed = null)
+public sealed class MapVisualTimeline(Action<ulong, PresentationEnd>? completed = null)
 {
     private readonly Dictionary<ulong, (MapEffect Effect, long Start)> effects = [];
     private readonly Dictionary<ulong, (MapNotice Notice, long Start)> notices = [];

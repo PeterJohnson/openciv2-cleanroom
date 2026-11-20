@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
 /// <summary>Experimental immutable, picture-backed atlas pages. Skia owns GPU residency.
 /// Consecutive sprites are batched only until an explicit ordering boundary.</summary>

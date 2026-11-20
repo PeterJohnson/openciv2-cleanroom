@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="SkiaSharp" />
+    <ProjectReference Include="../OpenCiv2.Base/OpenCiv2.Base.csproj" />
+    <ProjectReference Include="../OpenCiv2.Contracts/OpenCiv2.Contracts.csproj" />
+    <ProjectReference Include="../OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
+  </ItemGroup>
+  <ItemGroup><InternalsVisibleTo Include="OpenCiv2.MapProbe" /></ItemGroup>
+</Project>

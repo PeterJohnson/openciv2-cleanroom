@@ -63,7 +63,7 @@ def unique_object(pairs):
 
 
 def expected_inputs(root, name):
-    kind = "src" if name in (LIBRARIES - {"OpenCiv2.FoundationCases"}) | {"OpenCiv2.App", "OpenCiv2.Desktop", "OpenCiv2.Browser", "OpenCiv2.Automation", "OpenCiv2.IO.Native"} else "tests"
+    kind = "src" if name in (LIBRARIES - {"OpenCiv2.FoundationCases"}) | {"OpenCiv2.App", "OpenCiv2.MapRendering", "OpenCiv2.Desktop", "OpenCiv2.Browser", "OpenCiv2.Automation", "OpenCiv2.IO.Native"} else "tests"
     directory = root / kind / name
     paths = [root / p for p in COMMON]
     paths += [directory / f"{name}.csproj", directory / "packages.lock.json"]

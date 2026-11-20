@@ -1,5 +1,6 @@
 using System.Text.Json;
 using OpenCiv2.App;
+using OpenCiv2.MapRendering;
 
 internal static class RendererPreferences
 {

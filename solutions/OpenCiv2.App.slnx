@@ -11,6 +11,7 @@
   <Project Path="../src/OpenCiv2.ViewModels/OpenCiv2.ViewModels.csproj" />
   <Project Path="../src/OpenCiv2.Console/OpenCiv2.Console.csproj" />
   <Project Path="../src/OpenCiv2.App/OpenCiv2.App.csproj" />
+  <Project Path="../src/OpenCiv2.MapRendering/OpenCiv2.MapRendering.csproj" />
   <Project Path="../src/OpenCiv2.Desktop/OpenCiv2.Desktop.csproj" />
   <Project Path="../tests/OpenCiv2.MapProbe/OpenCiv2.MapProbe.csproj" />
 </Solution>

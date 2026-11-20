@@ -2,15 +2,15 @@ using OpenCiv2.Contracts;
 using OpenCiv2.Formats;
 using OpenCiv2.Formats.Content;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal enum MapPickKind { Tile, Unit, City }
-internal readonly record struct MapPick(MapPoint Position, MapPickKind Kind);
+public enum MapPickKind { Tile, Unit, City }
+public readonly record struct MapPick(MapPoint Position, MapPickKind Kind);
 internal readonly record struct TileConnections(int RiverMask, int RouteMask);
-internal readonly record struct MapObjects(ObservedMapUnit? Unit, int Count, ObservedMapCity? City, string? Name);
+public readonly record struct MapObjects(ObservedMapUnit? Unit, int Count, ObservedMapCity? City, string? Name);
 
 /// <summary>View-side indexing of an owned, filtered observation. No world or command access.</summary>
-internal sealed class MapScene
+public sealed class MapScene
 {
     private readonly MapObjects[] objects;
     private readonly int[] objectSlots;
@@ -38,6 +38,16 @@ internal sealed class MapScene
         new(1, -3), new(3, -1), new(3, 1), new(1, 3), new(-1, 3), new(-3, 1), new(-3, -1), new(-1, -3), new(0, 0)];
 
     public MapObservation Map { get; }
+
+    /// <summary>Indexes a host publication, attaching disclosed deltas only for explicitly enabled experiments.</summary>
+    public static MapScene Create(MapObservation map, MapScene? previous = null)
+    {
+        if (MapGpuComposition.Experiment && MapGpuComposition.Features.HasFlag(MapGpuFeatures.Sparse) &&
+            !(previous is not null && map.Delta?.Matches(previous.Map, map) == true))
+            map = MapObservationDelta.Attach(previous?.Map, map);
+        return new(map);
+    }
+
     public MapScene(MapObservation map)
     {
         Map = map;
@@ -100,8 +110,8 @@ internal sealed class MapScene
         return ref objects[slot];
     }
 
-    public IEnumerable<(MapPoint Point, int DisplayX)> VisibleForeground(MapVisibleBounds bounds) => VisibleCells(bounds, foregroundRows);
-    public IEnumerable<(MapPoint Point, int DisplayX)> VisibleLabels(MapVisibleBounds bounds) => VisibleCells(bounds, labelRows);
+    internal IEnumerable<(MapPoint Point, int DisplayX)> VisibleForeground(MapVisibleBounds bounds) => VisibleCells(bounds, foregroundRows);
+    internal IEnumerable<(MapPoint Point, int DisplayX)> VisibleLabels(MapVisibleBounds bounds) => VisibleCells(bounds, labelRows);
 
     private IEnumerable<(MapPoint Point, int DisplayX)> VisibleCells(MapVisibleBounds bounds, int[][] rows)
     {
@@ -153,7 +163,7 @@ internal sealed class MapScene
 
     /// <summary>P02 map information. Presentation joins come only from the bound observer's tiles.
     /// Projected roads/rails join matching remembered improvements. River masks use explored land/water.</summary>
-    public TileConnections Connections(MapPoint center, ObservedTile tile)
+    internal TileConnections Connections(MapPoint center, ObservedTile tile)
     {
         if (tile.Terrain is null) return default;
         var route = Route(tile);
@@ -244,6 +254,8 @@ internal sealed class MapScene
     public const int CityWidth = 52, CityTop = -30;
     public static bool RememberedCity(ObservedTile tile) =>
         (tile.Improvements & (MapImprovements.CitySite | MapImprovements.Fortification)) == MapImprovements.CitySite;
+
+    public static bool IsAirbase(ObservedTile tile) => MapTileArt.Airbase(tile);
 
     public MapPick? Pick(MapCamera camera, double x, double y, bool terrainOnly = false)
     {

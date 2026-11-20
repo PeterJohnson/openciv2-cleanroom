@@ -1,11 +1,11 @@
 using OpenCiv2.Contracts;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal readonly record struct MapCamera(double X, double Y, double Zoom)
+public readonly record struct MapCamera(double X, double Y, double Zoom)
 {
-    internal const int HalfWidth = 32, HalfHeight = 16;
-    internal static MapCamera Initial => new(80, 60, 1.25);
+    public const int HalfWidth = 32, HalfHeight = 16;
+    public static MapCamera Initial => new(80, 60, 1.25);
     public double ScreenX(int x) => X + x * HalfWidth * Zoom;
     public double ScreenY(int y) => Y + y * HalfHeight * Zoom;
 

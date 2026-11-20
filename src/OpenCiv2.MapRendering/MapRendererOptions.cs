@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace OpenCiv2.App;
+namespace OpenCiv2.MapRendering;
 
 public enum MapRendererMode { Cpu, Gpu }
 
@@ -44,22 +44,5 @@ public sealed record MapRendererOptions
         writer.WriteString("renderer", Mode == MapRendererMode.Gpu ? "gpu" : "cpu");
         writer.WriteNumber("gpuCacheMiB", GpuCacheMiB);
         writer.WriteEndObject();
-    }
-}
-
-/// <summary>The host owns persistence; changing this preference never mutates a running renderer.</summary>
-public sealed class MapRendererPreferences(MapRendererOptions startup, MapRendererOptions saved,
-    Action<MapRendererOptions>? save = null, string? warning = null)
-{
-    public MapRendererOptions Startup { get; } = startup;
-    public MapRendererOptions Saved { get; private set; } = saved;
-    public string? Warning { get; } = warning;
-    public bool CanSave => save is not null;
-    public void Save(MapRendererMode mode)
-    {
-        var next = new MapRendererOptions(mode, Startup.GpuCacheMiB);
-        if (save is null) throw new InvalidOperationException("Renderer preferences are unavailable in this host");
-        save(next);
-        Saved = next;
     }
 }

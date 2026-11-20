@@ -4,6 +4,7 @@ using OpenCiv2.App;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 /// <summary>Replays existing native input states with GL instrumentation and bounded frames in flight.</summary>

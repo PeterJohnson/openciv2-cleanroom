@@ -214,9 +214,10 @@ adapters are introduced when their M2 responsibilities require them:
 | `OpenCiv2.Console` | Parsing, help/completion and structured results through a scoped client; Contracts, no required GUI or scripting runtime. |
 | `OpenCiv2.Automation` | Optional Lua adapter, task scheduling and versioned task data through Contracts; native/WASM bridge isolated here. |
 | `OpenCiv2.Content` | CPU asset data, identities, lookup and independent decoders; no GPU objects. |
+| `OpenCiv2.MapRendering` | Optional read-only Skia map renderer, scene/camera/minimap geometry and cosmetic timelines; Base, Contracts, Formats and SkiaSharp. No Avalonia, Session, Query or Network dependency. Formats currently supplies graphics data and transitively references Core. |
 | `OpenCiv2.IO.Native`, browser adapters | Storage, time and transport implementations; native headless I/O has no Avalonia dependency. Browser-specific JS interop stays in the host adapter. |
 | `OpenCiv2.Platform.Native` | Native adapters that compose Formats with IO.Native, including classic byte-text streams. No graphical dependency; excluded from portable/browser engine graphs. |
-| Avalonia frontend and desktop/browser hosts | Dialogs, console panel, custom Skia map and platform menus; view models, content and console. Only composition roots construct Session and platform services. |
+| Avalonia frontend and desktop/browser hosts | Dialogs, console panel, map controls/input and platform menus; MapRendering, view models, content and console. Hosts lend their current Skia context to the renderer. Only composition roots construct Session and platform services. |
 | `OpenCiv2.Cli` (`oc2`) | Native inspection, validation, diff and content tools over Formats, Query and native I/O; explicitly supported live analysis additionally uses Session. |
 | `OpenCiv2.Export.Sqlite` | Optional native snapshot exporter over Query and SQLite; never a dependency of Core, Formats, Query or Session. |
 | Managed tests, conformance adapter and later headless runner | Test/CLI composition roots over portable libraries; no graphical dependency. |

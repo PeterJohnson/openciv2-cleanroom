@@ -3,6 +3,7 @@ using OpenCiv2.App;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 internal static class GpuMapMatrix

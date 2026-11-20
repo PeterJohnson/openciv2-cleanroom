@@ -1,8 +1,8 @@
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal sealed partial class MapPainter
+public sealed partial class MapPainter
 {
     private const int GroundAtlasSide = 1024;
     internal long PackedGroundBytes => retainedGroundAtlas?.Image is null ? 0 : GroundAtlasSide * GroundAtlasSide * 4L;

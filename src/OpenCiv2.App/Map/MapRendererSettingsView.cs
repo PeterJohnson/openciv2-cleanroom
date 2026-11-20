@@ -1,6 +1,7 @@
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Media;
+using OpenCiv2.MapRendering;
 
 namespace OpenCiv2.App.Map;
 

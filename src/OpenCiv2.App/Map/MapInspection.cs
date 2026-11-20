@@ -1,4 +1,5 @@
 using OpenCiv2.Contracts;
+using OpenCiv2.MapRendering;
 
 namespace OpenCiv2.App.Map;
 
@@ -57,7 +58,7 @@ internal static class MapInspection
         if (tile.GrasslandShield) features.Add("Grassland shield");
         if (tile.Resource != 0) features.Add($"Special resource {tile.Resource}");
         var improvements = tile.Improvements;
-        if (MapTileArt.Airbase(tile))
+        if (MapScene.IsAirbase(tile))
         {
             features.Add("Airbase");
             improvements &= ~(MapImprovements.CitySite | MapImprovements.Fortification);

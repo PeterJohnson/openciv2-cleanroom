@@ -7,6 +7,7 @@ using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 bool rendererOptions = args.Length == 4 && args[3] == "--renderer-options";
@@ -103,6 +104,7 @@ foreach (var sprite in atlas.Sprites)
 }
 double decodeAllMilliseconds = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
 
+RendererLibraryChecks.Run(atlas, fonts);
 using var session = new SeamSession();
 var authored = new MapScene(session.Player.ObserveMap()!);
 GeometryChecks(authored);

@@ -1584,11 +1584,7 @@
       "sources": [
         "src/OpenCiv2.App/ApplicationIdentity.cs",
         "src/OpenCiv2.App/GraphicsFonts.cs",
-        "src/OpenCiv2.App/Map/MapCamera.cs",
         "src/OpenCiv2.App/Map/MapControl.cs",
-        "src/OpenCiv2.App/Map/MapPainter.cs",
-        "src/OpenCiv2.App/Map/MapScene.cs",
-        "src/OpenCiv2.App/Map/MapTextures.cs",
         "src/OpenCiv2.App/SeamApp.cs",
         "src/OpenCiv2.App/SeamSession.cs",
         "src/OpenCiv2.App/SeamView.cs",
@@ -1599,6 +1595,10 @@
         "src/OpenCiv2.Formats/Graphics/AtlasPng.cs",
         "src/OpenCiv2.Formats/Graphics/PinnedGraphics.cs",
         "src/OpenCiv2.IO.Native/ContentDirectory.cs",
+        "src/OpenCiv2.MapRendering/MapCamera.cs",
+        "src/OpenCiv2.MapRendering/MapPainter.cs",
+        "src/OpenCiv2.MapRendering/MapScene.cs",
+        "src/OpenCiv2.MapRendering/MapTextures.cs",
         "src/OpenCiv2.Query/MapProjection.cs",
         "src/OpenCiv2.Session/SessionRuntime.cs"
       ],

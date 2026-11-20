@@ -1,9 +1,9 @@
 using OpenCiv2.Contracts;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal sealed partial class MapPainter
+public sealed partial class MapPainter
 {
     private static void ClipRegion(SKCanvas canvas, MapScene scene, FrameKey frame)
     {
@@ -90,7 +90,7 @@ internal sealed partial class MapPainter
     }
 }
 
-internal sealed partial class MapPainter
+public sealed partial class MapPainter
 {
     private SKImage? overviewImage;
 
@@ -153,7 +153,7 @@ internal sealed partial class MapPainter
     }
 }
 
-internal sealed partial class MapPainter
+public sealed partial class MapPainter
 {
     private int DrawTransient(SKCanvas canvas, MapScene scene, FrameKey frame, VisualFrame? visual, MapPick? inspected,
         MapPick? selected, SKImage? backdrop)

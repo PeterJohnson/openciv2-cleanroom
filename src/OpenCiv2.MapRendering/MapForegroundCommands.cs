@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
 /// <summary>One foreground traversal, followed by atlas admission and ordered submission.
 /// Commands live for one paint only. They never own GPU resources or survive a scene update.</summary>

@@ -1,5 +1,6 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.MapRendering;
 
 namespace OpenCiv2.App.Map;
 

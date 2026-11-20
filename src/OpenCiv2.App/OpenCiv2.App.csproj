@@ -3,6 +3,7 @@
     <PackageReference Include="Avalonia" /><PackageReference Include="Avalonia.Themes.Fluent" /><PackageReference Include="Avalonia.Fonts.Inter" />
     <PackageReference Include="Avalonia.Skia" /><PackageReference Include="SkiaSharp" />
     <ProjectReference Include="../OpenCiv2.Session/OpenCiv2.Session.csproj" />
+    <ProjectReference Include="../OpenCiv2.MapRendering/OpenCiv2.MapRendering.csproj" />
     <ProjectReference Include="../OpenCiv2.ViewModels/OpenCiv2.ViewModels.csproj" /><ProjectReference Include="../OpenCiv2.Console/OpenCiv2.Console.csproj" />
   </ItemGroup>
   <ItemGroup><InternalsVisibleTo Include="OpenCiv2.MapProbe" /></ItemGroup>

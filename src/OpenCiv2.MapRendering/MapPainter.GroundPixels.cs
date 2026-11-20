@@ -3,9 +3,9 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal sealed partial class MapPainter
+public sealed partial class MapPainter
 {
     private static bool AlignedGroundSupported => OperatingSystem.IsLinux() && Sse2.IsSupported && BitConverter.IsLittleEndian;
 

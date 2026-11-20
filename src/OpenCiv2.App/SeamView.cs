@@ -13,6 +13,7 @@ using OpenCiv2.Base;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using OpenCiv2.Session;
 using OpenCiv2.ViewModels;
 

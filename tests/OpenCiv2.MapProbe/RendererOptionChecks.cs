@@ -3,6 +3,7 @@ using System.Text.Json;
 using OpenCiv2.App;
 using OpenCiv2.App.Map;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 /// <summary>MV29/MV30: startup selection, controlled fallback, recovery and observer resource ownership.</summary>

@@ -4,11 +4,11 @@ using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal enum MapRedraw { Full, Cached, Dirty, Scrolled, Direct, Error }
+public enum MapRedraw { Full, Cached, Dirty, Scrolled, Direct, Error }
 internal sealed class MapResourceException(string message) : Exception(message);
-internal readonly record struct MapDrawStats(MapRedraw Redraw, int Tiles, int Objects, int Batches,
+public readonly record struct MapDrawStats(MapRedraw Redraw, int Tiles, int Objects, int Batches,
     int GroundChunks = 0, int PreparedChunks = 0, int Labels = 0, string? Error = null, double GroundTier = 0,
     long DamagePixels = 0, int Effects = 0, int Moving = 0, int Notices = 0, long GroundDamagePixels = 0,
     double GroundBuildMs = 0, double GroundSelectorMs = 0, double TexturePrepareMs = 0, int ParallelGroundChunks = 0,
@@ -32,7 +32,7 @@ internal readonly record struct MapDrawStats(MapRedraw Redraw, int Tiles, int Ob
 
 /// <summary>P02 read-only renderer. One batch per texture/layer, bounded viewport rasters,
 /// and a transient selection overlay. Raster ownership and scene publication use separate locks.</summary>
-internal sealed partial class MapPainter : IDisposable
+public sealed partial class MapPainter : IDisposable
 {
     private const int MaxFramePixels = 16_000_000;
     private const double HigherBodyPreparationStart = 1.35, HigherBodyTierBoundary = 2;
@@ -72,7 +72,7 @@ internal sealed partial class MapPainter : IDisposable
 
     private readonly record struct FrameKey(MapCamera Camera, double Width, double Height, double Scaling, MapDisplay Display, OwnedList<UnitTarget>? Moving);
     private sealed record SceneBinding(MapScene? Scene, long Epoch);
-    internal MapRendererOptions Options { get; }
+    public MapRendererOptions Options { get; }
 
     public MapPainter(AssetAtlas? atlas, PinnedFonts? fonts, MapArtSelection? selected = null,
         Func<SKImageInfo, SKSurface?>? allocateRaster = null, bool parallelForeground = true, bool packGroundTextures = true,
@@ -91,11 +91,11 @@ internal sealed partial class MapPainter : IDisposable
     internal (long Pages, long Sources) AtlasUsage => (spriteAtlas.Bytes, spriteAtlas.SourceBytes);
     internal (long Regions, long Topology) OptimizationUsage => (regionBytes, topologyBytes);
 
-    internal void BeginStartupGroundPreparation() => textures.BeginStartupGround();
+    public void BeginStartupGroundPreparation() => textures.BeginStartupGround();
 
-    internal StartupGroundWork? StartupGroundPreparation => textures.StartupGround;
+    public StartupGroundWork? StartupGroundPreparation => textures.StartupGround;
 
-    internal bool TryPrepareFirstFrameBodies(long epoch, MapCamera camera, double width, double height,
+    public bool TryPrepareFirstFrameBodies(long epoch, MapCamera camera, double width, double height,
         double scaling, MapDisplay display, VisualFrame? visual)
     {
         double pixels = Math.Ceiling(width * scaling) * Math.Ceiling(height * scaling);
@@ -123,11 +123,11 @@ internal sealed partial class MapPainter : IDisposable
     internal long ViewportBytes => (long)viewportInfo.Width * viewportInfo.Height * 4 *
         ((viewportRaster is null ? 0 : 1) + (terrainRaster is null ? 0 : 1) + (viewportScratch is null ? 0 : 1));
 
-    internal readonly record struct BindingTiming(double WaitMs, double InvalidateGroundMs, bool Deferred = false);
+    public readonly record struct BindingTiming(double WaitMs, double InvalidateGroundMs, bool Deferred = false);
 
     public long SetScene(MapScene? value) => SetScene(value, measure: false, out _);
 
-    internal long SetScene(MapScene? value, bool measure, out BindingTiming timing)
+    public long SetScene(MapScene? value, bool measure, out BindingTiming timing)
     {
         timing = default;
         long requested = measure ? Stopwatch.GetTimestamp() : 0;
@@ -247,7 +247,12 @@ internal sealed partial class MapPainter : IDisposable
         textures.CompleteBodyPreparation(admit: false);
     }
 
+    /// <summary>Draws the CPU composition into a borrowed canvas. The caller retains canvas ownership.</summary>
     public MapDrawStats Draw(SKCanvas output, long epoch, MapCamera camera, double width, double height,
+        double scaling, MapPick? selected, MapDisplay display = default, VisualFrame? visual = null, MapPick? inspected = null) =>
+        DrawCore(output, epoch, camera, width, height, scaling, selected, display, visual, inspected);
+
+    internal MapDrawStats DrawCore(SKCanvas output, long epoch, MapCamera camera, double width, double height,
         double scaling, MapPick? selected, MapDisplay display = default, VisualFrame? visual = null, MapPick? inspected = null,
         bool gpuComposition = false, MapGpuFeatures gpuFeatures = MapGpuFeatures.None)
     {

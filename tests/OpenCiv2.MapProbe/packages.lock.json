@@ -30,6 +30,7 @@
           "Avalonia.Skia": "[12.1.6, )",
           "Avalonia.Themes.Fluent": "[12.1.6, )",
           "OpenCiv2.Console": "[1.0.0, )",
+          "OpenCiv2.MapRendering": "[1.0.0, )",
           "OpenCiv2.Session": "[1.0.0, )",
           "OpenCiv2.ViewModels": "[1.0.0, )",
           "SkiaSharp": "[4.156.1, )"
@@ -71,6 +72,15 @@
         "type": "Project",
         "dependencies": {
           "OpenCiv2.Base": "[1.0.0, )"
+        }
+      },
+      "openciv2.maprendering": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Base": "[1.0.0, )",
+          "OpenCiv2.Contracts": "[1.0.0, )",
+          "OpenCiv2.Formats": "[1.0.0, )",
+          "SkiaSharp": "[4.156.1, )"
         }
       },
       "openciv2.network": {

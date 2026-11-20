@@ -8,6 +8,7 @@ using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 internal static class NativeMapPerformance

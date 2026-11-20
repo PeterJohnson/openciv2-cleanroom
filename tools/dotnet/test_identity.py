@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch
 
 import write_identity as identity
+import run_application as application
 
 
 class IdentityTests(unittest.TestCase):
@@ -62,10 +63,31 @@ class IdentityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             json.loads('{"Passed":false,"Passed":true}', object_pairs_hook=identity.unique_object)
 
+    def test_application_requires_current_renderer_identity(self):
+        for host in sorted(application.HOSTS):
+            with self.subTest(host=host):
+                names = application.LIBRARIES | {host}
+                if host == "OpenCiv2.Desktop":
+                    names |= {"OpenCiv2.IO.Native"}
+                report = {"format": "openciv2-application-seam/1", "build": [
+                    {"Assembly": name, "Sdk": "11.0.100", "Runtime": "11.0.0",
+                     "Target": "net11.0-browser" if name == "OpenCiv2.Browser" else "net11.0",
+                     "Configuration": "Release", "Sources": dict(self.expected)} for name in sorted(names)]}
+                with patch.object(identity, "expected_inputs", return_value=self.expected):
+                    self.assertEqual(application.validate(report, source_root=self.root), self.expected)
+                    renderer = next(entry for entry in report["build"] if entry["Assembly"] == "OpenCiv2.MapRendering")
+                    renderer["Sources"] = {}
+                    with self.assertRaisesRegex(ValueError, "Stale or unpinned application assembly"):
+                        application.validate(report, source_root=self.root)
+                    report["build"].remove(renderer)
+                    with self.assertRaisesRegex(ValueError, "Incomplete or duplicate application identity"):
+                        application.validate(report, source_root=self.root)
+
     def test_client_libraries_and_test_hosts_use_their_actual_directories(self):
         for kind, name in (
             ("src", "OpenCiv2.Console"), ("src", "OpenCiv2.ViewModels"),
             ("src", "OpenCiv2.App"), ("src", "OpenCiv2.Desktop"), ("src", "OpenCiv2.Browser"),
+            ("src", "OpenCiv2.MapRendering"),
             ("tests", "OpenCiv2.FoundationCases"), ("tests", "OpenCiv2.FoundationProbe"),
             ("tests", "OpenCiv2.Browser.Tests"),
         ):

@@ -1,7 +1,7 @@
 using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
 internal enum TileArtLayer
 {

@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
-internal sealed partial class MapPainter
+public sealed partial class MapPainter
 {
     private const int BandEdge = 8;
     private const int LargeBandEdge = 16;

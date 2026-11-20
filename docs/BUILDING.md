@@ -34,6 +34,11 @@ when using an SDK outside the normal installation location. You can always invok
 
 ## Avalonia desktop
 
+The optional App solution includes `OpenCiv2.MapRendering`, the shared Skia
+renderer library. App supplies the Avalonia controls and host integration;
+MapProbe references both for raster and application-boundary checks. The root
+headless solution remains independent of graphics packages.
+
 ```sh
 dotnet restore solutions/OpenCiv2.App.slnx --locked-mode
 dotnet build solutions/OpenCiv2.App.slnx -c Release --no-restore

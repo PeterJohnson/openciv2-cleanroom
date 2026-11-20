@@ -8,6 +8,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # Direct production references, reviewed against the architecture.
 GUI_PROJECTS = {"OpenCiv2.App", "OpenCiv2.Desktop", "OpenCiv2.Browser"}
+RENDERING_PROJECTS = {"OpenCiv2.MapRendering"}
+RENDERING_PACKAGES = {"SkiaSharp", *{f"SkiaSharp.NativeAssets.{platform}"
+    for platform in ("Linux", "WebAssembly", "Win32", "macOS")}}
 GUI_PACKAGES = {
     "Avalonia", "Avalonia.Angle.Windows.Natives", "Avalonia.Browser", "Avalonia.BuildServices",
     "Avalonia.Desktop", "Avalonia.Fonts.Inter", "Avalonia.FreeDesktop", "Avalonia.FreeDesktop.AtSpi",
@@ -19,7 +22,8 @@ GUI_PACKAGES = {
 }
 EDGES = {
     "OpenCiv2.Automation": {"OpenCiv2.Console"},
-    "OpenCiv2.App": {"OpenCiv2.Session", "OpenCiv2.ViewModels", "OpenCiv2.Console"},
+    "OpenCiv2.App": {"OpenCiv2.Session", "OpenCiv2.ViewModels", "OpenCiv2.Console", "OpenCiv2.MapRendering"},
+    "OpenCiv2.MapRendering": {"OpenCiv2.Base", "OpenCiv2.Contracts", "OpenCiv2.Formats"},
     "OpenCiv2.Desktop": {"OpenCiv2.App", "OpenCiv2.IO.Native"},
     "OpenCiv2.Browser": {"OpenCiv2.App"},
     "OpenCiv2.ViewModels": {"OpenCiv2.Contracts"},
@@ -59,6 +63,8 @@ def main():
                 failures.append(f"Unregistered production project: {project.stem}")
             # GUI/native/optional dependencies cannot arrive silently.
             allowed = {"RandN.Pcg32", "RandN.Core"} | (GUI_PACKAGES if project.stem in GUI_PROJECTS else set())
+            if project.stem in RENDERING_PROJECTS:
+                allowed |= RENDERING_PACKAGES
             for dependencies in lock["dependencies"].values():
                 for name, entry in dependencies.items():
                     if entry["type"] == "Project":
@@ -89,12 +95,12 @@ def main():
         if dependencies(browser) & browser_forbidden:
             failures.append(f"{browser} graph includes a native filesystem/CLI/export dependency")
     for portable in ("OpenCiv2.Cli", "OpenCiv2.Session", "OpenCiv2.ViewModels", "OpenCiv2.Console", "OpenCiv2.Browser.Tests"):
-        if dependencies(portable) & GUI_PROJECTS:
+        if dependencies(portable) & (GUI_PROJECTS | RENDERING_PROJECTS):
             failures.append(f"{portable} unexpectedly depends on a GUI host")
     if {"OpenCiv2.Automation", "OpenCiv2.Export.Sqlite"} & dependencies("OpenCiv2.Cli"):
         failures.append("Default CLI graph includes optional Lua/SQLite")
     for project in ET.parse(ROOT / "OpenCiv2.slnx").iter("Project"):
-        if Path(project.attrib["Path"]).stem in GUI_PROJECTS | {"OpenCiv2.Automation", "OpenCiv2.AutomationCases", "OpenCiv2.Automation.Tests", "OpenCiv2.AutomationProbe", "OpenCiv2.AutomationBrowser", "OpenCiv2.Export.Sqlite", "OpenCiv2.Cli.Sqlite", "OpenCiv2.Sqlite.Tests"}:
+        if Path(project.attrib["Path"]).stem in GUI_PROJECTS | RENDERING_PROJECTS | {"OpenCiv2.Automation", "OpenCiv2.AutomationCases", "OpenCiv2.Automation.Tests", "OpenCiv2.AutomationProbe", "OpenCiv2.AutomationBrowser", "OpenCiv2.Export.Sqlite", "OpenCiv2.Cli.Sqlite", "OpenCiv2.Sqlite.Tests"}:
             failures.append("Default solution includes optional GUI/Lua/SQLite")
     if failures:
         raise SystemExit("\n".join(failures))

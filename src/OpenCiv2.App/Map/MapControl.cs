@@ -11,6 +11,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 namespace OpenCiv2.App.Map;
@@ -32,7 +33,7 @@ internal sealed class MapControl : Control
     private bool dragged, orderKeyDown, zoomGesture;
     private DrawReceipt? receipt, changedReceipt, firstReceipt;
     private long drawSequence;
-    private static readonly bool TraceLatency = MapGpuComposition.Experiment && Environment.GetEnvironmentVariable("OPENCIV2_MAP_LATENCY") == "1";
+    private static bool TraceLatency => MapRendererSession.TraceLatency;
     private int inputCode;
     private long inputAt;
     private TopLevel? host;
@@ -131,11 +132,7 @@ internal sealed class MapControl : Control
         long allocated = tracePresentation ? GC.GetAllocatedBytesForCurrentThread() : 0;
         long indexing = tracePresentation ? Stopwatch.GetTimestamp() : 0;
         boundObservation = map;
-        var indexed = map;
-        if (map is not null && MapGpuComposition.Experiment && MapGpuComposition.Features.HasFlag(MapGpuFeatures.Sparse) &&
-            !(scene is { } previous && map.Delta?.Matches(previous.Map, map) == true))
-            indexed = MapObservationDelta.Attach(scene?.Map, map);
-        scene = indexed is null ? null : new(indexed);
+        scene = map is null ? null : MapScene.Create(map, scene);
         double indexMs = tracePresentation ? Stopwatch.GetElapsedTime(indexing).TotalMilliseconds : 0;
         long indexAllocatedBytes = tracePresentation ? GC.GetAllocatedBytesForCurrentThread() - allocated : 0;
         Hover(null);
@@ -440,48 +437,11 @@ internal sealed class MapControl : Control
                 try
                 {
                     canvas.ClipRect(new SKRect(0, 0, (float)bounds.Width, (float)bounds.Height));
-                    if ((MapGpuComposition.Synchronize || TraceLatency) && lease.GrContext is null)
-                        throw new MapGpuResourceException("GPU timing requires a hardware Skia context");
-                    // Explicit experiments apply the same ceiling to CPU upload
-                    // and GPU composition, including asynchronous timing runs.
-                    // Ordinary CPU sessions keep the host's existing policy.
-                    if ((MapGpuComposition.Experiment || TraceLatency) && lease.GrContext is not null)
-                        MapGpuComposition.PrepareContext(lease.GrContext!, (long)painter.Options.GpuCacheMiB * 1024 * 1024);
-                    if (MapGpuComposition.Synchronize) lease.GrContext!.Flush(submit: true, synchronous: true);
-                    startedAt = Stopwatch.GetTimestamp();
-                    stats = renderer.Draw(lease.GrContext, gpu => gpu
-                        ? MapGpuComposition.Draw(painter, lease.GrContext!, canvas, epoch, camera,
-                            bounds.Width, bounds.Height, scaling, selected, display, visual, hovered,
-                            MapGpuComposition.Experiment ? MapGpuComposition.Features : MapGpuComposition.SupportedFeatures,
-                            (long)painter.Options.GpuCacheMiB * 1024 * 1024)
-                        : painter.Draw(canvas, epoch, camera, bounds.Width, bounds.Height, scaling, selected, display, visual, hovered),
-                        painter.RecoverResources, strict: MapGpuComposition.Experiment);
-                    if (TraceLatency)
-                    {
-                        // Test-only optical stamp: pointer coordinate and its complement.
-                        // X11 readback observes the rendered window image, never a draw receipt.
-                        using var marker = new SKPaint();
-                        uint code = (uint)inputCode | (uint)(~inputCode & 0xffff) << 16;
-                        for (int bit = 0; bit < 32; bit++)
-                        {
-                            marker.Color = (code & (1u << bit)) == 0 ? SKColors.Black : SKColors.White;
-                            canvas.DrawRect(SKRect.Create((float)(bit * 2 / scaling), 0, (float)(2 / scaling), (float)(3 / scaling)), marker);
-                        }
-                    }
-                    if (MapGpuComposition.Synchronize)
-                    {
-                        long waiting = Stopwatch.GetTimestamp();
-                        lease.GrContext!.Flush(submit: true, synchronous: true);
-                        stats = stats with { GpuWaitMs = Stopwatch.GetElapsedTime(waiting).TotalMilliseconds, GpuSynchronized = true };
-                    }
-                    if (lease.GrContext is { IsAbandoned: false })
-                    {
-                        lease.GrContext!.GetResourceCacheUsage(out _, out long cacheBytes);
-                        stats = stats with { GpuCacheBytes = cacheBytes, GpuCacheLimitBytes = lease.GrContext.GetResourceCacheLimit() };
-                    }
-                    elapsed = Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds;
-                    if (TraceLatency && inputAt != 0)
-                        stats = stats with { InputToDrawMs = Stopwatch.GetElapsedTime(inputAt).TotalMilliseconds, InputCode = inputCode };
+                    var result = renderer.Draw(painter, lease.GrContext, canvas, epoch, camera,
+                        bounds.Width, bounds.Height, scaling, selected, display, visual, hovered, inputCode, inputAt);
+                    stats = result.Stats;
+                    elapsed = result.Milliseconds;
+                    startedAt = result.StartedAt;
                 }
                 finally { canvas.Restore(); }
             }

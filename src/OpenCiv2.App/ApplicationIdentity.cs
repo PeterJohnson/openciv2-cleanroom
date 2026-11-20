@@ -17,7 +17,7 @@ public static class ApplicationIdentity
             typeof(OpenCiv2.Formats.StoredSave).Assembly, typeof(OpenCiv2.Query.StoredSnapshot).Assembly,
             typeof(OpenCiv2.Network.Messages).Assembly, typeof(OpenCiv2.Session.SessionRuntime).Assembly,
             typeof(OpenCiv2.ViewModels.SessionPanel).Assembly, typeof(OpenCiv2.Console.CommandText).Assembly,
-            typeof(SeamApp).Assembly, host };
+            typeof(OpenCiv2.MapRendering.MapPainter).Assembly, typeof(SeamApp).Assembly, host };
         return new JsonObject
         {
             ["format"] = "openciv2-application-seam/1",

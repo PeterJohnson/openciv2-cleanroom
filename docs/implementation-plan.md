@@ -81,6 +81,11 @@ retains that finite scope and simulated 4K/5K results. It does not complete the
 map renderer. Browser content, visual coverage, interactive performance and the
 full platform/services gate below remain open.
 
+The shared Skia renderer now lives in the optional `OpenCiv2.MapRendering`
+library. App retains Avalonia controls, input, authored galleries and session
+composition. This dependency extraction preserves the existing renderer scope;
+it does not close visual, performance or platform acceptance gaps.
+
 Map completeness is [P02 MV01–MV30](algorithms/P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set),
 with the mandatory [acceptance matrix](testing/map-rendering.md), tracked in the
 [visual coverage ledger](validation/map-visual-coverage.md). The stock theme uses

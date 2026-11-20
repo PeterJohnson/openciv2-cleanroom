@@ -8,6 +8,7 @@ using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 internal static partial class NativeMapMatrix
@@ -17,6 +18,7 @@ internal static partial class NativeMapMatrix
 
     public static void Run(AssetAtlas atlas, PinnedFonts fonts, string output, string contentCases, MemoryStream? diagnostic = null)
     {
+        RendererLibraryChecks.Run(atlas, fonts);
         Directory.CreateDirectory(output);
         var catalog = MapArtCatalog.Stock;
         Require(catalog.Images.Count == 368 && catalog.Units.Count == 63 && catalog.Cities.Count == 48, "exhaustive stock catalog");

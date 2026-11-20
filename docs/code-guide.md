@@ -28,7 +28,8 @@ Projects live in `src/`; case libraries and executable hosts live in `tests/`.
 | `OpenCiv2.Cli`, `OpenCiv2.Export.Sqlite`, `OpenCiv2.Cli.Sqlite` | CLI composition and optional native export | `Program.cs`, `SqliteSnapshot.cs` |
 | `OpenCiv2.Automation` | Optional stock Lua interpreter, scoped player API and resource budgets | `LuaMachine.cs`, `ScriptTask.cs` |
 | `OpenCiv2.ViewModels`, `OpenCiv2.Console` | UI-independent player-client model and command parser | `SessionPanel.cs`, `CommandText.cs` |
-| `OpenCiv2.App`, `OpenCiv2.Desktop`, `OpenCiv2.Browser` | Avalonia integration host, authored map, renderer and input | `SeamSession.cs`, `SeamView.cs`, `Program.cs` |
+| `OpenCiv2.MapRendering` | Skia map drawing, scene indexing, camera, minimap geometry and presentation timelines | `MapPainter.cs`, `MapScene.cs`, `MapRendererSession.cs` |
+| `OpenCiv2.App`, `OpenCiv2.Desktop`, `OpenCiv2.Browser` | Avalonia integration, authored map/gallery, controls and input | `SeamSession.cs`, `SeamView.cs`, `MapControl.cs`, `Program.cs` |
 
 Shared cases are in `tests/OpenCiv2.FoundationCases`; native and browser
 hosts execute the same portable cases. Native I/O and optional SQLite have their
@@ -37,10 +38,23 @@ fixtures. Build commands and evidence checks are in the
 [build guide](BUILDING.md). Public client APIs expose owned values;
 mutable Core records and borrowed spans stay behind the session boundary.
 
+`OpenCiv2.MapRendering` is an optional repository-local library over Base,
+Contracts, Formats and SkiaSharp. It has no Avalonia or Session dependency;
+Formats still brings Core transitively for its existing content/codec ownership.
+App uses its public scene, camera, display, timeline and drawing APIs. Texture,
+atlas, cache and GPU experiment types remain internal, with friend access only
+for MapProbe. App retains inspection text, gallery fixtures, settings/persistence
+and Avalonia controls. MapProbe remains an integration host over both projects.
+
+The host owns each painter's lifetime and lends a current Skia canvas/context to
+`MapRendererSession.Draw` inside its drawing lease. Observer replacement, render
+epochs, fallback/retry and cache disposal retain their existing ownership. The
+library never creates an Avalonia context or loads a gameplay session.
+
 The two desktop renderer options share `MapRendererOptions`; the native host
 owns preference I/O in `RendererPreferences`. `MapRendererSession` owns per-window
 fallback/retry and context replacement. `MapGpuComposition` owns the shared
-context cache policy without owning Avalonia's context. The GPU implementation is in `OpenCiv2.App/Map/MapGpuComposition.cs`.
+context cache policy without owning Avalonia's context. The GPU implementation is in `OpenCiv2.MapRendering/MapGpuComposition.cs`.
 `MapPainter` remains the common selector/drawing implementation. The
 [prototype report](validation/m2-gpu-composition-prototype.md) records its
 historical environment switches, matched benchmarks and correctness limits; the software

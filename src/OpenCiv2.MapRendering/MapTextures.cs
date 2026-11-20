@@ -5,10 +5,10 @@ using System.Runtime.Intrinsics.X86;
 using OpenCiv2.Formats.Graphics;
 using SkiaSharp;
 
-namespace OpenCiv2.App.Map;
+namespace OpenCiv2.MapRendering;
 
 internal sealed class MapCommandCapacityException : Exception;
-internal sealed record StartupGroundWork(double WorkMs, double JoinMs, int Textures, long TextureBytes);
+public sealed record StartupGroundWork(double WorkMs, double JoinMs, int Textures, long TextureBytes);
 
 /// <summary>P03 immutable registered images. The renderer owns these CPU raster textures;
 /// the current Skia backend manages any uploads. Only the painter's lane uses this cache.</summary>

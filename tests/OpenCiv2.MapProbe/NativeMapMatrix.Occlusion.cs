@@ -3,6 +3,7 @@ using System.Text.Json;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.MapRendering;
 using SkiaSharp;
 
 internal static partial class NativeMapMatrix
