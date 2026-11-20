@@ -33,7 +33,7 @@ solutions build Avalonia, automation, SQLite export and performance probes.
 
 The application host exposes one bounded production command over an authored
 world. It proves the scoped-client, console and asynchronous interaction path.
-It is not a playable game or a completed renderer. The optional Lua bridge
+It is not a playable game or a completed renderer. The optional Lua-CSharp adapter
 exercises the same session APIs with explicit resource and authority limits.
 
 ## M0 — Build and evidence infrastructure
@@ -430,8 +430,8 @@ Owners: the extension API, with P05 player dispatch, W03 query privacy, F04 even
 boundaries and each command's existing mechanic. This work depends on M3's
 contracts, not on the completion of every classic AI policy.
 
-- Extend the optional `OpenCiv2.Automation` integration; pin a stock Lua
-  runtime and binding API for native/WASM in the dependency manifest. Keep
+- Extend the optional `OpenCiv2.Automation` integration; pin the Lua-CSharp
+  runtime and binding API for native/WASM through central NuGet versions and locks. Keep
   basic console and tools builds independent of the interpreter.
 - Bind permitted queries, events, commands and correlated results. Implement
   an example production policy using an authored fixture: observe own-city

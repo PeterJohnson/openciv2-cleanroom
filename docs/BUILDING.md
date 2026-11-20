@@ -336,18 +336,17 @@ assemblies and includes source-generated JSON; AOT is not an acceptance claim.
 
 ## Optional SQLite and Lua
 
-Build either native dependency independently:
+SQLite needs its optional native dependency; Lua-CSharp restores through NuGet:
 
 ```sh
 python3 tools/dotnet/build_sqlite.py
-python3 tools/dotnet/build_lua.py
 ```
 
-These builders verify the archive hashes in `dependencies.json`; `--archive PATH`
+The SQLite builder verifies the archive hash in `dependencies.json`; `--archive PATH`
 uses an offline download. Use a native C compiler (`cc` on Linux/macOS, Visual
 Studio Developer Command Prompt/PowerShell on Windows). `--cc PATH` selects another
-compiler. Lua supports Unix `--sanitize` checks. The small bridge contains no game
-model; build receipts and notices accompany the optional library.
+compiler. Build receipts and notices accompany the optional SQLite library.
+Lua automation needs no C compiler or separate runtime preparation.
 
 ```sh
 dotnet restore solutions/OpenCiv2.Sqlite.slnx --locked-mode
@@ -359,10 +358,9 @@ dotnet test --project tests/OpenCiv2.Automation.Tests -c Release --no-build --no
 ```
 
 SQLite adds four tests and the independent export CLI driver. Lua adds thirteen
-production-session/resource groups. To test the stock Lua bridge in WebAssembly:
+production-session/resource groups. To test Lua-CSharp in WebAssembly:
 
 ```sh
-python3 tools/dotnet/prepare_lua_wasm.py
 dotnet restore tests/OpenCiv2.AutomationBrowser --locked-mode
 dotnet publish tests/OpenCiv2.AutomationBrowser -c Release --no-restore
 python3 tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net11.0/OpenCiv2.AutomationProbe.dll
@@ -390,9 +388,8 @@ Format the optional solution/project you changed too. Use `--verify-no-changes`
 in checks. Review the diff before staging; formatting never authorizes unrelated
 changes. Nullable analysis, checked arithmetic and warnings-as-errors are enabled.
 
-The optional native Lua bridge follows its existing C style. Its sanitizer and
-native/browser resource tests validate that boundary. Do not format dependency
-downloads or generated files.
+The Lua-CSharp adapter shares task/resource tests between native and browser
+hosts. Do not format dependency downloads or generated files.
 
 ## CI and metadata
 

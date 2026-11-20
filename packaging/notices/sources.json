@@ -39,5 +39,10 @@
     "file": "RandN-LICENSE.txt",
     "sha256": "b0072c83082f674e9b33b272f5447e3882833f08a35ba45ca61b946401c00924"
   },
-  "normalization": "UTF-8, BOM removed, LF line endings and trailing whitespace stripped; license wording preserved."
+  "normalization": "UTF-8, BOM removed, LF line endings and trailing whitespace stripped; license wording preserved.",
+  "LuaCSharp": {
+    "url": "https://github.com/nuskey8/Lua-CSharp/blob/c735770a21407226cfd1204bbe11a25de27cddf9/LICENSE",
+    "file": "LuaCSharp-LICENSE.txt",
+    "sha256": "7501af28397df7689efee2a2ba3709accfe556a8b4c1b402632e500030522480"
+  }
 }

@@ -1,17 +1,18 @@
 using System.Globalization;
 using System.Text;
+using Lua;
 using OpenCiv2.Base;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Automation;
 
-public sealed record ScriptLimits(uint MemoryBytes = 2097152, uint InstructionsPerTick = 100000, uint Ticks = 200,
+public sealed record ScriptLimits(uint InstructionsPerTick = 100000, uint Ticks = 200,
     int Commands = 64, int OutputBytes = 4096)
 {
     internal void Validate()
     {
-        if (MemoryBytes is < 32768 or > 16777216 || InstructionsPerTick is < 1000 or > 1000000 ||
+        if (InstructionsPerTick is < 1000 or > 1000000 ||
             Ticks is < 1 or > 10000 || Commands is < 1 or > 128 || OutputBytes is < 0 or > 65536)
         {
             throw new ArgumentOutOfRangeException(nameof(ScriptLimits));
@@ -22,7 +23,7 @@ public enum ScriptStatus { Running, Completed, Cancelled, Failed }
 
 /// <summary>Single mutation-lane task over an exclusive automation binding. Each Tick resumes
 /// Lua once and handles at most one request; the owner pumps/retire session commands separately.
-/// No managed callback runs inside Lua. Cancellation never rolls back completed effects.</summary>
+/// Host bindings suspend Lua before accessing the session. Cancellation never rolls back completed effects.</summary>
 public sealed class ScriptTask : IDisposable
 {
     private readonly IPlayerClient client;
@@ -31,12 +32,11 @@ public sealed class ScriptTask : IDisposable
     private readonly List<CommandId> commands = [];
     private readonly StringBuilder output = new();
     private int outputBytes, attempts;
-    private byte[] reply = [0];
+    private LuaValue reply;
     private bool disposed;
     public ScriptStatus Status { get; private set; }
     public string Error { get; private set; } = "";
     public string Output => output.ToString();
-    public uint MemoryBytes => disposed ? 0 : machine.MemoryBytes;
     public OwnedList<CommandId> SubmittedCommands => new(commands);
 
     /// <summary>Current command outcomes/effects through the original lease. Read after the
@@ -61,7 +61,7 @@ public sealed class ScriptTask : IDisposable
         }
 
         this.client = client;
-        machine = LuaMachine.Create(script, this.limits);
+        machine = new LuaMachine(script, this.limits);
     }
 
     public void Tick()
@@ -87,7 +87,7 @@ public sealed class ScriptTask : IDisposable
                 Stop(ScriptStatus.Completed, "");
                 return;
             }
-            reply = Dispatch(machine.Argument(0), machine.Argument(1));
+            reply = Dispatch(machine.Operation, machine.Argument);
         }
         catch (Exception exception) when (exception is DecoderFallbackException or EncoderFallbackException)
         {
@@ -100,35 +100,20 @@ public sealed class ScriptTask : IDisposable
         }
     }
 
-    private byte[] Dispatch(string operation, string argument)
+    private LuaValue Dispatch(string operation, string argument)
     {
-        var w = new ReplyWriter();
+        var w = new ReplyBuilder();
         switch (operation)
         {
             case "units":
                 Empty(argument);
-                var units = client.OwnUnits().Records;
-                w.Array(units.Count);
-                foreach (var unit in units)
-                {
-                    w.Object(5);
-                    w.Field("slot", (int)unit.Slot.Value);
-                    w.Field("token", Decimal(unit.Token.Value));
-                    w.Field("x", unit.Position.X);
-                    w.Field("y", unit.Position.Y);
-                    w.Field("type", (int)unit.Type.Value);
-                }
-                break;
+                return w.Array(client.OwnUnits().Records.Select(unit => w.Object(
+                    ("slot", w.Integer(unit.Slot.Value)), ("token", w.Text(Decimal(unit.Token.Value))),
+                    ("x", w.Integer(unit.Position.X)), ("y", w.Integer(unit.Position.Y)),
+                    ("type", w.Integer(unit.Type.Value)))));
             case "commands":
                 Empty(argument);
-                var descriptors = client.Commands();
-                w.Array(descriptors.Count);
-                foreach (var descriptor in descriptors)
-                {
-                    w.Text(CommandText.Help(descriptor));
-                }
-
-                break;
+                return w.Array(client.Commands().Select(descriptor => w.Text(CommandText.Help(descriptor))));
             case "command":
                 if (attempts++ >= limits.Commands)
                 {
@@ -141,11 +126,9 @@ public sealed class ScriptTask : IDisposable
                     commands.Add(update.Correlation.Command);
                 }
 
-                WriteUpdate(w, update);
-                break;
+                return WriteUpdate(w, update);
             case "result":
-                WriteUpdate(w, Result(argument));
-                break;
+                return WriteUpdate(w, Result(argument));
             case "reply":
                 string[] parts = argument.Split(':');
                 if (parts.Length != 2
@@ -166,15 +149,12 @@ public sealed class ScriptTask : IDisposable
                     throw new ArgumentException("interaction_not_owned");
                 }
 
-                WriteReceipt(w, client.Reply(interaction, choice));
-                break;
+                return WriteReceipt(w, client.Reply(interaction, choice));
             case "cancel":
-                WriteReceipt(w, client.Cancel(Result(argument).Correlation.Command));
-                break;
+                return WriteReceipt(w, client.Cancel(Result(argument).Correlation.Command));
             case "wait":
                 Empty(argument);
-                w.Nil();
-                break;
+                return w.Nil();
             case "log":
                 int size = LuaMachine.Utf8.GetByteCount(argument) + 1;
                 if (size > limits.OutputBytes - outputBytes)
@@ -184,12 +164,10 @@ public sealed class ScriptTask : IDisposable
 
                 output.Append(argument).Append('\n');
                 outputBytes += size;
-                w.Nil();
-                break;
+                return w.Nil();
             default:
                 throw new ArgumentException("unknown_host_operation");
         }
-        return w.Finish();
     }
 
     private static void Empty(string value)
@@ -224,82 +202,39 @@ public sealed class ScriptTask : IDisposable
         return client.Result(id) ?? throw new InvalidOperationException("command_unavailable");
     }
 
-    private static void WriteReceipt(ReplyWriter w, InputReceipt receipt)
-    {
-        w.Object(2);
-        w.Field("accepted", receipt.Accepted);
-        w.Field("code", receipt.Code);
-    }
+    private static LuaValue WriteReceipt(ReplyBuilder w, InputReceipt receipt) => w.Object(
+        ("accepted", w.Boolean(receipt.Accepted)), ("code", w.Text(receipt.Code)));
 
-    private static void WriteUpdate(ReplyWriter w, CommandUpdate update)
-    {
-        w.Object(6);
-        w.Field("id", Decimal(update.Correlation.Command.Value));
-        w.Field("status", update.Status.ToString());
-        w.Field("code", update.Code);
-        w.Field("effects", update.Committed.Count);
-        w.Text("interaction");
-        if (update.Interaction is { } interaction)
-        {
-            w.Object(3);
-            w.Field("id", Decimal(interaction.Id.Value));
-            w.Field("prompt", interaction.Spec.Prompt);
-            w.Text("choices");
-            w.Array(interaction.Spec.Choices.Count);
-            foreach (int choice in interaction.Spec.Choices)
-            {
-                w.Integer(choice);
-            }
-        }
-        else
-        {
-            w.Nil();
-        }
+    private static LuaValue WriteUpdate(ReplyBuilder w, CommandUpdate update) => w.Object(
+        ("id", w.Text(Decimal(update.Correlation.Command.Value))),
+        ("status", w.Text(update.Status.ToString())), ("code", w.Text(update.Code)),
+        ("effects", w.Integer(update.Committed.Count)),
+        ("interaction", update.Interaction is { } interaction
+            ? w.Object(("id", w.Text(Decimal(interaction.Id.Value))),
+                ("prompt", w.Text(interaction.Spec.Prompt)),
+                ("choices", w.Array(interaction.Spec.Choices.Select(w.Integer))))
+            : w.Nil()),
+        ("result", w.Object(update.Result.Select(item => (item.Name, WriteValue(w, item.Value))).ToArray())));
 
-        w.Text("result");
-        w.Object(update.Result.Count);
-        foreach (var item in update.Result)
-        {
-            w.Text(item.Name);
-            WriteValue(w, item.Value);
-        }
-    }
-
-    private static void WriteValue(ReplyWriter w, CommandValue value)
+    private static LuaValue WriteValue(ReplyBuilder w, CommandValue value) => value switch
     {
-        switch (value)
-        {
-            case CommandValue.Integer number:
-                w.Integer(number.Value);
-                break;
-            case CommandValue.Boolean boolean:
-                w.Boolean(boolean.Value);
-                break;
-            case CommandValue.Text text:
-                w.Text(text.Value);
-                break;
-            case CommandValue.Civilization civ:
-                w.Integer(civ.Value.Value);
-                break;
-            case CommandValue.Unit unit:
-                w.Object(2);
-                w.Field("slot", (int)unit.Value.Slot.Value);
-                w.Field("token", Decimal(unit.Value.Token.Value));
-                break;
-            case CommandValue.City city:
-                w.Object(2);
-                w.Field("slot", (int)city.Value.Slot.Value);
-                w.Field("token", Decimal(city.Value.Token.Value));
-                break;
-            default:
-                throw new InvalidOperationException("unsupported_command_value");
-        }
-    }
+        CommandValue.Integer number => w.Integer(number.Value),
+        CommandValue.Boolean boolean => w.Boolean(boolean.Value),
+        CommandValue.Text text => w.Text(text.Value),
+        CommandValue.Civilization civ => w.Integer(civ.Value.Value),
+        CommandValue.Unit unit => w.Object(("slot", w.Integer(unit.Value.Slot.Value)),
+            ("token", w.Text(Decimal(unit.Value.Token.Value)))),
+        CommandValue.City city => w.Object(("slot", w.Integer(city.Value.Slot.Value)),
+            ("token", w.Text(Decimal(city.Value.Token.Value)))),
+        _ => throw new InvalidOperationException("unsupported_command_value")
+    };
 
     private void Stop(ScriptStatus status, string error)
     {
         Status = status;
         Error = error;
+        machine.Dispose();
+        reply = LuaValue.Nil;
         // Cancellation uses the ordinary command protocol. The owner must continue
         // pumping accepted cancellations/required replies; already committed effects survive.
         foreach (var id in commands)

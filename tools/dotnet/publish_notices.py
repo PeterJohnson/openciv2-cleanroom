@@ -3,7 +3,7 @@
 
 Includes the complete restored package graph (also build-only and unused platform
 assets), not a claim that every package survives trimming. Runtime packs and native
-Lua/SQLite receipts are recorded separately. Unknown missing licenses fail closed.
+SQLite receipts are recorded separately. Unknown missing licenses fail closed.
 """
 import argparse
 import base64
@@ -73,6 +73,8 @@ def metadata(bundle):
 def supplements(name, version, meta):
     commit = meta.get('repository', {}).get('commit')
     rules = {
+        **{name: ('0.5.8', 'c735770a21407226cfd1204bbe11a25de27cddf9', ['LuaCSharp'])
+           for name in ('LuaCSharp', 'LuaCSharp.Annotations', 'LuaCSharp.SourceGenerator')},
         'Avalonia.BuildServices': ('11.3.2', '777f975b0a0cecf0311273711d56697212c558c0', ['BuildServices']),
         'MicroCom.Runtime': ('0.11.6', '76785efcafd91b5902fd19dd11145f6dd655b7b4', ['MicroCom']),
         'Tmds.DBus.Protocol': ('0.94.1', 'b4a7fed0b878f74cb54f7cca84d2889af4e596ba', ['Tmds']),
@@ -186,15 +188,12 @@ def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime,
             add('dotnet/SDK-' + name, (dotnet_root / name).read_bytes())
         runtime_info['note'] = 'Framework-dependent host; runtime installed separately. SDK host notices included.'
     native = {}
-    for kind, notice, receipt in [('lua', 'LUA-NOTICE.txt', 'oc2-lua-build.json'),
-                                  ('sqlite', 'SQLITE-NOTICE.txt', 'oc2-sqlite-build.json')]:
+    for kind, notice, receipt in [('sqlite', 'SQLITE-NOTICE.txt', 'oc2-sqlite-build.json')]:
         if (output / notice).is_file():
             add(kind + '/' + notice, (output / notice).read_bytes())
             native[kind] = {'noticeSha256': sha((output / notice).read_bytes())}
             if (output / receipt).is_file():
                 native[kind]['build'] = json.loads((output / receipt).read_text())
-    if browser and project.stem == 'OpenCiv2.AutomationBrowser' and 'lua' not in native:
-        raise ValueError('Lua browser publication omitted its native notice')
     add('OpenCiv2-LICENSE.txt', (ROOT / 'LICENSE').read_bytes())
     report = {'format': 'openciv2-published-dependencies/1', 'project': project.stem, 'sdk': sdk,
               'scope': 'Complete locked restored graph; may include build-only and unselected platform assets, not a trimming reachability claim.',

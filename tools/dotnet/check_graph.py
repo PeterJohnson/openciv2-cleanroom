@@ -63,6 +63,8 @@ def main():
                 failures.append(f"Unregistered production project: {project.stem}")
             # GUI/native/optional dependencies cannot arrive silently.
             allowed = {"RandN.Pcg32", "RandN.Core"} | (GUI_PACKAGES if project.stem in GUI_PROJECTS else set())
+            if project.stem == "OpenCiv2.Automation":
+                allowed |= {"LuaCSharp", "LuaCSharp.Annotations", "LuaCSharp.SourceGenerator"}
             if project.stem in RENDERING_PROJECTS:
                 allowed |= RENDERING_PACKAGES
             for dependencies in lock["dependencies"].values():

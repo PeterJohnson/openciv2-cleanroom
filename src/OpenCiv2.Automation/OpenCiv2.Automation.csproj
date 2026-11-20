@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><AllowUnsafeBlocks>true</AllowUnsafeBlocks></PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="LuaCSharp" />
     <ProjectReference Include="../OpenCiv2.Console/OpenCiv2.Console.csproj" />
     <EmbeddedResource Include="Prelude.lua" LogicalName="OpenCiv2.Automation.Prelude" />
-    <_Oc2IdentityInput Include="$(MSBuildThisFileDirectory)../../docs/automation.md;$(MSBuildThisFileDirectory)Prelude.lua;$(MSBuildThisFileDirectory)../../native/lua/bridge.c;$(MSBuildThisFileDirectory)../../native/lua/bridge.h" />
+    <_Oc2IdentityInput Include="$(MSBuildThisFileDirectory)../../docs/automation.md;$(MSBuildThisFileDirectory)Prelude.lua" />
   </ItemGroup>
 </Project>

@@ -1,10 +1,11 @@
 # Lua automation
 
-Status: stock Lua 5.5.1 / bridge ABI 1 and the managed task adapter pass the same
-13 production-session groups on Linux x64 and Chromium WASM. Native sanitizer
-checks also pass on Linux. [Hosted CI](validation/README.md) additionally passes all thirteen
-groups on macOS ARM64 and Windows x64 with equal production-command outcomes.
-This closes those native Lua gates, not the remaining platform input/OS gates.
+The optional runtime is [Lua-CSharp](https://github.com/nuskey8/Lua-CSharp)
+(`LuaCSharp` **0.5.8**), pinned in `Directory.Packages.props` and NuGet lock files.
+It runs as managed code on native .NET and WebAssembly; no Lua C library, P/Invoke
+wrapper, binary reply protocol or native build preparation is required.
+Historical stock Lua 5.5.1 / ABI 1 receipts in [validation](validation/README.md)
+apply only to their recorded revisions, not to this runtime migration.
 
 `OpenCiv2.Automation` depends on the portable descriptor parser and Contracts.
 It never references Core, Query, Session, Avalonia or native I/O. A trusted owner
@@ -46,36 +47,45 @@ Avalonia input checks exercise the same command separately.
 
 ## Limits and lifetime
 
-Default limits are 2 MiB of Lua allocations, 100,000 instructions per resume,
-200 resumes, 64 command attempts, 4 KiB output and 64 KiB user source. Hard maxima
-are 16 MiB, one million instructions, 10,000 resumes, 128 command attempts and
-64 KiB output. Instruction counts round down to 1,000-instruction hook quanta.
-Prelude instructions count toward the budget. Native library routines operate on
-bounded VM data; these limits are not a wall-clock guarantee or hostile-code
-isolation claim. Oversize query responses fail explicitly; pagination remains a
-later API addition rather than silently truncating observations.
+Default limits are 100,000 instructions per resume, 200 resumes, 64 command
+attempts, 4 KiB output and 64 KiB user source. Hard maxima are one million
+instructions, 10,000 resumes, 128 command attempts and 64 KiB output.
+Instruction counts round down to 1,000-instruction hook quanta; the hook counter
+resets each tick. Prelude instructions count toward the budget. Exhaustion uses
+Lua-CSharp cancellation, which propagates through `pcall` and stops the task.
 
-Host request and reply payloads are capped at 64 KiB. Replies use a closed binary
-grammar (nil, boolean, signed i32, byte string, array, string-keyed object), with
-16 nesting levels and at most 4,096 entries per container. The managed writer has
-a fixed-capacity buffer. Lua decodes replies under `lua_resume`, never by evaluating
-source. A failed allocation or malformed reply stays within the protected native
-boundary. The coroutine is rooted on the main Lua stack until explicit close.
-A `SafeHandle` owns the interpreter; byte buffers are borrowed only during calls,
-and native observation pointers are copied while the handle remains rooted.
-There are no native-to-managed callbacks or retained managed pointers.
+There is **no per-task memory limit or VM memory accounting**. Lua values use the
+.NET garbage collector. Instruction limits do not bound time or allocation inside
+a library function; this runtime is for explicitly selected user scripts, not
+hostile-code isolation. String repetition remains capped at 65,536 repetitions
+(including empty strings) to bound library loop work.
 
-The interpreter opens restricted base/table/string/math/UTF-8 libraries. File,
-process, package, debug, network and child-coroutine capabilities are absent.
-Loaders, metatable mutation/access, user finalizers, random streams, pattern
-search, table sorting/moving and unyieldable error handlers are unavailable.
-Malformed UTF-8 host text fails with the stable `invalid_utf8` code on both
-runtimes, independent of framework localization/trimming. String repetition permits at most 65,536 repeats, including empty strings; this
-bounds native loops that would otherwise evade the allocator and instruction hook. Instruction
-exhaustion yields to the native owner and stops the task even inside `pcall`.
-The protected API checks string types before converting error objects, so error
-reporting cannot allocate through an unprotected Lua call. Lua diagnostics name
-the combined `automation` chunk; line numbers currently include the prelude.
+Host request and reply payloads are capped at 64 KiB. Replies contain owned
+`LuaValue`/`LuaTable` values (nil, boolean, exact signed i32, UTF-8 text, arrays and
+string-keyed objects), with at most 4,096 entries per container. The fixed API
+shapes bound nesting. Reply accounting charges one byte per scalar tag, four bytes
+per integer/string length/container count, and UTF-8 text bytes, retaining the
+previous API's payload budget without a wire encoding. Oversize query responses
+fail explicitly; pagination remains a later API addition.
+
+The managed host binding yields its Lua-CSharp coroutine before session dispatch.
+The next owner tick resumes it inline with the pending reply; no worker thread,
+external asynchronous operation or session callback runs the script. Disposal
+cancels the suspended yield, unwinds its call stack and disposes the states.
+Task completion, cancellation and failure release the interpreter immediately.
+
+Lua-CSharp implements the Lua 5.2 language/library surface, rather than the old
+Lua 5.5 runtime. Byte-string mode preserves UTF-8 byte lengths and slicing;
+strings crossing the host boundary are strictly validated. Malformed host text
+fails with `invalid_utf8` on both runtimes. IDs/tokens remain decimal strings to
+avoid loss of precision in Lua-CSharp's double-based numbers; signed i32 command
+values remain exact. The previous stock `utf8` library is unavailable.
+
+The interpreter opens restricted base/table/string/math libraries. File, process,
+package, debug, network and child-coroutine capabilities are absent. Loaders,
+metatable mutation/access, user finalizers, random streams, pattern search,
+table sorting/moving and `xpcall` are unavailable. Lua diagnostics name the
+combined `automation` chunk; line numbers currently include the prelude.
 
 Cancellation/error/completion stops further submissions and requests ordinary
 cancellation of unfinished task commands. The owner must continue pumping accepted
@@ -91,44 +101,26 @@ persistence, metadata matching, subscriptions and UI remain M4.
 
 ## Build and evidence
 
-See [managed commands](BUILDING.md). The native build
-verifies the pinned archive SHA-256, extracts only regular immediate `.c`/`.h`
-files, builds stock Lua plus the bridge, checks the loaded runtime version and ABI,
-and writes source/compiler/artifact hashes. The consumer build refuses stale
-bridge inputs or a changed library. Lua's full source-header license accompanies
-the native artifact. The native dependency contains no gameplay implementation.
+See [managed commands](BUILDING.md). The optional solution and browser host
+restore the same pinned NuGet runtime. Published dependency inventories include
+the Lua-CSharp runtime, annotations and source generator, with their pinned MIT
+license attribution under `packaging/notices/`. Ordinary console/core builds
+remain independent of these packages.
 
-`tests/lua_bridge.c` runs separately with address/undefined/leak sanitizers on
-Linux. It checks budget failure inside `pcall`, arbitrary error objects, syntax
-and allocator failures, restricted capabilities, exact typed replies, all truncated
-prefixes of a nested reply, resume exhaustion, coroutine GC rooting, allocation
-failure during replies and repeated explicit cleanup.
+`OpenCiv2.AutomationCases` contains 13 portable groups shared by native and browser
+hosts: command equivalence, observer filtering/descriptors, instruction limits,
+managed runtime/UTF-8 and suspension behavior, host/output/command bounds, script
+errors, cancellation before and after effects, GC/disposal, revoked authority,
+task command ownership, stale targets, restricted capabilities/limit admission,
+and error after effects. Both runners use the production session and Lua-CSharp.
+The runtime group also exercises allocations beyond the retired 2 MiB cap.
 
-`OpenCiv2.AutomationCases` contains 13 portable groups shared by the native and
-browser hosts: command equivalence, observer filtering/descriptors, instruction
-and memory limits (including typed-reply allocation), host/output/command bounds, script errors, cancellation before
-and after effects, managed GC/disposal, revoked authority, task command ownership,
-stale targets, restricted capabilities/limit admission, and error after effects.
-Both runners execute these against the actual production session and bridge.
-The [hosted receipt](validation/README.md) binds successful runs on all three desktop OSes
-and WASM to their tested source revision, library receipts and report hashes.
-
-The browser target links verified stock Lua and the bridge as C++ using Lua's
-supported exception path. This avoids the pinned LLVM 19/Emscripten 3.1.56 setjmp
-helper mismatch; gameplay remains in the portable C# projects. Generated wrappers include the exact
-archive-verified C sources with source-set hashes (including headers), and verification rejects modified
-or extra inputs before MSBuild compiles. Published output includes the Lua notice.
-The browser uses the ordinary trimmed .NET interpreter host; desktop Native AOT
-and managed browser AOT are not required by this automation boundary.
-
-`run_automation.py` records 12 explicit assembly manifests, exact compiled inputs,
-runner inputs and all invoked native/browser artifacts before/after execution.
-The native report currently binds 191 compiled inputs and the browser report 288.
-`compare_automation.py` validates current identities/artifacts and compares all 13
-case results plus actual full production stack links, effect count, changed flag
-and script output. Both hosts match the independently stated expected outcome.
-The evidence tests reject missing/duplicate cases, failed cases, changed results,
-stale/missing assemblies, altered prepared sources, extra wrappers and wrong Lua
-archives. Browser runs have a process watchdog and reject page errors. Local
-Chromium 151.0.7922.34 executes the WASM-linked bridge; no mocked interpreter or
-expected results enter the bridge. Full automation UI and subscriptions remain M4.
+`run_automation.py` records 12 assembly manifests, exact compiled inputs and
+locked dependency graphs, runner inputs and invoked artifacts before/after
+execution. Report format `openciv2-production-lua/2` distinguishes this runtime
+from the retired native bridge. `compare_automation.py` validates identities and
+compares all 13 results and actual production stack links, effect count, changed
+flag and output. Evidence tests reject missing/duplicate cases, failures, changed
+outcomes, stale assemblies/locks and old bridge reports. Browser runs have a
+process watchdog and reject page errors. Full automation UI and subscriptions
+remain M4; cross-platform claims require new receipts for this runtime.

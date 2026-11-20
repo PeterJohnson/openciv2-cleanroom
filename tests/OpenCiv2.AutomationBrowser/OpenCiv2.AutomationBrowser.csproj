@@ -5,5 +5,4 @@
     <WasmFingerprintDotnetJs>false</WasmFingerprintDotnetJs><JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../OpenCiv2.AutomationCases/OpenCiv2.AutomationCases.csproj" /></ItemGroup>
-  <Import Project="../../native/lua/Browser.targets" />
 </Project>

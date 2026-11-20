@@ -14,6 +14,16 @@
         "resolved": "11.0.0",
         "contentHash": "fvNAQsY36JwF/UNNkcPw+jEbcfHCNVkqKlgL7PBlolyXa+rSODtI5bQ4QLl3jr3QyRIAC6bIXGpXghH35+jI0w=="
       },
+      "LuaCSharp.Annotations": {
+        "type": "Transitive",
+        "resolved": "0.5.8",
+        "contentHash": "aRPtU/pDzXg0ZoN/Dq4+sEN5X+uzn5CH7POdt8/K3pZJYvK+IHTXd/byr+AfSmZliiZoZrDEb316OHxBB5SRVQ=="
+      },
+      "LuaCSharp.SourceGenerator": {
+        "type": "Transitive",
+        "resolved": "0.5.8",
+        "contentHash": "DT6RetfrtESoXf8K+AKAbqpTxpEgtDYsju+SdpFWRaeoGE8NpZZgqnSDplTBtlI62XpZB8a9+AVT/GrorYxk4Q=="
+      },
       "RandN.Core": {
         "type": "Transitive",
         "resolved": "0.5.0",
@@ -22,6 +32,7 @@
       "openciv2.automation": {
         "type": "Project",
         "dependencies": {
+          "LuaCSharp": "[0.5.8, )",
           "OpenCiv2.Console": "[1.0.0, )"
         }
       },
@@ -91,6 +102,16 @@
           "OpenCiv2.Formats": "[1.0.0, )",
           "OpenCiv2.Network": "[1.0.0, )",
           "OpenCiv2.Query": "[1.0.0, )"
+        }
+      },
+      "LuaCSharp": {
+        "type": "CentralTransitive",
+        "requested": "[0.5.8, )",
+        "resolved": "0.5.8",
+        "contentHash": "2n0x4X8xGRrqDABdNcjeL1RhtCOU6x3UPcU1JZMovhgKVKYvFEkK4Tya72qTmorE5x0p0NgJglM1shA9Cy0tZg==",
+        "dependencies": {
+          "LuaCSharp.Annotations": "0.5.8",
+          "LuaCSharp.SourceGenerator": "0.5.8"
         }
       },
       "RandN.Pcg32": {

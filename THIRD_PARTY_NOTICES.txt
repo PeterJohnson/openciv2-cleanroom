@@ -24,11 +24,11 @@ wrapper's MIT license. Font attribution is recorded by the publication inventory
 MicroCom, Tmds.DBus.Protocol and Avalonia.BuildServices — MIT
 Full license supplements and source pins: packaging/notices/
 
-Lua 5.5.1 — MIT, optional automation runtime
-https://www.lua.org/license.html
-The verified source archive supplies the full notice copied into native and
-browser outputs as LUA-NOTICE.txt. The interpreter and small native bridge
-contain no gameplay implementation.
+Lua-CSharp 0.5.8 — MIT, optional managed automation runtime
+https://github.com/nuskey8/Lua-CSharp
+Full license: packaging/notices/LuaCSharp-LICENSE.txt
+The runtime, annotations and source-generator NuGet packages are pinned for
+native .NET and WebAssembly. No native Lua library or bridge is distributed.
 
 SQLite 3.54.1 — public domain, optional native analysis exporter
 https://www.sqlite.org/copyright.html

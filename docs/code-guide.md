@@ -26,7 +26,7 @@ Projects live in `src/`; case libraries and executable hosts live in `tests/`.
 | `OpenCiv2.Query` | Stored inspection/diffs and observer-filtered live entity/map values | `StoredInspection.cs`, `LiveProjection.cs` |
 | `OpenCiv2.IO.Native`, `OpenCiv2.Platform.Native` | Native filesystem and classic text adapters | `NativeFiles.cs`, `ClassicStorage.cs`, `ClassicTextFiles.cs` |
 | `OpenCiv2.Cli`, `OpenCiv2.Export.Sqlite`, `OpenCiv2.Cli.Sqlite` | CLI composition and optional native export | `Program.cs`, `SqliteSnapshot.cs` |
-| `OpenCiv2.Automation` | Optional stock Lua interpreter, scoped player API and resource budgets | `LuaMachine.cs`, `ScriptTask.cs` |
+| `OpenCiv2.Automation` | Optional managed Lua-CSharp interpreter, scoped player API and resource budgets | `LuaMachine.cs`, `ScriptTask.cs` |
 | `OpenCiv2.ViewModels`, `OpenCiv2.Console` | UI-independent player-client model and command parser | `SessionPanel.cs`, `CommandText.cs` |
 | `OpenCiv2.MapRendering` | Skia map drawing, scene indexing, camera, minimap geometry and presentation timelines | `MapPainter.cs`, `MapScene.cs`, `MapRendererSession.cs` |
 | `OpenCiv2.App`, `OpenCiv2.Desktop`, `OpenCiv2.Browser` | Avalonia integration, authored map/gallery, controls and input | `SeamSession.cs`, `SeamView.cs`, `MapControl.cs`, `Program.cs` |
@@ -117,7 +117,8 @@ integer wrapping and sampling laws rather than replacing them based on names.
 No reflection-driven command dispatcher, global mutable service locator or generic
 ECS is required. Avoid per-frame world copies and one UI control per map tile.
 
-Game/runtime native interop is limited to the optional stock Lua bridge and SQLite API.
+Game/runtime native interop is limited to the optional SQLite API.
+Lua automation uses the managed Lua-CSharp package.
 The independent Linux map GPU test probe additionally uses system EGL/OpenGL to
 create its test context; production hosts continue to use Avalonia's context. Keep
 protected native calls, safe-handle lifetimes and resource budgets intact. Tools

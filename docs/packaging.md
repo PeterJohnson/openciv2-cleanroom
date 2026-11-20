@@ -132,7 +132,7 @@ Unrecorded archives use the SDK verifier directly with offline revocation lookup
 macOS's verification limitations make reviewed pins necessary for reliable
 publication there. Neither path asserts current online revocation status.
 
-Avalonia, MicroCom, Tmds.DBus, BuildServices and RandN packages omit full license
+Avalonia, MicroCom, Tmds.DBus, BuildServices, RandN and Lua-CSharp packages omit full license
 text. Checked-in supplements under `packaging/notices/` record exact
 upstream source URLs and hashes in `sources.json`; changed versions/commits need
 an attribution review. Avalonia's own third-party notices are included. The
@@ -142,7 +142,8 @@ alongside the package wrapper's MIT license. Skia/HarfBuzz/ANGLE notices come
 from their package archives. Browser Mono and self-contained native runtime
 notices come from separately pinned runtime archives. Framework-dependent desktop
 publications include SDK host notices and record that CoreCLR is not distributed.
-Lua browser publications must contain the Lua notice or publication fails.
+Lua-CSharp browser publications include its pinned MIT license supplement;
+missing license attribution fails publication. No native Lua receipt is required.
 
 Opt-in desktop Native AOT publication uses a separate desktop lock and
 `packaging/aot-runtime-packs.json`. Its runtime inventory is labeled `native-aot`
@@ -158,7 +159,7 @@ pins and reviewed signed-package pins with the same verification procedure above
 then republish and execute the application-input checks on the target host.
 
 Local Release publication checks passed for Avalonia desktop (28 locked packages),
-Avalonia browser (23) and Lua/WASM (4), including real signed-package hash checks.
+Avalonia browser (23) and the former native Lua/WASM runtime (4), including real signed-package hash checks.
 Ten regression groups cover changed/missing notices, lock mismatches, license
 expressions without full text, stale source attribution and failed/mismatched
 signature verification, plus exact archive pins, tampered bytes and silent

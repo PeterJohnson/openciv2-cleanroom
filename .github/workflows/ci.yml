@@ -80,17 +80,13 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: .github/scripts/enable-msvc.ps1
-      - name: Build and test optional stock Lua bridge
+      - name: Build and test optional Lua-CSharp automation
         run: |
-          args=()
-          if [[ "$RUNNER_OS" == "Linux" ]]; then args+=(--sanitize); fi
-          python tools/dotnet/build_lua.py "${args[@]}"
           dotnet restore solutions/OpenCiv2.Automation.slnx --locked-mode
           dotnet build solutions/OpenCiv2.Automation.slnx -c Release --no-restore
           dotnet test --project tests/OpenCiv2.Automation.Tests -c Release --no-build --no-restore
           dotnet format solutions/OpenCiv2.Automation.slnx --verify-no-changes --no-restore
           python tools/dotnet/run_automation.py --report build/test-results/lua-native.json --adapter dotnet tests/OpenCiv2.AutomationProbe/bin/Release/net11.0/OpenCiv2.AutomationProbe.dll
-          python tools/dotnet/prepare_lua_wasm.py
           python tools/dotnet/test_automation.py --report build/test-results/lua-native.json
       - name: Build pinned optional SQLite native library
         run: python tools/dotnet/build_sqlite.py
@@ -174,7 +170,6 @@ jobs:
           dotnet tests/OpenCiv2.FoundationProbe/bin/Release/net11.0/OpenCiv2.FoundationProbe.dll > build/test-results/native.json
           python tools/dotnet/write_identity.py build/test-results/build-identity.json --report build/test-results/native.json
           cp build/sqlite/native/oc2-sqlite-build.json build/test-results/
-          cp build/lua/native/oc2-lua-build.json build/test-results/
       - name: Package and exercise self-contained native CLIs
         run: |
           python tools/dotnet/package_cli.py
@@ -228,8 +223,6 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
         run: |
-          python tools/dotnet/build_lua.py
-          python tools/dotnet/prepare_lua_wasm.py
           dotnet restore solutions/OpenCiv2.Automation.slnx --locked-mode
           dotnet build solutions/OpenCiv2.Automation.slnx -c Release --no-restore
           dotnet restore tests/OpenCiv2.AutomationBrowser --locked-mode

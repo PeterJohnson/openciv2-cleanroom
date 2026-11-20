@@ -19,9 +19,8 @@ Before committing C# changes:
    projects. See [docs/BUILDING.md](docs/BUILDING.md) and
    [docs/testing/README.md](docs/testing/README.md).
 
-For optional native Lua bridge changes, preserve its local C style and run the
-bridge's sanitizer and native/browser resource tests. Do not format dependencies
-or generated build files.
+For Lua-CSharp automation changes, run the shared native/browser task and resource
+tests. Do not format dependencies or generated build files.
 
 Current project ownership is in [docs/code-guide.md](docs/code-guide.md).
 Continue work from [docs/implementation-plan.md](docs/implementation-plan.md);

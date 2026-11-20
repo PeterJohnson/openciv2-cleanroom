@@ -1,7 +1,7 @@
 # Windows development and acceptance
 
 Use the root [build guide](BUILDING.md) for .NET builds, tests and the Avalonia
-application. Optional Lua/SQLite need a Visual Studio C compiler environment.
+application. Optional SQLite needs a Visual Studio C compiler environment; Lua-CSharp does not.
 The [platform checklist](testing/platforms.md) describes outstanding real-desktop,
 OS interruption and performance checks. Hosted Windows x64 CI evidence is recorded
 in [validation](validation/README.md).

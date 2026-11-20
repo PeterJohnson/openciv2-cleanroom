@@ -146,6 +146,18 @@
     "tmds.dbus.protocol.0.94.1.nupkg": {
       "contentHash": "11YMr7FnAbL83bQmVxlhbIKHvSLxjO81D12Ej0QMSGXMDTxNA9MTOa4MQxx43nv5el/efuPHwzyrj6a5ha2gug==",
       "archiveSha512": "l6HQm/Ny4TygH7dxUpTj9G9WoiIGCQuceI3zN2gXBrKhSz2Spb5Jlxb9pARJrSPbxySW65hIy9kq6u1XZGU5jA=="
+    },
+    "luacsharp.0.5.8.nupkg": {
+      "contentHash": "2n0x4X8xGRrqDABdNcjeL1RhtCOU6x3UPcU1JZMovhgKVKYvFEkK4Tya72qTmorE5x0p0NgJglM1shA9Cy0tZg==",
+      "archiveSha512": "RcKjupiZyBhBf6O1xuad9AZpN1xFWnoKfkpwxvup5Mf/VUdOX+SR6N7R+1rm3FDqPGvgpgQnkeMV7jUha6I0NA=="
+    },
+    "luacsharp.annotations.0.5.8.nupkg": {
+      "contentHash": "aRPtU/pDzXg0ZoN/Dq4+sEN5X+uzn5CH7POdt8/K3pZJYvK+IHTXd/byr+AfSmZliiZoZrDEb316OHxBB5SRVQ==",
+      "archiveSha512": "iieZtP2GoSsOIHD4agtzuUbl4U8scuHYrGZ3vXYW2Y26I704BzOxKdkx65Dl23SZ5NsmCFJHMEH0HuGXwmZlhw=="
+    },
+    "luacsharp.sourcegenerator.0.5.8.nupkg": {
+      "contentHash": "DT6RetfrtESoXf8K+AKAbqpTxpEgtDYsju+SdpFWRaeoGE8NpZZgqnSDplTBtlI62XpZB8a9+AVT/GrorYxk4Q==",
+      "archiveSha512": "ug3Z2bbwHXEfpBfukO956tuimxVAGTi0eyXKPFBA0UsQRazqyNZWtHMhBRjkGafEEAM6k5cLKzvzRdAJSrfjzw=="
     }
   }
 }

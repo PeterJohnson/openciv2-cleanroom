@@ -23,7 +23,7 @@ public sealed record AutomationReport(string Format, bool Passed, ScriptCaseResu
             typeof(OpenCiv2.Console.CommandText).Assembly, typeof(OpenCiv2.Automation.ScriptTask).Assembly,
             typeof(AutomationSuite).Assembly, host };
         bool passed = results.All(r => r.Passed);
-        return new("openciv2-production-lua/1", passed, results, passed ? AutomationSuite.Outcome() : null,
+        return new("openciv2-production-lua/2", passed, results, passed ? AutomationSuite.Outcome() : null,
             assemblies.Distinct().Select(BuildIdentity.Read).ToArray());
     }
     public string Json() => JsonSerializer.Serialize(this, AutomationJson.Default.AutomationReport);

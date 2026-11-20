@@ -1,7 +1,7 @@
 # Architecture
 
 The application uses C#/.NET 11, Avalonia desktop/browser hosts and portable
-core libraries. The bounded foundations, CLI, session application and Lua bridge
+core libraries. The bounded foundations, CLI, session application and Lua automation
 are implemented; [validation](validation/README.md) records native and browser
 evidence and the remaining desktop gates. The [implementation plan](implementation-plan.md)
 distinguishes current functionality from later gameplay and platform work.
@@ -253,7 +253,7 @@ adapters are introduced when their M2 responsibilities require them:
 | `OpenCiv2.Session` | Runtime, authority, scoped clients, command dispatch, setup/load/save, continuations, AI scheduling and effects; composes Core, Formats, Query and Network. |
 | `OpenCiv2.ViewModels` | Observer-filtered map/dialog/report/menu models and intent mapping; Contracts, with no mutable engine dependency or Avalonia types. |
 | `OpenCiv2.Console` | Parsing, help/completion and structured results through a scoped client; Contracts, no required GUI or scripting runtime. |
-| `OpenCiv2.Automation` | Optional Lua adapter, task scheduling and versioned task data through Contracts; native/WASM bridge isolated here. |
+| `OpenCiv2.Automation` | Optional Lua adapter, task scheduling and versioned task data through Contracts; managed Lua-CSharp dependency isolated here. |
 | `OpenCiv2.Content` | CPU asset data, identities, lookup and independent decoders; no GPU objects. |
 | `OpenCiv2.MapRendering` | Optional read-only Skia map renderer, scene/camera/minimap geometry and cosmetic timelines; Base, Contracts, Formats and SkiaSharp. No Avalonia, Session, Query or Network dependency. Formats currently supplies graphics data and transitively references Core. |
 | `OpenCiv2.IO.Native`, browser adapters | Storage, time and transport implementations; native headless I/O has no Avalonia dependency. Browser-specific JS interop stays in the host adapter. |
@@ -851,14 +851,13 @@ handoff, observer changes and session replacement.
 
 ### Lua user automation
 
-Use an optional embedded stock Lua interpreter for high-level player automation.
-Pin one runtime and binding API version for native and WASM builds when this
-target is introduced; do not depend on JIT availability. C# owns
+Use optional Lua-CSharp for high-level player automation.
+Pin one managed runtime and binding API version for native and WASM builds;
+do not depend on JIT availability. C# owns
 state, arithmetic, mechanics, persistence and authority. Moving classic AI or
 map-generation algorithms into scripts is a separate design decision requiring
-its own conformance evidence. Lua's
-[embedding API](https://www.lua.org/manual/5.5/manual.html#1) supports host-provided
-functions; the interface below is our engine contract.
+its own conformance evidence. Lua-CSharp supports managed host functions;
+the interface below is our engine contract.
 
 Expose permitted queries (own cities/units, known tiles, available production),
 semantic events (turn start, production completion, command result), and normal
@@ -875,13 +874,14 @@ can wait for a command, interaction or semantic event without blocking rendering
 protocol dispatch or deadlines. Preserve existing compatibility boundaries even
 when the runtime needs to yield for responsiveness.
 
-Bound instruction work, memory, host-call work, command queues and output. Expose
+Bound instruction work, host-call payloads/work, command queues and output.
+Lua-CSharp uses managed GC without a per-task memory cap. Expose
 cancel/pause controls and useful script/line diagnostics. Lua instruction hooks
 alone cannot bound time spent inside a host function: keep host calls bounded
-or asynchronous. Contain Lua errors within protected native bridge calls; no native long jump
-may cross a managed frame, and no managed exception may escape a native callback.
-Keep callback roots and interpreter handles alive until explicit disposal. Disable
-the failed task and report committed command effects.
+or asynchronous. Contain Lua errors within the managed task adapter and propagate
+instruction cancellation through protected script calls. Keep suspended bindings
+and interpreter state alive until task termination/disposal. Disable the failed
+task and report committed command effects.
 Stop further submissions on cancellation; in-flight operations still follow
 their normal completion/cancel and mandatory-reply contracts.
 
@@ -1157,7 +1157,7 @@ locked inputs and the same application-input acceptance checks.
 
 The [build guide](BUILDING.md) gives root-based .NET commands. C# formatting,
 nullable analysis, warnings-as-errors and locked restores are checked in CI.
-The optional Lua bridge uses native sanitizer/resource checks. Builds do not rewrite source files. GUI test instrumentation must remain
+The optional Lua-CSharp adapter uses shared native/browser task and resource checks. Builds do not rewrite source files. GUI test instrumentation must remain
 explicitly separated from player-facing behavior.
 
 xUnit and shared native/browser cases verify the implemented contracts.

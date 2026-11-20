@@ -75,6 +75,13 @@ class PublicationTests(unittest.TestCase):
     def test_changed_vendored_attribution_rejected(self):
         with self.assertRaisesRegex(ValueError, 'changed dependency'):
             notices.supplements('Avalonia.Fonts.Inter', '12.1.7', {})
+        for name in ('LuaCSharp', 'LuaCSharp.Annotations', 'LuaCSharp.SourceGenerator'):
+            meta = {'repository': {'commit': 'c735770a21407226cfd1204bbe11a25de27cddf9'}}
+            self.assertEqual(notices.supplements(name, '0.5.8', meta), ['LuaCSharp'])
+            with self.assertRaisesRegex(ValueError, 'changed dependency'):
+                notices.supplements(name, '0.5.9', meta)
+            with self.assertRaisesRegex(ValueError, 'changed dependency'):
+                notices.supplements(name, '0.5.8', {})
         source = copy.deepcopy(json.loads((notices.NOTICES / 'sources.json').read_text()))
         source['RandN']['sha256'] = 'wrong'
         with tempfile.TemporaryDirectory() as directory:

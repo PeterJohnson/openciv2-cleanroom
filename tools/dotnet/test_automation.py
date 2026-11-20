@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""Reject weakened/stale real Lua reports and modified prepared browser sources."""
+"""Reject weakened/stale Lua-CSharp execution reports."""
 import argparse
 import copy
 import json
 from pathlib import Path
-import shutil
-import tempfile
 import unittest
-import prepare_lua_wasm
 import run_automation
 
 
@@ -37,21 +34,14 @@ class EvidenceTests(unittest.TestCase):
         self.rejects(lambda r: r['Build'][0].update(Sdk='unverified'))
         self.rejects(lambda r: r['Build'][0]['Sources'].update({'src/OpenCiv2.Base/Arithmetic.cs': '0' * 64}))
 
-    def test_prepared_sources_reject_tampering(self):
-        original = run_automation.ROOT / 'build/lua/wasm'
-        pin = json.loads((run_automation.ROOT / 'dependencies.json').read_text())['libraries']['Lua']
-        with tempfile.TemporaryDirectory(prefix='oc2-lua-input-test-') as directory:
-            output = Path(directory) / 'wasm'
-            shutil.copytree(original, output)
-            prepare_lua_wasm.prepare(output, None, True)
-            extra = output / 'cpp/extra.cpp'; extra.write_text('/* unexpected compilation input */')
-            with self.assertRaises(ValueError): prepare_lua_wasm.prepare(output, None, True)
-            extra.unlink()
-            source = output / 'source/oc2_lua.c'; saved = source.read_bytes(); source.write_bytes(saved + b'\n/* modified */\n')
-            with self.assertRaises(ValueError): prepare_lua_wasm.prepare(output, None, True)
-            source.write_bytes(saved)
-            archive = output / Path(pin['url']).name; archive.write_bytes(b'wrong archive')
-            with self.assertRaises(ValueError): prepare_lua_wasm.prepare(output, None, True)
+    def test_native_bridge_report_rejected(self):
+        self.rejects(lambda r: r.update(Format='openciv2-production-lua/1'))
+
+    def test_changed_dependency_lock(self):
+        def mutate(report):
+            entry = next(e for e in report['Build'] if e['Assembly'] == 'OpenCiv2.Automation')
+            entry['Sources']['src/OpenCiv2.Automation/packages.lock.json'] = '0' * 64
+        self.rejects(mutate)
 
 
 if __name__ == '__main__':

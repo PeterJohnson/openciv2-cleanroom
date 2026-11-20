@@ -6,14 +6,13 @@ from pathlib import Path
 import platform
 import shutil
 import subprocess
-import sys
 import xml.etree.ElementTree as ET
 import write_identity as identity
 
 ROOT = identity.ROOT
 LIBRARIES = identity.LIBRARIES - {'OpenCiv2.FoundationCases', 'OpenCiv2.ViewModels'} | {'OpenCiv2.Automation', 'OpenCiv2.AutomationCases'}
 HOSTS = {'OpenCiv2.AutomationProbe', 'OpenCiv2.AutomationBrowser'}
-CASES = ['command-equivalence', 'observer-and-descriptor', 'instruction-budget', 'memory-budget',
+CASES = ['command-equivalence', 'observer-and-descriptor', 'instruction-budget', 'lua-csharp-runtime',
          'host-output-command-budgets', 'script-errors', 'cancel-before-and-after-effects', 'disposal-and-gc',
          'revoked-authority', 'task-command-ownership', 'stale-target', 'sandbox-and-limits', 'error-preserves-effects']
 OUTCOME = {'Stack': '2,-1,100,1;-1,2,101,1;1,0,102,1;-1,-1,103,2', 'Effects': 1, 'Changed': True, 'Output': 'completed\n'}
@@ -23,20 +22,13 @@ def expected_inputs(name):
     expected = identity.expected_inputs(ROOT, name)
     extra = []
     if name == 'OpenCiv2.Automation':
-        extra = ['docs/automation.md', 'src/OpenCiv2.Automation/Prelude.lua',
-                 'native/lua/bridge.c', 'native/lua/bridge.h']
-    elif name == 'OpenCiv2.AutomationProbe':
-        extra = ['native/lua/Native.targets', 'tools/dotnet/build_lua.py', 'build/lua/native/oc2-lua-build.json']
-    elif name == 'OpenCiv2.AutomationBrowser':
-        extra = ['native/lua/Browser.targets', 'tools/dotnet/prepare_lua_wasm.py', 'tools/dotnet/build_lua.py',
-                 'build/lua/wasm/oc2-lua-wasm.json']
-        extra += [p.relative_to(ROOT).as_posix() for folder in ('source', 'cpp') for p in (ROOT / 'build/lua/wasm' / folder).iterdir() if p.is_file()]
+        extra = ['docs/automation.md', 'src/OpenCiv2.Automation/Prelude.lua']
     expected.update({p: identity.sha(ROOT / p) for p in extra})
     return expected
 
 
 def validate(report):
-    if report.get('Format') != 'openciv2-production-lua/1' or report.get('Passed') is not True or report.get('PageErrors'):
+    if report.get('Format') != 'openciv2-production-lua/2' or report.get('Passed') is not True or report.get('PageErrors'):
         raise ValueError('Missing or failed production Lua report')
     if [c['Name'] for c in report['Cases']] != CASES or any(c.get('Passed') is not True or c.get('Error') is not None for c in report['Cases']):
         raise ValueError('Missing, duplicate, reordered or failed Lua cases')
@@ -65,7 +57,6 @@ def main():
     group.add_argument('--browser-bundle', type=Path); group.add_argument('--adapter', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     browser = bool(args.browser_bundle)
-    subprocess.run([sys.executable, str(ROOT / 'tools/dotnet' / ('prepare_lua_wasm.py' if browser else 'build_lua.py')), '--verify'], check=True)
     host = 'OpenCiv2.AutomationBrowser' if browser else 'OpenCiv2.AutomationProbe'
     sources = {}
     for name in LIBRARIES | {host}: sources.update(expected_inputs(name))

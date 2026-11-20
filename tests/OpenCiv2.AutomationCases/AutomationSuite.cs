@@ -10,7 +10,7 @@ public static class AutomationSuite
 {
     private static readonly (string Name, Action Run)[] cases = [
         ("command-equivalence", CommandEquivalence), ("observer-and-descriptor", ObserverAndDescriptor),
-        ("instruction-budget", InstructionBudget), ("memory-budget", MemoryBudget),
+        ("instruction-budget", InstructionBudget), ("lua-csharp-runtime", ManagedRuntime),
         ("host-output-command-budgets", HostBudgets), ("script-errors", ScriptErrors),
         ("cancel-before-and-after-effects", Cancellation), ("disposal-and-gc", DisposalAndGc),
         ("revoked-authority", RevokedAuthority), ("task-command-ownership", TaskCommandOwnership),
@@ -89,33 +89,69 @@ public static class AutomationSuite
     {
         using var f = new Fixture(); string before = f.Stack(); using var task = f.Task(code, limits);
         f.Pump(task); Check(task.Status == ScriptStatus.Failed && task.Error.Contains(expected, StringComparison.Ordinal), task.Error);
-        Check(f.Stack() == before && !f.Runtime.HasPendingCommands); Check(task.MemoryBytes <= (limits ?? new()).MemoryBytes);
+        Check(f.Stack() == before && !f.Runtime.HasPendingCommands);
     }
     private static void InstructionBudget()
     {
         Fails("while true do end", "instruction_budget");
         Fails("pcall(function() while true do end end); game.log('escaped')", "instruction_budget");
+        Fails("while true do pcall(function() while true do end end) end", "instruction_budget");
+        // A host suspension inside pcall must remain on the owner tick and retain its hook.
+        Fails("pcall(function() game.wait(); while true do end end)", "instruction_budget");
     }
-    private static void MemoryBudget()
+    private static void ManagedRuntime()
     {
-        Fails("local x=string.rep('0123456789abcdef', 65536)", "memory", new(MemoryBytes: 65536));
-        Fails("local x={} while true do x[#x+1]=string.rep('a',1000) end", "memory", new(MemoryBytes: 65536));
-        // The typed response fits the transport but its decoded Lua tables exceed
-        // the VM allocator cap. This exercises protected reply allocation on both ABIs.
-        using var f = new Fixture(); f.Runtime.World.Entities.Units.SetEnd(512); f.Runtime.World.Globals.UnitEnd = 512;
-        for (int i = 4; i < 512; ++i) f.Runtime.World.Entities.Units.Storage[i] = new()
-        { Token = new((uint)i + 100), Owner = new(1), Previous = (UnitSlot?)null, Next = (UnitSlot?)null, Position = new(2, 2) };
-        using var task = f.Task("local units=game.units()", new(MemoryBytes: 65536)); f.Pump(task);
-        Check(task.Status == ScriptStatus.Failed && task.Error.Contains("memory", StringComparison.Ordinal), task.Error);
-        Check(task.MemoryBytes <= 65536 && !f.Runtime.HasPendingCommands);
-
+        using var f = new Fixture();
+        using var task = f.Task("""
+            assert(_VERSION == 'Lua 5.2')
+            -- Byte strings preserve the existing API's UTF-8 text boundary.
+            assert(#'é' == 2 and string.byte('é', 1) == 195)
+            local large = string.rep('a', 65536)
+            local values = {}
+            for i=1,40 do values[i] = large .. tostring(i) end
+            assert(#values[40] == 65538)
+            local ok = pcall(function()
+                for i=1,5 do game.log('é'); game.wait() end
+            end)
+            assert(ok)
+            """);
+        // Each owner tick dispatches exactly one host call, even under a UI context.
+        var previousContext = SynchronizationContext.Current;
+        try
+        {
+            SynchronizationContext.SetSynchronizationContext(new RejectPostingContext());
+            for (int i = 0; i < 5; ++i)
+            {
+                task.Tick(); Check(task.Output == string.Concat(Enumerable.Repeat("é\n", i + 1)));
+                task.Tick(); Check(task.Output == string.Concat(Enumerable.Repeat("é\n", i + 1)));
+                GC.Collect();
+            }
+            task.Tick();
+        }
+        finally { SynchronizationContext.SetSynchronizationContext(previousContext); }
+        Check(task.Status == ScriptStatus.Completed, task.Error);
+        Check(task.Output == string.Concat(Enumerable.Repeat("é\n", 5)));
+    }
+    private sealed class RejectPostingContext : SynchronizationContext
+    {
+        public override void Post(SendOrPostCallback callback, object? state) =>
+            throw new InvalidOperationException("Script escaped the owner tick");
     }
     private static void HostBudgets()
     {
-        Fails("string.rep('', 9223372036854775807)", "native_work_budget");
+        Fails("string.rep('', 9223372036854775807)", "host_work_budget");
         Fails("table.move({},1,9223372036854775807,1)", "nil value");
         Fails("while true do game.wait() end", "host_call_budget", new(Ticks: 3));
         Fails("game.log('12345')", "output_budget", new(OutputBytes: 4));
+        Fails("game.log('éé')", "output_budget", new(OutputBytes: 4));
+        Fails("pcall(function() game.log(string.rep('a',65536)) end)", "host_request_budget");
+        // A query can exceed the payload limit even though the VM has no memory cap.
+        using var f = new Fixture();
+        f.Runtime.World.Entities.Units.SetEnd(1024); f.Runtime.World.Globals.UnitEnd = 1024;
+        for (int i = 4; i < 1024; ++i) f.Runtime.World.Entities.Units.Storage[i] = new()
+        { Token = new((uint)i + 100), Owner = new(1), Position = new(2, 2) };
+        using var task = f.Task("game.units()"); f.Pump(task);
+        Check(task.Status == ScriptStatus.Failed && task.Error == "host_reply_budget", task.Error);
         Fails("game.command('unit.stack-bottom unit=0:100'); game.command('unit.stack-bottom unit=1:101')", "command_budget", new(Commands: 1));
     }
     private static void ScriptErrors()
@@ -144,9 +180,14 @@ public static class AutomationSuite
     private static void DisposalAndGc()
     {
         using var f = new Fixture(); using (var task = f.Task(Complete)) { f.Pump(task, true); Check(task.Status == ScriptStatus.Completed, task.Error); }
+        using (var cancelled = f.Task("pcall(function() game.wait() end); game.log('escaped')"))
+        {
+            cancelled.Tick(); cancelled.Cancel(); cancelled.Tick();
+            Check(cancelled.Status == ScriptStatus.Cancelled && cancelled.Output.Length == 0);
+        }
         var pending = f.Task("game.command('unit.stack-bottom unit=1:101'); game.wait()"); pending.Tick(); var id = pending.SubmittedCommands[0];
         pending.Dispose(); pending.Dispose(); while (f.Runtime.AdvanceOne()) { }
-        Check(f.Client.Result(id)!.Status == CommandStatus.Cancelled && pending.MemoryBytes == 0);
+        Check(f.Client.Result(id)!.Status == CommandStatus.Cancelled);
         try { pending.Tick(); throw new Exception("Disposed task tick admitted"); } catch (ObjectDisposedException) { }
     }
     private static void RevokedAuthority()
@@ -177,7 +218,7 @@ public static class AutomationSuite
     }
     private static void SandboxAndLimits()
     {
-        using var f = new Fixture(); using var task = f.Task("assert(io==nil and os==nil and package==nil and debug==nil and load==nil and coroutine==nil); assert(math.random==nil and setmetatable==nil and _oc2_call==nil)");
+        using var f = new Fixture(); using var task = f.Task("assert(io==nil and os==nil and package==nil and debug==nil and load==nil and coroutine==nil); assert(math.random==nil and math.randomseed==nil and setmetatable==nil and _oc2_call==nil); assert(require==nil and loadfile==nil and dofile==nil and collectgarbage==nil and print==nil and xpcall==nil); assert(string.dump==nil and string.find==nil and table.sort==nil)");
         f.Pump(task); Check(task.Status == ScriptStatus.Completed, task.Error);
         try { using var invalid = f.Task("return", new(Ticks: 0)); throw new Exception("Invalid limits admitted"); } catch (ArgumentOutOfRangeException) { }
         try { using var invalid = f.Task(new string('a', 65537)); throw new Exception("Oversize script admitted"); } catch (ArgumentException) { }
