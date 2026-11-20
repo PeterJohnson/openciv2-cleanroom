@@ -921,7 +921,7 @@ interaction does not resample them. Cosmetic work uses only its own context.
 Use [PeterJohnson/openciv2-assets](https://github.com/PeterJohnson/openciv2-assets),
 available locally at `~/project/openciv2-assets`. Its inspected checkout was
 `c4161c1843e8e06a5cf864e1633b6f6221abb797`. M0 also verified the published
-2026.11.07.1 runtime archive and pinned its URL/hash in `dependencies.json`.
+2026.11.08.1 runtime archive and pinned its URL/hash in `dependencies.json`.
 The [content inventory](content/README.md) separates source and release evidence;
 the [format contract](content/asset-format.md) records the observed pack/layout
 format, stock TrueType selection and runtime rasterization boundary.

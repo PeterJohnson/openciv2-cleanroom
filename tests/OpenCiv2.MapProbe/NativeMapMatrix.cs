@@ -19,6 +19,7 @@ internal static partial class NativeMapMatrix
     public static void Run(AssetAtlas atlas, PinnedFonts fonts, string output, string contentCases, MemoryStream? diagnostic = null)
     {
         RendererLibraryChecks.Run(atlas, fonts);
+        MapPresentationChecks.Run(atlas, fonts, output);
         Directory.CreateDirectory(output);
         var catalog = MapArtCatalog.Stock;
         Require(catalog.Images.Count == 368 && catalog.Units.Count == 63 && catalog.Cities.Count == 48, "exhaustive stock catalog");
@@ -737,7 +738,7 @@ internal static partial class NativeMapMatrix
         var pose = first with { Details = first.Details with { Order = MapFact<UnitOrder>.Known(UnitOrder.Sleeping) } };
         uint shade = MapArtCatalog.Stock.DisplayColors["sentrySilhouette"];
         var silhouette = new SKColor(0xff000000 | shade);
-        Draw(pose);
+        Draw(pose, new(Sentry: SentryAppearance.Silhouette));
         int solid = InspectBody(silhouette, out _);
         Encode(surface, Path.Combine(output, "MV14-sentry-silhouette.png"));
         Require(solid > 4, "the sentry silhouette contains the exact neutral body color");
@@ -823,7 +824,7 @@ internal static partial class NativeMapMatrix
             "the same occlusion and target identity apply across wrapped copies");
         var stack = new MapScene(world with { Units = new([unit with { Position = cityAt }]) });
         Require(stack.Pick(camera, camera.ScreenX(cityAt.X) + 8 * camera.Zoom, camera.ScreenY(cityAt.Y) - 12 * camera.Zoom)
-            == new MapPick(cityAt, MapPickKind.Unit), "same-cell unit body is in front of the city");
+            == new MapPick(cityAt, MapPickKind.City), "hidden same-cell unit body does not intercept city picking");
         Require(scene.Pick(camera, x, y, terrainOnly: true)?.Kind == MapPickKind.Tile, "bare terrain bypasses object hit boxes");
 
         var land = new ObservedTile(2, default, false, 0, false);

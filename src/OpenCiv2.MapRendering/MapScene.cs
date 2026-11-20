@@ -151,6 +151,11 @@ public sealed class MapScene
     public MapObjects Objects(MapPoint position) => objects[objectSlots[Index(position)]];
     public bool HasCity(MapPoint position) => objects[objectSlots[Index(position)]].City is not null;
 
+    // P02: city occupation is a flag, not a second body. Keep the observed
+    // stack available for inspection and commands even when its marker is hidden.
+    public bool ShowsUnit(MapPoint position) => Objects(position).Unit is not null &&
+        !HasCity(position) && !RememberedCity(Tile(position));
+
     internal IEnumerable<int> ComparisonIndices(MapScene before, bool sparse, bool radius = false)
     {
         var delta = Map.Delta;
@@ -289,7 +294,7 @@ public sealed class MapScene
                 : RememberedCity(Tile(point)) && Math.Abs(x * local.Zoom) <= 4 && Math.Abs(y * local.Zoom) <= 4;
             if (cityHit)
                 selected = new(point, MapPickKind.City);
-            if (cell.Unit is not null && Math.Abs(x - (cell.City is null ? 0 : 14)) <= UnitWidth / 2 && y >= UnitTop && y <= UnitTop + UnitWidth * 0.75)
+            if (ShowsUnit(point) && Math.Abs(x) <= UnitWidth / 2 && y >= UnitTop && y <= UnitTop + UnitWidth * 0.75)
                 selected = new(point, MapPickKind.Unit);
         }
         return selected;

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "profile": "classic-hd-map-2026.11.07.1",
+  "profile": "classic-hd-map-2026.11.08.1",
   "assetSource": {
     "revision": "c4161c1843e8e06a5cf864e1633b6f6221abb797",
-    "packSha256": "08321e5c1f18267293d84fe9cbed0e9709996eb139f1b570a3cf68d100f4e4c3",
+    "packSha256": "9e1ec3b46b32f9926cac43e314ca0cd6a0115195bf474e8986a402323c42d007",
     "dataFiles": {
       "assets/atlas-hd/compatibility/bindings.json": "5af14b9ee9e43bce5000ffe36a0784f9e3ba24abd3a59718e710e01be12d1566",
       "assets/atlas-hd/map/city-anchors.json": "5b00b329a7662ff9b6ead3cde6ef64ff31eb8ef3570868fd8b091a2d1e6e414a",
@@ -3210,7 +3210,7 @@
         256,
         128
       ],
-      "pngSha256": "09559c69d4a71a260ffe2e7b53c8f4760edfcf79a755f210f7e0bb94c06ba4f7"
+      "pngSha256": "44fe7c76c359d8c043a3d5db6d2ec5d1ec6db2f527d44f89379ab1a1acd8f774"
     },
     "crop/file/icons/199,356,32,32": {
       "logicalSize": [
@@ -4497,7 +4497,7 @@
         512,
         384
       ],
-      "pngSha256": "bfcfd8ebaa2b0efa530010527947cf4924c62d04aeb24005f8a511466ca8eabd"
+      "pngSha256": "508a7a6d37729aa81a1a5b9967f1bdcffcb59dbdaa00d1ddceb2660200584310"
     },
     "improvement/fortress": {
       "logicalSize": [

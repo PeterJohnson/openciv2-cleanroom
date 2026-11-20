@@ -4,7 +4,7 @@ This is the production art-input contract for P02's
 [minimum map visual feature set](../algorithms/P02-map-rendering-and-minimap.md#minimum-map-visual-feature-set).
 The [semantic binding catalog](map-asset-bindings.json) lists exact atlas keys,
 all selector variants, logical registration, faction colors and per-image hashes
-for runtime release **2026.11.07.1**. Its pack identity is pinned by
+for runtime release **2026.11.08.1**. Its pack identity is pinned by
 [assets.json](assets.json); [asset-format.md](asset-format.md) defines C2ATLAS1.
 No renderer source, original image sheet or source-derived harness is needed.
 
@@ -108,6 +108,13 @@ City art selects `city/{8*style+2*sizeClass+walled}`, with style 0..5,
 sizeClass 0..3, and walled 0 or 1. The catalog enumerates all 48 combinations
 and their population-box anchors. The flag anchor is `(48,4)` in the body box.
 
+A disclosed occupied city draws its bright owner flag. Empty, withheld and
+unavailable garrisons draw no flag; never infer occupation from the unit list.
+Units on city tiles, including remembered city sites, have no stationary body,
+shield or status badges. Their disclosed records remain available for inspection
+and commands. Pointer picking targets the city instead of an invisible unit.
+Airbases remain distinct from city sites and keep their unit bodies.
+
 The stock appearance policy starts from the permitted configured city style.
 Where disclosed, Industrialization selects style 4; Automobile together with
 Electronics selects style 5. Class is the number of thresholds reached by the
@@ -130,7 +137,7 @@ stock choices are:
 | Role | Key pattern (`p=208+3*color`) | Logical size |
 | --- | --- | --- |
 | Bright city flag | `tint/faction/flag/{p}` | 14×22 |
-| Dark city flag | `tint/crop/file/cities/1,448,14,22/{p}` | 14×22 |
+| Alternate dark flag (retained content; unused for city occupation) | `tint/crop/file/cities/1,448,14,22/{p}` | 14×22 |
 | Occupied airbase | `tint/crop/file/cities/338,423,64,48/{p}` | 64×48 |
 | Disorder marker | `crop/file/icons/166,223,30,30`, used as an alpha marker colored for the owner | 30×30 |
 
@@ -143,10 +150,13 @@ label/overview accents, shields and disorder use the same owner-color record.
 Scenario-defined nonstock colors require a separately declared selective-tint
 binding or equivalent owned tint data; do not clamp them to a stock slot silently.
 
-Sentry silhouette replaces body RGB while preserving alpha; detailed greyscale
-preserves body luminance detail and alpha. They are effects applied to the chosen
+Detailed greyscale is the default sleeping/sentry appearance and preserves body
+luminance detail and alpha. The optional silhouette mode replaces body RGB while
+preserving alpha. They are effects applied to the chosen
 unit image, not extra unit identities. Fortified, stack, health and order layers
-remain separately selectable. Full and dirty redraws must include their overhangs.
+remain separately selectable. Fortification is drawn over the unit body and
+below its shield/status annotations in both CPU and GPU composition. Full and
+dirty redraws must include their overhangs.
 
 ## Selection, effects and procedural content
 

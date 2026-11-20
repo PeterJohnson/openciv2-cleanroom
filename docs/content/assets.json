@@ -3,9 +3,9 @@
   "sourceRepository": "https://github.com/PeterJohnson/openciv2-assets",
   "sourceRevision": "c4161c1843e8e06a5cf864e1633b6f6221abb797",
   "runtimeRelease": {
-    "version": "2026.11.07.1",
-    "url": "https://github.com/PeterJohnson/openciv2-assets/releases/download/v2026.11.07.1/openciv2-assets-2026.11.07.1.zip",
-    "sha256": "13d370f9e94371112992ef6e40a3731eac3cb0f302dc9a3143c95ad88704a253",
+    "version": "2026.11.08.1",
+    "url": "https://github.com/PeterJohnson/openciv2-assets/releases/download/v2026.11.08.1/openciv2-assets-2026.11.08.1.zip",
+    "sha256": "093e791370a3a3724e0acc5b2c08dfbeff22e7efb9b5e9ac77b0f1da839539d4",
     "files": {
       "LICENSE": {
         "sha256": "096ca0db8d513b0124403a582613db987b08dd41c7997a47103e30a7367b209b",
@@ -16,12 +16,12 @@
         "size": 7830
       },
       "data/ATLAS-PROVENANCE.md": {
-        "sha256": "d4d2b37be1b39ac7ae94f746f59ea49c597f9c9ff08c5b781ed908841cb5d357",
-        "size": 9206
+        "sha256": "dceaf637f2c66ae4fbe505114f1eabfb1fae78bf8494407d20f7aeefcd57a7c6",
+        "size": 9414
       },
       "data/atlas-hd.pack": {
-        "sha256": "08321e5c1f18267293d84fe9cbed0e9709996eb139f1b570a3cf68d100f4e4c3",
-        "size": 249792878
+        "sha256": "9e1ec3b46b32f9926cac43e314ca0cd6a0115195bf474e8986a402323c42d007",
+        "size": 249808905
       },
       "data/cityview-rects.json": {
         "sha256": "72459173409e051136a75ae01cb98190213a40d83d2fcdedee52c25e89727050",

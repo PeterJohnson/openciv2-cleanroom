@@ -66,7 +66,7 @@ internal static partial class NativeMapMatrix
             { Appearance = MapFact<MapCityAppearance>.Known(new(5, 3, true)), Garrison = default, Population = default, Disorder = default }
         };
         var lower = new ObservedMapUnit(front, new(1), new(3), null, MapUnitDetails.Withheld);
-        var upper = new ObservedMapUnit(rear, new(32), new(1), null, MapUnitDetails.Withheld);
+        var upper = new ObservedMapUnit(new(rear.X - 1, rear.Y - 1), new(32), new(1), null, MapUnitDetails.Withheld);
         var scene = new MapScene(terrainOnly with { Tiles = new(tiles), Cities = new([city]), Units = new([lower, upper]) });
         var preview = new MapEffect(1, MapEffectKind.Explosion, front, front, 300);
         var overlay = new VisualFrame(new([new EffectFrame(preview, .27, front.X)]), new([]), new([]), true);
@@ -121,10 +121,10 @@ internal static partial class NativeMapMatrix
                 var canvas = expected.Canvas;
                 canvas.DrawImage(groundImage, SKRect.Create(width, height), new SKSamplingOptions(SKFilterMode.Nearest));
                 if (swapDepth && omit != "frontUnit") Unit(lower, 0, 48, 4);
+                if (omit != "rearUnit") Unit(upper, 0, 2, 0);
                 int x = (int)camera.ScreenX(rear.X), y = (int)camera.ScreenY(rear.Y);
                 if (omit != "fortress") Sprite("improvement/fortress", x - 32, y - 32);
                 if (omit != "city") Sprite("city/47", x - 32, y - 32);
-                if (omit != "rearUnit") Unit(upper, 14, 2, 0);
                 if (!swapDepth && omit != "frontUnit") Unit(lower, 0, 48, 4);
                 if (omit != "caption")
                 {

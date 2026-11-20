@@ -131,10 +131,11 @@ internal static partial class NativeMapMatrix
         int selectedX = (int)camera.ScreenX(terrain.Position.X), selectedY = (int)camera.ScreenY(terrain.Position.Y);
         painter.Draw(target.Canvas, epoch, camera, width, height, 1, null, visual: VisualFrame.Empty);
         SKColor ground = ReadPixel();
+        string unselected = Pixels(target);
         painter.Draw(target.Canvas, epoch, camera, width, height, 1, terrain, visual: VisualFrame.Empty);
         SKColor highlighted = ReadPixel();
-        Require(highlighted != ground && highlighted != SKColors.White && highlighted.Red > ground.Red,
-            "the pinned selection mask preserves visible terrain color");
+        Require(highlighted == ground && Pixels(target) != unselected,
+            "the pinned selection outline leaves the tile interior unchanged and adds a visible border");
         string off = Draw(VisualFrame.Empty);
         var stable = VisualFrame.Empty with { Pulse = true };
         string on = Draw(stable);

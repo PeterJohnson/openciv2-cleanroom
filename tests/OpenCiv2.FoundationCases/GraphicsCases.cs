@@ -110,9 +110,9 @@ public static partial class FoundationSuite
     {
         foreach (string invalid in new[]
         {
-            "[]", "{}", """{"schema":1,"schema":1,"kind":"openciv2-assets","version":"2026.11.07.1","files":{}}""",
-            """{"schema":1,"kind":"openciv2-assets","version":"2026.11.07.1","files":{"../LICENSE":{}}}""",
-            """{"schema":1,"kind":"openciv2-assets","version":"2026.11.07.1","files":{"data\\atlas-hd.pack":{}}}""",
+            "[]", "{}", """{"schema":1,"schema":1,"kind":"openciv2-assets","version":"2026.11.08.1","files":{}}""",
+            """{"schema":1,"kind":"openciv2-assets","version":"2026.11.08.1","files":{"../LICENSE":{}}}""",
+            """{"schema":1,"kind":"openciv2-assets","version":"2026.11.08.1","files":{"data\\atlas-hd.pack":{}}}""",
             """{"schema":1,"kind":"openciv2-assets","version":"untrusted","files":{}}""", new string(' ', 16385)
         })
         {

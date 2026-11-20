@@ -156,7 +156,7 @@ internal static partial class NativeMapMatrix
                 if (withFortified[pixel] != withoutFortified[pixel]) fortificationPixels++;
             }
         int fortressPixels = DifferentMapPixels(withFortified, Render(empty, fortified));
-        Require((fortificationPixels == 0) == FullyCovered("improvement/fortified", art.Body) &&
+        Require(fortificationPixels > 0 &&
             (fortressPixels == 0) == FullyCovered("improvement/fortress", art.Body, "improvement/fortified"),
             $"{theme} fortified figure and fortress respect the foreground alpha geometry ({fortificationPixels}, {fortressPixels})");
         Render(fortress, fortified);

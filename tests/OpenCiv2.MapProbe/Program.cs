@@ -10,6 +10,7 @@ using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 using SkiaSharp;
 
+bool presentation = args.Length == 4 && args[3] is "--presentation-checks" or "--gpu-presentation-checks";
 bool rendererOptions = args.Length == 4 && args[3] == "--renderer-options";
 bool optimizationChecks = args.Length == 5 && args[3] == "--gpu-optimization-checks";
 bool matrix = args.Length == 5 && args[3] == "--matrix";
@@ -20,8 +21,8 @@ bool performance = args.Length is 4 or 5 && args[3] is "--performance" or "--dia
 bool replay = args.Length == 5 && args[3] is "--replay-native-map" or "--replay-native-navigation" or "--replay-gpu-map" or "--replay-gpu-experiment";
 bool panOverlap = args.Length == 5 && args[3] == "--diagnostic-pan-overlap";
 bool pixels = args.Length == 4 && args[3] == "--atlas-pixels";
-if (args.Length != 3 && !optimizationChecks && !rendererOptions && !matrix && !experiments && !uploadChecks && !gpuMatrix && !performance && !replay && !panOverlap && !pixels)
-    throw new ArgumentException("Usage: OpenCiv2.MapProbe ASSET_ROOT FONT_ROOT OUTPUT [--matrix ART_FIXTURES | --gpu-matrix ART_FIXTURES | --gpu-experiment-matrix ART_FIXTURES | --gpu-experiments RECEIPT | --gpu-upload-check | --performance [WORKLOAD] | --diagnostic-performance [WORKLOAD] | --diagnostic-direct-performance [WORKLOAD] | --replay-native-map RECEIPT | --replay-gpu-map RECEIPT | --replay-gpu-experiment RECEIPT | --diagnostic-pan-overlap RECEIPT | --atlas-pixels]");
+if (args.Length != 3 && !presentation && !optimizationChecks && !rendererOptions && !matrix && !experiments && !uploadChecks && !gpuMatrix && !performance && !replay && !panOverlap && !pixels)
+    throw new ArgumentException("Usage: OpenCiv2.MapProbe ASSET_ROOT FONT_ROOT OUTPUT [--presentation-checks | --gpu-presentation-checks | --matrix ART_FIXTURES | --gpu-matrix ART_FIXTURES | --gpu-experiment-matrix ART_FIXTURES | --gpu-experiments RECEIPT | --gpu-upload-check | --performance [WORKLOAD] | --diagnostic-performance [WORKLOAD] | --diagnostic-direct-performance [WORKLOAD] | --replay-native-map RECEIPT | --replay-gpu-map RECEIPT | --replay-gpu-experiment RECEIPT | --diagnostic-pan-overlap RECEIPT | --atlas-pixels]");
 
 Func<string, Stream> Root(string directory) => name => File.OpenRead(Path.Combine(directory, name));
 var start = Stopwatch.GetTimestamp();
@@ -30,6 +31,12 @@ double admissionMilliseconds = Stopwatch.GetElapsedTime(start).TotalMilliseconds
 start = Stopwatch.GetTimestamp();
 var fonts = PinnedGraphics.LoadFonts(Root(args[1]));
 double fontsMilliseconds = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+if (presentation)
+{
+    using var context = args[3] == "--gpu-presentation-checks" ? new MapProbeGlContext() : null;
+    MapPresentationChecks.Run(atlas, fonts, args[2], context?.Context);
+    return;
+}
 if (optimizationChecks)
 {
     GpuOptimizationChecks.Run(atlas, fonts, args[2], args[4]);

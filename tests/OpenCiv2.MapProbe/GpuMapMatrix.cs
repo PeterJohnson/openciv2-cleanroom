@@ -14,6 +14,7 @@ internal static class GpuMapMatrix
     {
         Directory.CreateDirectory(output);
         using var gl = new MapProbeGlContext();
+        MapPresentationChecks.Run(atlas, fonts, output, gl.Context);
         var (native, classic) = NativeMapMatrix.OverrideChecks(contentCases);
         var results = new List<object>();
         foreach (var (theme, art) in new (string, MapArtSelection?)[] { ("stock", null), ("native", native), ("classic", classic) })

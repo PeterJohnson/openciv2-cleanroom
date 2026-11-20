@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def validate(root=ROOT, pack=None, decoded_report=None):
     catalog = read_json(root / "docs/content/map-asset-bindings.json")
     assets = read_json(root / "docs/content/assets.json")
-    require(catalog["schemaVersion"] == 1 and catalog["profile"] == "classic-hd-map-2026.11.07.1", "unknown map binding profile")
+    require(catalog["schemaVersion"] == 1 and catalog["profile"] == "classic-hd-map-2026.11.08.1", "unknown map binding profile")
     source = catalog["assetSource"]
     require(source["revision"] == assets["sourceRevision"] and
             source["packSha256"] == assets["runtimeRelease"]["files"]["data/atlas-hd.pack"]["sha256"], "map asset pin mismatch")

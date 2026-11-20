@@ -1,6 +1,6 @@
 # Runtime asset data contract
 
-This records the observed **2026.11.07.1** runtime release and the selected data
+This records the observed **2026.11.08.1** runtime release and the selected data
 at source revision `c4161c1843e8e06a5cf864e1633b6f6221abb797`. Evidence is the
 asset repository's runtime guide, selected JSON data, the standalone asset
 producer's container-writing boundary, and inspection of the published bytes.

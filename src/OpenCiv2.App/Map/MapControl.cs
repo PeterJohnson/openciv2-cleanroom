@@ -293,7 +293,7 @@ internal sealed class MapControl : Control
                 var unit = new MapPick(next, MapPickKind.Unit);
                 var city = new MapPick(next, MapPickKind.City);
                 Hover(display.Bare ? new(next, MapPickKind.Tile) :
-                    scene.PermitsPick(unit) ? unit : scene.PermitsPick(city) ? city : new(next, MapPickKind.Tile));
+                    scene.ShowsUnit(next) ? unit : scene.PermitsPick(city) ? city : new(next, MapPickKind.Tile));
             }
             e.Handled = true;
             return;

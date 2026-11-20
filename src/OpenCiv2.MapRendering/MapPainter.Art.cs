@@ -171,7 +171,7 @@ public sealed partial class MapPainter
             {
                 var tile = value.Tile(point);
                 var cell = ForegroundCell(value, point, remaining);
-                var unit = cell.Unit;
+                var unit = value.ShowsUnit(point) ? cell.Unit : null;
                 bool remembered = MapScene.RememberedCity(tile);
                 if (cell.City is not null || remembered) objects++;
                 if (unit is not null) objects += cell.Count;
@@ -196,8 +196,7 @@ public sealed partial class MapPainter
                 {
                     // Cell depth is in map-row order; stack/banner/body are layered together,
                     // so a later sprite cannot be promoted across an overlapping translucent one.
-                    float unitLeft = left + (cell.City is null ? 0 : 14 * zoom);
-                    DrawUnit(canvas, value, visibleUnit, cell.Count, unitLeft, top, zoom, tier, detail, frame.Display, paint, bodyPaint, font, greyscale);
+                    DrawUnit(canvas, value, visibleUnit, cell.Count, left, top, zoom, tier, detail, frame.Display, paint, bodyPaint, font, greyscale);
                 }
                 canvas.Flush(spriteAtlas);
             }
@@ -227,7 +226,7 @@ public sealed partial class MapPainter
         {
             var cell = ForegroundCell(scene, point, remaining);
             if (cell.City is { } city && CityBinding(city) is { } art) yield return art.Body;
-            if (cell.Unit is { } unit) yield return UnitBinding(unit).Body;
+            if (scene.ShowsUnit(point) && cell.Unit is { } unit) yield return UnitBinding(unit).Body;
         }
     }
 
@@ -290,11 +289,10 @@ public sealed partial class MapPainter
         if (info is null) return;
         var faction = Catalog.Factions[scene.Annotations.ColorRole(info.Owner)];
         SKColor owner = Color(scene, info.Owner);
-        if (info.Garrison.Value is { } garrison)
+        if (info.Garrison.Value == MapPresence.Present)
         {
-            string flag = garrison == MapPresence.Present ? faction.BrightFlag : faction.DarkFlag;
             var anchor = art is null ? Catalog.FlagAnchor : textures.Flag(art.Body, Catalog.FlagAnchor);
-            Sprite(canvas, flag, x + anchor.X * zoom, y + anchor.Y * zoom, zoom, tier);
+            Sprite(canvas, faction.BrightFlag, x + anchor.X * zoom, y + anchor.Y * zoom, zoom, tier);
         }
         if (detail == MapDetail.Full && info.Population.Value is int population)
         {
@@ -333,8 +331,6 @@ public sealed partial class MapPainter
         bool sleeping = state.Order.Value == UnitOrder.Sleeping || state.StationaryAircraft.Value == MapPresence.Present;
         if (detail != MapDetail.Overview)
         {
-            if (state.Order.Value == UnitOrder.Fortified)
-                Sprite(canvas, Catalog.Improvements["fortified"], x, y, zoom, tier);
             Sprite(canvas, art.Body, x + 2 * zoom, y + 2 * zoom, zoom, tier, tint: count > 1 ? rearShadow : Color("unitShadow"));
         }
         if (sleeping && display.Sentry == SentryAppearance.Silhouette)
@@ -344,6 +340,9 @@ public sealed partial class MapPainter
             bodyPaint.ColorFilter = sleeping ? greyscale : null;
             Sprite(canvas, art.Body, x, y, zoom, tier, bodyPaint);
         }
+
+        if (detail != MapDetail.Overview && state.Order.Value == UnitOrder.Fortified)
+            Sprite(canvas, Catalog.Improvements["fortified"], x, y, zoom, tier);
 
         var anchor = textures.Marker(art.Body, art.Shield);
         float shieldX = x + anchor.X * zoom, shieldY = y + anchor.Y * zoom;

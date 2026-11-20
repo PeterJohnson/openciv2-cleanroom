@@ -193,7 +193,7 @@ internal static partial class NativeMapMatrix
             var annotated = details with { Population = MapFact<int>.Known(0), Garrison = MapFact<MapPresence>.Known(garrison) };
             Render(city with { Details = annotated });
             var faction = catalog.Factions[details.Owner.Value];
-            string flag = garrison == MapPresence.Present ? faction.BrightFlag : faction.DarkFlag;
+            string? flag = garrison == MapPresence.Present ? faction.BrightFlag : null;
             ArtPoint population = theme switch
             {
                 "classic" => new(15, 9),
@@ -201,7 +201,7 @@ internal static partial class NativeMapMatrix
                 _ => catalog.Cities[i].Population
             };
             ArtPoint flagAt = theme == "classic" ? new(42, 7) : new(48, 4);
-            PaintObject(canvas, textures, flag, bodyX + flagAt.X, bodyY + flagAt.Y);
+            if (flag is not null) PaintObject(canvas, textures, flag, bodyX + flagAt.X, bodyY + flagAt.Y);
             int x = bodyX + population.X, y = bodyY + population.Y;
             var badge = new SKRectI(x, y, x + 12, y + 12);
             var owner = Opaque(replacement?.Color(details.Owner.Value, faction.Rgb) ?? faction.Rgb);

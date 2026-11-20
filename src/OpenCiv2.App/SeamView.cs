@@ -243,6 +243,7 @@ public sealed class SeamView : UserControl
         reducedMotion.IsCheckedChanged += (_, _) => map.Display = map.Display with { ReducedMotion = reducedMotion.IsChecked == true };
         options.Children.Add(reducedMotion);
         Choice("detailedSentry", "Detailed sleeping units", (d, enabled) => d with { Sentry = enabled ? SentryAppearance.Greyscale : SentryAppearance.Silhouette });
+        mapChoices["detailedSentry"].IsChecked = map.Display.Sentry == SentryAppearance.Greyscale;
         if (selectedArt is not null)
         {
             var suppliedArt = new CheckBox { Content = "Use supplied art", IsChecked = true };

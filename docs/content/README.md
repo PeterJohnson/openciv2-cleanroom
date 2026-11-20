@@ -14,9 +14,9 @@ files. The selection fingerprint is SHA-256 of sorted UTF-8 lines
 Only paths in `runtime-inputs.json` contribute; neighboring art is not selected.
 
 The independently inspected published
-[runtime release 2026.11.07.1](https://github.com/PeterJohnson/openciv2-assets/releases/tag/v2026.11.07.1)
+[runtime release 2026.11.08.1](https://github.com/PeterJohnson/openciv2-assets/releases/tag/v2026.11.08.1)
 is pinned by URL and archive SHA-256 in [dependencies.json](../../dependencies.json).
-Its archive hash is `13d370f9e94371112992ef6e40a3731eac3cb0f302dc9a3143c95ad88704a253`,
+Its archive hash is `093e791370a3a3724e0acc5b2c08dfbeff22e7efb9b5e9ac77b0f1da839539d4`,
 matching the publisher's checksum. The eight payload hashes are retained in
 `assets.json`; the ZIP has those files plus `package.json`. The source selection
 and release identities are separate observations, not a claim that we reproduced
