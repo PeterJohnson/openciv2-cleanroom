@@ -8,17 +8,17 @@ public record struct OrdinaryPreferences
 {
     public OrdinaryPreferences() { }
 
-    public ushort Rules;
+    public GameRules Rules;
     public short DefaultLevel, Tribe;
     public Difficulty Difficulty;
     public Gender Gender;
     public short Science, Tax;
-    public uint GameOptions;
-    public ushort DisabledMessages;
+    public GameOptions GameOptions;
+    public MessageSuppression DisabledMessages;
     public short Opponents, Barbarians;
     public WorldSize MapSize;
     public Fixed5<short> WorldParameters;
-    public OwnedList<byte> Text = OwnedList<byte>.Empty;
+    public string Text = string.Empty;
     public short AcceleratedStart;
     public RuleSelection RulesChoice;
 
@@ -26,11 +26,25 @@ public record struct OrdinaryPreferences
     {
         this = new()
         {
-            Rules = 0x003f,
+            Rules = GameRules.Normal,
             DefaultLevel = screenWidth > 999 ? (short)2 : (short)0,
             Science = 6,
             Tax = 4,
-            GameOptions = animationsAvailable ? 0x003f3258U : 0x001f3258U,
+            GameOptions = new()
+            {
+                Music = true,
+                Sound = true,
+                EnterClosesCity = true,
+                Advice = true,
+                EnemyMoves = true,
+                Autosave = true,
+                WonderMovies = true,
+                Throne = true,
+                Diplomacy = true,
+                AdvanceCivilopedia = true,
+                Council = true,
+                Heralds = animationsAvailable
+            },
             MapSize = WorldSize.Normal,
             Barbarians = 2,
         };
@@ -44,13 +58,13 @@ public record struct MultiplayerPreferences
     public short MainMenu, Type, HotseatMenu, LanMenu, EmailMenu;
     public NetworkProtocol Protocol;
     public bool OpenGame;
-    public OwnedList<byte> GameName = OwnedList<byte>.Empty, PlayerName = OwnedList<byte>.Empty,
-        EmailAddress = OwnedList<byte>.Empty, IpAddress = OwnedList<byte>.Empty;
+    public string GameName = string.Empty, PlayerName = string.Empty,
+        EmailAddress = string.Empty, IpAddress = string.Empty;
     public short Timer;
-    public OwnedList<byte> CustomTimer = OwnedList<byte>.Empty;
+    public string CustomTimer = string.Empty;
     public short HotseatPlayers;
     public Rectangle Parley, Chat;
     public bool ClearChatNewGame, ClearChatBoot, DoubleProduction, DoubleMovement;
 
-    public void SetDefaults() => this = new() { CustomTimer = new("60"u8.ToArray()) };
+    public void SetDefaults() => this = new() { CustomTimer = "60" };
 }

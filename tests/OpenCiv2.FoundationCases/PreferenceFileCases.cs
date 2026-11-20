@@ -69,7 +69,7 @@ public static partial class FoundationSuite
     }
     private static void PreferenceFileLoadDefaultsAndStaging()
     {
-        var missing = new PreferenceFixture { InputOpen = false }; Equal((int)PreferenceLoadStatus.Defaults, (int)missing.Load()); Equal(new OwnedList<string>(["open-input"]), new(missing.Trace)); Equal((short)2, missing.Process.OrdinaryPreferences.DefaultLevel); Equal(new OwnedList<byte>("60"u8.ToArray()), missing.Process.MultiplayerPreferences.CustomTimer);
+        var missing = new PreferenceFixture { InputOpen = false }; Equal((int)PreferenceLoadStatus.Defaults, (int)missing.Load()); Equal(new OwnedList<string>(["open-input"]), new(missing.Trace)); Equal((short)2, missing.Process.OrdinaryPreferences.DefaultLevel); Equal("60", missing.Process.MultiplayerPreferences.CustomTimer);
         foreach (int item in new[] { 0, 1 }) for (int prefix = 0; prefix <= (item == 0 ? 72 : 444); ++prefix)
         {
             var f = new PreferenceFixture { ShortRead = item, Prefix = prefix }; var entry = new PreferenceSnapshot(f.Process.OrdinaryPreferences, f.Process.MultiplayerPreferences);
@@ -81,11 +81,11 @@ public static partial class FoundationSuite
             Equal(item == 1 ? multiplayer : StateConversion.ToLive(ClassicPreferences.DecodeMultiplayer(Enumerable.Repeat((byte)0x88, 444).ToArray())), f.Process.MultiplayerPreferences);
             Equal(new OwnedList<string>(["open-input", "read:72", "read:444", "close"]), new(f.Trace));
         }
-        var complete = new PreferenceFixture(); Equal((int)PreferenceLoadStatus.Success, (int)complete.Load()); Equal(516, complete.Position); Equal(32, complete.Process.OrdinaryPreferences.Text.Count); Equal(6, complete.Process.MultiplayerPreferences.CustomTimer.Count); Equal(1, complete.Closes);
+        var complete = new PreferenceFixture(); Equal((int)PreferenceLoadStatus.Success, (int)complete.Load()); Equal(516, complete.Position); Equal(32, complete.Process.OrdinaryPreferences.Text.Length); Equal(6, complete.Process.MultiplayerPreferences.CustomTimer.Length); Equal(1, complete.Closes);
         foreach (bool shortInput in new[] { false, true })
         {
-            var f = new PreferenceFixture(); f.Process.OrdinaryPreferences.Text = new(new byte[100]); f.Process.MultiplayerPreferences.GameName = new(new byte[100]); if (shortInput) f.Input = [];
-            Equal((int)(shortInput ? PreferenceLoadStatus.Defaults : PreferenceLoadStatus.Success), (int)f.Load()); Equal(shortInput ? 0 : 32, f.Process.OrdinaryPreferences.Text.Count); Equal(shortInput ? 0 : 32, f.Process.MultiplayerPreferences.GameName.Count);
+            var f = new PreferenceFixture(); f.Process.OrdinaryPreferences.Text = ClassicText.DecodeWindows1252((new byte[100]).ToArray()); f.Process.MultiplayerPreferences.GameName = ClassicText.DecodeWindows1252((new byte[100]).ToArray()); if (shortInput) f.Input = [];
+            Equal((int)(shortInput ? PreferenceLoadStatus.Defaults : PreferenceLoadStatus.Success), (int)f.Load()); Equal(shortInput ? 0 : 32, f.Process.OrdinaryPreferences.Text.Length); Equal(shortInput ? 0 : 32, f.Process.MultiplayerPreferences.GameName.Length);
         }
     }
     private static void PreferenceFileLoadFailures()
@@ -139,12 +139,12 @@ public static partial class FoundationSuite
     {
         foreach (bool ordinary in new[] { false, true })
         {
-            var f = new PreferenceFixture(); if (ordinary) f.Process.OrdinaryPreferences.Text = new(Enumerable.Repeat((byte)65, 33)); else f.Process.MultiplayerPreferences.CustomTimer = new(Enumerable.Repeat((byte)65, 7));
+            var f = new PreferenceFixture(); if (ordinary) f.Process.OrdinaryPreferences.Text = ClassicText.DecodeWindows1252((Enumerable.Repeat((byte)65, 33)).ToArray()); else f.Process.MultiplayerPreferences.CustomTimer = ClassicText.DecodeWindows1252((Enumerable.Repeat((byte)65, 7)).ToArray());
             int notifications = 0; Throws<ArgumentException>(() => new ClassicPreferenceWriter(f.Storage).Write(new(f.Process.OrdinaryPreferences, f.Process.MultiplayerPreferences), () => ++notifications)); Equal(0, notifications); Equal(0, f.Trace.Count);
         }
         var snapshot = new PreferenceFixture(); var values = new PreferenceSnapshot(snapshot.Process.OrdinaryPreferences, snapshot.Process.MultiplayerPreferences);
         int notified = 0; var output = new ClassicPreferenceWriter(snapshot.Storage); Equal(true, output.Write(values, () => { ++notified; })); Equal(4, notified);
-        snapshot.Process.OrdinaryPreferences.Text = new([90]); Equal(32, values.Ordinary.Text.Count);
+        snapshot.Process.OrdinaryPreferences.Text = "Z"; Equal(32, values.Ordinary.Text.Length);
         // The exact encoded bytes are from the selected snapshot, including nonterminated fixed-width text.
         BytesEqual(ClassicPreferences.EncodeOrdinary(StateConversion.ToStored(values.Ordinary)), snapshot.Output.Take(72));
         BytesEqual(ClassicPreferences.EncodeMultiplayer(StateConversion.ToStored(values.Multiplayer)), snapshot.Output.Skip(72));
@@ -152,8 +152,8 @@ public static partial class FoundationSuite
     private static void PreferenceFilePublicationAndIsolation()
     {
         var f = new PreferenceFixture(); using var runtime = new SessionRuntime(f.Process, new(78)); runtime.BeginClientSession(new(10, 20)); var client = SessionClient(runtime); var random = runtime.GameplayRandom.Capture();
-        runtime.World.Globals.GameOptions = 0x1234; runtime.World.Multiplayer.Saved.Simultaneous = true; Equal((int)PreferenceLoadStatus.Success, (int)f.Load());
-        Equal(0x1234U, runtime.World.Globals.GameOptions); Equal(true, runtime.World.Multiplayer.Saved.Simultaneous); Equal(random, runtime.GameplayRandom.Capture());
+        runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(0x1234); runtime.World.Multiplayer.Saved.Simultaneous = true; Equal((int)PreferenceLoadStatus.Success, (int)f.Load());
+        Equal(StateConversion.DecodeGameOptions(0x1234U), runtime.World.Globals.GameOptions); Equal(true, runtime.World.Multiplayer.Saved.Simultaneous); Equal(random, runtime.GameplayRandom.Capture());
         List<ulong> revisions = []; f.Storage.ReplaceFile = _ => { revisions.Add(client.OwnUnits().Observation.Revision); return new CallbackOutput(_ => { revisions.Add(client.OwnUnits().Observation.Revision); return true; }, () => { revisions.Add(client.OwnUnits().Observation.Revision); return false; }); };
         f.Storage.RemoveFile = _ => { revisions.Add(client.OwnUnits().Observation.Revision); return false; };
         Equal((int)PreferenceSaveStatus.Output, (int)PreferenceFiles.Save(runtime, f.Storage)); Equal(new OwnedList<ulong>([1, 2, 3, 4, 5]), new(revisions)); Equal(random, runtime.GameplayRandom.Capture());

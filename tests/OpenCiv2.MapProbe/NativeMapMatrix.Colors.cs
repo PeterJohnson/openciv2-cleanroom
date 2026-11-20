@@ -185,7 +185,7 @@ internal static partial class NativeMapMatrix
         var rules = runtime.Process.Rules;
         var game = runtime.GameplayRandom.Capture();
         var presentation = runtime.PresentationRandom.Capture();
-        rules.Text.Initialize();
+        rules.IsLoaded = true;
         world.Civilizations[1].Tribe = 12;
         world.Civilizations[2].Tribe = 13;
         world.Civilizations[3].Tribe = 14;
@@ -319,12 +319,12 @@ internal static partial class NativeMapMatrix
         composition[At(resource)] = plains with
         {
             Resource = 2,
-            Improvements = MapImprovements.Road | MapImprovements.Irrigation | MapImprovements.Mine,
+            Improvements = MapFeatures.Road | MapFeatures.Irrigation | MapFeatures.Mine,
             Hut = MapFact<MapPresence>.Known(MapPresence.Present)
         };
         composition[At(pollution)] = plains with
         {
-            Improvements = MapImprovements.Pollution | MapImprovements.Railroad,
+            Improvements = MapFeatures.Pollution | MapFeatures.Railroad,
             Ownership = MapFact<MapTileOwnership>.Known(new(new(3)))
         };
         composition[At(secret)] = default;

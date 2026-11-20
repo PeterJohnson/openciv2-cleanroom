@@ -15,7 +15,7 @@ public sealed class ClassicFileState
     public string Extension = ".SAV", OpenedPath = "", ScenarioDirectory = "";
     public string DefaultGameStem = "GAME", GameStem = "GAME", LoadedFilename = "", RememberedSubdirectory = "";
     public StartingPositions Starts = new();
-    public short CursorX, CursorY;
+    public MapPoint Cursor;
     public SavedLayout PackedLayout = new();
     public Rectangle CurrentScreen;
     public Dictionary<ulong, ImportedEventBytes> EventBytes { get; } = [];
@@ -29,7 +29,7 @@ public sealed class ClassicFileState
         OpenedPath = ScenarioDirectory = LoadedFilename = RememberedSubdirectory = "";
         GameStem = DefaultGameStem;
         Starts = new();
-        CursorX = CursorY = 0;
+        Cursor = default;
         PackedLayout = new();
         EventBytes.Clear();
         RecordBytes = null;
@@ -146,7 +146,7 @@ public sealed class ClassicLoadOperation : IDisposable
         try
         {
             var bytes = new List<byte>();
-            for (int i = 0; i < 12; ++i)
+            for (int i = 0; i < OpenCiv2.Core.State.EliminationHistory.Capacity; ++i)
             {
                 var value = input.Byte();
                 if (value is null)
@@ -223,7 +223,7 @@ public sealed class ClassicLoadOperation : IDisposable
             ArgumentNullException.ThrowIfNull(content);
             ArgumentNullException.ThrowIfNull(content.Rules);
             var rules = runtime.Process.Rules;
-            content.Labels?.Install(rules.Text, rules.Labels);
+            content.Labels?.Install(rules.Labels);
             new RuleInstaller(content.Rules, rules).Load(true);
             services.ContentInstalled?.Invoke();
             GameInstallation.Install(loaded, runtime, content.Rules, retained.CurrentScreen, passwordResetCall);
@@ -231,7 +231,9 @@ public sealed class ClassicLoadOperation : IDisposable
             var opaque = new RecordCompatibility(
                 world.Lifetime)
             {
+                Map = new(world.Map, imported.Map.Tiles, imported.Map.Regions),
                 Globals = imported.Globals,
+                Scenario = imported.Scenario,
                 Multiplayer = imported.Multiplayer
             };
             imported.Civilizations.ToArray().CopyTo(opaque.Civilizations, 0);
@@ -252,19 +254,19 @@ public sealed class ClassicLoadOperation : IDisposable
                 }
             }
             retained.RecordBytes = opaque;
+            opaque.Attach(world.Lifetime);
             retained.EventBytes.Clear();
             if (imported.Events is { } events)
             {
                 for (int i = 0; i < events.Count; ++i)
                 {
                     var live = world.Events.Collection.At(i);
-                    retained.EventBytes.Add(live.Identity, new(live, events[i].Record.Retained));
+                    retained.EventBytes.Add(live.Identity, ImportedEventBytes.FromRecord(live, events[i].Record));
                 }
             }
 
             retained.Starts = new();
-            retained.CursorX = loaded.CursorX;
-            retained.CursorY = loaded.CursorY;
+            retained.Cursor = loaded.Cursor;
             retained.PackedLayout = StateConversion.ToStored(loaded.Layout);
             runtime.Publish();
             services.Flush();
@@ -312,20 +314,20 @@ public static class ClassicGameFiles
         ref var globals = ref world.Globals;
         if (!scenario)
         {
-            globals.GameFlags &= unchecked((ushort)~0x40);
+            globals.Status.ScenarioExport = false;
             return;
         }
-        globals.GameFlags |= 0x40;
-        for (int advance = 0; advance < 100; ++advance)
+        globals.Status.ScenarioExport = true;
+        for (int advance = 0; advance < RuleLimits.Advances; ++advance)
         {
-            globals.AdvanceKnownBy[advance] = 0;
+            globals.AdvanceKnownBy[advance] = default;
             int possessors = 0;
             byte first = 0;
-            for (int civ = 1; civ < 8; ++civ)
+            for (int civ = 1; civ < EntityLimits.Civilizations; ++civ)
             {
                 if (CivilizationKnowledge.KnowsAdvance(world.Civilizations, civ, advance))
                 {
-                    globals.AdvanceKnownBy[advance] |= (byte)(1 << civ);
+                    globals.AdvanceKnownBy[advance] = globals.AdvanceKnownBy[advance].With(civ);
                     first = (byte)civ;
                     ++possessors;
                 }
@@ -333,12 +335,19 @@ public static class ClassicGameFiles
 
             if (possessors != 0)
             {
-                globals.FirstDiscoverer[advance] = possessors == 1 ? first : (byte)8;
+                globals.FirstDiscoverer[advance] = possessors == 1 ? first : (byte)EntityLimits.Civilizations;
             }
         }
-        for (int civ = 1; civ < 8; ++civ)
+        for (int civ = 1; civ < EntityLimits.Civilizations; ++civ)
         {
-            world.Civilizations[civ].Flags &= unchecked((ushort)~0x69);
+            if (RecordCompatibility.Find(world.Lifetime) is { } opaque)
+            {
+                opaque.Civilizations[civ] = opaque.Civilizations[civ] with { Flags = (ushort)(opaque.Civilizations[civ].Flags & ~0x40) };
+            }
+
+            world.Civilizations[civ].Flags.Revolution = false;
+            world.Civilizations[civ].Flags.GovernmentChanged = false;
+            world.Civilizations[civ].Flags.PendingFreeAdvance = false;
         }
     }
 
@@ -400,18 +409,17 @@ public static class ClassicGameFiles
                 bytes.Append(value);
                 return true;
             }
-            retained.RecordBytes = retained.RecordBytes?.For(world.Lifetime);
+            retained.RecordBytes = retained.RecordBytes?.For(world.Lifetime) ?? RecordCompatibility.Find(world.Lifetime);
             ClassicLive.WritePersistentItems(Append, exported, world.Names, world.Civilizations, retained.RecordBytes);
-            ClassicLive.WriteMapItems(Append, MapStream.Embedded, world.Map, retained.Starts);
-            ClassicLive.WriteMapSummaryItems(Append, world.Map);
+            ClassicLive.WriteMapItems(Append, MapStream.Embedded, world.Map, retained.Starts, retained.RecordBytes?.Map);
+            ClassicLive.WriteMapSummaryItems(Append, world.Map, retained.RecordBytes?.Map);
             ClassicLive.WriteEntityItems(Append, world.Entities, retained.RecordBytes);
             ClassicLive.WriteLeaderItems(
                 Append,
                 exported,
                 world.Civilizations,
                 runtime.Process.Rules.Leaders,
-                retained.CursorX,
-                retained.CursorY);
+                retained.Cursor);
             ClassicLive.WriteHistoryLayoutItems(
                 Append,
                 world.PowerHistory,
@@ -419,7 +427,7 @@ public static class ClassicGameFiles
                 ref retained.PackedLayout,
                 world.Layout,
                 world.Views);
-            ClassicLive.WriteScenarioHistoryItems(Append, scenarioExport, exported, world.Scenario, world.Eliminations);
+            ClassicLive.WriteScenarioHistoryItems(Append, scenarioExport, exported, world.Scenario, world.Eliminations, retained.RecordBytes);
             if (exported.Multiplayer != GameMode.SinglePlayer)
             {
                 ClassicLive.WriteMultiplayerItem(

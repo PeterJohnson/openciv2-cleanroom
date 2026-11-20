@@ -2,16 +2,18 @@ using OpenCiv2.Base;
 
 namespace OpenCiv2.Contracts;
 
+/// <summary>Spatial features, including occupancy, structures and environmental changes. Unit presence in remembered
+/// state never authorizes disclosing a current unit.</summary>
 [Flags]
-public enum MapImprovements : byte
+public enum MapFeatures : byte
 {
-    None = 0, CitySite = 2, Irrigation = 4, Mine = 8, Road = 16, Railroad = 32, Fortification = 64, Pollution = 128
+    None = 0, Unit = 1, CitySite = 2, Irrigation = 4, Mine = 8, Road = 16, Railroad = 32, Fortification = 64, Pollution = 128
 }
 
 public readonly record struct MapPoint(int X, int Y);
 
 /// <summary>W03 §1: base terrain is known only after exploration. Improvements are remembered components.</summary>
-public readonly record struct ObservedTile(byte? Terrain, MapImprovements Improvements, bool River,
+public readonly record struct ObservedTile(byte? Terrain, MapFeatures Improvements, bool River,
     byte Resource, bool GrasslandShield,
     MapFact<MapPresence> Hut = default, MapFact<MapTileOwnership> Ownership = default,
     MapFact<MapTileOwnership> AirbaseOccupant = default);
@@ -28,7 +30,7 @@ public sealed record ObservedMapCity(
     MapPoint Position,
     CitySlot Slot,
     CityToken Token,
-    OwnedList<byte> Name,
+    string Name,
     sbyte Size,
     MapCityDetails? Details = null);
 
@@ -127,8 +129,10 @@ public sealed record MapAnnotations(OwnedList<byte> FactionRoles, UnitTarget? Ac
     {
         int index = slot.Value;
         byte role = index < FactionRoles.Count ? FactionRoles[index] : slot.Value;
-        return role < 8 ? role : throw new InvalidDataException($"Unsupported map owner color role {role}");
+        return role < ColorRoleCount ? role : throw new InvalidDataException($"Unsupported map owner color role {role}");
     }
+
+    public const int ColorRoleCount = 8;
 
     public static MapAnnotations Stock { get; } = new(new OwnedList<byte>([0, 1, 2, 3, 4, 5, 6, 7]));
 }

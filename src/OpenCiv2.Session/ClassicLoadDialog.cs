@@ -65,7 +65,7 @@ public static class ClassicLoadDialog
 
     private sealed class PublishedDeletion(SessionRuntime runtime, IUnitDeletionEffects effects) : IUnitDeletionEffects
     {
-        public void UnitRemoved(Position position)
+        public void UnitRemoved(MapPoint position)
         {
             Publish(runtime);
             effects.UnitRemoved(position);
@@ -83,7 +83,7 @@ public static class ClassicLoadDialog
             effects.CheckCivilization(owner, killer);
         }
 
-        public void SynchronizeDeletion(Position position, CitySlot? home)
+        public void SynchronizeDeletion(MapPoint position, CitySlot? home)
         {
             Publish(runtime);
             effects.SynchronizeDeletion(position, home);
@@ -173,7 +173,7 @@ public static class ClassicLoadDialog
                 throw new ArgumentException("Load dialog requires a qualified path without NUL", nameof(selectedPath));
             }
 
-            for (int index = 1; index < 8; ++index)
+            for (int index = 1; index < EntityLimits.Civilizations; ++index)
             {
                 Publish(runtime);
                 services.CloseMapWindow(index);
@@ -192,7 +192,7 @@ public static class ClassicLoadDialog
             services.Input.Flush();
             var world = runtime.World;
             var events = world.Events;
-            if (!events.Loaded && (world.Globals.GameFlags & 0x80) != 0)
+            if (!events.Loaded && world.Globals.Status.Scenario)
             {
                 Publish(runtime);
                 if (services.Input.Exists(files.ScenarioDirectory, "EVENTS." + files.Text.Extension))
@@ -210,10 +210,11 @@ public static class ClassicLoadDialog
                 events.Collection.Reset();
             }
 
+            ClassicConfigurationMetadata.CopyOptions(runtime.Process, world, initialize: false);
             world.Globals.GameOptions = runtime.Process.OrdinaryPreferences.GameOptions;
             Publish(runtime);
-            services.ConfigureSound((world.Globals.GameOptions & 0x10) != 0);
-            if ((world.Globals.GameOptions & 8) != 0 && events.Loaded)
+            services.ConfigureSound(world.Globals.GameOptions.Sound);
+            if (world.Globals.GameOptions.Music && events.Loaded)
             {
                 Publish(runtime);
                 services.ScenarioLoaded();

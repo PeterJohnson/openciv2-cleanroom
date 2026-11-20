@@ -120,9 +120,9 @@ public static class Workloads
         {
             Require(value.Units.Records.Count == 2048 && value.Cities.Records.Count == 256, "projection extent");
             Require(value.Units.Records.Select((u, i) => u == new OwnUnit(new((ushort)i), new((uint)i + 1),
-                (short)(i % 126 * 2 + i / 126 % 2), (short)(i / 126), new(0), 0, 0, UnitOrder.None, null)).All(b => b), "unit projection values");
+                new(i % 126 * 2 + i / 126 % 2, i / 126), new(0), 0, 0, UnitOrder.None, null)).All(b => b), "unit projection values");
             Require(value.Cities.Records.Select((c, i) => c == new OwnCity(new((ushort)i), new((uint)i + 1),
-                (short)(i % 126 * 2 + i / 126 % 2), (short)(i / 126), new(Encoding.ASCII.GetBytes("City " + i)), 1, 0, 0, 0)).All(b => b), "city projection values");
+                new(i % 126 * 2 + i / 126 % 2, i / 126), "City " + i, 1, 0, 0, 0)).All(b => b), "city projection values");
             Require(value.Units.Observation == value.Cities.Observation && value.Units.Observation.Observer.Value == 1, "projection observation");
             return WorldIdentity(runtime.World);
         }, repetitions);
@@ -142,17 +142,15 @@ public static class Workloads
         {
             Token = new((uint)i + 1),
             Owner = new(1),
-            X = (short)(i % 126 * 2 + i / 126 % 2),
-            Y = (short)(i / 126)
+            Position = new(i % 126 * 2 + i / 126 % 2, i / 126)
         };
         for (int i = 0; i < 256; ++i) world.Entities.Cities.Storage[i] = new()
         {
             Token = new((uint)i + 1),
             Owner = new(1),
-            X = (short)(i % 126 * 2 + i / 126 % 2),
-            Y = (short)(i / 126),
             Size = 1,
-            Name = new(Encoding.ASCII.GetBytes("City " + i))
+            Name = "City " + i,
+            Position = new(i % 126 * 2 + i / 126 % 2, i / 126)
         };
     }
     private static string WorldIdentity(GameState world)
@@ -164,17 +162,15 @@ public static class Workloads
         {
             Token = new((uint)i + 1),
             Owner = new(1),
-            X = (short)(i % 126 * 2 + i / 126 % 2),
-            Y = (short)(i / 126)
+            Position = new(i % 126 * 2 + i / 126 % 2, i / 126)
         }).All(b => b), "live units");
         Require(world.Entities.Cities.Scanned.ToArray().Select((c, i) => c == new City
         {
             Token = new((uint)i + 1),
             Owner = new(1),
-            X = (short)(i % 126 * 2 + i / 126 % 2),
-            Y = (short)(i / 126),
             Size = 1,
-            Name = new(Encoding.ASCII.GetBytes("City " + i))
+            Name = "City " + i,
+            Position = new(i % 126 * 2 + i / 126 % 2, i / 126)
         }).All(b => b), "live cities");
         return ContentIdentity.Sha256("world-252x252-2048units-256cities-owner1"u8);
     }
@@ -191,14 +187,7 @@ public static class Workloads
         public void Reset()
         {
             for (int i = 0; i < 3; ++i) runtime.World.Entities.Units.Storage[i] = new()
-            {
-                Token = new((uint)i + 100),
-                Owner = new(1),
-                X = 2,
-                Y = 2,
-                Previous = new((short)(i - 1)),
-                Next = new((short)(i == 2 ? -1 : i + 1))
-            };
+            { Token = new((uint)i + 100), Owner = new(1), Previous = (((short)(i - 1)) < 0 ? (UnitSlot?)null : new UnitSlot(unchecked((ushort)((short)(i - 1))))), Next = (((short)(i == 2 ? -1 : i + 1)) < 0 ? (UnitSlot?)null : new UnitSlot(unchecked((ushort)((short)(i == 2 ? -1 : i + 1))))), Position = new(2, 2) };
         }
         public CommandUpdate Execute()
         {
@@ -216,7 +205,7 @@ public static class Workloads
             Require(result.Status == CommandStatus.Completed && CommandDescriptor.Value(result.Result, "changed") == new CommandValue.Boolean(true), "command completion");
             Require(result.Committed.Count == 1 && result.Committed[0].Name == "unit.stack-reordered", "command effect");
             var units = runtime.World.Entities.Units.Scanned;
-            Require(units[0].Previous.Value == 2 && units[0].Next.Value == -1 && units[1].Previous.Value == -1 && units[1].Next.Value == 2 && units[2].Previous.Value == 1 && units[2].Next.Value == 0 && !runtime.HasPendingCommands, "command changed stack");
+            Require((units[0].Previous?.Value ?? -1) == 2 && (units[0].Next?.Value ?? -1) == -1 && (units[1].Previous?.Value ?? -1) == -1 && (units[1].Next?.Value ?? -1) == 2 && (units[2].Previous?.Value ?? -1) == 1 && (units[2].Next?.Value ?? -1) == 0 && !runtime.HasPendingCommands, "command changed stack");
             return ContentIdentity.Sha256("stack-1-2-0;changed=true;effects=1;retired"u8);
         }
         public void Dispose() => runtime.Dispose();

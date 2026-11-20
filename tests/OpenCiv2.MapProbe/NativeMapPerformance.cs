@@ -7,6 +7,7 @@ using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.Core.Rules;
+using OpenCiv2.Core.State;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 using SkiaSharp;
@@ -268,6 +269,19 @@ internal static class NativeMapPerformance
         return sorted[(int)Math.Ceiling(sorted.Length * p) - 1];
     }
 
+    private static MapFeatures FeaturesFor(MapFeatures improvements)
+    {
+        var result = MapFeatures.None;
+        if (improvements.HasFlag(MapFeatures.CitySite)) result |= MapFeatures.CitySite;
+        if (improvements.HasFlag(MapFeatures.Irrigation)) result |= MapFeatures.Irrigation;
+        if (improvements.HasFlag(MapFeatures.Mine)) result |= MapFeatures.Mine;
+        if (improvements.HasFlag(MapFeatures.Road)) result |= MapFeatures.Road;
+        if (improvements.HasFlag(MapFeatures.Railroad)) result |= MapFeatures.Railroad;
+        if (improvements.HasFlag(MapFeatures.Fortification)) result |= MapFeatures.Fortification;
+        if (improvements.HasFlag(MapFeatures.Pollution)) result |= MapFeatures.Pollution;
+        return result;
+    }
+
     private sealed class ScopedWorld : IDisposable
     {
         private readonly SeamSession session = new();
@@ -295,12 +309,12 @@ internal static class NativeMapPerformance
                 map.Tiles[i] = new Tile
                 {
                     Terrain = (Terrain)(source.Terrain ?? 2),
-                    Revelation = (byte)(source.Terrain is null ? 4 : 6),
-                    TerrainFlags = (byte)(source.River ? 0x80 : 0),
-                    Features = (byte)source.Improvements,
+                    RevealedTo = new CivilizationSet().With(2).With(1, source.Terrain is not null),
+                    River = source.River,
+                    Features = FeaturesFor(source.Improvements),
                     Owner = null
                 };
-                memoryA[i] = memoryB[i] = (byte)source.Improvements;
+                memoryA[i] = memoryB[i] = FeaturesFor(source.Improvements);
             }
             world.Entities.Units.SetEnd(2048);
             world.Entities.Cities.SetEnd(256);
@@ -313,7 +327,7 @@ internal static class NativeMapPerformance
                     Role = i < 2 ? RuleRole.Settle : RuleRole.Attack,
                     Domain = i % 4 == 0 ? RuleDomain.Air : RuleDomain.Land
                 };
-            world.Globals.Rules = 0x10;
+            world.Globals.Rules = GameRules.Normal;
             for (int i = 0; i < 2048; i++)
             {
                 var p = map.Geometry.Coordinates((64 + i * 101) % map.Geometry.Area);
@@ -322,9 +336,8 @@ internal static class NativeMapPerformance
                     Token = new((uint)i + 1),
                     Owner = new((byte)(i % 8)),
                     Type = new((byte)(i % 63)),
-                    X = (short)p.X,
-                    Y = (short)p.Y,
-                    Visibility = 6,
+                    Position = p,
+                    Visibility = new CivilizationSet().With(1).With(2),
                     Damage = (byte)(i % 31),
                     Orders = i % 5 == 0 ? UnitOrder.Fortified : i % 7 == 0 ? UnitOrder.Sleeping : UnitOrder.None
                 };
@@ -336,10 +349,9 @@ internal static class NativeMapPerformance
                 {
                     Token = new((uint)i + 1),
                     Owner = new((byte)(i % 8)),
-                    X = (short)p.X,
-                    Y = (short)p.Y,
+                    Position = p,
                     Size = (sbyte)(i % 23),
-                    Name = new(System.Text.Encoding.ASCII.GetBytes($"Harbor {i + 1}"))
+                    Name = $"Harbor {i + 1}"
                 };
             }
             world.Globals.ActiveUnit = new(1);
@@ -372,7 +384,7 @@ internal static class NativeMapPerformance
         {
             other = (step & 1) != 0;
             var world = session.Runtime.World;
-            world.Globals.Rules = (ushort)((step % 3 == 0 ? 0x8000 : 0) | 0x10);
+            world.Globals.Rules = GameRules.Normal with { FlatWorld = step % 3 == 0 };
             session.Runtime.Publish();
         }
 
@@ -383,20 +395,18 @@ internal static class NativeMapPerformance
             ref var tile = ref world.Map.TileAt(new(x, 108));
             tile.Terrain = (Terrain)(((int)tile.Terrain + 1) % 11);
             ref var memory = ref world.Map.Remembered(1, new(x, 108));
-            memory ^= (byte)MapImprovements.Road;
+            memory ^= MapFeatures.Road;
             ref var adjacent = ref world.Map.Remembered(1, new(x + 2, 108));
-            adjacent ^= (byte)MapImprovements.Railroad;
+            adjacent ^= MapFeatures.Railroad;
             ref var unit = ref world.Entities.Units.Storage[1];
-            unit.X = (short)x;
-            unit.Y = 108;
+            unit.Position = new(x, 108);
             unit.Damage = (byte)(iteration % 31);
             unit.Orders = (iteration & 1) == 0 ? UnitOrder.Sleeping : UnitOrder.GoTo;
             ref var city = ref world.Entities.Cities.Storage[1];
-            city.X = 66;
-            city.Y = 110;
+            city.Position = new(66, 110);
             city.Size = (sbyte)(iteration % 23);
-            city.Improvements[1] ^= 1;
-            city.Name = new(System.Text.Encoding.ASCII.GetBytes($"Harbor {iteration}"));
+            city.Improvements = city.Improvements.With(8, !city.Improvements.Contains(8));
+            city.Name = $"Harbor {iteration}";
             session.Runtime.Process.Rules.Leaders[0].Color = (short)(iteration % 8);
             session.Runtime.Publish();
         }

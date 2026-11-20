@@ -5,13 +5,6 @@ public readonly record struct UnitSlot(ushort Value);
 public readonly record struct CitySlot(ushort Value);
 public readonly record struct UnitToken(uint Value) { public bool Occupied => Value != 0; }
 public readonly record struct CityToken(uint Value) { public bool Occupied => Value != 0; }
-public static class EntityLimits
-{
-    public const int Civilizations = 8;
-    public const int Units = 2048;
-    public const int Cities = 256;
-}
-
 public enum GameMode { SinglePlayer, Hotseat, Email, Tcp, Ipx, Modem, Serial }
 public enum MovementMode { View, MoveUnits }
 public enum Government { Anarchy, Despotism, Monarchy, Communism, Fundamentalism, Republic, Democracy }

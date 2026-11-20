@@ -3,75 +3,56 @@ using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Core.State;
 
-/// <summary>
-/// A classic signed unit link whose negative values mean no linked slot.
-/// </summary>
-public readonly record struct UnitLink(short Value)
-{
-    public UnitLink() : this(-1) { }
-
-    public UnitSlot? Slot => Value < 0 ? null : new((ushort)Value);
-}
-/// <summary>
-/// A classic signed city link whose negative values mean no linked slot.
-/// </summary>
-public readonly record struct CityLink(short Value)
-{
-    public CityLink() : this(-1) { }
-
-    public CitySlot? Slot => Value < 0 ? null : new((ushort)Value);
-}
-
 /// <summary>F02 §§3,5: live logical unit state. File/wire layouts are separate codecs.</summary>
 public record struct Unit
 {
     public Unit()
     {
         Orders = UnitOrder.None;
-        Previous = new();
-        Next = new();
     }
 
     public UnitToken Token;
-    public short X, Y;
-    public ushort Flags;
+    public MapPoint Position;
+    public UnitStatus Flags;
     public UnitType Type;
     public CivilizationSlot Owner;
-    public byte MovesUsed, Visibility, Damage, LastDirection, AiTask, Counter, AuxiliaryTimer;
+    public CivilizationSet Visibility;
+    public byte MovesUsed, Damage, LastDirection, AiTask, Counter, AuxiliaryTimer;
     public UnitOrder Orders;
     public CitySlot? Home;
-    public short DestinationX, DestinationY;
-    public UnitLink Previous, Next;
+    public MapPoint Destination;
+    public UnitSlot? Carrier;
+    public UnitSlot? Previous, Next;
 }
 
-/// <summary>F02 §§3,6: live city values. Embedded arrays and immutable bytes make value copies independent.</summary>
+public enum SpecialistKind { Unused, Entertainer, TaxCollector, Scientist }
+
+/// <summary>F02 §§3,6: live city values. Embedded arrays and strings make value copies independent.</summary>
 public record struct City
 {
     public City()
     {
-        Name = OwnedList<byte>.Empty;
-        for (int i = 0; i < 3; ++i)
-        {
-            RoutePartners[i] = new();
-        }
+        Name = string.Empty;
     }
 
     public CityToken Token;
-    public short X, Y;
-    public uint Flags;
+    public MapPoint Position;
+    public CityStatus Flags;
     public CivilizationSlot Owner, Founder;
     public sbyte Size;
-    public byte TurnsCaptured, KnownTo;
-    public Fixed8<byte> RememberedSize;
-    public uint SpecialistKinds;
+    public byte TurnsCaptured;
+    public CivilizationSet KnownTo;
+    public CivilizationArray<byte> RememberedSize;
+    public SpecialistArray<SpecialistKind> Specialists;
+    public byte SpecialistCount;
     public short FoodBox, ShieldBox, BaseTrade;
-    public OwnedList<byte> Name;
-    public uint WorkedTiles;
-    public Fixed5<byte> Improvements;
+    public string Name;
+    public CityWorkSet WorkedTiles;
+    public ImprovementSet Improvements;
     public sbyte Production;
     public byte RouteCount;
-    public Fixed3<sbyte> Supplies, Demands, RouteGoods;
-    public Fixed3<CityLink> RoutePartners;
+    public TradeRouteArray<sbyte> Supplies, Demands, RouteGoods;
+    public TradeRouteArray<CitySlot?> RoutePartners;
     public short Science, Tax, Trade;
     public byte TotalFood, TotalShields, Happy, Unhappy;
 }
@@ -194,8 +175,6 @@ public sealed class UnitPool() : SlotPool<Unit, UnitSlot>(EntityLimits.Units)
 /// </summary>
 public sealed class CityPool() : SlotPool<City, CitySlot>(EntityLimits.Cities)
 {
-    public const int CreationLimit = 255;
-
     protected override int Index(CitySlot slot) => slot.Value;
 
     protected override bool Occupied(in City record) => record.Token.Occupied;
@@ -219,8 +198,8 @@ public sealed class EntityPools
         foreach (ref var unit in Units.Storage)
         {
             unit.Token = new(0);
-            unit.Previous = new();
-            unit.Next = new();
+            unit.Previous = null;
+            unit.Next = null;
         }
         foreach (ref var city in Cities.Storage)
         {

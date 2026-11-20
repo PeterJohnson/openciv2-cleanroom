@@ -1,75 +1,37 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Core.Rules;
 
-public readonly record struct NameReference(uint Id, bool Custom = false);
-public sealed class TextPool
+/// <summary>Owned live leader text and the F06 custom-name state; no pool ordinal or file marker.</summary>
+public sealed record LeaderText(string Text, bool Custom = false)
 {
-    private readonly List<OwnedList<byte>> entries = [];
-    public int Count => entries.Count;
-
-    public void Initialize()
-    {
-        entries.Clear();
-        entries.Add(new("<nil>"u8.ToArray()));
-    }
-
-    public uint Store(ReadOnlySpan<byte> text)
-    {
-        int nul = text.IndexOf((byte)0);
-        if (nul >= 0)
-        {
-            text = text[..nul];
-        }
-
-        if (text.Length == 0)
-        {
-            return 0;
-        }
-
-        uint id = checked((uint)entries.Count);
-        entries.Add(new(text.ToArray()));
-        return id;
-    }
-
-    public OwnedList<byte> Text(uint id)
-    {
-        if (id >= entries.Count)
-        {
-            throw new ArgumentOutOfRangeException(nameof(id), "Text reference is not present");
-        }
-
-        return entries[(int)id];
-    }
+    public static LeaderText Empty { get; } = new(RuleText.Nil);
 }
+
+/// <summary>P04 installed resources. Entry absence is distinct from present empty text.</summary>
 public sealed class Labels
 {
     public const int Capacity = 888;
+    public const int PopupCount = 3;
     public int StatusLanguage { get; set; }
     public int DeclaredCount { get; set; }
-    public List<uint?> Entries { get; } = [];
-    public uint?[] Popups { get; } = new uint?[3];
+    public List<string?> Entries { get; } = [];
+    public string?[] Popups { get; } = new string?[PopupCount];
 
-    public OwnedList<byte> Label(int index, TextPool pool)
+    public string Label(int index)
     {
         if (index < 0 || index >= Entries.Count || Entries[index] is null)
         {
             throw new ArgumentOutOfRangeException(nameof(index), "Label has no established table backing");
         }
 
-        return pool.Text(Entries[index]!.Value);
+        return Entries[index]!;
     }
 
-    public OwnedList<byte> Popup(int index, TextPool pool) => Popups[index] is { } id ? pool.Text(id) :
-        new(
-            index switch
-            {
-                0 => "OK"u8.ToArray(),
-                1 => "Help"u8.ToArray(),
-                2 => "Cancel"u8.ToArray(),
-                _ => throw new ArgumentOutOfRangeException(
-                    nameof(index))
-            });
+    public string Popup(int index) => index is >= 0 and < PopupCount
+        ? Popups[index] ?? (index switch { 0 => "OK", 1 => "Help", _ => "Cancel" })
+        : throw new ArgumentOutOfRangeException(nameof(index));
 }
 public sealed record LeaderSnapshot(
     sbyte Attack,
@@ -80,11 +42,11 @@ public sealed record LeaderSnapshot(
     bool Female,
     short Color,
     short CityStyle,
-    NameReference LeaderName,
-    NameReference Plural,
-    NameReference Adjective,
-    OwnedList<NameReference> Names,
-    OwnedList<OwnedList<NameReference>> Titles);
+    LeaderText LeaderName,
+    LeaderText Plural,
+    LeaderText Adjective,
+    OwnedList<LeaderText> Names,
+    OwnedList<OwnedList<LeaderText>> Titles);
 public sealed class Leader
 {
     public sbyte Attack { get; set; }
@@ -95,36 +57,24 @@ public sealed class Leader
     public bool Female { get; set; }
     public short Color { get; set; }
     public short CityStyle { get; set; }
-    public NameReference LeaderName { get; set; }
-    public NameReference Plural;
-    public NameReference Adjective;
-    public NameReference[] Names { get; } = new NameReference[2];
-    public NameReference[][] Titles { get; } = Enumerable.Range(0, 7).Select(_ => new NameReference[2]).ToArray();
+    public LeaderText LeaderName { get; set; } = LeaderText.Empty;
+    public LeaderText Plural = LeaderText.Empty;
+    public LeaderText Adjective = LeaderText.Empty;
+    public LeaderText[] Names { get; } = Enumerable.Repeat(LeaderText.Empty, RuleLimits.LeaderGenders).ToArray();
+    public LeaderText[][] Titles { get; } = Enumerable.Range(0, RuleLimits.Governments)
+        .Select(_ => Enumerable.Repeat(LeaderText.Empty, RuleLimits.LeaderGenders).ToArray()).ToArray();
 
     public LeaderSnapshot Snapshot() =>
         new(Attack, Expand, Civilize, TimesUsed, CityNameIndex, Female, Color, CityStyle,
-            LeaderName, Plural, Adjective, new(Names), new(Titles.Select(t => new OwnedList<NameReference>(t))));
-}
-public sealed class RuleNameBindings
-{
-    public uint[] Advances { get; } = new uint[100];
-    public uint[] Improvements { get; } = new uint[67];
-    public uint[] Units { get; } = new uint[62];
-    public uint[] Terrain { get; } = new uint[33];
-    public uint[] Governments { get; } = new uint[7];
-    public uint[][] GovernmentTitles { get; } = Enumerable.Range(0, 7).Select(_ => new uint[2]).ToArray();
-    public uint[] Commodities { get; } = new uint[16];
-    public uint[] Orders { get; } = new uint[13];
-    public uint[] Difficulties { get; } = new uint[6];
-    public uint[] Attitudes { get; } = new uint[9];
+            LeaderName, Plural, Adjective, new(Names), new(Titles.Select(t => new OwnedList<LeaderText>(t))));
 }
 public sealed class RuleState
 {
     public RuleTables Definitions { get; private set; } = new();
-    public TextPool Text { get; private set; } = new();
+    /// <summary>Whether a complete definition set has been installed for rule-dependent observations.</summary>
+    public bool IsLoaded { get; set; }
     public Labels Labels { get; private set; } = new();
-    public RuleNameBindings Names { get; private set; } = new();
-    public Leader[] Leaders { get; private set; } = Enumerable.Range(0, 21).Select(_ => new Leader()).ToArray();
+    public Leader[] Leaders { get; private set; } = Enumerable.Range(0, RuleLimits.Tribes).Select(_ => new Leader()).ToArray();
     public bool DoubleMovementApplied { get; set; }
 
     /// <summary>Transfer staged contents while retaining each RuleState's binding identity.
@@ -133,9 +83,8 @@ public sealed class RuleState
     {
         ArgumentNullException.ThrowIfNull(other);
         (Definitions, other.Definitions) = (other.Definitions, Definitions);
-        (Text, other.Text) = (other.Text, Text);
+        (IsLoaded, other.IsLoaded) = (other.IsLoaded, IsLoaded);
         (Labels, other.Labels) = (other.Labels, Labels);
-        (Names, other.Names) = (other.Names, Names);
         (Leaders, other.Leaders) = (other.Leaders, Leaders);
         (DoubleMovementApplied, other.DoubleMovementApplied) = (other.DoubleMovementApplied, DoubleMovementApplied);
     }

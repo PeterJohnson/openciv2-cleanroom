@@ -49,20 +49,20 @@ public static partial class ClassicRecords
         var city_end = r.I16();
         var num_advances = r.I16();
         var retained_34 = r.I16();
-        var items1 = new byte[100];
-        for (int i1 = 0; i1 < 100; ++i1)
+        var items1 = new byte[RuleLimits.Advances];
+        for (int i1 = 0; i1 < RuleLimits.Advances; ++i1)
         {
             items1[i1] = r.U8();
         }
         var first_discoverer = new OwnedList<byte>(items1);
-        var items2 = new byte[100];
-        for (int i2 = 0; i2 < 100; ++i2)
+        var items2 = new byte[RuleLimits.Advances];
+        for (int i2 = 0; i2 < RuleLimits.Advances; ++i2)
         {
             items2[i2] = r.U8();
         }
         var advance_known_by = new OwnedList<byte>(items2);
-        var items3 = new short[28];
-        for (int i3 = 0; i3 < 28; ++i3)
+        var items3 = new short[RuleLimits.Wonders];
+        for (int i3 = 0; i3 < RuleLimits.Wonders; ++i3)
         {
             items3[i3] = r.I16();
         }
@@ -70,14 +70,14 @@ public static partial class ClassicRecords
         var next_history_turn = r.I16();
         var best_human_rank = r.U8();
         var worst_human_rank = r.U8();
-        var items4 = new byte[8];
-        for (int i4 = 0; i4 < 8; ++i4)
+        var items4 = new byte[EntityLimits.Civilizations];
+        for (int i4 = 0; i4 < EntityLimits.Civilizations; ++i4)
         {
             items4[i4] = r.U8();
         }
         var power_rank = new OwnedList<byte>(items4);
-        var items5 = new byte[8];
-        for (int i5 = 0; i5 < 8; ++i5)
+        var items5 = new byte[EntityLimits.Civilizations];
+        for (int i5 = 0; i5 < EntityLimits.Civilizations; ++i5)
         {
             items5[i5] = r.U8();
         }
@@ -170,17 +170,17 @@ public static partial class ClassicRecords
         w.I16(v.CityEnd);
         w.I16(v.NumAdvances);
         w.I16(v.Retained34);
-        RequireCount(v.FirstDiscoverer, 100);
+        RequireCount(v.FirstDiscoverer, RuleLimits.Advances);
         foreach (var item6 in v.FirstDiscoverer)
         {
             w.U8(item6);
         }
-        RequireCount(v.AdvanceKnownBy, 100);
+        RequireCount(v.AdvanceKnownBy, RuleLimits.Advances);
         foreach (var item7 in v.AdvanceKnownBy)
         {
             w.U8(item7);
         }
-        RequireCount(v.WonderCity, 28);
+        RequireCount(v.WonderCity, RuleLimits.Wonders);
         foreach (var item8 in v.WonderCity)
         {
             w.I16(item8);
@@ -188,12 +188,12 @@ public static partial class ClassicRecords
         w.I16(v.NextHistoryTurn);
         w.U8(v.BestHumanRank);
         w.U8(v.WorstHumanRank);
-        RequireCount(v.PowerRank, 8);
+        RequireCount(v.PowerRank, EntityLimits.Civilizations);
         foreach (var item9 in v.PowerRank)
         {
             w.U8(item9);
         }
-        RequireCount(v.CivByRank, 8);
+        RequireCount(v.CivByRank, EntityLimits.Civilizations);
         foreach (var item10 in v.CivByRank)
         {
             w.U8(item10);
@@ -233,26 +233,26 @@ public static partial class ClassicRecords
         var subversion_count = r.I16();
         var reputation = r.U8();
         var diplo_request_count = r.I8();
-        var items12 = new uint[8];
-        for (int i12 = 0; i12 < 8; ++i12)
+        var items12 = new uint[EntityLimits.Civilizations];
+        for (int i12 = 0; i12 < EntityLimits.Civilizations; ++i12)
         {
             items12[i12] = r.U32();
         }
         var treaties = new OwnedList<uint>(items12);
-        var items13 = new byte[8];
-        for (int i13 = 0; i13 < 8; ++i13)
+        var items13 = new byte[EntityLimits.Civilizations];
+        for (int i13 = 0; i13 < EntityLimits.Civilizations; ++i13)
         {
             items13[i13] = r.U8();
         }
         var attitude = new OwnedList<byte>(items13);
-        var items14 = new sbyte[8];
-        for (int i14 = 0; i14 < 8; ++i14)
+        var items14 = new sbyte[EntityLimits.Civilizations];
+        for (int i14 = 0; i14 < EntityLimits.Civilizations; ++i14)
         {
             items14[i14] = r.I8();
         }
         var reputation_credit = new OwnedList<sbyte>(items14);
-        var items15 = new byte[8];
-        for (int i15 = 0; i15 < 8; ++i15)
+        var items15 = new byte[EntityLimits.Civilizations];
+        for (int i15 = 0; i15 < EntityLimits.Civilizations; ++i15)
         {
             items15[i15] = r.U8();
         }
@@ -271,81 +271,81 @@ public static partial class ClassicRecords
         var military_strength = r.U16();
         var total_attack = r.I16();
         var population_milestone = r.I16();
-        var items17 = new byte[100];
-        for (int i17 = 0; i17 < 100; ++i17)
+        var items17 = new byte[RuleLimits.Advances];
+        for (int i17 = 0; i17 < RuleLimits.Advances; ++i17)
         {
             items17[i17] = r.U8();
         }
         var advance_source = new OwnedList<byte>(items17);
-        var items18 = new byte[62];
-        for (int i18 = 0; i18 < 62; ++i18)
+        var items18 = new byte[RuleLimits.UnitTypes];
+        for (int i18 = 0; i18 < RuleLimits.UnitTypes; ++i18)
         {
             items18[i18] = r.U8();
         }
         var units_active = new OwnedList<byte>(items18);
-        var items19 = new byte[62];
-        for (int i19 = 0; i19 < 62; ++i19)
+        var items19 = new byte[RuleLimits.UnitTypes];
+        for (int i19 = 0; i19 < RuleLimits.UnitTypes; ++i19)
         {
             items19[i19] = r.U8();
         }
         var units_lost = new OwnedList<byte>(items19);
-        var items20 = new byte[62];
-        for (int i20 = 0; i20 < 62; ++i20)
+        var items20 = new byte[RuleLimits.UnitTypes];
+        for (int i20 = 0; i20 < RuleLimits.UnitTypes; ++i20)
         {
             items20[i20] = r.U8();
         }
         var units_in_production = new OwnedList<byte>(items20);
-        var items21 = new ushort[64];
-        for (int i21 = 0; i21 < 64; ++i21)
+        var items21 = new ushort[MapLimits.Regions];
+        for (int i21 = 0; i21 < MapLimits.Regions; ++i21)
         {
             items21[i21] = r.U16();
         }
         var continent_military = new OwnedList<ushort>(items21);
-        var items22 = new ushort[64];
-        for (int i22 = 0; i22 < 64; ++i22)
+        var items22 = new ushort[MapLimits.Regions];
+        for (int i22 = 0; i22 < MapLimits.Regions; ++i22)
         {
             items22[i22] = r.U16();
         }
         var continent_attack = new OwnedList<ushort>(items22);
-        var items23 = new byte[64];
-        for (int i23 = 0; i23 < 64; ++i23)
+        var items23 = new byte[MapLimits.Regions];
+        for (int i23 = 0; i23 < MapLimits.Regions; ++i23)
         {
             items23[i23] = r.U8();
         }
         var continent_cities = new OwnedList<byte>(items23);
-        var items24 = new byte[64];
-        for (int i24 = 0; i24 < 64; ++i24)
+        var items24 = new byte[MapLimits.Regions];
+        for (int i24 = 0; i24 < MapLimits.Regions; ++i24)
         {
             items24[i24] = r.U8();
         }
         var continent_city_size = new OwnedList<byte>(items24);
-        var items25 = new byte[64];
-        for (int i25 = 0; i25 < 64; ++i25)
+        var items25 = new byte[MapLimits.Regions];
+        for (int i25 = 0; i25 < MapLimits.Regions; ++i25)
         {
             items25[i25] = r.U8();
         }
         var continent_trade_units = new OwnedList<byte>(items25);
-        var items26 = new byte[64];
-        for (int i26 = 0; i26 < 64; ++i26)
+        var items26 = new byte[MapLimits.Regions];
+        for (int i26 = 0; i26 < MapLimits.Regions; ++i26)
         {
             items26[i26] = r.U8();
         }
         var continent_flags = new OwnedList<byte>(items26);
-        var items27 = new byte[64];
-        for (int i27 = 0; i27 < 64; ++i27)
+        var items27 = new byte[MapLimits.Regions];
+        for (int i27 = 0; i27 < MapLimits.Regions; ++i27)
         {
             items27[i27] = r.U8();
         }
         var continent_policy = new OwnedList<byte>(items27);
         var best_shield_surplus = r.I16();
-        var items28 = new short[7];
-        for (int i28 = 0; i28 < 7; ++i28)
+        var items28 = new short[RuleLimits.Governments];
+        for (int i28 = 0; i28 < RuleLimits.Governments; ++i28)
         {
             items28[i28] = r.I16();
         }
         var government_score = new OwnedList<short>(items28);
-        var items29 = new short[8];
-        for (int i29 = 0; i29 < 8; ++i29)
+        var items29 = new short[EntityLimits.Civilizations];
+        for (int i29 = 0; i29 < EntityLimits.Civilizations; ++i29)
         {
             items29[i29] = r.I16();
         }
@@ -370,14 +370,14 @@ public static partial class ClassicRecords
             items31[i31] = r.I16();
         }
         var spaceship_parts = new OwnedList<short>(items31);
-        var items32 = new CivilizationGoal[48];
-        for (int i32 = 0; i32 < 48; ++i32)
+        var items32 = new CivilizationGoal[OpenCiv2.Core.State.Civilization.CurrentGoalCapacity];
+        for (int i32 = 0; i32 < OpenCiv2.Core.State.Civilization.CurrentGoalCapacity; ++i32)
         {
             items32[i32] = ReadCivilizationGoal(ref r);
         }
         var goals = new OwnedList<CivilizationGoal>(items32);
-        var items33 = new CivilizationGoal[16];
-        for (int i33 = 0; i33 < 16; ++i33)
+        var items33 = new CivilizationGoal[OpenCiv2.Core.State.Civilization.StandingGoalCapacity];
+        for (int i33 = 0; i33 < OpenCiv2.Core.State.Civilization.StandingGoalCapacity; ++i33)
         {
             items33[i33] = ReadCivilizationGoal(ref r);
         }
@@ -477,22 +477,22 @@ public static partial class ClassicRecords
         w.I16(v.SubversionCount);
         w.U8(v.Reputation);
         w.I8(v.DiploRequestCount);
-        RequireCount(v.Treaties, 8);
+        RequireCount(v.Treaties, EntityLimits.Civilizations);
         foreach (var item35 in v.Treaties)
         {
             w.U32(item35);
         }
-        RequireCount(v.Attitude, 8);
+        RequireCount(v.Attitude, EntityLimits.Civilizations);
         foreach (var item36 in v.Attitude)
         {
             w.U8(item36);
         }
-        RequireCount(v.ReputationCredit, 8);
+        RequireCount(v.ReputationCredit, EntityLimits.Civilizations);
         foreach (var item37 in v.ReputationCredit)
         {
             w.I8(item37);
         }
-        RequireCount(v.AggressionCounter, 8);
+        RequireCount(v.AggressionCounter, EntityLimits.Civilizations);
         foreach (var item38 in v.AggressionCounter)
         {
             w.U8(item38);
@@ -510,68 +510,68 @@ public static partial class ClassicRecords
         w.U16(v.MilitaryStrength);
         w.I16(v.TotalAttack);
         w.I16(v.PopulationMilestone);
-        RequireCount(v.AdvanceSource, 100);
+        RequireCount(v.AdvanceSource, RuleLimits.Advances);
         foreach (var item40 in v.AdvanceSource)
         {
             w.U8(item40);
         }
-        RequireCount(v.UnitsActive, 62);
+        RequireCount(v.UnitsActive, RuleLimits.UnitTypes);
         foreach (var item41 in v.UnitsActive)
         {
             w.U8(item41);
         }
-        RequireCount(v.UnitsLost, 62);
+        RequireCount(v.UnitsLost, RuleLimits.UnitTypes);
         foreach (var item42 in v.UnitsLost)
         {
             w.U8(item42);
         }
-        RequireCount(v.UnitsInProduction, 62);
+        RequireCount(v.UnitsInProduction, RuleLimits.UnitTypes);
         foreach (var item43 in v.UnitsInProduction)
         {
             w.U8(item43);
         }
-        RequireCount(v.ContinentMilitary, 64);
+        RequireCount(v.ContinentMilitary, MapLimits.Regions);
         foreach (var item44 in v.ContinentMilitary)
         {
             w.U16(item44);
         }
-        RequireCount(v.ContinentAttack, 64);
+        RequireCount(v.ContinentAttack, MapLimits.Regions);
         foreach (var item45 in v.ContinentAttack)
         {
             w.U16(item45);
         }
-        RequireCount(v.ContinentCities, 64);
+        RequireCount(v.ContinentCities, MapLimits.Regions);
         foreach (var item46 in v.ContinentCities)
         {
             w.U8(item46);
         }
-        RequireCount(v.ContinentCitySize, 64);
+        RequireCount(v.ContinentCitySize, MapLimits.Regions);
         foreach (var item47 in v.ContinentCitySize)
         {
             w.U8(item47);
         }
-        RequireCount(v.ContinentTradeUnits, 64);
+        RequireCount(v.ContinentTradeUnits, MapLimits.Regions);
         foreach (var item48 in v.ContinentTradeUnits)
         {
             w.U8(item48);
         }
-        RequireCount(v.ContinentFlags, 64);
+        RequireCount(v.ContinentFlags, MapLimits.Regions);
         foreach (var item49 in v.ContinentFlags)
         {
             w.U8(item49);
         }
-        RequireCount(v.ContinentPolicy, 64);
+        RequireCount(v.ContinentPolicy, MapLimits.Regions);
         foreach (var item50 in v.ContinentPolicy)
         {
             w.U8(item50);
         }
         w.I16(v.BestShieldSurplus);
-        RequireCount(v.GovernmentScore, 7);
+        RequireCount(v.GovernmentScore, RuleLimits.Governments);
         foreach (var item51 in v.GovernmentScore)
         {
             w.I16(item51);
         }
-        RequireCount(v.LastContactTurn, 8);
+        RequireCount(v.LastContactTurn, EntityLimits.Civilizations);
         foreach (var item52 in v.LastContactTurn)
         {
             w.I16(item52);
@@ -594,12 +594,12 @@ public static partial class ClassicRecords
         {
             w.I16(item54);
         }
-        RequireCount(v.Goals, 48);
+        RequireCount(v.Goals, OpenCiv2.Core.State.Civilization.CurrentGoalCapacity);
         foreach (var item55 in v.Goals)
         {
             WriteCivilizationGoal(w, item55);
         }
-        RequireCount(v.StandingGoals, 16);
+        RequireCount(v.StandingGoals, OpenCiv2.Core.State.Civilization.StandingGoalCapacity);
         foreach (var item56 in v.StandingGoals)
         {
             WriteCivilizationGoal(w, item56);
@@ -619,8 +619,8 @@ public static partial class ClassicRecords
         var leader = new OwnedList<byte>(r.Take(24).ToArray());
         var tribe = new OwnedList<byte>(r.Take(24).ToArray());
         var adjective = new OwnedList<byte>(r.Take(24).ToArray());
-        var items57 = new OwnedList<byte>[7];
-        for (int i57 = 0; i57 < 7; ++i57)
+        var items57 = new OwnedList<byte>[RuleLimits.Governments];
+        for (int i57 = 0; i57 < RuleLimits.Governments; ++i57)
         {
             items57[i57] = new OwnedList<byte>(r.Take(24).ToArray());
         }
@@ -656,7 +656,7 @@ public static partial class ClassicRecords
             w.U8(b);
         }
 
-        RequireCount(v.Titles, 7);
+        RequireCount(v.Titles, RuleLimits.Governments);
         foreach (var item58 in v.Titles)
         {
             RequireCount(item58, 24);
@@ -693,8 +693,8 @@ public static partial class ClassicRecords
             items59[i59] = r.I16();
         }
         var names = new OwnedList<short>(items59);
-        var items60 = new OwnedList<short>[7];
-        for (int i60 = 0; i60 < 7; ++i60)
+        var items60 = new OwnedList<short>[RuleLimits.Governments];
+        for (int i60 = 0; i60 < RuleLimits.Governments; ++i60)
         {
             var items61 = new short[2];
             for (int i61 = 0; i61 < 2; ++i61)
@@ -747,7 +747,7 @@ public static partial class ClassicRecords
         {
             w.I16(item62);
         }
-        RequireCount(v.Titles, 7);
+        RequireCount(v.Titles, RuleLimits.Governments);
         foreach (var item63 in v.Titles)
         {
             RequireCount(item63, 2);
@@ -1003,27 +1003,27 @@ public static partial class ClassicRecords
 
     internal static MultiplayerRecord ReadMultiplayerRecord(ref ByteReader r)
     {
-        var items77 = new short[8];
-        for (int i77 = 0; i77 < 8; ++i77)
+        var items77 = new short[EntityLimits.Civilizations];
+        for (int i77 = 0; i77 < EntityLimits.Civilizations; ++i77)
         {
             items77[i77] = r.I16();
         }
         var center_x = new OwnedList<short>(items77);
-        var items78 = new short[8];
-        for (int i78 = 0; i78 < 8; ++i78)
+        var items78 = new short[EntityLimits.Civilizations];
+        for (int i78 = 0; i78 < EntityLimits.Civilizations; ++i78)
         {
             items78[i78] = r.I16();
         }
         var center_y = new OwnedList<short>(items78);
-        var items79 = new short[8];
-        for (int i79 = 0; i79 < 8; ++i79)
+        var items79 = new short[EntityLimits.Civilizations];
+        for (int i79 = 0; i79 < EntityLimits.Civilizations; ++i79)
         {
             items79[i79] = r.I16();
         }
         var introduced = new OwnedList<short>(items79);
         var turn_time_limit = r.I32();
-        var items80 = new byte[256];
-        for (int i80 = 0; i80 < 256; ++i80)
+        var items80 = new byte[PasswordConversion.ImageSize];
+        for (int i80 = 0; i80 < PasswordConversion.ImageSize; ++i80)
         {
             items80[i80] = r.U8();
         }
@@ -1040,8 +1040,8 @@ public static partial class ClassicRecords
             items81[i81] = r.U8();
         }
         var retained_142 = new OwnedList<byte>(items81);
-        var items82 = new OwnedList<byte>[8];
-        for (int i82 = 0; i82 < 8; ++i82)
+        var items82 = new OwnedList<byte>[EntityLimits.Civilizations];
+        for (int i82 = 0; i82 < EntityLimits.Civilizations; ++i82)
         {
             var items83 = new byte[32];
             for (int i83 = 0; i83 < 32; ++i83)
@@ -1051,8 +1051,8 @@ public static partial class ClassicRecords
             items82[i82] = new OwnedList<byte>(items83);
         }
         var emails = new OwnedList<OwnedList<byte>>(items82);
-        var items84 = new OwnedList<byte>[8];
-        for (int i84 = 0; i84 < 8; ++i84)
+        var items84 = new OwnedList<byte>[EntityLimits.Civilizations];
+        for (int i84 = 0; i84 < EntityLimits.Civilizations; ++i84)
         {
             var items85 = new byte[32];
             for (int i85 = 0; i85 < 32; ++i85)
@@ -1113,23 +1113,23 @@ public static partial class ClassicRecords
 
     internal static void WriteMultiplayerRecord(ByteWriter w, MultiplayerRecord v)
     {
-        RequireCount(v.CenterX, 8);
+        RequireCount(v.CenterX, EntityLimits.Civilizations);
         foreach (var item87 in v.CenterX)
         {
             w.I16(item87);
         }
-        RequireCount(v.CenterY, 8);
+        RequireCount(v.CenterY, EntityLimits.Civilizations);
         foreach (var item88 in v.CenterY)
         {
             w.I16(item88);
         }
-        RequireCount(v.Introduced, 8);
+        RequireCount(v.Introduced, EntityLimits.Civilizations);
         foreach (var item89 in v.Introduced)
         {
             w.I16(item89);
         }
         w.I32(v.TurnTimeLimit);
-        RequireCount(v.EncodedPasswords, 256);
+        RequireCount(v.EncodedPasswords, PasswordConversion.ImageSize);
         foreach (var item90 in v.EncodedPasswords)
         {
             w.U8(item90);
@@ -1145,7 +1145,7 @@ public static partial class ClassicRecords
         {
             w.U8(item91);
         }
-        RequireCount(v.Emails, 8);
+        RequireCount(v.Emails, EntityLimits.Civilizations);
         foreach (var item92 in v.Emails)
         {
             RequireCount(item92, 32);
@@ -1154,7 +1154,7 @@ public static partial class ClassicRecords
                 w.U8(item93);
             }
         }
-        RequireCount(v.PlayerSetup, 8);
+        RequireCount(v.PlayerSetup, EntityLimits.Civilizations);
         foreach (var item94 in v.PlayerSetup)
         {
             RequireCount(item94, 32);
@@ -1503,8 +1503,8 @@ public static partial class ClassicRecords
         var founder = new CivilizationSlot(r.U8());
         var turns_captured = r.U8();
         var known_to = r.U8();
-        var items107 = new byte[8];
-        for (int i107 = 0; i107 < 8; ++i107)
+        var items107 = new byte[EntityLimits.Civilizations];
+        for (int i107 = 0; i107 < EntityLimits.Civilizations; ++i107)
         {
             items107[i107] = r.U8();
         }
@@ -1524,26 +1524,26 @@ public static partial class ClassicRecords
         var improvements = new OwnedList<byte>(items108);
         var production = r.I8();
         var route_count = r.U8();
-        var items109 = new sbyte[3];
-        for (int i109 = 0; i109 < 3; ++i109)
+        var items109 = new sbyte[CityLimits.TradeRoutes];
+        for (int i109 = 0; i109 < CityLimits.TradeRoutes; ++i109)
         {
             items109[i109] = r.I8();
         }
         var supplies = new OwnedList<sbyte>(items109);
-        var items110 = new sbyte[3];
-        for (int i110 = 0; i110 < 3; ++i110)
+        var items110 = new sbyte[CityLimits.TradeRoutes];
+        for (int i110 = 0; i110 < CityLimits.TradeRoutes; ++i110)
         {
             items110[i110] = r.I8();
         }
         var demands = new OwnedList<sbyte>(items110);
-        var items111 = new sbyte[3];
-        for (int i111 = 0; i111 < 3; ++i111)
+        var items111 = new sbyte[CityLimits.TradeRoutes];
+        for (int i111 = 0; i111 < CityLimits.TradeRoutes; ++i111)
         {
             items111[i111] = r.I8();
         }
         var route_goods = new OwnedList<sbyte>(items111);
-        var items112 = new short[3];
-        for (int i112 = 0; i112 < 3; ++i112)
+        var items112 = new short[CityLimits.TradeRoutes];
+        for (int i112 = 0; i112 < CityLimits.TradeRoutes; ++i112)
         {
             items112[i112] = r.I16();
         }
@@ -1609,7 +1609,7 @@ public static partial class ClassicRecords
         w.U8(v.Founder.Value);
         w.U8(v.TurnsCaptured);
         w.U8(v.KnownTo);
-        RequireCount(v.RememberedSize, 8);
+        RequireCount(v.RememberedSize, EntityLimits.Civilizations);
         foreach (var item113 in v.RememberedSize)
         {
             w.U8(item113);
@@ -1633,22 +1633,22 @@ public static partial class ClassicRecords
         }
         w.I8(v.Production);
         w.U8(v.RouteCount);
-        RequireCount(v.Supplies, 3);
+        RequireCount(v.Supplies, CityLimits.TradeRoutes);
         foreach (var item115 in v.Supplies)
         {
             w.I8(item115);
         }
-        RequireCount(v.Demands, 3);
+        RequireCount(v.Demands, CityLimits.TradeRoutes);
         foreach (var item116 in v.Demands)
         {
             w.I8(item116);
         }
-        RequireCount(v.RouteGoods, 3);
+        RequireCount(v.RouteGoods, CityLimits.TradeRoutes);
         foreach (var item117 in v.RouteGoods)
         {
             w.I8(item117);
         }
-        RequireCount(v.RoutePartners, 3);
+        RequireCount(v.RoutePartners, CityLimits.TradeRoutes);
         foreach (var item118 in v.RoutePartners)
         {
             w.I16(item118);
@@ -1722,7 +1722,7 @@ public static partial class ClassicRecords
         var y = r.I16();
         var role = r.I8();
         var priority = r.I8();
-        return new() { X = x, Y = y, Role = role, Priority = priority };
+        return new() { Role = role, Priority = priority, Position = new(x, y) };
     }
 
     public static byte[] Encode(CivilizationGoal value)
@@ -1734,8 +1734,8 @@ public static partial class ClassicRecords
 
     internal static void WriteCivilizationGoal(ByteWriter w, CivilizationGoal v)
     {
-        w.I16(v.X);
-        w.I16(v.Y);
+        w.I16(unchecked((short)v.Position.X));
+        w.I16(unchecked((short)v.Position.Y));
         w.I8(v.Role);
         w.I8(v.Priority);
     }

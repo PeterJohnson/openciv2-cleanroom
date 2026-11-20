@@ -1,4 +1,5 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Core.State;
 
@@ -11,18 +12,17 @@ public sealed record GameInput
 {
     public GlobalValues Globals { get; init; } = new();
     public OwnedList<CivilizationNames> Names { get; init; } = new(
-        Enumerable.Range(0, 8).Select(_ => new CivilizationNames()));
+        Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => new CivilizationNames()));
     public OwnedList<Civilization> Civilizations { get; init; } = OwnedList<Civilization>.Empty;
     public MapInput Map { get; init; } = new();
     public OwnedList<Unit> Units { get; init; } = OwnedList<Unit>.Empty;
     public OwnedList<City> Cities { get; init; } = OwnedList<City>.Empty;
-    public OwnedList<TribeInput> Tribes { get; init; } = new(new TribeInput[21]);
-    public OwnedList<LeaderCustomization?> Leaders { get; init; } = new(new LeaderCustomization?[21]);
-    public short CursorX { get; init; }
-    public short CursorY { get; init; }
-    public Fixed150<Fixed8<byte>> PowerHistory { get; init; }
+    public OwnedList<TribeInput> Tribes { get; init; } = new(new TribeInput[RuleLimits.Tribes]);
+    public OwnedList<LeaderCustomization?> Leaders { get; init; } = new(new LeaderCustomization?[RuleLimits.Tribes]);
+    public MapPoint Cursor { get; init; }
+    public PowerHistoryArray<CivilizationArray<byte>> PowerHistory { get; init; }
     public Layout Layout { get; init; }
-    public OwnedList<MapView> Views { get; init; } = new(new MapView[8]);
+    public OwnedList<MapView> Views { get; init; } = new(new MapView[EntityLimits.Civilizations]);
     public ScenarioParameters? Scenario { get; init; }
     public EliminationHistory Eliminations { get; init; } = new();
     public MultiplayerValues? Multiplayer { get; init; }

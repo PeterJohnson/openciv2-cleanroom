@@ -1,4 +1,5 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.State;
 
 namespace OpenCiv2.Core.Units;
@@ -29,7 +30,7 @@ public sealed class LocalStacks
     private readonly StackBudget budget;
     private readonly List<StackDiagnostic>? diagnostics;
     private readonly Action<int>? repairDetach;
-    private readonly Action<int, Position>? repairAttach;
+    private readonly Action<int, MapPoint>? repairAttach;
     private uint depth;
 
     public LocalStacks(
@@ -47,7 +48,7 @@ public sealed class LocalStacks
         StackBudget budget,
         List<StackDiagnostic>? diagnostics,
         Action<int>? repairDetach,
-        Action<int, Position>? repairAttach)
+        Action<int, MapPoint>? repairAttach)
     {
         this.units = units;
         this.map = map;
@@ -81,11 +82,11 @@ public sealed class LocalStacks
     public int RawForwardCount(int slot)
     {
         int count = 0;
-        while (slot >= 0 && count < 2048)
+        while (slot >= 0 && count < EntityLimits.Units)
         {
             Step();
             ++count;
-            slot = BackedUnit(slot).Next.Value;
+            slot = (BackedUnit(slot).Next?.Value ?? -1);
         }
         return count;
     }
@@ -94,18 +95,18 @@ public sealed class LocalStacks
     {
         if (backward)
         {
-            BackedUnit(slot).Previous = new(-1);
-            if (BackedUnit(neighbor).Next.Value == slot)
+            BackedUnit(slot).Previous = null;
+            if ((BackedUnit(neighbor).Next?.Value ?? -1) == slot)
             {
-                BackedUnit(neighbor).Next = new(-1);
+                BackedUnit(neighbor).Next = null;
             }
         }
         else
         {
-            BackedUnit(slot).Next = new(-1);
-            if (BackedUnit(neighbor).Previous.Value == slot)
+            BackedUnit(slot).Next = null;
+            if ((BackedUnit(neighbor).Previous?.Value ?? -1) == slot)
             {
-                BackedUnit(neighbor).Previous = new(-1);
+                BackedUnit(neighbor).Previous = null;
             }
         }
     }
@@ -132,11 +133,11 @@ public sealed class LocalStacks
             }
 
             int result = 1;
-            if (RawForwardCount(slot) >= 2048)
+            if (RawForwardCount(slot) >= EntityLimits.Units)
             {
                 diagnostics?.Add(new(StackProblem.Infinite, slot));
                 result = 0;
-                int current = slot, savedNext = BackedUnit(current).Next.Value;
+                int current = slot, savedNext = (BackedUnit(current).Next?.Value ?? -1);
                 do
                 {
                     if (current < 0)
@@ -145,7 +146,7 @@ public sealed class LocalStacks
                     }
 
                     Step();
-                    var position = new Position(BackedUnit(current).X, BackedUnit(current).Y);
+                    var position = BackedUnit(current).Position;
                     if (repairDetach is null)
                     {
                         Detach(current);
@@ -162,7 +163,7 @@ public sealed class LocalStacks
                         break; // U01 terminal-read repair: no fabricated negative record.
                     }
 
-                    savedNext = BackedUnit(current).Next.Value;
+                    savedNext = (BackedUnit(current).Next?.Value ?? -1);
                 } while (current != slot);
             }
             for (int pass = 0; pass < 4; ++pass)
@@ -172,7 +173,9 @@ public sealed class LocalStacks
                 for (; ; )
                 {
                     Step();
-                    int neighbor = backward ? BackedUnit(current).Previous.Value : BackedUnit(current).Next.Value;
+                    int neighbor = backward
+                        ? BackedUnit(current).Previous?.Value ?? -1
+                        : BackedUnit(current).Next?.Value ?? -1;
                     if (neighbor < 0)
                     {
                         break;
@@ -193,11 +196,11 @@ public sealed class LocalStacks
                             problem = StackProblem.ForwardDead;
                         }
                     }
-                    else if (BackedUnit(neighbor).X != BackedUnit(current).X)
+                    else if (BackedUnit(neighbor).Position.X != BackedUnit(current).Position.X)
                     {
                         problem = backward ? StackProblem.BackwardX : StackProblem.ForwardX;
                     }
-                    else if (BackedUnit(neighbor).Y != BackedUnit(current).Y)
+                    else if (BackedUnit(neighbor).Position.Y != BackedUnit(current).Position.Y)
                     {
                         problem = backward ? StackProblem.BackwardY : StackProblem.ForwardY;
                     }
@@ -227,7 +230,7 @@ public sealed class LocalStacks
         }
 
         Validate(slot);
-        return BackedUnit(slot).Next.Value;
+        return (BackedUnit(slot).Next?.Value ?? -1);
     }
 
     private int EndOfChain(int slot, bool backward)
@@ -241,7 +244,9 @@ public sealed class LocalStacks
         for (; ; )
         {
             Step();
-            int neighbor = backward ? BackedUnit(slot).Previous.Value : BackedUnit(slot).Next.Value;
+            int neighbor = backward
+                ? BackedUnit(slot).Previous?.Value ?? -1
+                : BackedUnit(slot).Next?.Value ?? -1;
             if (neighbor < 0 || neighbor == slot)
             {
                 return slot;
@@ -257,13 +262,13 @@ public sealed class LocalStacks
 
     private static int SignedOwner(in Unit unit) => unchecked((sbyte)unit.Owner.Value);
 
-    public int FirstForOwnerAt(int owner, Position position)
+    public int FirstForOwnerAt(int owner, MapPoint position)
     {
         for (int i = 0; i < units.End; ++i)
         {
             Step();
             ref var unit = ref units.Storage[i];
-            if (unit.Token.Occupied && SignedOwner(unit) == owner && unit.X == position.X && unit.Y == position.Y)
+            if (unit.Token.Occupied && SignedOwner(unit) == owner && unit.Position == position)
             {
                 return First(i);
             }
@@ -271,7 +276,7 @@ public sealed class LocalStacks
         return -1;
     }
 
-    public int FirstAt(Position position)
+    public int FirstAt(MapPoint position)
     {
         if (retained.AnimationActive && map.UnitOwner(position) is null)
         {
@@ -282,7 +287,7 @@ public sealed class LocalStacks
         {
             Step();
             ref var unit = ref units.Storage[i];
-            if (unit.Token.Occupied && unit.X == position.X && unit.Y == position.Y)
+            if (unit.Token.Occupied && unit.Position == position)
             {
                 Validate(i);
                 return First(i);
@@ -301,31 +306,31 @@ public sealed class LocalStacks
 
     internal void DetachBody(int slot)
     {
-        bool previous = BackedUnit(slot).Previous.Value >= 0;
-        if (previous)
+        bool previous = BackedUnit(slot).Previous is not null;
+        if (BackedUnit(slot).Previous is { } previousSlot)
         {
-            BackedUnit(BackedUnit(slot).Previous.Value).Next = BackedUnit(slot).Next;
+            BackedUnit(previousSlot.Value).Next = BackedUnit(slot).Next;
         }
 
-        bool next = BackedUnit(slot).Next.Value >= 0;
-        if (next)
+        bool next = BackedUnit(slot).Next is not null;
+        if (BackedUnit(slot).Next is { } nextSlot)
         {
-            BackedUnit(BackedUnit(slot).Next.Value).Previous = BackedUnit(slot).Previous;
+            BackedUnit(nextSlot.Value).Previous = BackedUnit(slot).Previous;
         }
 
-        BackedUnit(slot).Previous = new(-1);
-        BackedUnit(slot).Next = new(-1);
-        var position = new Position(BackedUnit(slot).X, BackedUnit(slot).Y);
+        BackedUnit(slot).Previous = null;
+        BackedUnit(slot).Next = null;
+        var position = BackedUnit(slot).Position;
         if (!previous && !next && map.Geometry.InBounds(position))
         {
-            map.Mutate(new(TileField.Features, position, 1, 0));
+            map.Mutate(new TileChange.Features(position, MapFeatures.Unit, false));
         }
 
         short staging = unchecked((short)(-100 * (SignedOwner(BackedUnit(slot)) + 1)));
-        BackedUnit(slot).X = BackedUnit(slot).Y = staging;
+        BackedUnit(slot).Position = new(staging, staging);
     }
 
-    public void AttachAtFront(int slot, Position position)
+    public void AttachAtFront(int slot, MapPoint position)
     {
         Step();
         retained.AttachActive = true;
@@ -333,21 +338,21 @@ public sealed class LocalStacks
         retained.AttachActive = false;
     }
 
-    internal void AttachBody(int slot, Position position)
+    internal void AttachBody(int slot, MapPoint position)
     {
         int head = FirstForOwnerAt(SignedOwner(BackedUnit(slot)), position);
-        BackedUnit(slot).X = unchecked((short)position.X);
-        BackedUnit(slot).Y = unchecked((short)position.Y);
-        BackedUnit(slot).Previous = new(-1);
-        BackedUnit(slot).Next = new(unchecked((short)head));
+        BackedUnit(slot).Position = new(unchecked((short)position.X), unchecked((short)position.Y));
+        BackedUnit(slot).Previous = null;
+        BackedUnit(slot).Next = head < 0 ? null : new UnitSlot((ushort)head);
         if (head >= 0)
         {
-            BackedUnit(head).Previous = new(unchecked((short)slot));
+            BackedUnit(head).Previous = new UnitSlot((ushort)slot);
         }
         else if (map.Geometry.InBounds(position))
         {
-            map.Mutate(new(TileField.Features, position, 1));
-            map.Mutate(new(TileField.Owner, position, SignedOwner(BackedUnit(slot))));
+            map.Mutate(new TileChange.Features(position, MapFeatures.Unit));
+            int owner = SignedOwner(BackedUnit(slot));
+            map.Mutate(new TileChange.Owner(position, owner is >= 0 and <= EntityLimits.Civilizations ? (byte)owner : null));
         }
     }
 }

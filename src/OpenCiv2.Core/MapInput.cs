@@ -1,4 +1,5 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Core;
 
@@ -10,10 +11,11 @@ public sealed record MapInput
     public ushort Topology { get; init; }
     public ushort Seed { get; init; }
     public OwnedList<Tile> Tiles { get; init; } = OwnedList<Tile>.Empty;
-    public OwnedList<OwnedList<byte>> Remembered { get; init; } = new(Enumerable.Repeat(OwnedList<byte>.Empty, 7));
+    public OwnedList<OwnedList<MapFeatures>> Remembered { get; init; } =
+        new(Enumerable.Repeat(OwnedList<MapFeatures>.Empty, EntityLimits.PlayerCivilizations));
     public OwnedList<OwnedList<byte>> Coarse { get; init; } = new(Enumerable.Repeat(OwnedList<byte>.Empty, 2));
     public OwnedList<RegionSummary> Regions { get; init; } = new(
-        Enumerable.Range(0, 64).Select(_ => new RegionSummary(0, 0, 0, 0, new([0, 0]))));
+        Enumerable.Range(0, MapLimits.Regions).Select(_ => new RegionSummary(0, 0, 0, default)));
 
     public void Validate(bool embedded)
     {
@@ -28,7 +30,7 @@ public sealed record MapInput
             return;
         }
 
-        if (Remembered.Count != 7 || Remembered.Any(layer => layer.Count != shape.Area))
+        if (Remembered.Count != EntityLimits.PlayerCivilizations || Remembered.Any(layer => layer.Count != shape.Area))
         {
             throw new ArgumentException("Map memory does not match dimensions");
         }
@@ -39,7 +41,7 @@ public sealed record MapInput
             throw new ArgumentException("Coarse map does not match dimensions");
         }
 
-        if (Regions.Count != 64)
+        if (Regions.Count != MapLimits.Regions)
         {
             throw new ArgumentException("Map requires 64 regional summaries");
         }
@@ -58,7 +60,11 @@ public sealed record MapInput
             PatternSeed = Seed,
             RememberedBarbarian = destination.RememberedBarbarian.ToArray()
         };
-        destination.Regions.CopyTo(staged.Regions);
+        if (!embedded)
+        {
+            staged.RetainRegions(destination);
+        }
+
         staged.Allocate(new(Width, Height));
         for (int i = 0; i < Tiles.Count; ++i)
         {
@@ -67,7 +73,7 @@ public sealed record MapInput
 
         if (embedded)
         {
-            for (int i = 0; i < 7; ++i)
+            for (int i = 0; i < EntityLimits.PlayerCivilizations; ++i)
             {
                 for (int j = 0; j < Remembered[i].Count; ++j)
                 {
@@ -83,7 +89,7 @@ public sealed record MapInput
                 }
             }
 
-            for (int i = 0; i < 64; ++i)
+            for (int i = 0; i < MapLimits.Regions; ++i)
             {
                 staged.Regions[i] = Regions[i];
             }

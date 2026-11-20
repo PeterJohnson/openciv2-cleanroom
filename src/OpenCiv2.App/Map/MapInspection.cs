@@ -101,7 +101,7 @@ internal static class MapInspection
         if (MapScene.IsAirbase(tile))
         {
             features.Add("Airbase");
-            improvements &= ~(MapImprovements.CitySite | MapImprovements.Fortification);
+            improvements &= ~(MapFeatures.CitySite | MapFeatures.Fortification);
             if (tile.AirbaseOccupant.Value?.Owner is CivilizationSlot aircraft)
             {
                 features.Add($"Aircraft of Civilization {aircraft.Value}");

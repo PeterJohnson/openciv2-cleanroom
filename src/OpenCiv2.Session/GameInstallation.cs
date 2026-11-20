@@ -1,9 +1,9 @@
-using System.Numerics;
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
+using OpenCiv2.Formats;
 
 namespace OpenCiv2.Session;
 
@@ -19,7 +19,7 @@ public static class GameInstallation
         }
 
         int tribe = civilizations[civ].Tribe;
-        if (tribe < 0 || tribe >= 21)
+        if (tribe < 0 || tribe >= RuleLimits.Tribes)
         {
             throw new ArgumentException("Leader selection has no tribe backing");
         }
@@ -31,9 +31,9 @@ public static class GameInstallation
     {
         ArgumentNullException.ThrowIfNull(input);
         input.Map.Validate(true);
-        if (input.Civilizations.Count != 8 || input.Names.Count != 8 || input.Views.Count != 8
-            || input.Tribes.Count != 21
-            || input.Leaders.Count != 21
+        if (input.Civilizations.Count != EntityLimits.Civilizations || input.Names.Count != EntityLimits.Civilizations || input.Views.Count != EntityLimits.Civilizations
+            || input.Tribes.Count != RuleLimits.Tribes
+            || input.Leaders.Count != RuleLimits.Tribes
             ||
             input.Globals.UnitEnd < 0 || input.Globals.CityEnd < 0 || input.Units.Count != input.Globals.UnitEnd
             || input.Cities.Count != input.Globals.CityEnd
@@ -43,20 +43,20 @@ public static class GameInstallation
             throw new ArgumentException("Restoration input has inconsistent population or fixed record bounds");
         }
 
-        for (int civ = 0; civ < 8; ++civ)
+        for (int civ = 0; civ < EntityLimits.Civilizations; ++civ)
         {
             _ = Tribe(civ, input.Civilizations);
         }
 
-        if (input.Names.Any(n => n.Titles.Count != 7) || input.Eliminations.Names.Count != 12 ||
-            input.Leaders.Any(l => l is not null && (l.Titles.Count != 7 || l.Titles.Any(pair => pair.Count != 2))) ||
-            input.Multiplayer is { } multiplayer && multiplayer.Emails.Count != 8
+        if (input.Names.Any(n => n.Titles.Count != RuleLimits.Governments) || input.Eliminations.Names.Count != OpenCiv2.Core.State.EliminationHistory.Capacity ||
+            input.Leaders.Any(l => l is not null && (l.Titles.Count != RuleLimits.Governments || l.Titles.Any(pair => pair.Count != RuleLimits.LeaderGenders))) ||
+            input.Multiplayer is { } multiplayer && multiplayer.Emails.Count != EntityLimits.Civilizations
             || input.Events is { } events && events.Any(e => e.Strings.Count != Event.StringCount))
         {
             throw new ArgumentException("Restoration input has inconsistent nested record bounds");
         }
 
-        bool scenario = (input.Globals.GameFlags & 0xc0) != 0;
+        bool scenario = input.Globals.Status.HasScenario;
         if (scenario != input.Scenario.HasValue)
         {
             throw new ArgumentException("Scenario flags and restoration parameters disagree");
@@ -77,16 +77,16 @@ public static class GameInstallation
             }
             else
             {
-                for (int civ = 0; civ < 8; ++civ)
+                for (int civ = 0; civ < EntityLimits.Civilizations; ++civ)
                 {
-                    if ((input.Globals.HumanPlayers & (1 << civ)) != 0)
+                    if (input.Globals.HumanPlayers.Contains(civ))
                     {
                         Selected(civ);
                     }
                 }
             }
         }
-        else if (input.Names.Any(n => n.Tribe.Contains((byte)0)))
+        else if (input.Names.Any(n => n.Tribe.Contains('\0')))
         {
             throw new ArgumentException("Scenario tribe name contains NUL");
         }
@@ -99,15 +99,15 @@ public static class GameInstallation
             live.LeaderName = live.Names[live.Female ? 1 : 0];
             live.Plural = live.Plural with { Custom = false };
             live.Adjective = live.Adjective with { Custom = false };
-            for (int g = 0; g < 7; ++g)
+            for (int g = 0; g < RuleLimits.Governments; ++g)
             {
-                for (int sex = 0; sex < 2; ++sex)
+                for (int sex = 0; sex < RuleLimits.LeaderGenders; ++sex)
                 {
                     live.Titles[g][sex] = live.Titles[g][sex] with { Custom = false };
                 }
             }
         }
-        if ((input.Globals.GameFlags & 0xc0) == 0)
+        if (!input.Globals.Status.HasScenario)
         {
             void Restore(int civ)
             {
@@ -118,9 +118,9 @@ public static class GameInstallation
                 live.LeaderName = live.LeaderName with { Custom = !live.LeaderName.Custom };
                 live.Plural = live.Plural with { Custom = live.Plural.Custom ^ saved.Plural };
                 live.Adjective = live.Adjective with { Custom = live.Adjective.Custom ^ saved.Adjective };
-                for (int g = 0; g < 7; ++g)
+                for (int g = 0; g < RuleLimits.Governments; ++g)
                 {
-                    for (int sex = 0; sex < 2; ++sex)
+                    for (int sex = 0; sex < RuleLimits.LeaderGenders; ++sex)
                     {
                         live.Titles[g][sex] = live.Titles[g][sex] with
                         {
@@ -135,9 +135,9 @@ public static class GameInstallation
             }
             else
             {
-                for (int civ = 0; civ < 8; ++civ)
+                for (int civ = 0; civ < EntityLimits.Civilizations; ++civ)
                 {
-                    if ((world.Globals.HumanPlayers & (1 << civ)) != 0)
+                    if (world.Globals.HumanPlayers.Contains(civ))
                     {
                         Restore(civ);
                     }
@@ -146,19 +146,20 @@ public static class GameInstallation
 
             return;
         }
-        for (int civ = 1; civ < 8; ++civ)
+        for (int civ = 1; civ < EntityLimits.Civilizations; ++civ)
         {
             int selected = Tribe(civ, world.Civilizations);
             var live = rules.Leaders[selected];
-            live.Female = (world.Civilizations[civ].Flags & 0x200) != 0;
-            world.Civilizations[civ].LeaderPortrait = (byte)(selected + (live.Female ? 21 : 0));
-            if (world.Names[civ].Tribe.Equals(rules.Text.Text(live.Plural.Id)))
+            live.Female = world.Civilizations[civ].Flags.FemaleLeader;
+            world.Civilizations[civ].LeaderPortrait = (byte)(selected + (live.Female ? RuleLimits.Tribes : 0));
+            if (world.Names[civ].Tribe.Equals(live.Plural.Text))
             {
-                for (int g = 0; g < 7; ++g)
+                for (int g = 0; g < RuleLimits.Governments; ++g)
                 {
-                    for (int sex = 0; sex < 2; ++sex)
+                    for (int sex = 0; sex < RuleLimits.LeaderGenders; ++sex)
                     {
-                        live.Titles[g][sex] = new(rules.Names.GovernmentTitles[g][sex]);
+                        var titles = rules.Definitions.Governments[g].Titles;
+                        live.Titles[g][sex] = new(RuleText.Display((sex == 0 ? titles.Male : titles.Female)));
                     }
                 }
             }
@@ -191,25 +192,25 @@ public static class GameInstallation
         input.Map.Install(world.Map, true);
         world.Globals = input.Globals;
         ref var globals = ref world.Globals;
-        globals.NumEnemies = unchecked((byte)(BitOperations.PopCount(globals.CivsAlive) - 1 - (globals.CivsAlive & 1)));
-        bool scenario = (globals.GameFlags & 0xc0) != 0;
+        globals.NumEnemies = unchecked((byte)(globals.CivsAlive.Count - 1 - (globals.CivsAlive.Contains(0) ? 1 : 0)));
+        bool scenario = globals.Status.HasScenario;
         if (globals.Multiplayer != GameMode.SinglePlayer)
         {
-            globals.GameOptions &= ~0x8000U;
+            globals.GameOptions.CheatMode = false;
         }
 
         if (scenario)
         {
-            globals.GameFlags |= 0x80;
+            globals.Status.Scenario = true;
         }
 
-        if ((globals.GameFlags & 0x40) != 0)
+        if (globals.Status.ScenarioExport)
         {
-            globals.GameOptions &= ~0x8000U;
+            globals.GameOptions.CheatMode = false;
             globals.RevealMap = 0;
-            globals.GameFlags &= unchecked((ushort)~0x10);
+            globals.Status.Cheated = false;
         }
-        globals.GameFlags &= unchecked((ushort)~0x40);
+        globals.Status.ScenarioExport = false;
         input.Names.ToArray().CopyTo(world.Names, 0);
         input.Civilizations.ToArray().CopyTo(world.Civilizations, 0);
         world.Entities.Units.SetEnd(input.Units.Count);
@@ -217,7 +218,7 @@ public static class GameInstallation
         input.Units.ToArray().AsSpan().CopyTo(world.Entities.Units.Scanned);
         input.Cities.ToArray().AsSpan().CopyTo(world.Entities.Cities.Scanned);
         world.Entities.RenewLoadedLifetimes(process.Tokens, false);
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             var target = process.Rules.Leaders[i];
             target.TimesUsed = input.Tribes[i].TimesUsed;
@@ -243,7 +244,7 @@ public static class GameInstallation
         multiplayer.LocalHuman = globals.SavedCurrentCiv;
         if (input.Multiplayer is null)
         {
-            MultiplayerOperations.ResetPasswords(ref multiplayer, random!, passwordResetCall);
+            PasswordConversion.ResetPasswords(ref multiplayer, random!, passwordResetCall);
             saved.OpenGame = true;
             saved.KillOnRetirement = preferences.KillOnRetirement;
             saved.ShowHumanStarts = preferences.ShowHumanStarts;
@@ -260,9 +261,9 @@ public static class GameInstallation
                 saved.ResumeCiv = unchecked((byte)globals.TurnCiv);
                 if (saved.ResumeCiv == 0)
                 {
-                    for (int civ = 1; civ < 8; ++civ)
+                    for (int civ = 1; civ < EntityLimits.Civilizations; ++civ)
                     {
-                        if ((globals.CivsAlive & (1 << civ)) != 0)
+                        if (globals.CivsAlive.Contains(civ))
                         {
                             saved.ResumeCiv = (byte)civ;
                             break;
@@ -305,27 +306,27 @@ public static class GameInstallation
         Span<CivilizationNames> names,
         RuleState rules)
     {
-        if (!scenarioExport && (globals.GameFlags & 0x80) == 0)
+        if (!scenarioExport && !globals.Status.Scenario)
         {
             return;
         }
 
-        for (int civ = 1; civ < 8; ++civ)
+        for (int civ = 1; civ < EntityLimits.Civilizations; ++civ)
         {
             var live = rules.Leaders[Tribe(civ, civilizations)];
             if (!live.Adjective.Custom)
             {
-                names[civ].Adjective = rules.Text.Text(live.Adjective.Id);
+                names[civ].Adjective = live.Adjective.Text;
             }
 
             if (!live.Plural.Custom)
             {
-                names[civ].Tribe = rules.Text.Text(live.Plural.Id);
+                names[civ].Tribe = live.Plural.Text;
             }
 
             if (!live.LeaderName.Custom)
             {
-                names[civ].Leader = rules.Text.Text(live.LeaderName.Id);
+                names[civ].Leader = live.LeaderName.Text;
             }
         }
     }

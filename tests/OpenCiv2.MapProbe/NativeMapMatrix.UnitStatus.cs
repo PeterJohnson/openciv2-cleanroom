@@ -161,7 +161,7 @@ internal static partial class NativeMapMatrix
     {
         const int width = 120, height = 90, bodyX = 20, bodyY = 16;
         var camera = new MapCamera(bodyX + 32, bodyY + 32, 1);
-        var baseTile = new ObservedTile(1, MapImprovements.CitySite | MapImprovements.Fortification, false, 0, false)
+        var baseTile = new ObservedTile(1, MapFeatures.CitySite | MapFeatures.Fortification, false, 0, false)
         {
             AirbaseOccupant = MapFact<MapTileOwnership>.Known(new(new(4)))
         };

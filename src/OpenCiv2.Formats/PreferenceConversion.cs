@@ -10,15 +10,15 @@ public static partial class StateConversion
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new OrdinaryPreferences();
-        result.Rules = value.Rules;
+        result.Rules = DecodeGameRules(value.Rules);
         result.DefaultLevel = value.DefaultLevel;
         result.Difficulty = (Difficulty)value.Difficulty;
         result.Tribe = value.Tribe;
         result.Gender = (Gender)value.Gender;
         result.Science = value.Science;
         result.Tax = value.Tax;
-        result.GameOptions = value.GameOptions;
-        result.DisabledMessages = value.DisabledMessages;
+        result.GameOptions = DecodeGameOptions(value.GameOptions);
+        result.DisabledMessages = DecodeMessageSuppression(value.DisabledMessages);
         result.Opponents = value.Opponents;
         result.MapSize = (WorldSize)value.MapSize;
         result.Barbarians = value.Barbarians;
@@ -31,15 +31,15 @@ public static partial class StateConversion
 
     public static StoredOrdinaryPreferences ToStored(in OrdinaryPreferences value) => new()
     {
-        Rules = value.Rules,
+        Rules = EncodeGameRules(value.Rules),
         DefaultLevel = value.DefaultLevel,
         Difficulty = unchecked((short)value.Difficulty),
         Tribe = value.Tribe,
         Gender = unchecked((short)value.Gender),
         Science = value.Science,
         Tax = value.Tax,
-        GameOptions = value.GameOptions,
-        DisabledMessages = value.DisabledMessages,
+        GameOptions = EncodeGameOptions(value.GameOptions),
+        DisabledMessages = EncodeMessageSuppression(value.DisabledMessages),
         Opponents = value.Opponents,
         MapSize = unchecked((short)value.MapSize),
         Barbarians = value.Barbarians,
@@ -47,6 +47,13 @@ public static partial class StateConversion
         Text = StoredText(value.Text, 32),
         RulesChoice = unchecked((short)value.RulesChoice),
         AcceleratedStart = value.AcceleratedStart,
+    };
+
+    public static StoredOrdinaryPreferences PreserveOpaque(StoredOrdinaryPreferences output, StoredOrdinaryPreferences imported) => output with
+    {
+        Rules = (ushort)((output.Rules & GameRulesMask) | (imported.Rules & ~GameRulesMask)),
+        GameOptions = (output.GameOptions & GameOptionsMask) | (imported.GameOptions & ~GameOptionsMask),
+        DisabledMessages = (ushort)((output.DisabledMessages & MessageSuppressionMask) | (imported.DisabledMessages & ~MessageSuppressionMask))
     };
 
     public static MultiplayerPreferences ToLive(StoredMultiplayerPreferences value)

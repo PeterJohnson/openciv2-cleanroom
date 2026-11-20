@@ -21,16 +21,15 @@ public static partial class FoundationSuite
         CheckpointAdmit(game.Entities.Units.End == 0 && game.Entities.Cities.End == 0 && game.Entities.Units.Storage.SequenceEqual(cold.Entities.Units.Storage) && game.Entities.Cities.Storage.SequenceEqual(cold.Entities.Cities.Storage));
         var s = game.UnitStacks;
         CheckpointAdmit(s.Suppression == 0 && !s.AnimationActive && !s.DetachActive && !s.AttachActive && !s.RelocateActive && !s.BottomActive && s.DetachReply == 0 && s.AttachReply == 0 && s.RelocateReply == 0 && s.BottomReply == 0);
-        CheckpointAdmit(!game.UnitDeletion.Active && game.UnitDeletion.Reply == 0 && game.UnitTotals.Equals(cold.UnitTotals) && !game.TurnLoopActive && game.MovementMode == MovementMode.View && game.CivilizationColorFlags.Equals(cold.CivilizationColorFlags));
+        CheckpointAdmit(!game.UnitDeletion.Active && game.UnitDeletion.Reply == 0 && game.UnitTotals.Equals(cold.UnitTotals) && !game.TurnLoopActive && game.MovementMode == MovementMode.View);
         CheckpointAdmit(game.Globals == cold.Globals && game.WorldSetup == cold.WorldSetup && game.Names.SequenceEqual(cold.Names) && game.PendingLeaderOverrides.SequenceEqual(cold.PendingLeaderOverrides));
         cold.Civilizations[1].Gold = game.Civilizations[1].Gold;
         CheckpointAdmit(game.Civilizations.SequenceEqual(cold.Civilizations) && game.Multiplayer == cold.Multiplayer && !game.Events.Loaded && game.Events.Collection.Pristine && game.PowerHistory.Equals(cold.PowerHistory) && game.Eliminations == cold.Eliminations && game.Scenario == cold.Scenario && game.Layout == cold.Layout && game.Views.SequenceEqual(cold.Views));
         CheckpointAdmit(game.Mood.City is null && game.Mood.Happy == 0 && game.Mood.Unhappy == 0 && !game.Map.Allocated && game.Map.PatternSeed == 0 && game.Map.StoredTopology == 0 && game.Map.Regions.SequenceEqual(cold.Map.Regions) && game.Map.RememberedBarbarian.Length == 0);
-        CheckpointAdmit(process.Fallback.Value == coldProcess.Fallback.Value && process.TextParameters.Numbers.Equals(coldProcess.TextParameters.Numbers) && process.TextParameters.Strings.SequenceEqual(coldProcess.TextParameters.Strings) && process.TextParameters.Line.Count == 0);
-        var rules = process.Rules; var names = rules.Names;
-        CheckpointAdmit(rules.Definitions.Snapshot() == coldProcess.Rules.Definitions.Snapshot() && rules.Leaders.Select(l => l.Snapshot()).SequenceEqual(coldProcess.Rules.Leaders.Select(l => l.Snapshot())) && !rules.DoubleMovementApplied && rules.Text.Count == 0);
-        CheckpointAdmit(new[] { names.Advances, names.Improvements, names.Units, names.Terrain, names.Governments, names.Commodities, names.Orders, names.Difficulties, names.Attitudes }.All(a => a.All(v => v == 0)) && names.GovernmentTitles.All(a => a.All(v => v == 0)));
-        CheckpointAdmit(rules.Labels.StatusLanguage == 0 && rules.Labels.DeclaredCount == 0 && rules.Labels.Entries.Count == 0 && rules.Labels.Popups.SequenceEqual(coldProcess.Rules.Labels.Popups));
+        CheckpointAdmit(process.Fallback.Value == coldProcess.Fallback.Value && process.TextParameters.Numbers.Equals(coldProcess.TextParameters.Numbers) && process.TextParameters.Strings.SequenceEqual(coldProcess.TextParameters.Strings) && process.TextParameters.Line.Length == 0);
+        var rules = process.Rules;
+        CheckpointAdmit(rules.Definitions.Snapshot() == coldProcess.Rules.Definitions.Snapshot() && rules.Leaders.Select(l => l.Snapshot()).SequenceEqual(coldProcess.Rules.Leaders.Select(l => l.Snapshot())) && !rules.DoubleMovementApplied && !rules.IsLoaded);
+        CheckpointAdmit(rules.Labels.StatusLanguage == 0 && rules.Labels.DeclaredCount == 0 && rules.Labels.Entries.Count == 0 && rules.Labels.Popups.All(p => p is null));
     }
     private static CheckpointProfile SessionCheckpointProfile() => new("test.local-foundation/1", (world, process) =>
     {
@@ -145,7 +144,7 @@ public static partial class FoundationSuite
     private static void SessionCheckpointBadAdmission()
     {
         using var source = new CheckpointFixture(); var client = source.Client(); SuspendCheckpoint(source, client); byte[] bytes = source.Save();
-        using var destination = new CheckpointFixture(2); var existing = destination.Client(); destination.Runtime.World.Civilizations[1].Gold = 271; destination.Process.Tokens.NextUnit = 77; destination.Process.Tokens.NextCity = 88; destination.Process.OrdinaryPreferences.GameOptions = 0x12345678;
+        using var destination = new CheckpointFixture(2); var existing = destination.Client(); destination.Runtime.World.Civilizations[1].Gold = 271; destination.Process.Tokens.NextUnit = 77; destination.Process.Tokens.NextCity = 88; destination.Process.OrdinaryPreferences.GameOptions = StateConversion.DecodeGameOptions(0x12345678);
         byte[] before = destination.Save(); var world = destination.Runtime.World; var fallback = destination.Process.Fallback;
         Action<JsonNode>[] changes = [n => n["content"] = new string('b', 64), n => n["profile"] = "0000", n => n["command"]!["codecVersion"] = "999", n => n["command"]!["descriptorVersion"] = "999", n => n["command"]!["codec"] = "0000", n => n["command"]!["name"] = "0000", n => n["command"]!["locals"] = "00", n => n["world"] = "00", n => n["command"]!["arguments"] = new JsonArray(), n => n["counters"]!["command"] = "0", n => n["command"]!["interaction"]!["recipient"] = "2", n => n["gameplay"] = n["gameplay"]!.GetValue<string>().Replace("oc2-pcg32", "old-policy", StringComparison.Ordinal)];
         foreach (var change in changes)
@@ -153,7 +152,7 @@ public static partial class FoundationSuite
             var payload = LocalCodecPayload(bytes); change(payload); bool rejected = false; try { destination.Restore(LocalCodecEnvelope(payload)); } catch (Exception error) when (error is ArgumentException or ContentException or ChoiceException) { rejected = true; }
             Equal(true, rejected); BytesEqual(before, destination.Save()); Equal(true, ReferenceEquals(world, destination.Runtime.World)); Equal(0, existing.OwnUnits().Records.Count);
         }
-        var badProfile = SessionCheckpointProfile() with { Decode = (_, stagedWorld, stagedProcess) => { stagedWorld.Civilizations[1].Gold = -99; stagedProcess.Tokens.NextUnit = 2; stagedProcess.Fallback.Value.Region = 63; stagedProcess.Rules.Text.Initialize(); throw new InvalidOperationException("owner decode failure"); } };
+        var badProfile = SessionCheckpointProfile() with { Decode = (_, stagedWorld, stagedProcess) => { stagedWorld.Civilizations[1].Gold = -99; stagedProcess.Tokens.NextUnit = 2; stagedProcess.Fallback.Value.Region = 63; stagedProcess.Rules.IsLoaded = true; throw new InvalidOperationException("owner decode failure"); } };
         Throws<InvalidOperationException>(() => destination.Runtime.RestoreCheckpoint(bytes, badProfile, SessionCheckpointContent)); BytesEqual(before, destination.Save()); Equal(true, ReferenceEquals(fallback, destination.Process.Fallback)); Equal((byte)0, fallback.Value.Region);
         var corrupt = bytes.ToArray(); corrupt[corrupt.Length / 2] ^= 1; bool failed = false; try { destination.Restore(corrupt); } catch (Exception error) when (error is ArgumentException or ContentException) { failed = true; }
         Equal(true, failed); BytesEqual(before, destination.Save());
@@ -166,11 +165,11 @@ public static partial class FoundationSuite
             f => f.Runtime.World.Civilizations[2].Gold = 1, f => f.Runtime.World.Entities.Units.Storage[2047].Damage = 3, f => f.Runtime.World.Entities.Cities.SetEnd(1), f => f.Runtime.World.Globals.Turn = 1,
             f => f.Runtime.World.Map.Allocate(new(8, 8)), f => f.Runtime.World.Events.Loaded = true, f => { f.Runtime.World.Events.Collection.Append(); f.Runtime.World.Events.Collection.Reset(); },
             f => f.Runtime.World.UnitStacks.AttachActive = true, f => f.Runtime.World.UnitDeletion.Reply = -2, f => f.Runtime.World.UnitTotals[2] = 1, f => f.Runtime.World.TurnLoopActive = true, f => f.Runtime.World.MovementMode = MovementMode.MoveUnits,
-            f => f.Runtime.World.CivilizationColorFlags[2] = 1, f => f.Runtime.World.PendingLeaderOverrides[2] = 0, f => f.Runtime.World.Mood.Happy = 1, f => f.Runtime.World.Map.PatternSeed = 1,
-            f => f.Runtime.World.Map.Regions[2] = new(1, 0, 0, 0, new([0, 0])), f => f.Runtime.World.Map.RememberedBarbarian = [1], f => f.Process.Rules.DoubleMovementApplied = true,
-            f => f.Process.Rules.Labels.Entries.Add(0), f => f.Process.Rules.Text.Initialize(), f => f.Process.Fallback.Value.Region = 1, f => f.Process.TextParameters.Line = new([1]),
-            f => f.Process.Rules.Names.Advances[1] = 2, f => f.Process.Rules.Leaders[0].CityNameIndex = 1, f => f.Runtime.World.Views[0] = new(true, false, 0, 0, 0), f => f.Runtime.World.Scenario.Flags = 1,
-            f => f.Runtime.World.Names[0].Leader = new([3]), f => f.Runtime.World.WorldSetup.Width = 1, f => f.Runtime.World.Eliminations.Count = 1, f => f.Runtime.World.PowerHistory[0][0] = 1,
+            f => f.Runtime.World.PendingLeaderOverrides[2] = 0, f => f.Runtime.World.Mood.Happy = 1, f => f.Runtime.World.Map.PatternSeed = 1,
+            f => f.Runtime.World.Map.Regions[2] = new(1, 0, 0, default), f => f.Runtime.World.Map.RememberedBarbarian = [MapFeatures.Unit], f => f.Process.Rules.DoubleMovementApplied = true,
+            f => f.Process.Rules.Labels.Entries.Add(NameText("unexpected")), f => f.Process.Rules.IsLoaded = true, f => f.Process.Fallback.Value.Region = 1, f => f.Process.TextParameters.Line = "\u0001",
+            f => f.Process.Rules.Definitions.Advances[1] = new() { Identity = new("advance.1", NameText("unexpected")) }, f => f.Process.Rules.Leaders[0].CityNameIndex = 1, f => f.Runtime.World.Views[0] = new(true, false, new(0, 0), 0), f => f.Runtime.World.Scenario.Flags = new() { RevolutionRestriction = true },
+            f => f.Runtime.World.Names[0].Leader = "\u0003", f => f.Runtime.World.WorldSetup.Width = 1, f => f.Runtime.World.Eliminations.Count = 1, f => f.Runtime.World.PowerHistory[0][0] = 1,
             f => f.Runtime.AddParticipant(new(1)), f => f.Runtime.ReassignParticipant(f.Participant, new(2)), f => f.Runtime.ReassignParticipant(f.Participant, new(1), new(9)),
             f => f.Client().Submit(SessionCheckpointRequest(1)), f => { var c = f.Client(); var p = SuspendCheckpoint(f, c); c.Reply(p.Interaction!.Id, 2); },
             f => { var c = f.Client(); SuspendCheckpoint(f, c); c.Submit(SessionCheckpointRequest(1)); }, f => { var c = f.Client(); var p = SuspendCheckpoint(f, c); c.Cancel(p.Correlation.Command); f.Runtime.AdvanceOne(); }
@@ -231,8 +230,8 @@ public static partial class FoundationSuite
         exhausted.Restore(LocalCheckpointCodec.Encode(checkpoint)); Throws<OverflowException>(() => exhausted.Client()); Equal(95, exhausted.Runtime.World.Civilizations[1].Gold);
         // Atomic install also replaces arbitrary staged process/fallback contents. Failure above never touched them.
         using var transfer = new CheckpointFixture(8); var oldFallback = transfer.Process.Fallback; var oldText = transfer.Process.TextParameters;
-        var staged = baseProfile with { Decode = (data, world, process) => { baseProfile.Decode(data, world, process); process.Fallback.Value.Region = 19; process.TextParameters.Numbers[0] = 23; process.Rules.Text.Initialize(); } };
-        transfer.Runtime.RestoreCheckpoint(bytes, staged, SessionCheckpointContent); Equal(false, ReferenceEquals(oldFallback, transfer.Process.Fallback)); Equal(false, ReferenceEquals(oldText, transfer.Process.TextParameters)); Equal((byte)0, oldFallback.Value.Region); Equal(23, transfer.Process.TextParameters.Numbers[0]); Equal(1, transfer.Process.Rules.Text.Count);
+        var staged = baseProfile with { Decode = (data, world, process) => { baseProfile.Decode(data, world, process); process.Fallback.Value.Region = 19; process.TextParameters.Numbers[0] = 23; process.Rules.IsLoaded = true; } };
+        transfer.Runtime.RestoreCheckpoint(bytes, staged, SessionCheckpointContent); Equal(false, ReferenceEquals(oldFallback, transfer.Process.Fallback)); Equal(false, ReferenceEquals(oldText, transfer.Process.TextParameters)); Equal((byte)0, oldFallback.Value.Region); Equal(23, transfer.Process.TextParameters.Numbers[0]); Equal(true, transfer.Process.Rules.IsLoaded);
         transfer.Runtime.World.Map.Allocate(new(8, 8)); Equal((byte)19, transfer.Runtime.World.Map.TileAt(new(-1, -1)).Region); transfer.Runtime.World.Map.TileAt(new(-1, -1)).Region = 20; Equal((byte)20, transfer.Process.Fallback.Value.Region);
         using var advancing = new SessionRuntime(new(), new(9)); int checkedBoundary = 0;
         advancing.RegisterCommand(CommandDefinitionFor(_ => new TestContinuation((_, _) =>

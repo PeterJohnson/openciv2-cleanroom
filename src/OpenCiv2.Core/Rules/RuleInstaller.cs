@@ -12,36 +12,30 @@ public sealed class RuleInstaller
 
     public RuleInstaller(RuleInput input, RuleState retained)
     {
-        if (retained.Text.Count == 0)
-        {
-            throw new ArgumentException("Rule installation requires an initialized shared text pool");
-        }
-
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(retained);
         this.input = input;
         this.retained = retained;
     }
 
-    private RuleText TextInto(ref uint binding, RuleText value, bool blankAsSpace)
+    private static string NormalizeText(string value, bool blankAsSpace)
     {
-        var text = blankAsSpace && value.Classic.Count == 0 ? RuleText.Space : value;
-        binding = retained.Text.Store(text.Classic.ToArray());
-        return text;
+        return blankAsSpace && value.Length == 0 ? RuleText.Space : value;
     }
 
-    private RuleName NameInto(
+    private static RuleName NameInto(
         RuleName target,
-        ref uint binding,
         RuleName value,
         bool blankAsSpace,
         bool keep = false) =>
         new(
             value.Id.Length != 0 ? value.Id : target.Id,
-            keep ? target.Name : TextInto(ref binding, value.Name, blankAsSpace));
+            keep ? target.Name : NormalizeText(value.Name, blankAsSpace));
 
-    private RuleText LeaderName(
-        RuleText target,
-        ref NameReference binding,
-        RuleText value,
+    private static string LeaderName(
+        string target,
+        ref LeaderText binding,
+        string value,
         bool blankAsSpace,
         bool replace)
     {
@@ -50,8 +44,8 @@ public sealed class RuleInstaller
             return target;
         }
 
-        var text = blankAsSpace && value.Classic.Count == 0 ? RuleText.Space : value;
-        binding = new(retained.Text.Store(text.Classic.ToArray()));
+        var text = blankAsSpace && value.Length == 0 ? RuleText.Space : value;
+        binding = new(RuleText.Display(text));
         return text;
     }
 
@@ -69,6 +63,7 @@ public sealed class RuleInstaller
         Orders();
         Difficulties();
         Attitudes();
+        retained.IsLoaded = true;
     }
 
     public void Cosmic() => retained.Definitions.Cosmic = input.Definitions.Cosmic;
@@ -77,7 +72,7 @@ public sealed class RuleInstaller
     {
         var values = retained.Definitions;
         values.EnabledAdvanceCount = 0;
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < RuleLimits.Advances; ++i)
         {
             values.Advances[i] = values.Advances[i] with
             {
@@ -86,26 +81,25 @@ public sealed class RuleInstaller
             };
         }
 
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < RuleLimits.Advances; ++i)
         {
             var source = input.Definitions.Advances[i];
             values.Advances[i] = source with
             {
                 Identity = NameInto(
                     values.Advances[i].Identity,
-                    ref retained.Names.Advances[i],
                     source.Identity,
                     true,
                     keepNames),
                 Enabled = source.Prerequisites[0] != AdvanceReference.Never
             };
         }
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < RuleLimits.Advances; ++i)
         {
             if (values.Advances[i].Enabled)
             {
                 ++values.EnabledAdvanceCount;
-                for (int j = 0; j < 2; ++j)
+                for (int j = 0; j < RuleLimits.AdvancePrerequisites; ++j)
                 {
                     var prerequisites = values.Advances[i].Prerequisites.ToArray();
                     prerequisites[j] = RuleNormalization.FollowDisabled(prerequisites[j], values.Advances);
@@ -118,14 +112,13 @@ public sealed class RuleInstaller
     public void Improvements(bool keepNames = false)
     {
         var values = retained.Definitions;
-        for (int i = 0; i < 67; ++i)
+        for (int i = 0; i < RuleLimits.Improvements; ++i)
         {
             var source = input.Definitions.Improvements[i];
             values.Improvements[i] = source with
             {
                 Identity = NameInto(
                     values.Improvements[i].Identity,
-                    ref retained.Names.Improvements[i],
                     source.Identity,
                     true,
                     keepNames)
@@ -144,25 +137,24 @@ public sealed class RuleInstaller
     {
         var values = retained.Definitions;
         retained.DoubleMovementApplied = false;
-        for (int i = 0; i < 62; ++i)
+        for (int i = 0; i < RuleLimits.UnitTypes; ++i)
         {
             values.Units[i] = values.Units[i] with { Prerequisite = AdvanceReference.Never };
         }
 
-        for (int i = 0; i < 62; ++i)
+        for (int i = 0; i < RuleLimits.UnitTypes; ++i)
         {
             var source = input.Definitions.Units[i];
             values.Units[i] = source with
             {
                 Identity = NameInto(
                     values.Units[i].Identity,
-                    ref retained.Names.Units[i],
                     source.Identity,
                     true,
                     keepNames),
                 Movement = RuleNormalization.Movement(
                     input.MovementPoints[i],
-                    values.Cosmic[CosmicParameter.RoadMovementMultiplier])
+                    values.Cosmic.RoadMovementMultiplier)
             };
         }
     }
@@ -170,17 +162,16 @@ public sealed class RuleInstaller
     public void Terrain()
     {
         var values = retained.Definitions;
-        for (int i = 0; i < 33; ++i)
+        for (int i = 0; i < RuleLimits.Terrains; ++i)
         {
             var source = input.Definitions.Terrain[i];
             values.Terrain[i] = source with
             {
                 Identity = NameInto(
                     values.Terrain[i].Identity,
-                    ref retained.Names.Terrain[i],
                     source.Identity,
                     true),
-                Work = i < 11 ? source.Work : values.Terrain[i].Work
+                Work = i < RuleLimits.BaseTerrains ? source.Work : values.Terrain[i].Work
             };
         }
     }
@@ -188,23 +179,22 @@ public sealed class RuleInstaller
     public void Governments()
     {
         var values = retained.Definitions;
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < RuleLimits.Governments; ++i)
         {
             var source = input.Definitions.Governments[i];
             values.Governments[i] = values.Governments[i] with
             {
                 Identity = NameInto(
                     values.Governments[i].Identity,
-                    ref retained.Names.Governments[i],
                     source.Identity,
                     true)
             };
-            var male = TextInto(ref retained.Names.GovernmentTitles[i][0], source.Titles.Male, true);
+            var male = NormalizeText(source.Titles.Male, true);
             values.Governments[i] = values.Governments[i] with
             {
                 Titles = values.Governments[i].Titles with { Male = male }
             };
-            var female = TextInto(ref retained.Names.GovernmentTitles[i][1], source.Titles.Female, true);
+            var female = NormalizeText(source.Titles.Female, true);
             values.Governments[i] = values.Governments[i] with
             {
                 Titles = values.Governments[i].Titles with { Female = female }
@@ -215,7 +205,7 @@ public sealed class RuleInstaller
     public void Leaders(bool replace)
     {
         var values = retained.Definitions;
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             var live = retained.Leaders[i];
             var source = input.Definitions.Tribes[i];
@@ -224,7 +214,7 @@ public sealed class RuleInstaller
                 values.Tribes[i] = values.Tribes[i] with { Id = source.Id };
             }
 
-            for (int sex = 0; sex < 2; ++sex)
+            for (int sex = 0; sex < RuleLimits.LeaderGenders; ++sex)
             {
                 var names = values.Tribes[i].Leaders.ToArray();
                 names[sex] = LeaderName(names[sex], ref live.Names[sex], source.Leaders[sex], true, replace);
@@ -266,18 +256,19 @@ public sealed class RuleInstaller
                 live.Attack = source.Personality[0];
                 live.Expand = source.Personality[1];
                 live.Civilize = source.Personality[2];
-                for (int g = 0; g < 7; ++g)
+                for (int g = 0; g < RuleLimits.Governments; ++g)
                 {
-                    for (int sex = 0; sex < 2; ++sex)
+                    for (int sex = 0; sex < RuleLimits.LeaderGenders; ++sex)
                     {
-                        live.Titles[g][sex] = new(retained.Names.GovernmentTitles[g][sex]);
+                        var titles = values.Governments[g].Titles;
+                        live.Titles[g][sex] = new(RuleText.Display((sex == 0 ? titles.Male : titles.Female)));
                     }
                 }
             }
             foreach (var title in input.TitleOverrides[i])
             {
                 int g = (int)title.Government;
-                if (g <= 0 || g >= 7)
+                if (g <= 0 || g >= RuleLimits.Governments)
                 {
                     throw new ArgumentException("Rule title override requires government 1..6");
                 }
@@ -304,11 +295,10 @@ public sealed class RuleInstaller
 
     public void Commodities()
     {
-        for (int i = 0; i < 16; ++i)
+        for (int i = 0; i < RuleLimits.Commodities; ++i)
         {
             retained.Definitions.Commodities[i] = NameInto(
                 retained.Definitions.Commodities[i],
-                ref retained.Names.Commodities[i],
                 input.Definitions.Commodities[i],
                 true);
         }
@@ -316,14 +306,13 @@ public sealed class RuleInstaller
 
     public void Orders()
     {
-        for (int i = 0; i < 12; ++i)
+        for (int i = 0; i < RuleLimits.Orders; ++i)
         {
             var source = input.Definitions.Orders[i];
             retained.Definitions.Orders[i] = source with
             {
                 Identity = NameInto(
                     retained.Definitions.Orders[i].Identity,
-                    ref retained.Names.Orders[i + 1],
                     source.Identity,
                     false)
             };
@@ -332,11 +321,10 @@ public sealed class RuleInstaller
 
     public void Difficulties()
     {
-        for (int i = 0; i < 6; ++i)
+        for (int i = 0; i < RuleLimits.Difficulties; ++i)
         {
             retained.Definitions.Difficulties[i] = NameInto(
                 retained.Definitions.Difficulties[i],
-                ref retained.Names.Difficulties[i],
                 input.Definitions.Difficulties[i],
                 false);
         }
@@ -344,11 +332,10 @@ public sealed class RuleInstaller
 
     public void Attitudes()
     {
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < RuleLimits.DiplomaticAttitudes; ++i)
         {
             retained.Definitions.DiplomaticAttitudes[i] = NameInto(
                 retained.Definitions.DiplomaticAttitudes[i],
-                ref retained.Names.Attitudes[i],
                 input.Definitions.DiplomaticAttitudes[i],
                 false);
         }

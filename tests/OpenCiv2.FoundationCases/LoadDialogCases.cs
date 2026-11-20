@@ -17,24 +17,24 @@ public static partial class FoundationSuite
     private static void LoadedUnitsScanAndRepair()
     {
         var f = new DeletionFixture(); f.World.Globals.Multiplayer = GameMode.Tcp; var reports = new List<StackDiagnostic>();
-        f.Unit(0).Previous = new(3000); f.Unit(0).Next = new(3001); f.Live(1); f.Unit(1).X = -2; f.Unit(1).Next = new(2);
-        f.Live(2); f.Unit(2).Previous = new(1); f.Unit(2).Orders = UnitOrder.Sleeping; f.Unit(2).DestinationX = 1;
-        f.Unit(3).Previous = new(99); f.Unit(3).Next = new(100); f.Live(4); f.Unit(4).X = f.Unit(4).Y = 100; f.Live(5); f.Unit(5).X = -20; f.Bound(5); var outside = f.Unit(5);
+        f.Unit(0).Previous = new UnitSlot(3000); f.Unit(0).Next = new UnitSlot(3001); f.Live(1); f.Unit(1).Position = f.Unit(1).Position with { X = -2 }; f.Unit(1).Next = new UnitSlot(2);
+        f.Live(2); f.Unit(2).Previous = new UnitSlot(1); f.Unit(2).Orders = UnitOrder.Sleeping; f.Unit(2).Carrier = new UnitSlot(1);
+        f.Unit(3).Previous = new UnitSlot(99); f.Unit(3).Next = new UnitSlot(100); f.Live(4); f.Unit(4).Position = new(100, 100); f.Live(5); f.Unit(5).Position = f.Unit(5).Position with { X = -20 }; f.Bound(5); var outside = f.Unit(5);
         ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f, reports);
-        Equal(true, f.World.Multiplayer.NetworkHost); Equal(1, reports.Count); Equal(0U, f.Unit(1).Token.Value); Equal((short)-200, f.Unit(1).X); Equal((short)-1, f.Unit(2).Previous.Value); Equal((sbyte)UnitOrder.None, (sbyte)f.Unit(2).Orders);
-        foreach (int slot in new[] { 0, 3 }) { Equal((short)-1, f.Unit(slot).Previous.Value); Equal((short)-1, f.Unit(slot).Next.Value); }
+        Equal(true, f.World.Multiplayer.NetworkHost); Equal(1, reports.Count); Equal(0U, f.Unit(1).Token.Value); Equal((short)-200, f.Unit(1).Position.X); Equal((short)-1, (f.Unit(2).Previous?.Value ?? -1)); Equal((sbyte)UnitOrder.None, (sbyte)f.Unit(2).Orders);
+        foreach (int slot in new[] { 0, 3 }) { Equal((short)-1, (f.Unit(slot).Previous?.Value ?? -1)); Equal((short)-1, (f.Unit(slot).Next?.Value ?? -1)); }
         Equal(5U, f.Unit(4).Token.Value); Equal(outside, f.Unit(5)); Equal(5, f.World.Entities.Units.End); Equal(9, f.World.UnitTotals[1]); Equal((byte)9, f.Civ.UnitsActive[3]); f.Trace("");
-        foreach (bool x in new[] { false, true }) { f = new(); f.Live(0); if (x) f.Unit(0).X = -1; else f.Unit(0).Y = -1; ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f); Equal(0U, f.Unit(0).Token.Value); }
-        f = new(); f.Live(0); f.Unit(0).Previous = f.Unit(0).Next = new(0); reports.Clear(); ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f, reports);
-        Equal(new StackDiagnostic(StackProblem.Infinite, 0), reports.Single()); Equal(1U, f.Unit(0).Token.Value); Equal((short)-1, f.Unit(0).Next.Value); Equal((short)-1, f.Unit(0).Previous.Value); Equal(10, f.World.UnitTotals[1]);
+        foreach (bool x in new[] { false, true }) { f = new(); f.Live(0); if (x) f.Unit(0).Position = f.Unit(0).Position with { X = -1 }; else f.Unit(0).Position = f.Unit(0).Position with { Y = -1 }; ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f); Equal(0U, f.Unit(0).Token.Value); }
+        f = new(); f.Live(0); f.Unit(0).Previous = f.Unit(0).Next = new UnitSlot(0); reports.Clear(); ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f, reports);
+        Equal(new StackDiagnostic(StackProblem.Infinite, 0), reports.Single()); Equal(1U, f.Unit(0).Token.Value); Equal((short)-1, (f.Unit(0).Next?.Value ?? -1)); Equal((short)-1, (f.Unit(0).Previous?.Value ?? -1)); Equal(10, f.World.UnitTotals[1]);
     }
     private static void LoadedUnitsLiveTailAndFailure()
     {
-        var f = new DeletionFixture(); f.Live(0); f.Unit(0).X = -2; f.Role(5); f.Civ.UnitsActive[3] = 1;
-        f.OnCheck = () => { Equal(0, f.World.Entities.Units.End); Equal(true, f.World.UnitDeletion.Active); f.Unit(1).Previous = new(67); f.Unit(1).Next = new(68); f.Live(2); f.Unit(2).Y = -2; f.Unit(2).Type = new(4); f.Civ.UnitsActive[4] = 1; };
-        ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f); f.Trace("check:1,-1"); Equal((short)-1, f.Unit(1).Next.Value); Equal(0U, f.Unit(2).Token.Value); Equal(2, f.World.Entities.Units.End); Equal((short)2, f.World.Globals.UnitEnd); Equal(8, f.World.UnitTotals[1]);
+        var f = new DeletionFixture(); f.Live(0); f.Unit(0).Position = f.Unit(0).Position with { X = -2 }; f.Role(5); f.Civ.UnitsActive[3] = 1;
+        f.OnCheck = () => { Equal(0, f.World.Entities.Units.End); Equal(true, f.World.UnitDeletion.Active); f.Unit(1).Previous = new UnitSlot(67); f.Unit(1).Next = new UnitSlot(68); f.Live(2); f.Unit(2).Position = f.Unit(2).Position with { Y = -2 }; f.Unit(2).Type = new(4); f.Civ.UnitsActive[4] = 1; };
+        ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f); f.Trace("check:1,-1"); Equal((short)-1, (f.Unit(1).Next?.Value ?? -1)); Equal(0U, f.Unit(2).Token.Value); Equal(2, f.World.Entities.Units.End); Equal((short)2, f.World.Globals.UnitEnd); Equal(8, f.World.UnitTotals[1]);
         f = new(); f.Live(0); f.Budget.Steps = 0; Throws<StackResourceStop>(() => ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f)); Equal(true, f.World.Multiplayer.NetworkHost); Equal(1U, f.Unit(0).Token.Value);
-        f = new(); f.Live(0); f.Unit(0).X = -1; f.Role(5); f.Civ.UnitsActive[3] = 1; f.OnCheck = () => throw new IOException("V01"); Throws<IOException>(() => ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f)); Equal(0U, f.Unit(0).Token.Value); Equal(true, f.World.UnitDeletion.Active);
+        f = new(); f.Live(0); f.Unit(0).Position = f.Unit(0).Position with { X = -1 }; f.Role(5); f.Civ.UnitsActive[3] = 1; f.OnCheck = () => throw new IOException("V01"); Throws<IOException>(() => ClassicLoadedUnits.Cleanup(f.World, f.Process.Rules.Definitions, f.Budget, f)); Equal(0U, f.Unit(0).Token.Value); Equal(true, f.World.UnitDeletion.Active);
     }
     private static StoredSave DialogSave(bool scenario = false)
     {
@@ -54,11 +54,11 @@ public static partial class FoundationSuite
     {
         public GameFileFixture File = new(); public ClassicLoadDialogState Dialog = new() { ChosenPath = "prior", LoadedFileKind = 19 };
         public LoadDialogServices Services; public StackBudget Budget = new(100_000, 64); public OwnedList<string> Entries = new([]); public int Enumerations;
-        public OwnedList<EventInput>? Parsed = new([new(new() { Turn = 42 }, new(Enumerable.Range(0, Event.StringCount).Select(i => i == 4 ? new OwnedList<byte>("Authored"u8.ToArray()) : null)))]);
+        public OwnedList<EventInput>? Parsed = new([new(new() { Turn = 42 }, new(Enumerable.Range(0, Event.StringCount).Select(i => i == 4 ? "Authored" : null)))]);
         public Action? OnCheck; public RuleInput Rules = new(); public bool ResourceExists = true;
         public LoadDialogFixture()
         {
-            File.Bytes = ClassicFiles.EncodeStoredSave(DialogSave()); File.Runtime.Process.OrdinaryPreferences.GameOptions = 0x10018;
+            File.Bytes = ClassicFiles.EncodeStoredSave(DialogSave()); File.Runtime.Process.OrdinaryPreferences.GameOptions = StateConversion.DecodeGameOptions(0x10018);
             File.Services = File.Services with { Exists = (directory, name) => { File.Trace.Add("probe:" + directory + "\\" + name); return name.StartsWith("EVENTS.") && ResourceExists; }, LoadContent = () => { File.Trace.Add("content"); return new(Rules); } };
             Services = new(File.Services, TextCase.Ascii.UppercasePath, i => File.Trace.Add("window:" + i), (directory, pattern) => { ++Enumerations; File.Trace.Add("enumerate:" + directory + "\\" + pattern); return Entries; },
                 () => { File.Trace.Add("parse"); return Parsed; }, () => File.Trace.Add("scenario"), () => File.Trace.Add("music"), () => File.Trace.Add("title"),
@@ -70,9 +70,9 @@ public static partial class FoundationSuite
             var choices = new List<Choice>(); if (code.HasValue) choices.Add(Choice.Create(new("F06.scenario-alternative", "dialog/one"), new SamplingLaw.PrimaryCode(), ChoiceCode.Primary(code.Value)));
             File.Runtime.GameplayRandom.Restore(new GameplayRandom(new ControlledChoices(new(choices)), "session").Capture(), 1000);
         }
-        public void UnitRemoved(Position p) => throw new Exception("Unexpected deletion notification");
+        public void UnitRemoved(MapPoint p) => throw new Exception("Unexpected deletion notification");
         public void RefreshHomeCity(int city) => throw new Exception("Unexpected city notification");
-        public void SynchronizeDeletion(Position p, CitySlot? home) => throw new Exception("Unexpected deletion synchronization");
+        public void SynchronizeDeletion(MapPoint p, CitySlot? home) => throw new Exception("Unexpected deletion synchronization");
         public void CheckCivilization(int owner, int killer) { Equal(1, owner); Equal(-1, killer); File.Trace.Add("destroyed"); OnCheck?.Invoke(); }
         public void Dispose() => File.Dispose();
         public string Tail() => string.Join(';', File.Trace.Skip(File.Trace.IndexOf("flush") + 1));
@@ -121,35 +121,35 @@ public static partial class FoundationSuite
     private static void LoadDialogEventsAndOptions()
     {
         using var ordinary = new LoadDialogFixture(); var stale = ordinary.File.Runtime.World.Events.Collection.Append(); ordinary.File.Runtime.World.Events.Loaded = true;
-        Equal((int)CoreLoadStatus.Success, (int)ordinary.Load()!.Value); Equal("flush;sound:on;music;title;cd:C:\\home", ordinary.Tail()); Equal((uint)0x10018, ordinary.File.Runtime.World.Globals.GameOptions); Equal(false, ordinary.File.Runtime.World.Events.Collection.Contains(stale)); Equal(0, ordinary.File.Runtime.World.Events.Collection.Count); Equal("C:\\home\\world.sav", ordinary.Dialog.ChosenPath); Equal(19, ordinary.Dialog.LoadedFileKind);
+        Equal((int)CoreLoadStatus.Success, (int)ordinary.Load()!.Value); Equal("flush;sound:on;music;title;cd:C:\\home", ordinary.Tail()); Equal(StateConversion.DecodeGameOptions((uint)0x10018), ordinary.File.Runtime.World.Globals.GameOptions); Equal(false, ordinary.File.Runtime.World.Events.Collection.Contains(stale)); Equal(0, ordinary.File.Runtime.World.Events.Collection.Count); Equal("C:\\home\\world.sav", ordinary.Dialog.ChosenPath); Equal(19, ordinary.Dialog.LoadedFileKind);
         foreach (int branch in new[] { 0, 1, 2, 3 })
         {
             using var f = new LoadDialogFixture(); f.File.Bytes = ClassicFiles.EncodeStoredSave(DialogSave(true)); f.File.Files.Text.Extension = "GER"; f.ResourceExists = branch != 1; if (branch == 2) f.Parsed = null; if (branch == 3) f.Parsed = new([]);
             Equal((int)CoreLoadStatus.Success, (int)f.Load()!.Value); Equal(branch is 0 or 3, f.File.Runtime.World.Events.Loaded); Equal(branch == 0 ? 1 : 0, f.File.Runtime.World.Events.Collection.Count); Equal(branch is 0 or 3, f.File.Trace.Contains("scenario"));
-            Equal(true, f.File.Trace.Contains("probe:C:\\home\\EVENTS.GER")); if (branch == 0) { Equal(42, f.File.Runtime.World.Events.Collection.At(0).Values.Turn); Equal("Authored", ByteString(f.File.Runtime.World.Events.Collection.At(0).Strings[4].Value)); }
+            Equal(true, f.File.Trace.Contains("probe:C:\\home\\EVENTS.GER")); if (branch == 0) { Equal(42, f.File.Runtime.World.Events.Collection.At(0).Values.Turn); Equal("Authored", f.File.Runtime.World.Events.Collection.At(0).Strings[4].Value); }
         }
         foreach (bool scenario in new[] { false, true })
         {
             using var f = new LoadDialogFixture(); f.File.Bytes = ClassicFiles.EncodeStoredSave(DialogSave(scenario) with { Events = new([new(new() { Actions = 0x80000021, WhoCiv = 6, WhomCiv = 2 }, new(new OwnedList<byte>?[35]))]) });
-            f.Services = f.Services with { LoadEvents = () => throw new Exception("Persisted event replaced"), PresentTitle = null }; f.Load(title: false); Equal("flush;sound:on;scenario;music;cd:C:\\home", f.Tail()); Equal(0x80000021U, f.File.Runtime.World.Events.Collection.At(0).Values.Actions);
+            f.Services = f.Services with { LoadEvents = () => throw new Exception("Persisted event replaced"), PresentTitle = null }; f.Load(title: false); Equal("flush;sound:on;scenario;music;cd:C:\\home", f.Tail()); Equal(StateConversion.DecodeEventActions(0x80000021U), f.File.Runtime.World.Events.Collection.At(0).Values.Actions);
         }
     }
     private static void LoadDialogLiveChildren()
     {
         foreach (bool enable in new[] { false, true })
         {
-            using var f = new LoadDialogFixture(); f.File.Bytes = ClassicFiles.EncodeStoredSave(DialogSave(true)); f.File.Runtime.Process.OrdinaryPreferences.GameOptions = enable ? 0U : 8U;
+            using var f = new LoadDialogFixture(); f.File.Bytes = ClassicFiles.EncodeStoredSave(DialogSave(true)); f.File.Runtime.Process.OrdinaryPreferences.GameOptions = StateConversion.DecodeGameOptions(enable ? 0U : 8U);
             f.Services = f.Services with
             {
-                ConfigureSound = sound => { Equal(false, sound); f.File.Runtime.World.Globals.GameOptions = enable ? 8U : 0U; },
-                ScenarioLoaded = () => { Equal(true, enable); f.File.Trace.Add("scenario"); f.File.Runtime.World.Globals.GameOptions = 0; f.File.Runtime.World.Events.Loaded = false; },
-                SynchronizeMusic = () => Equal(0U, f.File.Runtime.World.Globals.GameOptions),
+                ConfigureSound = sound => { Equal(false, sound); f.File.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(enable ? 8U : 0U); },
+                ScenarioLoaded = () => { Equal(true, enable); f.File.Trace.Add("scenario"); f.File.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(0); f.File.Runtime.World.Events.Loaded = false; },
+                SynchronizeMusic = () => Equal(StateConversion.DecodeGameOptions(0U), f.File.Runtime.World.Globals.GameOptions),
                 PresentTitle = () => f.File.Files.Text.Home = "changed-home"
             };
             f.Load(); Equal(enable, f.File.Trace.Contains("scenario")); Equal("cd:changed-home", f.File.Trace[^1]); Equal(1, f.File.Runtime.World.Events.Collection.Count);
         }
-        using var flush = new LoadDialogFixture(); flush.Services = flush.Services with { Input = flush.Services.Input with { Flush = () => { flush.File.Trace.Add("flush"); flush.File.Runtime.World.Globals.GameFlags |= 0x80; flush.File.Runtime.Process.OrdinaryPreferences.GameOptions = 8; flush.File.Files.Text.Extension = "FRE"; } } };
-        flush.Load(); Equal(true, flush.File.Trace.Contains("probe:C:\\home\\EVENTS.FRE")); Equal(8U, flush.File.Runtime.World.Globals.GameOptions); Equal("flush;probe:C:\\home\\EVENTS.FRE;parse;sound:off;scenario;music;title;cd:C:\\home", flush.Tail());
+        using var flush = new LoadDialogFixture(); flush.Services = flush.Services with { Input = flush.Services.Input with { Flush = () => { flush.File.Trace.Add("flush"); flush.File.Runtime.World.Globals.Status.Scenario = true; flush.File.Runtime.Process.OrdinaryPreferences.GameOptions = StateConversion.DecodeGameOptions(8); flush.File.Files.Text.Extension = "FRE"; } } };
+        flush.Load(); Equal(true, flush.File.Trace.Contains("probe:C:\\home\\EVENTS.FRE")); Equal(StateConversion.DecodeGameOptions(8U), flush.File.Runtime.World.Globals.GameOptions); Equal("flush;probe:C:\\home\\EVENTS.FRE;parse;sound:off;scenario;music;title;cd:C:\\home", flush.Tail());
     }
     private static void LoadDialogCleanupAndPublication()
     {
@@ -158,7 +158,7 @@ public static partial class FoundationSuite
         f.File.Runtime.World.UnitTotals[1] = 2; var client = SessionClient(f.File.Runtime); var identity = client.Identity;
         f.Services = f.Services with { PresentTitle = () => { Equal(false, f.File.Runtime.World.Multiplayer.NetworkHost); Equal(2, client.OwnUnits().Records.Count); Equal("prior", f.Dialog.ChosenPath); f.File.Trace.Add("title"); } };
         f.OnCheck = () => { Equal(1, client.OwnUnits().Records.Count); Equal(new UnitSlot(2), client.OwnUnits().Records[0].Slot); Equal((sbyte)UnitOrder.None, (sbyte)client.OwnUnits().Records[0].Orders); Equal("C:\\home", f.File.Files.Text.Working); Equal("prior", f.Dialog.ChosenPath); Throws<InvalidOperationException>(() => f.File.Runtime.PrepareNewGame()); };
-        Equal((int)CoreLoadStatus.Success, (int)f.Load()!.Value); Equal("flush;sound:on;music;title;cd:C:\\home;destroyed", f.Tail()); Equal(identity, client.Identity); Equal(0U, f.File.Runtime.World.Entities.Units.Storage[1].Token.Value); Equal((short)-1, f.File.Runtime.World.Entities.Units.Storage[0].Next.Value); Equal(1, f.File.Runtime.World.UnitTotals[1]);
+        Equal((int)CoreLoadStatus.Success, (int)f.Load()!.Value); Equal("flush;sound:on;music;title;cd:C:\\home;destroyed", f.Tail()); Equal(identity, client.Identity); Equal(0U, f.File.Runtime.World.Entities.Units.Storage[1].Token.Value); Equal((short)-1, (f.File.Runtime.World.Entities.Units.Storage[0].Next?.Value ?? -1)); Equal(1, f.File.Runtime.World.UnitTotals[1]);
     }
     private static void LoadDialogFailurePrefixes()
     {

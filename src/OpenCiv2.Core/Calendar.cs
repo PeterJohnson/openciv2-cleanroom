@@ -1,3 +1,4 @@
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.State;
 
 namespace OpenCiv2.Core;
@@ -15,12 +16,12 @@ public static class Calendar
         unchecked
         {
             int level = (int)globals.Difficulty;
-            if ((globals.GameFlags & 4) != 0)
+            if (globals.Status.LargeMap)
             {
                 --level;
             }
 
-            if ((globals.GameFlags & 8) != 0)
+            if (globals.Status.SmallMap)
             {
                 ++level;
             }
@@ -28,7 +29,7 @@ public static class Calendar
             int profile = Math.Clamp(level - 1, 0, 3);
             int extra = globals.FirstLaunchTurn >= 0 ? Math.Max(inputTurn - globals.FirstLaunchTurn, 0) : 0;
             int working = inputTurn - extra;
-            if ((globals.GameFlags & 0x80) != 0 && scenario.YearIncrement != 0 && scenario.StartYear != 0)
+            if (globals.Status.Scenario && scenario.YearIncrement != 0 && scenario.StartYear != 0)
             {
                 return scenario.StartYear + working * Math.Abs((int)scenario.YearIncrement) - 1 + extra;
             }
@@ -77,7 +78,7 @@ public static class CivilizationKnowledge
             return true;
         }
 
-        if (advance == FutureTechnology || advance >= 100 || civilization < 1)
+        if (advance == FutureTechnology || advance >= RuleLimits.Advances || civilization < 1)
         {
             return false;
         }
@@ -87,6 +88,6 @@ public static class CivilizationKnowledge
             throw new ArgumentOutOfRangeException(nameof(civilization), "Advance query has no civilization backing");
         }
 
-        return (civilizations[civilization].Advances[advance / 8] & (1 << (advance % 8))) != 0;
+        return civilizations[civilization].Advances.Contains(advance);
     }
 }

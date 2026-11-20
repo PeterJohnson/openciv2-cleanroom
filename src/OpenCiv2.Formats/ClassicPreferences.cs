@@ -7,6 +7,7 @@ namespace OpenCiv2.Formats;
 /// <summary>F06 §4 exact preference items. No defaults, range checks or session installation.</summary>
 public static class ClassicPreferences
 {
+    public const int SettingsCount = 7;
     public const int OrdinarySize = 72, MultiplayerSize = 444;
 
     public static StoredOrdinaryPreferences DecodeOrdinary(ReadOnlySpan<byte> bytes)
@@ -129,8 +130,8 @@ public static class ClassicPreferences
             legacySettings[i] = new(r.Take(24).ToArray());
         }
 
-        var settings = new OwnedList<byte>[7];
-        for (int i = 0; i < 7; ++i)
+        var settings = new OwnedList<byte>[SettingsCount];
+        for (int i = 0; i < SettingsCount; ++i)
         {
             settings[i] = new(r.Take(24).ToArray());
         }
@@ -232,7 +233,7 @@ public static class ClassicPreferences
                 w.U8(item);
             }
         }
-        RequireCount(value.Settings, 7);
+        RequireCount(value.Settings, SettingsCount);
         foreach (var row in value.Settings)
         {
             RequireCount(row, 24);

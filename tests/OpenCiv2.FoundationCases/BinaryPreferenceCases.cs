@@ -26,7 +26,7 @@ public static partial class FoundationSuite
         Equal(new OwnedList<byte>(Enumerable.Repeat((byte)0xa5, 32)), p.Text); Equal(short.MinValue, p.RulesChoice); Equal(short.MaxValue, p.AcceleratedStart);
         Equal(new OwnedList<byte>(bytes), new(ClassicPreferences.EncodeOrdinary(p)));
         var live = StateConversion.ToLive(p); Equal(-14, (int)live.Difficulty); Equal(-12, (int)live.Gender); Equal(102, (int)live.MapSize); Equal(-32768, (int)live.RulesChoice);
-        Equal(p, StateConversion.ToStored(live)); bytes[36] = 0; Equal((byte)0xa5, p.Text[0]);
+        Equal(p, StateConversion.PreserveOpaque(StateConversion.ToStored(live), p)); bytes[36] = 0; Equal((byte)0xa5, p.Text[0]);
     }
     private static void BinaryMultiplayerPreferences()
     {
@@ -115,10 +115,10 @@ public static partial class FoundationSuite
     {
         var bytes = Enumerable.Repeat((byte)0x81, 72).ToArray(); bytes[36] = (byte)'A'; bytes[37] = 0;
         var stored = ClassicPreferences.DecodeOrdinary(bytes); var live = StateConversion.ToLive(stored);
-        Equal(new OwnedList<byte>([(byte)'A']), live.Text); Equal((byte)0x81, stored.Text[2]); var output = StateConversion.ToStored(live); Equal(true, output.Text.Skip(1).All(b => b == 0));
-        live.Text = new(new byte[] { 65, 0, 66 }); Throws<ArgumentException>(() => StateConversion.ToStored(live));
-        live.Text = new(Enumerable.Repeat((byte)65, 33)); Throws<ArgumentException>(() => StateConversion.ToStored(live));
-        live.Text = new(Enumerable.Repeat((byte)65, 32)); Equal(32, StateConversion.ToStored(live).Text.Count);
+        Equal(ClassicText.DecodeField((new byte[] { (byte)'A' }).ToArray()), live.Text); Equal((byte)0x81, stored.Text[2]); var output = StateConversion.ToStored(live); Equal(true, output.Text.Skip(1).All(b => b == 0));
+        live.Text = "A\u0000B"; Throws<ArgumentException>(() => StateConversion.ToStored(live));
+        live.Text = ClassicText.DecodeWindows1252((Enumerable.Repeat((byte)65, 33)).ToArray()); Throws<ArgumentException>(() => StateConversion.ToStored(live));
+        live.Text = ClassicText.DecodeWindows1252((Enumerable.Repeat((byte)65, 32)).ToArray()); Equal(32, StateConversion.ToStored(live).Text.Count);
         Throws<ArgumentException>(() => ClassicPreferences.EncodeOrdinary(stored with { Text = new(new byte[31]) }));
         Throws<ArgumentException>(() => StateConversion.ToLive(stored with { Text = new(new byte[33]) }));
         Throws<ArgumentException>(() => ClassicPreferences.EncodeOrdinary(stored with { WorldParameters = new(new short[4]) }));
@@ -128,7 +128,7 @@ public static partial class FoundationSuite
         { Throws<ArgumentException>(() => ClassicPreferences.EncodeMultiplayer(bad)); Throws<ArgumentException>(() => StateConversion.ToLive(bad)); }
         Throws<ArgumentException>(() => ClassicPreferences.EncodeMultiplayer(multi with { LegacySettings = new(new[] { new OwnedList<byte>(new byte[24]) }) }));
         Throws<ArgumentException>(() => ClassicPreferences.EncodeMultiplayer(multi with { Settings = new(Enumerable.Repeat(new OwnedList<byte>(new byte[23]), 7)) }));
-        var full = StateConversion.ToLive(ClassicPreferences.DecodeMultiplayer(Enumerable.Repeat((byte)0x81, 444).ToArray())); Equal(6, full.CustomTimer.Count); Equal(32, full.GameName.Count);
-        full.CustomTimer = new(Enumerable.Repeat((byte)'1', 7)); Throws<ArgumentException>(() => StateConversion.ToStored(full));
+        var full = StateConversion.ToLive(ClassicPreferences.DecodeMultiplayer(Enumerable.Repeat((byte)0x81, 444).ToArray())); Equal(6, full.CustomTimer.Length); Equal(32, full.GameName.Length);
+        full.CustomTimer = ClassicText.DecodeWindows1252((Enumerable.Repeat((byte)'1', 7)).ToArray()); Throws<ArgumentException>(() => StateConversion.ToStored(full));
     }
 }

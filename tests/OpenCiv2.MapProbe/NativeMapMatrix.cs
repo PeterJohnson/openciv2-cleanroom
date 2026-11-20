@@ -234,11 +234,11 @@ internal static partial class NativeMapMatrix
         var west = new MapPoint(2, 4);
         var plains = new ObservedTile(1, default, false, 0, false);
         var tiles = Enumerable.Repeat(plains, columns * rows).ToArray();
-        Set(center, plains with { River = true, Resource = 2, Improvements = MapImprovements.Railroad });
+        Set(center, plains with { River = true, Resource = 2, Improvements = MapFeatures.Railroad });
         Set(northeast, plains with { River = true });
         Set(southwest, plains with { River = true });
-        Set(east, plains with { Improvements = MapImprovements.Railroad });
-        Set(west, plains with { Improvements = MapImprovements.Road });
+        Set(east, plains with { Improvements = MapFeatures.Railroad });
+        Set(west, plains with { Improvements = MapFeatures.Road });
         var map = MapGallery.Open("MV04").Map with { Width = columns * 2, Height = rows, Flat = true, Tiles = new(tiles) };
         var layers = new (MapPoint Position, string Key)[]
         {
@@ -338,7 +338,7 @@ internal static partial class NativeMapMatrix
         var tiles = Enumerable.Repeat(new ObservedTile(2, default, false, 0, false), columns * rows).ToArray();
         tiles[2 * columns + 1] = default;
         tiles[2 * columns + 2] = tiles[2 * columns + 2] with { Terrain = 10 };
-        tiles[2 * columns + 5] = tiles[2 * columns + 5] with { Improvements = MapImprovements.CitySite };
+        tiles[2 * columns + 5] = tiles[2 * columns + 5] with { Improvements = MapFeatures.CitySite };
         var map = board with
         {
             Width = 2 * columns,
@@ -396,9 +396,9 @@ internal static partial class NativeMapMatrix
         var city = MapGallery.Open("MV15").Map.Cities[1] with
         {
             Position = new(18, 14),
-            Name = new("A crowded river harbor with a very long name"u8.ToArray())
+            Name = "A crowded river harbor with a very long name"
         };
-        var neighbor = city with { Position = new(22, 14), Name = new("East Harbor"u8.ToArray()) };
+        var neighbor = city with { Position = new(22, 14), Name = "East Harbor" };
         var unit = map.Units[1] with { Position = new(17, 15) };
         map = map with { Cities = new([city, neighbor]), Units = new([unit]) };
         var camera = new MapCamera(-150.25, 60.375, .83);
@@ -415,15 +415,15 @@ internal static partial class NativeMapMatrix
             var initial = Frame(map, MapRedraw.Full);
             Require(initial.Labels == 1, "long label displaces its neighbor before the update");
 
-            var renamed = city with { Name = new("Port"u8.ToArray()) };
+            var renamed = city with { Name = "Port" };
             var revised = map with { Revision = 1, Cities = new([renamed, neighbor]) };
             var labels = Frame(revised, MapRedraw.Dirty);
             Require(labels.Labels == 2 && labels.DamagePixels > 0 && labels.PreparedChunks == 0, "renaming reflows labels without rebuilding terrain");
 
             var tiles = revised.Tiles.ToArray();
             int index = 14 * (map.Width / 2) + 9;
-            tiles[index] = tiles[index] with { Terrain = 4, River = true, Improvements = MapImprovements.Road };
-            tiles[index + 1] = tiles[index + 1] with { Improvements = MapImprovements.Road };
+            tiles[index] = tiles[index] with { Terrain = 4, River = true, Improvements = MapFeatures.Road };
+            tiles[index + 1] = tiles[index + 1] with { Improvements = MapFeatures.Road };
             var state = renamed.Details!;
             var appearance = state.Appearance.Value!.Value;
             var changed = revised with
@@ -834,7 +834,7 @@ internal static partial class NativeMapMatrix
             using var output = SKSurface.Create(new SKImageInfo(120 * density, 80 * density));
             output.Canvas.Scale(density);
             var full = Frame(.55, land);
-            var irrigated = land with { Improvements = MapImprovements.Irrigation };
+            var irrigated = land with { Improvements = MapFeatures.Irrigation };
             Require(Frame(.55, irrigated) != full, "irrigation is visible exactly at full detail");
             double below = Math.BitDecrement(.55);
             Require(Frame(below, irrigated) == Frame(below, land), "detail follows the unrounded displayed zoom at either DPI");
@@ -1060,7 +1060,7 @@ internal static partial class NativeMapMatrix
         var source = MapGallery.Open("MV04").Map;
         const int w = 8, h = 8;
         var land = new ObservedTile(1, default, false, 0, false);
-        var road = land with { Improvements = MapImprovements.Road, River = true };
+        var road = land with { Improvements = MapFeatures.Road, River = true };
         var tiles = Enumerable.Repeat(land, w * h / 2).ToArray();
         var center = new MapPoint(0, 2);
         var match = new MapPoint(7, 3);
@@ -1089,8 +1089,8 @@ internal static partial class NativeMapMatrix
 
         Array.Fill(tiles, land);
         var city = new MapPoint(4, 4);
-        var farmland = land with { Improvements = MapImprovements.Irrigation | MapImprovements.Mine };
-        Put(city, road with { Improvements = MapImprovements.CitySite | MapImprovements.Road | MapImprovements.Pollution, Resource = 2 });
+        var farmland = land with { Improvements = MapFeatures.Irrigation | MapFeatures.Mine };
+        Put(city, road with { Improvements = MapFeatures.CitySite | MapFeatures.Road | MapFeatures.Pollution, Resource = 2 });
         Put(new(5, 5), farmland);
         var farm = map with { Flat = true, Tiles = new(tiles) };
         Check(farm, city, MapDetail.Full, false, ["improvement/farmland", "resource/3", "improvement/pollution"], ["improvement/mine"]);
@@ -1120,12 +1120,12 @@ internal static partial class NativeMapMatrix
         var seen = new MapPoint(12, 6);
         var before = session.Player.ObserveMap()!;
         var first = Capture(before);
-        world.Map.TileAt(new(hidden.X, hidden.Y)) = new() { Terrain = Terrain.Mountains, TerrainFlags = 0xc0, Features = 0xfa, Owner = 2 };
+        world.Map.TileAt(new(hidden.X, hidden.Y)) = new() { Terrain = Terrain.Mountains, River = true, ResourceSuppressed = true, Features = MapFeatures.CitySite | MapFeatures.Mine | MapFeatures.Road | MapFeatures.Railroad | MapFeatures.Fortification | MapFeatures.Pollution, Owner = 2 };
         world.Entities.Units.Storage[3].Type = new(59);
         world.Entities.Units.Storage[3].Counter = 217;
         world.Entities.Units.Storage[4].Damage = 123;
         world.Entities.Units.Storage[4].Orders = UnitOrder.AiGoTo;
-        world.Entities.Cities.Storage[1].Name = new("Unavailable capital"u8.ToArray());
+        world.Entities.Cities.Storage[1].Name = "Unavailable capital";
         world.Entities.Cities.Storage[1].Size = 24;
         session.Runtime.Publish();
         var after = session.Player.ObserveMap()!;

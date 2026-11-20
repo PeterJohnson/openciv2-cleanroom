@@ -14,7 +14,11 @@ public sealed record PremadeWorldChoices(Func<int> UseSeed, Func<int> UseStartLo
         ArgumentNullException.ThrowIfNull(Ticks);
     }
 }
-public sealed record PremadeWorldInput(MapInput Map, StartingPositions Starts);
+/// <summary>Owned map input. A source adapter may retain its opaque metadata when installation succeeds.</summary>
+public record PremadeWorldInput(MapInput Map, StartingPositions Starts)
+{
+    public virtual void Install(MapStorage destination) => Map.Install(destination, false);
+}
 public interface IPremadeWorldSource
 {
     /// <summary>Decode and close before returning owned map operands; null reports input failure.</summary>
@@ -67,15 +71,14 @@ public static class PremadeWorld
 
             foreach (ref var tile in map.Tiles)
             {
-                tile.Features = 0;
+                tile.Features = MapFeatures.None;
                 tile.Claimant = 0;
-                tile.RadiusOther = 0;
-                tile.Revelation = 0;
+                tile.RevealedTo = default;
                 tile.Region = 0;
                 tile.Owner = null;
                 tile.Fertility = 0;
             }
-            for (int civ = 1; civ < 8; ++civ)
+            for (int civ = 1; civ < EntityLimits.Civilizations; ++civ)
             {
                 var layer = map.RememberedLayer(civ);
                 if (layer.Length != map.Geometry.Area)
@@ -97,9 +100,9 @@ public static class PremadeWorld
                 map.PatternSeed = Arithmetic.MapPatternSeedFromTicks(choices.Ticks());
             }
             bool hasHint = false;
-            for (int i = 0; i < 21; ++i)
+            for (int i = 0; i < RuleLimits.Tribes; ++i)
             {
-                if (starts.X[i] >= 0)
+                if (starts.Positions[i].X >= 0)
                 {
                     hasHint = true;
                     break;
@@ -114,11 +117,11 @@ public static class PremadeWorld
                     starts = new();
                 }
             }
-            runtime.World.Globals.Rules &= 0x7fff;
+            runtime.World.Globals.Rules.FlatWorld = false;
             var source = WorldSource.PremadeCylindrical;
             if (map.StoredTopology != 0)
             {
-                runtime.World.Globals.Rules |= 0x8000;
+                runtime.World.Globals.Rules.FlatWorld = true;
                 source = WorldSource.PremadeFlat;
             }
             Publish(runtime);
@@ -166,7 +169,7 @@ public static class PremadeWorld
                 Publish(runtime);
                 return null;
             }
-            input.Map.Install(runtime.World.Map, false);
+            input.Install(runtime.World.Map);
             starts = input.Starts;
             runtime.World.WorldSetup.Width = unchecked((short)input.Map.Width);
             runtime.World.WorldSetup.Height = unchecked((short)input.Map.Height);

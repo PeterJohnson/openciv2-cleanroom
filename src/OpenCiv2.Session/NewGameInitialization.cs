@@ -1,4 +1,3 @@
-using System.Numerics;
 using OpenCiv2.Base;
 using OpenCiv2.Base.Randomness;
 using OpenCiv2.Contracts;
@@ -36,12 +35,12 @@ public static class NewGameInitialization
         }
         try
         {
+            ClassicConfigurationMetadata.CopyOptions(process, world, initialize: true);
             world.Scenario.Reset();
             world.Eliminations.Count = 0;
             world.Eliminations.Turns = default;
             world.Eliminations.Killers = default;
-            world.Eliminations.Names = new(Enumerable.Repeat(OwnedList<byte>.Empty, 12));
-            world.CivilizationColorFlags = default;
+            world.Eliminations.Names = new(Enumerable.Repeat(string.Empty, OpenCiv2.Core.State.EliminationHistory.Capacity));
             foreach (var leader in process.Rules.Leaders)
             {
                 leader.TimesUsed = 0;
@@ -50,23 +49,24 @@ public static class NewGameInitialization
             globals.Turn = 0;
             globals.Year = -4000;
             globals.FirstLaunchTurn = -1;
-            globals.GameOptions = process.OrdinaryPreferences.GameOptions & ~0x8000U;
+            globals.GameOptions = process.OrdinaryPreferences.GameOptions with { CheatMode = false };
             if (globals.Difficulty == Difficulty.Chieftain)
             {
-                globals.GameOptions |= 0x300;
+                globals.GameOptions.Tutorial = globals.GameOptions.Advice = true;
             }
             else
             {
-                globals.GameOptions &= ~0x100U;
+                globals.GameOptions.Tutorial = false;
             }
 
-            globals.TransientFlags = globals.ShownEventFlags = 0;
+            globals.TransientFlags = default;
+            globals.ShownEventFlags = default;
             globals.MessageOptions = process.OrdinaryPreferences.DisabledMessages;
             world.MovementMode = MovementMode.MoveUnits;
             world.Entities.Units.SetEnd(0);
             world.Entities.Cities.SetEnd(0);
             globals.UnitEnd = globals.CityEnd = 0;
-            globals.ActiveUnit = new(0);
+            globals.ActiveUnit = new UnitSlot(0);
             globals.TurnCiv = 0;
             globals.ViewCiv = -1;
             globals.RevealMap = 0;
@@ -74,15 +74,15 @@ public static class NewGameInitialization
             globals.WarmingPollution = globals.PollutedTiles = 0;
             globals.FirstDiscoverer = default;
             globals.AdvanceKnownBy = default;
-            for (int i = 0; i < 28; ++i)
+            for (int i = 0; i < RuleLimits.Wonders; ++i)
             {
                 globals.WonderCity[i] = -1;
             }
 
-            for (int slot = 0; slot < 8; ++slot)
+            for (int slot = 0; slot < EntityLimits.Civilizations; ++slot)
             {
                 ref var civ = ref world.Civilizations[slot];
-                civ.SpaceshipFlags = 0;
+                civ.SpaceshipFlags = default;
                 civ.SpaceshipParts = default;
                 civ.SpaceshipPopulation = 0;
                 civ.SpaceshipLaunchYear = civ.SpaceshipArrivalYear = 0;
@@ -102,7 +102,7 @@ public static class NewGameInitialization
             }
             globals.NextHistoryTurn = (short)random.PrimaryModulo(new ChoiceKey("F05.new-game.history", call), 50);
             world.PowerHistory = default;
-            for (int slot = 0; slot < 8; ++slot)
+            for (int slot = 0; slot < EntityLimits.Civilizations; ++slot)
             {
                 Publish();
                 _ = services.CreateCivilization(slot);
@@ -116,9 +116,9 @@ public static class NewGameInitialization
                 preferences.Science = 6;
                 preferences.Tax = 4;
             }
-            if (BitOperations.PopCount(globals.HumanPlayers) == 1)
+            if (globals.HumanPlayers.Count == 1)
             {
-                if (globals.PlayerCiv is < 0 or >= 8)
+                if (globals.PlayerCiv is < 0 or >= EntityLimits.Civilizations)
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(runtime),
@@ -131,9 +131,9 @@ public static class NewGameInitialization
             }
             else
             {
-                for (int slot = 1; slot < 8; ++slot)
+                for (int slot = 1; slot < EntityLimits.Civilizations; ++slot)
                 {
-                    if ((globals.HumanPlayers & (1 << slot)) != 0)
+                    if (globals.HumanPlayers.Contains(slot))
                     {
                         world.Civilizations[slot].ScienceRate = 6;
                         world.Civilizations[slot].TaxRate = 4;
@@ -143,9 +143,9 @@ public static class NewGameInitialization
 
             if (globals.Difficulty == Difficulty.Chieftain)
             {
-                for (int slot = 1; slot < 8; ++slot)
+                for (int slot = 1; slot < EntityLimits.Civilizations; ++slot)
                 {
-                    if ((globals.HumanPlayers & (1 << slot)) != 0)
+                    if (globals.HumanPlayers.Contains(slot))
                     {
                         world.Civilizations[slot].Gold = 50;
                     }

@@ -1,36 +1,46 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Core.State;
+
+/// <summary>S02 trigger values are exact alternatives, not combinable flags.</summary>
+public enum EventTrigger
+{
+    None, UnitKilled, CityTaken, Turn, TurnInterval, Negotiation, ScenarioLoaded,
+    RandomTurn, NoSchism, ReceivedTechnology, DenyNegotiation, Unrecognized
+}
 
 /// <summary>F02/S02 retained semantic operands; serialized presence and opaque bytes belong to Formats.</summary>
 public record struct EventValues
 {
-    public uint Triggers, Actions;
+    public EventTrigger Trigger;
+    public EventActions Actions;
     public int UnitType, WhoCiv, TalkerType, WhomCiv, ListenerType, Turn, Denominator, Technology;
     public int MoveOwnerCiv, MoveUnitType, MoveCount;
-    public Fixed8<int> MoveRectangle;
-    public int MoveX, MoveY, AggressionWhomCiv, AggressionWhoCiv, CreateOwnerCiv, CreateUnitType;
-    public Fixed20<int> CreateLocations;
+    public Fixed4<MapPoint> MoveRectangle;
+    public MapPoint MoveTo;
+    public int AggressionWhomCiv, AggressionWhoCiv, CreateOwnerCiv, CreateUnitType;
+    public Fixed10<MapPoint> CreateLocations;
     public int CreateLocationCount;
     public bool CreateVeteran;
     public int AuxiliaryScalar, MoneyReceiverCiv, MoneyAmount;
     public bool NegotiationFlag;
     public int CdTrack, TerrainType;
-    public Fixed8<int> TerrainRectangle;
+    public Fixed4<MapPoint> TerrainRectangle;
     public int DestroyCiv, GiveTech, GiveTechCiv;
 }
 
 /// <summary>S02 §2 shared logical string identity. Absent differs from present empty.</summary>
 public readonly struct EventString : IEquatable<EventString>
 {
-    private sealed class Backing(OwnedList<byte> text) { public OwnedList<byte> Text = text; }
+    private sealed class Backing(string text) { public string Text = text; }
 
     private readonly Backing? backing;
 
-    public EventString(IEnumerable<byte> text) => backing = new(new(text.TakeWhile(b => b != 0)));
+    public EventString(string text) => backing = new(text ?? throw new ArgumentNullException(nameof(text)));
 
     public bool Present => backing is not null;
-    public OwnedList<byte> Value
+    public string Value
     {
         get => (backing ?? throw new ArgumentOutOfRangeException(nameof(Value), "Event string is absent")).Text;
         set =>
@@ -49,7 +59,7 @@ public readonly struct EventString : IEquatable<EventString>
 
     public static bool operator !=(EventString left, EventString right) => !left.Equals(right);
 }
-public sealed record EventInput(EventValues Values, OwnedList<OwnedList<byte>?> Strings);
+public sealed record EventInput(EventValues Values, OwnedList<string?> Strings);
 public sealed class Event
 {
     public const int StringCount = 35, TextBegin = 4, OtherBegin = 24;

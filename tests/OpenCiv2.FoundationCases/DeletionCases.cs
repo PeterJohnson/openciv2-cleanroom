@@ -4,6 +4,7 @@ using OpenCiv2.Core;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
 using OpenCiv2.Core.Units;
+using OpenCiv2.Formats;
 
 namespace OpenCiv2.FoundationCases;
 
@@ -19,7 +20,7 @@ public static partial class FoundationSuite
         public Action? OnRemoved, OnRefresh, OnCheck, OnSync;
         public DeletionFixture()
         {
-            World = new(Process); World.Map.Allocate(new(8, 6)); ref var tile = ref World.Map.TileAt(new(2, 2)); tile.Features = 0x15; tile.Owner = 1; tile.Fertility = 7;
+            World = new(Process); World.Map.Allocate(new(8, 6)); ref var tile = ref World.Map.TileAt(new(2, 2)); tile.Features = MapFeatures.Unit | MapFeatures.Irrigation | MapFeatures.Road; tile.Owner = 1; tile.Fertility = 7;
             Civ.MilitaryCount = 10; Civ.UnitsActive[3] = 10; Civ.UnitsLost[3] = 7; World.UnitTotals[1] = 10;
         }
         public ref Civilization Civ => ref World.Civilizations[1];
@@ -28,14 +29,14 @@ public static partial class FoundationSuite
         public void Bound(int end) { World.Entities.Units.SetEnd(end); World.Globals.UnitEnd = (short)end; }
         public void Live(int slot)
         {
-            Unit(slot).Token = new((uint)slot + 1); Unit(slot).Type = new(3); Unit(slot).Owner = new(1); Unit(slot).X = Unit(slot).Y = 2;
+            Unit(slot).Token = new((uint)slot + 1); Unit(slot).Type = new(3); Unit(slot).Owner = new(1); Unit(slot).Position = new(2, 2);
             Bound(Math.Max(World.Entities.Units.End, slot + 1));
         }
         public UnitDeletion Operation => new(World, Process.Rules.Definitions, Budget, this);
-        public void UnitRemoved(Position position) { Calls.Add($"removed:{position.X},{position.Y}"); OnRemoved?.Invoke(); }
+        public void UnitRemoved(MapPoint position) { Calls.Add($"removed:{position.X},{position.Y}"); OnRemoved?.Invoke(); }
         public void RefreshHomeCity(int city) { Calls.Add($"refresh:{city}"); OnRefresh?.Invoke(); }
         public void CheckCivilization(int owner, int killer) { Calls.Add($"check:{owner},{killer}"); OnCheck?.Invoke(); }
-        public void SynchronizeDeletion(Position position, CitySlot? home)
+        public void SynchronizeDeletion(MapPoint position, CitySlot? home)
         {
             Calls.Add("sync"); OnSync?.Invoke(); Calls.Add($"unit:{position.X},{position.Y}");
             if (home is CitySlot selected && selected.Value > 0) Calls.Add($"home:{selected.Value}");
@@ -46,11 +47,11 @@ public static partial class FoundationSuite
     private static void DeletionBookkeeping()
     {
         var f = new DeletionFixture(); f.Live(1); f.Bound(4); ref var unit = ref f.Unit(1);
-        unit.Flags = 0x5703; unit.Orders = UnitOrder.Fortified; unit.Home = new(200); unit.MovesUsed = 33; unit.Damage = 9; unit.DestinationX = 57; unit.DestinationY = -12;
-        var expected = unit; expected.Token = new(0); expected.X = expected.Y = -200; var globals = f.World.Globals;
+        unit.Flags = StateConversion.DecodeUnitStatus(0x5703); unit.Orders = UnitOrder.Fortified; unit.Home = new(200); unit.MovesUsed = 33; unit.Damage = 9; unit.Destination = new(57, -12);
+        var expected = unit; expected.Token = new(0); expected.Position = new(-200, -200); var globals = f.World.Globals;
         f.Operation.Erase(1, false); Equal(expected, unit); Equal(globals, f.World.Globals); Equal(4, f.World.Entities.Units.End);
         Equal((short)9, f.Civ.MilitaryCount); Equal((byte)9, f.Civ.UnitsActive[3]); Equal((byte)7, f.Civ.UnitsLost[3]); Equal(9, f.World.UnitTotals[1]);
-        Equal((byte)0x14, f.World.Map.TileAt(new(2, 2)).Features); Equal(1, (int)f.World.Map.TileAt(new(2, 2)).Owner!); Equal((byte)7, f.World.Map.TileAt(new(2, 2)).Fertility);
+        Equal(MapFeatures.Irrigation | MapFeatures.Road, f.World.Map.TileAt(new(2, 2)).Features); Equal(1, (int)f.World.Map.TileAt(new(2, 2)).Owner!); Equal((byte)7, f.World.Map.TileAt(new(2, 2)).Fertility);
         Equal(false, f.World.UnitDeletion.Active); Equal(false, f.World.UnitStacks.DetachActive); f.Trace("");
     }
     private static void DeletionCounterArithmetic()
@@ -75,18 +76,18 @@ public static partial class FoundationSuite
     private static void DeletionSleepingReferences()
     {
         var f = new DeletionFixture(); f.Live(1); f.Bound(5);
-        for (int i = 0; i < 6; ++i) { f.Unit(i).Orders = UnitOrder.Sleeping; f.Unit(i).DestinationX = 1; f.Unit(i).DestinationY = 59; f.Unit(i).Flags = 0x1000; }
-        f.Unit(2).DestinationX = 3; f.Unit(3).Orders = UnitOrder.Fortified; f.Operation.Erase(1, false);
+        for (int i = 0; i < 6; ++i) { f.Unit(i).Orders = UnitOrder.Sleeping; f.Unit(i).Carrier = new UnitSlot(1); f.Unit(i).Destination = new(1, 59); f.Unit(i).Flags = StateConversion.DecodeUnitStatus(0x1000); }
+        f.Unit(2).Carrier = new UnitSlot(3); f.Unit(3).Orders = UnitOrder.Fortified; f.Operation.Erase(1, false);
         foreach (int i in new[] { 0, 1, 4 })
-        { Equal((sbyte)UnitOrder.None, (sbyte)f.Unit(i).Orders); Equal((short)1, f.Unit(i).DestinationX); Equal((short)59, f.Unit(i).DestinationY); Equal((ushort)0x1000, f.Unit(i).Flags); }
+        { Equal((sbyte)UnitOrder.None, (sbyte)f.Unit(i).Orders); Equal((short)1, f.Unit(i).Destination.X); Equal((short)59, f.Unit(i).Destination.Y); Equal(StateConversion.DecodeUnitStatus((ushort)0x1000), f.Unit(i).Flags); }
         Equal((sbyte)UnitOrder.Sleeping, (sbyte)f.Unit(2).Orders); Equal((sbyte)UnitOrder.Fortified, (sbyte)f.Unit(3).Orders); Equal((sbyte)UnitOrder.Sleeping, (sbyte)f.Unit(5).Orders);
         // The removed exact tail is no longer in the wake scan.
-        f = new(); f.Live(0); f.Unit(0).Orders = UnitOrder.Sleeping; f.Unit(0).DestinationX = 0; f.Operation.Erase(0, false); Equal((sbyte)UnitOrder.Sleeping, (sbyte)f.Unit(0).Orders);
+        f = new(); f.Live(0); f.Unit(0).Orders = UnitOrder.Sleeping; f.Unit(0).Carrier = new UnitSlot(0); f.Operation.Erase(0, false); Equal((sbyte)UnitOrder.Sleeping, (sbyte)f.Unit(0).Orders);
     }
     private static void DeletionGuardsAndAuthority()
     {
-        var f = new DeletionFixture(); f.World.Globals.Multiplayer = GameMode.Tcp; f.World.UnitDeletion.Active = true; f.World.UnitDeletion.Reply = 83; f.Unit(0).Next = new(3000); f.Budget.Steps = 0;
-        f.Operation.Erase(-8, true); f.Operation.Erase(0, true); Equal((short)3000, f.Unit(0).Next.Value); Equal(true, f.World.UnitDeletion.Active); Equal(83, f.World.UnitDeletion.Reply); f.Trace("");
+        var f = new DeletionFixture(); f.World.Globals.Multiplayer = GameMode.Tcp; f.World.UnitDeletion.Active = true; f.World.UnitDeletion.Reply = 83; f.Unit(0).Next = new UnitSlot(3000); f.Budget.Steps = 0;
+        f.Operation.Erase(-8, true); f.Operation.Erase(0, true); Equal((short)3000, (f.Unit(0).Next?.Value ?? -1)); Equal(true, f.World.UnitDeletion.Active); Equal(83, f.World.UnitDeletion.Reply); f.Trace("");
         f.World.UnitDeletion.Active = false; Throws<ArgumentOutOfRangeException>(() => f.Operation.Erase(3000, true)); Equal(false, f.World.UnitDeletion.Active);
         foreach (bool notify in new[] { false, true }) for (int mode = 0; mode < 7; ++mode)
         {
@@ -114,7 +115,7 @@ public static partial class FoundationSuite
         f.OnRemoved = () =>
         {
             Equal(true, f.World.UnitDeletion.Active); Equal(false, f.Unit(0).Token.Occupied);
-            f.Unit(0).Owner = new(2); f.Unit(0).Type = new(4); f.Unit(0).Home = new(7); f.Unit(0).X = f.Unit(0).Y = 4;
+            f.Unit(0).Owner = new(2); f.Unit(0).Type = new(4); f.Unit(0).Home = new(7); f.Unit(0).Position = new(4, 4);
             f.Role(5); f.Civ.CityCount = 0; f.Civ.UnitsActive[3] = 0;
         };
         f.OnCheck = () => f.World.Globals.Multiplayer = GameMode.Tcp;
@@ -125,9 +126,9 @@ public static partial class FoundationSuite
     {
         for (int condition = 0; condition < 3; ++condition)
         {
-            var f = new DeletionFixture(); f.Live(0); f.Role(5); f.Role(5, 4); f.Civ.UnitsActive[3] = 1; f.Civ.UnitsActive[4] = 5; f.World.Globals.CivsAlive = 0xff;
+            var f = new DeletionFixture(); f.Live(0); f.Role(5); f.Role(5, 4); f.Civ.UnitsActive[3] = 1; f.Civ.UnitsActive[4] = 5; f.World.Globals.CivsAlive = StateConversion.DecodeCivilizations(0xff);
             if (condition == 1) f.Civ.CityCount = 1; if (condition == 2) f.Civ.UnitsActive[3] = 2;
-            f.Operation.Erase(0, false); f.Trace(condition == 0 ? "check:1,-1" : ""); Equal((byte)0xff, f.World.Globals.CivsAlive); Equal((short)10, f.Civ.MilitaryCount);
+            f.Operation.Erase(0, false); f.Trace(condition == 0 ? "check:1,-1" : ""); Equal(StateConversion.DecodeCivilizations((byte)0xff), f.World.Globals.CivsAlive); Equal((short)10, f.Civ.MilitaryCount);
         }
     }
     private static void DeletionFailurePrefixes()
@@ -138,7 +139,7 @@ public static partial class FoundationSuite
             Action fail = () => throw new IOException("owning child failed");
             switch (stage)
             {
-                case 0: f.Unit(0).Next = new(3000); break;
+                case 0: f.Unit(0).Next = new UnitSlot(3000); break;
                 case 1: f.OnRemoved = fail; break;
                 case 2: f.OnRefresh = fail; break;
                 case 3: f.Role(5); f.Civ.UnitsActive[3] = 1; f.OnCheck = fail; break;
@@ -162,7 +163,7 @@ public static partial class FoundationSuite
     private static void DeletionBackingAndSignedOwner()
     {
         var f = new DeletionFixture(); f.Live(0); Throws<ArgumentOutOfRangeException>(() => f.Operation.Erase(2048, false));
-        f.Unit(0).Owner = new(255); f.Operation.Erase(0, false); Equal((short)0, f.Unit(0).X); Equal((short)0, f.Unit(0).Y); Equal(10, f.World.UnitTotals[1]);
+        f.Unit(0).Owner = new(255); f.Operation.Erase(0, false); Equal((short)0, f.Unit(0).Position.X); Equal((short)0, f.Unit(0).Position.Y); Equal(10, f.World.UnitTotals[1]);
         f = new(); f.Live(0); f.Unit(0).Owner = new(255); f.Role(5);
         Throws<ArgumentOutOfRangeException>(() => f.Operation.Erase(0, false)); Equal(false, f.Unit(0).Token.Occupied); Equal(true, f.World.UnitDeletion.Active);
         f = new(); f.Live(0); f.Unit(0).Owner = new(8); Throws<ArgumentOutOfRangeException>(() => f.Operation.Erase(0, false)); Equal(true, f.Unit(0).Token.Occupied); Equal(true, f.World.UnitDeletion.Active);

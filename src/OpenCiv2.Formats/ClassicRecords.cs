@@ -39,10 +39,10 @@ public static partial class ClassicRecords
         w.U8(home is { } slot ? (byte)slot.Value : (byte)255);
     }
 
-    public static Tile DecodeTile(ReadOnlySpan<byte> bytes)
+    public static StoredTile DecodeTile(ReadOnlySpan<byte> bytes)
     {
         RequireSize(bytes, 6);
-        return new Tile
+        return new StoredTile
         {
             Terrain = (Terrain)(bytes[0] & 15),
             TerrainFlags = (byte)(bytes[0] & 0xf0),
@@ -56,9 +56,9 @@ public static partial class ClassicRecords
         };
     }
 
-    public static byte[] Encode(Tile v)
+    public static byte[] Encode(StoredTile v)
     {
-        if ((byte)v.Terrain > 15 || (v.TerrainFlags & 15) != 0 || v.Claimant > 7 ||
+        if ((byte)v.Terrain > 15 || (v.TerrainFlags & 15) != 0 || v.Claimant >= EntityLimits.Civilizations ||
             v.RadiusOther > 31 || v.Fertility > 15 || v.Owner is > 14)
         {
             throw new ArgumentException("Tile field outside classic encoding");
@@ -68,7 +68,7 @@ public static partial class ClassicRecords
             v.Region, v.Revelation, (byte)(((v.Owner ?? 15) << 4) | v.Fertility)];
     }
 
-    public static RegionSummary DecodeRegion(ReadOnlySpan<byte> bytes)
+    public static StoredRegionSummary DecodeRegion(ReadOnlySpan<byte> bytes)
     {
         RequireSize(bytes, 16);
         var r = new ByteReader(bytes);
@@ -78,7 +78,7 @@ public static partial class ClassicRecords
         return new(land, fertile, water, neighbors, new([first, r.U8()]));
     }
 
-    public static byte[] Encode(RegionSummary v)
+    public static byte[] Encode(StoredRegionSummary v)
     {
         RequireCount(v.Retained, 2);
         var w = new ByteWriter();

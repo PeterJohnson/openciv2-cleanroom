@@ -1,4 +1,5 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.State;
 using RuntimeEliminations = OpenCiv2.Core.State.EliminationHistory;
 using RuntimeScenario = OpenCiv2.Core.State.ScenarioParameters;
@@ -7,19 +8,37 @@ namespace OpenCiv2.Formats;
 
 public static partial class StateConversion
 {
-    private static OwnedList<OwnedList<byte>> TextFields(
-        OwnedList<OwnedList<byte>> source,
-        int count,
-        int width,
-        bool stored)
+    private static OwnedList<string> LiveTextFields(OwnedList<OwnedList<byte>> source, int count, int width)
     {
         if (source.Count != count)
         {
             throw new ArgumentException("Text field group has an incorrect extent", nameof(source));
         }
-
-        return new(source.Select(text => stored ? StoredText(text, width) : LiveText(text, width)));
+        return new(source.Select(text => LiveText(text, width)));
     }
+    private static OwnedList<OwnedList<byte>> StoredTextFields(OwnedList<string> source, int count, int width)
+    {
+        if (source.Count != count)
+        {
+            throw new ArgumentException("Text field group has an incorrect extent", nameof(source));
+        }
+        return new(source.Select(text => StoredText(text, width)));
+    }
+
+    private static void LivePoints(OwnedList<int> coordinates, Span<MapPoint> points)
+    {
+        if (coordinates.Count != points.Length * 2)
+        {
+            throw new ArgumentException("Coordinate pairs have an incorrect extent", nameof(coordinates));
+        }
+        for (int i = 0; i < points.Length; ++i)
+        {
+            points[i] = new(coordinates[2 * i], coordinates[2 * i + 1]);
+        }
+    }
+
+    private static OwnedList<int> StoredPoints(ReadOnlySpan<MapPoint> points) =>
+        new(points.ToArray().SelectMany(p => new[] { p.X, p.Y }));
 
     public static CivilizationNames ToLive(StoredCivilizationNames value)
     {
@@ -29,7 +48,7 @@ public static partial class StateConversion
         result.Leader = LiveText(value.Leader, 24);
         result.Tribe = LiveText(value.Tribe, 24);
         result.Adjective = LiveText(value.Adjective, 24);
-        result.Titles = TextFields(value.Titles, 7, 24, false);
+        result.Titles = LiveTextFields(value.Titles, RuleLimits.Governments, 24);
         return result;
     }
 
@@ -39,14 +58,14 @@ public static partial class StateConversion
         Leader = StoredText(value.Leader, 24),
         Tribe = StoredText(value.Tribe, 24),
         Adjective = StoredText(value.Adjective, 24),
-        Titles = TextFields(value.Titles, 7, 24, true),
+        Titles = StoredTextFields(value.Titles, RuleLimits.Governments, 24),
     };
 
     public static RuntimeScenario ToLive(ScenarioParameters value)
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new RuntimeScenario();
-        result.Flags = value.Flags;
+        result.Flags = DecodeScenarioOptions(value.Flags);
         result.Name = LiveText(value.Name, 80);
         result.TechnologyParadigm = value.TechnologyParadigm;
         result.YearIncrement = value.YearIncrement;
@@ -59,7 +78,7 @@ public static partial class StateConversion
 
     public static ScenarioParameters ToStored(in RuntimeScenario value) => new()
     {
-        Flags = value.Flags,
+        Flags = EncodeScenarioOptions(value.Flags),
         Name = StoredText(value.Name, 80),
         TechnologyParadigm = value.TechnologyParadigm,
         YearIncrement = value.YearIncrement,
@@ -69,6 +88,9 @@ public static partial class StateConversion
         VictoryThresholds = new(((ReadOnlySpan<short>)value.VictoryThresholds).ToArray()),
     };
 
+    public static ScenarioParameters PreserveOpaque(ScenarioParameters output, ScenarioParameters imported) => output with
+    { Flags = (ushort)((output.Flags & ScenarioOptionsMask) | (imported.Flags & ~ScenarioOptionsMask)) };
+
     public static RuntimeEliminations ToLive(EliminationHistory value)
     {
         ArgumentNullException.ThrowIfNull(value);
@@ -77,7 +99,7 @@ public static partial class StateConversion
         Copy(value.Turns, result.Turns);
         Copy(value.Killers, result.Killers);
         Copy(value.Portraits, result.Portraits);
-        result.Names = TextFields(value.Names, 12, 24, false);
+        result.Names = LiveTextFields(value.Names, RuntimeEliminations.Capacity, 24);
         return result;
     }
 
@@ -87,34 +109,41 @@ public static partial class StateConversion
         Turns = new(((ReadOnlySpan<short>)value.Turns).ToArray()),
         Killers = new(((ReadOnlySpan<byte>)value.Killers).ToArray()),
         Portraits = new(((ReadOnlySpan<byte>)value.Portraits).ToArray()),
-        Names = TextFields(value.Names, 12, 24, true),
+        Names = StoredTextFields(value.Names, RuntimeEliminations.Capacity, 24),
     };
 
     public static MultiplayerValues ToLive(MultiplayerRecord value)
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new MultiplayerValues();
-        Copy(value.CenterX, result.CenterX);
-        Copy(value.CenterY, result.CenterY);
-        if (value.Introduced.Count != 8)
+        if (value.CenterX.Count != EntityLimits.Civilizations || value.CenterY.Count != EntityLimits.Civilizations)
+        {
+            throw new ArgumentException("Map centers require eight positions", nameof(value));
+        }
+
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
+        {
+            result.Centers[i] = new(value.CenterX[i], value.CenterY[i]);
+        }
+        if (value.Introduced.Count != EntityLimits.Civilizations)
         {
             throw new ArgumentException("Introductions require eight flags", nameof(value));
         }
 
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
         {
             result.Introduced[i] = value.Introduced[i] != 0;
         }
 
         result.TurnTimeLimit = value.TurnTimeLimit;
-        Copy(value.EncodedPasswords, result.EncodedPasswords);
+        result.Passwords = PasswordConversion.Decode(value.EncodedPasswords);
         result.OpenGame = value.OpenGame != 0;
         result.KillOnRetirement = value.KillOnRetirement != 0;
         result.ShowHumanStarts = value.ShowHumanStarts != 0;
         result.ChatFromStart = value.ChatFromStart != 0;
         result.Simultaneous = value.Simultaneous != 0;
         result.CheatTurnTime = value.CheatTurnTime;
-        result.Emails = TextFields(value.Emails, 8, 32, false);
+        result.Emails = LiveTextFields(value.Emails, EntityLimits.Civilizations, 32);
         result.ResumeCiv = value.ResumeCiv;
         result.ResumeEvent = value.ResumeEvent;
         result.AutoplayActive = value.AutoplayActive != 0;
@@ -127,18 +156,18 @@ public static partial class StateConversion
 
     public static MultiplayerRecord ToStored(in MultiplayerValues value) => new()
     {
-        CenterX = new(((ReadOnlySpan<short>)value.CenterX).ToArray()),
-        CenterY = new(((ReadOnlySpan<short>)value.CenterY).ToArray()),
+        CenterX = new(((ReadOnlySpan<MapPoint>)value.Centers).ToArray().Select(p => unchecked((short)p.X))),
+        CenterY = new(((ReadOnlySpan<MapPoint>)value.Centers).ToArray().Select(p => unchecked((short)p.Y))),
         Introduced = new(((ReadOnlySpan<bool>)value.Introduced).ToArray().Select(flag => flag ? (short)1 : (short)0)),
         TurnTimeLimit = value.TurnTimeLimit,
-        EncodedPasswords = new(((ReadOnlySpan<byte>)value.EncodedPasswords).ToArray()),
+        EncodedPasswords = PasswordConversion.Encode(value.Passwords),
         OpenGame = value.OpenGame ? (short)1 : (short)0,
         KillOnRetirement = value.KillOnRetirement ? (short)1 : (short)0,
         ShowHumanStarts = value.ShowHumanStarts ? (short)1 : (short)0,
         ChatFromStart = value.ChatFromStart ? (short)1 : (short)0,
         Simultaneous = value.Simultaneous ? (short)1 : (short)0,
         CheatTurnTime = value.CheatTurnTime,
-        Emails = TextFields(value.Emails, 8, 32, true),
+        Emails = StoredTextFields(value.Emails, EntityLimits.Civilizations, 32),
         ResumeCiv = value.ResumeCiv,
         ResumeEvent = value.ResumeEvent,
         AutoplayActive = value.AutoplayActive ? (short)1 : (short)0,
@@ -162,8 +191,7 @@ public static partial class StateConversion
         var result = new MapView();
         result.Open = value.Open != 0;
         result.TrackMoves = value.TrackMoves != 0;
-        result.X = value.X;
-        result.Y = value.Y;
+        result.Center = new(value.X, value.Y);
         result.Zoom = value.Zoom;
         return result;
     }
@@ -172,8 +200,8 @@ public static partial class StateConversion
     {
         Open = value.Open ? (short)1 : (short)0,
         TrackMoves = value.TrackMoves ? (short)1 : (short)0,
-        X = value.X,
-        Y = value.Y,
+        X = unchecked((short)value.Center.X),
+        Y = unchecked((short)value.Center.Y),
         Zoom = value.Zoom,
     };
 
@@ -181,8 +209,8 @@ public static partial class StateConversion
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new EventValues();
-        result.Triggers = value.Triggers;
-        result.Actions = value.Actions;
+        result.Trigger = DecodeEventTrigger(value.Triggers);
+        result.Actions = DecodeEventActions(value.Actions);
         result.UnitType = value.UnitType;
         result.WhoCiv = value.WhoCiv;
         result.TalkerType = value.TalkerType;
@@ -194,14 +222,13 @@ public static partial class StateConversion
         result.MoveOwnerCiv = value.MoveOwnerCiv;
         result.MoveUnitType = value.MoveUnitType;
         result.MoveCount = value.MoveCount;
-        Copy(value.MoveRectangle, result.MoveRectangle);
-        result.MoveX = value.MoveX;
-        result.MoveY = value.MoveY;
+        LivePoints(value.MoveRectangle, result.MoveRectangle);
+        result.MoveTo = new(value.MoveX, value.MoveY);
         result.AggressionWhomCiv = value.AggressionWhomCiv;
         result.AggressionWhoCiv = value.AggressionWhoCiv;
         result.CreateOwnerCiv = value.CreateOwnerCiv;
         result.CreateUnitType = value.CreateUnitType;
-        Copy(value.CreateLocations, result.CreateLocations);
+        LivePoints(value.CreateLocations, result.CreateLocations);
         result.CreateLocationCount = value.CreateLocationCount;
         result.CreateVeteran = value.CreateVeteran != 0;
         result.AuxiliaryScalar = value.AuxiliaryScalar;
@@ -210,7 +237,7 @@ public static partial class StateConversion
         result.NegotiationFlag = value.NegotiationFlag != 0;
         result.CdTrack = value.CdTrack;
         result.TerrainType = value.TerrainType;
-        Copy(value.TerrainRectangle, result.TerrainRectangle);
+        LivePoints(value.TerrainRectangle, result.TerrainRectangle);
         result.DestroyCiv = value.DestroyCiv;
         result.GiveTech = value.GiveTech;
         result.GiveTechCiv = value.GiveTechCiv;
@@ -219,8 +246,8 @@ public static partial class StateConversion
 
     public static EventRecord ToStored(in EventValues value) => new()
     {
-        Triggers = value.Triggers,
-        Actions = value.Actions,
+        Triggers = EncodeEventTrigger(value.Trigger),
+        Actions = EncodeEventActions(value.Actions),
         UnitType = value.UnitType,
         WhoCiv = value.WhoCiv,
         TalkerType = value.TalkerType,
@@ -232,14 +259,14 @@ public static partial class StateConversion
         MoveOwnerCiv = value.MoveOwnerCiv,
         MoveUnitType = value.MoveUnitType,
         MoveCount = value.MoveCount,
-        MoveRectangle = new(((ReadOnlySpan<int>)value.MoveRectangle).ToArray()),
-        MoveX = value.MoveX,
-        MoveY = value.MoveY,
+        MoveRectangle = StoredPoints(value.MoveRectangle),
+        MoveX = value.MoveTo.X,
+        MoveY = value.MoveTo.Y,
         AggressionWhomCiv = value.AggressionWhomCiv,
         AggressionWhoCiv = value.AggressionWhoCiv,
         CreateOwnerCiv = value.CreateOwnerCiv,
         CreateUnitType = value.CreateUnitType,
-        CreateLocations = new(((ReadOnlySpan<int>)value.CreateLocations).ToArray()),
+        CreateLocations = StoredPoints(value.CreateLocations),
         CreateLocationCount = value.CreateLocationCount,
         CreateVeteran = value.CreateVeteran ? (int)1 : (int)0,
         AuxiliaryScalar = value.AuxiliaryScalar,
@@ -248,7 +275,7 @@ public static partial class StateConversion
         NegotiationFlag = value.NegotiationFlag ? (int)1 : (int)0,
         CdTrack = value.CdTrack,
         TerrainType = value.TerrainType,
-        TerrainRectangle = new(((ReadOnlySpan<int>)value.TerrainRectangle).ToArray()),
+        TerrainRectangle = StoredPoints(value.TerrainRectangle),
         DestroyCiv = value.DestroyCiv,
         GiveTech = value.GiveTech,
         GiveTechCiv = value.GiveTechCiv,

@@ -84,8 +84,8 @@ internal static partial class NativeMapMatrix
         var city = board.Cities[0] with { Position = excluded.Position };
         var tiles = board.Tiles.ToArray();
         int index = center.Y * (board.Width / 2) + center.X / 2;
-        tiles[index] = tiles[index] with { Improvements = MapImprovements.Road };
-        tiles[index + 1] = tiles[index + 1] with { Improvements = MapImprovements.Railroad | MapImprovements.CitySite };
+        tiles[index] = tiles[index] with { Improvements = MapFeatures.Road };
+        tiles[index + 1] = tiles[index + 1] with { Improvements = MapFeatures.Railroad | MapFeatures.CitySite };
         var baseline = board with
         {
             Tiles = new(tiles),
@@ -96,7 +96,7 @@ internal static partial class NativeMapMatrix
         Require(unrestricted.InCityRadius(center) && unrestricted.HasTarget(excluded.Target!.Value),
             "the adjacent city and worker affect the unrestricted view");
         var substitutedTiles = tiles.ToArray();
-        substitutedTiles[index + 1] = new(10, MapImprovements.Pollution, true, 2, false);
+        substitutedTiles[index + 1] = new(10, MapFeatures.Pollution, true, 2, false);
         var alternate = baseline with
         {
             Revision = baseline.Revision + 1,

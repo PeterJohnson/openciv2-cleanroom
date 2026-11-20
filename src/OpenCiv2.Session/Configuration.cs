@@ -1,4 +1,5 @@
 using OpenCiv2.Contracts;
+using OpenCiv2.Core.State;
 using OpenCiv2.IO;
 
 namespace OpenCiv2.Session;
@@ -35,17 +36,19 @@ public static class Configuration
         using var pin = runtime.PinWorld();
         try
         {
-            ref uint options = ref runtime.World.Globals.GameOptions;
-            bool oldMusic = (options & 8) != 0;
-            options &= 0xffff8027;
+            ref var options = ref runtime.World.Globals.GameOptions;
+            bool oldMusic = options.Music;
+            options.Sound = options.Music = options.Wait = options.Autosave = options.EnemyMoves =
+                options.SkipEnemyPauses = options.FastSlide = options.Advice = options.Tutorial =
+                options.MouseGoTo = options.EnterClosesCity = false;
             if (choices.Sound)
             {
-                options |= 0x10;
+                options.Sound = true;
             }
 
             if (choices.Music)
             {
-                options |= 8;
+                options.Music = true;
                 if (!oldMusic)
                 {
                     Publish(runtime);
@@ -61,49 +64,50 @@ public static class Configuration
             }
             if (choices.Wait)
             {
-                options |= 0x4000;
+                options.Wait = true;
             }
 
             if (choices.Autosave)
             {
-                options |= 0x2000;
+                options.Autosave = true;
             }
 
             if (choices.EnemyMoves)
             {
-                options |= 0x1000;
+                options.EnemyMoves = true;
             }
 
             if (choices.SkipEnemyPauses)
             {
-                options |= 0x800;
+                options.SkipEnemyPauses = true;
             }
 
             if (choices.FastSlide)
             {
-                options |= 0x400;
+                options.FastSlide = true;
             }
 
             if (choices.Advice)
             {
-                options |= 0x200;
+                options.Advice = true;
             }
 
             if (choices.Tutorial)
             {
-                options |= 0x100;
+                options.Tutorial = true;
             }
 
             if (choices.MouseGoTo)
             {
-                options |= 0x80;
+                options.MouseGoTo = true;
             }
 
             if (choices.EnterClosesCity)
             {
-                options |= 0x40;
+                options.EnterClosesCity = true;
             }
 
+            ClassicConfigurationMetadata.CopyOptionsToPreferences(runtime.Process, runtime.World);
             runtime.Process.OrdinaryPreferences.GameOptions = options;
             _ = PreferenceFiles.Save(runtime, services.Preferences);
             return true;
@@ -129,17 +133,18 @@ public static class Configuration
         using var pin = runtime.PinWorld();
         try
         {
-            ref uint options = ref runtime.World.Globals.GameOptions;
-            bool oldHeralds = (options & 0x200000) != 0;
-            options &= ~0x003f0000U;
+            ref var options = ref runtime.World.Globals.GameOptions;
+            bool oldHeralds = options.Heralds;
+            options.Throne = options.Diplomacy = options.Heralds = options.AdvanceCivilopedia =
+                options.Council = options.WonderMovies = false;
             if (choices.Throne)
             {
-                options |= 0x20000;
+                options.Throne = true;
             }
 
             if (choices.Diplomacy)
             {
-                options |= 0x40000;
+                options.Diplomacy = true;
             }
 
             if (choices.Heralds)
@@ -153,23 +158,24 @@ public static class Configuration
                         services.LowMemoryNotice();
                     }
                 }
-                options |= 0x200000;
+                options.Heralds = true;
             }
             if (choices.AdvanceCivilopedia)
             {
-                options |= 0x80000;
+                options.AdvanceCivilopedia = true;
             }
 
             if (choices.Council)
             {
-                options |= 0x100000;
+                options.Council = true;
             }
 
             if (choices.WonderMovies)
             {
-                options |= 0x10000;
+                options.WonderMovies = true;
             }
 
+            ClassicConfigurationMetadata.CopyOptionsToPreferences(runtime.Process, runtime.World);
             runtime.Process.OrdinaryPreferences.GameOptions = options;
             _ = PreferenceFiles.Save(runtime, services.Preferences);
             return true;
@@ -192,28 +198,22 @@ public static class Configuration
         using var pin = runtime.PinWorld();
         try
         {
-            ReadOnlySpan<bool> enabled = [
-                choices.GrowthHalted,
-                choices.ImprovementBuilt,
-                choices.UnitBuilt,
-                choices.InvalidBuild,
-                choices.Disorder,
-                choices.OrderRestored,
-                choices.Celebration,
-                choices.FoodLow,
-                choices.Pollution,
-                choices.ProductionPenalty,
-                choices.ZoomToCity
-            ];
-            ushort messages = 0;
-            for (int i = 0; i < enabled.Length; ++i)
+            var messages = new MessageSuppression
             {
-                if (!enabled[i])
-                {
-                    messages |= (ushort)(1 << i);
-                }
-            }
+                GrowthHalted = !choices.GrowthHalted,
+                ImprovementBuilt = !choices.ImprovementBuilt,
+                UnitBuilt = !choices.UnitBuilt,
+                InvalidBuild = !choices.InvalidBuild,
+                Disorder = !choices.Disorder,
+                OrderRestored = !choices.OrderRestored,
+                Celebration = !choices.Celebration,
+                FoodLow = !choices.FoodLow,
+                Pollution = !choices.Pollution,
+                ProductionPenalty = !choices.ProductionPenalty,
+                ZoomToCity = !choices.ZoomToCity,
+            };
 
+            ClassicConfigurationMetadata.ResetMessages(runtime.Process, runtime.World);
             runtime.World.Globals.MessageOptions = messages;
             runtime.Process.OrdinaryPreferences.DisabledMessages = messages;
             _ = PreferenceFiles.Save(runtime, preferences);

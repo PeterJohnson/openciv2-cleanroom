@@ -3,6 +3,7 @@ using System.Runtime.ExceptionServices;
 using System.Text;
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core.Rules;
 using OpenCiv2.IO;
 
 namespace OpenCiv2.Session;
@@ -100,7 +101,7 @@ public sealed class ClassicSaveOperation : IDisposable
         var world = runtime.World;
         var mode = world.Globals.Multiplayer;
         int year = world.Globals.Year, civ = world.Multiplayer.LocalHuman;
-        bool monthly = (scenario || (world.Globals.GameFlags & 0x80) != 0) && world.Scenario.YearIncrement < 0;
+        bool monthly = (scenario || world.Globals.Status.Scenario) && world.Scenario.YearIncrement < 0;
         files.Extension = ClassicGameFiles.SelectExtension(scenario, mode, files.Extension);
         string name = Text(s.RulerName(civ));
         var prefix = (name[..Math.Min(2, name.Length)] + "_").ToCharArray();
@@ -151,7 +152,7 @@ public sealed class ClassicSaveOperation : IDisposable
         int civ = world.Multiplayer.LocalHuman, year = world.Globals.Year, difficulty = (int)world.Globals.Difficulty;
         if (scenario)
         {
-            return Notice("SCENOK", Encoding.Latin1.GetString(world.Scenario.Name.ToArray()));
+            return Notice("SCENOK", world.Scenario.Name);
         }
 
         if (mode == GameMode.Email)
@@ -160,8 +161,7 @@ public sealed class ClassicSaveOperation : IDisposable
         }
 
         var rules = runtime.Process.Rules;
-        string difficultyName = Encoding.Latin1.GetString(
-            rules.Text.Text(rules.Names.Difficulties[difficulty]).ToArray());
+        string difficultyName = RuleText.Display(rules.Definitions.Difficulties[difficulty].Name);
         var s = services!;
         return Notice(
             "SAVEOK",

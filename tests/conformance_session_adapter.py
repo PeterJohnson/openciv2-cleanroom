@@ -43,6 +43,8 @@ class SessionAdapterTests(unittest.TestCase):
                 value = changed["state"][key]
                 if kind == "bytes":
                     value["hex"] = value["hex"][:-2] + ("00" if value["hex"][-2:] != "00" else "01")
+                elif kind == "text[]":
+                    value[-1]["value"] = "unexpected retained password"
                 elif kind == "i16[]":
                     value[-1]["value"] = "1"
                 elif kind == "bool":

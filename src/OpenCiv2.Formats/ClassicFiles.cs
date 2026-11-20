@@ -1,5 +1,6 @@
 using System.Numerics;
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.IO;
 
@@ -68,7 +69,7 @@ public static class ClassicFiles
     private static OwnedList<short> Starts(ReadOnlySpan<byte> bytes)
     {
         var r = new ByteReader(bytes);
-        var values = new short[21];
+        var values = new short[RuleLimits.Tribes];
         for (int i = 0; i < values.Length; ++i)
         {
             values[i] = r.I16();
@@ -93,8 +94,8 @@ public static class ClassicFiles
     public static byte[] EncodeRawMap(RawMapFile map)
     {
         var shape = Shape(map.Header, 0);
-        ClassicRecords.RequireCount(map.StartX, 21);
-        ClassicRecords.RequireCount(map.StartY, 21);
+        ClassicRecords.RequireCount(map.StartX, RuleLimits.Tribes);
+        ClassicRecords.RequireCount(map.StartY, RuleLimits.Tribes);
         ClassicRecords.RequireCount(map.Tiles, shape.Area);
         var w = new ByteWriter();
         w.Append(ClassicRecords.Encode(map.Header));
@@ -184,16 +185,16 @@ public static class ClassicFiles
         int unitCount, cityCount;
         try
         {
-            unitCount = Count(globals.UnitEnd, 2048, "Unit scan bound");
-            cityCount = Count(globals.CityEnd, 256, "City scan bound");
+            unitCount = Count(globals.UnitEnd, EntityLimits.Units, "Unit scan bound");
+            cityCount = Count(globals.CityEnd, EntityLimits.Cities, "City scan bound");
         }
         catch (ArgumentException error)
         {
-            throw new DecodeException(12 + (globals.UnitEnd is < 0 or > 2048 ? 0x2e : 0x30), error.Message);
+            throw new DecodeException(12 + (globals.UnitEnd is < 0 or > EntityLimits.Units ? 0x2e : 0x30), error.Message);
         }
-        var names = ReadMany(ref r, 8, 242, ClassicRecords.DecodeStoredCivilizationNames);
-        var civilizations = new StoredCivilization[8];
-        for (int i = 0; i < 8; ++i)
+        var names = ReadMany(ref r, EntityLimits.Civilizations, 242, ClassicRecords.DecodeStoredCivilizationNames);
+        var civilizations = new StoredCivilization[EntityLimits.Civilizations];
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
         {
             if (version >= 0x28)
             {
@@ -211,8 +212,8 @@ public static class ClassicFiles
         int mapOffset = r.Position;
         var mapHeader = Read(ref r, 14, ClassicRecords.DecodeMapHeader);
         var shape = Shape(mapHeader, mapOffset);
-        var remembered = new OwnedList<byte>[7];
-        for (int i = 0; i < 7; ++i)
+        var remembered = new OwnedList<byte>[EntityLimits.PlayerCivilizations];
+        for (int i = 0; i < EntityLimits.PlayerCivilizations; ++i)
         {
             remembered[i] = Bytes(ref r, shape.Area);
         }
@@ -220,7 +221,7 @@ public static class ClassicFiles
         var tiles = ReadMany(ref r, shape.Area, 6, ClassicRecords.DecodeTile);
         int coarseSize = shape.CoarseWidth * shape.CoarseHeight;
         var coarse = new OwnedList<OwnedList<byte>>([Bytes(ref r, coarseSize), Bytes(ref r, coarseSize)]);
-        var regions = ReadMany(ref r, 64, 16, ClassicRecords.DecodeRegion);
+        var regions = ReadMany(ref r, MapLimits.Regions, 16, ClassicRecords.DecodeRegion);
         var units = new StoredUnit[unitCount];
         var cities = new StoredCity[cityCount];
         for (int i = 0; i < unitCount; ++i)
@@ -237,22 +238,22 @@ public static class ClassicFiles
                 : Read(ref r, 88, ClassicRecords.DecodeStoredCity);
         }
 
-        var tribes = new TribeUsage[21];
-        for (int i = 0; i < 21; ++i)
+        var tribes = new TribeUsage[RuleLimits.Tribes];
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             tribes[i] = new(r.U8(), r.U8(), r.U8());
         }
 
         short cursorX = r.I16(), cursorY = r.I16();
         var leaders = ReadMany(ref r, LeaderCount(globals), 48, ClassicRecords.DecodeStoredLeader);
-        var history = new OwnedList<byte>[150];
-        for (int i = 0; i < 150; ++i)
+        var history = new OwnedList<byte>[OpenCiv2.Core.State.GameState.PowerHistorySamples];
+        for (int i = 0; i < OpenCiv2.Core.State.GameState.PowerHistorySamples; ++i)
         {
-            history[i] = Bytes(ref r, 8);
+            history[i] = Bytes(ref r, EntityLimits.Civilizations);
         }
 
         var layout = Read(ref r, 106, ClassicRecords.DecodeSavedLayout);
-        var views = ReadMany(ref r, 8, 10, ClassicRecords.DecodeSavedMapView);
+        var views = ReadMany(ref r, EntityLimits.Civilizations, 10, ClassicRecords.DecodeSavedMapView);
         var scenario = HasScenario(globals) ? Read(ref r, 100, ClassicRecords.DecodeScenarioParameters) : null;
         var eliminations = Read(ref r, 338, ClassicRecords.DecodeEliminationHistory);
         var multiplayer = version >= 0x29 && globals.Multiplayer != 0
@@ -342,14 +343,14 @@ public static class ClassicFiles
     public static byte[] EncodeStoredSave(StoredSave save)
     {
         Check(save.Header.Version == 0x2c, "Stored-save encoding supports only version 0x2c");
-        ClassicRecords.RequireCount(save.Names, 8);
-        ClassicRecords.RequireCount(save.Civilizations, 8);
-        ClassicRecords.RequireCount(save.Units, Count(save.Globals.UnitEnd, 2048, "Unit scan bound"));
-        ClassicRecords.RequireCount(save.Cities, Count(save.Globals.CityEnd, 256, "City scan bound"));
+        ClassicRecords.RequireCount(save.Names, EntityLimits.Civilizations);
+        ClassicRecords.RequireCount(save.Civilizations, EntityLimits.Civilizations);
+        ClassicRecords.RequireCount(save.Units, Count(save.Globals.UnitEnd, EntityLimits.Units, "Unit scan bound"));
+        ClassicRecords.RequireCount(save.Cities, Count(save.Globals.CityEnd, EntityLimits.Cities, "City scan bound"));
         ClassicRecords.RequireCount(save.Leaders, LeaderCount(save.Globals));
-        ClassicRecords.RequireCount(save.Tribes, 21);
-        ClassicRecords.RequireCount(save.PowerHistory, 150);
-        ClassicRecords.RequireCount(save.Views, 8);
+        ClassicRecords.RequireCount(save.Tribes, RuleLimits.Tribes);
+        ClassicRecords.RequireCount(save.PowerHistory, OpenCiv2.Core.State.GameState.PowerHistorySamples);
+        ClassicRecords.RequireCount(save.Views, EntityLimits.Civilizations);
         Check((save.Scenario is not null) == HasScenario(save.Globals), "Scenario block/flags disagree");
         Check((save.Multiplayer is not null) == (save.Globals.Multiplayer != 0), "Multiplayer block/mode disagree");
         Check(
@@ -358,14 +359,14 @@ public static class ClassicFiles
         var map = save.Map;
         var shape = new Geometry(map.Header.Width, map.Header.Height);
         ClassicRecords.RequireCount(map.Tiles, shape.Area);
-        ClassicRecords.RequireCount(map.Remembered, 7);
+        ClassicRecords.RequireCount(map.Remembered, EntityLimits.PlayerCivilizations);
         foreach (var layer in map.Remembered)
         {
             ClassicRecords.RequireCount(layer, shape.Area);
         }
 
         ClassicRecords.RequireCount(map.Coarse, 2);
-        ClassicRecords.RequireCount(map.Regions, 64);
+        ClassicRecords.RequireCount(map.Regions, MapLimits.Regions);
         foreach (var grid in map.Coarse)
         {
             ClassicRecords.RequireCount(grid, shape.CoarseWidth * shape.CoarseHeight);
@@ -432,7 +433,7 @@ public static class ClassicFiles
 
         foreach (var sample in save.PowerHistory)
         {
-            ClassicRecords.RequireCount(sample, 8);
+            ClassicRecords.RequireCount(sample, EntityLimits.Civilizations);
             Append(w, sample);
         }
         w.Append(ClassicRecords.Encode(save.Layout));

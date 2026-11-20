@@ -16,15 +16,15 @@ internal enum MapDetail { Full, Reduced, Overview }
 internal static class MapTileArt
 {
     private static readonly MapArtCatalog Catalog = MapArtCatalog.Stock;
-    private const MapImprovements Transport = MapImprovements.Road | MapImprovements.Railroad;
-    private const MapImprovements Buildings = MapImprovements.CitySite | MapImprovements.Fortification;
+    private const MapFeatures Transport = MapFeatures.Road | MapFeatures.Railroad;
+    private const MapFeatures Buildings = MapFeatures.CitySite | MapFeatures.Fortification;
 
     public static MapDetail Detail(double displayedZoom) => displayedZoom >= 0.55 ? MapDetail.Full :
         displayedZoom >= 0.35 ? MapDetail.Reduced : MapDetail.Overview;
 
     public static bool HasCity(MapScene scene, MapPoint point, ObservedTile tile) =>
         (tile.Improvements & Buildings) != Buildings &&
-        ((tile.Improvements & Buildings) == MapImprovements.CitySite || scene.HasCity(point));
+        ((tile.Improvements & Buildings) == MapFeatures.CitySite || scene.HasCity(point));
 
     public static bool Airbase(ObservedTile tile) => (tile.Improvements & Buildings) == Buildings;
 
@@ -41,7 +41,7 @@ internal static class MapTileArt
         var terrainArt = Catalog.Terrain[terrain];
         output.Add(new(TileArtLayer.Ground, terrainArt.Body));
         const int diagonals = 0b01010101;
-        Span<MapImprovements> improvements = stackalloc MapImprovements[8];
+        Span<MapFeatures> improvements = stackalloc MapFeatures[MapLimits.Directions];
         improvements.Clear();
         int land = 0, same = 0, rivers = 0, mouths = 0, fog = 0, neighborCities = 0;
         bool detailed = detail != MapDetail.Overview;
@@ -140,12 +140,12 @@ internal static class MapTileArt
 
         if (!bare && detail == MapDetail.Full)
         {
-            const MapImprovements work = MapImprovements.Irrigation | MapImprovements.Mine;
+            const MapFeatures work = MapFeatures.Irrigation | MapFeatures.Mine;
             var agriculture = (tile.Improvements & work) switch
             {
                 work => "farmland",
-                MapImprovements.Irrigation => "irrigation",
-                MapImprovements.Mine => "mine",
+                MapFeatures.Irrigation => "irrigation",
+                MapFeatures.Mine => "mine",
                 _ => null
             };
             if (agriculture is null && city)
@@ -156,7 +156,7 @@ internal static class MapTileArt
                 {
                     agriculture = "farmland";
                 }
-                else if (southeast == MapImprovements.Irrigation || southwest == MapImprovements.Irrigation)
+                else if (southeast == MapFeatures.Irrigation || southwest == MapFeatures.Irrigation)
                 {
                     agriculture = "irrigation";
                 }
@@ -184,7 +184,7 @@ internal static class MapTileArt
                 output.Add(new(TileArtLayer.Resource, resource));
             }
 
-            if ((tile.Improvements & MapImprovements.Pollution) != 0)
+            if ((tile.Improvements & MapFeatures.Pollution) != 0)
             {
                 output.Add(new(TileArtLayer.Pollution, Catalog.Improvements["pollution"]));
             }
@@ -199,10 +199,10 @@ internal static class MapTileArt
         }
     }
 
-    private static void AddRoutes(List<TileSprite> output, MapImprovements flags, bool city,
-        ReadOnlySpan<MapImprovements> neighbors, int neighborCities)
+    private static void AddRoutes(List<TileSprite> output, MapFeatures flags, bool city,
+        ReadOnlySpan<MapFeatures> neighbors, int neighborCities)
     {
-        bool rail = city || (flags & MapImprovements.Railroad) != 0;
+        bool rail = city || (flags & MapFeatures.Railroad) != 0;
         bool connected = false;
         for (int d = 0; d < neighbors.Length; d++)
         {
@@ -213,7 +213,7 @@ internal static class MapTileArt
                 continue;
             }
 
-            bool railArm = rail && (otherCity || (other & MapImprovements.Railroad) != 0);
+            bool railArm = rail && (otherCity || (other & MapFeatures.Railroad) != 0);
             output.Add(new(TileArtLayer.RouteNE + d, railArm ? Catalog.Rails[d + 1] : Catalog.Roads[d + 1]));
             connected = true;
         }

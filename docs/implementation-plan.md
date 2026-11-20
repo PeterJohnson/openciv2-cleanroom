@@ -61,6 +61,40 @@ The [finite scope](m1-closeout.md) records exclusions. Complete terrain generati
 civilization creation, balancing, acceleration, event execution, turn processing
 and multiplayer sessions remain the responsibilities of later owning milestones.
 
+### State representation boundary
+
+Game status, tile features, unit/city/civilization status, rules/options,
+relationships, scenario/event settings, unit abilities and regional presence
+now use named logical values. Membership sets cover civilizations, technologies,
+improvements, worked positions and neighboring regions; specialists and their
+count have separate fields. File bit positions and opaque values live in the
+adapters, with lifetime checks and explicit configuration copy/reset handling.
+Lossless stored codecs and live import/edit/export are tested separately.
+Do not reintroduce raw masks or `BitN` members when extending these APIs.
+
+`MapFeatures` and `MapPoint` are shared between Core and Contracts. The feature
+name includes occupancy and environmental changes; observer output excludes
+remembered unit presence. Cosmic parameters are named properties, with ordering
+and normalization in Formats. Rule definitions and live leaders own their text;
+parallel name bindings and the shared text pool have been removed. Label rebuilds
+and rule reloads are checked for independent text retention. All paired map
+locations now use `MapPoint`, including entity positions, destinations, goals,
+starts, views and events. Text in Core/Contracts uses C# strings; classic byte
+encoding, termination, widths and password scrambling belong to Formats.
+Unicode names, coordinate/carrier conversion and adapter round trips have regression
+coverage. The authored fresh-game conformance projection observes eight logical
+passwords, separately from F06 encoding tests.
+Nullable slot references replace signed link wrappers. F06 retains raw negative
+sentinels in adapter metadata while core absence uses null. Shared entity, rule,
+city and map limits now drive bounds, allocation and domain inline-array extents;
+preference-field counts, password image sizes and history/AI capacities remain
+with their respective owners.
+
+One specification terminology gap remains: P02 calls the `0x8000` unit state
+AwaitingInput, while F02/U03 name it Automated and F02 assigns Waiting to
+`0x4000`. The projection preserves P02's existing marker using `Automated`;
+resolve the naming conflict before changing that visible behavior.
+
 ### Compatibility scope for every milestone
 
 Implement each owning specification's admitted domain, meaningful failure prefixes,

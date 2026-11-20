@@ -30,7 +30,7 @@ public static partial class FoundationSuite
         public SaveMenuFixture()
         {
             File.ReadySave(); File.Files.Text.Search = "saves"; File.Runtime.World.Globals.Year = -3980; File.Runtime.World.Globals.Difficulty = Difficulty.King;
-            var rules = File.Runtime.Process.Rules; for (int i = 0; i < 6; ++i) rules.Names.Difficulties[i] = rules.Text.Store(Encoding.ASCII.GetBytes("Difficulty" + i));
+            var rules = File.Runtime.Process.Rules; for (int i = 0; i < 6; ++i) rules.Definitions.Difficulties[i] = new("difficulty." + i, NameText("Difficulty" + i));
             Services = new(File.Storage, Timer, () => { ++CalendarCalls; return new(11, 14, 2026, 1, 2, 3); }, s => s.ToLowerInvariant(), i => "Label" + i,
                 i => "Ruler" + i, i => "Title" + i, i => "Tribe" + i, i => i.ToString(CultureInfo.InvariantCulture), () => "Output failed", notice => Notices.Add(notice));
         }
@@ -75,7 +75,7 @@ public static partial class FoundationSuite
         foreach (short year in new short[] { short.MinValue, -13, -12, -1, 0, 1, 12, short.MaxValue })
         {
             using var f = new SaveMenuFixture(); f.File.Runtime.World.Globals.Year = year; f.File.Runtime.World.Scenario.YearIncrement = -1;
-            f.File.Runtime.World.Scenario.Name = new([0xe9]); Equal((int)SaveMenuResult.Saved, (int)f.Save(true));
+            f.File.Runtime.World.Scenario.Name = "\u00e9"; Equal((int)SaveMenuResult.Saved, (int)f.Save(true));
             int month = year < 0 ? 11 - Math.Abs(year % 12) : Math.Abs(year % 12); Equal("saves\\" + Math.Abs(year / 12) + "label" + (420 + month) + ".scn", f.Chooser.Request!.InitialPath);
             Equal("SCENOK", f.Notices.Single().Key); Equal("é", f.Notices[0].Arguments[0]); Equal(0, f.CalendarCalls);
         }

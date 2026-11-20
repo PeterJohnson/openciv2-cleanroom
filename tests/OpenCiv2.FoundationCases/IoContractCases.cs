@@ -1,5 +1,6 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Formats;
 using OpenCiv2.IO;
 
 namespace OpenCiv2.FoundationCases;
@@ -109,9 +110,9 @@ public static partial class FoundationSuite
         choices[0] = 3;
         Equal(1, interaction.Choices[0]);
         byte[] classic = [0xff, 0x80];
-        var names = new SetupNames(new(classic), new([]), new([]));
+        var names = new SetupNames(ClassicText.DecodeWindows1252((classic).ToArray()), "", "");
         classic[0] = 0;
-        Equal((byte)0xff, names.Leader[0]);
+        Equal('ÿ', names.Leader[0]);
         Throws<ArgumentException>(() => new GovernmentTitles([]));
         Equal(false, new UnitToken(0).Occupied); Equal(true, new CityToken(uint.MaxValue).Occupied);
     }

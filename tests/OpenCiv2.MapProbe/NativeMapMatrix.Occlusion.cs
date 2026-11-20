@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 using SkiaSharp;
@@ -57,11 +58,11 @@ internal static partial class NativeMapMatrix
             Annotations = MapAnnotations.Stock
         };
         var tiles = ground.ToArray();
-        tiles[rear.Y * columns + rear.X / 2] = tiles[rear.Y * columns + rear.X / 2] with { Improvements = MapImprovements.Fortification };
+        tiles[rear.Y * columns + rear.X / 2] = tiles[rear.Y * columns + rear.X / 2] with { Improvements = MapFeatures.Fortification };
         var city = board.Cities[0] with
         {
             Position = rear,
-            Name = new(Encoding.ASCII.GetBytes("Low Harbor")),
+            Name = "Low Harbor",
             Details = board.Cities[0].Details! with
             { Appearance = MapFact<MapCityAppearance>.Known(new(5, 3, true)), Garrison = default, Population = default, Disorder = default }
         };

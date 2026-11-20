@@ -131,7 +131,7 @@ public sealed class MapScene
                 ref readonly var cell = ref objects[objectSlots[index]];
                 var tile = map.Tiles[index];
                 if (cell.Unit is not null || cell.City is not null || RememberedCity(tile) ||
-                    tile.Terrain is not null && (tile.Improvements & MapImprovements.Fortification) != 0)
+                    tile.Terrain is not null && (tile.Improvements & MapFeatures.Fortification) != 0)
                 {
                     foreground.Add(x);
                 }
@@ -201,17 +201,7 @@ public sealed class MapScene
         }
     }
 
-    private static string CityName(ObservedMapCity city)
-    {
-        try
-        {
-            return ClassicText.DecodeWindows1252(city.Name.ToArray(), "map city name");
-        }
-        catch (ContentException)
-        {
-            return "City";
-        }
-    }
+    private static string CityName(ObservedMapCity city) => city.Name;
 
     private int Index(MapPoint position) => position.Y * (Map.Width / 2) + position.X / 2;
 
@@ -236,10 +226,10 @@ public sealed class MapScene
             !(radius && delta.CitiesChanged) ? delta.ChangedIndices : Enumerable.Range(0, Map.Tiles.Count);
     }
 
-    public static MapImprovements Route(ObservedTile tile) =>
-        (tile.Improvements & MapImprovements.Railroad) != 0
-            ? MapImprovements.Railroad
-            : tile.Improvements & MapImprovements.Road;
+    public static MapFeatures Route(ObservedTile tile) =>
+        (tile.Improvements & MapFeatures.Railroad) != 0
+            ? MapFeatures.Railroad
+            : tile.Improvements & MapFeatures.Road;
 
     /// <summary>P02 map information. Presentation joins come only from the bound observer's tiles.
     /// Projected roads/rails join matching remembered improvements. River masks use explored land/water.</summary>
@@ -254,7 +244,7 @@ public sealed class MapScene
         int riverMask = 0, routeMask = 0;
         for (int i = 0; i < Directions.Length; i++)
         {
-            if (route == MapImprovements.None && (i & 1) != 0)
+            if (route == MapFeatures.None && (i & 1) != 0)
             {
                 continue;
             }
@@ -408,7 +398,7 @@ public sealed class MapScene
     public const int CityWidth = 52, CityTop = -30;
 
     public static bool RememberedCity(ObservedTile tile) =>
-        (tile.Improvements & (MapImprovements.CitySite | MapImprovements.Fortification)) == MapImprovements.CitySite;
+        (tile.Improvements & (MapFeatures.CitySite | MapFeatures.Fortification)) == MapFeatures.CitySite;
 
     public static bool IsAirbase(ObservedTile tile) => MapTileArt.Airbase(tile);
 

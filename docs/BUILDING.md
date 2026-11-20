@@ -20,7 +20,7 @@ dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- --help
 dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- inspect path/to/game.sav --json
 ```
 
-The suite contains 459 tests: 437 portable groups, twenty native I/O checks and
+The suite contains 469 tests: 447 portable groups, twenty native I/O checks and
 two API-boundary checks. Test counts describe the current bounded implementation,
 not whole-game compatibility. The CLI supports stored inspection, validation,
 diff, content resolution/validation and classic rule/name/preference conversion.
@@ -330,7 +330,7 @@ node tools/dotnet/run_browser.cjs tests/OpenCiv2.Browser.Tests/bin/Release/net11
 python3 tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
 ```
 
-The portable suite runs the same 437 groups as native. Browser hosts exclude
+The portable suite runs the same 447 groups as native. Browser hosts exclude
 native filesystem, process CLI and SQLite projects. Release publication trims
 assemblies and includes source-generated JSON; AOT is not an acceptance claim.
 

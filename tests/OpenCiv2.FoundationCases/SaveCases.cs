@@ -108,10 +108,13 @@ public static partial class FoundationSuite
             for (int value = 0; value < 256; ++value)
             {
                 var changed = bytes.ToArray(); changed[offset] = (byte)value;
-                BytesEqual(changed, ClassicRecords.Encode(ClassicRecords.DecodeTile(changed)));
+                var stored = ClassicRecords.DecodeTile(changed);
+                BytesEqual(changed, ClassicRecords.Encode(stored));
+                BytesEqual(changed, ClassicRecords.Encode(StateConversion.PreserveOpaque(
+                    StateConversion.ToStored(StateConversion.ToLive(stored)), stored)));
             }
         var tile = ClassicRecords.DecodeTile(bytes);
-        Equal((byte)11, (byte)tile.Terrain); Equal(true, tile.Airbase); Equal((byte)7, tile.Claimant); Equal((byte)14, tile.Owner!.Value);
+        Equal((byte)11, (byte)tile.Terrain); Equal(true, StateConversion.ToLive(tile).Airbase); Equal((byte)7, tile.Claimant); Equal((byte)14, tile.Owner!.Value);
         Throws<ArgumentException>(() => ClassicRecords.Encode(tile with { Claimant = 8 }));
         Throws<ArgumentException>(() => ClassicRecords.Encode(tile with { Owner = 15 }));
         byte[] regionBytes = [0, 0x80, 0xff, 0x7f, 0xff, 0xff, 0xa5, 1, 2, 4, 8, 0x10, 0x20, 0x40, 0x80, 0x5a];
@@ -124,7 +127,7 @@ public static partial class FoundationSuite
         byte[] bytes = [.. SaveVector(), (byte)'E', (byte)'V', (byte)'N']; bytes[9] = 0x55;
         var save = ClassicFiles.DecodeStoredSave(bytes);
         Equal(short.MaxValue, save.Globals.Turn); Equal(short.MinValue, save.Globals.Year); Equal(int.MinValue, save.Civilizations[0].Gold);
-        Equal((byte)0xfe, save.Names[0].Leader[2]); Equal((byte)0xa5, save.Map.Remembered[0][0]); Equal(true, save.Map.Tiles[0].Ocean);
+        Equal((byte)0xfe, save.Names[0].Leader[2]); Equal((byte)0xa5, save.Map.Remembered[0][0]); Equal(Terrain.Ocean, save.Map.Tiles[0].Terrain);
         Equal(2, save.Units.Count); Equal(0x80000001U, save.Units[0].Token.Value); Equal(0U, save.Units[1].Token.Value);
         Equal((byte)0xee, save.Units[1].MovesUsed); Equal(uint.MaxValue, save.Cities[0].Token.Value);
         Equal(new TribeUsage(13, 29, 1), save.Tribes[0]); Equal(new TribeUsage(17, 31, 0), save.Tribes[1]);

@@ -1,4 +1,5 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 
@@ -42,7 +43,7 @@ public static class NativeCityContent
         }
 
         var list = root.At("buildPreferences");
-        if (list.ArraySize() > 32)
+        if (list.ArraySize() > CityPreferences.Capacity)
         {
             list.Error("at most 32 build preferences are supported");
         }
@@ -53,17 +54,17 @@ public static class NativeCityContent
             var field = list.Element(i);
             string id = field.Id();
             int slot = 1;
-            while (slot < 39 && rules.Improvements[slot].Identity.Id != id)
+            while (slot < RuleLimits.BuildingTypes && rules.Improvements[slot].Identity.Id != id)
             {
                 ++slot;
             }
 
-            if (slot == 39)
+            if (slot == RuleLimits.BuildingTypes)
             {
                 field.Error("build preference must resolve to improvement slot 1..38");
             }
 
-            byte[] name = rules.Improvements[slot].Identity.Name.Classic.ToArray();
+            byte[] name = ClassicText.EncodeWindows1252(rules.Improvements[slot].Identity.Name);
             if (name.Length == 0 || name.AsSpan().SequenceEqual(" "u8))
             {
                 field.Error("improvement name cannot round-trip through a trimmed classic token");
@@ -71,7 +72,7 @@ public static class NativeCityContent
 
             for (int earlier = 1; earlier < slot; ++earlier)
             {
-                if (Equal(comparison, name, rules.Improvements[earlier].Identity.Name.Classic.ToArray(), field.Path))
+                if (Equal(comparison, name, ClassicText.EncodeWindows1252(rules.Improvements[earlier].Identity.Name), field.Path))
                 {
                     field.Error("classic preference name resolves to an earlier improvement");
                 }
@@ -82,7 +83,7 @@ public static class NativeCityContent
         return new(new(priority == "deprioritize", new(order)), selected.File);
     }
 
-    private static RuleText Text(ContentReader field, NameComparison comparison, bool cityName)
+    private static string Text(ContentReader field, NameComparison comparison, bool cityName)
     {
         string unicode = field.Text();
         byte[] bytes = ClassicText.EncodeWindows1252(unicode, field.Path);
@@ -101,12 +102,12 @@ public static class NativeCityContent
             field.Error("city name would terminate a classic name list");
         }
 
-        return new(unicode, new(bytes));
+        return unicode;
     }
 
-    private static OwnedList<RuleText> Names(ContentReader field, NameComparison comparison)
+    private static OwnedList<string> Names(ContentReader field, NameComparison comparison)
     {
-        var names = new List<RuleText>();
+        var names = new List<string>();
         for (int i = 0; i < field.ArraySize(); ++i)
         {
             names.Add(Text(field.Element(i), comparison, true));
@@ -137,7 +138,7 @@ public static class NativeCityContent
                 Names(entry.At("cityNames"), comparison));
             foreach (var previous in civilizations)
             {
-                if (Equal(comparison, previous.Plural.Classic.ToArray(), list.Plural.Classic.ToArray(), entry.Path))
+                if (Equal(comparison, ClassicText.EncodeWindows1252(previous.Plural), ClassicText.EncodeWindows1252(list.Plural), entry.Path))
                 {
                     entry.Error("ambiguous civilization plural name");
                 }
@@ -150,7 +151,7 @@ public static class NativeCityContent
         foreach (var tribe in rules.Tribes)
         {
             var found = civilizations.FirstOrDefault(
-                list => Equal(comparison, tribe.Plural.Classic.ToArray(), list.Plural.Classic.ToArray(), lists.Path));
+                list => Equal(comparison, ClassicText.EncodeWindows1252(tribe.Plural), ClassicText.EncodeWindows1252(list.Plural), lists.Path));
             if (found is null || found.Names.Count == 0)
             {
                 complete = false;
@@ -161,6 +162,6 @@ public static class NativeCityContent
             lists.Error("a complete base requires a nonempty list for every starting tribe plural");
         }
 
-        return new(new([new(new(civilizations), fallback)], comparison), selected.File, complete);
+        return new(new([new(new(civilizations), fallback)], ClassicText.Compare(comparison)), selected.File, complete);
     }
 }

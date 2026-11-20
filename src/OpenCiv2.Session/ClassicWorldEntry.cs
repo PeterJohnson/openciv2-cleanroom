@@ -18,13 +18,37 @@ public static class ClassicWorldEntry
     {
         ArgumentNullException.ThrowIfNull(files);
         ArgumentNullException.ThrowIfNull(services);
-        return WorldEntry.Enter(
-            runtime,
-            ref files.Starts,
-            random,
-            call,
-            choice,
-            calendar,
-            services with { ResetSource = files.PrepareNewWorld });
+        try
+        {
+            return WorldEntry.Enter(
+                runtime,
+                ref files.Starts,
+                random,
+                call,
+                choice,
+                calendar,
+                services with
+                {
+                    ResetSource = () =>
+                    {
+                        files.PrepareNewWorld();
+                        if (services.Premade?.Source is ClassicPremadeWorldSource source)
+                        {
+                            source.PrepareNewWorld();
+                        }
+                    }
+                });
+        }
+        finally
+        {
+            if (services.Premade?.Source is ClassicPremadeWorldSource { MapBytes: { } mapBytes }
+                && mapBytes.BelongsTo(runtime.World.Map))
+            {
+                files.RecordBytes = files.RecordBytes?.For(runtime.World.Lifetime) ??
+                    OpenCiv2.Formats.RecordCompatibility.Find(runtime.World.Lifetime) ?? new(runtime.World.Lifetime);
+                files.RecordBytes.Attach(runtime.World.Lifetime);
+                files.RecordBytes.Map = mapBytes;
+            }
+        }
     }
 }

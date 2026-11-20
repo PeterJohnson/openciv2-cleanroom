@@ -1,5 +1,6 @@
 using System.Text.Json.Nodes;
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 
 namespace OpenCiv2.Formats.Content;
@@ -114,7 +115,7 @@ public static class GameplayContent
         var records = root.At("governments");
         records.Fields(GameplayNames.Governments);
         var values = new List<GovernmentValues>();
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < RuleLimits.Governments; ++i)
         {
             var record = records.At(GameplayNames.Governments[i]);
             record.Fields(["maximumRateTenths", "requiredAdvance", "corruptionDivisor"]);

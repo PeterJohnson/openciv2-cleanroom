@@ -13,10 +13,9 @@ public static class CityNames
         ref RuntimeCity city,
         Civilization[] civilizations,
         Leader[] leaders,
-        Func<uint, OwnedList<byte>> resolvePlural,
         NameCatalog catalog)
     {
-        ArgumentNullException.ThrowIfNull(resolvePlural);
+        ArgumentNullException.ThrowIfNull(catalog);
         int owner = city.Owner.Value;
         Leader LiveLeader()
         {
@@ -33,12 +32,12 @@ public static class CityNames
 
             return leaders[tribe];
         }
-        var plural = resolvePlural(LiveLeader().Plural.Id);
+        var plural = LiveLeader().Plural.Text;
         for (int attempt = 0; attempt < 2; ++attempt)
         {
             var leader = LiveLeader();
             leader.CityNameIndex = unchecked((byte)(leader.CityNameIndex + 1));
-            var result = catalog.Select(plural.ToArray(), leader.CityNameIndex);
+            var result = catalog.Select(plural, leader.CityNameIndex);
             if (result.Outcome == NameOutcome.Unavailable)
             {
                 break;
@@ -46,7 +45,7 @@ public static class CityNames
 
             if (result.Outcome == NameOutcome.Selected)
             {
-                city.Name = new(result.Bytes.TakeWhile(b => b != 0).Take(15));
+                city.Name = string.Concat(result.Text.EnumerateRunes().Take(15));
                 return true;
             }
             LiveLeader().CityNameIndex = 0;
@@ -59,5 +58,5 @@ public static class CityNames
         Civilization[] civilizations,
         RuleState rules,
         NameCatalog catalog) =>
-        DefaultName(ref city, civilizations, rules.Leaders, rules.Text.Text, catalog);
+        DefaultName(ref city, civilizations, rules.Leaders, catalog);
 }

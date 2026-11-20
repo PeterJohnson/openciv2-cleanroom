@@ -50,7 +50,7 @@ internal static class MapPresentationChecks
                 })
                 {
                     var placed = city with { Details = city.Details! with { Garrison = garrison } };
-                    var map = world with { Tiles = new([ground with { Improvements = MapImprovements.CitySite }]), Cities = new([placed]) };
+                    var map = world with { Tiles = new([ground with { Improvements = MapFeatures.CitySite }]), Cities = new([placed]) };
                     var bare = Render(map, "city-" + name);
                     var stacked = map with { Units = new([unit, unit with { Type = new(5) }]) };
                     Require(bare.SequenceEqual(Render(stacked, "city-" + name + "-garrison")),
@@ -66,10 +66,10 @@ internal static class MapPresentationChecks
                     else Require(bare.SequenceEqual(emptyCity!), "undisclosed occupation never fabricates a flag");
                 }
                 Require(!occupiedCity!.SequenceEqual(emptyCity!), "only disclosed present occupation adds a flag");
-                var remembered = world with { Tiles = new([ground with { Improvements = MapImprovements.CitySite }]) };
+                var remembered = world with { Tiles = new([ground with { Improvements = MapFeatures.CitySite }]) };
                 Require(Render(remembered, "remembered").SequenceEqual(Render(remembered with { Units = new([unit]) }, "remembered-garrison")),
                     "remembered city sites hide stationary units too");
-                var airbase = world with { Tiles = new([ground with { Improvements = MapImprovements.CitySite | MapImprovements.Fortification }]) };
+                var airbase = world with { Tiles = new([ground with { Improvements = MapFeatures.CitySite | MapFeatures.Fortification }]) };
                 Require(!Render(airbase, "empty-airbase").SequenceEqual(Render(airbase with { Units = new([unit]) }, "airbase-unit")),
                     "airbases retain their unit bodies");
                 var sleeping = world with { Units = new([unit with { Details = unit.Details with { Order = MapFact<UnitOrder>.Known(UnitOrder.Sleeping) } }]) };

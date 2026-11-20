@@ -2,6 +2,7 @@ using System.Text.Json;
 using OpenCiv2.App;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 using SkiaSharp;
@@ -159,7 +160,7 @@ internal static partial class NativeMapMatrix
         {
             Width = 2,
             Height = 1,
-            Tiles = new([new ObservedTile(1, MapImprovements.CitySite, false, 0, false)]),
+            Tiles = new([new ObservedTile(1, MapFeatures.CitySite, false, 0, false)]),
             Units = new([]),
             Annotations = MapAnnotations.Stock
         };
@@ -180,7 +181,7 @@ internal static partial class NativeMapMatrix
                 Garrison = MapFact<MapPresence>.Withheld,
                 Disorder = MapFact<MapPresence>.Withheld
             };
-            var city = original with { Position = default, Name = new([]), Details = details };
+            var city = original with { Position = default, Name = "", Details = details };
             string key = $"city/{i}";
             Render(city);
             var canvas = expected.Canvas;
@@ -221,7 +222,7 @@ internal static partial class NativeMapMatrix
             receipts.Add(new { i, key, flag, flagAt, population, details.Owner, digest = Pixels(actual) });
         }
 
-        var known = board.Cities[2] with { Position = default, Name = new("Marsh Gate"u8.ToArray()) };
+        var known = board.Cities[2] with { Position = default, Name = "Marsh Gate" };
         var fallbackDetails = known.Details! with
         {
             Knowledge = CityKnowledge.Remembered,

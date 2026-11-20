@@ -29,26 +29,26 @@ public static partial class FoundationSuite
     {
         var world = new GameState(new ProcessContext()); world.Map.Allocate(new(8, 6));
         world.Map.StoredTopology = 0x8123; world.Map.PatternSeed = 0xabcd;
-        for (int civ = 1; civ < 8; ++civ) world.Map.RememberedLayer(civ).Fill((byte)(civ + 10));
-        world.Map.RememberedBarbarian = [255];
+        for (int civ = 1; civ < 8; ++civ) world.Map.RememberedLayer(civ).Fill(StateConversion.DecodeMapFeatures((byte)(civ + 10)));
+        world.Map.RememberedBarbarian = [MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Irrigation | MapFeatures.Mine | MapFeatures.Road | MapFeatures.Railroad | MapFeatures.Fortification | MapFeatures.Pollution];
         for (int grid = 0; grid < 2; ++grid) world.Map.CoarseGrid(grid).Fill((byte)(41 + grid));
-        world.Map.Tiles[0].Features = 0xf1; world.Map.Tiles[^1].Region = 0xff;
+        world.Map.Tiles[0].Features = MapFeatures.Unit | MapFeatures.Road | MapFeatures.Railroad | MapFeatures.Fortification | MapFeatures.Pollution; world.Map.Tiles[^1].Region = 0xff;
         return world;
     }
     private static void LiveMapWriters()
     {
-        var world = WriterWorld(); var starts = new StartingPositions(); starts.X[0] = short.MinValue; starts.Y[20] = short.MaxValue;
+        var world = WriterWorld(); var starts = new StartingPositions(); starts.Positions[0] = starts.Positions[0] with { X = short.MinValue }; starts.Positions[20] = starts.Positions[20] with { Y = short.MaxValue };
         var raw = new ItemCapture(); Equal(true, ClassicLive.WriteMapItems(raw.Write, MapStream.Raw, world.Map, starts));
         Equal(new OwnedList<int>([14, 42, 42, 144]), new(raw.Items.Select(i => i.Length)));
         var decoded = ClassicFiles.DecodeRawMap(raw.Bytes); Equal((short)24, decoded.Header.Area); Equal((ushort)0x8123, decoded.Header.Topology); Equal((ushort)0xabcd, decoded.Header.Seed);
-        Equal(short.MinValue, decoded.StartX[0]); Equal(short.MaxValue, decoded.StartY[20]); Equal(new OwnedList<Tile>(world.Map.Tiles.ToArray()), decoded.Tiles);
+        Equal(short.MinValue, decoded.StartX[0]); Equal(short.MaxValue, decoded.StartY[20]); Equal(new OwnedList<Tile>(world.Map.Tiles.ToArray()), new(decoded.Tiles.Select(StateConversion.ToLive)));
         var embedded = new ItemCapture(); Equal(true, ClassicLive.WriteMapItems(embedded.Write, MapStream.Embedded, world.Map, starts)); Equal(9, embedded.Items.Count);
         for (int civ = 1; civ < 8; ++civ) Equal(new OwnedList<byte>(Enumerable.Repeat((byte)(civ + 10), 24)), new(embedded.Items[civ]));
         Equal(new OwnedList<byte>(raw.Items[3]), new(embedded.Items[8]));
         var summary = new ItemCapture(); Equal(true, ClassicLive.WriteMapSummaryItems(summary.Write, world.Map));
         Equal(new OwnedList<int>([4, 4, 1024]), new(summary.Items.Select(i => i.Length)));
         Equal(new OwnedList<byte>([41, 41, 41, 41]), new(summary.Items[0])); Equal(new OwnedList<byte>([42, 42, 42, 42]), new(summary.Items[1]));
-        for (int i = 0; i < 64; ++i) Equal(world.Map.Regions[i], ClassicRecords.DecodeRegion(summary.Items[2].AsSpan(i * 16, 16)));
+        for (int i = 0; i < 64; ++i) Equal(world.Map.Regions[i], StateConversion.ToLive(ClassicRecords.DecodeRegion(summary.Items[2].AsSpan(i * 16, 16))));
     }
     private static void LiveMapWriterFailures()
     {
@@ -70,7 +70,7 @@ public static partial class FoundationSuite
     {
         var world = WriterWorld(); var pools = world.Entities; pools.Units.SetEnd(2); pools.Cities.SetEnd(1);
         pools.Units.Storage[0].Token = new(19); pools.Units.Storage[0].Damage = 7; pools.Units.Storage[1].Damage = 99;
-        pools.Cities.Storage[0].Token = new(27); pools.Cities.Storage[0].Name = new("City"u8.ToArray());
+        pools.Cities.Storage[0].Token = new(27); pools.Cities.Storage[0].Name = "City";
         var imported = new RecordCompatibility(world.Lifetime); imported.Units[new(19)] = new() { Damage = 255, RetainedByte = 0x81, RetainedWord = 0x9023 }; imported.Cities[new(27)] = new() { RetainedByte = 0xa2 };
         Equal(true, ReferenceEquals(imported, imported.For(world.Lifetime))); Equal(true, imported.For(new WorldLifetime()) is null);
         var output = new ItemCapture(); Equal(true, ClassicLive.WriteEntityItems(output.Write, pools, imported)); Equal(2, output.Items.Count);
@@ -84,7 +84,7 @@ public static partial class FoundationSuite
     }
     private static void LivePersistentWriters()
     {
-        var world = WriterWorld(); world.Globals.Turn = 21; world.Names[3].Leader = new("Ruler"u8.ToArray()); world.Civilizations[3].Gold = 800;
+        var world = WriterWorld(); world.Globals.Turn = 21; world.Names[3].Leader = "Ruler"; world.Civilizations[3].Gold = 800;
         var imported = new RecordCompatibility(world.Lifetime) { Globals = new() { Turn = 999, Retained0e = 0x1234, Retained34 = -17 } };
         imported.Civilizations[3] = new() { Gold = -1, Retained1b = 0x81, Retained65 = 0x82, Retained3fd = 0x83, Retained401 = 0x84 };
         var output = new ItemCapture(); Equal(true, ClassicLive.WritePersistentItems(output.Write, world.Globals, world.Names, world.Civilizations, imported));
@@ -93,7 +93,7 @@ public static partial class FoundationSuite
         Equal(world.Names[3], StateConversion.ToLive(ClassicRecords.DecodeStoredCivilizationNames(output.Items[1].AsSpan(3 * 242, 242))));
         var civ = ClassicRecords.DecodeStoredCivilization(output.Items[2].AsSpan(3 * 1428, 1428)); Equal(800, civ.Gold); Equal((byte)0x81, civ.Retained1b); Equal((byte)0x84, civ.Retained401);
         for (int fail = 0; fail < 3; ++fail) { output = new(fail); Equal(false, ClassicLive.WritePersistentItems(output.Write, world.Globals, world.Names, world.Civilizations, imported)); Equal(fail + 1, output.Items.Count); }
-        world.Names[0].Leader = new(new byte[25]); output = new(); Throws<ArgumentException>(() => ClassicLive.WritePersistentItems(output.Write, world.Globals, world.Names, world.Civilizations)); Equal(1, output.Items.Count);
+        world.Names[0].Leader = ClassicText.DecodeWindows1252((new byte[25]).ToArray()); output = new(); Throws<ArgumentException>(() => ClassicLive.WritePersistentItems(output.Write, world.Globals, world.Names, world.Civilizations)); Equal(1, output.Items.Count);
     }
     private static void LiveLeaderWriters()
     {
@@ -101,27 +101,27 @@ public static partial class FoundationSuite
         for (int i = 0; i < 21; ++i)
         {
             var leader = leaders[i]; leader.TimesUsed = (byte)(i + 1); leader.CityNameIndex = (byte)(200 + i); leader.Female = i % 2 == 0;
-            leader.LeaderName = new(uint.MaxValue, true); leader.Plural = new(70000, false); leader.Adjective = new(0x80000001, true);
-            leader.Names[0] = new(0, true); leader.Names[1] = new(65536); for (int g = 0; g < 7; ++g) { leader.Titles[g][0] = new((uint)g, true); leader.Titles[g][1] = new(uint.MaxValue); }
+            leader.LeaderName = new(NameText("Custom leader"), true); leader.Plural = new(NameText("Default people")); leader.Adjective = new(NameText("Custom adjective"), true);
+            leader.Names[0] = new(RuleText.Nil, true); leader.Names[1] = new(NameText("Default leader")); for (int g = 0; g < 7; ++g) { leader.Titles[g][0] = new(NameText("Custom title " + g), true); leader.Titles[g][1] = new(NameText("Default title")); }
         }
-        world.Globals.PlayerCiv = 7; world.Globals.HumanPlayers = 6; world.Civilizations[1].Tribe = 3; world.Civilizations[2].Tribe = 3; world.Civilizations[7].Tribe = 5;
+        world.Globals.PlayerCiv = 7; world.Globals.HumanPlayers = StateConversion.DecodeCivilizations(6); world.Civilizations[1].Tribe = 3; world.Civilizations[2].Tribe = 3; world.Civilizations[7].Tribe = 5;
         for (int mode = 0; mode < 7; ++mode)
         {
             world.Globals.Multiplayer = (GameMode)mode; var before = world.Globals; var output = new ItemCapture();
-            Equal(true, ClassicLive.WriteLeaderItems(output.Write, world.Globals, world.Civilizations, leaders, -7, 31)); Equal(before, world.Globals);
+            Equal(true, ClassicLive.WriteLeaderItems(output.Write, world.Globals, world.Civilizations, leaders, new(-7, 31))); Equal(before, world.Globals);
             Equal(mode == 0 ? 66 : 67, output.Items.Count); Equal((short)-7, BinaryPrimitives.ReadInt16LittleEndian(output.Items[63])); Equal((short)31, BinaryPrimitives.ReadInt16LittleEndian(output.Items[64]));
             for (int i = 0; i < 21; ++i) { Equal((byte)(i + 1), output.Items[3 * i][0]); Equal((byte)(200 + i), output.Items[3 * i + 1][0]); Equal(i % 2 == 0 ? (byte)1 : (byte)0, output.Items[3 * i + 2][0]); }
             var record = ClassicRecords.DecodeStoredLeader(output.Items[65]); Equal((byte)(mode == 0 ? 6 : 4), record.TimesUsed); Equal((short)-1, record.LeaderName); Equal((short)1, record.Plural); Equal((short)-1, record.Adjective);
             Equal(new OwnedList<short>([-1, 1]), record.Names); foreach (var title in record.Titles) Equal(new OwnedList<short>([-1, 1]), title);
             if (mode != 0) Equal(new OwnedList<byte>(output.Items[65]), new(output.Items[66]));
         }
-        for (int fail = 0; fail < 67; ++fail) { var output = new ItemCapture(fail); Equal(false, ClassicLive.WriteLeaderItems(output.Write, world.Globals, world.Civilizations, leaders, 0, 0)); Equal(fail + 1, output.Items.Count); }
-        world.Civilizations[1].Tribe = 21; var prefix = new ItemCapture(); Throws<ArgumentOutOfRangeException>(() => ClassicLive.WriteLeaderItems(prefix.Write, world.Globals, world.Civilizations, leaders, 0, 0)); Equal(65, prefix.Items.Count);
+        for (int fail = 0; fail < 67; ++fail) { var output = new ItemCapture(fail); Equal(false, ClassicLive.WriteLeaderItems(output.Write, world.Globals, world.Civilizations, leaders, new(0, 0))); Equal(fail + 1, output.Items.Count); }
+        world.Civilizations[1].Tribe = 21; var prefix = new ItemCapture(); Throws<ArgumentOutOfRangeException>(() => ClassicLive.WriteLeaderItems(prefix.Write, world.Globals, world.Civilizations, leaders, new(0, 0))); Equal(65, prefix.Items.Count);
     }
     private static void LiveLayoutWriters()
     {
         var world = WriterWorld(); world.Layout.Valid = true; world.Layout.Rectangles[1] = new(70000, -70000, 80000, -80000); world.PowerHistory[149][7] = 81;
-        for (short i = 0; i < 8; ++i) world.Views[i] = new(i % 2 == 0, i % 2 != 0, (short)(i + 10), (short)-i, (short)(i - 4));
+        for (short i = 0; i < 8; ++i) world.Views[i] = new(i % 2 == 0, i % 2 != 0, new((short)(i + 10), (short)-i), (short)(i - 4));
         var before = world.Layout; var packed = new SavedLayout(); var output = new ItemCapture();
         Equal(true, ClassicLive.WriteHistoryLayoutItems(output.Write, world.PowerHistory, new(0, 0, 1280, 800), ref packed, world.Layout, world.Views));
         Equal(before, world.Layout); Equal(42, output.Items.Count); Equal(1200, output.Items[0].Length); Equal((byte)81, output.Items[0][^1]); Equal(packed, ClassicRecords.DecodeSavedLayout(output.Items[1]));
@@ -138,10 +138,15 @@ public static partial class FoundationSuite
     }
     private static void LiveScenarioMultiplayerWriters()
     {
-        var world = WriterWorld(); world.Scenario.Name = new("Scenario"u8.ToArray()); world.Eliminations.Count = 7;
+        var world = WriterWorld();
+        world.Scenario.Name = ClassicText.DecodeWindows1252((new byte[81]).ToArray());
+        var omitted = new ItemCapture();
+        Equal(true, ClassicLive.WriteScenarioHistoryItems(omitted.Write, false, new(), world.Scenario, world.Eliminations));
+        Equal(1, omitted.Items.Count);
+        world.Scenario.Name = "Scenario"; world.Eliminations.Count = 7;
         foreach (bool export in new[] { false, true }) foreach (ushort flags in new ushort[] { 0, 0x80, 0xffff })
         {
-            world.Globals.GameFlags = flags; var output = new ItemCapture(); Equal(true, ClassicLive.WriteScenarioHistoryItems(output.Write, export, world.Globals, world.Scenario, world.Eliminations));
+            world.Globals.Status = StateConversion.DecodeGameStatus(flags); var output = new ItemCapture(); Equal(true, ClassicLive.WriteScenarioHistoryItems(output.Write, export, world.Globals, world.Scenario, world.Eliminations));
             bool hasScenario = export || (flags & 0x80) != 0; Equal(hasScenario ? 2 : 1, output.Items.Count); Equal((short)7, ClassicRecords.DecodeEliminationHistory(output.Items[^1]).Count);
             if (hasScenario) Equal(world.Scenario, StateConversion.ToLive(ClassicRecords.DecodeScenarioParameters(output.Items[0])));
         }
@@ -155,10 +160,10 @@ public static partial class FoundationSuite
     }
     private static void LiveEventWriters()
     {
-        var events = new EventCollection(); var first = events.Append(); var second = events.Append(); first.Values.Actions = 0x800001;
-        first.SetString(0, new("Unit"u8.ToArray())); first.SetString(1, new([])); first.SetString(4, new("Line"u8.ToArray())); first.SetString(6, new("After hole"u8.ToArray())); first.SetString(34, new("wave.wav"u8.ToArray()));
-        second.SetString(0, new(Enumerable.Repeat((byte)'L', 300))); second.Strings[0].Value = new(second.Strings[0].Value.Concat(new byte[] { 0, 81 }));
-        var opaque = new Dictionary<ulong, ImportedEventBytes> { [first.Identity] = new(first, new(Enumerable.Repeat((byte)0x7e, 40))) };
+        var events = new EventCollection(); var first = events.Append(); var second = events.Append(); first.Values.Actions = StateConversion.DecodeEventActions(0x800001);
+        first.SetString(0, new("Unit")); first.SetString(1, new("")); first.SetString(4, new("Line")); first.SetString(6, new("After hole")); first.SetString(34, new("wave.wav"));
+        second.SetString(0, new(new string('L', 300))); second.Strings[0].Value = second.Strings[0].Value + "\0Q";
+        var opaque = new Dictionary<ulong, ImportedEventBytes> { [first.Identity] = ImportedEventBytes.FromRecord(first, new EventRecord { Actions = 0x800001, Retained = new(Enumerable.Repeat((byte)0x7e, 40)) }) };
         var records = new ItemCapture(); var strings = new ItemCapture(); var terminators = new List<byte>();
         Equal(true, ClassicLive.WriteEventItems(records.Write, strings.Write, b => { terminators.Add(b); return true; }, events, opaque));
         Equal(4, records.Items.Count); Equal("EVNT", System.Text.Encoding.ASCII.GetString(records.Items[0])); Equal(2, BinaryPrimitives.ReadInt32LittleEndian(records.Items[1]));
@@ -171,13 +176,13 @@ public static partial class FoundationSuite
         // Every field maps to its own presence word, including absent/empty distinction.
         for (int field = 0; field < 35; ++field)
         {
-            var one = new EventCollection().Append(); one.SetString(field, new([])); var markers = ClassicFiles.EventMarkers(StateConversion.ToStored(one));
+            var one = new EventCollection().Append(); one.SetString(field, new("")); var markers = ClassicFiles.EventMarkers(StateConversion.ToStored(one));
             for (int i = 0; i < 35; ++i) Equal(i == field ? 1U : 0U, markers[i]);
         }
     }
     private static void LiveEventFailures()
     {
-        var events = new EventCollection(); events.Append().SetString(0, new("one"u8.ToArray())); events.Append().SetString(34, new("two"u8.ToArray()));
+        var events = new EventCollection(); events.Append().SetString(0, new("one")); events.Append().SetString(34, new("two"));
         var success = new ItemCapture(); Equal(true, ClassicLive.WriteEventItems(success.Write, success.Write, b => success.Write([b]), events)); Equal(8, success.Items.Count);
         for (int fail = 0; fail < success.Items.Count; ++fail) foreach (bool throws in new[] { false, true })
         {
@@ -185,21 +190,21 @@ public static partial class FoundationSuite
             bool Run() => ClassicLive.WriteEventItems(output.Write, output.Write, b => output.Write([b]), events);
             if (throws) Throws<IOException>(() => Run()); else Equal(false, Run());
             Equal(fail + 1, output.Items.Count); Equal(new OwnedList<byte>(success.Items.Take(fail + 1).SelectMany(b => b)), new(output.Bytes));
-            Equal(2, events.Count); Equal(new OwnedList<byte>("one"u8.ToArray()), events.At(0).Strings[0].Value);
+            Equal(2, events.Count); Equal("one", events.At(0).Strings[0].Value);
         }
         var empty = new ItemCapture(); Equal(true, ClassicLive.WriteEventItems(empty.Write, _ => throw new InvalidOperationException(), _ => throw new InvalidOperationException(), new())); Equal(2, empty.Items.Count);
     }
     private static void LiveSaveComposition()
     {
-        var process = new ProcessContext(); var world = WriterWorld(); world.Globals.Multiplayer = GameMode.Tcp; world.Globals.HumanPlayers = 6; world.Globals.GameFlags = 0x80;
+        var process = new ProcessContext(); var world = WriterWorld(); world.Globals.Multiplayer = GameMode.Tcp; world.Globals.HumanPlayers = StateConversion.DecodeCivilizations(6); world.Globals.Status = new GameStatus { Scenario = true };
         world.Globals.UnitEnd = 2; world.Globals.CityEnd = 1; world.Entities.Units.SetEnd(2); world.Entities.Cities.SetEnd(1);
-        world.Entities.Units.Storage[0].Token = new(17); world.Entities.Cities.Storage[0].Token = new(19); world.Entities.Cities.Storage[0].Name = new("Alpha"u8.ToArray());
-        world.PowerHistory[149][7] = 81; world.Events.Collection.Append().SetString(0, new("Unit"u8.ToArray()));
+        world.Entities.Units.Storage[0].Token = new(17); world.Entities.Cities.Storage[0].Token = new(19); world.Entities.Cities.Storage[0].Name = "Alpha";
+        world.PowerHistory[149][7] = 81; world.Events.Collection.Append().SetString(0, new("Unit"));
         var output = new ItemCapture(); var packed = new SavedLayout(); var starts = new StartingPositions();
         output.Write(ClassicFiles.EncodeGameHeader());
         Equal(true, ClassicLive.WritePersistentItems(output.Write, world.Globals, world.Names, world.Civilizations));
         Equal(true, ClassicLive.WriteMapItems(output.Write, MapStream.Embedded, world.Map, starts)); Equal(true, ClassicLive.WriteMapSummaryItems(output.Write, world.Map));
-        Equal(true, ClassicLive.WriteEntityItems(output.Write, world.Entities)); Equal(true, ClassicLive.WriteLeaderItems(output.Write, world.Globals, world.Civilizations, process.Rules.Leaders, -3, 5));
+        Equal(true, ClassicLive.WriteEntityItems(output.Write, world.Entities)); Equal(true, ClassicLive.WriteLeaderItems(output.Write, world.Globals, world.Civilizations, process.Rules.Leaders, new(-3, 5)));
         Equal(true, ClassicLive.WriteHistoryLayoutItems(output.Write, world.PowerHistory, new(0, 0, 1280, 800), ref packed, world.Layout, world.Views));
         Equal(true, ClassicLive.WriteScenarioHistoryItems(output.Write, false, world.Globals, world.Scenario, world.Eliminations)); Equal(true, ClassicLive.WriteMultiplayerItem(output.Write, world.Multiplayer, 261));
         Equal(true, ClassicLive.WriteEventItems(output.Write, output.Write, b => output.Write([b]), world.Events.Collection));

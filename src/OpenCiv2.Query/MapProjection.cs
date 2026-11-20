@@ -24,13 +24,12 @@ public static class MapProjection
 
         var geometry = map.Geometry;
         int observer = identity.Observer.Value;
-        int observerBit = 1 << observer;
         var memory = map.RememberedLayer(observer);
         var tiles = new ObservedTile[geometry.Area];
         for (int i = 0; i < tiles.Length; i++)
         {
             ref readonly var tile = ref map.Tiles[i];
-            if ((tile.Revelation & observerBit) == 0)
+            if (!tile.RevealedTo.Contains(observer))
             {
                 continue;
             }
@@ -38,8 +37,8 @@ public static class MapProjection
             var point = geometry.Coordinates(i);
             // A remembered unit bit is never current detection. City sites come from memory,
             // independent of live foreign city names, size, ownership or lifetime.
-            tiles[i] = new((byte)tile.Terrain, i < memory.Length ? (MapImprovements)(memory[i] & 0xfe) : default,
-                (tile.TerrainFlags & 0x80) != 0, map.SpecialResource(point),
+            tiles[i] = new((byte)tile.Terrain, i < memory.Length ? ObserveImprovements(memory[i]) : default,
+                tile.River, map.SpecialResource(point),
                 tile.Terrain == Terrain.Grassland && Geometry.GrasslandShield(point),
                 map.HutCandidate(point) ? MapFact<MapPresence>.Withheld : Present(false));
         }
@@ -50,7 +49,7 @@ public static class MapProjection
         for (int i = 0; i < pool.Length; i++)
         {
             ref readonly var unit = ref pool[i];
-            var point = new Position(unit.X, unit.Y);
+            var point = unit.Position;
             if (!unit.Token.Occupied || !geometry.Canonical(point))
             {
                 continue;
@@ -60,10 +59,10 @@ public static class MapProjection
             {
                 own[i] = true;
             }
-            else if ((unit.Visibility & observerBit) != 0
+            else if (unit.Visibility.Contains(observer)
                 && tiles[geometry.TileIndex(point)!.Value].Terrain is not null)
             {
-                units.Add(new(new(unit.X, unit.Y), unit.Type, unit.Owner, null, MapUnitDetails.Withheld));
+                units.Add(new(unit.Position, unit.Type, unit.Owner, null, MapUnitDetails.Withheld));
             }
         }
 
@@ -82,11 +81,11 @@ public static class MapProjection
                 }
 
                 ref readonly var unit = ref pool[i];
-                int previous = unit.Previous.Value;
+                int previous = (unit.Previous?.Value ?? -1);
                 if (pass == 0 && previous >= 0 && previous < own.Length && own[previous]
-                    && pool[previous].Next.Value == i
+                    && (pool[previous].Next?.Value ?? -1) == i
                     &&
-                    pool[previous].X == unit.X && pool[previous].Y == unit.Y)
+                    pool[previous].Position.X == unit.Position.X && pool[previous].Position.Y == unit.Position.Y)
                 {
                     continue;
                 }
@@ -96,19 +95,19 @@ public static class MapProjection
                     ref readonly var member = ref pool[j];
                     own[j] = false;
                     var target = new UnitTarget(new((ushort)j), member.Token);
-                    if (world.Globals.ActiveUnit.Value == j)
+                    if ((world.Globals.ActiveUnit?.Value ?? -1) == j)
                     {
                         active = target;
                     }
 
-                    int tileIndex = geometry.TileIndex(new(member.X, member.Y))!.Value;
+                    int tileIndex = geometry.TileIndex(member.Position)!.Value;
                     ownPositions.Add(tileIndex);
                     var unitRule = member.Type.Value < rules.Definitions.Units.Length
                         ? rules.Definitions.Units[member.Type.Value]
                         : null;
                     var tile = tiles[tileIndex];
-                    bool airbase = (tile.Improvements & (MapImprovements.CitySite | MapImprovements.Fortification)) ==
-                        (MapImprovements.CitySite | MapImprovements.Fortification);
+                    bool airbase = (tile.Improvements & (MapFeatures.CitySite | MapFeatures.Fortification)) ==
+                        (MapFeatures.CitySite | MapFeatures.Fortification);
                     bool stationary = airbase && unitRule is { Domain: RuleDomain.Air };
                     if (tile.Terrain is not null)
                     {
@@ -121,11 +120,11 @@ public static class MapProjection
                                 : tile.AirbaseOccupant
                         };
                     }
-                    units.Add(new(new(member.X, member.Y), member.Type, member.Owner, target,
-                        UnitDetails(member, unitRule, stationary, (world.Globals.Rules & 0x0010) == 0)));
-                    int next = member.Next.Value;
-                    j = next >= 0 && next < own.Length && own[next] && pool[next].Previous.Value == j &&
-                        pool[next].X == member.X && pool[next].Y == member.Y ? next : -1;
+                    units.Add(new(member.Position, member.Type, member.Owner, target,
+                        UnitDetails(member, unitRule, stationary, !world.Globals.Rules.NormalCombat)));
+                    int next = (member.Next?.Value ?? -1);
+                    j = next >= 0 && next < own.Length && own[next] && (pool[next].Previous?.Value ?? -1) == j &&
+                        pool[next].Position.X == member.Position.X && pool[next].Position.Y == member.Position.Y ? next : -1;
                 }
             }
         }
@@ -135,12 +134,12 @@ public static class MapProjection
         for (int i = 0; i < cityPool.Length; i++)
         {
             ref readonly var city = ref cityPool[i];
-            if (!city.Token.Occupied || city.Owner != identity.Observer || !geometry.Canonical(new(city.X, city.Y)))
+            if (!city.Token.Occupied || city.Owner != identity.Observer || !geometry.Canonical(city.Position))
             {
                 continue;
             }
 
-            int tileIndex = geometry.TileIndex(new(city.X, city.Y))!.Value;
+            int tileIndex = geometry.TileIndex(city.Position)!.Value;
             if (tiles[tileIndex].Terrain is not null)
             {
                 tiles[tileIndex] = tiles[tileIndex] with
@@ -150,31 +149,34 @@ public static class MapProjection
                 };
             }
 
-            cities.Add(new(new(city.X, city.Y), new((ushort)i), city.Token,
-                new(city.Name.TakeWhile(b => b != 0)), city.Size,
+            cities.Add(new(city.Position, new((ushort)i), city.Token,
+                city.Name, city.Size,
                 CityDetails(world, rules, city, ownPositions.Contains(tileIndex))));
         }
-        int admittedOwners = observerBit;
+        var admittedOwners = CivilizationSet.Only(observer);
         foreach (var unit in units)
         {
-            admittedOwners |= 1 << unit.Owner.Value;
+            admittedOwners = admittedOwners.With(unit.Owner.Value);
         }
 
         var colors = new byte[EntityLimits.Civilizations];
         for (byte i = 0; i < colors.Length; i++)
         {
             int tribe = world.Civilizations[i].Tribe;
-            // Empty rule text identifies an authored/uninstalled rules state. Stock roles
+            // Uninstalled rules identify an authored state. Stock roles
             // remain explicit in that profile. A selected role outside 0..7 stays diagnostic.
-            short role = (admittedOwners & (1 << i)) != 0 && rules.Text.Count != 0 && tribe >= 0
+            short role = admittedOwners.Contains(i) && rules.IsLoaded && tribe >= 0
                 && tribe < rules.Leaders.Length
                 ? rules.Leaders[tribe].Color
                 : i;
             colors[i] = role is >= 0 and <= 255 ? (byte)role : byte.MaxValue;
         }
-        return new(identity, revision, geometry.Width, geometry.Height, (world.Globals.Rules & 0x8000) != 0,
+        return new(identity, revision, geometry.Width, geometry.Height, world.Globals.Rules.FlatWorld,
             new(tiles), new(units), new(cities), new(new(colors), active));
     }
+
+    // Remembered occupancy does not authorize disclosing a current unit.
+    private static MapFeatures ObserveImprovements(MapFeatures features) => features & ~MapFeatures.Unit;
 
     private static MapFact<MapPresence> Present(bool value) =>
         MapFact<MapPresence>.Known(value ? MapPresence.Present : MapPresence.Absent);
@@ -192,7 +194,8 @@ public static class MapProjection
             : MapFact<UnitOrder>.Known(unit.Orders);
         var work = defined && rule!.Role == RuleRole.Settle
             ? MapFact<int>.Known(unit.Counter) : default;
-        return new(health, order, Present((unit.Flags & 0x8000) != 0), Present((unit.Flags & 0x2000) != 0),
+        // P02 calls this awaiting input; F02/U03 name the same state Automated.
+        return new(health, order, Present(unit.Flags.Automated), Present(unit.Flags.Veteran),
             default, work, defined ? Present(stationary) : default);
     }
 
@@ -211,14 +214,14 @@ public static class MapProjection
         // Only own occupants are admitted here. No observed own garrison does not imply
         // the absence of other occupants.
         return new(city.Owner, CityKnowledge.Own, appearance, MapFact<int>.Known(city.Size),
-            knownGarrison ? Present(true) : default, Present((city.Flags & 1) != 0));
+            knownGarrison ? Present(true) : default, Present(city.Flags.Disorder));
     }
 
-    private static bool Improvement(City city, int index) => (city.Improvements[index / 8] & (1 << (index % 8))) != 0;
+    private static bool Improvement(City city, int index) => city.Improvements.Contains(index);
 
     private static bool HasGreatWall(GameState world, RuleState rules, CivilizationSlot owner)
     {
-        if (rules.Text.Count == 0)
+        if (!rules.IsLoaded)
         {
             return false;
         }

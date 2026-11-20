@@ -5,7 +5,9 @@ rule definitions into immutable typed values. It checks all ten fixed identity
 collections, cosmic parameters, wonder expiry, rule references, government-title
 overrides and the selected gameplay bundle's government advance references.
 It returns no result on failure and performs no file writes or session updates.
-The model lives in `OpenCiv2.Core`; JSON decoding uses System.Text.Json through
+The model lives in `OpenCiv2.Core`; names, titles and shortcuts are ordinary C#
+strings. CP1252 encode/decode and one-byte shortcut validation stay in Formats.
+JSON decoding uses System.Text.Json through
 the [shared admission wrapper](m1-content-runtime.md#json-and-operand-admission).
 
 The implementation follows [data-format.md sections 2/4 and appendices A/B](content/data-format.md)
@@ -67,7 +69,8 @@ it directly to `RuleState`, without virtual files or classic token serialization
 Its full load follows F03's twelve-table order and explicit leader-replacement
 policy. The individual advance, improvement and unit methods also support
 `keepNames`. Native identity IDs are installed independently of display-name
-preservation. The shared pool must already be initialized by its owning setup.
+preservation. Names are owned values on the definitions; no separate binding table
+or text-pool initialization is required.
 
 The decoder now retains advance/improvement prerequisites before fixup, whole
 movement points, and every ordered title override. The installer uses those
@@ -76,10 +79,11 @@ fixup reads the current advance table, and movement uses the current cosmic road
 multiplier. Already normalized HP, costs and scalar codes are not scaled again.
 These dependencies remain explicit without allocation-time callbacks.
 
-Names use full-width local references and explicit custom-name flags. Preserved
+Names use owned text values and explicit custom-name flags. Preserved
 leader fields require no discarded allocations; repeated title overrides retain
 their final semantic value. Usage and city-name counters remain. Special terrain
-rows retain existing work values, and order-name slot zero stays unchanged.
+rows retain existing work values. Cosmic rules expose named properties; the
+Formats adapter owns COSMIC field ordering and input normalization.
 
 Rule admission precedes installation. The installer owns its admitted input and
 does not invent event/reentry boundaries while storing text. Setup, full pack

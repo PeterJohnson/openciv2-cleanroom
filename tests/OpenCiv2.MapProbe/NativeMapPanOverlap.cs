@@ -2,6 +2,7 @@ using System.Text.Json;
 using OpenCiv2.App;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 using SkiaSharp;
@@ -26,7 +27,7 @@ internal static class NativeMapPanOverlap
             var frames = series.GetProperty("samples");
             foreach (bool captions in new[] { true, false })
             {
-                var world = captions ? map : map with { Cities = new(map.Cities.Select(city => city with { Name = new([]) })) };
+                var world = captions ? map : map with { Cities = new(map.Cities.Select(city => city with { Name = "" })) };
                 comparisons.Add(new { width, height, density, world.Flat, captions, samples = CompareSeries(world, board.Display, frames, width, height, density) });
             }
         }

@@ -104,9 +104,9 @@ public static partial class FoundationSuite
         Equal(int.MinValue, g.WrappedDx(int.MinValue, 0, false)); Equal(-1073741824, g.StepDistance(new(int.MinValue, 0), new(0, 0), true));
         Equal(0, g.StepDistance(new(int.MinValue, int.MinValue), new(0, 0), true)); Equal(-536870912, Geometry.WeightedFromDeltas(new(int.MinValue, 0)));
         Equal(-1073741825, Geometry.WeightedFromDeltas(new(int.MaxValue, int.MaxValue))); Equal(int.MinValue, g.WrappedDx(int.MaxValue, -1, true));
-        Position[] offsets = [new(1, 0), new(1, 0), new(9, 0), new(-1, 0)];
-        Equal(new OwnedList<Position>([new(1, 0), new(1, 0), new(3, 0)]), new Geometry(4, 4).Neighbors(new(0, 0), offsets, false));
-        Position[] directions = [new(1, -1), new(1, 1), new(0, 1), new(-1, 1), new(-1, 0), new(-1, -1), new(0, -1), new(1, 0)];
+        MapPoint[] offsets = [new(1, 0), new(1, 0), new(9, 0), new(-1, 0)];
+        Equal(new OwnedList<MapPoint>([new(1, 0), new(1, 0), new(3, 0)]), new Geometry(4, 4).Neighbors(new(0, 0), offsets, false));
+        MapPoint[] directions = [new(1, -1), new(1, 1), new(0, 1), new(-1, 1), new(-1, 0), new(-1, -1), new(0, -1), new(1, 0)];
         Equal((byte)0, Geometry.DirectionOf(new(20, -1), directions)); directions[7] = new(50, -2); Equal((byte)7, Geometry.DirectionOf(new(20, -1), directions));
         Equal((byte)8, Geometry.DirectionOf(new(0, 0), directions)); directions[6] = new(0, 0); Equal((byte)6, Geometry.DirectionOf(new(0, 0), directions));
         foreach (int x in new[] { 0, 4, 95 }) Equal(true, g.ContainsX(x, 95, 10, false));

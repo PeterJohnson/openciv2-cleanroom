@@ -75,26 +75,26 @@ public static partial class FoundationSuite
         var catalog = content.Catalog;
         string[] expected = ["@TrIbEs 0", "First", "Second", "Fallback One", "Fallback Two"];
         for (byte i = 0; i < expected.Length; ++i)
-        { var result = catalog.Select("tribes 0"u8, i); Equal((int)NameOutcome.Selected, (int)result.Outcome); Equal(expected[i], ClassicText.DecodeWindows1252(result.Bytes.ToArray(), "name")); }
-        foreach (byte index in new byte[] { 5, 254, 255 }) Equal((int)NameOutcome.Exhausted, (int)catalog.Select("tribes 0"u8, index).Outcome);
-        Equal((int)NameOutcome.Unavailable, (int)catalog.Select("missing"u8, 1).Outcome);
+        { var result = catalog.Select("tribes 0", i); Equal((int)NameOutcome.Selected, (int)result.Outcome); Equal(expected[i], result.Text); }
+        foreach (byte index in new byte[] { 5, 254, 255 }) Equal((int)NameOutcome.Exhausted, (int)catalog.Select("tribes 0", index).Outcome);
+        Equal((int)NameOutcome.Unavailable, (int)catalog.Select("missing", 1).Outcome);
         input.Names["civilizations"]![0]!["cityNames"] = JsonNode.Parse("""["Duplicate","Duplicate"]""");
-        var duplicates = input.LoadNames().Catalog; BytesEqual(duplicates.Select("tribes 0"u8, 1).Bytes, duplicates.Select("tribes 0"u8, 2).Bytes);
-        Equal("First", ClassicText.DecodeWindows1252(catalog.Select("tribes 0"u8, 1).Bytes.ToArray(), "name"));
+        var duplicates = input.LoadNames().Catalog; Equal(duplicates.Select("tribes 0", 1).Text, duplicates.Select("tribes 0", 2).Text);
+        Equal("First", catalog.Select("tribes 0", 1).Text);
         var source = content.Catalog.Layers[0]; var first = source.Civilizations[0];
-        var incomplete = new NameCatalog([new(new([first with { Names = new([first.Names[0]]), Complete = false }]), source.Fallback)], TextComparison.AsciiNameEqual);
-        Equal((int)NameOutcome.Selected, (int)incomplete.Select("tribes 0"u8, 1).Outcome);
-        Throws<ArgumentException>(() => incomplete.Select("tribes 0"u8, 2));
+        var incomplete = new NameCatalog([new(new([first with { Names = new([first.Names[0]]), Complete = false }]), source.Fallback)], ClassicText.Compare(TextComparison.AsciiNameEqual));
+        Equal((int)NameOutcome.Selected, (int)incomplete.Select("tribes 0", 1).Outcome);
+        Throws<ArgumentException>(() => incomplete.Select("tribes 0", 2));
     }
     private static void CityNameLayerOwnership()
     {
-        static RuleText Text(string value) => new(value, new(ClassicText.EncodeWindows1252(value, "fixture")));
+        static string Text(string value) => value;
         var first = new CityNameLists(new([new(Text("Scenario"), new([Text("Scenario one")]))]), null);
         var second = new CityNameLists(new([new(Text("Scenario"), new([Text("Wrong override")])), new(Text("Home only"), new([Text("Home")]))]), new([Text("Home extra")]));
-        var layers = new[] { first, second }; var catalog = new NameCatalog(layers, TextComparison.AsciiNameEqual); layers[0] = second;
-        Equal("Scenario one", ClassicText.DecodeWindows1252(catalog.Select("Scenario"u8, 1).Bytes.ToArray(), "name"));
-        Equal((int)NameOutcome.Exhausted, (int)catalog.Select("Scenario"u8, 2).Outcome);
-        Equal("Home extra", ClassicText.DecodeWindows1252(catalog.Select("Home only"u8, 2).Bytes.ToArray(), "name"));
+        var layers = new[] { first, second }; var catalog = new NameCatalog(layers, ClassicText.Compare(TextComparison.AsciiNameEqual)); layers[0] = second;
+        Equal("Scenario one", catalog.Select("Scenario", 1).Text);
+        Equal((int)NameOutcome.Exhausted, (int)catalog.Select("Scenario", 2).Outcome);
+        Equal("Home extra", catalog.Select("Home only", 2).Text);
         var input = new CityContentInput(); input.Names["civilizations"] = new JsonArray(); input.Names["fallbackNames"] = new JsonArray();
         ContentError("invalid-content", () => input.LoadNames()); var overlay = input.LoadNames(true);
         Equal(false, overlay.StartingListsComplete); Equal("authored.overlay", overlay.Source.Owner.Id); Equal(0, overlay.Catalog.Layers[0].Civilizations.Count);
@@ -111,7 +111,7 @@ public static partial class FoundationSuite
         { var input = new CityContentInput(); input.Names["fallbackNames"]![0] = invalid; ContentError("invalid-content", () => input.LoadNames()); }
         var text = new CityContentInput(); text.Names["fallbackNames"]![0] = "Unrepresentable ☃"; ContentError("text-encoding", () => text.LoadNames());
         text = new(); text.Names["civilizations"]![0]!["pluralName"] = "Café"; text.Names["civilizations"]![1]!["pluralName"] = "CAFÉ"; ContentError("comparison-unavailable", () => text.LoadNames());
-        text = new(); text.Names["fallbackNames"]![0] = new string('x', 254); Equal(254, text.LoadNames().Catalog.Layers[0].Fallback![0].Classic.Count);
+        text = new(); text.Names["fallbackNames"]![0] = new string('x', 254); Equal(254, text.LoadNames().Catalog.Layers[0].Fallback![0].Length);
         Throws<ArgumentNullException>(() => new NameCatalog([], null!));
     }
 }

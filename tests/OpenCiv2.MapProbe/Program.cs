@@ -182,7 +182,7 @@ static void GeometryChecks(MapScene scene)
 // P02 known feature joins, W01 §3 directions, P03 §5 crop identities.
 static void FeatureArtChecks(MapPainter painter, MapObservation authored)
 {
-    var road = new ObservedTile(2, MapImprovements.Road, true, 0, false);
+    var road = new ObservedTile(2, MapFeatures.Road, true, 0, false);
     var known = new ObservedTile(2, default, false, 0, false);
     var tiles = Enumerable.Repeat(known, 16).ToArray();
     var point = new MapPoint(0, 2);
@@ -194,8 +194,8 @@ static void FeatureArtChecks(MapPainter painter, MapObservation authored)
     var map = authored with { Width = 8, Height = 4, Flat = false, Tiles = new(tiles), Units = new([]), Cities = new([]) };
     Require(new MapScene(map).Connections(point, road) == new TileConnections(5, 49), "wrapped river and road joins");
     Require(new MapScene(map with { Flat = true }).Connections(point, road) == new TileConnections(1, 1), "flat river and road joins");
-    Require(MapScene.Route(road with { Improvements = MapImprovements.Road | MapImprovements.Railroad }) ==
-        MapImprovements.Railroad, "rail takes precedence over the road art");
+    Require(MapScene.Route(road with { Improvements = MapFeatures.Road | MapFeatures.Railroad }) ==
+        MapFeatures.Railroad, "rail takes precedence over the road art");
     Require(MapArtCatalog.Stock.Terrain[0].FirstResource == "resource/0" &&
         MapArtCatalog.Stock.Terrain[10].SecondResource == "resource/21", "pinned resource variants");
 
@@ -211,8 +211,8 @@ static void FeatureArtChecks(MapPainter painter, MapObservation authored)
     string grass = Render(known, 1);
     Require(grass != Render(known with { GrasslandShield = true }, 2), "grassland shield sprite contributes pixels");
     Require(grass != Render(known with { River = true }, 2), "river sprite contributes pixels");
-    Require(grass != Render(known with { Improvements = MapImprovements.Road }, 2), "road sprite contributes pixels");
-    Require(grass != Render(known with { Improvements = MapImprovements.Railroad }, 2), "rail sprite contributes pixels");
+    Require(grass != Render(known with { Improvements = MapFeatures.Road }, 2), "road sprite contributes pixels");
+    Require(grass != Render(known with { Improvements = MapFeatures.Railroad }, 2), "rail sprite contributes pixels");
     var desert = known with { Terrain = 0 };
     string desertBase = Render(desert, 1);
     var resource = Render(desert with { Resource = 1 }, 2);
@@ -274,18 +274,18 @@ static void SeedStressWorld(SeamSession session)
     var world = session.Runtime.World;
     var geometry = new Geometry(384, 124);
     world.Map.Allocate(geometry);
-    Span<byte> memory = world.Map.RememberedLayer(1);
+    var memory = world.Map.RememberedLayer(1);
     for (int i = 0; i < geometry.Area; i++)
     {
         var point = geometry.Coordinates(i);
         world.Map.Tiles[i] = new Tile
         {
             Terrain = (Terrain)((i + point.Y) % 11),
-            Revelation = (byte)(point.X % 13 == 0 ? 0 : 2),
-            TerrainFlags = (byte)(i % 17 == 0 ? 0x80 : 0),
+            RevealedTo = new CivilizationSet().With(1, point.X % 13 != 0),
+            River = i % 17 == 0,
             Owner = null
         };
-        memory[i] = (byte)(i % 17 == 0 ? 0x10 : i % 23 == 0 ? 0x04 : 0);
+        memory[i] = i % 17 == 0 ? MapFeatures.Road : i % 23 == 0 ? MapFeatures.Irrigation : MapFeatures.None;
     }
     world.Entities.Units.SetEnd(1600);
     for (int i = 0; i < 1600; i++)
@@ -295,10 +295,9 @@ static void SeedStressWorld(SeamSession session)
         {
             Token = new((uint)i + 100),
             Owner = new((byte)(i % 4 + 1)),
-            X = (short)point.X,
-            Y = (short)point.Y,
+            Position = point,
             Type = new((byte)(i % 6)),
-            Visibility = (byte)(i % 3 == 0 ? 2 : 0)
+            Visibility = new CivilizationSet().With(1, i % 3 == 0)
         };
     }
     world.Entities.Cities.SetEnd(180);
@@ -309,9 +308,8 @@ static void SeedStressWorld(SeamSession session)
         {
             Token = new((uint)i + 4000),
             Owner = new(1),
-            X = (short)point.X,
-            Y = (short)point.Y,
-            Name = new("Riverbend"u8.ToArray()),
+            Position = point,
+            Name = "Riverbend",
             Size = (sbyte)(1 + i % 12)
         };
     }

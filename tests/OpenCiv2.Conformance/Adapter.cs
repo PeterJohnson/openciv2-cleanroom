@@ -85,7 +85,7 @@ public static partial class Adapter
         {
             byte owner = Number<byte>(args[1]); Require(owner < 8, "Civilization owner outside 0..7"); uint end = (uint)input.Count(2048); var scanned = new UnitToken[end];
             for (int i = 0; i < scanned.Length; ++i) scanned[i] = new(input.Read<uint>()); var military = new short[8]; for (int i = 0; i < 8; ++i) military[i] = input.Read<short>(); byte humans = input.Read<byte>(); input.End();
-            arguments = O(("owner", S("u8", owner))); var slot = EntityAllocation.ReserveUnit(scanned, ref end, new(owner), military[owner], humans); result = slot is { } assigned ? S("u16", assigned.Value) : Null();
+            arguments = O(("owner", S("u8", owner))); var slot = EntityAllocation.ReserveUnit(scanned, ref end, new(owner), military[owner], StateConversion.DecodeCivilizations(humans)); result = slot is { } assigned ? S("u16", assigned.Value) : Null();
             state = O(("F02.unitEnd", S("u32", end)), ("F02.unitTokenScan", A(scanned, v => S("u32", v.Value))), ("F02.militaryCounts", A(military, v => S("i16", v))), ("F02.effectiveHumanSet", S("u8", humans)));
         }
         else if ((operation == "W01.wrapX" && args.Count == 2) || (operation == "W01.tileIndex" && args.Count == 3) || (operation is "W01.stepDistance" or "W01.weightedDistance" && args.Count == 5))

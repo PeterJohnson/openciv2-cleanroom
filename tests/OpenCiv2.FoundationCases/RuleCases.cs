@@ -57,10 +57,9 @@ public static partial class FoundationSuite
         }
         public RuleContent Load(string? raw = null) => NativeRules.Load(ContentPacks.Resolve(Pack(raw).Mount()));
     }
-    private static RuleState Installed(RuleInput input, int prefix = 0)
+    private static RuleState Installed(RuleInput input)
     {
-        var state = new RuleState(); state.Text.Initialize();
-        for (int i = 0; i < prefix; ++i) state.Text.Store("prefix"u8);
+        var state = new RuleState();
         new RuleInstaller(input, state).Load(true); return state;
     }
     private static void ClassicTextExact()
@@ -81,17 +80,17 @@ public static partial class FoundationSuite
         var input = new RulesInput(); var baseline = input.Load(); var r = Installed(baseline.Input).Definitions.Snapshot();
         Equal((ushort)100, r.EnabledAdvanceCount); Equal((byte)6, r.Units[0].Movement); Equal((byte)30, r.Units[0].HitPoints);
         Equal((byte)3, r.Terrain[0].DefenseFactor); Equal(0, (int)r.Terrain[0].Work!.Transformation); Equal(true, r.Terrain[11].Work is null);
-        Equal((byte)6, r.Cosmic[CosmicParameter.FoodBoxRows]); Equal((byte)5, r.Cosmic[CosmicParameter.ShieldBoxRows]);
+        Equal((byte)6, r.Cosmic.FoodBoxRows); Equal((byte)5, r.Cosmic.ShieldBoxRows);
         Equal(new OwnedList<AdvanceReference?>([null, null, (AdvanceReference)54, (AdvanceReference)15, (AdvanceReference)31, (AdvanceReference)71, (AdvanceReference)21]), baseline.Input.GovernmentAdvances);
         foreach (var pair in input.Rules.ToArray()) if (pair.Value is JsonArray rows) input.Rules[pair.Key] = new JsonArray(rows.Reverse().Select(v => v!.DeepClone()).ToArray());
         Equal(r, Installed(input.Load().Input).Definitions.Snapshot());
-        input.Rules["units"]![0]!["name"] = "Renamed"; Equal("Renamed", input.Load().Input.Definitions.Units[61].Identity.Name.Unicode);
-        Equal("units 61", baseline.Input.Definitions.Units[61].Identity.Name.Unicode);
+        input.Rules["units"]![0]!["name"] = "Renamed"; Equal("Renamed", input.Load().Input.Definitions.Units[61].Identity.Name);
+        Equal("units 61", baseline.Input.Definitions.Units[61].Identity.Name);
     }
     private static void RulesNumericNormalization()
     {
-        BytesEqual([1, 1, 0, 4, 4, 0, 0, 4, 10, 4, 4, 3, 5, 0, 0, 0, 1, 0, 0, 4, 25, 0], RuleNormalization.Cosmic(Enumerable.Repeat(int.MinValue, 22).ToArray()).Values);
-        BytesEqual([10, 100, 10, 20, 20, 10, 10, 12, 100, 50, 50, 10, 100, 8, 8, 8, 20, 100, 100, 100, 200, 10], RuleNormalization.Cosmic(Enumerable.Repeat(int.MaxValue, 22).ToArray()).Values);
+        BytesEqual([1, 1, 0, 4, 4, 0, 0, 4, 10, 4, 4, 3, 5, 0, 0, 0, 1, 0, 0, 4, 25, 0], CosmicConversion.Encode(CosmicConversion.Decode(Enumerable.Repeat(int.MinValue, 22).ToArray())));
+        BytesEqual([10, 100, 10, 20, 20, 10, 10, 12, 100, 50, 50, 10, 100, 8, 8, 8, 20, 100, 100, 100, 200, 10], CosmicConversion.Encode(CosmicConversion.Decode(Enumerable.Repeat(int.MaxValue, 22).ToArray())));
         Equal((byte)1, RuleNormalization.UnitCost(-1)); Equal((byte)200, RuleNormalization.UnitCost(201));
         Equal((byte)1, RuleNormalization.LeaderColor(32768)); Equal((byte)3, RuleNormalization.LeaderStyle(32767));
         var i = new RulesInput(); i.Rules["globalRules"]!["roadMovementMultiplier"] = 30; i.Rules["globalRules"]!["foodBoxRows"] = 19; i.Rules["globalRules"]!["shieldBoxRows"] = 19;
@@ -100,10 +99,12 @@ public static partial class FoundationSuite
         var unit = i.Rules["units"]![0]!; unit["movementPoints"] = 30; unit["hitPoints"] = 250; unit["costRows"] = 200; unit["attack"] = 300; unit["defense"] = 128;
         unit["abilities"] = JsonNode.Parse("""["detect-submarines","see-two"]"""); i.Compatibility["retainedUnitFlags"] = JsonNode.Parse("""[{"unit":"units.authored.0","positions":[15]}]""");
         i.Rules["terrain"]![0]!["food"] = -1; i.Rules["tribes"]![0]!["preferredColor"] = 65539; i.Rules["tribes"]![0]!["cityStyle"] = 65538; i.Rules["tribes"]![0]!["personality"]!["aggression"] = -129;
-        var r = Installed(i.Load().Input).Definitions;
-        Equal((byte)10, r.Cosmic[CosmicParameter.RoadMovementMultiplier]); Equal((byte)20, r.Cosmic[CosmicParameter.FoodBoxRows]); Equal((byte)19, r.Cosmic[CosmicParameter.ShieldBoxRows]);
+        var input = i.Load().Input;
+        Equal(0x8000U, RuleCompatibility.RetainedUnitFlags(input, 0));
+        var r = Installed(input).Definitions;
+        Equal((byte)10, r.Cosmic.RoadMovementMultiplier); Equal((byte)20, r.Cosmic.FoodBoxRows); Equal((byte)19, r.Cosmic.ShieldBoxRows);
         Equal((sbyte)-128, r.Advances[0].AiValue); Equal((sbyte)-1, r.Advances[0].CivilizedAiModifier); Equal((byte)0, r.Improvements[0].CostRows); Equal((byte)255, r.Improvements[0].Upkeep);
-        Equal((byte)44, r.Units[0].Movement); Equal((byte)250, r.Units[0].HitPoints); Equal((byte)200, r.Units[0].CostRows); Equal((byte)44, r.Units[0].Attack); Equal((byte)128, r.Units[0].Defense); Equal(0xc001U, r.Units[0].Abilities);
+        Equal((byte)44, r.Units[0].Movement); Equal((byte)250, r.Units[0].HitPoints); Equal((byte)200, r.Units[0].CostRows); Equal((byte)44, r.Units[0].Attack); Equal((byte)128, r.Units[0].Defense); Equal(StateConversion.DecodeUnitAbilities(0xc001U), r.Units[0].Abilities);
         Equal((byte)255, r.Terrain[0].Food); Equal((byte)3, r.Tribes[0].PreferredColor); Equal((byte)2, r.Tribes[0].CityStyle); Equal((sbyte)127, r.Tribes[0].Personality[0]);
         Equal((byte)4, RuleNormalization.ClassicHitPoints(26)); Equal((byte)253, RuleNormalization.Movement(-1, 3));
         unit["movementPoints"] = "operand"; string raw = i.Rules.ToJsonString();
@@ -136,33 +137,36 @@ public static partial class FoundationSuite
         i.Rules["orders"]![0]!["name"] = ""; i.Rules["orders"]![0]!["shortcutHint"] = "Œ"; i.Rules["difficulties"]![0]!["name"] = "First, second; kept";
         i.Rules["tribes"]![0]!["governmentTitles"] = JsonNode.Parse("""[{"government":"governments.authored.1","male":"First","female":"First"},{"government":"governments.authored.1","male":"Last","female":""}]""");
         var input = i.Load().Input;
-        foreach (int prefix in new[] { 0, 70000 })
+        foreach (bool rebuildLabels in new[] { false, true })
         {
-            var state = Installed(input, prefix); var r = state.Definitions; var installer = new RuleInstaller(input, state);
-            Equal(" ", r.Units[0].Identity.Name.Unicode); BytesEqual([67, 97, 102, 0xe9], state.Text.Text(state.Names.Improvements[1]));
-            Equal("", r.Orders[0].Identity.Name.Unicode); Equal((byte)0x8c, r.Orders[0].Shortcut); Equal(0U, state.Names.Orders[0]);
-            Equal("Last", r.Tribes[0].Titles[1].Male.Unicode); Equal("", r.Tribes[0].Titles[1].Female.Unicode); Equal(0U, state.Leaders[0].Titles[1][1].Id);
-            BytesEqual("<nil>"u8.ToArray(), state.Text.Text(state.Leaders[0].Titles[1][1].Id));
-            Equal(true, state.Names.Advances[0] > prefix); Equal(r.Governments[0].Titles, r.Tribes[0].Titles[0]);
-            state.Leaders[0].Plural = new(state.Text.Store("custom"u8), true); state.Leaders[0].TimesUsed = 71; state.Leaders[0].CityNameIndex = 93;
-            var retained = state.Leaders[0].Snapshot(); int count = state.Text.Count; installer.Leaders(false);
-            Equal(retained, state.Leaders[0].Snapshot()); Equal(count, state.Text.Count);
-            r.Units[0] = r.Units[0] with { Identity = new("old", new("Old name", new("Old name"u8.ToArray()))) }; state.DoubleMovementApplied = true;
-            installer.Units(true); Equal("Old name", r.Units[0].Identity.Name.Unicode); Equal("units.authored.0", r.Units[0].Identity.Id); Equal((byte)6, r.Units[0].Movement); Equal((byte)30, r.Units[0].HitPoints); Equal(false, state.DoubleMovementApplied);
-            var cosmic = r.Cosmic.Values.ToArray(); cosmic[0] = 7; r.Cosmic = new(new OwnedList<byte>(cosmic)); installer.Units(true); Equal((byte)14, r.Units[0].Movement); Equal((byte)30, r.Units[0].HitPoints);
+            var state = Installed(input); var r = state.Definitions;
+            if (rebuildLabels) new LabelCatalog(1, new([NameText("unrelated label")]), new(new string?[3])).Install(state.Labels);
+            var installer = new RuleInstaller(input, state);
+            Equal(" ", r.Units[0].Identity.Name); Equal("Caf\u00e9", RuleText.Display(r.Improvements[1].Identity.Name));
+            Equal("", r.Orders[0].Identity.Name); Equal("Œ", r.Orders[0].Shortcut); Equal(RuleText.Nil, RuleText.Display(r.Orders[0].Identity.Name));
+            Equal("Last", r.Tribes[0].Titles[1].Male); Equal("", r.Tribes[0].Titles[1].Female); Equal(RuleText.Nil, state.Leaders[0].Titles[1][1].Text);
+            Equal("<nil>", state.Leaders[0].Titles[1][1].Text);
+            Equal(r.Governments[0].Titles, r.Tribes[0].Titles[0]);
+            state.Leaders[0].Plural = new(NameText("custom"), true); state.Leaders[0].TimesUsed = 71; state.Leaders[0].CityNameIndex = 93;
+            var retained = state.Leaders[0].Snapshot(); installer.Leaders(false);
+            Equal(retained, state.Leaders[0].Snapshot());
+            r.Units[0] = r.Units[0] with { Identity = new("old", "Old name") }; state.DoubleMovementApplied = true;
+            installer.Units(true); Equal("Old name", r.Units[0].Identity.Name); Equal("units.authored.0", r.Units[0].Identity.Id); Equal((byte)6, r.Units[0].Movement); Equal((byte)30, r.Units[0].HitPoints); Equal(false, state.DoubleMovementApplied);
+            r.Cosmic = r.Cosmic with { RoadMovementMultiplier = 7 }; installer.Units(true); Equal((byte)14, r.Units[0].Movement); Equal((byte)30, r.Units[0].HitPoints);
             r.Terrain[11] = r.Terrain[11] with { Work = new(new(WorkTurns: 97), new()) }; installer.Terrain(); Equal((byte)97, r.Terrain[11].Work!.Irrigation.WorkTurns);
             var snapshot = r.Snapshot(); r.Units[0] = r.Units[0] with { Attack = 72 }; Equal((byte)1, snapshot.Units[0].Attack);
         }
-        Throws<ArgumentException>(() => new RuleInstaller(input, new RuleState()));
+        Equal(true, Installed(input).IsLoaded);
     }
     private static void RuleTextAndLabelState()
     {
-        var pool = new TextPool(); pool.Initialize(); Equal(1, pool.Count); Equal(0U, pool.Store([]));
-        Equal(1U, pool.Store("name\0ignored"u8)); Equal(2U, pool.Store("name"u8)); BytesEqual("name"u8.ToArray(), pool.Text(1));
-        Throws<ArgumentOutOfRangeException>(() => pool.Text(3)); var labels = new Labels(); Equal(888, Labels.Capacity);
-        BytesEqual("OK"u8.ToArray(), labels.Popup(0, pool)); BytesEqual("Help"u8.ToArray(), labels.Popup(1, pool)); BytesEqual("Cancel"u8.ToArray(), labels.Popup(2, pool));
-        labels.Entries.Add(null); Throws<ArgumentOutOfRangeException>(() => labels.Label(0, pool)); labels.Entries[0] = 2; BytesEqual("name"u8.ToArray(), labels.Label(0, pool));
-        labels.Popups[0] = 0; BytesEqual("<nil>"u8.ToArray(), labels.Popup(0, pool)); pool.Initialize(); Equal(1, pool.Count);
+        Equal(RuleText.Nil, RuleText.Display(RuleText.Empty)); Equal(RuleText.Space, RuleText.Display(RuleText.Space));
+        var labels = new Labels(); Equal(888, Labels.Capacity);
+        Equal("OK", labels.Popup(0)); Equal("Help", labels.Popup(1)); Equal("Cancel", labels.Popup(2));
+        labels.Entries.Add(null); Throws<ArgumentOutOfRangeException>(() => labels.Label(0));
+        labels.Entries[0] = NameText("name"); Equal("name", labels.Label(0));
+        labels.Popups[0] = RuleText.Nil; Equal("<nil>", labels.Popup(0));
+        Throws<ArgumentOutOfRangeException>(() => labels.Popup(3));
     }
     private static void RulesReloadDependenciesAndFailurePrefix()
     {
@@ -177,10 +181,10 @@ public static partial class FoundationSuite
         Throws<ArgumentException>(() => installer.Improvements());
         Equal(1, (int)state.Definitions.Improvements[0].Prerequisite); Equal((byte)10, state.Definitions.Improvements[0].CostRows);
         Equal((byte)97, state.Definitions.Improvements[1].CostRows);
-        var overrides = input.TitleOverrides.ToArray(); overrides[0] = new([new((Government)1, new(new("Earlier", new("Earlier"u8.ToArray())), RuleText.Empty)), new((Government)0, new())]);
+        var overrides = input.TitleOverrides.ToArray(); overrides[0] = new([new((Government)1, new("Earlier", RuleText.Empty)), new((Government)0, new())]);
         var later = state.Leaders[1].Snapshot();
         Throws<ArgumentException>(() => new RuleInstaller(input with { TitleOverrides = new(overrides) }, state).Leaders(true));
-        Equal("Earlier", state.Definitions.Tribes[0].Titles[1].Male.Unicode); Equal(later, state.Leaders[1].Snapshot());
+        Equal("Earlier", state.Definitions.Tribes[0].Titles[1].Male); Equal(later, state.Leaders[1].Snapshot());
         // Decoder admission is separate from ordered mutation, so a rejected document has no effects.
         state.Definitions.Units[0] = state.Definitions.Units[0] with { Attack = 72 }; fixture.Rules["units"]![0]!["hitPoints"] = 31;
         ContentError("invalid-content", () => new RuleInstaller(fixture.Load().Input, state).Load(true)); Equal((byte)72, state.Definitions.Units[0].Attack);

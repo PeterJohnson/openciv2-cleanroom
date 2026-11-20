@@ -88,6 +88,7 @@
         "src/OpenCiv2.Contracts/Clients.cs",
         "src/OpenCiv2.Contracts/Commands.cs",
         "src/OpenCiv2.Contracts/Identities.cs",
+        "src/OpenCiv2.Contracts/Limits.cs",
         "src/OpenCiv2.Contracts/LiveRecords.cs",
         "src/OpenCiv2.Contracts/Setup.cs"
       ],
@@ -162,8 +163,8 @@
     {
       "id": "world-state",
       "contract": "F02 ownership; X01 fresh-world/text repair; F05/F06 retained values",
-      "publicSurface": "ProcessContext/GameState, world lifetime, history/layout/scenario/setup/text state, TextPool",
-      "review": "Independent process/world values and explicit reset/default behavior. Logical text IDs retain complete names beyond classic signed ordinals; historical allocation extents and pointer lifetimes are intentionally not reproduced.",
+      "publicSurface": "ProcessContext/GameState, world lifetime, history/layout/scenario/setup/text state, owned rule and label text",
+      "review": "Independent process/world values and explicit reset/default behavior. Owned text retains complete names independently of classic ordinals; historical allocation extents and pointer lifetimes are intentionally not reproduced.",
       "sharedGroups": [
         "F02.entity-mood-dispatch",
         "F02.entity-pool-deletion",
@@ -326,7 +327,7 @@
     {
       "id": "multiplayer-state",
       "contract": "F06 \u00a7\u00a76,9",
-      "publicSurface": "Saved/live multiplayer values, password encode/decode/reset/flags and loaded-mode adaptation",
+      "publicSurface": "Logical saved passwords and presence flags; adapter-owned password encoding, reset padding and loaded-mode adaptation",
       "review": "All source password bits and circular seam, semantic choice failure prefix and retained byte 255, equal-mode gate and retained current values; PCG generated policy intentionally changed.",
       "sharedGroups": [
         "F06.event-values-live-conversion",
@@ -356,6 +357,7 @@
         "src/OpenCiv2.Core/State/Multiplayer.cs",
         "src/OpenCiv2.Formats/ClassicLive.cs",
         "src/OpenCiv2.Formats/FixedCodecs.cs",
+        "src/OpenCiv2.Formats/PasswordConversion.cs",
         "src/OpenCiv2.Formats/StateAuxConversion.cs"
       ],
       "tests": [
@@ -368,7 +370,7 @@
       "id": "map",
       "contract": "W01 geometry/spatial state; F06 map input",
       "publicSurface": "Geometry indices/canonical coordinates/wrap/distance/neighbors/regions; MapStorage allocate/release/swap/layers/lookup/features/mutate/sync; staged MapInput install",
-      "review": "Parity aliases, signed wrapping/overflow, half-open rectangles, ordered duplicate neighborhoods, allocation/admission, retained direct layers, current resource seed, synchronization routes and failure prefixes.",
+      "review": "Parity aliases, signed wrapping/overflow, half-open rectangles, ordered duplicate neighborhoods, allocation/admission, retained direct layers, current resource seed, synchronization routes and failure prefixes. Semantic feature components and civilization sets; classic operand reduction and opaque-only publication are adapter responsibilities.",
       "sharedGroups": [
         "F06.game-restoration-admission",
         "F06.game-restoration-leader-selection",
@@ -377,7 +379,16 @@
         "F06.game-restoration-values",
         "F06.map-input-admission",
         "F06.map-input-staged-installation",
+        "F06.opaque-event-flags",
+        "F06.opaque-flags-live-save",
+        "F06.opaque-option-lifetimes",
+        "F06.opaque-tile-lifetimes",
         "F06.raw-map-restoration",
+        "F06.semantic-entity-flags",
+        "F06.semantic-game-status",
+        "F06.semantic-map-locations",
+        "F06.semantic-memberships",
+        "F06.semantic-text-boundaries",
         "Query.lossless-json-and-raw-maps",
         "Query.owned-records-and-diffs",
         "Query.semantic-diagnostics",
@@ -388,26 +399,31 @@
         "W01.map-mutation-fields",
         "W01.map-replacement-and-swap",
         "W01.map-retained-spatial-reads",
-        "W01.map-synchronization"
+        "W01.map-synchronization",
+        "W01.semantic-tile-mutations"
       ],
       "status": "implemented",
       "sources": [
+        "src/OpenCiv2.Core/CivilizationSet.cs",
         "src/OpenCiv2.Core/Geometry.cs",
         "src/OpenCiv2.Core/MapInput.cs",
         "src/OpenCiv2.Core/MapStorage.cs",
-        "src/OpenCiv2.Core/Tiles.cs"
+        "src/OpenCiv2.Core/TileChange.cs",
+        "src/OpenCiv2.Core/Tiles.cs",
+        "src/OpenCiv2.Formats/ClassicTileMutations.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/MapCases.cs",
         "tests/OpenCiv2.FoundationCases/QueryCases.cs",
-        "tests/OpenCiv2.FoundationCases/RestorationCases.cs"
+        "tests/OpenCiv2.FoundationCases/RestorationCases.cs",
+        "tests/OpenCiv2.FoundationCases/SemanticStateCases.cs"
       ]
     },
     {
       "id": "rules",
       "contract": "F03 \u00a7\u00a72\u20137; X01 semantic names",
       "publicSurface": "Typed rule operands/tables, all normalization helpers, ordered per-table installation and reload/name retention",
-      "review": "All cosmic limits, signed byte/word wrapping, disabled advance fixup, order/dependencies and failure prefixes; full-width semantic names and marker conversion replace original pool ordinals.",
+      "review": "All cosmic limits, signed byte/word wrapping, disabled advance fixup, order/dependencies and failure prefixes; owned semantic names and marker conversion replace original pool ordinals.",
       "sharedGroups": [
         "F02.text-and-label-state",
         "F03.advance-fixup",
@@ -424,7 +440,8 @@
         "src/OpenCiv2.Core/Rules/RuleNormalization.cs",
         "src/OpenCiv2.Core/Rules/RuleState.cs",
         "src/OpenCiv2.Core/Rules/RuleValues.cs",
-        "src/OpenCiv2.Formats/Content/RuleContent.cs"
+        "src/OpenCiv2.Formats/Content/RuleContent.cs",
+        "src/OpenCiv2.Formats/CosmicConversion.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/RuleCases.cs"
@@ -461,7 +478,7 @@
       "id": "city-names",
       "contract": "C01 \u00a72; X01 text repair",
       "publicSurface": "Default city-name selection over native/classic catalogs and owned rule names",
-      "review": "All local/shared/fallback cursor paths, duplicate-name retries and failed publication; complete byte names and repaired full-width IDs, not allocation timing.",
+      "review": "All local/shared/fallback cursor paths, duplicate-name retries and failed publication; complete owned names independent of labels and allocation timing.",
       "sharedGroups": [
         "C01.city-naming-cursors",
         "C01.city-naming-installed-rules",
@@ -617,7 +634,7 @@
       "id": "stored-records",
       "contract": "F06 explicit byte records",
       "publicSurface": "Fixed text and unit/city/tile/region/global record codecs, raw field inventory, stored/live compatibility metadata",
-      "review": "Exact field offsets, signed and unsigned views, unused bits and text tails; reject truncation/extra bytes and out-of-range logical exports without truncation.",
+      "review": "Exact field offsets, signed and unsigned views, unused bits and text tails; reject truncation/extra bytes and out-of-range logical exports without truncation. Logical Unicode text, paired MapPoint locations and carrier references are tested separately from fixed CP1252 fields and stored coordinate layouts. Nullable slot references canonicalize absence in core; unchanged imported negative encodings survive adapter export, and slot zero remains present.",
       "sharedGroups": [
         "F06.binary-multiplayer-preferences",
         "F06.binary-ordinary-preferences",
@@ -653,6 +670,7 @@
         "src/OpenCiv2.Formats/ClassicText.cs",
         "src/OpenCiv2.Formats/FixedCodecs.cs",
         "src/OpenCiv2.Formats/RecordCompatibility.cs",
+        "src/OpenCiv2.Formats/ReferenceConversion.cs",
         "src/OpenCiv2.Formats/StoredRecords.cs",
         "src/OpenCiv2.Query/RecordFields.cs"
       ],
@@ -693,7 +711,7 @@
       "id": "live-codecs",
       "contract": "F06 stored/live adapters and output sections",
       "publicSurface": "Entity/global/leader/history/layout/scenario/multiplayer conversions; owned GameInput and live section writers",
-      "review": "Opaque metadata bound to actual world lifetime, semantic custom-name sign restoration/export, selected-tribe repeated effects; staged validation and byte-prefix failures.",
+      "review": "Opaque metadata bound to actual world lifetime, semantic custom-name sign restoration/export, selected-tribe repeated effects; staged validation and byte-prefix failures. Game status and tiles use semantic state; unknown game/terrain/radius bits remain in world/map-bound adapter metadata.",
       "sharedGroups": [
         "F06.city-live-conversion",
         "F06.civilization-census-counts",
@@ -722,24 +740,48 @@
         "F06.map-view-live-conversion",
         "F06.multiplayer-live-conversion",
         "F06.names-live-conversion",
+        "F06.opaque-event-flags",
+        "F06.opaque-flags-live-save",
+        "F06.opaque-option-lifetimes",
+        "F06.opaque-tile-lifetimes",
         "F06.raw-map-restoration",
         "F06.scenario-history-live-conversion",
-        "F06.unit-live-conversion"
+        "F06.semantic-entity-flags",
+        "F06.semantic-game-status",
+        "F06.semantic-map-locations",
+        "F06.semantic-memberships",
+        "F06.semantic-text-boundaries",
+        "F06.unit-live-conversion",
+        "W01.semantic-tile-mutations"
       ],
       "status": "implemented",
       "sources": [
+        "src/OpenCiv2.Core/IndexSets.cs",
         "src/OpenCiv2.Core/State/GameInput.cs",
+        "src/OpenCiv2.Core/State/GameStatus.cs",
+        "src/OpenCiv2.Core/State/SemanticFlags.cs",
         "src/OpenCiv2.Formats/ClassicLive.cs",
+        "src/OpenCiv2.Formats/FlagConversion.cs",
+        "src/OpenCiv2.Formats/GameStatusConversion.cs",
         "src/OpenCiv2.Formats/LiveSaveConversion.cs",
+        "src/OpenCiv2.Formats/MapCompatibility.cs",
+        "src/OpenCiv2.Formats/MembershipConversion.cs",
+        "src/OpenCiv2.Formats/RecordCompatibility.cs",
         "src/OpenCiv2.Formats/RestorationInput.cs",
+        "src/OpenCiv2.Formats/RuleCompatibility.cs",
         "src/OpenCiv2.Formats/StateAuxConversion.cs",
-        "src/OpenCiv2.Formats/StateConversion.cs"
+        "src/OpenCiv2.Formats/StateConversion.cs",
+        "src/OpenCiv2.Formats/StoredRegionSummary.cs",
+        "src/OpenCiv2.Formats/StoredTile.cs",
+        "src/OpenCiv2.Formats/TileConversion.cs",
+        "src/OpenCiv2.Session/ClassicConfigurationMetadata.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/AuxStateCases.cs",
         "tests/OpenCiv2.FoundationCases/CivilizationCases.cs",
         "tests/OpenCiv2.FoundationCases/LiveWriterCases.cs",
-        "tests/OpenCiv2.FoundationCases/RestorationCases.cs"
+        "tests/OpenCiv2.FoundationCases/RestorationCases.cs",
+        "tests/OpenCiv2.FoundationCases/SemanticStateCases.cs"
       ]
     },
     {
@@ -807,7 +849,7 @@
         "P04.classic-label-catalog",
         "P04.classic-label-fallback",
         "P04.classic-label-missing-and-retained-names",
-        "P04.label-installation-full-width-and-deduplication",
+        "P04.label-installation-independent-names",
         "P04.text-language-configuration"
       ],
       "status": "implemented",

@@ -2,6 +2,7 @@ using System.Text.Json;
 using OpenCiv2.App;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 using SkiaSharp;
@@ -100,7 +101,7 @@ internal static partial class NativeMapMatrix
     private static void AgriculturalPixelChecks(AssetAtlas atlas, PinnedFonts fonts, MapArtSelection? replacement, string output)
     {
         const int columns = 5, rows = 9, width = 350, height = 180;
-        const MapImprovements farmland = MapImprovements.Irrigation | MapImprovements.Mine;
+        const MapFeatures farmland = MapFeatures.Irrigation | MapFeatures.Mine;
         var center = new MapPoint(4, 4);
         var southeast = new MapPoint(5, 5);
         var southwest = new MapPoint(3, 5);
@@ -110,7 +111,7 @@ internal static partial class NativeMapMatrix
         var city = first with
         {
             Position = center,
-            Name = new([]),
+            Name = "",
             Details = first.Details! with
             {
                 Appearance = MapFact<MapCityAppearance>.Known(new(0, 0, false)),
@@ -127,12 +128,12 @@ internal static partial class NativeMapMatrix
         using var reference = SKSurface.Create(new SKImageInfo(width, height));
         var receipts = new List<object>();
 
-        var markers = new (string Name, MapImprovements State, TerrainPlacement? Sprite)[]
+        var markers = new (string Name, MapFeatures State, TerrainPlacement? Sprite)[]
         {
             ("none", default, null),
-            ("irrigation", MapImprovements.Irrigation, new(TerrainPass.Field, "improvement/irrigation", center)),
+            ("irrigation", MapFeatures.Irrigation, new(TerrainPass.Field, "improvement/irrigation", center)),
             ("farmland", farmland, new(TerrainPass.Field, "improvement/farmland", center)),
-            ("mine", MapImprovements.Mine, new(TerrainPass.Mine, "improvement/mine", center))
+            ("mine", MapFeatures.Mine, new(TerrainPass.Mine, "improvement/mine", center))
         };
         var combinations = new HashSet<string>(StringComparer.Ordinal);
         foreach (var (name, state, sprite) in markers)
@@ -140,10 +141,10 @@ internal static partial class NativeMapMatrix
             Require(combinations.Add(Check(name, plain with { Improvements = state }, sprite)),
                 $"{theme} {name} is visually distinct on the same plains terrain");
             Check(name + "-river-resource", plain with { Improvements = state, River = true, Resource = 2 }, sprite);
-            Check(name + "-city", plain with { Improvements = state | MapImprovements.CitySite, River = true, Resource = 2 },
+            Check(name + "-city", plain with { Improvements = state | MapFeatures.CitySite, River = true, Resource = 2 },
                 sprite, showCity: true);
         }
-        var centerCity = plain with { Improvements = MapImprovements.CitySite, River = true, Resource = 2 };
+        var centerCity = plain with { Improvements = MapFeatures.CitySite, River = true, Resource = 2 };
         foreach (var direction in new[] { (Name: "southeast", Point: southeast), (Name: "southwest", Point: southwest) })
         {
             var field = new TerrainPlacement(TerrainPass.Field, "improvement/farmland", direction.Point);
@@ -152,7 +153,7 @@ internal static partial class NativeMapMatrix
             Check("hidden-" + direction.Name, centerCity, null, true,
                 (direction.Point, plain with { Terrain = null, Improvements = farmland }, null));
         }
-        var bareTile = centerCity with { Improvements = MapImprovements.CitySite | farmland | MapImprovements.Pollution };
+        var bareTile = centerCity with { Improvements = MapFeatures.CitySite | farmland | MapFeatures.Pollution };
         Check("bare", bareTile, null, showCity: true, bare: true);
         File.WriteAllText(Path.Combine(output, $"MV06-agriculture-{theme}.json"), JsonSerializer.Serialize(receipts, Json));
 
@@ -182,7 +183,7 @@ internal static partial class NativeMapMatrix
             if (agriculture is { } field) plan.Add(field);
             if (neighbor?.Art is { } neighborField) plan.Add(neighborField);
             if (tile.Resource != 0) plan.Add(new(TerrainPass.Resource, "resource/3", center));
-            if ((tile.Improvements & MapImprovements.Pollution) != 0)
+            if ((tile.Improvements & MapFeatures.Pollution) != 0)
                 plan.Add(new(TerrainPass.Pollution, "improvement/pollution", center));
             DrawExpected(plan);
             var current = ReadMapPixels(image);

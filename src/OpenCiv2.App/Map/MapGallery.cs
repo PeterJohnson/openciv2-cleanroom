@@ -1,5 +1,6 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Formats;
 using OpenCiv2.MapRendering;
 
 namespace OpenCiv2.App.Map;
@@ -59,7 +60,7 @@ internal static class MapGallery
     private static GalleryBoard Terrain()
     {
         var board = new Builder("MV01", "Eleven terrain types", 11);
-        for (byte terrain = 0; terrain < 11; terrain++)
+        for (byte terrain = 0; terrain < RuleLimits.BaseTerrains; terrain++)
         {
             board.Art(terrain, Tile(terrain), $"terrain/{terrain}");
         }
@@ -76,7 +77,7 @@ internal static class MapGallery
             {
                 int spot = q * 8 + mask;
                 board.Art(spot, Tile(10), $"coast/{q}/{mask}");
-                for (int d = 0; d < 8; d++)
+                for (int d = 0; d < MapLimits.Directions; d++)
                 {
                     board.Neighbor(spot, d, Tile(10));
                 }
@@ -131,7 +132,7 @@ internal static class MapGallery
         var board = new Builder("MV04", "River masks, mouths and crossings", 20);
         for (int mask = 0; mask < 16; mask++)
         {
-            var features = mask % 3 == 0 ? MapImprovements.Railroad : mask % 3 == 1 ? MapImprovements.Road : default;
+            var features = mask % 3 == 0 ? MapFeatures.Railroad : mask % 3 == 1 ? MapFeatures.Road : default;
             board.Art(mask, Tile(2, features, river: true), $"river/{mask}");
             for (int q = 0; q < 4; q++)
             {
@@ -152,13 +153,13 @@ internal static class MapGallery
     private static GalleryBoard Resources()
     {
         var board = new Builder("MV05", "Both resources per terrain and the grassland shield", 23);
-        for (int t = 0; t < 11; t++)
+        for (int t = 0; t < RuleLimits.BaseTerrains; t++)
         {
             for (byte s = 1; s <= 2; s++)
             {
                 board.Art(
                     t * 2 + s - 1,
-                    Tile((byte)t, MapImprovements.Road, river: true) with { Resource = s },
+                    Tile((byte)t, MapFeatures.Road, river: true) with { Resource = s },
                     $"resource/{t * 2 + s - 1}");
             }
         }
@@ -172,14 +173,14 @@ internal static class MapGallery
         var board = new Builder("MV06", "Irrigation, farmland and mines", 12);
         foreach (var (index, flags, key) in new[]
         {
-            (0, MapImprovements.Irrigation, "irrigation"),
-            (1, MapImprovements.Irrigation | MapImprovements.Mine, "farmland"),
-            (2, MapImprovements.Mine, "mine")
+            (0, MapFeatures.Irrigation, "irrigation"),
+            (1, MapFeatures.Irrigation | MapFeatures.Mine, "farmland"),
+            (2, MapFeatures.Mine, "mine")
         })
         {
             board.Art(index, Tile(2, flags), "improvement/" + key);
             board.Art(index + 4, Tile(2, flags, true) with { GrasslandShield = true }, "improvement/" + key);
-            board.Art(index + 8, Tile(2, flags | MapImprovements.CitySite), "improvement/" + key);
+            board.Art(index + 8, Tile(2, flags | MapFeatures.CitySite), "improvement/" + key);
             board.City(index + 8, 1, 0, 2, false, 5);
         }
         return board.Finish();
@@ -188,21 +189,21 @@ internal static class MapGallery
     private static GalleryBoard Networks()
     {
         var board = new Builder("MV07", "Road, rail, mixed and city endpoints", 44);
-        board.Art(0, Tile(2, MapImprovements.Road), "road/0");
-        board.Art(1, Tile(2, MapImprovements.Railroad), "rail/0");
-        for (int d = 0; d < 8; d++)
+        board.Art(0, Tile(2, MapFeatures.Road), "road/0");
+        board.Art(1, Tile(2, MapFeatures.Railroad), "rail/0");
+        for (int d = 0; d < MapLimits.Directions; d++)
         {
             int index = 2 + d;
-            board.Art(index, Tile(2, MapImprovements.Road), $"road/{d + 1}");
-            board.Neighbor(index, d, Tile(2, MapImprovements.Road));
-            board.Art(index + 8, Tile(2, MapImprovements.Railroad), $"rail/{d + 1}");
-            board.Neighbor(index + 8, d, Tile(2, MapImprovements.Railroad));
-            board.Art(index + 16, Tile(2, MapImprovements.Road), $"road/{d + 1}");
-            board.Neighbor(index + 16, d, Tile(2, MapImprovements.Railroad));
-            board.Art(index + 24, Tile(2, MapImprovements.Railroad), $"rail/{d + 1}");
-            board.Neighbor(index + 24, d, Tile(2, MapImprovements.CitySite));
-            board.Art(index + 32, Tile(2, MapImprovements.Railroad), "rail/0");
-            board.Neighbor(index + 32, d, Tile(2, MapImprovements.CitySite | MapImprovements.Fortification));
+            board.Art(index, Tile(2, MapFeatures.Road), $"road/{d + 1}");
+            board.Neighbor(index, d, Tile(2, MapFeatures.Road));
+            board.Art(index + 8, Tile(2, MapFeatures.Railroad), $"rail/{d + 1}");
+            board.Neighbor(index + 8, d, Tile(2, MapFeatures.Railroad));
+            board.Art(index + 16, Tile(2, MapFeatures.Road), $"road/{d + 1}");
+            board.Neighbor(index + 16, d, Tile(2, MapFeatures.Railroad));
+            board.Art(index + 24, Tile(2, MapFeatures.Railroad), $"rail/{d + 1}");
+            board.Neighbor(index + 24, d, Tile(2, MapFeatures.CitySite));
+            board.Art(index + 32, Tile(2, MapFeatures.Railroad), "rail/0");
+            board.Neighbor(index + 32, d, Tile(2, MapFeatures.CitySite | MapFeatures.Fortification));
         }
         return board.Finish();
     }
@@ -211,14 +212,14 @@ internal static class MapGallery
     {
         var board = new Builder("MV08", "Villages, pollution, fortresses and airbases", 12);
         board.Art(0, Tile(2) with { Hut = Present(true) }, "improvement/village");
-        board.Art(1, Tile(2, MapImprovements.Pollution), "improvement/pollution");
-        board.Put(board.At(2), Tile(2, MapImprovements.Fortification));
+        board.Art(1, Tile(2, MapFeatures.Pollution), "improvement/pollution");
+        board.Put(board.At(2), Tile(2, MapFeatures.Fortification));
         board.Unit(2, 3, 8, Status(2) with { Order = MapFact<UnitOrder>.Known(UnitOrder.Fortified) });
-        board.Put(board.At(3), Tile(2, MapImprovements.CitySite | MapImprovements.Fortification) with
+        board.Put(board.At(3), Tile(2, MapFeatures.CitySite | MapFeatures.Fortification) with
         { AirbaseOccupant = MapFact<MapTileOwnership>.Known(new(null)) });
-        for (byte owner = 0; owner < 8; owner++)
+        for (byte owner = 0; owner < EntityLimits.Civilizations; owner++)
         {
-            board.Put(board.At(4 + owner), Tile(2, MapImprovements.CitySite | MapImprovements.Fortification) with
+            board.Put(board.At(4 + owner), Tile(2, MapFeatures.CitySite | MapFeatures.Fortification) with
             { AirbaseOccupant = MapFact<MapTileOwnership>.Known(new(new(owner))) });
         }
 
@@ -257,7 +258,7 @@ internal static class MapGallery
     private static GalleryBoard OwnerColors()
     {
         var board = new Builder("MV17", "Civilization colors and overlays", 40);
-        for (byte owner = 0; owner < 8; owner++)
+        for (byte owner = 0; owner < EntityLimits.Civilizations; owner++)
         {
             var slot = new CivilizationSlot(owner);
             var details = owner == 1 ? Status(0) with { Order = MapFact<UnitOrder>.Withheld } : MapUnitDetails.Withheld;
@@ -265,7 +266,7 @@ internal static class MapGallery
             board.Unit(owner, owner, 1, details);
             board.City(8 + owner, owner, 0, 0, false, 3, $"North {owner}");
             board.City(16 + owner, owner, 0, 0, false, 3, $"South {owner}");
-            board.Put(board.At(24 + owner), Tile(1, MapImprovements.CitySite | MapImprovements.Fortification) with
+            board.Put(board.At(24 + owner), Tile(1, MapFeatures.CitySite | MapFeatures.Fortification) with
             { AirbaseOccupant = MapFact<MapTileOwnership>.Known(new(slot)) });
             board.Put(board.At(32 + owner), Tile(1) with
             { Ownership = MapFact<MapTileOwnership>.Known(new(slot)) });
@@ -316,7 +317,7 @@ internal static class MapGallery
             var state = Status(i);
             if (sleeping)
             {
-                board.Put(board.At(i), Tile(2, MapImprovements.Fortification));
+                board.Put(board.At(i), Tile(2, MapFeatures.Fortification));
                 state = state with
                 {
                     Order = MapFact<UnitOrder>.Known(i % 2 == 0 ? UnitOrder.Sleeping : UnitOrder.Fortified),
@@ -343,7 +344,7 @@ internal static class MapGallery
         board.Unit(4, 2, 0, MapUnitDetails.Withheld);
         board.City(5, 1, 0, 1, false, 4, "Workshop");
         board.City(6, 2, 2, 1, false, 5, "Old Harbor");
-        board.Put(board.At(7), Tile(2, MapImprovements.CitySite | MapImprovements.Road));
+        board.Put(board.At(7), Tile(2, MapFeatures.CitySite | MapFeatures.Road));
         return board.Finish();
     }
 
@@ -376,21 +377,21 @@ internal static class MapGallery
             }
 
             byte terrain = (byte)((x / 11 + y / 9) % 11);
-            MapImprovements improvements = (x % 16 < 2 ? MapImprovements.Railroad : default) |
-                (y % 11 < 2 ? MapImprovements.Road : default);
+            MapFeatures improvements = (x % 16 < 2 ? MapFeatures.Railroad : default) |
+                (y % 11 < 2 ? MapFeatures.Road : default);
             if (i % 73 == 0)
             {
-                improvements |= MapImprovements.Irrigation | MapImprovements.Mine;
+                improvements |= MapFeatures.Irrigation | MapFeatures.Mine;
             }
 
             if (i % 89 == 0)
             {
-                improvements |= MapImprovements.Fortification;
+                improvements |= MapFeatures.Fortification;
             }
 
             if (i % 137 == 0)
             {
-                improvements |= MapImprovements.Pollution;
+                improvements |= MapFeatures.Pollution;
             }
 
             tiles[i] = Tile(terrain, improvements, river: x - y / 2 is >= 6 and <= 8) with
@@ -429,7 +430,7 @@ internal static class MapGallery
             }
 
             var p = Coordinate(index, w);
-            tiles[index] = tiles[index] with { Improvements = tiles[index].Improvements | MapImprovements.CitySite };
+            tiles[index] = tiles[index] with { Improvements = tiles[index].Improvements | MapFeatures.CitySite };
             cities.Add(City(p, i, owner, i % 6, i % 4, i % 3 == 0, i % 23, $"Harbor {i + 1}"));
         }
         UnitTarget? active = units.FirstOrDefault(u => u.Target is not null).Target;
@@ -481,10 +482,10 @@ internal static class MapGallery
         int alternate = point.X + 2 < map.Width ? at + 1 : map.Flat ? at - 1 : point.Y * columnCount;
         var changed = tiles[at];
         byte terrain = (byte)(((changed.Terrain ?? 1) + 1) % 11);
-        tiles[at] = changed with { Terrain = terrain, Improvements = changed.Improvements ^ MapImprovements.Road };
+        tiles[at] = changed with { Terrain = terrain, Improvements = changed.Improvements ^ MapFeatures.Road };
         tiles[alternate] = tiles[alternate] with
         {
-            Improvements = tiles[alternate].Improvements ^ MapImprovements.Railroad
+            Improvements = tiles[alternate].Improvements ^ MapFeatures.Railroad
         };
         if (units.Length != 0)
         {
@@ -513,7 +514,7 @@ internal static class MapGallery
                 int size = 3 + (int)(map.Revision % 17);
                 cities[index] = cities[index] with
                 {
-                    Name = new(System.Text.Encoding.ASCII.GetBytes($"Harbor revision {map.Revision + 1}")),
+                    Name = $"Harbor revision {map.Revision + 1}",
                     Details = info with
                     {
                         Appearance = MapFact<MapCityAppearance>.Known(appearance with { Walled = !appearance.Walled }),
@@ -573,7 +574,7 @@ internal static class MapGallery
         new(new(7242), new((ulong)(100 + Array.IndexOf(Cases.ToArray(), id))),
             new(1), new(1), new(1), ControllerKind.Frontend);
 
-    private static ObservedTile Tile(byte terrain, MapImprovements improvements = default, bool river = false) =>
+    private static ObservedTile Tile(byte terrain, MapFeatures improvements = default, bool river = false) =>
         new(terrain, improvements, river, 0, false);
 
     private static MapPoint Coordinate(int index, int width)
@@ -638,7 +639,7 @@ internal static class MapGallery
             point,
             new((ushort)index),
             new((uint)index + 1),
-            new(OpenCiv2.Formats.ClassicText.EncodeWindows1252(name, "authored gallery label")),
+            name,
             (sbyte)size,
             new(
                 new(owner),

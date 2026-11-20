@@ -1,3 +1,4 @@
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
 using OpenCiv2.Core.Units;
@@ -29,12 +30,12 @@ public static class ClassicLoadedUnits
             ref var unit = ref world.Entities.Units.Storage[slot];
             if (!unit.Token.Occupied)
             {
-                unit.Previous = unit.Next = new(-1);
+                unit.Previous = unit.Next = null;
             }
             else
             {
                 stacks.Validate(slot);
-                if (unit.X < 0 || unit.Y < 0)
+                if (unit.Position.X < 0 || unit.Position.Y < 0)
                 {
                     deletion.Erase(slot, false);
                 }

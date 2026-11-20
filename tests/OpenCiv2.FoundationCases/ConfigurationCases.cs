@@ -26,7 +26,7 @@ public static partial class FoundationSuite
         public ConfigurationFixture()
         {
             Files.Process.OrdinaryPreferences.SetDefaults(1000, true); Files.Process.MultiplayerPreferences.SetDefaults();
-            Files.Process.OrdinaryPreferences.GameOptions = 0xdeadbeef; Files.Process.OrdinaryPreferences.DisabledMessages = 0x9876;
+            Files.Process.OrdinaryPreferences.GameOptions = StateConversion.DecodeGameOptions(0xdeadbeef); Files.Process.OrdinaryPreferences.DisabledMessages = StateConversion.DecodeMessageSuppression(0x9876);
             Runtime = new(Files.Process, new(79)); Runtime.BeginClientSession(new(10, 20));
             Music.StopAction = () => Files.Trace.Add("stop"); Music.ReinitializeAction = () => Files.Trace.Add("reinitialize"); Music.SynchronizeAction = () => Files.Trace.Add("synchronize");
         }
@@ -37,7 +37,7 @@ public static partial class FoundationSuite
     private static MessageOptionChoices MessageChoices(Func<int, bool> at) => new(at(0), at(1), at(2), at(3), at(4), at(5), at(6), at(7), at(8), at(9), at(10));
     private static void ConfigurationCancellationAndAdmission()
     {
-        using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = uint.MaxValue; f.Runtime.World.Globals.MessageOptions = ushort.MaxValue;
+        using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(uint.MaxValue); f.Runtime.World.Globals.MessageOptions = StateConversion.DecodeMessageSuppression(ushort.MaxValue);
         var globals = f.Runtime.World.Globals; var preferences = f.Files.Process.OrdinaryPreferences; var random = f.Runtime.GameplayRandom.Capture();
         Equal(false, Configuration.Game(f.Runtime, null, null!)); Equal(false, Configuration.Graphics(f.Runtime, null, null!)); Equal(false, Configuration.Messages(f.Runtime, null, null!));
         Throws<ArgumentNullException>(() => Configuration.Game(f.Runtime, GameChoices(_ => true), new(f.Files.Storage, null!)));
@@ -52,10 +52,10 @@ public static partial class FoundationSuite
         uint[] bits = [0x10, 8, 0x4000, 0x2000, 0x1000, 0x800, 0x400, 0x200, 0x100, 0x80, 0x40];
         for (int selected = 0; selected < bits.Length; ++selected)
         {
-            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = uint.MaxValue;
+            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(uint.MaxValue);
             var random = f.Runtime.GameplayRandom.Capture(); Equal(true, Configuration.Game(f.Runtime, GameChoices(i => i == selected), f.Game));
-            uint expected = 0xffff8027 | bits[selected]; Equal(expected, f.Runtime.World.Globals.GameOptions); Equal(expected, f.Files.Process.OrdinaryPreferences.GameOptions);
-            var stored = ClassicPreferences.DecodeOrdinary(f.Files.Output.Take(72).ToArray()); Equal(expected, stored.GameOptions); Equal((ushort)0x9876, stored.DisabledMessages);
+            uint expected = 0xffff8027 | bits[selected]; Equal(StateConversion.DecodeGameOptions(expected), f.Runtime.World.Globals.GameOptions); Equal(StateConversion.DecodeGameOptions(expected), f.Files.Process.OrdinaryPreferences.GameOptions);
+            var stored = ClassicPreferences.DecodeOrdinary(f.Files.Output.Take(72).ToArray()); Equal(expected & StateConversion.GameOptionsMask, stored.GameOptions); Equal((ushort)(0x9876 & StateConversion.MessageSuppressionMask), stored.DisabledMessages);
             Equal(516, f.Files.Output.Count); Equal(1, f.Files.Closes); Equal(random, f.Runtime.GameplayRandom.Capture());
         }
     }
@@ -63,14 +63,14 @@ public static partial class FoundationSuite
     {
         foreach (bool before in new[] { false, true }) foreach (bool after in new[] { false, true })
         {
-            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = before ? 8U : 0U;
+            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(before ? 8U : 0U);
             var client = SessionClient(f.Runtime); List<ulong> revisions = [];
-            void Audio(string name) { Equal(after ? 0x18U : 0x10U, f.Runtime.World.Globals.GameOptions); Equal(0xdeadbeefU, f.Files.Process.OrdinaryPreferences.GameOptions); revisions.Add(client.OwnUnits().Observation.Revision); f.Files.Trace.Add(name); }
+            void Audio(string name) { Equal(StateConversion.DecodeGameOptions(after ? 0x18U : 0x10U), f.Runtime.World.Globals.GameOptions); Equal(StateConversion.DecodeGameOptions(0xdeadbeefU), f.Files.Process.OrdinaryPreferences.GameOptions); revisions.Add(client.OwnUnits().Observation.Revision); f.Files.Trace.Add(name); }
             f.Music.StopAction = () => Audio("stop"); f.Music.ReinitializeAction = () => Audio("reinitialize"); f.Music.SynchronizeAction = () => Audio("synchronize");
             Equal(true, Configuration.Game(f.Runtime, GameChoices(i => i != 1 || after), f.Game));
             List<string> expected = []; if (!after) expected.Add("stop"); else { if (!before) expected.Add("reinitialize"); expected.Add("synchronize"); }
             expected.AddRange(["open-output", "write:72", "write:444", "close"]); Equal(new OwnedList<string>(expected), new(f.Files.Trace));
-            Equal(after ? 0x7fd8U : 0x7fd0U, f.Runtime.World.Globals.GameOptions); Equal(new OwnedList<ulong>(Enumerable.Range(1, revisions.Count).Select(i => (ulong)i)), new(revisions));
+            Equal(StateConversion.DecodeGameOptions(after ? 0x7fd8U : 0x7fd0U), f.Runtime.World.Globals.GameOptions); Equal(new OwnedList<ulong>(Enumerable.Range(1, revisions.Count).Select(i => (ulong)i)), new(revisions));
         }
         using var repeated = new ConfigurationFixture(); int calls = 0; repeated.Music.StopAction = () => ++calls;
         Configuration.Game(repeated.Runtime, GameChoices(_ => false), repeated.Game); Configuration.Game(repeated.Runtime, GameChoices(_ => false), repeated.Game); Equal(2, calls);
@@ -87,8 +87,8 @@ public static partial class FoundationSuite
             if (failure == 5) f.Files.AfterWrite = _ => throw new IOException("write");
             if (failure < 4) Equal(true, Configuration.Game(f.Runtime, GameChoices(_ => true), f.Game));
             else Throws<IOException>(() => Configuration.Game(f.Runtime, GameChoices(_ => true), f.Game));
-            Equal(failure == 4 ? 0x18U : 0x7fd8U, f.Runtime.World.Globals.GameOptions);
-            Equal(failure == 4 ? 0xdeadbeefU : 0x7fd8U, f.Files.Process.OrdinaryPreferences.GameOptions);
+            Equal(StateConversion.DecodeGameOptions(failure == 4 ? 0x18U : 0x7fd8U), f.Runtime.World.Globals.GameOptions);
+            Equal(StateConversion.DecodeGameOptions(failure == 4 ? 0xdeadbeefU : 0x7fd8U), f.Files.Process.OrdinaryPreferences.GameOptions);
             Equal(failure is 0 or 4 ? 0 : 1, f.Files.Closes); Equal(failure is >= 1 and <= 3 ? 1 : 0, f.Files.Removals);
             Equal(true, client.OwnUnits().Observation.Revision > 0); f.Runtime.PrepareNewGame();
         }
@@ -98,31 +98,31 @@ public static partial class FoundationSuite
         uint[] bits = [0x20000, 0x40000, 0x200000, 0x80000, 0x100000, 0x10000];
         for (int selected = 0; selected < bits.Length; ++selected)
         {
-            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = uint.MaxValue;
+            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(uint.MaxValue);
             Equal(true, Configuration.Graphics(f.Runtime, GraphicsChoices(i => i == selected), f.Graphics with { HeraldsAvailable = () => throw new Exception("Already enabled") }));
-            uint expected = 0xffc0ffff | bits[selected]; Equal(expected, f.Runtime.World.Globals.GameOptions); Equal(expected, ClassicPreferences.DecodeOrdinary(f.Files.Output.Take(72).ToArray()).GameOptions);
+            uint expected = 0xffc0ffff | bits[selected]; Equal(StateConversion.DecodeGameOptions(expected), f.Runtime.World.Globals.GameOptions); Equal(expected & StateConversion.GameOptionsMask, ClassicPreferences.DecodeOrdinary(f.Files.Output.Take(72).ToArray()).GameOptions);
         }
         foreach (bool fails in new[] { false, true })
         {
-            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = 0x1f0010;
+            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(0x1f0010);
             var client = SessionClient(f.Runtime); int calls = 0;
             var services = f.Graphics with
             {
-                HeraldsAvailable = () => { Equal(0x60010U, f.Runtime.World.Globals.GameOptions); Equal(1UL, client.OwnUnits().Observation.Revision); ++calls; return false; },
-                LowMemoryNotice = () => { Equal(0x60010U, f.Runtime.World.Globals.GameOptions); Equal(2UL, client.OwnUnits().Observation.Revision); ++calls; if (fails) throw new IOException("warning"); f.Runtime.World.Globals.GameOptions |= 0x80000020; }
+                HeraldsAvailable = () => { Equal(StateConversion.DecodeGameOptions(0x60010U), f.Runtime.World.Globals.GameOptions); Equal(1UL, client.OwnUnits().Observation.Revision); ++calls; return false; },
+                LowMemoryNotice = () => { Equal(StateConversion.DecodeGameOptions(0x60010U), f.Runtime.World.Globals.GameOptions); Equal(2UL, client.OwnUnits().Observation.Revision); ++calls; if (fails) throw new IOException("warning"); f.Runtime.World.Globals.GameOptions = StateConversion.DecodeGameOptions(StateConversion.EncodeGameOptions(f.Runtime.World.Globals.GameOptions) | 0x80000020); }
             };
             if (fails) Throws<IOException>(() => Configuration.Graphics(f.Runtime, GraphicsChoices(_ => true), services)); else Equal(true, Configuration.Graphics(f.Runtime, GraphicsChoices(_ => true), services));
-            Equal(2, calls); Equal(fails ? 0x60010U : 0x803f0030U, f.Runtime.World.Globals.GameOptions); Equal(fails ? 0xdeadbeefU : 0x803f0030U, f.Files.Process.OrdinaryPreferences.GameOptions); Equal(fails ? 0 : 516, f.Files.Output.Count);
+            Equal(2, calls); Equal(StateConversion.DecodeGameOptions(fails ? 0x60010U : 0x803f0030U), f.Runtime.World.Globals.GameOptions); Equal(StateConversion.DecodeGameOptions(fails ? 0xdeadbeefU : 0x803f0030U), f.Files.Process.OrdinaryPreferences.GameOptions); Equal(fails ? 0 : 516, f.Files.Output.Count);
         }
     }
     private static void ConfigurationMessageReplacement()
     {
         for (int disabled = -1; disabled < 12; ++disabled)
         {
-            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.MessageOptions = ushort.MaxValue; f.Files.OutputOpen = disabled != 11;
+            using var f = new ConfigurationFixture(); f.Runtime.World.Globals.MessageOptions = StateConversion.DecodeMessageSuppression(ushort.MaxValue); f.Files.OutputOpen = disabled != 11;
             Configuration.Messages(f.Runtime, MessageChoices(i => disabled != 11 && i != disabled), f.Files.Storage);
             ushort expected = disabled == 11 ? (ushort)0x7ff : disabled < 0 ? (ushort)0 : (ushort)(1 << disabled);
-            Equal(expected, f.Runtime.World.Globals.MessageOptions); Equal(expected, f.Files.Process.OrdinaryPreferences.DisabledMessages); Equal(0xdeadbeefU, f.Files.Process.OrdinaryPreferences.GameOptions);
+            Equal(StateConversion.DecodeMessageSuppression(expected), f.Runtime.World.Globals.MessageOptions); Equal(StateConversion.DecodeMessageSuppression(expected), f.Files.Process.OrdinaryPreferences.DisabledMessages); Equal(StateConversion.DecodeGameOptions(0xdeadbeefU), f.Files.Process.OrdinaryPreferences.GameOptions);
             if (disabled != 11) Equal(expected, ClassicPreferences.DecodeOrdinary(f.Files.Output.Take(72).ToArray()).DisabledMessages);
         }
     }

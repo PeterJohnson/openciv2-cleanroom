@@ -114,8 +114,8 @@ public sealed class ScriptTask : IDisposable
                     w.Object(5);
                     w.Field("slot", (int)unit.Slot.Value);
                     w.Field("token", Decimal(unit.Token.Value));
-                    w.Field("x", unit.X);
-                    w.Field("y", unit.Y);
+                    w.Field("x", unit.Position.X);
+                    w.Field("y", unit.Position.Y);
                     w.Field("type", (int)unit.Type.Value);
                 }
                 break;

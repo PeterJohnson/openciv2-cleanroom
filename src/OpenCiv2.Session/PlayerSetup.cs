@@ -12,6 +12,9 @@ namespace OpenCiv2.Session;
 /// Does not save preferences, generate terrain, create civilizations or apply acceleration.</summary>
 public static class PlayerSetup
 {
+    private const int MinimumOpponents = 2;
+    private const int MaximumOpponents = EntityLimits.PlayerCivilizations - 1;
+
     private enum Step { Difficulty, Opponents, Barbarians, Rules, Gender, Tribe, Names, CityStyle }
 
     private static void RestoreNames(RuleState rules)
@@ -23,7 +26,7 @@ public static class PlayerSetup
             leader.Adjective = leader.Adjective with { Custom = false };
             foreach (var pair in leader.Titles)
             {
-                for (int i = 0; i < 2; ++i)
+                for (int i = 0; i < RuleLimits.LeaderGenders; ++i)
                 {
                     pair[i] = pair[i] with { Custom = false };
                 }
@@ -31,21 +34,21 @@ public static class PlayerSetup
         }
     }
 
-    private static OwnedList<byte> Name(OwnedList<byte> bytes)
+    private static string Name(string text)
     {
-        if (bytes.Count > 23 || bytes.Contains((byte)0))
+        if (text.EnumerateRunes().Count() > 23 || text.Contains('\0'))
         {
-            throw new ArgumentOutOfRangeException(nameof(bytes), "Setup names require at most 23 bytes without NUL");
+            throw new ArgumentOutOfRangeException(nameof(text), "Setup names require at most 23 characters without NUL");
         }
 
-        return bytes;
+        return text;
     }
 
-    private static void Title(ref CivilizationNames names, int index, OwnedList<byte> bytes)
+    private static void Title(ref CivilizationNames names, int index, string text)
     {
-        bytes = Name(bytes);
+        text = Name(text);
         var titles = names.Titles.ToArray();
-        titles[index] = bytes;
+        titles[index] = text;
         names.Titles = new(titles);
     }
 
@@ -53,7 +56,7 @@ public static class PlayerSetup
         new(rules.Leaders.Select((leader, i) => (leader, i))
         .Where(item => color is null || item.leader.Color == color)
             .Select(
-                item => new SetupTribeOption(item.i, rules.Text.Text(item.leader.Plural.Id), item.leader.Color)));
+                item => new SetupTribeOption(item.i, item.leader.Plural.Text, item.leader.Color)));
 
     private static void Row(int value, int maximum)
     {
@@ -126,7 +129,7 @@ public static class PlayerSetup
                         {
                             Publish();
                             int choice = services.ChooseDifficulty(preferences.Difficulty);
-                            Row(choice, 5);
+                            Row(choice, RuleLimits.Difficulties - 1);
                             if (choice < 0)
                             {
                                 return Finish();
@@ -142,18 +145,19 @@ public static class PlayerSetup
                             var choice = services.ChooseOpponents(preferences.Opponents);
                             if (choice is SetupNumericChoice.Selected ordinary)
                             {
-                                Row(ordinary.Row, 4);
+                                Row(ordinary.Row, MaximumOpponents - MinimumOpponents);
                                 if (ordinary.Row < 0)
                                 {
                                     step = Step.Difficulty;
                                     break;
                                 }
-                                globals.NumEnemies = (byte)(6 - ordinary.Row);
+                                globals.NumEnemies = (byte)(MaximumOpponents - ordinary.Row);
                                 preferences.Opponents = (short)ordinary.Row;
                             }
                             else if (choice is SetupNumericChoice.Random)
                             {
-                                globals.NumEnemies = (byte)(Sample(0, 5) + 2);
+                                globals.NumEnemies = (byte)(
+                                    Sample(0, MaximumOpponents - MinimumOpponents + 1) + MinimumOpponents);
                             }
                             else
                             {
@@ -181,7 +185,7 @@ public static class PlayerSetup
                             else if (choice is SetupNumericChoice.Random)
                             {
                                 int level = (int)globals.Difficulty;
-                                Row(level, 5);
+                                Row(level, RuleLimits.Difficulties - 1);
                                 globals.BarbarianActivity = unchecked((byte)(level < 2
                                     ? Sample(1, 2) + level
                                     : level < 5 ? Sample(1, 3) + 1 : Sample(1, 2) + 2));
@@ -207,48 +211,50 @@ public static class PlayerSetup
                             preferences.RulesChoice = (RuleSelection)choice;
                             if (choice == 0)
                             {
-                                globals.Rules = 0x3f;
+                                ClassicConfigurationMetadata.ResetRules(runtime.Process, runtime.World, preferences: false);
+                                globals.Rules = GameRules.Normal;
                                 step = Step.Gender;
                                 break;
                             }
-                            ushort remembered = preferences.Rules;
+                            var remembered = preferences.Rules;
                             bool flat = source == WorldSource.Generated
-                                ? (remembered & 0x8000) != 0
+                                ? remembered.FlatWorld
                                 : source == WorldSource.PremadeFlat;
                             var defaults = new SetupAdvancedChoices(
-                                (remembered & 0x10) == 0,
+                                !remembered.NormalCombat,
                                 flat,
                                 false,
                                 preferences.AcceleratedStart != 0,
-                                (remembered & 0x80) != 0,
-                                (remembered & 0x100) != 0);
+                                remembered.Bloodlust,
+                                remembered.NoRestart);
                             var checks = Invoke(() => services.ChooseAdvanced(defaults)).Checks;
-                            globals.Rules = 0x2f;
+                            ClassicConfigurationMetadata.ResetRules(runtime.Process, runtime.World, preferences: true);
+                            globals.Rules = default;
                             if (!checks.SimplifiedCombat)
                             {
-                                globals.Rules |= 0x10;
+                                globals.Rules.NormalCombat = true;
                             }
 
                             if (checks.FlatWorld)
                             {
-                                globals.Rules |= 0x8000;
+                                globals.Rules.FlatWorld = true;
                             }
 
                             pickOpponents = checks.PickOpponents;
                             acceleration = checks.AcceleratedStartup ? 1 : 0;
                             if (checks.Bloodlust)
                             {
-                                globals.Rules |= 0x80;
+                                globals.Rules.Bloodlust = true;
                             }
 
                             if (checks.NoRestart)
                             {
-                                globals.Rules |= 0x100;
+                                globals.Rules.NoRestart = true;
                             }
 
                             preferences.Rules = source == WorldSource.Generated
                                 ? globals.Rules
-                                : (ushort)((globals.Rules & 0x7fff) | (remembered & 0x8000));
+                                : globals.Rules with { FlatWorld = remembered.FlatWorld };
                             if (acceleration != 0)
                             {
                                 var years = SetupCalendar.PrepareAccelerationYears(runtime, calendar);
@@ -268,7 +274,7 @@ public static class PlayerSetup
                         RestoreNames(rules);
                         Publish();
                         gender = services.ChooseGender(preferences.Gender);
-                        Row(gender, 1);
+                        Row(gender, RuleLimits.LeaderGenders - 1);
                         if (gender < 0)
                         {
                             step = Step.Difficulty;
@@ -282,7 +288,7 @@ public static class PlayerSetup
                             var choices = Tribes(rules);
                             Publish();
                             var choice = services.ChooseTribe(choices, preferences.Tribe);
-                            Row(choice.Tribe, 20);
+                            Row(choice.Tribe, RuleLimits.Tribes - 1);
                             if (choice.Tribe < 0)
                             {
                                 step = Step.Gender;
@@ -293,7 +299,7 @@ public static class PlayerSetup
                             preferences.Tribe = (short)selectedTribe;
                             var leader = rules.Leaders[selectedTribe];
                             human = leader.Color;
-                            if (human is < 1 or > 7)
+                            if (human is < 1 or >= EntityLimits.Civilizations)
                             {
                                 throw new ArgumentOutOfRangeException(
                                     nameof(services),
@@ -302,24 +308,24 @@ public static class PlayerSetup
 
                             globals.PlayerCiv = (sbyte)human;
                             world.Multiplayer.LocalHuman = human;
-                            globals.HumanPlayers = (byte)(1 << human);
+                            globals.HumanPlayers = CivilizationSet.Only(human);
                             ref var civ = ref world.Civilizations[human];
                             civ.Tribe = (short)selectedTribe;
-                            civ.LeaderPortrait = (byte)(selectedTribe + 21 * gender);
+                            civ.LeaderPortrait = (byte)(selectedTribe + RuleLimits.Tribes * gender);
                             leader.Female = gender != 0;
                             leader.LeaderName = leader.Names[gender];
                             ref var names = ref world.Names[human];
-                            names.Leader = Name(rules.Text.Text(leader.LeaderName.Id));
+                            names.Leader = Name(leader.LeaderName.Text);
                             leader.LeaderName = leader.LeaderName with { Custom = true };
                             if (custom)
                             {
-                                names.Tribe = Name(rules.Text.Text(leader.Plural.Id));
+                                names.Tribe = Name(leader.Plural.Text);
                                 leader.Plural = leader.Plural with { Custom = true };
-                                names.Adjective = Name(rules.Text.Text(leader.Adjective.Id));
+                                names.Adjective = Name(leader.Adjective.Text);
                                 leader.Adjective = leader.Adjective with { Custom = true };
-                                for (int g = 0; g < 7; ++g)
+                                for (int g = 0; g < RuleLimits.Governments; ++g)
                                 {
-                                    Title(ref names, g, rules.Text.Text(leader.Titles[g][gender].Id));
+                                    Title(ref names, g, leader.Titles[g][gender].Text);
                                     leader.Titles[g][gender] = leader.Titles[g][gender] with { Custom = true };
                                 }
                             }
@@ -331,8 +337,8 @@ public static class PlayerSetup
                             ref var names = ref world.Names[human];
                             var current = new SetupNames(
                                 names.Leader,
-                                custom ? names.Tribe : OwnedList<byte>.Empty,
-                                custom ? names.Adjective : OwnedList<byte>.Empty);
+                                custom ? names.Tribe : string.Empty,
+                                custom ? names.Adjective : string.Empty);
                             var response = Invoke(() => services.ChooseNames(custom, current));
                             if (response.Action == SetupNameAction.Unavailable)
                             {
@@ -368,7 +374,7 @@ public static class PlayerSetup
 
                                 if (edited.Status == SetupTitleStatus.Accept)
                                 {
-                                    for (int g = 0; g < 7; ++g)
+                                    for (int g = 0; g < RuleLimits.Governments; ++g)
                                     {
                                         Title(ref names, g, edited.Titles.Values[g]);
                                     }
@@ -404,23 +410,23 @@ public static class PlayerSetup
                                 break;
                             }
                             names.CityStyle = (short)style;
-                            globals.CivsAlive = (byte)(globals.HumanPlayers | 1);
+                            globals.CivsAlive = globals.HumanPlayers.With(0);
                             for (int admitted = 0; admitted < globals.NumEnemies;)
                             {
-                                byte bit = (byte)(1 << Sample(2, 8));
-                                if ((globals.CivsAlive & bit) == 0)
+                                int civilization = Sample(2, EntityLimits.Civilizations);
+                                if (!globals.CivsAlive.Contains(civilization))
                                 {
-                                    globals.CivsAlive |= bit;
+                                    globals.CivsAlive = globals.CivsAlive.With(civilization);
                                     ++admitted;
                                 }
                             }
                             bool cancelled = false;
                             if (pickOpponents)
                             {
-                                for (byte slot = 1; slot < 8; ++slot)
+                                for (byte slot = 1; slot < EntityLimits.Civilizations; ++slot)
                                 {
-                                    int bit = 1 << slot;
-                                    if ((globals.CivsAlive & bit) == 0 || (globals.HumanPlayers & bit) != 0)
+
+                                    if (!globals.CivsAlive.Contains(slot) || globals.HumanPlayers.Contains(slot))
                                     {
                                         continue;
                                     }

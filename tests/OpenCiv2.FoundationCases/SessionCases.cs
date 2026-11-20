@@ -1,6 +1,7 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core.State;
+using OpenCiv2.Formats;
 using OpenCiv2.Session;
 
 namespace OpenCiv2.FoundationCases;
@@ -21,7 +22,7 @@ public static partial class FoundationSuite
     {
         using var runtime = new SessionRuntime(new(), new(7)); var session = runtime.BeginClientSession(new(11, 22));
         runtime.World.Entities.Units.SetEnd(2); runtime.World.Entities.Units.Storage[0] = new() { Token = new(100), Owner = new(1) }; runtime.World.Entities.Units.Storage[1] = new() { Token = new(101), Owner = new(2) };
-        runtime.World.Globals.HumanPlayers = 2; var participant = runtime.AddParticipant(new(1), new(9));
+        runtime.World.Globals.HumanPlayers = StateConversion.DecodeCivilizations(2); var participant = runtime.AddParticipant(new(1), new(9));
         var frontend = runtime.Bind(participant, ControllerKind.Frontend); var automation = runtime.Bind(participant, ControllerKind.Automation);
         var developer = runtime.Bind(participant, ControllerKind.EnginePolicy, AccessClass.Developer);
         Equal(frontend.Identity.Participant, automation.Identity.Participant); Equal(false, frontend.Identity.Controller == automation.Identity.Controller);
@@ -30,7 +31,7 @@ public static partial class FoundationSuite
         var old = frontend.OwnUnits(); runtime.World.Entities.Units.Storage[0].Damage = 9; runtime.Publish();
         Equal((byte)0, old.Records[0].Damage); Equal(new LiveObservation(new(7), session, 1, new(1)), frontend.OwnUnits().Observation);
         var alias = frontend; runtime.Revoke(frontend.Identity.Controller); CheckRevoked(alias, AccessFailure.Revoked); Equal(1, automation.OwnUnits().Records.Count);
-        Equal((byte)2, runtime.World.Globals.HumanPlayers); Equal(new Participant(participant, new(1), new(9)), runtime.Participant(participant));
+        Equal(StateConversion.DecodeCivilizations((byte)2), runtime.World.Globals.HumanPlayers); Equal(new Participant(participant, new(1), new(9)), runtime.Participant(participant));
     }
     private static void SessionReassignmentAndLifetimes()
     {
@@ -57,13 +58,13 @@ public static partial class FoundationSuite
     {
         var process = new ProcessContext(); using var runtime = new SessionRuntime(process, new(1)); using var peer = new SessionRuntime(new(), new(2));
         runtime.BeginClientSession(new(91, 92)); peer.BeginClientSession(new(91, 92));
-        var world = runtime.World; var rules = process.Rules; process.Tokens.AssignUnit(); process.Tokens.AssignCity(); rules.Text.Initialize(); var label = rules.Text.Store("Retained rule"u8);
-        rules.Names.Units[3] = label; rules.Leaders[4].CityNameIndex = 73; rules.Definitions.Units[3] = rules.Definitions.Units[3] with { Attack = 91 }; process.Fallback.Value.Fertility = 99;
+        var world = runtime.World; var rules = process.Rules; process.Tokens.AssignUnit(); process.Tokens.AssignCity(); var label = NameText("Retained rule");
+        rules.Leaders[4].CityNameIndex = 73; rules.Definitions.Units[3] = rules.Definitions.Units[3] with { Attack = 91, Identity = new("unit.3", label) }; process.Fallback.Value.Fertility = 99;
         world.Map.Allocate(new(4, 2)); world.Map.Tiles[0].Fertility = 42; world.Entities.Units.SetEnd(5);
         var a = SessionClient(runtime); var b = SessionClient(peer); Equal(false, a.OwnUnits().Observation.Runtime == b.OwnUnits().Observation.Runtime); Equal(0, b.OwnUnits().Records.Count);
-        Equal((byte)0, peer.Process.Rules.Leaders[4].CityNameIndex); Equal(0, peer.Process.Rules.Text.Count); Equal((byte)0, peer.Process.Fallback.Value.Fertility);
+        Equal((byte)0, peer.Process.Rules.Leaders[4].CityNameIndex); Equal(false, peer.Process.Rules.IsLoaded); Equal((byte)0, peer.Process.Fallback.Value.Fertility);
         runtime.BeginClientSession(new(93, 94)); Equal(true, ReferenceEquals(world, runtime.World)); Equal(true, ReferenceEquals(rules, runtime.Process.Rules));
-        Equal(5, world.Entities.Units.End); Equal((byte)42, world.Map.Tiles[0].Fertility); Equal((byte)73, rules.Leaders[4].CityNameIndex); Equal(new OwnedList<byte>("Retained rule"u8.ToArray()), rules.Text.Text(label));
+        Equal(5, world.Entities.Units.End); Equal((byte)42, world.Map.Tiles[0].Fertility); Equal((byte)73, rules.Leaders[4].CityNameIndex); Equal("Retained rule", rules.Definitions.Units[3].Identity.Name);
         Equal(new UnitToken(2), process.Tokens.AssignUnit()); Equal(new CityToken(2), process.Tokens.AssignCity());
     }
     private static void SessionRandomDomains()

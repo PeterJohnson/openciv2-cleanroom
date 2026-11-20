@@ -34,7 +34,8 @@ public static class ClassicLive
         return w.ToArray();
     }
 
-    public static bool WriteMapItems(WriteItem write, MapStream kind, MapStorage map, in StartingPositions starts)
+    public static bool WriteMapItems(WriteItem write, MapStream kind, MapStorage map, in StartingPositions starts,
+        MapCompatibility? compatibility = null)
     {
         if (!map.Allocated || map.Tiles.Length != map.Geometry.Area)
         {
@@ -59,14 +60,16 @@ public static class ClassicLive
 
         if (kind == MapStream.Raw)
         {
-            if (!write(Shorts(starts.X)) || !write(Shorts(starts.Y)))
+            var positions = ((ReadOnlySpan<MapPoint>)starts.Positions).ToArray();
+            if (!write(Shorts(positions.Select(p => unchecked((short)p.X)).ToArray()))
+                || !write(Shorts(positions.Select(p => unchecked((short)p.Y)).ToArray())))
             {
                 return false;
             }
         }
         else
         {
-            for (int civilization = 1; civilization < 8; ++civilization)
+            for (int civilization = 1; civilization < EntityLimits.Civilizations; ++civilization)
             {
                 var layer = map.RememberedLayer(civilization);
                 if (layer.Length != shape.Area)
@@ -74,15 +77,22 @@ public static class ClassicLive
                     throw new ArgumentException("Map memory layer does not match allocated geometry", nameof(map));
                 }
 
-                if (!write(layer))
+                var encoded = new byte[layer.Length];
+                for (int i = 0; i < layer.Length; ++i)
+                {
+                    encoded[i] = StateConversion.EncodeMapFeatures(layer[i]);
+                }
+                if (!write(encoded))
                 {
                     return false;
                 }
             }
         }
         var tiles = new ByteWriter();
-        foreach (var tile in map.Tiles)
+        for (int i = 0; i < map.Tiles.Length; ++i)
         {
+            var tile = compatibility is not null && compatibility.BelongsTo(map)
+                ? compatibility.Export(map, i) : StateConversion.ToStored(map.Tiles[i]);
             tiles.Append(ClassicRecords.Encode(tile));
         }
 
@@ -137,7 +147,7 @@ public static class ClassicLive
         ReadOnlySpan<Civilization> civilizations,
         RecordCompatibility? compatibility = null)
     {
-        if (names.Length != 8 || civilizations.Length != 8)
+        if (names.Length != EntityLimits.Civilizations || civilizations.Length != EntityLimits.Civilizations)
         {
             throw new ArgumentException("Persistent output requires eight civilization records and names");
         }
@@ -178,7 +188,7 @@ public static class ClassicLive
         return write(bytes.ToArray());
     }
 
-    public static bool WriteMapSummaryItems(WriteItem write, MapStorage map)
+    public static bool WriteMapSummaryItems(WriteItem write, MapStorage map, MapCompatibility? compatibility = null)
     {
         for (int grid = 0; grid < 2; ++grid)
         {
@@ -196,8 +206,10 @@ public static class ClassicLive
             }
         }
         var regions = new ByteWriter();
-        foreach (var value in map.Regions)
+        for (int i = 0; i < map.Regions.Length; ++i)
         {
+            var value = compatibility is not null && compatibility.HasRegionsFor(map)
+                ? compatibility.ExportRegion(map, i) : StateConversion.ToStored(map.Regions[i]);
             regions.Append(ClassicRecords.Encode(value));
         }
 
@@ -206,19 +218,19 @@ public static class ClassicLive
 
     public static bool WriteHistoryLayoutItems(
         WriteItem write,
-        in Fixed150<Fixed8<byte>> history,
+        in PowerHistoryArray<CivilizationArray<byte>> history,
         Rectangle currentScreen,
         ref SavedLayout packed,
         in Layout layout,
         ReadOnlySpan<MapView> views)
     {
-        if (views.Length != 8)
+        if (views.Length != EntityLimits.Civilizations)
         {
             throw new ArgumentException("History output requires eight map views", nameof(views));
         }
 
         var bytes = new ByteWriter();
-        foreach (var sample in (ReadOnlySpan<Fixed8<byte>>)history)
+        foreach (var sample in (ReadOnlySpan<CivilizationArray<byte>>)history)
         {
             foreach (byte value in (ReadOnlySpan<byte>)sample)
             {
@@ -257,12 +269,20 @@ public static class ClassicLive
         bool scenarioExport,
         in GlobalValues globals,
         in RuntimeScenario scenario,
-        in RuntimeEliminations eliminations)
+        in RuntimeEliminations eliminations,
+        RecordCompatibility? compatibility = null)
     {
-        if ((scenarioExport || (globals.GameFlags & 0x80) != 0)
-            && !write(ClassicRecords.Encode(StateConversion.ToStored(scenario))))
+        if (scenarioExport || globals.Status.Scenario)
         {
-            return false;
+            var stored = StateConversion.ToStored(scenario);
+            if (compatibility?.Scenario is { } imported)
+            {
+                stored = StateConversion.PreserveOpaque(stored, imported);
+            }
+            if (!write(ClassicRecords.Encode(stored)))
+            {
+                return false;
+            }
         }
 
         return write(ClassicRecords.Encode(StateConversion.ToStored(eliminations)));
@@ -289,10 +309,9 @@ public static class ClassicLive
         in GlobalValues globals,
         ReadOnlySpan<Civilization> civilizations,
         ReadOnlySpan<Leader> leaders,
-        short cursorX,
-        short cursorY)
+        MapPoint cursor)
     {
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             if (i >= leaders.Length)
             {
@@ -305,7 +324,7 @@ public static class ClassicLive
                 return false;
             }
         }
-        if (!write(Word(cursorX)) || !write(Word(cursorY)))
+        if (!write(Word(unchecked((short)cursor.X))) || !write(Word(unchecked((short)cursor.Y))))
         {
             return false;
         }
@@ -315,9 +334,9 @@ public static class ClassicLive
             return WriteSelectedLeader(write, globals.PlayerCiv, civilizations, leaders);
         }
 
-        for (int civ = 0; civ < 8; ++civ)
+        for (int civ = 0; civ < EntityLimits.Civilizations; ++civ)
         {
-            if ((globals.HumanPlayers & (1U << civ)) != 0 && !WriteSelectedLeader(write, civ, civilizations, leaders))
+            if (globals.HumanPlayers.Contains(civ) && !WriteSelectedLeader(write, civ, civilizations, leaders))
             {
                 return false;
             }
@@ -338,7 +357,7 @@ public static class ClassicLive
         }
 
         int tribe = civilizations[civilization].Tribe;
-        if (tribe < 0 || tribe >= 21 || tribe >= leaders.Length)
+        if (tribe < 0 || tribe >= RuleLimits.Tribes || tribe >= leaders.Length)
         {
             throw new ArgumentOutOfRangeException(nameof(civilizations), "Leader selection has no tribe backing");
         }
@@ -373,6 +392,14 @@ public static class ClassicLive
                 && imported.BelongsTo(entry))
             {
                 record = record with { Retained = imported.Retained };
+                if (imported.Record is { } original)
+                {
+                    record = record with
+                    {
+                        Triggers = entry.Values.Trigger == EventTrigger.Unrecognized ? original.Triggers : record.Triggers,
+                        Actions = (record.Actions & StateConversion.EventActionsMask) | (original.Actions & ~StateConversion.EventActionsMask)
+                    };
+                }
             }
 
             if (!write(ClassicRecords.Encode(record)))
@@ -395,7 +422,7 @@ public static class ClassicLive
                     continue;
                 }
 
-                byte[] bytes = entry.Strings[field].Value.TakeWhile(b => b != 0).ToArray();
+                byte[] bytes = ClassicText.EncodeField(entry.Strings[field].Value.Split('\0')[0]);
                 if (!text(bytes) || !writeByte(0))
                 {
                     return false;

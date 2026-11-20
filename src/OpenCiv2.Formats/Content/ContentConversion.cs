@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.City;
 using OpenCiv2.Formats.Classic;
 using ClassicReader = OpenCiv2.Formats.Classic.TextReader;
@@ -133,7 +134,7 @@ public static partial class ContentConversions
             // Loading stops at a miss; conversion diagnoses an ordinary unresolved entry.
             if (reader.Open("CITYPREF.TXT", "AUTOBUILD"u8.ToArray()))
             {
-                for (int i = 0; i < 32 && reader.NextLine(); ++i)
+                for (int i = 0; i < Core.City.CityPreferences.Capacity && reader.NextLine(); ++i)
                 {
                     if (!reader.Line.IsEmpty && reader.Line[0] == '@')
                     {
@@ -147,11 +148,11 @@ public static partial class ContentConversions
                     }
 
                     bool found = false;
-                    for (int slot = 1; slot <= 38; ++slot)
+                    for (int slot = 1; slot < RuleLimits.BuildingTypes; ++slot)
                     {
                         if (comparison.Equal(
                             token,
-                            rules.Input.Definitions.Improvements[slot].Identity.Name.Classic.ToArray()))
+                            ClassicText.EncodeWindows1252(rules.Input.Definitions.Improvements[slot].Identity.Name)))
                         {
                             found = true;
                             break;
@@ -230,7 +231,7 @@ public static partial class ContentConversions
             var selectors = new List<byte[]>();
             foreach (var list in parsed.Civilizations)
             {
-                byte[] selector = list.Plural.Classic.ToArray();
+                byte[] selector = ClassicText.EncodeWindows1252(list.Plural);
                 bool stop = selector.Length >= 4 && comparison.Equal(selector.AsSpan(0, 4), "STOP"u8);
                 if (selectors.Any(previous => comparison.Equal(previous, selector)))
                 {
@@ -245,7 +246,7 @@ public static partial class ContentConversions
                         "CITY contains repeated section selectors");
                 }
                 selectors.Add(selector);
-                var names = Strings(list.Names.Select(n => n.Unicode));
+                var names = Strings(list.Names.Select(n => n));
                 bool extra = comparison.Equal(selector, "EXTRA"u8);
                 if (extra)
                 {
@@ -258,7 +259,7 @@ public static partial class ContentConversions
                     {
                         unsupported.Add(
                             (JsonNode)JsonValue.Create(
-                                "Exhausted-stream custom plural selector: " + list.Plural.Unicode)!);
+                                "Exhausted-stream custom plural selector: " + list.Plural)!);
                         continue;
                     }
                     throw new ContentException(
@@ -267,7 +268,7 @@ public static partial class ContentConversions
                         "CITY list reaches EOF without a blank or STOP terminator; classic exhausted-stream behavior is not a native list");
                 }
                 civilizations.Add(
-                    (JsonNode)new JsonObject { ["pluralName"] = list.Plural.Unicode, ["cityNames"] = names });
+                    (JsonNode)new JsonObject { ["pluralName"] = list.Plural, ["cityNames"] = names });
             }
         }
         catch (TextException error)

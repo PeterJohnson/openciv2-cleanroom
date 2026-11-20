@@ -25,16 +25,16 @@ public static partial class FoundationSuite
         {
             Runtime.BeginClientSession(new(10, 20)); var world = Runtime.World; world.Map.Allocate(new(8, 6)); world.Globals.Multiplayer = GameMode.Tcp; world.TurnLoopActive = true;
             world.Entities.Units.SetEnd(2); world.Globals.UnitEnd = 2;
-            for (int i = 0; i < 2; ++i) { ref var unit = ref Unit(i); unit.Token = new((uint)i + 1); unit.X = unit.Y = 2; unit.Owner = new(1); }
-            Unit(0).Next = new(1); Unit(1).Previous = new(0);
+            for (int i = 0; i < 2; ++i) { ref var unit = ref Unit(i); unit.Token = new((uint)i + 1); unit.Position = new(2, 2); unit.Owner = new(1); }
+            Unit(0).Next = new UnitSlot(1); Unit(1).Previous = new UnitSlot(0);
             Services = new(Placement: () => ++Synchronizations, Deletion: this, Ticks: () => Tick, TimedOut: () => { ++Timeouts; Equal(true, world.TurnLoopActive); });
         }
         public ref Unit Unit(int slot) => ref Runtime.World.Entities.Units.Storage[slot];
         public UnitOperation Operation(UnitOperationKind kind = UnitOperationKind.Relocate, bool notify = true, int slot = 0) => new(Runtime, Request(kind, slot), notify, new(10000, 64), Services, Channel);
-        public void UnitRemoved(Position position) => ++Removed;
+        public void UnitRemoved(MapPoint position) => ++Removed;
         public void RefreshHomeCity(int city) => ++Refreshed;
         public void CheckCivilization(int owner, int killer) => ++Checks;
-        public void SynchronizeDeletion(Position position, CitySlot? home) => ++Synchronizations;
+        public void SynchronizeDeletion(MapPoint position, CitySlot? home) => ++Synchronizations;
         public void Dispose() => Runtime.Dispose();
     }
     private static UnitRequest Request(UnitOperationKind kind, int slot = 0) => new(kind, new([slot, 4, 2, 77, 88, 99]));
@@ -74,7 +74,7 @@ public static partial class FoundationSuite
             using var operation = f.Operation();
             if (stage is 1 or 2) Throws<IOException>(() => operation.Poll());
             else { operation.Poll(); if (stage is 3 or 4) { f.Tick += 3600; Throws<IOException>(() => operation.Poll()); } else if (stage == 0) operation.Cancel(); else operation.Dispose(); }
-            Equal(true, operation.Poll()!.Value.Cancelled); operation.Dispose(); Equal(1, f.Channel.Cancellations); Equal((short)2, f.Unit(0).X); if (stage == 4) Equal(true, f.Runtime.World.TurnLoopActive); f.Runtime.PrepareNewGame();
+            Equal(true, operation.Poll()!.Value.Cancelled); operation.Dispose(); Equal(1, f.Channel.Cancellations); Equal((short)2, f.Unit(0).Position.X); if (stage == 4) Equal(true, f.Runtime.World.TurnLoopActive); f.Runtime.PrepareNewGame();
         }
         using var dispose = new UnitOperationFixture(); using var unstarted = dispose.Operation(); unstarted.Dispose(); Equal(0, dispose.Channel.Sends); Equal(1, dispose.Channel.Cancellations); Equal(new UnitOperationResult(-2, false, true), unstarted.Poll()!.Value);
     }
@@ -99,9 +99,9 @@ public static partial class FoundationSuite
             using var f = new UnitOperationFixture(); f.Runtime.World.Multiplayer.NetworkHost = true; f.Unit(0).Home = new(0); var client = SessionClient(f.Runtime); using var operation = f.Operation(kind);
             Equal(new UnitOperationResult(), operation.Poll()!.Value); Equal(0, f.Channel.Sends); Equal(1, f.Synchronizations); Equal(1, f.Channel.Cancellations);
             if (kind == UnitOperationKind.Erase) { Equal(0U, f.Unit(0).Token.Value); Equal(1, f.Removed); Equal(1, f.Refreshed); Equal(1, client.OwnUnits().Records.Count); }
-            else if (kind is UnitOperationKind.Relocate or UnitOperationKind.Attach) Equal((short)4, f.Unit(0).X);
-            else if (kind == UnitOperationKind.Detach) Equal((short)-200, f.Unit(0).X);
-            else { Equal((short)1, f.Unit(0).Previous.Value); Equal((short)-1, f.Unit(0).Next.Value); }
+            else if (kind is UnitOperationKind.Relocate or UnitOperationKind.Attach) Equal((short)4, f.Unit(0).Position.X);
+            else if (kind == UnitOperationKind.Detach) Equal((short)-200, f.Unit(0).Position.X);
+            else { Equal((short)1, (f.Unit(0).Previous?.Value ?? -1)); Equal((short)-1, (f.Unit(0).Next?.Value ?? -1)); }
         }
         foreach (bool remote in new[] { false, true })
         {
@@ -131,20 +131,20 @@ public static partial class FoundationSuite
         foreach (bool becomeHost in new[] { false, true })
         {
             using var f = new UnitOperationFixture(); using var operation = f.Operation(UnitOperationKind.RelocateStack); Equal(true, operation.Poll() is null); Equal((int)UnitOperationKind.Relocate, (int)f.Channel.Request!.Operation);
-            f.Channel.OnPoll = () => { int slot = f.Channel.Request!.Arguments[0]; f.Unit(slot).X = 4; f.Unit(slot).Previous = f.Unit(slot).Next = new(-1); f.Unit(1).Previous = new(-1); f.Runtime.World.Multiplayer.NetworkHost = becomeHost; };
+            f.Channel.OnPoll = () => { int slot = f.Channel.Request!.Arguments[0]; f.Unit(slot).Position = f.Unit(slot).Position with { X = 4 }; f.Unit(slot).Previous = f.Unit(slot).Next = (UnitSlot?)null; f.Unit(1).Previous = (UnitSlot?)null; f.Runtime.World.Multiplayer.NetworkHost = becomeHost; };
             f.Channel.Replies.Enqueue(new(0)); Equal(true, operation.Poll() is null); Throws<InvalidOperationException>(() => f.Runtime.PrepareNewGame());
             if (becomeHost) Equal(true, operation.Poll().HasValue);
             else { Equal(true, operation.Poll() is null); Equal(1, f.Channel.Request!.Arguments[0]); f.Channel.Replies.Enqueue(new(0)); Equal(true, operation.Poll().HasValue); }
-            Equal(becomeHost ? 1 : 2, f.Channel.Sends); Equal((short)4, f.Unit(0).X); Equal((short)4, f.Unit(1).X); Equal(1, f.Synchronizations); Equal(1, f.Channel.Cancellations); f.Runtime.PrepareNewGame();
+            Equal(becomeHost ? 1 : 2, f.Channel.Sends); Equal((short)4, f.Unit(0).Position.X); Equal((short)4, f.Unit(1).Position.X); Equal(1, f.Synchronizations); Equal(1, f.Channel.Cancellations); f.Runtime.PrepareNewGame();
         }
         using var local = new UnitOperationFixture(); local.Runtime.World.Multiplayer.NetworkHost = true; var budget = new StackBudget(10000, 64); using var moving = new UnitOperation(local.Runtime, Request(UnitOperationKind.RelocateStack), true, budget, local.Services, local.Channel);
-        Equal(true, moving.Poll() is null); Equal((short)4, local.Unit(0).X); Equal((short)2, local.Unit(1).X); Equal(new UnitOperationResult(), moving.Poll()!.Value); Equal(10000UL, budget.Steps); Equal(1, local.Synchronizations);
+        Equal(true, moving.Poll() is null); Equal((short)4, local.Unit(0).Position.X); Equal((short)2, local.Unit(1).Position.X); Equal(new UnitOperationResult(), moving.Poll()!.Value); Equal(10000UL, budget.Steps); Equal(1, local.Synchronizations);
     }
     private static void UnitOperationStackTimeoutAndPartialFailure()
     {
         using var f = new UnitOperationFixture(); using var operation = f.Operation(UnitOperationKind.RelocateStack); operation.Poll(); f.Tick += 3600;
-        f.Channel.OnPoll = () => { f.Unit(0).Next = new(-1); f.Unit(1).Previous = new(-1); }; Equal(true, operation.Poll() is null); Equal(1, f.Timeouts); Equal(true, operation.Poll() is null); Equal(1, f.Channel.Request!.Arguments[0]); f.Channel.Replies.Enqueue(new(3)); Equal(new UnitOperationResult(3, true), operation.Poll()!.Value); Equal(1, f.Synchronizations);
-        using var fail = new UnitOperationFixture(); fail.Runtime.World.Multiplayer.NetworkHost = true; fail.Services = fail.Services with { Placement = () => throw new IOException("sync") }; using var partial = fail.Operation(UnitOperationKind.RelocateStack); partial.Poll(); Throws<IOException>(() => partial.Poll()); Equal((short)4, fail.Unit(0).X); Equal((short)4, fail.Unit(1).X); Equal(true, partial.Result!.Value.Cancelled); Equal(1, fail.Channel.Cancellations); fail.Runtime.PrepareNewGame();
+        f.Channel.OnPoll = () => { f.Unit(0).Next = (UnitSlot?)null; f.Unit(1).Previous = (UnitSlot?)null; }; Equal(true, operation.Poll() is null); Equal(1, f.Timeouts); Equal(true, operation.Poll() is null); Equal(1, f.Channel.Request!.Arguments[0]); f.Channel.Replies.Enqueue(new(3)); Equal(new UnitOperationResult(3, true), operation.Poll()!.Value); Equal(1, f.Synchronizations);
+        using var fail = new UnitOperationFixture(); fail.Runtime.World.Multiplayer.NetworkHost = true; fail.Services = fail.Services with { Placement = () => throw new IOException("sync") }; using var partial = fail.Operation(UnitOperationKind.RelocateStack); partial.Poll(); Throws<IOException>(() => partial.Poll()); Equal((short)4, fail.Unit(0).Position.X); Equal((short)4, fail.Unit(1).Position.X); Equal(true, partial.Result!.Value.Cancelled); Equal(1, fail.Channel.Cancellations); fail.Runtime.PrepareNewGame();
     }
     private sealed class CommandUnit(UnitOperationServices services, IUnitRequestChannel channel) : IContinuation
     {
@@ -169,7 +169,7 @@ public static partial class FoundationSuite
                 if (route == 2) f.Runtime.CancelCommand(id); else { f.Channel.Replies.Enqueue(new(0)); Equal(true, f.Runtime.ContinueCommand(id)); }
                 Equal(true, f.Runtime.AdvanceOne());
             }
-            Equal((int)(route == 2 ? CommandStatus.Cancelled : CommandStatus.Completed), (int)client.Result(id)!.Status); Equal(route == 0 ? 0 : 1, f.Channel.Sends); Equal(1, f.Channel.Cancellations); if (route == 0) Equal((short)4, f.Unit(0).X); f.Runtime.PrepareNewGame();
+            Equal((int)(route == 2 ? CommandStatus.Cancelled : CommandStatus.Completed), (int)client.Result(id)!.Status); Equal(route == 0 ? 0 : 1, f.Channel.Sends); Equal(1, f.Channel.Cancellations); if (route == 0) Equal((short)4, f.Unit(0).Position.X); f.Runtime.PrepareNewGame();
         }
     }
 }

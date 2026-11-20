@@ -319,7 +319,7 @@ public sealed class UnitOperation : IDisposable
             if (!started)
             {
                 if (request.Operation == UnitOperationKind.Erase && (slot < 0 || !BackedUnit(slot).Token.Occupied)
-                    || request.Operation == UnitOperationKind.Bottom && BackedUnit(slot).Next.Value < 0)
+                    || request.Operation == UnitOperationKind.Bottom && BackedUnit(slot).Next is null)
                 {
                     Finish(new());
                     return Result;
@@ -328,7 +328,7 @@ public sealed class UnitOperation : IDisposable
                 if (!remote)
                 {
                     var placement = new StackOperations(world, budget, services.Diagnostics, services.Placement);
-                    var position = new Position(request.Arguments[1], request.Arguments[2]);
+                    var position = new MapPoint(request.Arguments[1], request.Arguments[2]);
                     switch (request.Operation)
                     {
                         case UnitOperationKind.Detach:

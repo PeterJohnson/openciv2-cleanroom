@@ -3,8 +3,10 @@ using System.Text.Json.Nodes;
 using OpenCiv2.Base;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Classic;
 using OpenCiv2.Formats.Content;
+using StateConversion = OpenCiv2.Formats.StateConversion;
 
 namespace OpenCiv2.FoundationCases;
 
@@ -59,19 +61,19 @@ public static partial class FoundationSuite
         sections[7] = "@LEADERS\n" + RepeatLines("Leader,Leader,1,1,0,Plural,Example,0,0,0,1,First,Lady,1,Last,Last Lady", 21);
         var input = ConvertedRules(ContentConversions.Rules(ConversionInput(string.Concat(sections)), TextCase.Ascii)).Input;
         Equal(259, input.MovementPoints[0]); Equal(0, (int)input.Definitions.Advances[1].Prerequisites[0]); Equal(0, (int)input.Definitions.Improvements[0].Prerequisite);
-        Equal("Café", input.Definitions.Improvements[0].Identity.Name.Unicode); Equal("Caf\xe9", ByteString(input.Definitions.Improvements[0].Identity.Name.Classic));
-        Equal((byte)10, input.Definitions.Improvements[0].CostRows); Equal(0x8001U, input.Definitions.Units[0].Abilities); Equal("Unit 2", input.Definitions.Units[1].Identity.Name.Unicode);
-        Equal(2, input.TitleOverrides[0].Count); Equal("First", input.TitleOverrides[0][0].Titles.Male.Unicode); Equal("Last", input.TitleOverrides[0][1].Titles.Male.Unicode);
+        Equal("Café", input.Definitions.Improvements[0].Identity.Name); Equal("Caf\xe9", input.Definitions.Improvements[0].Identity.Name);
+        Equal((byte)10, input.Definitions.Improvements[0].CostRows); Equal(StateConversion.DecodeUnitAbilities(0x8001U), input.Definitions.Units[0].Abilities); Equal("Unit 2", input.Definitions.Units[1].Identity.Name);
+        Equal(2, input.TitleOverrides[0].Count); Equal("First", input.TitleOverrides[0][0].Titles.Male); Equal("Last", input.TitleOverrides[0][1].Titles.Male);
         var retained = Installed(input); var values = retained.Definitions; var loader = new RuleInstaller(input, retained);
         Equal((byte)9, values.Units[0].Movement); Equal(-2, (int)values.Advances[1].Prerequisites[0]); Equal(-2, (int)values.Improvements[0].Prerequisite);
-        var kept = new RuleText("Kept", new("Kept"u8.ToArray())); values.Units[0] = values.Units[0] with { Identity = values.Units[0].Identity with { Name = kept } };
+        var kept = "Kept"; values.Units[0] = values.Units[0] with { Identity = values.Units[0].Identity with { Name = kept } };
         values.Improvements[0] = values.Improvements[0] with { Identity = values.Improvements[0].Identity with { Name = kept } };
         values.Advances[1] = values.Advances[1] with { Identity = values.Advances[1].Identity with { Name = kept } }; loader.Advances(true);
-        values.Advances[0] = values.Advances[0] with { Enabled = true }; var cosmic = values.Cosmic.Values.ToArray(); cosmic[0] = 5; values.Cosmic = new(new(cosmic));
+        values.Advances[0] = values.Advances[0] with { Enabled = true }; values.Cosmic = values.Cosmic with { RoadMovementMultiplier = 5 };
         values.Governments[2] = values.Governments[2] with { Titles = values.Governments[2].Titles with { Male = kept } };
-        var bindings = new OwnedList<uint>(retained.Names.Units); loader.Improvements(true); loader.Units(true); loader.Leaders(true);
+        var names = new OwnedList<string>(values.Units.Select(u => u.Identity.Name)); loader.Improvements(true); loader.Units(true); loader.Leaders(true);
         Equal((byte)15, values.Units[0].Movement); Equal((byte)30, values.Units[0].HitPoints); Equal(0, (int)values.Improvements[0].Prerequisite);
-        Equal(kept, values.Units[0].Identity.Name); Equal(kept, values.Improvements[0].Identity.Name); Equal(kept, values.Advances[1].Identity.Name); Equal(kept, values.Tribes[0].Titles[2].Male); Equal(bindings, new(retained.Names.Units));
+        Equal(kept, values.Units[0].Identity.Name); Equal(kept, values.Improvements[0].Identity.Name); Equal(kept, values.Advances[1].Identity.Name); Equal(kept, values.Tribes[0].Titles[2].Male); Equal(names, new(values.Units.Select(u => u.Identity.Name)));
     }
     private static void ConversionRulesRejection()
     {
@@ -98,13 +100,13 @@ public static partial class FoundationSuite
             for (int tribe = 0; tribe < 21; ++tribe)
                 for (int cursor = 0; cursor < 256; ++cursor)
                 {
-                    string plural = "tribes " + tribe; var actual = native.Select(ByteText(plural), (byte)cursor); Equal(classic.Select(ByteText(plural), (byte)cursor), actual);
+                    string plural = "tribes " + tribe; var actual = native.Select(plural, (byte)cursor); Equal(classic.Select(plural, (byte)cursor), actual);
                     string expected = cursor == 0 ? "@" + plural : cursor <= 2 ? "First" : cursor == 3 ? "Caf\xe9" : populated && cursor == 4 ? "Extra One" : populated && cursor == 5 ? "Extra Two" : "";
-                    Equal(expected, ByteString(actual.Bytes));
+                    Equal(expected, actual.Text);
                 }
-            foreach (var list in native.Layers[0].Civilizations.Where(v => v.Plural.Unicode is "STOP" or "EXTRA"))
-                for (int cursor = 0; cursor < 256; ++cursor) Equal(classic.Select(list.Plural.Classic.ToArray(), (byte)cursor), native.Select(list.Plural.Classic.ToArray(), (byte)cursor));
-            Equal((int)NameOutcome.Unavailable, (int)native.Select("Missing"u8, 1).Outcome);
+            foreach (var list in native.Layers[0].Civilizations.Where(v => v.Plural is "STOP" or "EXTRA"))
+                for (int cursor = 0; cursor < 256; ++cursor) Equal(classic.Select(list.Plural, (byte)cursor), native.Select(list.Plural, (byte)cursor));
+            Equal((int)NameOutcome.Unavailable, (int)native.Select("Missing", 1).Outcome);
             ConversionHash(converted.Receipt, "source", source.Bytes); ConversionHash(converted.Receipt, "output", converted.Component);
             Equal("classic-city-names/1", converted.Receipt.GetProperty("conversion").GetString()!);
         }
@@ -124,7 +126,7 @@ public static partial class FoundationSuite
         var converted = ContentConversions.CityNames(ConversionInput(text), selected, TextCase.Ascii);
         var catalog = NativeCityContent.LoadNames(ConvertedCity(converted, input, true, true), input.Rules.Load().Input.Definitions, TextComparison.AsciiNameEqual).Catalog;
         Equal(1, catalog.Layers[0].Civilizations.Count); var list = catalog.Layers[0].Civilizations[0];
-        Equal("Caf\xe9", ByteString(list.Plural.Classic)); Equal(2, list.Names.Count); Equal(new string('x', 254), ByteString(list.Names[0].Classic)); Equal("x", ByteString(list.Names[1].Classic));
+        Equal("Caf\xe9", list.Plural); Equal(2, list.Names.Count); Equal(new string('x', 254), list.Names[0]); Equal("x", list.Names[1]);
         ContentError("comparison-unavailable", () => ContentConversions.CityNames(ConversionInput(text + "@CAF\xc9\nTwo\n@STOP\n"), selected, TextCase.Ascii));
     }
     private static void ConversionPreferenceEffects()

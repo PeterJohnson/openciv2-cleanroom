@@ -402,7 +402,7 @@ public sealed partial class MapPainter
         float zoom, double tier, MapDetail detail)
     {
         if (detail != MapDetail.Full || tile.Terrain is null
-            || (tile.Improvements & MapImprovements.Fortification) == 0)
+            || (tile.Improvements & MapFeatures.Fortification) == 0)
         {
             return;
         }

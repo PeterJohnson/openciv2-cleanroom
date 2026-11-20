@@ -1,4 +1,5 @@
 using OpenCiv2.Core.Rules;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Classic;
 using OpenCiv2.Session;
 
@@ -17,9 +18,9 @@ public static partial class FoundationSuite
             var trace = new TextTrace(); traces.Add(trace); return new(key, new TracedText(ByteText(bytes), trace));
         });
         using var context = new ClassicRuleContext(files, new(), services, (directory, name) => { Equal("scenario", directory); Equal("RULES.TXT", name); return scenario; }, TextCase.Ascii);
-        var first = context.Load(); Equal((byte)4, first.Rules.Definitions.Cosmic[CosmicParameter.RoadMovementMultiplier]); Equal("Home0", ByteString(first.Labels!.Entries[0])); Equal("home", files.Text.Search); Equal("caller", files.Text.Working); Equal(true, traces.All(t => t.Closes == 1)); Equal(true, opens.Contains("scenario/RULES.TXT"));
-        scenario = false; opens.Clear(); var second = context.Load(); Equal((byte)3, second.Rules.Definitions.Cosmic[CosmicParameter.RoadMovementMultiplier]); Equal(false, opens.Contains("scenario/RULES.TXT")); Equal(true, traces.All(t => t.Closes == 1));
-        sources.Clear(); Equal((byte)4, first.Rules.Definitions.Cosmic[CosmicParameter.RoadMovementMultiplier]); Equal("Home0", ByteString(second.Labels!.Entries[0])); context.Dispose(); Throws<ObjectDisposedException>(() => context.Load());
+        var first = context.Load(); Equal((byte)4, first.Rules.Definitions.Cosmic.RoadMovementMultiplier); Equal("Home0", first.Labels!.Entries[0]); Equal("home", files.Text.Search); Equal("caller", files.Text.Working); Equal(true, traces.All(t => t.Closes == 1)); Equal(true, opens.Contains("scenario/RULES.TXT"));
+        scenario = false; opens.Clear(); var second = context.Load(); Equal((byte)3, second.Rules.Definitions.Cosmic.RoadMovementMultiplier); Equal(false, opens.Contains("scenario/RULES.TXT")); Equal(true, traces.All(t => t.Closes == 1));
+        sources.Clear(); Equal((byte)4, first.Rules.Definitions.Cosmic.RoadMovementMultiplier); Equal("Home0", second.Labels!.Entries[0]); context.Dispose(); Throws<ObjectDisposedException>(() => context.Load());
     }
     private static void ClassicRuleContextFailureCleanup()
     {

@@ -255,7 +255,7 @@ public sealed class SeamView : UserControl
 
         var unit = records.Records[units.SelectedIndex];
         activeTarget = new(unit.Slot, unit.Token);
-        selection = new(new(unit.X, unit.Y), MapPickKind.Unit);
+        selection = new(unit.Position, MapPickKind.Unit);
         map.Select(selection);
         DescribeSelection();
     }
@@ -418,14 +418,14 @@ public sealed class SeamView : UserControl
         if (newBinding || !Equals(view.Units?.Records, previous?.Units?.Records))
         {
             changingItems = true;
-            units.ItemsSource = view.Units?.Records.Select(u => $"Unit {u.Slot.Value}   ({u.X}, {u.Y})").ToArray()
+            units.ItemsSource = view.Units?.Records.Select(u => $"Unit {u.Slot.Value}   ({u.Position.X}, {u.Position.Y})").ToArray()
                 ?? [];
             changingItems = false;
             if (newBinding && view.Units is { Records.Count: > 0 } starter)
             {
                 var first = starter.Records[0];
                 activeTarget = new(first.Slot, first.Token);
-                selection = new(new(first.X, first.Y), MapPickKind.Unit);
+                selection = new(first.Position, MapPickKind.Unit);
                 map.Select(selection);
             }
             SelectUnitRow();
@@ -438,7 +438,7 @@ public sealed class SeamView : UserControl
                 else if (view.Units is { } current)
                 {
                     var unit = current.Records[units.SelectedIndex];
-                    selection = new(new(unit.X, unit.Y), MapPickKind.Unit);
+                    selection = new(unit.Position, MapPickKind.Unit);
                 }
                 map.Select(selection);
             }

@@ -40,7 +40,7 @@ internal static class GpuOptimizationChecks
                 foreach (var point in new[] { a, b })
                 {
                     int index = point.Y * (scene.Map.Width / 2) + point.X / 2;
-                    tiles[index] = tiles[index] with { Improvements = tiles[index].Improvements ^ MapImprovements.Road };
+                    tiles[index] = tiles[index] with { Improvements = tiles[index].Improvements ^ MapFeatures.Road };
                 }
                 scene = new(MapObservationDelta.Attach(scene.Map, scene.Map with { Revision = scene.Map.Revision + 1, Tiles = new(tiles) }));
                 Check("separated-edits", scene, camera);
@@ -121,7 +121,7 @@ internal static class GpuOptimizationChecks
         foreach (var point in new MapPoint[] { new(6, 8), new(38, 8) })
         {
             int i = point.Y * (before.Map.Width / 2) + point.X / 2;
-            tiles[i] = tiles[i] with { Terrain = 2, Improvements = tiles[i].Improvements ^ MapImprovements.Road };
+            tiles[i] = tiles[i] with { Terrain = 2, Improvements = tiles[i].Improvements ^ MapFeatures.Road };
         }
         var after = new MapScene(MapObservationDelta.Attach(before.Map, before.Map with { Revision = before.Map.Revision + 1, Tiles = new(tiles) }));
         var camera = new MapCamera(96, 72, 1);

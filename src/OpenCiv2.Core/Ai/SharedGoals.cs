@@ -36,12 +36,12 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
         }
     }
 
-    public static int PriorityAt(in Civilization civilization, Position position, sbyte role)
+    public static int PriorityAt(in Civilization civilization, MapPoint position, sbyte role)
     {
         int result = 0;
         foreach (ref readonly var goal in (ReadOnlySpan<CivilizationGoal>)civilization.Goals)
         {
-            if (goal.X == position.X && goal.Y == position.Y && goal.Role == role
+            if (goal.Position == position && goal.Role == role
                 && unchecked((sbyte)result) <= Math.Abs((int)goal.Priority))
             {
                 result = Math.Abs((int)goal.Priority);
@@ -51,11 +51,11 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
         return result;
     }
 
-    private static bool Duplicate(ReadOnlySpan<CivilizationGoal> goals, Position position, sbyte role, sbyte priority)
+    private static bool Duplicate(ReadOnlySpan<CivilizationGoal> goals, MapPoint position, sbyte role, sbyte priority)
     {
         foreach (var goal in goals)
         {
-            if (goal.X == position.X && goal.Y == position.Y && goal.Role == role && goal.Priority >= priority)
+            if (goal.Position == position && goal.Role == role && goal.Priority >= priority)
             {
                 return true;
             }
@@ -66,7 +66,7 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
 
     private static void Insert(
         Span<CivilizationGoal> goals,
-        Position position,
+        MapPoint position,
         sbyte role,
         sbyte priority,
         bool standing)
@@ -92,12 +92,12 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
                 goals[end] = goals[end - 1];
             }
 
-            goals[i] = new(unchecked((short)position.X), unchecked((short)position.Y), role, priority);
+            goals[i] = new(new(unchecked((short)position.X), unchecked((short)position.Y)), role, priority);
             return;
         }
     }
 
-    public void AddCurrent(int civilization, Position position, int role, int priority)
+    public void AddCurrent(int civilization, MapPoint position, int role, int priority)
     {
         Span<CivilizationGoal> goals = Civilization(civilization).Goals;
         sbyte retainedRole = unchecked((sbyte)role), retainedPriority = unchecked((sbyte)priority);
@@ -106,7 +106,7 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
             return;
         }
 
-        if (civilization == world.Globals.TurnCiv && (world.Globals.HumanPlayers & (1U << civilization)) == 0
+        if (civilization == world.Globals.TurnCiv && !world.Globals.HumanPlayers.Contains(civilization)
             && role is 2 or 3)
         {
             int end = world.Entities.Units.End;
@@ -134,7 +134,7 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
                     continue;
                 }
 
-                byte region = world.Map.TileAt(new(unit.X, unit.Y)).Region;
+                byte region = world.Map.TileAt(unit.Position).Region;
                 if (region != world.Map.TileAt(position).Region)
                 {
                     continue;
@@ -142,21 +142,20 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
 
                 int distance = world.Map.Geometry.WeightedDistance(
                     position,
-                    new(unit.X, unit.Y),
-                    (world.Globals.Rules & 0x8000) != 0);
+                    unit.Position,
+                    world.Globals.Rules.FlatWorld);
                 int moves = queries.RemainingMoves(slot);
                 if (unchecked(2 * distance) <= moves)
                 {
                     unit.Orders = UnitOrder.GoTo;
-                    unit.DestinationX = unchecked((short)position.X);
-                    unit.DestinationY = unchecked((short)position.Y);
+                    unit.Destination = new(unchecked((short)position.X), unchecked((short)position.Y));
                 }
             }
         }
         Insert(goals, position, retainedRole, retainedPriority, false);
     }
 
-    public void AddStanding(int civilization, Position position, int role, int priority)
+    public void AddStanding(int civilization, MapPoint position, int role, int priority)
     {
         Span<CivilizationGoal> goals = Civilization(civilization).StandingGoals;
         sbyte retainedRole = unchecked((sbyte)role), retainedPriority = unchecked((sbyte)priority);
@@ -182,12 +181,12 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
         {
             if (goal.Role >= 0)
             {
-                AddCurrent(civilization, new(goal.X, goal.Y), goal.Role, goal.Priority);
+                AddCurrent(civilization, goal.Position, goal.Role, goal.Priority);
             }
         }
     }
 
-    public void ClearStandingNear(int civilization, int role, Position position, int limit)
+    public void ClearStandingNear(int civilization, int role, MapPoint position, int limit)
     {
         foreach (ref var goal in (Span<CivilizationGoal>)Civilization(civilization).StandingGoals)
         {
@@ -198,8 +197,8 @@ public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovement
 
             int distance = world.Map.Geometry.WeightedDistance(
                 position,
-                new(goal.X, goal.Y),
-                (world.Globals.Rules & 0x8000) != 0);
+                goal.Position,
+                world.Globals.Rules.FlatWorld);
             if (distance <= limit)
             {
                 goal = goal with { Role = -1, Priority = 0 };

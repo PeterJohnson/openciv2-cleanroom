@@ -847,13 +847,13 @@ internal static class RecordFields
 
     private static void Append(CivilizationGoal v, string prefix, List<Field> fields)
     {
-        fields.Add(new(prefix + "x", "i16", new FieldValue.Signed(v.X)));
-        fields.Add(new(prefix + "y", "i16", new FieldValue.Signed(v.Y)));
+        fields.Add(new(prefix + "x", "i16", new FieldValue.Signed(v.Position.X)));
+        fields.Add(new(prefix + "y", "i16", new FieldValue.Signed(v.Position.Y)));
         fields.Add(new(prefix + "role", "i8", new FieldValue.Signed(v.Role)));
         fields.Add(new(prefix + "priority", "i8", new FieldValue.Signed(v.Priority)));
     }
 
-    public static List<Field> Of(Tile v) =>
+    public static List<Field> Of(StoredTile v) =>
     [
         new("terrain", "u8", new FieldValue.Unsigned((byte)v.Terrain)),
         new("terrain_flags", "u8", new FieldValue.Unsigned(v.TerrainFlags)),
@@ -866,7 +866,7 @@ internal static class RecordFields
         new("owner", "u8", v.Owner is { } owner ? new FieldValue.Unsigned(owner) : null)
     ];
 
-    public static List<Field> Of(RegionSummary v) =>
+    public static List<Field> Of(StoredRegionSummary v) =>
     [
         new("land", "i16", new FieldValue.Signed(v.Land)),
         new("fertile", "i16", new FieldValue.Signed(v.Fertile)),

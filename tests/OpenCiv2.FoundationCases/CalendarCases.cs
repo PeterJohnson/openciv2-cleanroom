@@ -4,12 +4,13 @@ using OpenCiv2.Core;
 using OpenCiv2.Core.State;
 using OpenCiv2.Formats.Content;
 using GameCalendar = OpenCiv2.Core.Calendar;
+using StateConversion = OpenCiv2.Formats.StateConversion;
 
 namespace OpenCiv2.FoundationCases;
 
 public static partial class FoundationSuite
 {
-    private static GlobalValues CalendarGlobals(int difficulty = 2, ushort flags = 0) => new() { Difficulty = (Difficulty)difficulty, GameFlags = flags, FirstLaunchTurn = -1 };
+    private static GlobalValues CalendarGlobals(int difficulty = 2, ushort flags = 0) => new() { Difficulty = (Difficulty)difficulty, Status = StateConversion.DecodeGameStatus(flags), FirstLaunchTurn = -1 };
     private static CalendarValues ClassicCalendar => GameplayContent.Builtin.Values.Calendar;
     private static void CalendarProfiles()
     {
@@ -48,8 +49,8 @@ public static partial class FoundationSuite
     {
         var globals = CalendarGlobals(2, 0x80); var scenario = new ScenarioParameters { YearIncrement = 5, StartYear = 100 };
         foreach (var (turn, year) in new (int, int)[] { (0, 99), (1, 104), (21, 204), (-2, 89) }) Equal(year, GameCalendar.Year(turn, globals, scenario, ClassicCalendar));
-        scenario.YearIncrement = -5; Equal(204, GameCalendar.Year(21, globals, scenario, ClassicCalendar)); globals.GameFlags = 0; Equal(-3000, GameCalendar.Year(21, globals, scenario, ClassicCalendar));
-        globals.GameFlags = 0x80; scenario.StartYear = 0; Equal(-3000, GameCalendar.Year(21, globals, scenario, ClassicCalendar)); scenario.StartYear = 100; scenario.YearIncrement = 0; Equal(-3000, GameCalendar.Year(21, globals, scenario, ClassicCalendar));
+        scenario.YearIncrement = -5; Equal(204, GameCalendar.Year(21, globals, scenario, ClassicCalendar)); globals.Status = new GameStatus(); Equal(-3000, GameCalendar.Year(21, globals, scenario, ClassicCalendar));
+        globals.Status = new GameStatus { Scenario = true }; scenario.StartYear = 0; Equal(-3000, GameCalendar.Year(21, globals, scenario, ClassicCalendar)); scenario.StartYear = 100; scenario.YearIncrement = 0; Equal(-3000, GameCalendar.Year(21, globals, scenario, ClassicCalendar));
         globals = CalendarGlobals(5, 0x8c); scenario.StartYear = 1; scenario.YearIncrement = -1; Equal(0, GameCalendar.Year(0, globals, scenario, ClassicCalendar)); globals.FirstLaunchTurn = 0; Equal(41, GameCalendar.Year(41, globals, scenario, ClassicCalendar));
         scenario.StartYear = -100; scenario.YearIncrement = -12; globals.FirstLaunchTurn = 21; Equal(171, GameCalendar.Year(41, globals, scenario, ClassicCalendar));
         globals = CalendarGlobals(0, 0x80); scenario.StartYear = 1; scenario.YearIncrement = short.MinValue; Equal(int.MinValue, GameCalendar.Year(65536, globals, scenario, ClassicCalendar)); Equal(0, GameCalendar.Year(131072, globals, scenario, ClassicCalendar));
@@ -77,12 +78,12 @@ public static partial class FoundationSuite
     private static void CalendarObservation()
     {
         var globals = CalendarGlobals(3, 0xfffc); globals.Turn = 123; globals.Year = 456; globals.FirstLaunchTurn = 21;
-        var scenario = new ScenarioParameters { Flags = 0xffff, StartYear = -400, YearIncrement = -12, MaximumTurns = 90 }; var before = globals; var beforeScenario = scenario; var calendar = ClassicCalendar;
+        var scenario = new ScenarioParameters { Flags = StateConversion.DecodeScenarioOptions(0xffff), StartYear = -400, YearIncrement = -12, MaximumTurns = 90 }; var before = globals; var beforeScenario = scenario; var calendar = ClassicCalendar;
         Equal(-129, GameCalendar.Year(41, globals, scenario, calendar)); Equal(before, globals); Equal(beforeScenario, scenario); Equal(calendar, ClassicCalendar);
     }
     private static void KnowledgeSentinels()
     {
-        var civs = new Civilization[8]; ((Span<byte>)civs[1].Advances).Fill(255);
+        var civs = new Civilization[8]; for (int i = 0; i < 100; ++i) civs[1].Advances = civs[1].Advances.With(i);
         foreach (int civ in new[] { -1, 0, 1, 8, int.MaxValue })
         {
             Equal(false, CivilizationKnowledge.KnowsAdvance(civs, civ, -2)); Equal(true, CivilizationKnowledge.KnowsAdvance(civs, civ, -1)); Equal(true, CivilizationKnowledge.KnowsAdvance(civs, civ, int.MinValue));

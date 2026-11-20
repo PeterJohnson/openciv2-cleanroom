@@ -1,6 +1,7 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
+using OpenCiv2.Formats;
 using OpenCiv2.Session;
 using OpenCiv2.ViewModels;
 
@@ -15,22 +16,22 @@ public static partial class FoundationSuite
         using var f = new LocalUnitCommandFixture();
         var world = f.Runtime.World;
         Equal(true, f.Client.ObserveMap()!.Tiles.All(t => t == default));
-        var a = new Position(2, 2);
-        var b = new Position(4, 2);
-        world.Map.TileAt(a) = new() { Terrain = Terrain.Grassland, TerrainFlags = 0x80, Revelation = 2, Owner = 2, Features = 0x99 };
-        world.Map.TileAt(b) = new() { Terrain = Terrain.Hills, Revelation = 4 };
-        world.Map.Remembered(1, a) = 0x13;
-        world.Map.Remembered(1, b) = 0xff;
-        f.Unit(3).Visibility = 2;
+        var a = new MapPoint(2, 2);
+        var b = new MapPoint(4, 2);
+        world.Map.TileAt(a) = new() { Terrain = Terrain.Grassland, River = true, RevealedTo = new CivilizationSet().With(1), Owner = 2, Features = MapFeatures.Unit | MapFeatures.Mine | MapFeatures.Road | MapFeatures.Pollution };
+        world.Map.TileAt(b) = new() { Terrain = Terrain.Hills, RevealedTo = new CivilizationSet().With(2) };
+        world.Map.Remembered(1, a) = MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Road;
+        world.Map.Remembered(1, b) = MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Irrigation | MapFeatures.Mine | MapFeatures.Road | MapFeatures.Railroad | MapFeatures.Fortification | MapFeatures.Pollution;
+        f.Unit(3).Visibility = StateConversion.DecodeCivilizations(2);
         world.Entities.Cities.SetEnd(2);
-        world.Entities.Cities.Storage[0] = new() { Token = new(8), Owner = new(1), X = 2, Y = 2, Size = 5, Name = new("Blue"u8.ToArray()) };
-        world.Entities.Cities.Storage[1] = new() { Token = new(9), Owner = new(2), X = 4, Y = 2, Size = 7, Name = new("Red"u8.ToArray()), KnownTo = 2 };
+        world.Entities.Cities.Storage[0] = new() { Token = new(8), Owner = new(1), Size = 5, Name = "Blue", Position = new(2, 2) };
+        world.Entities.Cities.Storage[1] = new() { Token = new(9), Owner = new(2), Size = 7, Name = "Red", KnownTo = StateConversion.DecodeCivilizations(2), Position = new(4, 2) };
         var first = f.Client.ObserveMap()!;
         var second = f.Other.ObserveMap()!;
         int left = world.Map.Geometry.TileIndex(a)!.Value, right = world.Map.Geometry.TileIndex(b)!.Value;
         Equal((byte)1, first.Identity.Observer.Value);
         Equal((byte)2, second.Identity.Observer.Value);
-        Equal(new ObservedTile(2, MapImprovements.Road | MapImprovements.CitySite, true, 0, Geometry.GrasslandShield(a),
+        Equal(new ObservedTile(2, MapFeatures.Road | MapFeatures.CitySite, true, 0, Geometry.GrasslandShield(a),
             MapFact<MapPresence>.Known(MapPresence.Absent), MapFact<MapTileOwnership>.Known(new(new(1)))), first.Tiles[left]);
         Equal(default(ObservedTile), first.Tiles[right]);
         Equal(default(ObservedTile), second.Tiles[left]);
@@ -38,14 +39,14 @@ public static partial class FoundationSuite
         Equal(4, first.Units.Count);
         Equal(3, first.Units.Count(u => u.Target is not null));
         Equal(1, second.Units.Count);
-        Equal("Blue", System.Text.Encoding.ASCII.GetString(first.Cities.Single().Name.ToArray()));
-        Equal("Red", System.Text.Encoding.ASCII.GetString(second.Cities.Single().Name.ToArray()));
+        Equal("Blue", first.Cities.Single().Name);
+        Equal("Red", second.Cities.Single().Name);
 
         // Changing live foreign city facts and improvements cannot update retained tile memory.
-        world.Entities.Cities.Storage[1].Name = new("Change"u8.ToArray());
-        world.Map.TileAt(a).Features = 0;
-        f.Unit(3).X = 4;
-        world.Globals.Rules = 0x8000;
+        world.Entities.Cities.Storage[1].Name = "Change";
+        world.Map.TileAt(a).Features = MapFeatures.None;
+        f.Unit(3).Position = f.Unit(3).Position with { X = 4 };
+        world.Globals.Rules = StateConversion.DecodeGameRules(0x8000);
         f.Runtime.Publish();
         var next = f.Client.ObserveMap()!;
         Equal(first.Tiles, next.Tiles);
@@ -55,9 +56,9 @@ public static partial class FoundationSuite
         Equal(false, first.Flat);
         Equal(true, next.Revision > first.Revision);
 
-        var site = new Position(0, 0);
+        var site = new MapPoint(0, 0);
         world.Map.PatternSeed = 24;
-        world.Map.TileAt(site) = new() { Terrain = Terrain.Desert, TerrainFlags = 0x40, Revelation = 2, Owner = null };
+        world.Map.TileAt(site) = new() { Terrain = Terrain.Desert, ResourceSuppressed = true, RevealedTo = new CivilizationSet().With(1), Owner = null };
         f.Runtime.Publish();
         var random = f.Runtime.GameplayRandom.Capture();
         Equal(true, world.Map.Hut(site));
@@ -69,7 +70,7 @@ public static partial class FoundationSuite
         Equal(false, world.Map.Hut(site));
         Equal(eligible, f.Client.ObserveMap()!.Tiles[0]);
         world.Map.PatternSeed = 16;
-        world.Map.TileAt(site).TerrainFlags = 0;
+        world.Map.TileAt(site).ResourceSuppressed = false;
         f.Runtime.Publish();
         Equal((byte)2, f.Client.ObserveMap()!.Tiles[0].Resource);
         world.Map.TileAt(site).Terrain = Terrain.Grassland;

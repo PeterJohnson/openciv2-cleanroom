@@ -1,10 +1,14 @@
+using System.Runtime.CompilerServices;
 using OpenCiv2.Core.State;
 using OpenCiv2.Formats;
 using OpenCiv2.IO;
 
 namespace OpenCiv2.Session;
 
-public readonly record struct PreferenceSnapshot(OrdinaryPreferences Ordinary, MultiplayerPreferences Multiplayer);
+public readonly record struct PreferenceSnapshot(OrdinaryPreferences Ordinary, MultiplayerPreferences Multiplayer)
+{
+    public StoredOrdinaryPreferences? ImportedOrdinary { get; init; }
+}
 public readonly record struct PreferenceDefaults(int ScreenWidth, bool AnimationsAvailable);
 public enum PreferenceLoadStatus { Success, Defaults, Input }
 public enum PreferenceSaveStatus { Success, Output }
@@ -41,7 +45,13 @@ public sealed class ClassicPreferenceWriter : IPreferenceWriter
 
     public bool Write(PreferenceSnapshot values, Action? beforeIo = null)
     {
-        var ordinary = ClassicPreferences.EncodeOrdinary(StateConversion.ToStored(values.Ordinary));
+        var stored = StateConversion.ToStored(values.Ordinary);
+        if (values.ImportedOrdinary is { } imported)
+        {
+            stored = StateConversion.PreserveOpaque(stored, imported);
+        }
+
+        var ordinary = ClassicPreferences.EncodeOrdinary(stored);
         var multiplayer = ClassicPreferences.EncodeMultiplayer(StateConversion.ToStored(values.Multiplayer));
         beforeIo?.Invoke();
         using var file = storage.Replace("CIV2.DAT");
@@ -65,12 +75,25 @@ public sealed class ClassicPreferenceWriter : IPreferenceWriter
 }
 public static class PreferenceFiles
 {
+    private static readonly ConditionalWeakTable<object, StoredOrdinaryPreferences> imported = new();
+    public static PreferenceSnapshot Capture(ProcessContext process) => new(process.OrdinaryPreferences, process.MultiplayerPreferences)
+    { ImportedOrdinary = imported.TryGetValue(process.PreferencesIdentity, out var value) ? value : null };
+    internal static void ReplaceImported(ProcessContext process, StoredOrdinaryPreferences? value)
+    {
+        imported.Remove(process.PreferencesIdentity);
+        if (value is not null)
+        {
+            imported.Add(process.PreferencesIdentity, value);
+        }
+    }
+
     /// <summary>Stage both independent items and close before installation. Missing/short items default;
     /// close failure or exceptions leave installed preferences unchanged.</summary>
     public static PreferenceLoadStatus Load(ProcessContext process, PreferenceDefaults defaults, IFileStorage storage)
     {
         ArgumentNullException.ThrowIfNull(process);
         ArgumentNullException.ThrowIfNull(storage);
+        StoredOrdinaryPreferences? stored = null;
         var ordinary = process.OrdinaryPreferences;
         var multiplayer = process.MultiplayerPreferences;
         var status = PreferenceLoadStatus.Defaults;
@@ -97,7 +120,8 @@ public static class PreferenceFiles
 
             if (first.Complete)
             {
-                ordinary = StateConversion.ToLive(ClassicPreferences.DecodeOrdinary(first.Prefix.ToArray()));
+                stored = ClassicPreferences.DecodeOrdinary(first.Prefix.ToArray());
+                ordinary = StateConversion.ToLive(stored);
             }
             else
             {
@@ -118,6 +142,7 @@ public static class PreferenceFiles
                 status = PreferenceLoadStatus.Success;
             }
         }
+        ReplaceImported(process, stored);
         process.OrdinaryPreferences = ordinary;
         process.MultiplayerPreferences = multiplayer;
         return status;
@@ -128,7 +153,7 @@ public static class PreferenceFiles
         ArgumentNullException.ThrowIfNull(process);
         return new ClassicPreferenceWriter(
             storage).Write(
-                new(process.OrdinaryPreferences, process.MultiplayerPreferences))
+                Capture(process))
             ? PreferenceSaveStatus.Success
             : PreferenceSaveStatus.Output;
     }
@@ -140,7 +165,7 @@ public static class PreferenceFiles
         var process = runtime.Process;
         return new ClassicPreferenceWriter(
             storage).Write(
-                new(process.OrdinaryPreferences, process.MultiplayerPreferences),
+                Capture(process),
                 () =>
             {
                 if (runtime.Active)

@@ -10,8 +10,8 @@ public static class ClassicLabels
     public static LabelCatalog Load(TextReader reader, TextDirectories directories, Action? missingLabels = null)
     {
         string search = directories.Search;
-        var entries = new List<OwnedList<byte>>();
-        var popups = new OwnedList<byte>?[3];
+        var entries = new List<string>();
+        var popups = new string?[Core.Rules.Labels.PopupCount];
         int declared = 0;
         void Append(int count)
         {
@@ -23,7 +23,7 @@ public static class ClassicLabels
             while (entries.Count < count)
             {
                 reader.NextLine();
-                entries.Add(new(reader.Line.ToArray()));
+                entries.Add(ClassicText.DecodeTerminated(reader.Line.ToArray()));
             }
         }
         try
@@ -48,7 +48,7 @@ public static class ClassicLabels
                         Append(count);
                     }
                 }
-                var error = new OwnedList<byte>("[ERROR:LABELS.TXT]"u8.ToArray());
+                var error = "[ERROR:LABELS.TXT]";
                 while (entries.Count < Labels.Capacity)
                 {
                     entries.Add(error);
@@ -66,7 +66,7 @@ public static class ClassicLabels
                 for (int i = 0; i < 3; ++i)
                 {
                     reader.NextLine();
-                    popups[i] = new(reader.Line.ToArray());
+                    popups[i] = ClassicText.DecodeTerminated(reader.Line.ToArray());
                 }
             }
 

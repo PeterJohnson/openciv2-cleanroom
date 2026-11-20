@@ -13,17 +13,17 @@ public sealed partial class SessionRuntime
         state.RequireQuiescent();
         var world = new GameState(state.Process);
         var rules = new RuleState();
-        rules.Text.Initialize();
+
         foreach (ref var civilization in world.Civilizations.AsSpan())
         {
             foreach (ref var goal in (Span<CivilizationGoal>)civilization.Goals)
             {
-                goal = new(0, 0, -1, 0);
+                goal = new(new(0, 0), -1, 0);
             }
 
             foreach (ref var goal in (Span<CivilizationGoal>)civilization.StandingGoals)
             {
-                goal = new(0, 0, -1, 0);
+                goal = new(new(0, 0), -1, 0);
             }
         }
         // All preparation precedes revocation. No service callbacks interrupt replacement.

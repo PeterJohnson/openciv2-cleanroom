@@ -50,15 +50,15 @@ public static class LocalUnitCommands
         }
 
         var origin = units.Storage[slot];
-        if (!world.Map.Allocated || !world.Map.Geometry.Canonical(new(origin.X, origin.Y)))
+        if (!world.Map.Allocated || !world.Map.Geometry.Canonical(origin.Position))
         {
             return "stack_not_available";
         }
         // Admission observes raw links without invoking U01's mutating repair. No other owner's
         // fields are returned. Both walks terminate within the finite pool even for cyclic input.
         bool Member(int index) => index >= 0 && index < units.End && units.Storage[index].Token.Occupied &&
-            units.Storage[index].Owner == actor.Civilization && units.Storage[index].X == origin.X
-            && units.Storage[index].Y == origin.Y;
+            units.Storage[index].Owner == actor.Civilization && units.Storage[index].Position.X == origin.Position.X
+            && units.Storage[index].Position.Y == origin.Position.Y;
         int head = slot;
         for (int remaining = EntityLimits.Units; ; --remaining)
         {
@@ -67,13 +67,13 @@ public static class LocalUnitCommands
                 return "stack_not_available";
             }
 
-            int previous = units.Storage[head].Previous.Value;
+            int previous = (units.Storage[head].Previous?.Value ?? -1);
             if (previous < 0)
             {
                 break;
             }
 
-            if (!Member(previous) || units.Storage[previous].Next.Value != head)
+            if (!Member(previous) || (units.Storage[previous].Next?.Value ?? -1) != head)
             {
                 return "stack_not_available";
             }
@@ -86,14 +86,14 @@ public static class LocalUnitCommands
         {
             // The primitive's >=2048 repair threshold is outside this coherent-stack command profile.
             if (++count >= EntityLimits.Units || !Member(current)
-                || (last >= 0 && units.Storage[current].Previous.Value != last))
+                || (last >= 0 && (units.Storage[current].Previous?.Value ?? -1) != last))
             {
                 return "stack_not_available";
             }
 
             found |= current == slot;
             last = current;
-            current = units.Storage[current].Next.Value;
+            current = (units.Storage[current].Next?.Value ?? -1);
         }
         return found ? null : "stack_not_available";
     }
@@ -131,7 +131,7 @@ public static class LocalUnitCommands
                 return new(CommandStatus.Failed, Code: "unexpected_input");
             }
 
-            bool changed = context.World.Entities.Units.Storage[target.Slot.Value].Next.Value >= 0;
+            bool changed = context.World.Entities.Units.Storage[target.Slot.Value].Next is not null;
             using var operation = new UnitOperation(
                 context,
                 new(UnitOperationKind.Bottom, new([target.Slot.Value, 0, 0, 0, 0, 0])),

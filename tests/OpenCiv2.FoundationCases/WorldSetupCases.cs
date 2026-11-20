@@ -29,7 +29,7 @@ public static partial class FoundationSuite
             Files.Process.OrdinaryPreferences = new() { MapSize = WorldSize.Large };
             Files.Process.MultiplayerPreferences = new();
             Files.Process.OrdinaryPreferences.WorldParameters[3] = -1; Files.Process.OrdinaryPreferences.WorldParameters[4] = 1;
-            Runtime.World.WorldSetup.Width = 31; Runtime.World.WorldSetup.Height = 37; Runtime.World.Globals.GameFlags = 0xffff;
+            Runtime.World.WorldSetup.Width = 31; Runtime.World.WorldSetup.Height = 37; Runtime.World.Globals.Status = new GameStatus { AiCoordination = true, Won = true, LargeMap = true, SmallMap = true, Cheated = true, Scored = true, ScenarioExport = true, Scenario = true };
             for (int i = 0; i < 5; ++i) Runtime.World.WorldSetup.Parameters[i] = 11 + i;
         }
         public WorldParameterServices Services(Func<WorldParameter, short, WorldParameterChoice>? choose = null) => new(choose ?? ((_, _) => new WorldParameterChoice.Selected(1)), new ClassicPreferenceWriter(Files.Storage));
@@ -52,8 +52,8 @@ public static partial class FoundationSuite
         foreach (var (row, width, height, flags) in new (int, short, short, ushort)[] { (0, 80, 50, 8), (1, 100, 80, 0), (2, 150, 120, 4), (7, 100, 80, 0), (65536, 100, 80, 0) })
         {
             using var f = new WorldSetupFixture(); var random = f.Runtime.GameplayRandom.Capture();
-            var ui = new SizeInteraction { Preset = remembered => { Equal(2, (int)remembered); Equal((ushort)0, f.Runtime.World.Globals.GameFlags); return new WorldSizeChoice.Preset(row); } };
-            Equal(true, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal(width, f.Runtime.World.WorldSetup.Width); Equal(height, f.Runtime.World.WorldSetup.Height); Equal(flags, f.Runtime.World.Globals.GameFlags);
+            var ui = new SizeInteraction { Preset = remembered => { Equal(2, (int)remembered); Equal(new GameStatus(), f.Runtime.World.Globals.Status); return new WorldSizeChoice.Preset(row); } };
+            Equal(true, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal(width, f.Runtime.World.WorldSetup.Width); Equal(height, f.Runtime.World.WorldSetup.Height); Equal(StateConversion.DecodeGameStatus(flags), f.Runtime.World.Globals.Status);
             Equal((int)unchecked((short)row), (int)f.Runtime.Process.OrdinaryPreferences.MapSize); SetupParametersEqual([11, 12, 13, 14, 15], f.Runtime); Equal(0, f.Files.Trace.Count); Equal(random, f.Runtime.GameplayRandom.Capture());
         }
     }
@@ -64,7 +64,7 @@ public static partial class FoundationSuite
             ("60","50",120,50,0), ("100","60",200,60,4), ("59","101",118,101,0), ("  +50suffix","\t80",100,80,0), ("4294967346","80",100,80,0) })
         {
             using var f = new WorldSetupFixture(); var ui = new SizeInteraction { Preset = _ => new WorldSizeChoice.Custom(), Custom = (a, b) => { Equal("50", a); Equal("80", b); return new(CustomSizeStatus.Accepted, width, height); } };
-            Equal(true, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal(w, f.Runtime.World.WorldSetup.Width); Equal(h, f.Runtime.World.WorldSetup.Height); Equal(flags, f.Runtime.World.Globals.GameFlags); Equal(2, (int)f.Runtime.Process.OrdinaryPreferences.MapSize);
+            Equal(true, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal(w, f.Runtime.World.WorldSetup.Width); Equal(h, f.Runtime.World.WorldSetup.Height); Equal(StateConversion.DecodeGameStatus(flags), f.Runtime.World.Globals.Status); Equal(2, (int)f.Runtime.Process.OrdinaryPreferences.MapSize);
         }
         foreach (var (width, height) in new[] { ("19", "80"), ("50", "19"), ("251", "20"), ("20", "251"), ("20", "49"), ("101", "100"), ("65535", "80"), ("0x32", "80"), ("0b110010", "80"), ("", "80"), ("word", "80") })
         {
@@ -77,12 +77,12 @@ public static partial class FoundationSuite
     {
         using var f = new WorldSetupFixture(); int presets = 0, customs = 0;
         var ui = new SizeInteraction { Preset = _ => ++presets == 1 ? new WorldSizeChoice.Custom() : new WorldSizeChoice.Preset(-1), Custom = (_, _) => ++customs == 1 ? new(CustomSizeStatus.Accepted, "19", "80") : new(CustomSizeStatus.Cancelled, "", "") };
-        Equal(false, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal(2, presets); Equal(2, customs); Equal((short)38, f.Runtime.World.WorldSetup.Width); Equal((ushort)8, f.Runtime.World.Globals.GameFlags);
-        Equal(false, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal((short)76, f.Runtime.World.WorldSetup.Width); Equal((ushort)0, f.Runtime.World.Globals.GameFlags);
+        Equal(false, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal(2, presets); Equal(2, customs); Equal((short)38, f.Runtime.World.WorldSetup.Width); Equal(new GameStatus { SmallMap = true }, f.Runtime.World.Globals.Status);
+        Equal(false, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal((short)76, f.Runtime.World.WorldSetup.Width); Equal(new GameStatus(), f.Runtime.World.Globals.Status);
         f.Runtime.World.WorldSetup.Width = 20000; f.Runtime.World.WorldSetup.Height = 2;
         ui.Preset = _ => new WorldSizeChoice.Custom(); ui.Custom = (_, _) => new(CustomSizeStatus.Unavailable, "", "");
-        Equal(false, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal((short)-25536, f.Runtime.World.WorldSetup.Width); Equal((ushort)4, f.Runtime.World.Globals.GameFlags);
-        ui.Custom = (_, _) => throw new IOException("dialog"); Throws<IOException>(() => WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal((short)-25536, f.Runtime.World.WorldSetup.Width); Equal((ushort)0, f.Runtime.World.Globals.GameFlags);
+        Equal(false, WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal((short)-25536, f.Runtime.World.WorldSetup.Width); Equal(new GameStatus { LargeMap = true }, f.Runtime.World.Globals.Status);
+        ui.Custom = (_, _) => throw new IOException("dialog"); Throws<IOException>(() => WorldSetupOperations.SelectSize(f.Runtime, ui)); Equal((short)-25536, f.Runtime.World.WorldSetup.Width); Equal(new GameStatus(), f.Runtime.World.Globals.Status);
         ui.Custom = (_, _) => new((CustomSizeStatus)99, "50", "80"); Throws<ArgumentException>(() => WorldSetupOperations.SelectSize(f.Runtime, ui));
         f.Runtime.PrepareNewGame(); // All world pins were released on both exceptional paths.
     }
@@ -157,18 +157,18 @@ public static partial class FoundationSuite
     }
     private static void WorldSetupPublicationAndPins()
     {
-        using var f = new WorldSetupFixture(); var runtime = f.Runtime; runtime.World.Entities.Units.SetEnd(1); runtime.World.Entities.Units.Storage[0] = new() { Token = new(1), Owner = new(1), X = 7 }; var client = SessionClient(runtime); ulong revision = client.OwnUnits().Observation.Revision; short next = 7;
+        using var f = new WorldSetupFixture(); var runtime = f.Runtime; runtime.World.Entities.Units.SetEnd(1); runtime.World.Entities.Units.Storage[0] = new() { Token = new(1), Owner = new(1), Position = new(7, 0) }; var client = SessionClient(runtime); ulong revision = client.OwnUnits().Observation.Revision; short next = 7;
         void Boundary()
         {
-            var observed = client.OwnUnits(); Equal(true, observed.Observation.Revision > revision); revision = observed.Observation.Revision; Equal(next, observed.Records[0].X);
-            runtime.World.Entities.Units.Storage[0].X = ++next; Throws<InvalidOperationException>(runtime.PrepareNewGame);
+            var observed = client.OwnUnits(); Equal(true, observed.Observation.Revision > revision); revision = observed.Observation.Revision; Equal(next, observed.Records[0].Position.X);
+            runtime.World.Entities.Units.Storage[0].Position = runtime.World.Entities.Units.Storage[0].Position with { X = ++next }; Throws<InvalidOperationException>(runtime.PrepareNewGame);
         }
-        var ui = new SizeInteraction { Preset = _ => { Boundary(); return new WorldSizeChoice.Preset(0); } }; Equal(true, WorldSetupOperations.SelectSize(runtime, ui)); Equal(next, client.OwnUnits().Records[0].X);
+        var ui = new SizeInteraction { Preset = _ => { Boundary(); return new WorldSizeChoice.Preset(0); } }; Equal(true, WorldSetupOperations.SelectSize(runtime, ui)); Equal(next, client.OwnUnits().Records[0].Position.X);
         var open = f.Files.Storage.ReplaceFile; f.Files.Storage.ReplaceFile = path => { Boundary(); return open(path); }; f.Files.AfterWrite = _ => Boundary(); f.Files.BeforeClose = Boundary;
         Equal(true, WorldSetupOperations.CustomizeParameters(runtime, WorldChoices([]), "world/one", f.Services((_, _) => { Boundary(); return new WorldParameterChoice.Selected(1); })));
-        Equal(next, client.OwnUnits().Records[0].X);
+        Equal(next, client.OwnUnits().Records[0].Position.X);
         Throws<IOException>(() => WorldSetupOperations.CustomizeParameters(runtime, WorldChoices([]), "world/one", f.Services((_, _) => { Boundary(); throw new IOException("dialog"); })));
-        Equal(next, client.OwnUnits().Records[0].X); Equal(true, client.OwnUnits().Observation.Revision > revision); runtime.PrepareNewGame();
+        Equal(next, client.OwnUnits().Records[0].Position.X); Equal(true, client.OwnUnits().Observation.Revision > revision); runtime.PrepareNewGame();
     }
     private static void WorldSetupAdmissionAndInactiveUse()
     {
@@ -185,8 +185,8 @@ public static partial class FoundationSuite
         using var runtime = new SessionRuntime(new(), new(96)); runtime.World.Globals = CalendarGlobals(2); runtime.World.Globals.Turn = 77; runtime.World.Globals.Year = 1200; runtime.World.Globals.FirstLaunchTurn = 0;
         runtime.World.Scenario.StartYear = 123; runtime.World.Scenario.YearIncrement = 7; var scenario = runtime.World.Scenario; var preferences = runtime.Process.OrdinaryPreferences; var globals = runtime.World.Globals; globals.FirstLaunchTurn = -1;
         Equal(new AccelerationYears(4000, 3000, 2000), SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar)); Equal(globals, runtime.World.Globals); Equal(scenario, runtime.World.Scenario); Equal(preferences, runtime.Process.OrdinaryPreferences); Equal(false, runtime.Active);
-        runtime.World.Globals.GameFlags = 4; Equal(new AccelerationYears(4000, 3600, 3200), SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar));
-        runtime.World.Globals.GameFlags = 8; Equal(new AccelerationYears(4000, 3000, 2000), SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar));
+        runtime.World.Globals.Status = new GameStatus { LargeMap = true }; Equal(new AccelerationYears(4000, 3600, 3200), SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar));
+        runtime.World.Globals.Status = new GameStatus { SmallMap = true }; Equal(new AccelerationYears(4000, 3000, 2000), SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar));
         runtime.BeginClientSession(new(17, 29)); var gameplay = runtime.GameplayRandom.Capture(); var presentation = runtime.PresentationRandom.Capture(); var client = SessionClient(runtime); ulong revision = client.OwnUnits().Observation.Revision;
         SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar); Equal(revision + 1, client.OwnUnits().Observation.Revision); Equal(gameplay, runtime.GameplayRandom.Capture()); Equal(presentation, runtime.PresentationRandom.Capture());
     }
@@ -195,7 +195,7 @@ public static partial class FoundationSuite
         using var runtime = new SessionRuntime(new(), new(97)); runtime.World.Globals = CalendarGlobals(0, 0x80); runtime.World.Scenario.StartYear = -100; runtime.World.Scenario.YearIncrement = -12;
         Equal(new AccelerationYears(101, 151, 391), SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar)); runtime.World.Scenario.StartYear = 1; runtime.World.Scenario.YearIncrement = 1;
         Equal(new AccelerationYears(0, 21, 41), SetupCalendar.PrepareAccelerationYears(runtime, ClassicCalendar));
-        var calendar = CustomCalendar(Enumerable.Range(0, 6).Select(i => new CalendarPeriod(int.MinValue + i, 1, 1)).ToArray()); runtime.World.Globals.GameFlags = 0;
+        var calendar = CustomCalendar(Enumerable.Range(0, 6).Select(i => new CalendarPeriod(int.MinValue + i, 1, 1)).ToArray()); runtime.World.Globals.Status = new GameStatus();
         Equal(new AccelerationYears(2147483648, 2147483628, 2147483608), SetupCalendar.PrepareAccelerationYears(runtime, calendar));
     }
 }

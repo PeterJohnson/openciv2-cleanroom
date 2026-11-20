@@ -244,7 +244,7 @@ internal static class GpuMapExperiments
     {
         var tiles = map.Tiles.ToArray();
         int index = point.Y * (map.Width / 2) + point.X / 2;
-        tiles[index] = tiles[index] with { Improvements = tiles[index].Improvements ^ MapImprovements.Road };
+        tiles[index] = tiles[index] with { Improvements = tiles[index].Improvements ^ MapFeatures.Road };
         return MapObservationDelta.Attach(map, map with { Revision = map.Revision + 1, Tiles = new(tiles) });
     }
 

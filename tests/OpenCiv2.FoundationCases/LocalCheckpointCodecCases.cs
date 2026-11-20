@@ -113,7 +113,7 @@ public static partial class FoundationSuite
         var payload = LocalCodecPayload(LocalCheckpointCodec.Encode(original)); payload["world"] = new string('0', (LocalCheckpointCodec.MaximumOwnerBytes + 1) * 2); LocalCodecReject(LocalCodecEnvelope(payload));
         payload = LocalCodecPayload(LocalCheckpointCodec.Encode(original)); payload["command"]!["code"] = new string('0', 4097 * 4); LocalCodecReject(LocalCodecEnvelope(payload));
         payload = LocalCodecPayload(LocalCheckpointCodec.Encode(original)); payload["command"]!["effects"] = new JsonArray(Enumerable.Range(0, 4097).Select(_ => (JsonNode)new JsonObject()).ToArray()); LocalCodecReject(LocalCodecEnvelope(payload));
-        string excessive = new(' ', LocalCheckpointCodec.MaximumPayload + 1);
+        string excessive = new string(' ', LocalCheckpointCodec.MaximumPayload + 1);
         LocalCodecReject(CheckpointJsonBytes(new JsonObject { ["format"] = LocalCheckpointCodec.Format, ["payload"] = excessive, ["sha256"] = ContentIdentity.Sha256(Encoding.UTF8.GetBytes(excessive)) }));
         foreach (var bad in new[] { original with { Command = command with { Access = (AccessClass)9 } }, original with { Command = command with { Update = command.Update with { Status = CommandStatus.Pending } } }, original with { Command = command with { Update = command.Update with { Interaction = null } } } })
             Throws<ArgumentException>(() => LocalCheckpointCodec.Encode(bad));

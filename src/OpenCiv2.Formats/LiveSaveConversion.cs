@@ -40,7 +40,7 @@ public static partial class StateConversion
         return layout;
     }
 
-    private static short NameMarker(NameReference name) => name.Custom ? (short)-1 : (short)1;
+    private static short NameMarker(LeaderText name) => name.Custom ? (short)-1 : (short)1;
 
     public static StoredLeader ToStored(Leader live) => new()
     {

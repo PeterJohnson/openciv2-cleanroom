@@ -121,6 +121,47 @@ cannot invent gameplay callbacks, per-allocation publication or reentry. Harmles
 UI failures do not prescribe original fatal-error timing. This boundary overrides
 mixed historical excerpts and stronger storage/trace language below.
 
+### Shared semantic values
+
+Entity references use `UnitSlot?` and `CitySlot?`; `null` means absent. Formats
+translates signed classic sentinels, writes canonical -1 for newly absent
+references, and preserves imported negative encodings in compatibility metadata.
+Slot zero is a valid reference. Nonnegative out-of-backing references remain
+available to the owning validation/repair paths; nullable storage does not silently
+repair them.
+
+`EntityLimits` defines live capacities. `RuleLimits` defines rule collection sizes,
+including advances, unit types, governments and tribes. `CityLimits` and `MapLimits`
+define their own collection sizes; other repeated capacities stay with their
+owning state or adapter. Domain inline arrays use those constants too. Generic
+fixed arrays and file byte widths are not assigned an unrelated entity limit just
+because their numeric sizes happen to match.
+
+Core spatial state and public map contracts use the same `MapFeatures` and
+`MapPoint` types. Features include occupancy, structures and environmental
+changes, so the type is broader than improvements. Remembered unit presence
+never authorizes disclosure of a current unit. Formats maps feature members to
+file bits explicitly.
+
+Locations in units, cities, goals, starts, cursors, views and event operands use
+`MapPoint`; only stored records split or pack their coordinates. A sleeping
+unit's carrier link is separate from its map destination, even though the classic
+record overlays those fields.
+
+Core and public contracts use C# strings for names, labels, event text, setup
+choices, preferences and passwords. Formats owns CP1252 conversion, termination,
+fixed widths and password scrambling. Binary text fields reversibly map unassigned
+CP1252 bytes to C1 characters; strict content readers still reject them. Unsupported
+Unicode remains valid logical text and is rejected when exporting to classic
+formats. Password padding stays attached to the imported immutable password list
+in the adapter and never becomes gameplay text.
+
+`CosmicRules` exposes named properties. Formats owns ordered COSMIC fields and
+input normalization. Installed rule names live on their definitions; live leader
+text carries its custom-name state directly. Labels own their text separately,
+without parallel name bindings or text-pool ordinals. Immutable `RuleDefinitions`
+snapshots remain separate from mutable installed `RuleTables`.
+
 ### Logical text and classic name markers
 
 Live names use full-width implementation-local references or owned strings and
@@ -242,12 +283,37 @@ Read-only properties do not make a shared array immutable; snapshots must copy o
 otherwise own their backing data. Keep borrowed spans within synchronous calls.
 
 Live text uses managed strings with explicit classic encoding conversions. Binary
-flags use `bool`, and choices with specified meanings use named enums. Counts, bitmasks, indices, sentinels and
-specified wrapping arithmetic retain their distinct semantics. Classic field
+flags use `bool`, and choices with specified meanings use named enums. Counts, indices, sentinels and specified wrapping arithmetic retain their distinct
+semantics. Membership sets expose bounded membership operations rather than stored masks. Classic field
 widths, terminators, padding and noncanonical flag words belong to stored codec
 types. Explicit conversions normalize nonzero flags to true and export them as
 0/1, omit text padding and reject unrepresentable text instead of truncating it.
 Lossless stored decode/re-encode remains separate from a live import/export.
+
+`GlobalValues.Status` uses independent named booleans, including the independently
+consumed large/small classifications. `Tile` uses named feature components,
+river/resource-suppression booleans and a civilization membership set; remembered
+layers use the same feature type. `TileChange` carries semantic operations.
+`StoredTile`, game-status conversion and `ClassicTileMutations` own classic bit
+positions, packed operands, reductions and noncanonical synchronization operands.
+Unit, city, civilization, relationship, scenario, spaceship, regional, option,
+message, tutorial and ability fields use named boolean values. Event triggers
+are alternatives, with unrecognized imported tags carried by the adapter. City
+specialists and their count are separate from the set of worked positions;
+improvements, advances, visibility and regional neighbors use logical sets.
+The classic conversion layer alone defines bit positions and packed fields.
+
+Unknown record bits remain in `RecordCompatibility`, bound to the world and
+entity tokens; event metadata follows the event instance. `MapCompatibility`
+holds opaque tile bytes for one spatial allocation; regional bytes follow their
+separately retained summary storage. Preference
+metadata follows the process preference identity across swaps, and snapshots
+carry it through preference writers. Accepted configuration changes copy or
+reset that metadata at the same boundaries as logical values. Unassigned unit
+ability bits follow immutable imported rule inputs in `RuleCompatibility`, not
+installed rule tables. Replacement cannot reuse stale bytes. Stored inspection
+continues to expose the original fields.
+
 
 Resource exhaustion is fatal at the application boundary. Allocation
 failure propagates; command/content recovery must not convert `OutOfMemoryException`
@@ -291,7 +357,7 @@ canonical zero-filled legacy fields and text tails.
 `ClassicRuleContext` is an input source, returning owned `LoadedContent` once.
 The installer reuses its `RuleInput` for final name-preserving updates. There is
 no parser reload/close protocol in the load workflow. Classic label parsing
-returns `LabelCatalog`; pool installation and language/cache setup are separate.
+returns `LabelCatalog`; label installation and language/cache setup are separate.
 New-world setup uses the same `LoadedContent` factory and installer, including
 final name-preserving table updates from that one parsed input. Scenario event
 sources return `EventCatalog`; shared installation prepares the replacement

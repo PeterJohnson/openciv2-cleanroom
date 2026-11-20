@@ -1,7 +1,7 @@
 {
   "format": "openciv2-conformance/3",
   "id": "X02.F02.fresh-game-used",
-  "revision": 4,
+  "revision": 5,
   "target": {
     "game": "Civilization II Multiplayer Gold Edition",
     "version": "5.4.0f patch 3",
@@ -1111,10 +1111,6 @@
         "$type": "i16",
         "value": "-32768"
       },
-      "F02.passwordBytes": {
-        "$type": "bytes",
-        "hex": "0724415e7b98b5d2ef0c294663809dbad7f4112e4b6885a2bfdcf91633506d8aa7c4e1fe1b3855728facc9e603203d5a7794b1ceeb0825425f7c99b6d3f00d2a4764819ebbd8f5122f4c6986a3c0ddfa1734516e8ba8c5e2ff1c39567390adcae704213e5b7895b2cfec092643607d9ab7d4f10e2b4865829fbcd9f613304d6a87a4c1defb1835526f8ca9c6e3001d3a577491aecbe805223f5c7996b3d0ed0a2744617e9bb8d5f20f2c496683a0bddaf714314e6b88a5c2dffc193653708daac7e4011e3b587592afcce90623405d7a97b4d1ee0b2845627f9cb9d6f3102d4a6784a1bedbf815324f6c89a6c3e0fd1a3754718eabc8e5021f3c597693b0cdea"
-      },
       "F02.mapAllocated": {
         "$type": "bool",
         "value": true
@@ -1125,7 +1121,7 @@
       },
       "F02.textLine": {
         "$type": "text",
-        "value": "Prior game: \"Rome\"\n\u00c9t\u00e9 \u4e16\u754c"
+        "value": "Prior game: \"Rome\"\nÉté 世界"
       },
       "F02.preferenceGameOptions": {
         "$type": "u32",
@@ -1142,7 +1138,41 @@
       "F02.previousClientValid": {
         "$type": "bool",
         "value": true
-      }
+      },
+      "F02.passwords": [
+        {
+          "$type": "text",
+          "value": "previous-0"
+        },
+        {
+          "$type": "text",
+          "value": "previous-1"
+        },
+        {
+          "$type": "text",
+          "value": "previous-2"
+        },
+        {
+          "$type": "text",
+          "value": "previous-3"
+        },
+        {
+          "$type": "text",
+          "value": "previous-4"
+        },
+        {
+          "$type": "text",
+          "value": "previous-5"
+        },
+        {
+          "$type": "text",
+          "value": "previous-6"
+        },
+        {
+          "$type": "text",
+          "value": "前の秘密"
+        }
+      ]
     },
     "retainedInputs": [],
     "blobs": []
@@ -2230,10 +2260,6 @@
         "$type": "i16",
         "value": "0"
       },
-      "F02.passwordBytes": {
-        "$type": "bytes",
-        "hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-      },
       "F02.mapAllocated": {
         "$type": "bool",
         "value": false
@@ -2261,7 +2287,41 @@
       "F02.previousClientValid": {
         "$type": "bool",
         "value": false
-      }
+      },
+      "F02.passwords": [
+        {
+          "$type": "text",
+          "value": ""
+        },
+        {
+          "$type": "text",
+          "value": ""
+        },
+        {
+          "$type": "text",
+          "value": ""
+        },
+        {
+          "$type": "text",
+          "value": ""
+        },
+        {
+          "$type": "text",
+          "value": ""
+        },
+        {
+          "$type": "text",
+          "value": ""
+        },
+        {
+          "$type": "text",
+          "value": ""
+        },
+        {
+          "$type": "text",
+          "value": ""
+        }
+      ]
     },
     "trace": [
       {
@@ -3360,10 +3420,6 @@
               "$type": "i16",
               "value": "0"
             },
-            "F02.passwordBytes": {
-              "$type": "bytes",
-              "hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-            },
             "F02.mapAllocated": {
               "$type": "bool",
               "value": false
@@ -3391,7 +3447,41 @@
             "F02.previousClientValid": {
               "$type": "bool",
               "value": false
-            }
+            },
+            "F02.passwords": [
+              {
+                "$type": "text",
+                "value": ""
+              },
+              {
+                "$type": "text",
+                "value": ""
+              },
+              {
+                "$type": "text",
+                "value": ""
+              },
+              {
+                "$type": "text",
+                "value": ""
+              },
+              {
+                "$type": "text",
+                "value": ""
+              },
+              {
+                "$type": "text",
+                "value": ""
+              },
+              {
+                "$type": "text",
+                "value": ""
+              },
+              {
+                "$type": "text",
+                "value": ""
+              }
+            ]
           }
         }
       }

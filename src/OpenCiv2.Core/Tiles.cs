@@ -1,5 +1,4 @@
-using OpenCiv2.Base;
-
+using OpenCiv2.Contracts;
 namespace OpenCiv2.Core;
 
 public enum Terrain : byte
@@ -16,6 +15,7 @@ public enum Terrain : byte
     Jungle,
     Ocean
 }
+/// <summary>W01 logical spatial state; opaque terrain/radius bytes remain in stored records.</summary>
 public record struct Tile
 {
     public Tile()
@@ -25,23 +25,23 @@ public record struct Tile
     }
 
     public Terrain Terrain { get; set; }
-    public byte TerrainFlags { get; set; }
-    public byte Features { get; set; }
+    public bool River { get; set; }
+    public bool ResourceSuppressed { get; set; }
+    public MapFeatures Features { get; set; }
     public byte Claimant { get; set; }
-    public byte RadiusOther { get; set; }
     public byte Region { get; set; }
-    public byte Revelation { get; set; }
+    public CivilizationSet RevealedTo { get; set; }
     public byte Fertility { get; set; }
     public byte? Owner { get; set; }
     public bool Ocean => Terrain == Terrain.Ocean;
-    public bool City => (Features & 0x42) == 0x02;
-    public bool Airbase => (Features & 0x42) == 0x42;
-    public bool Unit => (Features & 1) != 0;
+    public bool City => (Features & (MapFeatures.CitySite | MapFeatures.Fortification)) == MapFeatures.CitySite;
+    public bool Airbase => (Features & (MapFeatures.CitySite | MapFeatures.Fortification)) ==
+        (MapFeatures.CitySite | MapFeatures.Fortification);
+    public bool Unit => Features.HasFlag(MapFeatures.Unit);
 }
 public sealed record RegionSummary(
     short Land,
     short Fertile,
     short Water,
-    ulong NeighboringWater,
-    OwnedList<byte> Retained);
-public readonly record struct CivilizationGoal(short X, short Y, sbyte Role, sbyte Priority);
+    RegionSet NeighboringWater);
+public readonly record struct CivilizationGoal(MapPoint Position, sbyte Role, sbyte Priority);

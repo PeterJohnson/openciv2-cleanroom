@@ -22,29 +22,25 @@ public static partial class StateConversion
         }
     }
 
-    private static OwnedList<byte> LiveText(OwnedList<byte> source, int length)
+    private static string LiveText(OwnedList<byte> source, int length)
     {
         if (source.Count != length)
         {
             throw new ArgumentException("Stored text has an incorrect extent", nameof(source));
         }
 
-        return new(source.TakeWhile(value => value != 0));
+        return ClassicText.DecodeTerminated(source);
     }
 
-    private static OwnedList<byte> StoredText(OwnedList<byte> source, int length)
+    private static OwnedList<byte> StoredText(string source, int length)
     {
-        if (source.Count > length || source.Contains((byte)0))
+        if (source.Length > length || source.Contains('\0'))
         {
             throw new ArgumentException("Text cannot be represented in the classic field", nameof(source));
         }
 
         byte[] result = new byte[length];
-        for (int i = 0; i < source.Count; ++i)
-        {
-            result[i] = source[i];
-        }
-
+        ClassicText.EncodeField(source).CopyTo(result, 0);
         return new(result);
     }
 
@@ -52,13 +48,12 @@ public static partial class StateConversion
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new Unit();
-        result.X = value.X;
-        result.Y = value.Y;
-        result.Flags = value.Flags;
+        result.Position = new(value.X, value.Y);
+        result.Flags = DecodeUnitStatus(value.Flags);
         result.Type = value.Type;
         result.Owner = value.Owner;
         result.MovesUsed = value.MovesUsed;
-        result.Visibility = value.Visibility;
+        result.Visibility = DecodeCivilizations(value.Visibility);
         result.Damage = value.Damage;
         result.LastDirection = value.LastDirection;
         result.AiTask = value.AiTask;
@@ -66,23 +61,23 @@ public static partial class StateConversion
         result.AuxiliaryTimer = value.AuxiliaryTimer;
         result.Orders = value.Orders;
         result.Home = value.Home;
-        result.DestinationX = value.DestinationX;
-        result.DestinationY = value.DestinationY;
-        result.Previous = new(value.Previous);
-        result.Next = new(value.Next);
+        result.Destination = new(value.DestinationX, value.DestinationY);
+        result.Carrier = value.Orders == UnitOrder.Sleeping ? DecodeUnitReference(value.DestinationX) : null;
+        result.Previous = DecodeUnitReference(value.Previous);
+        result.Next = DecodeUnitReference(value.Next);
         result.Token = value.Token;
         return result;
     }
 
     public static StoredUnit ToStored(in Unit value) => new()
     {
-        X = value.X,
-        Y = value.Y,
-        Flags = value.Flags,
+        X = unchecked((short)value.Position.X),
+        Y = unchecked((short)value.Position.Y),
+        Flags = EncodeUnitStatus(value.Flags),
         Type = value.Type,
         Owner = value.Owner,
         MovesUsed = value.MovesUsed,
-        Visibility = value.Visibility,
+        Visibility = EncodeCivilizations(value.Visibility),
         Damage = value.Damage,
         LastDirection = value.LastDirection,
         AiTask = value.AiTask,
@@ -90,10 +85,11 @@ public static partial class StateConversion
         AuxiliaryTimer = value.AuxiliaryTimer,
         Orders = value.Orders,
         Home = value.Home,
-        DestinationX = value.DestinationX,
-        DestinationY = value.DestinationY,
-        Previous = value.Previous.Value,
-        Next = value.Next.Value,
+        DestinationX = value.Orders == UnitOrder.Sleeping
+            ? EncodeUnitReference(value.Carrier) : unchecked((short)value.Destination.X),
+        DestinationY = unchecked((short)value.Destination.Y),
+        Previous = EncodeUnitReference(value.Previous),
+        Next = EncodeUnitReference(value.Next),
         Token = value.Token,
     };
 
@@ -101,41 +97,45 @@ public static partial class StateConversion
     {
         RetainedByte = imported.RetainedByte,
         RetainedWord = imported.RetainedWord,
+        Previous = PreserveAbsentReference(output.Previous, imported.Previous),
+        Next = PreserveAbsentReference(output.Next, imported.Next),
+        DestinationX = output.Orders == UnitOrder.Sleeping && imported.Orders == UnitOrder.Sleeping
+            ? PreserveAbsentReference(output.DestinationX, imported.DestinationX) : output.DestinationX,
     };
 
     public static RuntimeCity ToLive(StoredCity value)
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new RuntimeCity();
-        result.X = value.X;
-        result.Y = value.Y;
-        result.Flags = value.Flags;
+        result.Position = new(value.X, value.Y);
+        result.Flags = DecodeCityStatus(value.Flags);
         result.Owner = value.Owner;
         result.Size = value.Size;
         result.Founder = value.Founder;
         result.TurnsCaptured = value.TurnsCaptured;
-        result.KnownTo = value.KnownTo;
+        result.KnownTo = DecodeCivilizations(value.KnownTo);
         Copy(value.RememberedSize, result.RememberedSize);
-        result.SpecialistKinds = value.SpecialistKinds;
+        result.Specialists = DecodeSpecialists(value.SpecialistKinds);
+        result.SpecialistCount = (byte)(value.WorkedTiles >> 26);
         result.FoodBox = value.FoodBox;
         result.ShieldBox = value.ShieldBox;
         result.BaseTrade = value.BaseTrade;
         result.Name = LiveText(value.Name, 16);
-        result.WorkedTiles = value.WorkedTiles;
-        Copy(value.Improvements, result.Improvements);
+        result.WorkedTiles = DecodeCityWork(value.WorkedTiles);
+        result.Improvements = DecodeImprovements(value.Improvements);
         result.Production = value.Production;
         result.RouteCount = value.RouteCount;
         Copy(value.Supplies, result.Supplies);
         Copy(value.Demands, result.Demands);
         Copy(value.RouteGoods, result.RouteGoods);
-        if (value.RoutePartners.Count != 3)
+        if (value.RoutePartners.Count != CityLimits.TradeRoutes)
         {
             throw new ArgumentException("Stored route partners require three values", nameof(value));
         }
 
-        for (int i = 0; i < 3; ++i)
+        for (int i = 0; i < CityLimits.TradeRoutes; ++i)
         {
-            result.RoutePartners[i] = new(value.RoutePartners[i]);
+            result.RoutePartners[i] = DecodeCityReference(value.RoutePartners[i]);
         }
 
         result.Science = value.Science;
@@ -151,28 +151,28 @@ public static partial class StateConversion
 
     public static StoredCity ToStored(in RuntimeCity value) => new()
     {
-        X = value.X,
-        Y = value.Y,
-        Flags = value.Flags,
+        X = unchecked((short)value.Position.X),
+        Y = unchecked((short)value.Position.Y),
+        Flags = EncodeCityStatus(value.Flags),
         Owner = value.Owner,
         Size = value.Size,
         Founder = value.Founder,
         TurnsCaptured = value.TurnsCaptured,
-        KnownTo = value.KnownTo,
+        KnownTo = EncodeCivilizations(value.KnownTo),
         RememberedSize = new(((ReadOnlySpan<byte>)value.RememberedSize).ToArray()),
-        SpecialistKinds = value.SpecialistKinds,
+        SpecialistKinds = EncodeSpecialists(value.Specialists),
         FoodBox = value.FoodBox,
         ShieldBox = value.ShieldBox,
         BaseTrade = value.BaseTrade,
         Name = StoredText(value.Name, 16),
-        WorkedTiles = value.WorkedTiles,
-        Improvements = new(((ReadOnlySpan<byte>)value.Improvements).ToArray()),
+        WorkedTiles = EncodeCityWork(value.WorkedTiles, value.SpecialistCount),
+        Improvements = EncodeImprovements(value.Improvements),
         Production = value.Production,
         RouteCount = value.RouteCount,
         Supplies = new(((ReadOnlySpan<sbyte>)value.Supplies).ToArray()),
         Demands = new(((ReadOnlySpan<sbyte>)value.Demands).ToArray()),
         RouteGoods = new(((ReadOnlySpan<sbyte>)value.RouteGoods).ToArray()),
-        RoutePartners = new([value.RoutePartners[0].Value, value.RoutePartners[1].Value, value.RoutePartners[2].Value]),
+        RoutePartners = new(((ReadOnlySpan<CitySlot?>)value.RoutePartners).ToArray().Select(EncodeCityReference)),
         Science = value.Science,
         Tax = value.Tax,
         Trade = value.Trade,
@@ -185,6 +185,10 @@ public static partial class StateConversion
 
     public static StoredCity PreserveOpaque(StoredCity output, StoredCity imported) => output with
     {
+        RoutePartners = new(output.RoutePartners.Select((slot, i) =>
+            PreserveAbsentReference(slot, imported.RoutePartners[i]))),
+        WorkedTiles = (output.WorkedTiles & 0xfc1fffff) | (imported.WorkedTiles & 0x03e00000),
+        Flags = (output.Flags & CityStatusMask) | (imported.Flags & ~CityStatusMask),
         RetainedByte = imported.RetainedByte,
     };
 
@@ -192,17 +196,17 @@ public static partial class StateConversion
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new GlobalValues();
-        result.Rules = value.Rules;
-        result.GameOptions = value.GameOptions;
-        result.TransientFlags = value.TransientFlags;
-        result.GameFlags = value.GameFlags;
-        result.MessageOptions = value.MessageOptions;
-        result.ShownEventFlags = value.ShownEventFlags;
+        result.Rules = DecodeGameRules(value.Rules);
+        result.GameOptions = DecodeGameOptions(value.GameOptions);
+        result.TransientFlags = DecodeTurnStatus(value.TransientFlags);
+        result.Status = DecodeGameStatus(value.GameFlags);
+        result.MessageOptions = DecodeMessageSuppression(value.MessageOptions);
+        result.ShownEventFlags = DecodeTutorialProgress(value.ShownEventFlags);
         result.Turn = value.Turn;
         result.Year = value.Year;
         result.FirstLaunchTurn = value.FirstLaunchTurn;
-        result.ActiveUnit = new(value.ActiveUnit);
-        result.MovingUnit = new(value.MovingUnit);
+        result.ActiveUnit = DecodeUnitReference(value.ActiveUnit);
+        result.MovingUnit = DecodeUnitReference(value.MovingUnit);
         result.Multiplayer = (GameMode)value.Multiplayer;
         result.PlayerCiv = value.PlayerCiv;
         result.SavedCurrentCiv = value.SavedCurrentCiv;
@@ -211,9 +215,9 @@ public static partial class StateConversion
         result.RevealMap = value.RevealMap;
         result.Difficulty = (Difficulty)value.Difficulty;
         result.BarbarianActivity = value.BarbarianActivity;
-        result.CivsAlive = value.CivsAlive;
-        result.HumanPlayers = value.HumanPlayers;
-        result.CivsAtStart = value.CivsAtStart;
+        result.CivsAlive = DecodeCivilizations(value.CivsAlive);
+        result.HumanPlayers = DecodeCivilizations(value.HumanPlayers);
+        result.CivsAtStart = DecodeCivilizations(value.CivsAtStart);
         result.NumEnemies = value.NumEnemies;
         result.WarmingCounter = value.WarmingCounter;
         result.GlobalWarmings = value.GlobalWarmings;
@@ -224,7 +228,7 @@ public static partial class StateConversion
         result.CityEnd = value.CityEnd;
         result.NumAdvances = value.NumAdvances;
         Copy(value.FirstDiscoverer, result.FirstDiscoverer);
-        Copy(value.AdvanceKnownBy, result.AdvanceKnownBy);
+        Copy(new OwnedList<CivilizationSet>(value.AdvanceKnownBy.Select(DecodeCivilizations)), result.AdvanceKnownBy);
         Copy(value.WonderCity, result.WonderCity);
         result.NextHistoryTurn = value.NextHistoryTurn;
         result.BestHumanRank = value.BestHumanRank;
@@ -236,17 +240,17 @@ public static partial class StateConversion
 
     public static StoredGlobals ToStored(in GlobalValues value) => new()
     {
-        Rules = value.Rules,
-        GameOptions = value.GameOptions,
-        TransientFlags = value.TransientFlags,
-        GameFlags = value.GameFlags,
-        MessageOptions = value.MessageOptions,
-        ShownEventFlags = value.ShownEventFlags,
+        Rules = EncodeGameRules(value.Rules),
+        GameOptions = EncodeGameOptions(value.GameOptions),
+        TransientFlags = EncodeTurnStatus(value.TransientFlags),
+        GameFlags = EncodeGameStatus(value.Status),
+        MessageOptions = EncodeMessageSuppression(value.MessageOptions),
+        ShownEventFlags = EncodeTutorialProgress(value.ShownEventFlags),
         Turn = value.Turn,
         Year = value.Year,
         FirstLaunchTurn = value.FirstLaunchTurn,
-        ActiveUnit = value.ActiveUnit.Value,
-        MovingUnit = value.MovingUnit.Value,
+        ActiveUnit = EncodeUnitReference(value.ActiveUnit),
+        MovingUnit = EncodeUnitReference(value.MovingUnit),
         Multiplayer = unchecked((byte)value.Multiplayer),
         PlayerCiv = value.PlayerCiv,
         SavedCurrentCiv = value.SavedCurrentCiv,
@@ -255,9 +259,9 @@ public static partial class StateConversion
         RevealMap = value.RevealMap,
         Difficulty = unchecked((byte)value.Difficulty),
         BarbarianActivity = value.BarbarianActivity,
-        CivsAlive = value.CivsAlive,
-        HumanPlayers = value.HumanPlayers,
-        CivsAtStart = value.CivsAtStart,
+        CivsAlive = EncodeCivilizations(value.CivsAlive),
+        HumanPlayers = EncodeCivilizations(value.HumanPlayers),
+        CivsAtStart = EncodeCivilizations(value.CivsAtStart),
         NumEnemies = value.NumEnemies,
         WarmingCounter = value.WarmingCounter,
         GlobalWarmings = value.GlobalWarmings,
@@ -268,7 +272,7 @@ public static partial class StateConversion
         CityEnd = value.CityEnd,
         NumAdvances = value.NumAdvances,
         FirstDiscoverer = new(((ReadOnlySpan<byte>)value.FirstDiscoverer).ToArray()),
-        AdvanceKnownBy = new(((ReadOnlySpan<byte>)value.AdvanceKnownBy).ToArray()),
+        AdvanceKnownBy = new(((ReadOnlySpan<CivilizationSet>)value.AdvanceKnownBy).ToArray().Select(EncodeCivilizations)),
         WonderCity = new(((ReadOnlySpan<short>)value.WonderCity).ToArray()),
         NextHistoryTurn = value.NextHistoryTurn,
         BestHumanRank = value.BestHumanRank,
@@ -279,6 +283,14 @@ public static partial class StateConversion
 
     public static StoredGlobals PreserveOpaque(StoredGlobals output, StoredGlobals imported) => output with
     {
+        ActiveUnit = PreserveAbsentReference(output.ActiveUnit, imported.ActiveUnit),
+        MovingUnit = PreserveAbsentReference(output.MovingUnit, imported.MovingUnit),
+        Rules = (ushort)((output.Rules & GameRulesMask) | (imported.Rules & ~GameRulesMask)),
+        GameOptions = (output.GameOptions & GameOptionsMask) | (imported.GameOptions & ~GameOptionsMask),
+        MessageOptions = (ushort)((output.MessageOptions & MessageSuppressionMask) | (imported.MessageOptions & ~MessageSuppressionMask)),
+        TransientFlags = (ushort)((output.TransientFlags & TurnStatusMask) | (imported.TransientFlags & ~TurnStatusMask)),
+        ShownEventFlags = (ushort)((output.ShownEventFlags & TutorialProgressMask) | (imported.ShownEventFlags & ~TutorialProgressMask)),
+        GameFlags = (ushort)((output.GameFlags & 0x00ff) | (imported.GameFlags & 0xff00)),
         Retained0e = imported.Retained0e,
         Retained34 = imported.Retained34,
     };
@@ -287,7 +299,7 @@ public static partial class StateConversion
     {
         ArgumentNullException.ThrowIfNull(value);
         var result = new Civilization();
-        result.Flags = value.Flags;
+        result.Flags = DecodeCivilizationStatus(value.Flags);
         result.Gold = value.Gold;
         result.Tribe = value.Tribe;
         result.ResearchProgress = value.ResearchProgress;
@@ -305,11 +317,11 @@ public static partial class StateConversion
         result.SubversionCount = value.SubversionCount;
         result.Reputation = value.Reputation;
         result.DiploRequestCount = value.DiploRequestCount;
-        Copy(value.Treaties, result.Treaties);
+        Copy(new OwnedList<Relationship>(value.Treaties.Select(DecodeRelationship)), result.Treaties);
         Copy(value.Attitude, result.Attitude);
         Copy(value.ReputationCredit, result.ReputationCredit);
         Copy(value.AggressionCounter, result.AggressionCounter);
-        Copy(value.Advances, result.Advances);
+        result.Advances = DecodeAdvances(value.Advances);
         result.MilitaryCount = value.MilitaryCount;
         result.CityCount = value.CityCount;
         result.ShipCount = value.ShipCount;
@@ -326,7 +338,7 @@ public static partial class StateConversion
         Copy(value.ContinentCities, result.ContinentCities);
         Copy(value.ContinentCitySize, result.ContinentCitySize);
         Copy(value.ContinentTradeUnits, result.ContinentTradeUnits);
-        Copy(value.ContinentFlags, result.ContinentFlags);
+        Copy(new OwnedList<RegionalPresence>(value.ContinentFlags.Select(DecodeRegionalPresence)), result.ContinentFlags);
         Copy(value.ContinentPolicy, result.ContinentPolicy);
         result.BestShieldSurplus = value.BestShieldSurplus;
         Copy(value.GovernmentScore, result.GovernmentScore);
@@ -334,7 +346,7 @@ public static partial class StateConversion
         result.LeaderPortrait = value.LeaderPortrait;
         Copy(value.ThroneRoom, result.ThroneRoom);
         result.ThroneRoomUpgrades = value.ThroneRoomUpgrades;
-        result.SpaceshipFlags = value.SpaceshipFlags;
+        result.SpaceshipFlags = DecodeSpaceshipStatus(value.SpaceshipFlags);
         result.SpaceshipArrivalYear = value.SpaceshipArrivalYear;
         result.SpaceshipLaunchYear = value.SpaceshipLaunchYear;
         result.SpaceshipPopulation = value.SpaceshipPopulation;
@@ -346,7 +358,7 @@ public static partial class StateConversion
 
     public static StoredCivilization ToStored(in Civilization value) => new()
     {
-        Flags = value.Flags,
+        Flags = EncodeCivilizationStatus(value.Flags),
         Gold = value.Gold,
         Tribe = value.Tribe,
         ResearchProgress = value.ResearchProgress,
@@ -364,11 +376,11 @@ public static partial class StateConversion
         SubversionCount = value.SubversionCount,
         Reputation = value.Reputation,
         DiploRequestCount = value.DiploRequestCount,
-        Treaties = new(((ReadOnlySpan<uint>)value.Treaties).ToArray()),
+        Treaties = new(((ReadOnlySpan<Relationship>)value.Treaties).ToArray().Select(EncodeRelationship)),
         Attitude = new(((ReadOnlySpan<byte>)value.Attitude).ToArray()),
         ReputationCredit = new(((ReadOnlySpan<sbyte>)value.ReputationCredit).ToArray()),
         AggressionCounter = new(((ReadOnlySpan<byte>)value.AggressionCounter).ToArray()),
-        Advances = new(((ReadOnlySpan<byte>)value.Advances).ToArray()),
+        Advances = EncodeAdvances(value.Advances),
         MilitaryCount = value.MilitaryCount,
         CityCount = value.CityCount,
         ShipCount = value.ShipCount,
@@ -385,7 +397,7 @@ public static partial class StateConversion
         ContinentCities = new(((ReadOnlySpan<byte>)value.ContinentCities).ToArray()),
         ContinentCitySize = new(((ReadOnlySpan<byte>)value.ContinentCitySize).ToArray()),
         ContinentTradeUnits = new(((ReadOnlySpan<byte>)value.ContinentTradeUnits).ToArray()),
-        ContinentFlags = new(((ReadOnlySpan<byte>)value.ContinentFlags).ToArray()),
+        ContinentFlags = new(((ReadOnlySpan<RegionalPresence>)value.ContinentFlags).ToArray().Select(EncodeRegionalPresence)),
         ContinentPolicy = new(((ReadOnlySpan<byte>)value.ContinentPolicy).ToArray()),
         BestShieldSurplus = value.BestShieldSurplus,
         GovernmentScore = new(((ReadOnlySpan<short>)value.GovernmentScore).ToArray()),
@@ -393,7 +405,7 @@ public static partial class StateConversion
         LeaderPortrait = value.LeaderPortrait,
         ThroneRoom = new(((ReadOnlySpan<byte>)value.ThroneRoom).ToArray()),
         ThroneRoomUpgrades = value.ThroneRoomUpgrades,
-        SpaceshipFlags = value.SpaceshipFlags,
+        SpaceshipFlags = EncodeSpaceshipStatus(value.SpaceshipFlags),
         SpaceshipArrivalYear = value.SpaceshipArrivalYear,
         SpaceshipLaunchYear = value.SpaceshipLaunchYear,
         SpaceshipPopulation = value.SpaceshipPopulation,
@@ -405,6 +417,11 @@ public static partial class StateConversion
     public static StoredCivilization PreserveOpaque(StoredCivilization output, StoredCivilization imported) =>
         output with
         {
+            Flags = (ushort)((output.Flags & CivilizationStatusMask) | (imported.Flags & ~CivilizationStatusMask)),
+            Treaties = new(output.Treaties.Select((v, i) => (v & RelationshipMask) | (imported.Treaties[i] & ~RelationshipMask))),
+            Advances = new(output.Advances.Select((v, i) => i == 12 ? (byte)((v & 15) | (imported.Advances[i] & 0xf0)) : v)),
+            ContinentFlags = new(output.ContinentFlags.Select((v, i) => (byte)((v & RegionalPresenceMask) | (imported.ContinentFlags[i] & ~RegionalPresenceMask)))),
+            SpaceshipFlags = (byte)((output.SpaceshipFlags & SpaceshipStatusMask) | (imported.SpaceshipFlags & ~SpaceshipStatusMask)),
             Retained1b = imported.Retained1b,
             Retained65 = imported.Retained65,
             Retained3fd = imported.Retained3fd,

@@ -187,7 +187,7 @@ internal static partial class ContentCli
             {
                 var rules = NativeRules.Load(pack);
                 var state = new RuleState();
-                state.Text.Initialize();
+
                 if (validation == ContentValidation.Preferences)
                 {
                     preferences = NativeCityContent.LoadPreferences(
@@ -206,9 +206,9 @@ internal static partial class ContentCli
                 rulesReport = new JsonObject
                 {
                     ["enabledAdvances"] = definitions.EnabledAdvanceCount,
-                    ["roadMovementMultiplier"] = definitions.Cosmic[CosmicParameter.RoadMovementMultiplier],
-                    ["foodBoxRows"] = definitions.Cosmic[CosmicParameter.FoodBoxRows],
-                    ["shieldBoxRows"] = definitions.Cosmic[CosmicParameter.ShieldBoxRows],
+                    ["roadMovementMultiplier"] = definitions.Cosmic.RoadMovementMultiplier,
+                    ["foodBoxRows"] = definitions.Cosmic.FoodBoxRows,
+                    ["shieldBoxRows"] = definitions.Cosmic.ShieldBoxRows,
                     ["governmentAdvances"] = new JsonArray(
                         rules.Input.GovernmentAdvances.Select(
                             a => a is null ? null : (JsonNode)JsonValue.Create((int)a.Value)!)
@@ -268,7 +268,7 @@ internal static partial class ContentCli
                         lists.Civilizations.Select(
                             l => (JsonNode)new JsonObject
                             {
-                                ["pluralName"] = l.Plural.Unicode,
+                                ["pluralName"] = l.Plural,
                                 ["nameCount"] = l.Names.Count
                             })
                             .ToArray())

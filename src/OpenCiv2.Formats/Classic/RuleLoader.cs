@@ -147,8 +147,8 @@ public sealed class RuleLoader
     private readonly TextCase comparison;
     private readonly Action<RuleLoadException>? onFailure;
     private readonly RuleTables rules = new();
-    private readonly int[] movement = new int[62];
-    private readonly List<LeaderTitleOverride>[] titles = Enumerable.Range(0, 21)
+    private readonly int[] movement = new int[RuleLimits.UnitTypes];
+    private readonly List<LeaderTitleOverride>[] titles = Enumerable.Range(0, RuleLimits.Tribes)
         .Select(
             _ => new List<LeaderTitleOverride>())
         .ToArray();
@@ -161,13 +161,15 @@ public sealed class RuleLoader
         this.onFailure = onFailure;
     }
 
+    private readonly uint[] unitFlags = new uint[RuleLimits.UnitTypes];
+
     public RuleInput Snapshot() =>
-        new()
+        RuleCompatibility.Attach(new()
         {
             Definitions = rules.Snapshot(),
             MovementPoints = new(movement),
             TitleOverrides = new(titles.Select(t => new OwnedList<LeaderTitleOverride>(t)))
-        };
+        }, unitFlags);
 
     public static AdvanceReference ResolveAdvance(ReadOnlySpan<byte> token)
     {
@@ -202,17 +204,17 @@ public sealed class RuleLoader
         return index < 0 ? TerrainResult.Invalid : (TerrainResult)index;
     }
 
-    private static RuleText Text(byte[] bytes, bool padded)
+    private static string Text(byte[] bytes, bool padded)
     {
         if (padded && bytes.Length == 0)
         {
             bytes = [(byte)' '];
         }
 
-        return new(ClassicText.DecodeWindows1252(bytes, "classic rule text"), new(bytes));
+        return ClassicText.DecodeWindows1252(bytes, "classic rule text");
     }
 
-    private RuleText Name(bool padded) => Text(reader.NextToken(), padded);
+    private string Name(bool padded) => Text(reader.NextToken(), padded);
 
     private void Fail(RuleLoadFault fault, string section, int row, int position, int code)
     {
@@ -261,19 +263,19 @@ public sealed class RuleLoader
 
     public void Cosmic()
     {
-        var values = new byte[22];
+        var values = new int[CosmicConversion.Count];
         for (int i = 0; i < values.Length; ++i)
         {
             reader.NextLine();
-            values[i] = RuleNormalization.CosmicValue((CosmicParameter)i, reader.NextInteger());
+            values[i] = reader.NextInteger();
         }
-        rules.Cosmic = new(new OwnedList<byte>(values));
+        rules.Cosmic = CosmicConversion.Decode(values);
     }
 
     public void Advances()
     {
         rules.EnabledAdvanceCount = 0;
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < RuleLimits.Advances; ++i)
         {
             rules.Advances[i] = rules.Advances[i] with
             {
@@ -283,7 +285,7 @@ public sealed class RuleLoader
         }
 
         int index = 0;
-        for (; index < 100; ++index)
+        for (; index < RuleLimits.Advances; ++index)
         {
             reader.NextLine();
             if (reader.Line.IsEmpty || reader.Line[0] == ';')
@@ -295,8 +297,8 @@ public sealed class RuleLoader
             sbyte ai = RuleNormalization.Signed8(
                 reader.NextInteger()), civil = RuleNormalization.Signed8(
                     reader.NextInteger());
-            var prerequisites = new AdvanceReference[2];
-            for (int p = 0; p < 2; ++p)
+            var prerequisites = new AdvanceReference[RuleLimits.AdvancePrerequisites];
+            for (int p = 0; p < RuleLimits.AdvancePrerequisites; ++p)
             {
                 prerequisites[p] = ResolveAdvance(reader.NextToken());
                 if (prerequisites[p] == AdvanceReference.Invalid)
@@ -315,7 +317,7 @@ public sealed class RuleLoader
                 Enabled = prerequisites[0] != AdvanceReference.Never
             };
         }
-        for (; index < 100; ++index)
+        for (; index < RuleLimits.Advances; ++index)
         {
             rules.Advances[index] = new()
             {
@@ -331,7 +333,7 @@ public sealed class RuleLoader
 
     public void Improvements()
     {
-        for (int i = 0; i < 67; ++i)
+        for (int i = 0; i < RuleLimits.Improvements; ++i)
         {
             reader.NextLine();
             var name = Name(true);
@@ -356,7 +358,7 @@ public sealed class RuleLoader
 
     public void WonderExpiry()
     {
-        for (int i = 0; i < 28; ++i)
+        for (int i = 0; i < RuleLimits.Wonders; ++i)
         {
             reader.NextLine();
             var value = ResolveAdvance(reader.NextToken());
@@ -372,14 +374,15 @@ public sealed class RuleLoader
     public void Units()
     {
         Array.Clear(movement);
-        for (int i = 0; i < 62; ++i)
+        for (int i = 0; i < RuleLimits.UnitTypes; ++i)
         {
             rules.Units[i] = rules.Units[i] with { Prerequisite = AdvanceReference.Never };
         }
 
         int index = 0;
-        for (; index < 62; ++index)
+        for (; index < RuleLimits.UnitTypes; ++index)
         {
+            unitFlags[index] = 0;
             reader.NextLine();
             if (reader.Line.IsEmpty || reader.Line[0] == ';')
             {
@@ -407,6 +410,7 @@ public sealed class RuleLoader
                 Fail(RuleLoadFault.Reference, "UNITS", index, 0, -6);
             }
 
+            unitFlags[index] = abilities;
             rules.Units[index] = new()
             {
                 Identity = new("", name),
@@ -421,11 +425,12 @@ public sealed class RuleLoader
                 Capacity = capacity,
                 Role = role,
                 Prerequisite = prerequisite,
-                Abilities = abilities
+                Abilities = StateConversion.DecodeUnitAbilities(abilities)
             };
         }
-        for (; index < 62; ++index)
+        for (; index < RuleLimits.UnitTypes; ++index)
         {
+            unitFlags[index] = 0;
             rules.Units[index] = new()
             {
                 Identity = new(
@@ -441,7 +446,7 @@ public sealed class RuleLoader
 
     public void Terrain()
     {
-        for (int i = 0; i < 33; ++i)
+        for (int i = 0; i < RuleLimits.Terrains; ++i)
         {
             reader.NextLine();
             var name = Name(true);
@@ -453,7 +458,7 @@ public sealed class RuleLoader
                     reader.NextInteger()), trade = RuleNormalization.Code8(
                         reader.NextInteger());
             BaseTerrainWork? work = null;
-            if (i < 11)
+            if (i < RuleLimits.BaseTerrains)
             {
                 var parts = new TerrainWork[2];
                 for (int p = 0; p < 2; ++p)
@@ -493,7 +498,7 @@ public sealed class RuleLoader
 
     public void Governments()
     {
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < RuleLimits.Governments; ++i)
         {
             reader.NextLine();
             rules.Governments[i] = new() { Identity = new("", Name(true)), Titles = new(Name(true), Name(true)) };
@@ -502,11 +507,11 @@ public sealed class RuleLoader
 
     public void Leaders()
     {
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             titles[i].Clear();
             reader.NextLine();
-            var names = new OwnedList<RuleText>([Name(true), Name(true)]);
+            var names = new OwnedList<string>([Name(true), Name(true)]);
             var gender = (Gender)Math.Clamp(reader.NextInteger(), 0, 1);
             byte color = RuleNormalization.LeaderColor(
                 reader.NextInteger()), style = RuleNormalization.LeaderStyle(
@@ -549,7 +554,7 @@ public sealed class RuleLoader
 
     public void Commodities()
     {
-        for (int i = 0; i < 16; ++i)
+        for (int i = 0; i < RuleLimits.Commodities; ++i)
         {
             reader.NextLine();
             rules.Commodities[i] = new("", Name(true));
@@ -558,18 +563,22 @@ public sealed class RuleLoader
 
     public void Orders()
     {
-        for (int i = 0; i < 12; ++i)
+        for (int i = 0; i < RuleLimits.Orders; ++i)
         {
             reader.NextLine();
             var name = Name(false);
             byte[] key = reader.NextToken();
-            rules.Orders[i] = new() { Identity = new("", name), Shortcut = key.Length == 0 ? (byte)0 : key[0] };
+            rules.Orders[i] = new()
+            {
+                Identity = new("", name),
+                Shortcut = ClassicText.DecodeWindows1252(key.AsSpan(0, Math.Min(1, key.Length)), "ORDERS")
+            };
         }
     }
 
     public void Difficulties()
     {
-        for (int i = 0; i < 6; ++i)
+        for (int i = 0; i < RuleLimits.Difficulties; ++i)
         {
             reader.NextLine();
             rules.Difficulties[i] = new("", Text(reader.Line.ToArray(), false));
@@ -578,7 +587,7 @@ public sealed class RuleLoader
 
     public void Attitudes()
     {
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < RuleLimits.DiplomaticAttitudes; ++i)
         {
             reader.NextLine();
             rules.DiplomaticAttitudes[i] = new("", Text(reader.Line.ToArray(), false));

@@ -16,8 +16,8 @@ internal static partial class NativeMapMatrix
         const string notice = "É⤀⌒\U0001F6F8";
         const uint fill = 0xd91a2427, ink = 0xfffff0d1;
         var baseline = MapGallery.Open("MV27").Map;
-        var first = baseline.Cities[0] with { Position = new(4, 4), Name = Classic(name) };
-        var adjacent = baseline.Cities[1] with { Position = new(6, 4), Name = Classic(nearby) };
+        var first = baseline.Cities[0] with { Position = new(4, 4), Name = name };
+        var adjacent = baseline.Cities[1] with { Position = new(6, 4), Name = nearby };
         var observed = baseline with
         {
             Width = 14,
@@ -58,7 +58,7 @@ internal static partial class NativeMapMatrix
             foreach (double zoom in new[] { .4, .63 })
             {
                 var camera = new MapCamera(170 - first.Position.X * 32 * zoom, 85 - first.Position.Y * 16 * zoom, zoom);
-                var nameless = new MapScene(observed with { Cities = new(observed.Cities.Select(city => city with { Name = new([]) })) });
+                var nameless = new MapScene(observed with { Cities = new(observed.Cities.Select(city => city with { Name = "" })) });
                 painter.Draw(expected.Canvas, painter.SetScene(nameless), camera, width, height, density, null);
                 uint[] background = ReadMapPixels(expected);
                 var scene = new MapScene(observed);
@@ -117,7 +117,7 @@ internal static partial class NativeMapMatrix
             var clipped = observed with { Annotations = MapAnnotations.Stock with { Region = region } };
             painter.Draw(actual.Canvas, painter.SetScene(new(clipped)), framed, width, height, density, null);
             uint[] withCaption = ReadMapPixels(actual);
-            var clippedBareName = clipped with { Cities = new([first with { Name = new([]) }]) };
+            var clippedBareName = clipped with { Cities = new([first with { Name = "" }]) };
             painter.Draw(expected.Canvas, painter.SetScene(new(clippedBareName)), framed, width, height, density, null);
             uint[] withoutCaption = ReadMapPixels(expected);
             int visible = 0;
@@ -145,7 +145,7 @@ internal static partial class NativeMapMatrix
             }, "255", shieldX, Math.Max(shieldY + 15 * .625f, shieldY + 6 * .625f + 10), 9, 16, 7, new(fill), new(ink));
             var populous = first with
             {
-                Name = new([]),
+                Name = "",
                 Details = first.Details! with
                 { Appearance = MapFact<MapCityAppearance>.Known(new(0, 0, false)), Population = default, Garrison = default, Disorder = default }
             };
@@ -187,7 +187,6 @@ internal static partial class NativeMapMatrix
         }
         File.WriteAllText(Path.Combine(output, "MV27-labels.json"), JsonSerializer.Serialize(new { notice, measured, records }, Json));
 
-        static OpenCiv2.Base.OwnedList<byte> Classic(string value) => new(ClassicText.EncodeWindows1252(value, "authored caption"));
 
         SKTypeface ReadFace(string id)
         {

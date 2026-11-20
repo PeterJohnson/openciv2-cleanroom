@@ -25,7 +25,7 @@ try
     if (args.Length == 2) NativeFiles.WriteNewFile(args[1], encoded);
     using var stream = StandardOutput.Open(); using var writer = new Utf8JsonWriter(stream);
     writer.WriteStartObject(); writer.WriteNumber("ordinaryBytes", ClassicPreferences.OrdinarySize); writer.WriteNumber("multiplayerBytes", ClassicPreferences.MultiplayerSize);
-    writer.WriteNumber("trailingBytes", bytes.Length - size); writer.WriteNumber("options", process.OrdinaryPreferences.GameOptions); writer.WriteEndObject(); writer.Flush();
+    writer.WriteNumber("trailingBytes", bytes.Length - size); writer.WriteNumber("options", ordinary.GameOptions); writer.WriteEndObject(); writer.Flush();
     return 0;
 }
 catch (Exception error) { Console.Error.WriteLine(error.Message); return 1; }

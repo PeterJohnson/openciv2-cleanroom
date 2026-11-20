@@ -48,6 +48,16 @@ public static partial class FoundationSuite
         ("F06.fixed-record-roundtrips", FixedRecordRoundtrips),
         ("F06.fixed-field-offsets", FixedFieldOffsets),
         ("F06.tile-bit-domains", TileBitDomains),
+        ("F06.semantic-game-status", SemanticGameStatus),
+        ("F06.semantic-text-boundaries", SemanticTextBoundaries),
+        ("F06.semantic-map-locations", SemanticMapLocations),
+        ("F06.semantic-entity-flags", SemanticEntityFlags),
+        ("F06.semantic-memberships", SemanticMemberships),
+        ("F06.opaque-option-lifetimes", OpaqueOptionLifetimes),
+        ("F06.opaque-flags-live-save", OpaqueFlagsLiveSave),
+        ("F06.opaque-event-flags", OpaqueEventFlags),
+        ("F06.opaque-tile-lifetimes", OpaqueTileLifetimes),
+        ("W01.semantic-tile-mutations", SemanticTileMutations),
         ("F06.stored-stream-order", StoredStreamOrder),
         ("F06.optional-blocks", OptionalBlocks),
         ("F06.event-admission", EventAdmission),
@@ -345,7 +355,7 @@ public static partial class FoundationSuite
         ("P04.classic-label-fallback", ClassicLabelFallback),
         ("P04.classic-label-missing-and-retained-names", ClassicLabelMissingAndRetainedNames),
         ("P04.classic-label-admission-and-cleanup", ClassicLabelAdmissionAndCleanup),
-        ("P04.label-installation-full-width-and-deduplication", LabelInstallationFullWidthAndDeduplication),
+        ("P04.label-installation-independent-names", LabelInstallationIndependentNames),
         ("P04.text-language-configuration", TextLanguageConfiguration),
         ("F06.game-file-load-versions", GameFileLoadVersions),
         ("F06.game-file-load-rejected-inputs", GameFileLoadRejectedInputs),
@@ -475,9 +485,9 @@ public static partial class FoundationSuite
         return JsonSerializer.Serialize(report, ReportJson.Default.FoundationReport);
     }
 
-    private static void Equal<T>(T expected, T actual) where T : IEquatable<T>
+    private static void Equal<T>(T expected, T actual)
     {
-        if (!expected.Equals(actual))
+        if (!EqualityComparer<T>.Default.Equals(expected, actual))
             throw new InvalidOperationException($"Expected {expected}, got {actual}.");
     }
 

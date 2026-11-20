@@ -2,6 +2,7 @@ using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.Core.State;
+using OpenCiv2.Formats;
 using OpenCiv2.Session;
 using OpenCiv2.ViewModels;
 
@@ -55,12 +56,12 @@ internal sealed class SeamSession : IDisposable
             var tile = new Tile
             {
                 Terrain = terrain,
-                Revelation = (byte)(y < 19 && (x < 23 - y / 2 || x > 51) ? 2 : 4),
+                RevealedTo = new CivilizationSet().With(y < 19 && (x < 23 - y / 2 || x > 51) ? 1 : 2),
                 Owner = null
             };
             if (y == 4 && x is >= 4 and <= 16)
             {
-                tile.Features = (byte)(x is 6 or 8 ? 0x14 : 0x10);
+                tile.Features = MapFeatures.Road | (x is 6 or 8 ? MapFeatures.Irrigation : MapFeatures.None);
             }
 
             memory[i] = tile.Features;
@@ -68,72 +69,49 @@ internal sealed class SeamSession : IDisposable
         }
         // W01 diagonal contacts form a continuous river. Its last land tile
         // meets the western gulf across the horizontal seam at (55, 11).
-        AddRiver([(14, 2), (13, 3), (12, 4), (11, 5), (10, 6), (9, 7),
-            (8, 8), (7, 9), (6, 8), (5, 7), (4, 8), (3, 9), (2, 10), (1, 11), (0, 10)]);
-        AddRiver([(5, 3), (6, 4), (7, 5), (8, 6)]);
+        AddRiver([new(14, 2), new(13, 3), new(12, 4), new(11, 5), new(10, 6), new(9, 7),
+            new(8, 8), new(7, 9), new(6, 8), new(5, 7), new(4, 8), new(3, 9), new(2, 10), new(1, 11), new(0, 10)]);
+        AddRiver([new(5, 3), new(6, 4), new(7, 5), new(8, 6)]);
 
         world.Entities.Units.SetEnd(7);
         world.Globals.UnitEnd = 7;
-        world.Globals.ActiveUnit = new(1);
+        world.Globals.ActiveUnit = new UnitSlot(1);
         for (int i = 0; i < 3; i++)
         {
-            AddUnit(i, 1, 2, 2, i + 1, i - 1, i >= 2 ? -1 : i + 1, 0);
+            AddUnit(i, 1, new(2, 2), i + 1, i - 1, i >= 2 ? -1 : i + 1, false);
         }
 
-        AddUnit(3, 2, 2, 2, 0, -1, -1, 0); // Concealed on an explored tile.
-        AddUnit(4, 2, 12, 6, 5, -1, -1, 2); // Independently seen by the observer.
-        AddUnit(5, 2, 29, 9, 4, -1, -1, 2); // Seen bit alone cannot expose an unexplored tile.
-        AddUnit(6, 2, 54, 4, 2, -1, -1, 0); // Concealed across the wrapped edge.
+        AddUnit(3, 2, new(2, 2), 0, -1, -1, false); // Concealed on an explored tile.
+        AddUnit(4, 2, new(12, 6), 5, -1, -1, true); // Independently seen by the observer.
+        AddUnit(5, 2, new(29, 9), 4, -1, -1, true); // Seen bit alone cannot expose an unexplored tile.
+        AddUnit(6, 2, new(54, 4), 2, -1, -1, false); // Concealed across the wrapped edge.
         map.TileAt(new(2, 2)).Terrain = Terrain.Grassland;
-        map.TileAt(new(2, 2)).Features = 1;
+        map.TileAt(new(2, 2)).Features = MapFeatures.Unit;
         map.TileAt(new(2, 2)).Owner = 1;
         world.Entities.Cities.SetEnd(2);
         world.Globals.CityEnd = 2;
         world.Entities.Cities.Storage[0] = new()
-        {
-            Token = new(200),
-            Owner = new(1),
-            X = 6,
-            Y = 4,
-            Size = 3,
-            Name = new("Riverbend"u8.ToArray())
-        };
+        { Token = new(200), Owner = new(1), Size = 3, Name = "Riverbend", Position = new(6, 4) };
         world.Entities.Cities.Storage[1] = new()
-        {
-            Token = new(201),
-            Owner = new(2),
-            X = 12,
-            Y = 8,
-            Size = 5,
-            Name = new("Concealed"u8.ToArray())
-        };
-        map.TileAt(new(6, 4)).Features |= 2;
+        { Token = new(201), Owner = new(2), Size = 5, Name = "Concealed", Position = new(12, 8) };
+        map.TileAt(new(6, 4)).Features |= MapFeatures.CitySite;
         map.TileAt(new(6, 4)).Owner = 1;
-        map.TileAt(new(12, 8)).Features |= 2;
+        map.TileAt(new(12, 8)).Features |= MapFeatures.CitySite;
         map.TileAt(new(12, 8)).Owner = 2;
-        map.Remembered(1, new(12, 8)) |= 2;
+        map.Remembered(1, new(12, 8)) |= MapFeatures.CitySite;
 
-        void AddRiver(ReadOnlySpan<(int X, int Y)> course)
+        void AddRiver(ReadOnlySpan<MapPoint> course)
         {
-            foreach (var (x, y) in course)
+            foreach (var point in course)
             {
-                map.TileAt(new(x, y)).TerrainFlags |= 0x80;
+                map.TileAt(point).River = true;
             }
         }
 
-        void AddUnit(int slot, byte owner, short x, short y, int type, int previous, int next, byte seen)
+        void AddUnit(int slot, byte owner, MapPoint position, int type, int previous, int next, bool seen)
         {
             world.Entities.Units.Storage[slot] = new()
-            {
-                Token = new((uint)slot + 100),
-                Owner = new(owner),
-                Type = new((byte)type),
-                X = x,
-                Y = y,
-                Visibility = seen,
-                Previous = new((short)previous),
-                Next = new((short)next)
-            };
+            { Token = new((uint)slot + 100), Owner = new(owner), Type = new((byte)type), Visibility = new CivilizationSet().With(1, seen), Previous = (((short)previous) < 0 ? (UnitSlot?)null : new UnitSlot(unchecked((ushort)((short)previous)))), Next = (((short)next) < 0 ? (UnitSlot?)null : new UnitSlot(unchecked((ushort)((short)next)))), Position = position };
         }
     }
 

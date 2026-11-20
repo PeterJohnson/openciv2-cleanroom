@@ -40,14 +40,14 @@ public sealed record StoredGlobals
     public short CityEnd { get; init; } = (short)0;
     public short NumAdvances { get; init; } = (short)0;
     public short Retained34 { get; init; } = (short)0;
-    public OwnedList<byte> FirstDiscoverer { get; init; } = new(Enumerable.Range(0, 100).Select(_ => (byte)0));
-    public OwnedList<byte> AdvanceKnownBy { get; init; } = new(Enumerable.Range(0, 100).Select(_ => (byte)0));
-    public OwnedList<short> WonderCity { get; init; } = new(Enumerable.Range(0, 28).Select(_ => (short)0));
+    public OwnedList<byte> FirstDiscoverer { get; init; } = new(Enumerable.Range(0, RuleLimits.Advances).Select(_ => (byte)0));
+    public OwnedList<byte> AdvanceKnownBy { get; init; } = new(Enumerable.Range(0, RuleLimits.Advances).Select(_ => (byte)0));
+    public OwnedList<short> WonderCity { get; init; } = new(Enumerable.Range(0, RuleLimits.Wonders).Select(_ => (short)0));
     public short NextHistoryTurn { get; init; } = (short)0;
     public byte BestHumanRank { get; init; } = (byte)0;
     public byte WorstHumanRank { get; init; } = (byte)0;
-    public OwnedList<byte> PowerRank { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (byte)0));
-    public OwnedList<byte> CivByRank { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (byte)0));
+    public OwnedList<byte> PowerRank { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (byte)0));
+    public OwnedList<byte> CivByRank { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (byte)0));
 }
 
 public sealed record StoredCivilization
@@ -71,10 +71,10 @@ public sealed record StoredCivilization
     public short SubversionCount { get; init; } = (short)0;
     public byte Reputation { get; init; } = (byte)0;
     public sbyte DiploRequestCount { get; init; } = (sbyte)0;
-    public OwnedList<uint> Treaties { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (uint)0));
-    public OwnedList<byte> Attitude { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (byte)0));
-    public OwnedList<sbyte> ReputationCredit { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (sbyte)0));
-    public OwnedList<byte> AggressionCounter { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (byte)0));
+    public OwnedList<uint> Treaties { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (uint)0));
+    public OwnedList<byte> Attitude { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (byte)0));
+    public OwnedList<sbyte> ReputationCredit { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (sbyte)0));
+    public OwnedList<byte> AggressionCounter { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (byte)0));
     public OwnedList<byte> Advances { get; init; } = new(Enumerable.Range(0, 13).Select(_ => (byte)0));
     public byte Retained65 { get; init; } = (byte)0;
     public short MilitaryCount { get; init; } = (short)0;
@@ -84,20 +84,20 @@ public sealed record StoredCivilization
     public ushort MilitaryStrength { get; init; } = (ushort)0;
     public short TotalAttack { get; init; } = (short)0;
     public short PopulationMilestone { get; init; } = (short)0;
-    public OwnedList<byte> AdvanceSource { get; init; } = new(Enumerable.Range(0, 100).Select(_ => (byte)0));
-    public OwnedList<byte> UnitsActive { get; init; } = new(Enumerable.Range(0, 62).Select(_ => (byte)0));
-    public OwnedList<byte> UnitsLost { get; init; } = new(Enumerable.Range(0, 62).Select(_ => (byte)0));
-    public OwnedList<byte> UnitsInProduction { get; init; } = new(Enumerable.Range(0, 62).Select(_ => (byte)0));
-    public OwnedList<ushort> ContinentMilitary { get; init; } = new(Enumerable.Range(0, 64).Select(_ => (ushort)0));
-    public OwnedList<ushort> ContinentAttack { get; init; } = new(Enumerable.Range(0, 64).Select(_ => (ushort)0));
-    public OwnedList<byte> ContinentCities { get; init; } = new(Enumerable.Range(0, 64).Select(_ => (byte)0));
-    public OwnedList<byte> ContinentCitySize { get; init; } = new(Enumerable.Range(0, 64).Select(_ => (byte)0));
-    public OwnedList<byte> ContinentTradeUnits { get; init; } = new(Enumerable.Range(0, 64).Select(_ => (byte)0));
-    public OwnedList<byte> ContinentFlags { get; init; } = new(Enumerable.Range(0, 64).Select(_ => (byte)0));
-    public OwnedList<byte> ContinentPolicy { get; init; } = new(Enumerable.Range(0, 64).Select(_ => (byte)0));
+    public OwnedList<byte> AdvanceSource { get; init; } = new(Enumerable.Range(0, RuleLimits.Advances).Select(_ => (byte)0));
+    public OwnedList<byte> UnitsActive { get; init; } = new(Enumerable.Range(0, RuleLimits.UnitTypes).Select(_ => (byte)0));
+    public OwnedList<byte> UnitsLost { get; init; } = new(Enumerable.Range(0, RuleLimits.UnitTypes).Select(_ => (byte)0));
+    public OwnedList<byte> UnitsInProduction { get; init; } = new(Enumerable.Range(0, RuleLimits.UnitTypes).Select(_ => (byte)0));
+    public OwnedList<ushort> ContinentMilitary { get; init; } = new(Enumerable.Range(0, MapLimits.Regions).Select(_ => (ushort)0));
+    public OwnedList<ushort> ContinentAttack { get; init; } = new(Enumerable.Range(0, MapLimits.Regions).Select(_ => (ushort)0));
+    public OwnedList<byte> ContinentCities { get; init; } = new(Enumerable.Range(0, MapLimits.Regions).Select(_ => (byte)0));
+    public OwnedList<byte> ContinentCitySize { get; init; } = new(Enumerable.Range(0, MapLimits.Regions).Select(_ => (byte)0));
+    public OwnedList<byte> ContinentTradeUnits { get; init; } = new(Enumerable.Range(0, MapLimits.Regions).Select(_ => (byte)0));
+    public OwnedList<byte> ContinentFlags { get; init; } = new(Enumerable.Range(0, MapLimits.Regions).Select(_ => (byte)0));
+    public OwnedList<byte> ContinentPolicy { get; init; } = new(Enumerable.Range(0, MapLimits.Regions).Select(_ => (byte)0));
     public short BestShieldSurplus { get; init; } = (short)0;
-    public OwnedList<short> GovernmentScore { get; init; } = new(Enumerable.Range(0, 7).Select(_ => (short)0));
-    public OwnedList<short> LastContactTurn { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (short)0));
+    public OwnedList<short> GovernmentScore { get; init; } = new(Enumerable.Range(0, RuleLimits.Governments).Select(_ => (short)0));
+    public OwnedList<short> LastContactTurn { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (short)0));
     public byte LeaderPortrait { get; init; } = (byte)0;
     public OwnedList<byte> ThroneRoom { get; init; } = new(Enumerable.Range(0, 10).Select(_ => (byte)0));
     public byte Retained3fd { get; init; } = (byte)0;
@@ -109,9 +109,9 @@ public sealed record StoredCivilization
     public short SpaceshipPopulation { get; init; } = (short)0;
     public OwnedList<short> SpaceshipParts { get; init; } = new(Enumerable.Range(0, 6).Select(_ => (short)0));
     public OwnedList<CivilizationGoal> Goals { get; init; } = new(
-        Enumerable.Range(0, 48).Select(_ => new CivilizationGoal()));
+        Enumerable.Range(0, OpenCiv2.Core.State.Civilization.CurrentGoalCapacity).Select(_ => new CivilizationGoal()));
     public OwnedList<CivilizationGoal> StandingGoals { get; init; } = new(
-        Enumerable.Range(0, 16).Select(_ => new CivilizationGoal()));
+        Enumerable.Range(0, OpenCiv2.Core.State.Civilization.StandingGoalCapacity).Select(_ => new CivilizationGoal()));
 }
 
 public sealed record StoredCivilizationNames
@@ -121,7 +121,7 @@ public sealed record StoredCivilizationNames
     public OwnedList<byte> Tribe { get; init; } = new(new byte[24]);
     public OwnedList<byte> Adjective { get; init; } = new(new byte[24]);
     public OwnedList<OwnedList<byte>> Titles { get; init; } = new(
-        Enumerable.Range(0, 7).Select(_ => new OwnedList<byte>(new byte[24])));
+        Enumerable.Range(0, RuleLimits.Governments).Select(_ => new OwnedList<byte>(new byte[24])));
 }
 
 public sealed record StoredLeader
@@ -139,7 +139,7 @@ public sealed record StoredLeader
     public short Adjective { get; init; } = (short)0;
     public OwnedList<short> Names { get; init; } = new(Enumerable.Range(0, 2).Select(_ => (short)0));
     public OwnedList<OwnedList<short>> Titles { get; init; } = new(
-        Enumerable.Range(0, 7).Select(_ => new OwnedList<short>(Enumerable.Range(0, 2).Select(_ => (short)0))));
+        Enumerable.Range(0, RuleLimits.Governments).Select(_ => new OwnedList<short>(Enumerable.Range(0, 2).Select(_ => (short)0))));
 }
 
 public sealed record SavedRectangle
@@ -190,11 +190,11 @@ public sealed record EliminationHistory
 
 public sealed record MultiplayerRecord
 {
-    public OwnedList<short> CenterX { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (short)0));
-    public OwnedList<short> CenterY { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (short)0));
-    public OwnedList<short> Introduced { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (short)0));
+    public OwnedList<short> CenterX { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (short)0));
+    public OwnedList<short> CenterY { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (short)0));
+    public OwnedList<short> Introduced { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (short)0));
     public int TurnTimeLimit { get; init; } = (int)0;
-    public OwnedList<byte> EncodedPasswords { get; init; } = new(Enumerable.Range(0, 256).Select(_ => (byte)0));
+    public OwnedList<byte> EncodedPasswords { get; init; } = new(Enumerable.Range(0, PasswordConversion.ImageSize).Select(_ => (byte)0));
     public short OpenGame { get; init; } = (short)0;
     public short KillOnRetirement { get; init; } = (short)0;
     public short ShowHumanStarts { get; init; } = (short)0;
@@ -203,9 +203,9 @@ public sealed record MultiplayerRecord
     public int CheatTurnTime { get; init; } = (int)0;
     public OwnedList<byte> Retained142 { get; init; } = new(Enumerable.Range(0, 290).Select(_ => (byte)0));
     public OwnedList<OwnedList<byte>> Emails { get; init; } = new(
-        Enumerable.Range(0, 8).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
+        Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
     public OwnedList<OwnedList<byte>> PlayerSetup { get; init; } = new(
-        Enumerable.Range(0, 8).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
+        Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => new OwnedList<byte>(Enumerable.Range(0, 32).Select(_ => (byte)0))));
     public byte ResumeCiv { get; init; } = (byte)0;
     public byte Retained465 { get; init; } = (byte)0;
     public short ResumeEvent { get; init; } = (short)0;
@@ -306,7 +306,7 @@ public sealed record StoredCity
     public CivilizationSlot Founder { get; init; } = new CivilizationSlot(0);
     public byte TurnsCaptured { get; init; } = (byte)0;
     public byte KnownTo { get; init; } = (byte)0;
-    public OwnedList<byte> RememberedSize { get; init; } = new(Enumerable.Range(0, 8).Select(_ => (byte)0));
+    public OwnedList<byte> RememberedSize { get; init; } = new(Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => (byte)0));
     public byte RetainedByte { get; init; } = (byte)0;
     public uint SpecialistKinds { get; init; } = (uint)0;
     public short FoodBox { get; init; } = (short)0;

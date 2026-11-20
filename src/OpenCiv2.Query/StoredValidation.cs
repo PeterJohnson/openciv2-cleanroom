@@ -1,5 +1,6 @@
 using System.Globalization;
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core;
 using OpenCiv2.Formats;
 
@@ -29,7 +30,7 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
         }
     }
 
-    private void Map(MapHeader header, OwnedList<Tile> tiles)
+    private void Map(MapHeader header, OwnedList<StoredTile> tiles)
     {
         var shape = new Geometry(header.Width, header.Height);
         if (header.Area != shape.Area)
@@ -78,7 +79,7 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
                     "Base terrain is outside the eleven classic slots");
             }
 
-            if (tiles[i].Owner is > 7)
+            if (tiles[i].Owner >= EntityLimits.Civilizations)
             {
                 Error(
                     Section.Tiles,
@@ -152,7 +153,7 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
         string[] selectorNames = ["player_civ", "saved_current_civ", "turn_civ"];
         for (int i = 0; i < 3; ++i)
         {
-            if (selectors[i] is < 0 or > 7)
+            if (selectors[i] is < 0 or >= EntityLimits.Civilizations)
             {
                 v.Error(
                     Section.Globals,
@@ -172,13 +173,13 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
                 "globals[0].view_civ",
                 "Saved view-civilization sentinel semantics are unspecified; this field is preserved without semantic validation",
                 12 + 0x1e));
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
         {
             var names = save.Names[i];
             v.Text(Section.CivilizationNames, i, "leader", 2, names.Leader);
             v.Text(Section.CivilizationNames, i, "tribe", 0x1a, names.Tribe);
             v.Text(Section.CivilizationNames, i, "adjective", 0x32, names.Adjective);
-            for (int j = 0; j < 7; ++j)
+            for (int j = 0; j < RuleLimits.Governments; ++j)
             {
                 v.Text(Section.CivilizationNames, i, "titles[" + Index(j) + "]", 0x4a + 24 * j, names.Titles[j]);
             }
@@ -194,7 +195,7 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
                     "Living civilization's tribe is outside 0..20");
             }
         }
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             if (save.Tribes[i].Female > 1)
             {
@@ -210,7 +211,7 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
             }
         }
 
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
         {
             if (save.Views[i].Zoom is < -7 or > 8)
             {
@@ -250,12 +251,12 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
             }
 
             v.Text(Section.Cities, i, "name", 0x20, city.Name);
-            if (city.Owner.Value > 7)
+            if (city.Owner.Value >= EntityLimits.Civilizations)
             {
                 v.Error(Section.Cities, i, "owner", 8, "owner-range", "Live city's owner is outside 0..7");
             }
 
-            if (city.Founder.Value > 7)
+            if (city.Founder.Value >= EntityLimits.Civilizations)
             {
                 v.Error(Section.Cities, i, "founder", 10, "civilization-range", "Live city's founder is outside 0..7");
             }
@@ -293,7 +294,7 @@ internal sealed class StoredValidation(IReadOnlyList<Record> records, List<Diagn
                 continue;
             }
 
-            if (unit.Owner.Value > 7)
+            if (unit.Owner.Value >= EntityLimits.Civilizations)
             {
                 v.Error(Section.Units, i, "owner", 7, "owner-range", "Live unit's owner is outside 0..7");
             }

@@ -5,42 +5,25 @@ namespace OpenCiv2.Core.Rules;
 /// <summary>P04 §2 owned resource text, independent of source readers and live text identities.</summary>
 public sealed record LabelCatalog(
     int DeclaredCount,
-    OwnedList<OwnedList<byte>> Entries,
-    OwnedList<OwnedList<byte>?> Popups)
+    OwnedList<string> Entries,
+    OwnedList<string?> Popups)
 {
-    public LabelCatalog() : this(0, new([]), new(new OwnedList<byte>?[3])) { }
+    public LabelCatalog() : this(0, new([]), new(new string?[Labels.PopupCount])) { }
 
-    public void Install(TextPool pool, Labels labels)
+    public void Install(Labels labels)
     {
-        if (Entries.Count > Labels.Capacity || Popups.Count != 3)
+        if (Entries.Count > Labels.Capacity || Popups.Count != Labels.PopupCount)
         {
             throw new ArgumentException("Label catalog has invalid resource bounds");
         }
 
-        if (pool.Count == 0)
-        {
-            pool.Initialize();
-        }
-
-        var interned = new Dictionary<OwnedList<byte>, uint>();
-        uint Store(OwnedList<byte> text)
-        {
-            if (interned.TryGetValue(text, out uint id))
-            {
-                return id;
-            }
-
-            id = pool.Store(text.ToArray());
-            interned.Add(text, id);
-            return id;
-        }
-        var entries = Entries.Select(text => (uint?)Store(text)).ToArray();
+        var entries = Entries.Select(RuleText.Display).ToArray();
         var popups = labels.Popups.ToArray();
         for (int i = 0; i < 3; ++i)
         {
             if (Popups[i] is { } text)
             {
-                popups[i] = Store(text);
+                popups[i] = RuleText.Display(text);
             }
         }
 

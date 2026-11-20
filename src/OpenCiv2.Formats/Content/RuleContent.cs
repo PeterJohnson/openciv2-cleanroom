@@ -21,7 +21,9 @@ public static class NativeRules
             "difficulties",
             "diplomaticAttitudes"
         ]);
-    public static OwnedList<int> Counts { get; } = new([100, 67, 62, 33, 7, 21, 16, 12, 6, 9]);
+    public static OwnedList<int> Counts { get; } = new([RuleLimits.Advances, RuleLimits.Improvements, RuleLimits.UnitTypes, RuleLimits.Terrains,
+        RuleLimits.Governments, RuleLimits.Tribes, RuleLimits.Commodities, RuleLimits.Orders,
+        RuleLimits.Difficulties, RuleLimits.DiplomaticAttitudes]);
     public static OwnedList<string> CosmicNames { get; } = new(
         [
             "roadMovementMultiplier",
@@ -76,7 +78,7 @@ public static class NativeRules
         _ => null
     };
 
-    private static RuleText Text(ContentReader field, bool padded, bool token = true, bool earlyTermination = false)
+    private static string Text(ContentReader field, bool padded, bool token = true, bool earlyTermination = false)
     {
         string unicode = field.Text(false);
         byte[] encoded = ClassicText.EncodeWindows1252(unicode, field.Path);
@@ -106,7 +108,7 @@ public static class NativeRules
             field.Error("name would terminate the classic advance/unit table");
         }
 
-        return new(unicode, new(encoded));
+        return unicode;
     }
 
     private static RuleName Name(ContentReader row, bool padded = true, bool token = true, bool early = false) =>
@@ -309,13 +311,13 @@ public static class NativeRules
         var maps = MapIdentities(root, compat);
         ContentReader Row(int kind, int slot) => root.At(Collections[kind]).Element(maps[kind].Rows[slot]);
         var values = new RuleTables();
-        var movement = new int[62];
-        var titleOverrides = new List<LeaderTitleOverride>[21];
-        var governmentAdvances = new AdvanceReference?[7];
+        var movement = new int[RuleLimits.UnitTypes];
+        var titleOverrides = new List<LeaderTitleOverride>[RuleLimits.Tribes];
+        var governmentAdvances = new AdvanceReference?[RuleLimits.Governments];
         var cosmic = root.At("globalRules");
         cosmic.Fields(CosmicNames);
-        values.Cosmic = RuleNormalization.Cosmic(CosmicNames.Select(name => cosmic.At(name).Integer()).ToArray());
-        for (int i = 0; i < 100; ++i)
+        values.Cosmic = CosmicConversion.Decode(CosmicNames.Select(name => cosmic.At(name).Integer()).ToArray());
+        for (int i = 0; i < RuleLimits.Advances; ++i)
         {
             var r = Row(0, i);
             r.Fields(["id", "name", "aiValue", "civilizedAiModifier", "prerequisites", "epoch", "category"]);
@@ -324,7 +326,7 @@ public static class NativeRules
                 r.At("aiValue").Integer()), civil = RuleNormalization.Signed8(
                     r.At("civilizedAiModifier").Integer());
             var prerequisites = r.At("prerequisites");
-            if (prerequisites.ArraySize() != 2)
+            if (prerequisites.ArraySize() != RuleLimits.AdvancePrerequisites)
             {
                 prerequisites.Error("expected two prerequisites");
             }
@@ -344,7 +346,7 @@ public static class NativeRules
                     ["military", "economic", "social", "academic", "applied"])
             };
         }
-        for (int i = 0; i < 67; ++i)
+        for (int i = 0; i < RuleLimits.Improvements; ++i)
         {
             var r = Row(1, i);
             r.Fields(["id", "name", "costRows", "upkeep", "prerequisite"]);
@@ -357,25 +359,25 @@ public static class NativeRules
             };
         }
         var wonders = root.At("wonderObsolescence");
-        if (wonders.ArraySize() != 28)
+        if (wonders.ArraySize() != RuleLimits.Wonders)
         {
             wonders.Error("expected 28 wonder expiry definitions");
         }
 
         var seenWonders = new HashSet<short>();
-        for (int i = 0; i < 28; ++i)
+        for (int i = 0; i < RuleLimits.Wonders; ++i)
         {
             var r = wonders.Element(i);
             r.Fields(["wonder", "advance"]);
             short slot = maps[1].Lookup(r.At("wonder"));
-            if (slot < 39 || !seenWonders.Add(slot))
+            if (slot < RuleLimits.BuildingTypes || !seenWonders.Add(slot))
             {
                 r.Error("expected each wonder identity exactly once");
             }
 
-            values.WonderObsolescence[slot - 39] = Advance(r.At("advance"), maps[0]);
+            values.WonderObsolescence[slot - RuleLimits.BuildingTypes] = Advance(r.At("advance"), maps[0]);
         }
-        for (int i = 0; i < 62; ++i)
+        for (int i = 0; i < RuleLimits.UnitTypes; ++i)
         {
             var r = Row(2, i);
             r.Fields(
@@ -453,9 +455,10 @@ public static class NativeRules
                 Firepower = firepower,
                 CostRows = cost,
                 Capacity = capacity,
-                Abilities = flags
+                Abilities = StateConversion.DecodeUnitAbilities(flags)
             };
         }
+        uint[] retainedFlags = new uint[RuleLimits.UnitTypes];
         if (compat is not null)
         {
             var flags = compat.At("retainedUnitFlags");
@@ -479,15 +482,15 @@ public static class NativeRules
                 if (positions.ArraySize() != 0)
                 {
                     positions.Element(0).Integer(15, 15);
-                    values.Units[slot] = values.Units[slot] with { Abilities = values.Units[slot].Abilities | 0x8000 };
+                    retainedFlags[slot] = 0x8000;
                 }
             }
         }
-        for (int i = 0; i < 33; ++i)
+        for (int i = 0; i < RuleLimits.Terrains; ++i)
         {
             var r = Row(3, i);
             string[] fields = ["id", "name", "movementCost", "defenseMultiplier", "food", "shields", "trade"];
-            r.Fields(i < 11 ? [.. fields, "irrigation", "mining", "transformation"] : fields);
+            r.Fields(i < RuleLimits.BaseTerrains ? [.. fields, "irrigation", "mining", "transformation"] : fields);
             var name = Name(r);
             byte movementCost = RuleNormalization.Code8(r.At("movementCost").Integer());
             var ratio = r.At("defenseMultiplier");
@@ -511,7 +514,7 @@ public static class NativeRules
                 Food = food,
                 Shields = shields,
                 Trade = trade,
-                Work = i < 11
+                Work = i < RuleLimits.BaseTerrains
                     ? new(
                         Work(r.At("irrigation"), maps[3]),
                         Work(r.At("mining"), maps[3]),
@@ -519,7 +522,7 @@ public static class NativeRules
                     : null
             };
         }
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < RuleLimits.Governments; ++i)
         {
             var r = Row(4, i);
             r.Fields(["id", "name", "maleTitle", "femaleTitle"]);
@@ -529,7 +532,7 @@ public static class NativeRules
                 Titles = new(Text(r.At("maleTitle"), true), Text(r.At("femaleTitle"), true))
             };
         }
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             var r = Row(5, i);
             r.Fields(
@@ -549,7 +552,7 @@ public static class NativeRules
             var adjective = Text(r.At("adjective"), true);
             var leaders = r.At("leaderNames");
             leaders.Fields(["male", "female"]);
-            var names = new OwnedList<RuleText>([Text(leaders.At("male"), true), Text(leaders.At("female"), true)]);
+            var names = new OwnedList<string>([Text(leaders.At("male"), true), Text(leaders.At("female"), true)]);
             var gender = (Gender)Named(r.At("preferredLeaderGender"), ["male", "female"]);
             byte color = RuleNormalization.LeaderColor(
                 r.At("preferredColor").Integer()), style = RuleNormalization.LeaderStyle(
@@ -600,12 +603,12 @@ public static class NativeRules
         SimpleNames(values.Commodities, 6, true, true);
         SimpleNames(values.Difficulties, 8, false, false);
         SimpleNames(values.DiplomaticAttitudes, 9, false, false);
-        for (int i = 0; i < 12; ++i)
+        for (int i = 0; i < RuleLimits.Orders; ++i)
         {
             var r = Row(7, i);
             r.Fields(["id", "name", "shortcutHint"]);
-            var shortcut = Text(r.At("shortcutHint"), false);
-            if (shortcut.Classic.Count > 1)
+            var shortcut = ClassicText.EncodeWindows1252(Text(r.At("shortcutHint"), false), r.Path);
+            if (shortcut.Length > 1)
             {
                 r.At("shortcutHint").Error("shortcut must be empty or one encoded character");
             }
@@ -613,10 +616,10 @@ public static class NativeRules
             values.Orders[i] = new()
             {
                 Identity = Name(r, false),
-                Shortcut = shortcut.Classic.Count == 0 ? (byte)0 : shortcut.Classic[0]
+                Shortcut = ClassicText.DecodeWindows1252(shortcut, r.Path)
             };
         }
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < RuleLimits.Governments; ++i)
         {
             string? required = pack.Gameplay.Bundle.Values.Governments[i].RequiredAdvance;
             if (required is null)
@@ -641,13 +644,13 @@ public static class NativeRules
             }
         }
         return new(
-            new()
+            RuleCompatibility.Attach(new()
             {
                 Definitions = values.Snapshot(),
                 MovementPoints = new(movement),
                 TitleOverrides = new(titleOverrides.Select(t => new OwnedList<LeaderTitleOverride>(t))),
                 GovernmentAdvances = new(governmentAdvances)
-            },
+            }, retainedFlags),
             source.File,
             pack.Compatibility?.File);
     }

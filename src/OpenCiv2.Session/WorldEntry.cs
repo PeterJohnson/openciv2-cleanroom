@@ -20,7 +20,7 @@ public sealed record WorldEntryServices(
     Action<bool> GenerateWorld,
     NewGameServices Initialize,
     Action<int> Accelerate,
-    Action<CivilizationSlot, OwnedList<byte>> Introduce)
+    Action<CivilizationSlot, string> Introduce)
 {
     internal void Validate(NewWorldChoice choice)
     {
@@ -60,10 +60,10 @@ public static class WorldEntry
 {
     /// <summary>F05 §2/V03 §2: highest twelve eligible known advances, displayed ascending with trailing
     /// comma/space.</summary>
-    public static OwnedList<byte> StartingAdvanceList(GameState world, RuleState rules, int civilization)
+    public static string StartingAdvanceList(GameState world, RuleState rules, int civilization)
     {
         var selected = new List<int>();
-        for (int index = 99; index > 0 && selected.Count < 12; --index)
+        for (int index = RuleLimits.Advances - 1; index > 0 && selected.Count < 12; --index)
         {
             var prerequisites = rules.Definitions.Advances[index].Prerequisites;
             if (prerequisites[0] == AdvanceReference.Never && prerequisites[1] == AdvanceReference.Never)
@@ -76,14 +76,13 @@ public static class WorldEntry
                 selected.Add(index);
             }
         }
-        var bytes = new List<byte>();
+        var text = new System.Text.StringBuilder();
         for (int i = selected.Count - 1; i >= 0; --i)
         {
-            bytes.AddRange(rules.Text.Text(rules.Names.Advances[selected[i]]));
-            bytes.Add((byte)',');
-            bytes.Add((byte)' ');
+            text.Append(RuleText.Display(rules.Definitions.Advances[selected[i]].Identity.Name));
+            text.Append(", ");
         }
-        return new(bytes);
+        return text.ToString();
     }
 
     /// <summary>F05 §2. Validate selected services, cross the fresh-game boundary, then compose setup.
@@ -126,7 +125,7 @@ public static class WorldEntry
             ArgumentNullException.ThrowIfNull(content);
             ArgumentNullException.ThrowIfNull(content.Rules);
             var rules = runtime.Process.Rules;
-            content.Labels?.Install(rules.Text, rules.Labels);
+            content.Labels?.Install(rules.Labels);
             var installer = new RuleInstaller(content.Rules, rules);
             installer.Load(true);
             var source = WorldSource.Generated;
@@ -165,7 +164,7 @@ public static class WorldEntry
             }
             Publish();
             _ = services.Parameters.Preferences.Write(
-                new(runtime.Process.OrdinaryPreferences, runtime.Process.MultiplayerPreferences));
+                PreferenceFiles.Capture(runtime.Process));
             installer.Advances(true);
             installer.Units(true);
             installer.Improvements(true);
@@ -180,7 +179,7 @@ public static class WorldEntry
                 services.Accelerate(players.Acceleration);
             }
             int player = runtime.World.Globals.PlayerCiv;
-            if (player is < 1 or > 7)
+            if (player is < 1 or >= EntityLimits.Civilizations)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(runtime),

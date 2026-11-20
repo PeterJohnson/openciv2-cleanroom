@@ -29,14 +29,7 @@ public static class AutomationSuite
             Runtime.RegisterCommand(LocalUnitCommands.StackBottom()); Runtime.BeginClientSession(new(17, 23));
             Runtime.World.Map.Allocate(new(8, 6)); Runtime.World.Entities.Units.SetEnd(4); Runtime.World.Globals.UnitEnd = 4;
             for (int i = 0; i < 4; ++i) Runtime.World.Entities.Units.Storage[i] = new()
-            {
-                Token = new((uint)i + 100),
-                Owner = new((byte)(i == 3 ? 2 : 1)),
-                X = 2,
-                Y = 2,
-                Previous = new((short)(i == 3 ? -1 : i - 1)),
-                Next = new((short)(i >= 2 ? -1 : i + 1))
-            };
+            { Token = new((uint)i + 100), Owner = new((byte)(i == 3 ? 2 : 1)), Previous = (((short)(i == 3 ? -1 : i - 1)) < 0 ? (UnitSlot?)null : new UnitSlot(unchecked((ushort)((short)(i == 3 ? -1 : i - 1))))), Next = (((short)(i >= 2 ? -1 : i + 1)) < 0 ? (UnitSlot?)null : new UnitSlot(unchecked((ushort)((short)(i >= 2 ? -1 : i + 1))))), Position = new(2, 2) };
             Participant = Runtime.AddParticipant(new(1)); Client = Runtime.Bind(Participant, ControllerKind.Automation);
         }
         internal ScriptTask Task(string code, ScriptLimits? limits = null) => new(Client, code, limits);
@@ -50,7 +43,7 @@ public static class AutomationSuite
             Check(task.Status != ScriptStatus.Running, "Task did not stop within test tick bound");
             while (Runtime.AdvanceOne()) { }
         }
-        internal string Stack() => string.Join(";", Runtime.World.Entities.Units.Storage[..4].ToArray().Select(u => FormattableString.Invariant($"{u.Previous.Value},{u.Next.Value},{u.Token.Value},{u.Owner.Value}")));
+        internal string Stack() => string.Join(";", Runtime.World.Entities.Units.Storage[..4].ToArray().Select(u => FormattableString.Invariant($"{(u.Previous?.Value ?? -1)},{(u.Next?.Value ?? -1)},{u.Token.Value},{u.Owner.Value}")));
         public void Dispose() => Runtime.Dispose();
     }
     private const string Command = "unit.stack-bottom unit=0:100";
@@ -111,7 +104,7 @@ public static class AutomationSuite
         // the VM allocator cap. This exercises protected reply allocation on both ABIs.
         using var f = new Fixture(); f.Runtime.World.Entities.Units.SetEnd(512); f.Runtime.World.Globals.UnitEnd = 512;
         for (int i = 4; i < 512; ++i) f.Runtime.World.Entities.Units.Storage[i] = new()
-        { Token = new((uint)i + 100), Owner = new(1), X = 2, Y = 2, Previous = new(-1), Next = new(-1) };
+        { Token = new((uint)i + 100), Owner = new(1), Previous = (UnitSlot?)null, Next = (UnitSlot?)null, Position = new(2, 2) };
         using var task = f.Task("local units=game.units()", new(MemoryBytes: 65536)); f.Pump(task);
         Check(task.Status == ScriptStatus.Failed && task.Error.Contains("memory", StringComparison.Ordinal), task.Error);
         Check(task.MemoryBytes <= 65536 && !f.Runtime.HasPendingCommands);
@@ -180,7 +173,7 @@ public static class AutomationSuite
         using var f = new Fixture(); using var task = f.Task(Complete + "\nerror('after_effect')"); f.Pump(task);
         Check(task.Status == ScriptStatus.Failed && task.Error.Contains("after_effect", StringComparison.Ordinal));
         Check(task.Results.Single().Status == CommandStatus.Completed && task.Results.Single().Committed.Count == 1);
-        Check(f.Runtime.World.Entities.Units.Storage[0].Next.Value == -1);
+        Check((f.Runtime.World.Entities.Units.Storage[0].Next?.Value ?? -1) == -1);
     }
     private static void SandboxAndLimits()
     {

@@ -1,4 +1,5 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 
@@ -9,13 +10,14 @@ public static class ClassicCityContent
     public static CityPreferenceUpdate LoadPreferences(TextReader reader, RuleDefinitions rules, TextCase comparison) =>
         LoadPreferences(
             reader,
-            rules.Improvements.Skip(1).Take(38).Select(r => r.Identity.Name.Classic.ToArray()).ToArray(),
+            rules.Improvements.Skip(1).Take(RuleLimits.BuildingTypes - 1).Select(r => ClassicText.EncodeWindows1252(r.Identity.Name)).ToArray(),
             comparison);
 
     public static CityPreferenceUpdate LoadPreferences(TextReader reader, RuleState rules, TextCase comparison) =>
         LoadPreferences(
             reader,
-            rules.Names.Improvements.Skip(1).Take(38).Select(id => rules.Text.Text(id).ToArray()).ToArray(),
+            rules.Definitions.Improvements.Skip(1).Take(RuleLimits.BuildingTypes - 1)
+                .Select(rule => ClassicText.EncodeWindows1252(RuleText.Display(rule.Identity.Name))).ToArray(),
             comparison);
 
     private static CityPreferenceUpdate LoadPreferences(TextReader reader, byte[][] names, TextCase comparison)
@@ -32,7 +34,7 @@ public static class ClassicCityContent
                 return new(deprioritize, new(order));
             }
 
-            while (order.Count < 32 && reader.NextLine())
+            while (order.Count < CityPreferences.Capacity && reader.NextLine())
             {
                 byte[] token = reader.NextToken();
                 int index = 0;
@@ -83,9 +85,9 @@ public static class ClassicCityContent
             lines.Add(reader.Line.ToArray());
         }
         bool Stop(byte[] line) => line.Length >= 5 && comparison.Equal(line.AsSpan(0, 5), "@STOP"u8);
-        static RuleText Text(byte[] bytes) => new(ClassicText.DecodeWindows1252(bytes, "CITY"), new(bytes));
+        static string Text(byte[] bytes) => ClassicText.DecodeWindows1252(bytes, "CITY");
         var civilizations = new List<CityNameList>();
-        OwnedList<RuleText>? fallback = null;
+        OwnedList<string>? fallback = null;
         int materialized = 0;
         for (int i = 0; i < lines.Count; ++i)
         {
@@ -95,7 +97,7 @@ public static class ClassicCityContent
             }
 
             var plural = Text(lines[i][1..]);
-            var names = new List<RuleText>();
+            var names = new List<string>();
             int j = i + 1;
             // Other headers/comments are names until a blank or STOP terminates this list.
             for (; j < lines.Count && lines[j].Length != 0 && !Stop(lines[j]); ++j)
@@ -109,7 +111,7 @@ public static class ClassicCityContent
                 names.Add(Text(lines[j]));
             }
             var list = new CityNameList(plural, new(names), j < lines.Count || names.Count >= 255);
-            if (fallback is null && comparison.Equal(plural.Classic.ToArray(), "EXTRA"u8))
+            if (fallback is null && comparison.Equal(ClassicText.EncodeWindows1252(plural), "EXTRA"u8))
             {
                 fallback = list.Names;
             }
@@ -157,6 +159,6 @@ public static class ClassicCityContent
             directories.Search = savedSearch;
             directories.Working = directories.Home;
         }
-        return new(layers, comparison.Equal);
+        return new(layers, ClassicText.Compare(comparison.Equal));
     }
 }

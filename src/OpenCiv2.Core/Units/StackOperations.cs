@@ -40,9 +40,9 @@ public sealed class StackOperations
 
     public int Last(int slot) => local.Last(slot);
 
-    public int FirstForOwnerAt(int owner, Position position) => local.FirstForOwnerAt(owner, position);
+    public int FirstForOwnerAt(int owner, MapPoint position) => local.FirstForOwnerAt(owner, position);
 
-    public int FirstAt(Position position) => local.FirstAt(position);
+    public int FirstAt(MapPoint position) => local.FirstAt(position);
 
     private ref bool Active(PlacementOperation operation)
     {
@@ -96,7 +96,7 @@ public sealed class StackOperations
         Finish(PlacementOperation.Detach, sync);
     }
 
-    public void AttachAtFront(int slot, Position position, bool sync)
+    public void AttachAtFront(int slot, MapPoint position, bool sync)
     {
         local.Step();
         Begin(PlacementOperation.Attach);
@@ -104,7 +104,7 @@ public sealed class StackOperations
         Finish(PlacementOperation.Attach, sync);
     }
 
-    public void Relocate(int slot, Position position, bool sync)
+    public void Relocate(int slot, MapPoint position, bool sync)
     {
         local.Step();
         Begin(PlacementOperation.Relocate);
@@ -114,20 +114,20 @@ public sealed class StackOperations
     }
 
     public void RelocateInPlace(int slot, bool sync) =>
-        Relocate(slot, new(local.BackedUnit(slot).X, local.BackedUnit(slot).Y), sync);
+        Relocate(slot, local.BackedUnit(slot).Position, sync);
 
     public void MoveToBottom(int slot, bool sync)
     {
-        if (local.BackedUnit(slot).Next.Value < 0)
+        if (local.BackedUnit(slot).Next is null)
         {
             return;
         }
 
         local.Step();
         Begin(PlacementOperation.Bottom);
-        if (local.BackedUnit(slot).Next.Value >= 0)
+        if (local.BackedUnit(slot).Next is not null)
         {
-            var position = new Position(local.BackedUnit(slot).X, local.BackedUnit(slot).Y);
+            var position = new MapPoint(local.BackedUnit(slot).Position.X, local.BackedUnit(slot).Position.Y);
             int anchor = First(slot);
             if (anchor == slot)
             {
@@ -136,16 +136,15 @@ public sealed class StackOperations
 
             Detach(slot, false);
             int tail = Last(anchor);
-            local.BackedUnit(tail).Next = new(unchecked((short)slot));
-            local.BackedUnit(slot).Previous = new(unchecked((short)tail));
-            local.BackedUnit(slot).Next = new(-1);
-            local.BackedUnit(slot).X = unchecked((short)position.X);
-            local.BackedUnit(slot).Y = unchecked((short)position.Y);
+            local.BackedUnit(tail).Next = slot < 0 ? null : new UnitSlot((ushort)slot);
+            local.BackedUnit(slot).Previous = tail < 0 ? null : new UnitSlot((ushort)tail);
+            local.BackedUnit(slot).Next = null;
+            local.BackedUnit(slot).Position = new(unchecked((short)position.X), unchecked((short)position.Y));
         }
         Finish(PlacementOperation.Bottom, sync);
     }
 
-    public void RelocateStack(int slot, Position position, bool sync)
+    public void RelocateStack(int slot, MapPoint position, bool sync)
     {
         int current = First(slot);
         while (current >= 0)

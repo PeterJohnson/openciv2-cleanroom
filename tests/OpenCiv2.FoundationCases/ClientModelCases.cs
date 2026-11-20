@@ -13,10 +13,10 @@ public static partial class FoundationSuite
         {
             using var f = new LocalUnitCommandFixture(); var model = new SessionPanel(); model.Bind(f.Client);
             var request = text ? CommandText.Parse("unit.stack-bottom unit=0:100", model.View.Commands) : f.Request();
-            Equal(true, model.Submit(request)); Equal(false, model.Submit(request)); Equal((short)1, f.Unit(0).Next.Value);
+            Equal(true, model.Submit(request)); Equal(false, model.Submit(request)); Equal((short)1, (f.Unit(0).Next?.Value ?? -1));
             f.Runtime.AdvanceOne(); model.Refresh(); Equal((int)CommandStatus.AwaitingInteraction, (int)model.View.Command!.Status);
             Equal(false, model.Reply(7)); Equal(true, model.Reply(1)); Equal(false, model.Reply(1));
-            f.Runtime.AdvanceOne(); model.Refresh(); Equal((int)CommandStatus.Completed, (int)model.View.Command!.Status); Equal((short)2, f.Unit(0).Previous.Value);
+            f.Runtime.AdvanceOne(); model.Refresh(); Equal((int)CommandStatus.Completed, (int)model.View.Command!.Status); Equal((short)2, (f.Unit(0).Previous?.Value ?? -1));
             Equal(1, model.View.Command.Committed.Count); var final = model.View.Command;
             Equal(true, f.Runtime.RetireCommand(final.Correlation.Command)); model.Refresh(); Equal(final, model.View.Command!);
         }
@@ -34,7 +34,7 @@ public static partial class FoundationSuite
     private static void ClientModelCancellationAndRevocation()
     {
         using var f = new LocalUnitCommandFixture(); var model = new SessionPanel(); model.Bind(f.Client); model.Submit(f.Request()); f.Runtime.AdvanceOne(); model.Refresh();
-        Equal(true, model.Cancel()); f.Runtime.AdvanceOne(); model.Refresh(); Equal((int)CommandStatus.Cancelled, (int)model.View.Command!.Status); Equal((short)1, f.Unit(0).Next.Value);
+        Equal(true, model.Cancel()); f.Runtime.AdvanceOne(); model.Refresh(); Equal((int)CommandStatus.Cancelled, (int)model.View.Command!.Status); Equal((short)1, (f.Unit(0).Next?.Value ?? -1));
         model.Submit(f.Request(3, 103)); Equal((int)CommandStatus.Rejected, (int)model.View.Command!.Status); model.Refresh(); Equal("unit_not_available", model.View.Command!.Code);
         f.Runtime.Revoke(f.Client.Identity.Controller); Equal(false, model.Submit(f.Request())); Equal(true, model.View.Identity is null); Equal(true, model.View.Command is null);
     }
@@ -60,6 +60,6 @@ public static partial class FoundationSuite
             "unit.stack-bottom unit=0:+100", "unit.stack-bottom unit=0:4294967296", "unit.stack-bottom unit=0:100 unit=0:100", "unit.stack-bottom other=0:100", "unit.stack-bottom 0:100",
             "unit.stack-bottom unit=\"0:100", "unit.stack-bottom unit=\"0:\\n100\"", new string(' ', 4097), "unit.stack-bottom " + string.Join(' ', Enumerable.Repeat("unit=0:100", 65)) })
             Throws<ArgumentException>(() => CommandText.Parse(input, descriptors));
-        Equal(false, f.Runtime.HasPendingCommands); Equal((short)1, f.Unit(0).Next.Value);
+        Equal(false, f.Runtime.HasPendingCommands); Equal((short)1, (f.Unit(0).Next?.Value ?? -1));
     }
 }

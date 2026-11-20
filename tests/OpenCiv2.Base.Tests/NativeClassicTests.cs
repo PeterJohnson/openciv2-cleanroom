@@ -1,5 +1,6 @@
 using System.Text;
 using OpenCiv2.Core.State;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Classic;
 using OpenCiv2.IO.Native;
 using OpenCiv2.Platform.Native;
@@ -68,7 +69,7 @@ public sealed class NativeClassicTests : IDisposable
         Directory.CreateDirectory(Path.Combine(directory, "Scenario")); Text("Scenario/rules.txt", "@FIRST\r\nscenario\r\n"); Text("RuLeS.TxT", "@FIRST\nhome\n@SECOND\nfallback\n");
         var disk = new ClassicStorage(directory); var text = new ClassicTextFiles(disk); var dirs = new TextDirectories(directory, Path.Combine(directory, "Scenario"), directory); using var reader = new ClassicReader(new(), dirs, new(text.Open), TextCase.Ascii);
         Assert.True(reader.Open("rules", "FIRST"u8.ToArray())); Assert.True(reader.NextLine()); Assert.Equal("scenario", Encoding.Latin1.GetString(reader.Line)); Assert.True(reader.Open("rules", "SECOND"u8.ToArray())); Assert.True(reader.NextLine()); Assert.Equal("fallback", Encoding.Latin1.GetString(reader.Line)); reader.Close(); Assert.Equal(Path.Combine(directory, "Scenario"), dirs.Search);
-        var process = new ProcessContext(); Assert.Equal(PreferenceLoadStatus.Defaults, PreferenceFiles.Load(process, new(1000, true), disk)); process.OrdinaryPreferences.Text = new(Enumerable.Repeat((byte)255, 32)); process.MultiplayerPreferences.GameName = new(Enumerable.Repeat((byte)254, 32)); File.WriteAllBytes(Path.Combine(directory, "cIv2.dAt"), new byte[999]);
+        var process = new ProcessContext(); Assert.Equal(PreferenceLoadStatus.Defaults, PreferenceFiles.Load(process, new(1000, true), disk)); process.OrdinaryPreferences.Text = ClassicText.DecodeWindows1252((Enumerable.Repeat((byte)255, 32)).ToArray()); process.MultiplayerPreferences.GameName = ClassicText.DecodeWindows1252((Enumerable.Repeat((byte)254, 32)).ToArray()); File.WriteAllBytes(Path.Combine(directory, "cIv2.dAt"), new byte[999]);
         Assert.Equal(PreferenceSaveStatus.Success, PreferenceFiles.Save(process, disk)); Assert.Equal(516, File.ReadAllBytes(Path.Combine(directory, "cIv2.dAt")).Length); var ordinary = process.OrdinaryPreferences; var multiplayer = process.MultiplayerPreferences; process.OrdinaryPreferences = new(); process.MultiplayerPreferences = new();
         Assert.Equal(PreferenceLoadStatus.Success, PreferenceFiles.Load(process, new(1, false), disk)); Assert.Equal(ordinary, process.OrdinaryPreferences); Assert.Equal(multiplayer, process.MultiplayerPreferences);
     }

@@ -1,4 +1,5 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Core.State;
 
@@ -8,7 +9,7 @@ public record struct Layout
     public bool Valid;
     public Fixed13<Rectangle> Rectangles;
 }
-public record struct MapView(bool Open, bool TrackMoves, short X, short Y, short Zoom);
+public record struct MapView(bool Open, bool TrackMoves, MapPoint Center, short Zoom);
 public record struct WorldSetup
 {
     public short Width, Height;
@@ -18,40 +19,40 @@ public record struct StartingPositions
 {
     public StartingPositions()
     {
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
-            X[i] = -1;
-            Y[i] = -1;
+            Positions[i] = new(-1, -1);
         }
     }
 
-    public Fixed21<short> X, Y;
+    public TribeArray<MapPoint> Positions;
 }
 public record struct CivilizationNames
 {
     public CivilizationNames() { }
 
     public short CityStyle;
-    public OwnedList<byte> Leader = OwnedList<byte>.Empty,
-        Tribe = OwnedList<byte>.Empty,
-        Adjective = OwnedList<byte>.Empty;
-    public OwnedList<OwnedList<byte>> Titles = new(Enumerable.Repeat(OwnedList<byte>.Empty, 7));
+    public string Leader = string.Empty,
+        Tribe = string.Empty,
+        Adjective = string.Empty;
+    public OwnedList<string> Titles = new(Enumerable.Repeat(string.Empty, RuleLimits.Governments));
 }
 public record struct EliminationHistory
 {
+    public const int Capacity = 12;
     public EliminationHistory() { }
 
     public short Count;
-    public Fixed12<short> Turns;
-    public Fixed12<byte> Killers, Portraits;
-    public OwnedList<OwnedList<byte>> Names = new(Enumerable.Repeat(OwnedList<byte>.Empty, 12));
+    public EliminationArray<short> Turns;
+    public EliminationArray<byte> Killers, Portraits;
+    public OwnedList<string> Names = new(Enumerable.Repeat(string.Empty, Capacity));
 }
 public record struct ScenarioParameters
 {
     public ScenarioParameters() { }
 
-    public ushort Flags;
-    public OwnedList<byte> Name = OwnedList<byte>.Empty;
+    public ScenarioOptions Flags;
+    public string Name = string.Empty;
     public short TechnologyParadigm, YearIncrement, StartYear, MaximumTurns, ObjectiveCiv;
     public Fixed4<short> VictoryThresholds;
 
@@ -60,14 +61,15 @@ public record struct ScenarioParameters
 }
 public sealed class TextParameters
 {
+    public const int StringCount = 11;
     public Fixed6<int> Numbers;
-    public OwnedList<byte>[] Strings { get; } = Enumerable.Repeat(OwnedList<byte>.Empty, 11).ToArray();
-    public OwnedList<byte> Line = OwnedList<byte>.Empty;
+    public string[] Strings { get; } = Enumerable.Repeat(string.Empty, StringCount).ToArray();
+    public string Line = string.Empty;
 
     public void Clear()
     {
         Numbers = default;
-        Array.Fill(Strings, OwnedList<byte>.Empty);
-        Line = OwnedList<byte>.Empty;
+        Array.Fill(Strings, string.Empty);
+        Line = string.Empty;
     }
 }

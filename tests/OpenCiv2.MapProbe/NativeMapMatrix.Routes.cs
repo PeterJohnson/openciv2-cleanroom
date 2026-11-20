@@ -2,6 +2,7 @@ using System.Text.Json;
 using OpenCiv2.App;
 using OpenCiv2.App.Map;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.MapRendering;
 using SkiaSharp;
@@ -24,20 +25,20 @@ internal static partial class NativeMapMatrix
         for (int y = 8; y <= 12; y++)
             for (int x = 10 + (y & 1); x <= 20; x += 2)
                 world.Map.Remembered(1, new(x, y)) = 0;
-        world.Map.Remembered(1, new(point.X, point.Y)) = (byte)MapImprovements.Road;
-        world.Map.Remembered(1, new(east.X, east.Y)) = (byte)MapImprovements.Railroad;
+        world.Map.Remembered(1, new(point.X, point.Y)) = MapFeatures.Road;
+        world.Map.Remembered(1, new(east.X, east.Y)) = MapFeatures.Railroad;
         session.Runtime.Publish();
         var mixed = session.Player.ObserveMap()!;
         Require(mixed.Identity.Observer.Value == 1 && new MapScene(mixed).Tile(east).Terrain is not null,
             "the observer has explored the test road and rail tiles");
         var random = session.Runtime.GameplayRandom.Capture();
         var cosmetic = session.Runtime.PresentationRandom.Capture();
-        world.Map.TileAt(new(east.X, east.Y)).Features ^= (byte)(MapImprovements.Railroad | MapImprovements.Road);
+        world.Map.TileAt(new(east.X, east.Y)).Features ^= MapFeatures.Railroad | MapFeatures.Road;
         session.Runtime.Publish();
         var hiddenChange = session.Player.ObserveMap()!;
         Require(hiddenChange.Revision != mixed.Revision && hiddenChange.Tiles.Equals(mixed.Tiles),
             "changing live route flags without a memory publication does not update W03 tiles");
-        world.Map.Remembered(1, new(point.X, point.Y)) = (byte)MapImprovements.Railroad;
+        world.Map.Remembered(1, new(point.X, point.Y)) = MapFeatures.Railroad;
         session.Runtime.Publish();
         var rails = session.Player.ObserveMap()!;
         world.Map.Remembered(1, new(east.X, east.Y)) = 0;

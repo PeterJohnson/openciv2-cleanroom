@@ -28,6 +28,7 @@ public sealed class ProcessTokens
 /// </summary>
 public static class EntityAllocation
 {
+    private const int MilitaryReservationThreshold = 1948;
     private static void Admit(CivilizationSlot owner, uint end, int length)
     {
         if (owner.Value >= EntityLimits.Civilizations || end > EntityLimits.Units || length != end)
@@ -44,12 +45,13 @@ public static class EntityAllocation
         ref uint end,
         CivilizationSlot owner,
         short militaryCount,
-        byte effectiveHumans)
+        CivilizationSet effectiveHumans)
     {
         if (firstFree == end)
         {
-            bool human = (effectiveHumans & (1 << owner.Value)) != 0;
-            if (end >= EntityLimits.Units || militaryCount > 1948 || (!human && end >= 2040))
+            bool human = effectiveHumans.Contains(owner.Value);
+            if (end >= EntityLimits.Units || militaryCount > MilitaryReservationThreshold ||
+                (!human && end >= EntityLimits.NonHumanUnits))
             {
                 return null;
             }
@@ -65,7 +67,7 @@ public static class EntityAllocation
         ref uint end,
         CivilizationSlot owner,
         short militaryCount,
-        byte effectiveHumans)
+        CivilizationSet effectiveHumans)
     {
         Admit(owner, end, scanned.Length);
         uint slot = 0;
@@ -84,7 +86,7 @@ public static class EntityAllocation
         UnitPool pool,
         CivilizationSlot owner,
         short militaryCount,
-        byte effectiveHumans)
+        CivilizationSet effectiveHumans)
     {
         uint end = (uint)pool.End;
         Admit(owner, end, pool.Scanned.Length);

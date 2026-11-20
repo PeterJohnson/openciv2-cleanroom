@@ -12,6 +12,7 @@ public sealed class ProcessContext
     public OrdinaryPreferences OrdinaryPreferences = new();
     public TextParameters TextParameters { get; private set; } = new();
     public TileCell Fallback { get; private set; } = new();
+    public object PreferencesIdentity { get; private set; } = new();
 
     /// <summary>Install staged checkpoint contents without callbacks or allocation. Process, token and
     /// rule-provider identities remain stable. Old world/fallback/text references are invalidated.</summary>
@@ -25,6 +26,7 @@ public sealed class ProcessContext
         (OrdinaryPreferences, other.OrdinaryPreferences) = (other.OrdinaryPreferences, OrdinaryPreferences);
         (TextParameters, other.TextParameters) = (other.TextParameters, TextParameters);
         (Fallback, other.Fallback) = (other.Fallback, Fallback);
+        (PreferencesIdentity, other.PreferencesIdentity) = (other.PreferencesIdentity, PreferencesIdentity);
     }
 }
 /// <summary>
@@ -34,6 +36,7 @@ public sealed class WorldLifetime;
 /// <summary>Logical world and retained workspaces. Session owns replacement, authority and fresh-game reset.</summary>
 public sealed class GameState
 {
+    public const int PowerHistorySamples = 150;
     /// <summary>
     /// Creates empty world storage bound to the process fallback tile; setup and loading remain explicit
     /// operations.
@@ -48,22 +51,21 @@ public sealed class GameState
     public EntityPools Entities { get; } = new();
     public UnitStackState UnitStacks { get; } = new();
     public UnitDeletionState UnitDeletion { get; } = new();
-    public Fixed8<int> UnitTotals;
+    public CivilizationArray<int> UnitTotals;
     public bool TurnLoopActive;
     public MovementMode MovementMode;
-    public Fixed8<uint> CivilizationColorFlags;
     public GlobalValues Globals = new();
     public WorldSetup WorldSetup;
-    public Civilization[] Civilizations { get; } = new Civilization[8];
-    public CivilizationNames[] Names { get; } = Enumerable.Range(0, 8).Select(_ => new CivilizationNames()).ToArray();
-    public sbyte[] PendingLeaderOverrides { get; } = Enumerable.Repeat((sbyte)-1, 8).ToArray();
+    public Civilization[] Civilizations { get; } = new Civilization[EntityLimits.Civilizations];
+    public CivilizationNames[] Names { get; } = Enumerable.Range(0, EntityLimits.Civilizations).Select(_ => new CivilizationNames()).ToArray();
+    public sbyte[] PendingLeaderOverrides { get; } = Enumerable.Repeat((sbyte)-1, EntityLimits.Civilizations).ToArray();
     public MultiplayerState Multiplayer = new();
     public EventState Events { get; } = new();
-    public Fixed150<Fixed8<byte>> PowerHistory;
+    public PowerHistoryArray<CivilizationArray<byte>> PowerHistory;
     public EliminationHistory Eliminations = new();
     public ScenarioParameters Scenario = new();
     public Layout Layout;
-    public MapView[] Views { get; } = new MapView[8];
+    public MapView[] Views { get; } = new MapView[EntityLimits.Civilizations];
     public CityMoodWorkspace Mood { get; } = new();
     public MapStorage Map { get; }
 }

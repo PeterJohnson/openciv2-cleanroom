@@ -78,9 +78,9 @@ public static class WorldSetupOperations
         return Complete(runtime, () =>
         {
             ref var setup = ref runtime.World.WorldSetup;
-            ref var flags = ref runtime.World.Globals.GameFlags;
+            ref var status = ref runtime.World.Globals.Status;
             ref var remembered = ref runtime.Process.OrdinaryPreferences.MapSize;
-            flags = 0;
+            status = default;
             bool success = false, done = false;
             while (!done)
             {
@@ -136,12 +136,12 @@ public static class WorldSetupOperations
             int finalArea = setup.Width * setup.Height;
             if (finalArea > 5999)
             {
-                flags |= 4;
+                status.LargeMap = true;
             }
 
             if (finalArea < 3000)
             {
-                flags |= 8;
+                status.SmallMap = true;
             }
 
             setup.Width = unchecked((short)(2 * setup.Width));
@@ -248,7 +248,7 @@ public static class WorldSetupOperations
                 }
             }
             _ = services.Preferences.Write(
-                new(runtime.Process.OrdinaryPreferences, runtime.Process.MultiplayerPreferences),
+                PreferenceFiles.Capture(runtime.Process),
                 () => Publish(runtime));
             return true;
         });

@@ -1,5 +1,6 @@
 using System.Globalization;
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Formats;
 using OpenCiv2.IO;
 
@@ -93,19 +94,19 @@ public static class StoredInspection
             new("version", "u16", new FieldValue.Unsigned(save.Header.Version))
         ]);
         b.Record(Section.Globals, 0, 330, RecordFields.Of(save.Globals));
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
         {
             b.Record(Section.CivilizationNames, i, 242, RecordFields.Of(save.Names[i]));
         }
 
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
         {
             b.Record(Section.Civilizations, i, 1428, RecordFields.Of(save.Civilizations[i]));
         }
 
         var map = save.Map;
         b.Record(Section.MapHeader, 0, 14, RecordFields.Of(map.Header));
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < EntityLimits.PlayerCivilizations; ++i)
         {
             b.Bytes(Section.Remembered, i + 1, map.Remembered[i]);
         }
@@ -135,7 +136,7 @@ public static class StoredInspection
             b.Record(Section.Cities, i, 88, RecordFields.Of(save.Cities[i]));
         }
 
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
             var tribe = save.Tribes[i];
             b.Record(Section.Tribes, i, 3, [
@@ -159,11 +160,11 @@ public static class StoredInspection
 
         for (int i = 0; i < 150; ++i)
         {
-            b.Record(Section.PowerHistory, i, 8, Numbers("civilizations", save.PowerHistory[i], "u8"));
+            b.Record(Section.PowerHistory, i, EntityLimits.Civilizations, Numbers("civilizations", save.PowerHistory[i], "u8"));
         }
 
         b.Record(Section.Layout, 0, 106, RecordFields.Of(save.Layout));
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < EntityLimits.Civilizations; ++i)
         {
             b.Record(Section.Views, i, 10, RecordFields.Of(save.Views[i]));
         }

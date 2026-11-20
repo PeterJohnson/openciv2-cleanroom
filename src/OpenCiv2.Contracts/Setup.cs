@@ -36,21 +36,21 @@ public abstract record SetupNumericChoice
 
     public sealed record Random : SetupNumericChoice;
 }
-// Classic byte strings remain bytes; no implicit UTF-8 conversion at this boundary.
-public sealed record SetupTribeOption(int Tribe, OwnedList<byte> Plural, short PreferredColor);
+// Setup choices carry logical Unicode text; file encodings belong to the adapters.
+public sealed record SetupTribeOption(int Tribe, string Plural, short PreferredColor);
 public sealed record SetupTribeChoice(int Tribe = -1, bool Custom = false);
 public sealed record SetupAdvancedChoices(bool SimplifiedCombat = false, bool FlatWorld = false,
     bool PickOpponents = false, bool AcceleratedStartup = false, bool Bloodlust = false, bool NoRestart = false);
 // F05 deliberately ignores the modal result, including cancellation.
 public sealed record SetupAdvancedResponse(int ModalResult, SetupAdvancedChoices Checks);
 public enum SetupNameAction { Accept, Cancel, Unavailable, Titles, Portrait }
-public sealed record SetupNames(OwnedList<byte> Leader, OwnedList<byte> Plural, OwnedList<byte> Adjective);
+public sealed record SetupNames(string Leader, string Plural, string Adjective);
 public sealed record SetupNameResponse(SetupNameAction Action, SetupNames Names);
 public sealed record GovernmentTitles
 {
-    public OwnedList<OwnedList<byte>> Values { get; }
+    public OwnedList<string> Values { get; }
 
-    public GovernmentTitles(IEnumerable<OwnedList<byte>> values)
+    public GovernmentTitles(IEnumerable<string> values)
     {
         Values = new(values);
         if (Values.Count != 7)

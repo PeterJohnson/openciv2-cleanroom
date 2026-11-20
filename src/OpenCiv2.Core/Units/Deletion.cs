@@ -8,14 +8,14 @@ namespace OpenCiv2.Core.Units;
 /// <summary>Required owning children, not optional observers. Failures retain preceding U01 effects.</summary>
 public interface IUnitDeletionEffects
 {
-    void UnitRemoved(Position position);
+    void UnitRemoved(MapPoint position);
 
     void RefreshHomeCity(int city);
 
     void CheckCivilization(int owner, int killer);
 
     /// <summary>Session owns state diff, position notice, positive-home notice and flush(5000).</summary>
-    void SynchronizeDeletion(Position position, CitySlot? home);
+    void SynchronizeDeletion(MapPoint position, CitySlot? home);
 }
 
 /// <summary>U01 §§6,9 local/host basic deletion. Session owns remote lifetimes; V01 owns elimination.</summary>
@@ -85,10 +85,10 @@ public sealed class UnitDeletion
 
         world.UnitDeletion.Active = true;
         ref var unit = ref stacks.BackedUnit(slot);
-        var position = new Position(unit.X, unit.Y);
+        var position = unit.Position;
         int type = unit.Type.Value, owner = unchecked((sbyte)unit.Owner.Value);
         var home = unit.Home;
-        if (owner >= 0 && slot < 2048)
+        if (owner >= 0 && slot < EntityLimits.Units)
         {
             ref var civ = ref Civilization(owner);
             if (civ.MilitaryCount != 0 && Role(type) < 5)
@@ -117,8 +117,10 @@ public sealed class UnitDeletion
         }
         foreach (ref var candidate in pool.Scanned)
         {
-            if (candidate.Orders == UnitOrder.Sleeping && candidate.DestinationX == slot)
+            if (candidate.Orders == UnitOrder.Sleeping && candidate.Carrier is { } carrier && carrier.Value == slot)
             {
+                // F02 retains the carrier value when waking changes the destination discriminator.
+                candidate.Destination = candidate.Destination with { X = carrier.Value };
                 candidate.Orders = UnitOrder.None;
             }
         }

@@ -48,7 +48,7 @@ public static partial class ContentConversions
         Admit(source);
         using var reader = Reader(source, comparison);
         var state = new RuleState();
-        state.Text.Initialize();
+
         RuleInput operands;
         try
         {
@@ -68,9 +68,10 @@ public static partial class ContentConversions
         }
         var values = state.Definitions;
         var global = new JsonObject();
+        var cosmic = CosmicConversion.Encode(values.Cosmic);
         for (int i = 0; i < 22; ++i)
         {
-            global[NativeRules.CosmicNames[i]] = values.Cosmic.Values[i];
+            global[NativeRules.CosmicNames[i]] = cosmic[i];
         }
 
         var rules = new JsonObject { ["format"] = "openciv2-rules/1", ["globalRules"] = global };
@@ -109,7 +110,7 @@ public static partial class ContentConversions
             (v, id) => v with { Identity = v.Identity with { Id = id } },
             (v, i) => new()
             {
-                ["name"] = v.Identity.Name.Unicode,
+                ["name"] = v.Identity.Name,
                 ["aiValue"] = v.AiValue,
                 ["civilizedAiModifier"] = v.CivilizedAiModifier,
                 ["prerequisites"] = new JsonArray(
@@ -123,23 +124,23 @@ public static partial class ContentConversions
             (v, id) => v with { Identity = v.Identity with { Id = id } },
             (v, i) => new()
             {
-                ["name"] = v.Identity.Name.Unicode,
+                ["name"] = v.Identity.Name,
                 ["costRows"] = v.CostRows,
                 ["upkeep"] = v.Upkeep,
                 ["prerequisite"] = Reference(operands.Definitions.Improvements[i].Prerequisite)
             });
         rules["wonderObsolescence"] = new JsonArray(
-            Enumerable.Range(0, 28)
+            Enumerable.Range(0, RuleLimits.Wonders)
                 .Select(
                     i => (JsonNode)new JsonObject
                     {
-                        ["wonder"] = Id("improvements", i + 39),
+                        ["wonder"] = Id("improvements", i + RuleLimits.BuildingTypes),
                         ["advance"] = Reference(values.WonderObsolescence[i])
                     })
                 .ToArray());
         Collection("units", values.Units, (v, id) => v with { Identity = v.Identity with { Id = id } }, (v, i) =>
         {
-            if ((v.Abilities & 0x8000) != 0)
+            if ((RuleCompatibility.RetainedUnitFlags(operands, i) & 0x8000) != 0)
             {
                 flags.Add(
                     (JsonNode)new JsonObject
@@ -151,7 +152,7 @@ public static partial class ContentConversions
 
             return new()
             {
-                ["name"] = v.Identity.Name.Unicode,
+                ["name"] = v.Identity.Name,
                 ["obsoleteBy"] = Reference(v.ObsoleteBy),
                 ["prerequisite"] = Reference(v.Prerequisite),
                 ["movementPoints"] = operands.MovementPoints[i],
@@ -176,7 +177,7 @@ public static partial class ContentConversions
                 ["costRows"] = v.CostRows,
                 ["capacity"] = v.Capacity,
                 ["abilities"] = Strings(
-                    Enumerable.Range(0, 15).Where(bit => (v.Abilities & (1U << bit)) != 0)
+                    Enumerable.Range(0, 15).Where(bit => (StateConversion.EncodeUnitAbilities(v.Abilities) & (1U << bit)) != 0)
                         .Select(
                             bit => NativeRules.AbilityNames[bit]))
             };
@@ -185,7 +186,7 @@ public static partial class ContentConversions
         {
             var row = new JsonObject
             {
-                ["name"] = v.Identity.Name.Unicode,
+                ["name"] = v.Identity.Name,
                 ["movementCost"] = v.MovementCost,
                 ["defenseMultiplier"] = new JsonObject { ["numerator"] = v.DefenseFactor, ["denominator"] = 2 },
                 ["food"] = v.Food,
@@ -206,15 +207,15 @@ public static partial class ContentConversions
             (v, id) => v with { Identity = v.Identity with { Id = id } },
             (v, _) => new()
             {
-                ["name"] = v.Identity.Name.Unicode,
-                ["maleTitle"] = v.Titles.Male.Unicode,
-                ["femaleTitle"] = v.Titles.Female.Unicode
+                ["name"] = v.Identity.Name,
+                ["maleTitle"] = v.Titles.Male,
+                ["femaleTitle"] = v.Titles.Female
             });
         Collection("tribes", values.Tribes, (v, id) => v with { Id = id }, (v, i) => new()
         {
-            ["pluralName"] = v.Plural.Unicode,
-            ["adjective"] = v.Adjective.Unicode,
-            ["leaderNames"] = new JsonObject { ["male"] = v.Leaders[0].Unicode, ["female"] = v.Leaders[1].Unicode },
+            ["pluralName"] = v.Plural,
+            ["adjective"] = v.Adjective,
+            ["leaderNames"] = new JsonObject { ["male"] = v.Leaders[0], ["female"] = v.Leaders[1] },
             ["preferredLeaderGender"] = v.PreferredGender == Gender.Female ? "female" : "male",
             ["preferredColor"] = v.PreferredColor,
             ["cityStyle"] = v.CityStyle,
@@ -229,8 +230,8 @@ public static partial class ContentConversions
                     t => (JsonNode)new JsonObject
                     {
                         ["government"] = Id("governments", (int)t.Government),
-                        ["male"] = t.Titles.Male.Unicode,
-                        ["female"] = t.Titles.Female.Unicode
+                        ["male"] = t.Titles.Male,
+                        ["female"] = t.Titles.Female
                     })
                     .ToArray())
         });
@@ -240,7 +241,7 @@ public static partial class ContentConversions
             ("diplomaticAttitudes", values.DiplomaticAttitudes)
             })
         {
-            Collection(name, table, (v, id) => v with { Id = id }, (v, _) => new() { ["name"] = v.Name.Unicode });
+            Collection(name, table, (v, id) => v with { Id = id }, (v, _) => new() { ["name"] = v.Name });
         }
 
         Collection(
@@ -249,8 +250,8 @@ public static partial class ContentConversions
             (v, id) => v with { Identity = v.Identity with { Id = id } },
             (v, _) => new()
             {
-                ["name"] = v.Identity.Name.Unicode,
-                ["shortcutHint"] = v.Shortcut == 0 ? "" : ClassicText.DecodeWindows1252([v.Shortcut], source.Identity)
+                ["name"] = v.Identity.Name,
+                ["shortcutHint"] = v.Shortcut
             });
         byte[] ruleBytes = Serialize(rules), compatibilityBytes = Serialize(compatibility);
         var ruleDocument = Document("converted-rules", ruleBytes);
@@ -269,7 +270,7 @@ public static partial class ContentConversions
             new(ruleDocument.File.Owner, null, GameplayContent.Builtin));
         var native = NativeRules.Load(pack);
         var installed = new RuleState();
-        installed.Text.Initialize();
+
         new RuleInstaller(native.Input, installed).Load(true);
         if (installed.Definitions.Snapshot() != values.Snapshot())
         {

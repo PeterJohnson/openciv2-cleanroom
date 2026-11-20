@@ -84,7 +84,12 @@ substitutes a temporary player selector into the authoritative globals.
 
 ## Passwords and multiplayer load/save stages
 
-Password encoding, decoding, reset and mode adaptation remain state operations.
+`PasswordConversion` in Formats owns scrambling, decoding and randomized reset
+padding. Core stores eight logical password strings and computes presence flags
+from them. The adapter retains imported encoded images by immutable list identity,
+so value copies preserve their own padding and a failed reset retains its random
+prefix without mutating an earlier snapshot. Mode adaptation remains a core
+operation.
 The installer selects legacy/single-player defaults or an admitted multiplayer
 block, then owns password randomness, resume selection and flag refresh. Decoders
 consume no random choices. Live export substitutes the network-turn selector in
@@ -94,7 +99,8 @@ operations independently of file chunking.
 ## Ordered events and string ownership
 
 `EventValues` contains semantic fields. The stored `EventRecord` additionally
-contains presence words and opaque bytes. Import resolves strings before they
+contains presence words, separate coordinate fields and opaque bytes. Live event
+locations use `MapPoint` and event text uses C# strings. Import decodes strings before they
 enter the live collection. `EventCollection` assigns immutable IDs and exposes
 const events through const access. Copying preserves the specified text-hole
 aliases; compaction prepares one detached copy and publishes its strings into

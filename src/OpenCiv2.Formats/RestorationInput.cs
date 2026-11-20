@@ -17,7 +17,7 @@ public static class RestorationInput
             Height = source.Header.Height,
             Topology = source.Header.Topology,
             Seed = source.Header.Seed,
-            Tiles = source.Tiles
+            Tiles = new(source.Tiles.Select(StateConversion.ToLive))
         };
         result.Validate(false);
         return result;
@@ -26,8 +26,8 @@ public static class RestorationInput
     public static GameInput Game(StoredSave source)
     {
         ArgumentNullException.ThrowIfNull(source);
-        if (source.Names.Count != 8 || source.Tribes.Count != 21 || source.Views.Count != 8
-            || source.PowerHistory.Count != 150)
+        if (source.Names.Count != EntityLimits.Civilizations || source.Tribes.Count != RuleLimits.Tribes || source.Views.Count != EntityLimits.Civilizations
+            || source.PowerHistory.Count != GameState.PowerHistorySamples)
         {
             throw new ArgumentException("Restoration input has incorrect fixed-group extents", nameof(source));
         }
@@ -47,7 +47,7 @@ public static class RestorationInput
                 cities[i].Token = new(1);
             }
         }
-        var leaders = new LeaderCustomization?[21];
+        var leaders = new LeaderCustomization?[RuleLimits.Tribes];
         int index = 0;
         void SelectLeader(int civilization)
         {
@@ -57,7 +57,7 @@ public static class RestorationInput
             }
 
             int tribe = civilizations[civilization].Tribe;
-            if (tribe < 0 || tribe >= 21)
+            if (tribe < 0 || tribe >= RuleLimits.Tribes)
             {
                 throw new ArgumentException("Saved civilization has an invalid tribe", nameof(source));
             }
@@ -68,7 +68,7 @@ public static class RestorationInput
             }
 
             var saved = source.Leaders[index++];
-            if (saved.Titles.Count != 7 || saved.Titles.Any(row => row.Count != 2))
+            if (saved.Titles.Count != RuleLimits.Governments || saved.Titles.Any(row => row.Count != RuleLimits.LeaderGenders))
             {
                 throw new ArgumentException("Saved leader requires seven title pairs", nameof(source));
             }
@@ -84,7 +84,7 @@ public static class RestorationInput
         }
         else
         {
-            for (int civilization = 0; civilization < 8; ++civilization)
+            for (int civilization = 0; civilization < EntityLimits.Civilizations; ++civilization)
             {
                 if ((source.Globals.HumanPlayers & (1U << civilization)) != 0)
                 {
@@ -93,15 +93,15 @@ public static class RestorationInput
             }
         }
 
-        Fixed150<Fixed8<byte>> history = default;
-        for (int i = 0; i < 150; ++i)
+        PowerHistoryArray<CivilizationArray<byte>> history = default;
+        for (int i = 0; i < GameState.PowerHistorySamples; ++i)
         {
-            if (source.PowerHistory[i].Count != 8)
+            if (source.PowerHistory[i].Count != EntityLimits.Civilizations)
             {
                 throw new ArgumentException("History sample requires eight civilizations", nameof(source));
             }
 
-            for (int j = 0; j < 8; ++j)
+            for (int j = 0; j < EntityLimits.Civilizations; ++j)
             {
                 history[i][j] = source.PowerHistory[i][j];
             }
@@ -112,10 +112,11 @@ public static class RestorationInput
             Height = source.Map.Header.Height,
             Topology = source.Map.Header.Topology,
             Seed = source.Map.Header.Seed,
-            Tiles = source.Map.Tiles,
-            Remembered = source.Map.Remembered,
+            Tiles = new(source.Map.Tiles.Select(StateConversion.ToLive)),
+            Remembered = new(source.Map.Remembered.Select(layer =>
+                new OwnedList<MapFeatures>(layer.Select(StateConversion.DecodeMapFeatures)))),
             Coarse = source.Map.Coarse,
-            Regions = source.Map.Regions
+            Regions = new(source.Map.Regions.Select(StateConversion.ToLive))
         };
         map.Validate(true);
         OwnedList<EventInput>? events = null;
@@ -128,7 +129,8 @@ public static class RestorationInput
                     throw new ArgumentException("Event input requires 35 strings", nameof(source));
                 }
 
-                return new EventInput(StateConversion.ToLive(entry.Record), entry.Strings);
+                return new EventInput(StateConversion.ToLive(entry.Record),
+                    new(entry.Strings.Select(text => text is null ? null : ClassicText.DecodeTerminated(text))));
             }));
         }
         return new()
@@ -139,11 +141,9 @@ public static class RestorationInput
             Map = map,
             Units = new(units),
             Cities = new(cities),
-            Tribes = new(
-                source.Tribes.Select(value => new TribeInput(value.TimesUsed, value.CityNameIndex, value.Female != 0))),
+            Tribes = new(source.Tribes.Select(value =>
+                new TribeInput(value.TimesUsed, value.CityNameIndex, value.Female != 0))),
             Leaders = new(leaders),
-            CursorX = source.CursorX,
-            CursorY = source.CursorY,
             PowerHistory = history,
             Layout = StateConversion.ToLive(source.Layout),
             Views = new(source.Views.Select(StateConversion.ToLive)),
@@ -151,6 +151,7 @@ public static class RestorationInput
             Eliminations = StateConversion.ToLive(source.Eliminations),
             Multiplayer = source.Multiplayer is null ? null : StateConversion.ToLive(source.Multiplayer),
             Events = events,
+            Cursor = new(source.CursorX, source.CursorY)
         };
     }
 }

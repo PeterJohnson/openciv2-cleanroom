@@ -68,8 +68,8 @@ a complete folding table. Byte text and presentation encoding remain separate.
 
 `ClassicLabels.Load` returns an owned `LabelCatalog`, including
 home fallback and popup text. It closes its reader before returning and never
-accesses a live text pool. `LabelCatalog.Install` publishes catalog text into the
-shared pool, retaining popup bindings when their source is absent. Parsing errors
+accesses live rule state. `LabelCatalog.Install` publishes owned text into the
+label table, retaining popup text when its source is absent. Parsing errors
 leave installed labels untouched. Language selection and GAME-cache setup belong
 to `TextConfiguration.Initialize`, independently of any label source.
 
@@ -101,11 +101,11 @@ it neither selects a new current name nor installs default title pairs. Repeated
 optional title overrides use the last value. The loader retains each leader's
 usage count and city-name cursor.
 
-`RuleState` owns decoded definitions, text storage, logical name references,
-21 live leaders and the double-movement flag. Name references are full-width;
-custom-name status is an explicit flag. Preserving names does not allocate or
-publish discarded replacements. Appends retain existing views. Label rebuilds
-preserve unrelated rule references; new-game preparation replaces the whole state.
+`RuleState` owns decoded definitions, labels, 21 live leaders and the
+double-movement flag. Definitions and live leaders carry owned text values;
+custom-name status is an explicit flag. Preserving names does not publish
+discarded replacements. Label rebuilds preserve unrelated rule and leader text;
+new-game preparation replaces the whole state.
 The original parallel unit-name pointer table has no runtime consumer and is omitted.
 
 The separate F06 `StoredLeader` type preserves every byte of an imported record.
@@ -130,7 +130,7 @@ Undefined bytes fail before storing that name, preserving earlier updates;
 other language encodings and the broader comparison profile remain open. There
 is no filesystem discovery, session reload orchestration or classic export command
 hidden in this API. The separate [native rule installer](m1-rule-content.md#retained-rule-installation)
-now applies admitted semantic input to the same retained state and pool.
+now applies admitted semantic input to the same retained state.
 
 ## City-production preferences
 
@@ -140,11 +140,11 @@ NODEFEND presence, closes, and independently opens AUTOBUILD. It reads current
 improvement names 1…38 in ascending order, appends the first match, retains
 duplicates and stops at the first unmatched token, EOF or 32 entries. Trailing
 tokens are ignored. Missing content creates no stock list. Name reads remain
-live across file callbacks; a callback-corrupted count stops at the attempted
-out-of-bounds write after prior effects.
-The `RuleState` overload resolves current improvement label IDs through the
-shared pool. The definition-only overload remains available for direct semantic
-content inputs; it is not the process name-reference lookup.
+owned for the duration of the preference read, so file callbacks cannot
+change the captured matching names.
+Both overloads capture improvement names from the supplied rule definitions
+before reading the preference file. The mutable `RuleState` overload reads the
+currently installed definitions; the snapshot overload reads its owned input.
 
 `NativeCityContent.LoadPreferences` validates a selected resolved pack's
 `openciv2-city-preferences/1` component and its complete native rules. IDs must
@@ -198,7 +198,9 @@ item and 444-byte multiplayer item. Pure codecs decode owned transferred prefixe
 against explicit prior values. Successful stored items retain arbitrary scalar
 bits and unterminated fixed strings. Stored prefix helpers retain untransferred
 bytes from the supplied prior record. Live conversion uses text through the first
-NUL and interprets nonzero binary flags as true. Live export writes 0/1 flags,
+NUL, decodes CP1252 into C# strings and interprets nonzero binary flags as true.
+Unassigned binary-field bytes retain their matching C1 characters for reversible
+export; strict content-file text decoding continues to reject them. Live export writes 0/1 flags,
 zero-filled text tails and legacy settings, and rejects oversized or embedded-NUL
 text without truncation. The second item starts at the actual cursor. Trailing
 file bytes are ignored.

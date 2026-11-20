@@ -54,6 +54,6 @@ public sealed record StoredMultiplayerPreferences
     public OwnedList<OwnedList<byte>> LegacySettings { get; init; } = new(
         Enumerable.Range(0, 3).Select(_ => new OwnedList<byte>(new byte[24])));
     public OwnedList<OwnedList<byte>> Settings { get; init; } = new(
-        Enumerable.Range(0, 7).Select(_ => new OwnedList<byte>(new byte[24])));
+        Enumerable.Range(0, ClassicPreferences.SettingsCount).Select(_ => new OwnedList<byte>(new byte[24])));
     public short LegacySetting5 { get; init; }
 }

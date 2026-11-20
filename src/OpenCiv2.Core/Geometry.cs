@@ -1,8 +1,7 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 
 namespace OpenCiv2.Core;
-
-public readonly record struct Position(int X, int Y);
 
 /// <summary>W01 doubled coordinates and admitted classic dimensions.</summary>
 public sealed class Geometry
@@ -31,13 +30,13 @@ public sealed class Geometry
         Area = area;
     }
 
-    public bool InBounds(Position p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
+    public bool InBounds(MapPoint p) => p.X >= 0 && p.X < Width && p.Y >= 0 && p.Y < Height;
 
-    public bool Canonical(Position p) => InBounds(p) && (p.X & 1) == (p.Y & 1);
+    public bool Canonical(MapPoint p) => InBounds(p) && (p.X & 1) == (p.Y & 1);
 
-    public int? TileIndex(Position p) => InBounds(p) ? p.Y * (Width / 2) + p.X / 2 : null;
+    public int? TileIndex(MapPoint p) => InBounds(p) ? p.Y * (Width / 2) + p.X / 2 : null;
 
-    public Position Coordinates(int index)
+    public MapPoint Coordinates(int index)
     {
         if (index < 0 || index >= Area)
         {
@@ -63,12 +62,12 @@ public sealed class Geometry
         return !flat && delta > Width / 2 ? unchecked(Width - delta) : delta;
     }
 
-    public int StepDistance(Position first, Position second, bool flat) =>
+    public int StepDistance(MapPoint first, MapPoint second, bool flat) =>
         Arithmetic.ShiftSigned(
             unchecked(WrappedDx(first.X, second.X, flat) + Abs32(unchecked(first.Y - second.Y))),
             -1);
 
-    public static int WeightedFromDeltas(Position delta)
+    public static int WeightedFromDeltas(MapPoint delta)
     {
         int dx = Abs32(delta.X), dy = Abs32(delta.Y);
         int half = Arithmetic.ShiftSigned(unchecked(dx + dy), -1);
@@ -76,7 +75,7 @@ public sealed class Geometry
         return unchecked(Math.Max(dx, dy) - correction);
     }
 
-    public int WeightedDistance(Position first, Position second, bool flat) =>
+    public int WeightedDistance(MapPoint first, MapPoint second, bool flat) =>
         WeightedFromDeltas(new(WrappedDx(first.X, second.X, flat), Abs32(unchecked(first.Y - second.Y))));
 
     public bool ContainsX(int x, int left, int length, bool flat)
@@ -97,15 +96,15 @@ public sealed class Geometry
         return x >= left && unchecked(end - x) >= 1;
     }
 
-    public bool ContainsRectangle(Position p, Position origin, Position extent, bool flat) =>
+    public bool ContainsRectangle(MapPoint p, MapPoint origin, MapPoint extent, bool flat) =>
         ContainsX(p.X, origin.X, extent.X, flat) && p.Y >= origin.Y && p.Y < unchecked(origin.Y + extent.Y);
 
-    public OwnedList<Position> Neighbors(Position center, IEnumerable<Position> offsets, bool flat)
+    public OwnedList<MapPoint> Neighbors(MapPoint center, IEnumerable<MapPoint> offsets, bool flat)
     {
-        var result = new List<Position>();
+        var result = new List<MapPoint>();
         foreach (var offset in offsets)
         {
-            var p = new Position(WrapX(unchecked(center.X + offset.X), flat), unchecked(center.Y + offset.Y));
+            var p = new MapPoint(WrapX(unchecked(center.X + offset.X), flat), unchecked(center.Y + offset.Y));
             if (InBounds(p))
             {
                 result.Add(p);
@@ -114,15 +113,15 @@ public sealed class Geometry
         return new(result);
     }
 
-    public static byte DirectionOf(Position delta, IReadOnlyList<Position> directions)
+    public static byte DirectionOf(MapPoint delta, IReadOnlyList<MapPoint> directions)
     {
-        if (directions.Count < 8)
+        if (directions.Count < MapLimits.Directions)
         {
             throw new ArgumentException("Eight direction entries are required.");
         }
 
-        byte result = 8;
-        for (byte i = 0; i < 8; ++i)
+        byte result = MapLimits.Directions;
+        for (byte i = 0; i < MapLimits.Directions; ++i)
         {
             if (Math.Sign(delta.X) == Math.Sign(directions[i].X) && Math.Sign(delta.Y) == Math.Sign(directions[i].Y))
             {
@@ -133,7 +132,7 @@ public sealed class Geometry
         return result;
     }
 
-    public static bool GrasslandShield(Position p)
+    public static bool GrasslandShield(MapPoint p)
     {
         int half = Arithmetic.ShiftSigned(unchecked(p.X + p.Y), -1);
         return (unchecked((uint)(-half - p.X)) & 3) < 2;

@@ -42,7 +42,7 @@ internal static partial class NativeMapMatrix
                 Require(replacement.Image(terrainKey) is not null, $"selected sheet replaces {terrainKey}");
 
             bool connects = terrain != 10;
-            var featureTile = tile with { River = connects, Improvements = connects ? MapImprovements.Road : default };
+            var featureTile = tile with { River = connects, Improvements = connects ? MapFeatures.Road : default };
             var network = new List<(string Binding, ArtPoint At)>(ground);
             if (connects) network.AddRange([("river/0", default), ("road/0", default)]);
             Draw(featureTile, network);
@@ -108,9 +108,9 @@ internal static partial class NativeMapMatrix
         const int width = 96, height = 76;
         var camera = new MapCamera(width / 2, height - 24, 1);
         var empty = new ObservedTile(2, default, false, 0, false);
-        var pollution = empty with { Improvements = MapImprovements.Pollution };
-        var fortress = empty with { Improvements = MapImprovements.Fortification };
-        var airbase = empty with { Improvements = MapImprovements.CitySite | MapImprovements.Fortification };
+        var pollution = empty with { Improvements = MapFeatures.Pollution };
+        var fortress = empty with { Improvements = MapFeatures.Fortification };
+        var airbase = empty with { Improvements = MapFeatures.CitySite | MapFeatures.Fortification };
         var map = MapGallery.Open("MV01").Map with { Width = 2, Height = 1 };
         var figure = MapGallery.Open("MV08").Map.Units[0] with { Position = new(0, 0), Details = MapUnitDetails.Withheld };
         var fortified = figure with { Details = figure.Details with { Order = MapFact<UnitOrder>.Known(UnitOrder.Fortified) } };

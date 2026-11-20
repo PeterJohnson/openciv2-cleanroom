@@ -9,7 +9,6 @@ public static class TextConfiguration
     public static void Initialize(
         int language,
         TextDirectories directories,
-        TextPool pool,
         Labels labels,
         Action buildGameCache)
     {
@@ -22,6 +21,5 @@ public static class TextConfiguration
 
         directories.Extension = language switch { 2 => "FRE", 3 => "GER", 4 => "ITA", 5 => "SPA", _ => "TXT" };
         buildGameCache();
-        pool.Initialize();
     }
 }

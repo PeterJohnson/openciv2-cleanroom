@@ -20,7 +20,7 @@ static void Identity(Utf8JsonWriter w, string name, string path)
 static void World(Utf8JsonWriter w, string name, GameState world, int[] gold)
 {
     w.WriteStartObject(name); w.WriteNumber("turn", world.Globals.Turn); w.WriteNumber("year", world.Globals.Year); w.WriteNumber("mode", (int)world.Globals.Multiplayer);
-    w.WriteNumber("playerCiv", world.Globals.PlayerCiv); w.WriteNumber("localHuman", world.Multiplayer.LocalHuman); w.WriteNumber("gameFlags", world.Globals.GameFlags);
+    w.WriteNumber("playerCiv", world.Globals.PlayerCiv); w.WriteNumber("localHuman", world.Multiplayer.LocalHuman); w.WriteNumber("gameFlags", StateConversion.EncodeGameStatus(world.Globals.Status));
     w.WriteNumber("unitSlots", world.Globals.UnitEnd); w.WriteNumber("citySlots", world.Globals.CityEnd); w.WriteStartArray("gold"); foreach (int value in gold) w.WriteNumberValue(value); w.WriteEndArray(); w.WriteEndObject();
 }
 try

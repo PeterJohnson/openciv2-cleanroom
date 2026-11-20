@@ -19,16 +19,7 @@ public static class LiveProjection
             if (unit.Token.Occupied && unit.Owner == observation.Observer)
             {
                 result.Add(
-                    new(
-                        new((ushort)i),
-                        unit.Token,
-                        unit.X,
-                        unit.Y,
-                        unit.Type,
-                        unit.MovesUsed,
-                        unit.Damage,
-                        unit.Orders,
-                        unit.Home));
+                    new(new((ushort)i), unit.Token, unit.Position, unit.Type, unit.MovesUsed, unit.Damage, unit.Orders, unit.Home));
             }
         }
         return new(observation, new(result));
@@ -45,16 +36,7 @@ public static class LiveProjection
             if (city.Token.Occupied && city.Owner == observation.Observer)
             {
                 result.Add(
-                    new(
-                        new((ushort)i),
-                        city.Token,
-                        city.X,
-                        city.Y,
-                        new OwnedList<byte>(city.Name.TakeWhile(b => b != 0)),
-                        city.Size,
-                        city.Production,
-                        city.FoodBox,
-                        city.ShieldBox));
+                    new(new((ushort)i), city.Token, city.Position, city.Name, city.Size, city.Production, city.FoodBox, city.ShieldBox));
             }
         }
         return new(observation, new(result));

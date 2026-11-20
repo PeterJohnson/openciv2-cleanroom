@@ -1,3 +1,6 @@
+using OpenCiv2.Base;
+using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.Core.State;
 using OpenCiv2.Formats;
 using OpenCiv2.IO;
@@ -8,6 +11,20 @@ namespace OpenCiv2.Session;
 public sealed class ClassicPremadeWorldSource : IPremadeWorldSource
 {
     private readonly IFileStorage storage;
+    public MapCompatibility? MapBytes { get; private set; }
+
+    internal void PrepareNewWorld() => MapBytes = null;
+
+    private sealed record ImportedMap(MapInput Map, StartingPositions Starts,
+        OwnedList<StoredTile> Tiles, ClassicPremadeWorldSource Source) : PremadeWorldInput(Map, Starts)
+    {
+        public override void Install(MapStorage destination)
+        {
+            base.Install(destination);
+            // F05 §3 clears radius metadata but retains every terrain bit when starting from a raw map.
+            Source.MapBytes = new(destination, Tiles.Select(tile => tile with { RadiusOther = 0 }));
+        }
+    }
 
     public ClassicPremadeWorldSource(IFileStorage storage)
     {
@@ -59,11 +76,11 @@ public sealed class ClassicPremadeWorldSource : IPremadeWorldSource
             return null;
         }
         var starts = new StartingPositions();
-        for (int i = 0; i < 21; ++i)
+        for (int i = 0; i < RuleLimits.Tribes; ++i)
         {
-            starts.X[i] = decoded.StartX[i];
-            starts.Y[i] = decoded.StartY[i];
+            starts.Positions[i] = starts.Positions[i] with { X = decoded.StartX[i] };
+            starts.Positions[i] = starts.Positions[i] with { Y = decoded.StartY[i] };
         }
-        return new(RestorationInput.Map(decoded), starts);
+        return new ImportedMap(RestorationInput.Map(decoded), starts, decoded.Tiles, this);
     }
 }

@@ -5,7 +5,8 @@ namespace OpenCiv2.Core.State;
 /// <summary>F02 §4 retained logical state. No implicit census or diplomacy repair.</summary>
 public record struct Civilization
 {
-    public ushort Flags;
+    public const int CurrentGoalCapacity = 48, StandingGoalCapacity = 16;
+    public CivilizationStatus Flags;
     public int Gold;
     public short Tribe, ResearchProgress, Researching, CapitalX, LastCityTurn;
     public byte NumAdvances, FutureTechs, ResearchCostAdvances, ScienceRate, TaxRate, DiploRandom;
@@ -14,57 +15,57 @@ public record struct Civilization
     public short SubversionCount;
     public byte Reputation;
     public sbyte DiploRequestCount;
-    public Fixed8<uint> Treaties;
-    public Fixed8<byte> Attitude, AggressionCounter;
-    public Fixed8<sbyte> ReputationCredit;
-    public Fixed13<byte> Advances;
+    public CivilizationArray<Relationship> Treaties;
+    public CivilizationArray<byte> Attitude, AggressionCounter;
+    public CivilizationArray<sbyte> ReputationCredit;
+    public AdvanceSet Advances;
     public short MilitaryCount, CityCount, ShipCount, TotalCitySize;
     public ushort MilitaryStrength;
     public short TotalAttack, PopulationMilestone;
-    public Fixed100<byte> AdvanceSource;
-    public Fixed62<byte> UnitsActive, UnitsLost, UnitsInProduction;
-    public Fixed64<ushort> ContinentMilitary, ContinentAttack;
-    public Fixed64<byte> ContinentCities, ContinentCitySize, ContinentTradeUnits, ContinentFlags, ContinentPolicy;
+    public AdvanceArray<byte> AdvanceSource;
+    public UnitTypeArray<byte> UnitsActive, UnitsLost, UnitsInProduction;
+    public RegionArray<ushort> ContinentMilitary, ContinentAttack;
+    public RegionArray<byte> ContinentCities, ContinentCitySize, ContinentTradeUnits, ContinentPolicy;
+    public RegionArray<RegionalPresence> ContinentFlags;
     public short BestShieldSurplus;
-    public Fixed7<short> GovernmentScore;
-    public Fixed8<short> LastContactTurn;
+    public GovernmentArray<short> GovernmentScore;
+    public CivilizationArray<short> LastContactTurn;
     public byte LeaderPortrait;
     public Fixed10<byte> ThroneRoom;
     public short ThroneRoomUpgrades;
-    public byte SpaceshipFlags;
+    public SpaceshipStatus SpaceshipFlags;
     public short SpaceshipArrivalYear, SpaceshipLaunchYear, SpaceshipPopulation;
     public Fixed6<short> SpaceshipParts;
-    public Fixed48<CivilizationGoal> Goals;
-    public Fixed16<CivilizationGoal> StandingGoals;
+    public CurrentGoalArray<CivilizationGoal> Goals;
+    public StandingGoalArray<CivilizationGoal> StandingGoals;
 }
 
 /// <summary>F02 §4/F06 §3 logical fields. Scan selectors here do not install a running session.</summary>
 public record struct GlobalValues
 {
-    public GlobalValues()
-    {
-        ActiveUnit = new();
-        MovingUnit = new();
-    }
-
-    public ushort Rules;
-    public uint GameOptions;
-    public ushort TransientFlags, GameFlags, MessageOptions, ShownEventFlags;
+    public GameRules Rules;
+    public GameOptions GameOptions;
+    public TurnStatus TransientFlags;
+    public MessageSuppression MessageOptions;
+    public TutorialProgress ShownEventFlags;
+    public GameStatus Status;
     public short Turn, Year, FirstLaunchTurn;
-    public UnitLink ActiveUnit, MovingUnit;
+    public UnitSlot? ActiveUnit, MovingUnit;
     public GameMode Multiplayer;
     public sbyte PlayerCiv, SavedCurrentCiv, TurnCiv, ViewCiv;
     public byte RevealMap, BarbarianActivity;
     public Difficulty Difficulty;
-    public byte CivsAlive, HumanPlayers, CivsAtStart, NumEnemies;
+    public CivilizationSet CivsAlive, HumanPlayers, CivsAtStart;
+    public byte NumEnemies;
     public sbyte WarmingCounter, GlobalWarmings;
     public short WarmingPollution, PollutedTiles, PeaceTurns, UnitEnd, CityEnd, NumAdvances;
-    public Fixed100<byte> FirstDiscoverer, AdvanceKnownBy;
+    public AdvanceArray<byte> FirstDiscoverer;
+    public AdvanceArray<CivilizationSet> AdvanceKnownBy;
     // -1 not built, -2 destroyed, otherwise a city slot; construction is not a new-game initializer.
-    public Fixed28<short> WonderCity;
+    public WonderArray<short> WonderCity;
     public short NextHistoryTurn;
     public byte BestHumanRank, WorstHumanRank;
-    public Fixed8<byte> PowerRank, CivByRank;
+    public CivilizationArray<byte> PowerRank, CivByRank;
 }
 
 public static class CivilizationCensus
@@ -72,13 +73,13 @@ public static class CivilizationCensus
     /// <summary>F06 §6 stage 17: rebuild only these two counters in civilization/slot order, modulo 256.</summary>
     public static void RebuildLoadedUnits(Span<Civilization> civilizations, EntityPools pools)
     {
-        if (civilizations.Length != 8)
+        if (civilizations.Length != EntityLimits.Civilizations)
         {
             throw new ArgumentException("Loaded census requires eight civilizations", nameof(civilizations));
         }
 
         ArgumentNullException.ThrowIfNull(pools);
-        for (int civ = 0; civ < 8; ++civ)
+        for (int civ = 0; civ < EntityLimits.Civilizations; ++civ)
         {
             ref var current = ref civilizations[civ];
             current.UnitsActive = default;
@@ -91,7 +92,7 @@ public static class CivilizationCensus
                 }
 
                 int type = unit.Type.Value;
-                if (type >= 62)
+                if (type >= RuleLimits.UnitTypes)
                 {
                     throw new ArgumentOutOfRangeException(nameof(pools), "Loaded unit census has no type backing");
                 }
@@ -106,7 +107,7 @@ public static class CivilizationCensus
                 }
 
                 int type = city.Production;
-                if (type >= 62)
+                if (type >= RuleLimits.UnitTypes)
                 {
                     throw new ArgumentOutOfRangeException(
                         nameof(pools),

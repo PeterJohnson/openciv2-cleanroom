@@ -18,7 +18,9 @@ public static partial class FoundationSuite
         for (int i = 0; i < 21; ++i) w.I16((short)(hints && i == 0 ? 1 : hints && i == 20 ? -7 : -1));
         w.Append([0xc2, 0xff, 0xff, 61, 0x55, 0x73, 0x8a, 0x42, 0x45, 62, 0xaa, 0xf7, 0x19, 0x81, 0x20, 63, 0xff, 0xe9, 0xf0, 0x55, 0x9b, 3, 1, 0x21]); return w.ToArray();
     }
-    private static OwnedList<byte> PremadeTiles(MapStorage map) => new(map.Tiles.ToArray().SelectMany(ClassicRecords.Encode));
+    private static OwnedList<byte> PremadeTiles(MapStorage map, MapCompatibility? compatibility = null) => new(
+        Enumerable.Range(0, map.Tiles.Length).Select(i => compatibility is not null && compatibility.BelongsTo(map)
+            ? compatibility.Export(map, i) : StateConversion.ToStored(map.Tiles[i])).SelectMany(ClassicRecords.Encode));
     private sealed class PremadeSource(Func<string, PremadeWorldInput?> load) : IPremadeWorldSource { public PremadeWorldInput? Load(string path) => load(path); }
     private sealed class PremadeFixture : IDisposable
     {
@@ -34,13 +36,13 @@ public static partial class FoundationSuite
         public PremadeWorldServices Services;
         public PremadeFixture()
         {
-            var map = Runtime.World.Map; map.Allocate(new(8, 4)); map.PatternSeed = 55; map.Regions[3] = new(10, 20, 30, 0x12345678, new([42, 43])); map.RememberedBarbarian = [7, 8, 9]; map.Tiles[0].Region = 17; map.Tiles[0].Features = 0x42;
-            for (int civ = 1; civ < 8; ++civ) map.RememberedLayer(civ).Fill(77);
+            var map = Runtime.World.Map; map.Allocate(new(8, 4)); map.PatternSeed = 55; map.Regions[3] = new(10, 20, 30, StateConversion.DecodeRegions(0x12345678)); map.RememberedBarbarian = [MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Irrigation, MapFeatures.Mine, MapFeatures.Unit | MapFeatures.Mine]; map.Tiles[0].Region = 17; map.Tiles[0].Features = MapFeatures.CitySite | MapFeatures.Fortification;
+            for (int civ = 1; civ < 8; ++civ) map.RememberedLayer(civ).Fill(MapFeatures.Unit | MapFeatures.Irrigation | MapFeatures.Mine | MapFeatures.Fortification);
             for (int grid = 0; grid < 4; ++grid) map.CoarseGrid(grid).Fill(42);
-            Runtime.Process.Fallback.Value = ClassicRecords.DecodeTile([0x82, 0xff, 0xe1, 17, 15, 0x32]);
-            for (int i = 0; i < 21; ++i) { Starts.X[i] = 0x1234; Starts.Y[i] = 0x5678; }
+            Runtime.Process.Fallback.Value = StateConversion.ToLive(ClassicRecords.DecodeTile([0x82, 0xff, 0xe1, 17, 15, 0x32]));
+            for (int i = 0; i < 21; ++i) { Starts.Positions[i] = Starts.Positions[i] with { X = 0x1234 }; Starts.Positions[i] = Starts.Positions[i] with { Y = 0x5678 }; }
             Runtime.World.WorldSetup.Width = 99; Runtime.World.WorldSetup.Height = 88; for (int i = 0; i < 5; ++i) Runtime.World.WorldSetup.Parameters[i] = i + 1;
-            Runtime.World.Globals.GameFlags = 0xffff; Runtime.World.Globals.Rules = 0x1555;
+            Runtime.World.Globals.Status = new GameStatus { AiCoordination = true, Won = true, LargeMap = true, SmallMap = true, Cheated = true, Scored = true, ScenarioExport = true, Scenario = true }; Runtime.World.Globals.Rules = StateConversion.DecodeGameRules(0x1555);
             Storage.ReadFile = path =>
             {
                 Equal("authored.mp", path); Event("open"); if (!Open) return null; Position = 0;
@@ -51,7 +53,7 @@ public static partial class FoundationSuite
         private void Event(string name) { Trace.Add(name); Observe?.Invoke(name); }
         public WorldSource? Load() => PremadeWorld.Load(Runtime, ref Starts, "authored.mp", Services);
         public void ReadWithoutPreparation()
-        { var input = Services.Source.Load("authored.mp")!; input.Map.Install(Runtime.World.Map, false); Starts = input.Starts; Trace.Clear(); }
+        { var input = Services.Source.Load("authored.mp")!; input.Install(Runtime.World.Map); Starts = input.Starts; Trace.Clear(); }
         public void Dispose() => Runtime.Dispose();
     }
     private static void PremadeInstallationAndRetention()
@@ -59,27 +61,27 @@ public static partial class FoundationSuite
         using var f = new PremadeFixture(); var map = f.Runtime.World.Map; var fallback = f.Runtime.Process.Fallback.Value; var regions = new OwnedList<RegionSummary>(map.Regions.ToArray()); var preferences = f.Runtime.Process.OrdinaryPreferences;
         f.Bytes = [.. f.Bytes, 0xde, 0xad]; var original = new OwnedList<byte>(f.Bytes); Equal((int)WorldSource.PremadeFlat, (int)f.Load()!.Value);
         Equal(f.Bytes.Length, f.Position); Equal(1, f.Closes); Equal(new OwnedList<string>(["open", "read", "close", "seed", "hints"]), new(f.Trace)); Equal(4, map.Geometry.Width); Equal(2, map.Geometry.Height); Equal((ushort)24, map.PatternSeed); Equal((ushort)0xfffe, map.StoredTopology);
-        Equal(new OwnedList<byte>([0xc2, 0, 0, 0, 0, 0xf0, 0x8a, 0, 0, 0, 0, 0xf0, 0x19, 0, 0, 0, 0, 0xf0, 0xf0, 0, 0, 0, 0, 0xf0]), PremadeTiles(map));
-        Equal(regions, new(map.Regions.ToArray())); Equal(fallback, f.Runtime.Process.Fallback.Value); Equal(new OwnedList<byte>([7, 8, 9]), new(map.RememberedBarbarian));
+        Equal(new OwnedList<byte>([0xc2, 0, 0, 0, 0, 0xf0, 0x8a, 0, 0, 0, 0, 0xf0, 0x19, 0, 0, 0, 0, 0xf0, 0xf0, 0, 0, 0, 0, 0xf0]), PremadeTiles(map, ((ClassicPremadeWorldSource)f.Services.Source).MapBytes));
+        Equal(regions, new(map.Regions.ToArray())); Equal(fallback, f.Runtime.Process.Fallback.Value); Equal(new OwnedList<MapFeatures>([MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Irrigation, MapFeatures.Mine, MapFeatures.Unit | MapFeatures.Mine]), new(map.RememberedBarbarian));
         for (int civ = 1; civ < 8; ++civ) Equal(true, map.RememberedLayer(civ).ToArray().All(v => v == 0));
         for (int grid = 0; grid < 4; ++grid) Equal(true, map.CoarseGrid(grid).ToArray().All(v => v is null));
-        Equal((short)2, f.Starts.X[0]); Equal((short)1, f.Starts.Y[0]); Equal((short)300, f.Starts.X[20]); Equal((short)-7, f.Starts.Y[20]); Equal((ushort)0x9555, f.Runtime.World.Globals.Rules); Equal((ushort)0xffff, f.Runtime.World.Globals.GameFlags); Equal((short)4, f.Runtime.World.WorldSetup.Width); Equal((short)2, f.Runtime.World.WorldSetup.Height); SetupParametersEqual([1, 2, 3, 4, 5], f.Runtime); Equal(preferences, f.Runtime.Process.OrdinaryPreferences); Equal(original, new(f.Bytes)); Equal(false, f.Runtime.Active);
-        f.Runtime.World.Globals.GameFlags = 6; f.Bytes = PremadeBytes(99, 0, false); Equal((int)WorldSource.PremadeCylindrical, (int)f.Load()!.Value); Equal((ushort)0x1555, f.Runtime.World.Globals.Rules); Equal((ushort)6, f.Runtime.World.Globals.GameFlags); Equal(new StartingPositions(), f.Starts); SetupParametersEqual([1, 2, 3, 4, 5], f.Runtime); Equal(regions, new(map.Regions.ToArray()));
+        Equal((short)2, f.Starts.Positions[0].X); Equal((short)1, f.Starts.Positions[0].Y); Equal((short)300, f.Starts.Positions[20].X); Equal((short)-7, f.Starts.Positions[20].Y); Equal(StateConversion.DecodeGameRules((ushort)0x9555), f.Runtime.World.Globals.Rules); Equal(new GameStatus { AiCoordination = true, Won = true, LargeMap = true, SmallMap = true, Cheated = true, Scored = true, ScenarioExport = true, Scenario = true }, f.Runtime.World.Globals.Status); Equal((short)4, f.Runtime.World.WorldSetup.Width); Equal((short)2, f.Runtime.World.WorldSetup.Height); SetupParametersEqual([1, 2, 3, 4, 5], f.Runtime); Equal(preferences, f.Runtime.Process.OrdinaryPreferences); Equal(original, new(f.Bytes)); Equal(false, f.Runtime.Active);
+        f.Runtime.World.Globals.Status = new GameStatus { Won = true, LargeMap = true }; f.Bytes = PremadeBytes(99, 0, false); Equal((int)WorldSource.PremadeCylindrical, (int)f.Load()!.Value); Equal(StateConversion.DecodeGameRules((ushort)0x1555), f.Runtime.World.Globals.Rules); Equal(new GameStatus { Won = true, LargeMap = true }, f.Runtime.World.Globals.Status); Equal(new StartingPositions(), f.Starts); SetupParametersEqual([1, 2, 3, 4, 5], f.Runtime); Equal(regions, new(map.Regions.ToArray()));
     }
     private static void PremadeNormalizationAndHintScan()
     {
         foreach (int slot in new[] { -1, 0, 20 })
         {
             using var f = new PremadeFixture(); f.ReadWithoutPreparation(); var map = f.Runtime.World.Map; var setup = f.Runtime.World.WorldSetup;
-            for (int civ = 1; civ < 8; ++civ) map.RememberedLayer(civ).Fill((byte)civ);
+            for (int civ = 1; civ < 8; ++civ) map.RememberedLayer(civ).Fill(StateConversion.DecodeMapFeatures((byte)civ));
             for (int grid = 0; grid < 4; ++grid) map.CoarseGrid(grid)[0] = (byte)(grid + 10);
-            for (int i = 0; i < 21; ++i) { f.Starts.X[i] = -2; f.Starts.Y[i] = 30000; }
-            if (slot >= 0) f.Starts.X[slot] = 0; var starts = f.Starts; f.HintResponse = 0;
+            for (int i = 0; i < 21; ++i) { f.Starts.Positions[i] = f.Starts.Positions[i] with { X = -2 }; f.Starts.Positions[i] = f.Starts.Positions[i] with { Y = 30000 }; }
+            if (slot >= 0) f.Starts.Positions[slot] = f.Starts.Positions[slot] with { X = 0 }; var starts = f.Starts; f.HintResponse = 0;
             Equal((int)WorldSource.PremadeFlat, (int)PremadeWorld.Prepare(f.Runtime, ref f.Starts, f.Services.Choices)); Equal(slot < 0 ? starts : new StartingPositions(), f.Starts);
             Equal(slot < 0 ? new OwnedList<string>(["seed"]) : new(["seed", "hints"]), new(f.Trace));
             for (int civ = 1; civ < 8; ++civ) Equal(true, map.RememberedLayer(civ).ToArray().All(v => v == 0));
             for (int grid = 0; grid < 4; ++grid) Equal((byte)(grid + 10), map.CoarseGrid(grid)[0]!.Value);
-            Equal(new OwnedList<byte>([7, 8, 9]), new(map.RememberedBarbarian)); Equal(setup, f.Runtime.World.WorldSetup);
+            Equal(new OwnedList<MapFeatures>([MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Irrigation, MapFeatures.Mine, MapFeatures.Unit | MapFeatures.Mine]), new(map.RememberedBarbarian)); Equal(setup, f.Runtime.World.WorldSetup);
         }
     }
     private static void PremadeSeedAndResponseLaws()
@@ -93,7 +95,7 @@ public static partial class FoundationSuite
         foreach (int response in new[] { -9, -1, 0, 1, 2 })
         {
             using var f = new PremadeFixture(); f.SeedResponse = f.HintResponse = response; f.Tick = 0x8002; f.Load(); Equal((ushort)(response == 0 ? 2 : 24), f.Runtime.World.Map.PatternSeed);
-            if (response == 0) Equal(new StartingPositions(), f.Starts); else Equal((short)300, f.Starts.X[20]); Equal(response == 0 ? 1 : 0, f.Trace.Count(e => e == "ticks"));
+            if (response == 0) Equal(new StartingPositions(), f.Starts); else Equal((short)300, f.Starts.Positions[20].X); Equal(response == 0 ? 1 : 0, f.Trace.Count(e => e == "ticks"));
         }
     }
     private static void PremadeLiveChoicesAndFailures()
@@ -103,15 +105,15 @@ public static partial class FoundationSuite
             f.Bytes = PremadeBytes(24, 0, false); f.SeedResponse = -1;
             f.Observe = e =>
             {
-                if (e == "seed") { Equal((byte)0, f.Runtime.World.Map.Tiles[0].Features); Equal(true, f.Runtime.World.Map.Tiles[0].Owner is null); f.Runtime.World.Map.PatternSeed = 99; f.Starts.X[20] = 123; f.Runtime.World.Globals.Rules = 0x42; }
-                if (e == "hints") { Equal((ushort)99, f.Runtime.World.Map.PatternSeed); Equal((short)123, f.Starts.X[20]); f.Runtime.World.Map.StoredTopology = 7; f.Runtime.World.Globals.Rules |= 0x100; }
+                if (e == "seed") { Equal(MapFeatures.None, f.Runtime.World.Map.Tiles[0].Features); Equal(true, f.Runtime.World.Map.Tiles[0].Owner is null); f.Runtime.World.Map.PatternSeed = 99; f.Starts.Positions[20] = f.Starts.Positions[20] with { X = 123 }; f.Runtime.World.Globals.Rules = StateConversion.DecodeGameRules(0x42); }
+                if (e == "hints") { Equal((ushort)99, f.Runtime.World.Map.PatternSeed); Equal((short)123, f.Starts.Positions[20].X); f.Runtime.World.Map.StoredTopology = 7; f.Runtime.World.Globals.Rules.NoRestart = true; }
             };
-            Equal((int)WorldSource.PremadeFlat, (int)f.Load()!.Value); Equal((ushort)0x8142, f.Runtime.World.Globals.Rules); Equal((ushort)99, f.Runtime.World.Map.PatternSeed);
+            Equal((int)WorldSource.PremadeFlat, (int)f.Load()!.Value); Equal(StateConversion.DecodeGameRules((ushort)0x8142), f.Runtime.World.Globals.Rules); Equal((ushort)99, f.Runtime.World.Map.PatternSeed);
         }
         foreach (string stop in new[] { "seed", "ticks", "hints" })
         {
             using var f = new PremadeFixture(); f.SeedResponse = 0; f.Observe = e => { if (e == stop) throw new IOException(stop); };
-            Throws<IOException>(() => f.Load()); Equal((byte)0, f.Runtime.World.Map.Tiles[0].Features); Equal(true, f.Runtime.World.Map.Tiles[0].Owner is null); Equal((ushort)0x1555, f.Runtime.World.Globals.Rules); Equal((ushort)(stop == "hints" ? 0x5678 : 24), f.Runtime.World.Map.PatternSeed); Equal((short)300, f.Starts.X[20]); Equal(1, f.Closes);
+            Throws<IOException>(() => f.Load()); Equal(MapFeatures.None, f.Runtime.World.Map.Tiles[0].Features); Equal(true, f.Runtime.World.Map.Tiles[0].Owner is null); Equal(StateConversion.DecodeGameRules((ushort)0x1555), f.Runtime.World.Globals.Rules); Equal((ushort)(stop == "hints" ? 0x5678 : 24), f.Runtime.World.Map.PatternSeed); Equal((short)300, f.Starts.Positions[20].X); Equal(1, f.Closes);
             f.Runtime.PrepareNewGame();
         }
     }
@@ -152,9 +154,9 @@ public static partial class FoundationSuite
         foreach (var services in new[] { f.Services with { Source = null! }, f.Services with { LoadFailure = null! }, f.Services with { Choices = new(null!, () => 1, () => 1) }, f.Services with { Choices = new(() => 1, null!, () => 1) }, f.Services with { Choices = new(() => 1, () => 1, null!) } })
             Throws<ArgumentNullException>(() => PremadeWorld.Load(f.Runtime, ref f.Starts, "authored.mp", services));
         Equal(before, PremadeTiles(f.Runtime.World.Map)); Equal(0, f.Trace.Count);
-        f.Runtime.BeginClientSession(new(1, 2)); f.Runtime.World.Entities.Units.SetEnd(1); f.Runtime.World.Entities.Units.Storage[0] = new() { Token = new(1), Owner = new(1), X = 7 }; var client = SessionClient(f.Runtime); short next = 7;
-        f.Observe = _ => { Equal(next, client.OwnUnits().Records[0].X); f.Runtime.World.Entities.Units.Storage[0].X = ++next; Throws<InvalidOperationException>(f.Runtime.PrepareNewGame); };
-        f.SeedResponse = 0; f.Load(); Equal(next, client.OwnUnits().Records[0].X); f.Bytes = [1]; Equal(true, f.Load() is null); Equal(next, client.OwnUnits().Records[0].X); f.Open = false; Equal(true, f.Load() is null); Equal(next, client.OwnUnits().Records[0].X);
+        f.Runtime.BeginClientSession(new(1, 2)); f.Runtime.World.Entities.Units.SetEnd(1); f.Runtime.World.Entities.Units.Storage[0] = new() { Token = new(1), Owner = new(1), Position = new(7, 0) }; var client = SessionClient(f.Runtime); short next = 7;
+        f.Observe = _ => { Equal(next, client.OwnUnits().Records[0].Position.X); f.Runtime.World.Entities.Units.Storage[0].Position = f.Runtime.World.Entities.Units.Storage[0].Position with { X = ++next }; Throws<InvalidOperationException>(f.Runtime.PrepareNewGame); };
+        f.SeedResponse = 0; f.Load(); Equal(next, client.OwnUnits().Records[0].Position.X); f.Bytes = [1]; Equal(true, f.Load() is null); Equal(next, client.OwnUnits().Records[0].Position.X); f.Open = false; Equal(true, f.Load() is null); Equal(next, client.OwnUnits().Records[0].Position.X);
         f.Runtime.PrepareNewGame(); Throws<ArgumentException>(() => PremadeWorld.Prepare(f.Runtime, ref f.Starts, f.Services.Choices));
         f.Runtime.RegisterCommand(CommandDefinitionFor(_ => DecisionContinuation())); f.Runtime.BeginClientSession(new()); var pending = SessionClient(f.Runtime); pending.Submit(CommandRequestFor());
         int events = f.Trace.Count; Throws<InvalidOperationException>(() => f.Load()); Equal(events, f.Trace.Count); // Pending commands cannot be bypassed by a map load.
