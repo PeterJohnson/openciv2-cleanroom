@@ -25,9 +25,14 @@ public static class PinnedGraphics
             using var parsed = JsonDocument.Parse(metadata.AsMemory(0, length));
             var root = parsed.RootElement;
             RequireProperties(root, ["schema", "kind", "version", "files"]);
-            if (root.GetProperty("schema").GetInt32() != 1 || root.GetProperty("kind").GetString() != "openciv2-assets" ||
-                root.GetProperty("version").GetString() != release.GetProperty("version").GetString())
-                throw new InvalidDataException("Asset package identity does not match the pinned release");
+            int schema = root.GetProperty("schema").GetInt32();
+            string? kind = root.GetProperty("kind").GetString(), version = root.GetProperty("version").GetString();
+            string expectedVersion = release.GetProperty("version").GetString()!;
+            if (schema != 1 || kind != "openciv2-assets" || version != expectedVersion)
+                throw new InvalidDataException(
+                    $"Asset package identity does not match the pinned release: expected schema 1, kind 'openciv2-assets', version '{expectedVersion}'; " +
+                    $"found schema {schema}, kind '{kind}', version '{version}'. " +
+                    $"Download {release.GetProperty("url").GetString()}, verify its SHA-256 against dependencies.json, and select the extracted package root.");
             var fileMap = root.GetProperty("files");
             RequireProperties(fileMap, files.Keys);
             foreach (var (path, pin) in files)

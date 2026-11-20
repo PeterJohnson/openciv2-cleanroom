@@ -54,6 +54,14 @@ dotnet run --project src/OpenCiv2.Desktop -c Release --no-build -- \
   --assets /path/to/runtime-package --fonts /path/to/dejavu-fonts-ttf-2.37
 ```
 
+If startup reports **Asset package identity does not match the pinned release**,
+compare the version in that directory's `package.json` with `assets.version` in
+`dependencies.json`. Download the pinned `assets.url`, verify the archive against
+`assets.sha256`, and extract it into a fresh directory. Point `--assets` to that
+directory. The current pin is **2026.11.08.1**; an existing **2026.11.07.1** package
+must be replaced because its atlas bytes also differ. Editing the manifest's
+version does not update the assets and will fail the file hash checks.
+
 The host validates the input pins before drawing. With stock graphics loaded,
 Riverbend shows a blue river crossing a brown road and small resource sprites,
 including pale Grassland shields. The header reads **Authored map / Riverbend**.
