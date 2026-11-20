@@ -33,15 +33,22 @@ async function main() {
             const read = () => page.evaluate(() => globalThis.openCiv2Snapshot());
             const check = async (name, test) => { const state = await read(); if (!test(state)) throw new Error(`${scale}: ${name}: ${JSON.stringify(state)}`); checks.push({ scale, name, state }); };
             const wait = async status => { try { await page.waitForFunction(status => globalThis.openCiv2Snapshot().status === status, status); } catch (error) { await page.screenshot({ path: output + '.failure.png' }); throw new Error(error + ': ' + JSON.stringify(await read())); } };
-            const click = async name => { const box = (await read()).controls[name]; if (!box.enabled) throw new Error(`${name} disabled`); await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2); };
+            const click = async name => {
+                // Model snapshots can expose a new dialog before the canvas hit-test tree updates.
+                // Allow a complete rendering turn, then read the current control bounds.
+                await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+                const box = (await read()).controls[name];
+                if (!box.enabled) throw new Error(`${name} disabled`);
+                await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+            };
             await check('viewport-and-density', s => Math.abs(s.width - 1000) < 2 && Math.abs(s.height - 800) < 2 && Math.abs(s.scaling - scale) < .01);
             identity = await page.evaluate(() => globalThis.openCiv2Identity());
             await check('observer-filtered-units', s => s.observer === '1' && s.units.map(u => u.slot).join(',') === '0,1,2');
             await page.screenshot({ path: output + '.initial.png' }); await click('send'); await wait('AwaitingInteraction'); await check('asynchronous-decision', s => s.effects === 0 && s.controls.confirm.enabled && !s.controls.send.enabled);
             await click('cancel'); await wait('Cancelled'); await check('cancel-preserves-state', s => s.effects === 0);
             await click('input'); await page.keyboard.press('ControlOrMeta+A'); await page.keyboard.type('unit.stack-bottom unit=0:100'); await page.keyboard.press('Enter'); await wait('AwaitingInteraction');
-            // Input retains focus; the next enabled control is the confirmation button.
-            await page.keyboard.press('Tab'); await page.keyboard.press('Space'); await wait('Completed');
+            // Opening the dialog focuses Confirm; Tab would move away from it.
+            await page.keyboard.press('Space'); await wait('Completed');
             await check('console-and-keyboard-confirm', s => s.effects === 1 && s.changed === true);
             await page.screenshot({ path: output + `.scale-${scale}.png` });
             await click('send'); await wait('AwaitingInteraction'); await click('confirm'); await wait('Completed'); await check('repeat-is-no-op', s => s.changed === false && s.effects === 0);
