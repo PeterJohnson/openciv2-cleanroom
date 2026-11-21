@@ -5,6 +5,16 @@ browser evidence. This page distinguishes those checks from desktop acceptance
 and whole-game compatibility. Build and test commands are in the
 [build guide](../BUILDING.md) and [test matrix](../testing/README.md).
 
+**M2 development is closed with tracked deferrals.** The
+[closeout review](../m2-closeout.md) reconciles the Linux, Mac, Windows and browser
+records and assigns M2-F01–F08 to follow-up work. M3 is the main implementation
+workstream. Original full performance/platform acceptance remains open; the
+dated failures and skips below are preserved, and CPU remains the default.
+The combined Linux checkout passes native tests and CPU/GPU matrices. Its shared
+WASM matrix hit an allocation failure; a logging-only diagnostic rerun passed.
+Both results are retained in the closeout, with the unresolved failure assigned
+to M2-F02/F04 rather than declaring the current browser matrix accepted.
+
 ## Current local validation
 
 The [Windows M2 validation](m2-windows-2026-11-20.md) on 2026-11-20 Pacific
@@ -17,8 +27,9 @@ platform, browser and performance gates remain open; the initial receipt is reta
 The [2026-11-20 Mac M2 follow-up](m2-macos-fixes-2026-11-20.md) fixes the reviewed
 P02 registry hash and initial focus of keyboard-opened native dialogs. Two
 renderer iterations reduce the 1080p browser dirty-world p95 to 54.6–55.2 ms, with
-exact endpoint images. The 16.7 ms target and remaining platform gates keep M2
-unaccepted. The [initial Mac run](m2-macos-2026-11-20.md) retains the original
+exact endpoint images. The 16.7 ms target and remaining platform gates are still
+failed/pending under full acceptance; they are explicit closeout deferrals.
+The [initial Mac run](m2-macos-2026-11-20.md) retains the original
 failures, broader Apple M4 native/Chromium checks and baseline timing evidence.
 
 The opt-in desktop Native AOT build passed
@@ -33,8 +44,8 @@ including native/browser behavior, actual application input, extracted CLI
 packages and collector smoke checks. That record identifies the uncommitted
 tested tree and report hashes. The [previous .NET 10 run](local-2026-11-17.md)
 remains historical evidence. The upgraded hosted workflows have now passed for
-the signed Native AOT lock correction, as recorded below; actual Windows/macOS
-desktop checks remain open.
+the signed Native AOT lock correction, as recorded below. The later Mac/Windows
+records above add bounded desktop checks; complete platform qualification remains open.
 
 ## M2 map slice
 
@@ -51,7 +62,8 @@ retain their own gates.
 
 The [menus and dialogs record](m2-menus-dialogs.md) covers the shared action model,
 Linux/browser dropdowns, correlated custom choices, focus and stale-target
-handling. The macOS NativeMenu adapter still requires real native tracking tests.
+handling. The later Mac records add real NativeMenu/input and dispatcher-progress
+evidence; full deadline/peer delivery under native tracking remains M2-F05.
 
 The [browser GPU default record](m2-browser-gpu-default.md) covers shared native
 and WASM navigation/history, art/density galleries, resource replacement and

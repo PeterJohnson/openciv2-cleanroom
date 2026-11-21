@@ -11,8 +11,8 @@ establish that its entire family has been implemented or validated.
 | --- | --- | --- |
 | M0 | Reproducible build, specification/content inventories and evidence boundaries | Implemented with pinned .NET tooling and cross-platform CI |
 | M1 | Finite portable foundations, classic codecs, content/inspection CLI, session ownership and bounded checkpoints | Implemented; current test families and exclusions are in the coverage and validation guides |
-| M2 | Complete map renderer, Avalonia interaction, platform menus/storage and content installation | Linux and WASM/WebGL authored rendering evidence exists; performance, remaining platform/services and live-provider joins retain their separate gates |
-| M3 | First playable local game slice | Planned; depends on M1 and the required M2 surfaces |
+| M2 | Map renderer, Avalonia interaction, platform menus/storage and content installation | Development closed with explicit M2-F01–F08 deferrals; full performance/platform acceptance remains open. See the [closeout](m2-closeout.md). |
+| M3 | First playable local game slice | Main workstream after M2 closeout; W02 generation/world entry exists, while the playable loop and its integration gates remain open |
 | M4 | Complete single-player mechanics, AI and expanded automation | Planned |
 | M5 | Scenarios, editors, complete UI and hotseat | Planned |
 | M6 | Original-peer multiplayer and browser transport | Planned |
@@ -20,8 +20,9 @@ establish that its entire family has been implemented or validated.
 
 Platform checks grow with each slice. CI passes core/CLI, Lua/SQLite and package
 checks on Linux x64, macOS ARM64 and Windows x64; Chromium executes portable,
-Lua and application-input tests. Native Windows/macOS desktop input/shutdown,
-OS interruption behavior and target-hardware performance remain open. See
+Lua and application-input tests. Bounded native Windows/macOS input, shutdown,
+menus and pickers now have executed evidence and corrected defects. Complete
+platform coverage, OS interruption and performance acceptance remain open. See
 [validation](validation/README.md) and the [platform checklist](testing/platforms.md).
 
 ## Current implementation status
@@ -33,7 +34,9 @@ solutions build Avalonia, automation, SQLite export and performance probes.
 
 The application host exposes one bounded production command over an authored
 world. It proves the scoped-client, console and asynchronous interaction path.
-It is not a playable game or a completed renderer. The optional Lua-CSharp adapter
+It is not a playable game or a fully qualified cross-platform UI. M2's renderer
+and platform implementation is closed under the [explicit handoff](m2-closeout.md),
+with its failed/pending acceptance gates retained. The optional Lua-CSharp adapter
 exercises the same session APIs with explicit resource and authority limits.
 
 ## M0 — Build and evidence infrastructure
@@ -108,6 +111,13 @@ checks and independent provenance for compatibility claims.
 ## M2 — Prove the graphical and platform boundaries
 
 Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
+
+**Development closed with tracked deferrals.** The [M2 closeout](m2-closeout.md)
+records the accepted Mac/Windows review, resolved findings, delivered scope and
+M2-F01–F08 follow-ups. M3 is the main implementation workstream. The functional,
+performance and full-acceptance criteria below remain technical obligations;
+the user-approved closeout changes milestone scheduling, not pass/fail results.
+The following slice history retains its original evidence boundaries.
 
 The Riverbend slice establishes rendering infrastructure: scoped W01/W03
 observations, pinned atlas/fonts, Skia drawing, pan/zoom, picking and the shared
@@ -288,8 +298,16 @@ in-window menus, a macOS NativeMenu adapter, and correlated custom dialog choice
 Linux/browser input exercises dropdown selection, checked states, focus,
 shortcuts, cancellation and resizing. Shared native/WASM cases cover stale
 targets, observer changes, duplicate replies, deadlines and queued peer requests.
-Actual macOS native tracking, Windows input, IME and assistive-technology checks
-remain platform gates; this does not implement later gameplay menu commands.
+That slice left macOS native tracking, Windows input, IME and assistive technology
+to subsequent platform validation; it did not implement later gameplay menu commands.
+
+The subsequent [Mac follow-up](validation/m2-macos-fixes-2026-11-20.md) validates
+actual native menu/input paths and repairs initial keyboard focus. It also fixes
+the reviewed P02 registry hash and reduces dirty-world rendering work while
+retaining the failed performance target. The [Windows correction](validation/m2-windows-storage-fix-2026-11-20.md)
+repairs concurrent file replacement. Bounded Windows input, picker and shutdown
+checks are recorded in the [initial run](validation/m2-windows-2026-11-20.md).
+Remaining native tracking/device/accessibility coverage is tracked in M2-F04–F08.
 
 The [storage and service slice](validation/m2-storage-services.md) adds a native/
 IndexedDB file library with unchanged import/export, explicit persistence
@@ -377,13 +395,15 @@ and pass the fixed budgets on measured target hardware. Software/offscreen
 correctness measurements remain separately labeled. Measured failures require
 resolution; unmeasured targets remain pending rather than weakening the budgets.
 
-**Full M2 exit gate:** both renderer gates and the remaining services pass; the
+**Retained full-acceptance gate (open):** both renderer gates and the remaining services pass; the
 same shell and content run on macOS, Windows, Linux, and in a
 browser. Menu selections produce the expected action once. Avalonia and browser
 automation can operate the custom dialog; real desktops validate native menus,
 IME, accessibility and mixed-DPI/fullscreen transitions. Headless tests still
 reference no graphical library. Resolve the comparison's browser dropdown issue.
 Any renderer or native-loop issue has a resolved approach before full UI work.
+This was the original full M2 exit gate. The accepted development closeout moves
+its outstanding work to the named follow-ups without claiming it has passed.
 
 ## M3 — Deliver the first playable slice
 
@@ -618,6 +638,10 @@ local-play web preview if bridge evidence is still incomplete.
 
 ## M7 — Close conformance and package releases
 
+- Close the applicable [M2-F01–F08 follow-ups](m2-closeout.md#explicit-follow-up-work)
+  before claiming full performance/platform/device acceptance. GPU promotion
+  remains conditional on M2-F03; closing development did not change defaults,
+  budgets or the evidence required for support claims.
 - Complete the X02 G01–G23 ledger across the advertised nominal domain. Give
   each unresolved retained read, specification ambiguity, original-run gap,
   or restricted feature an explicit disposition and evidence needed for closure.
@@ -674,32 +698,25 @@ and does not replace, X02's operation-level coverage ledger.
 
 ## Immediate implementation backlog
 
-1. Keep every MV01–MV30 row in the [map acceptance matrix](testing/map-rendering.md)
-   current as rendering changes. The [WASM/WebGL functional gate](validation/m2-browser-map.md)
-   now passes with pinned content, stock/native/classic bindings, the authored
-   gallery and exact presentation comparisons. Extend native evidence to the
-   remaining platforms; retain the explicit live-provider joins and their owners.
-2. Close [interactive map performance](performance/map-rendering.md) on available
-   target hardware and complete browser startup/download optimization and resource
-   budgets. Browser content admission and functional resource checks have
-   [their own executed record](validation/m2-browser-map.md).
-   The [local follow-up](validation/m2-local-closeout.md) excludes unused bitmap
-   fonts and measures the current full-content startup; monolithic atlas transfer
-   remains a separate download-budget problem.
-   The [three-backend measurements](validation/m2-browser-performance.md) identify
-   terrain rebuilds and projection/binding as remaining costs after GPU command
-   batching. Extend the diagnostic pan/zoom/world-update coverage to the complete
-   protocol; retain failed/pending gates honestly.
-3. Connect playable session load/save to the implemented native/browser file
-   library, retaining F06 failure effects and explicit persistence completion.
-   Storage cancellation/restart and shared deadline tests now have
-   [local evidence](validation/m2-storage-services.md); validate real
-   Windows/macOS pickers and macOS native menu tracking separately.
-4. Finish actual Windows/macOS desktop input/shutdown, OS interruption and full
-   platform acceptance using [the checklist](testing/platforms.md); retain explicit
-   evidence for target-hardware performance and additional runtime identifiers.
-5. Continue M3's smallest playable vertical slice, then expand mechanics and AI
-   through the owning specifications and milestone gates below.
+1. Deliver M3's smallest headless/graphical playable loop using the scoped client:
+   real city/unit commands, turn progression, live renderer providers, then
+   save/reload and continuation. W02 world generation/entry is available; its
+   existence does not complete that loop.
+2. Connect playable session load/save to the native/browser file library,
+   preserving F06 failure effects, cancellation and explicit persistence completion.
+   Keep later city/report/media/editor features with their M3–M5 owners.
+3. Preserve every MV01–MV30 row in the [map acceptance matrix](testing/map-rendering.md)
+   as live providers replace authored fixtures. Keep source/content-bound native
+   and browser evidence and exact retained/fresh comparisons.
+4. Carry [M2-F01–F03](m2-closeout.md#explicit-follow-up-work): unchanged interactive
+   performance and startup/download/resource budgets, plus GPU correctness and
+   promotion. CPU remains the default; neither the Mac timing improvement nor
+   passing GPU reruns erase outstanding failures.
+5. Carry [M2-F04–F08](m2-closeout.md#explicit-follow-up-work) through host/UI/media
+   integration and [platform qualification](testing/platforms.md): remaining
+   browser/OS matrices, native loops, accessibility/displays, physical audio and
+   storage failure coverage. Preserve separate OS-interruption, extra-RID and
+   release gates before claiming support.
 
 For each slice, read the owning specification, record any gap, implement the
 smallest coherent operation, test its boundary and failures, update coverage and

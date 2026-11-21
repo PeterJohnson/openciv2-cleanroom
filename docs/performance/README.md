@@ -12,16 +12,26 @@ actual cached pan, continuous zoom, dirty world changes and replacement/recovery
 Use the [visual acceptance matrix](../testing/map-rendering.md) alongside it;
 timing a scene with missing layers cannot establish renderer performance.
 
+M2 development is [closed with tracked deferrals](../m2-closeout.md), while
+M2-F01 (changing-map performance) and M2-F02 (startup/download/resources) retain
+their failed/pending status and unchanged budgets. They remain acceptance work
+alongside M3 and before release claims, not prerequisites for reopening M2 development.
+
 ## Recorded reference results
 
-The recorded studies predate the .NET 11 upgrade. Rerun their full sampling
-procedures before claiming performance acceptance for the current build.
+The CLI/workload reference studies below predate the .NET 11 upgrade. Later
+full-content startup and browser renderer studies use .NET 11 and retain their
+own revisions and failures. Rerun the relevant full sampling procedure before
+claiming performance acceptance for a changed build.
 
 The Linux x64 Ryzen AI 9 HX 370 study used .NET 10.0.404/runtime 10.0.15 and
 Chromium/Playwright. [Warmed workloads](workloads.md) and [application startup](application.md)
 retain their exact C# measurement receipts. They describe the recorded revisions,
 not a fresh measurement after changes to code, project layout or packaging.
-macOS/Windows target-hardware performance remains unmeasured.
+The [Mac M2 follow-up](../validation/m2-macos-fixes-2026-11-20.md#timing-and-acceptance)
+measures hardware-WebGL/default-CPU dirty-world rendering at 1080p: final p95
+54.6–55.2 ms still fails 16.7 ms. Windows performance and the complete native Mac
+protocol remain unmeasured; this browser workload is not physical scanout evidence.
 
 A large admitted save contains 31,752 tiles, 2,048 units and 256 cities. Warmed
 native decode is about 2.67 ms; full inspection/JSON takes 106–109 ms and allocates

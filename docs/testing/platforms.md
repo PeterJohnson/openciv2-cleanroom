@@ -12,7 +12,11 @@ Windows x64 core/CLI, Lua/SQLite, desktop compilation/publication and packages.
 The [Windows M2 run](../validation/m2-windows-2026-11-20.md) executes bounded
 managed/AOT input, shutdown and picker checks. Its two storage failures are fixed
 in the [follow-up validation](../validation/m2-windows-storage-fix-2026-11-20.md).
-Full Windows/macOS desktop and OS delivery acceptance remains open. The
+The [Mac follow-up](../validation/m2-macos-fixes-2026-11-20.md) validates native
+menus, keyboard/map input, shutdown, pickers and AOT fullscreen while repairing
+initial dialog focus. Full desktop and OS delivery acceptance remains open.
+The [M2 development closeout](../m2-closeout.md) carries these remaining gates
+as M2-F04–F08; moving the main workstream to M3 does not mark them passed. The
 [Riverbend slice](../validation/m2-map-slice.md) adds Linux X11 validation with
 pinned content and software raster results for simulated 4K/5K surfaces.
 
@@ -59,10 +63,12 @@ binary and input sequence. An identity file by itself proves neither input
 delivery nor a passing scenario. The ordinary host does not write observations
 unless `--observe` is explicitly supplied.
 
-## M2 cross-platform handoff
+## Platform follow-up after M2 development closeout
 
 The [local follow-up](../validation/m2-local-closeout.md) records Linux/Chromium
-checks and known failures. On each remaining target, record managed and Native
+checks and known failures; the later Mac/Windows records above extend that
+evidence. Use the checklist for remaining cases rather than treating entire
+platforms as either untested or fully accepted. Record managed and Native
 AOT publication separately; compile miniaudio with that target's native compiler
 and retain its build receipt/license. Run Windows builds in a Developer Command
 Prompt. Do not reuse the Linux audio binary on another OS or architecture.
@@ -103,15 +109,18 @@ software rendering or from aggregate test counts.
 | --- | --- |
 | OS cancellation/output delivery | Demonstrate actual target-OS interrupt/cancel behavior, no unintended partial publication and closed output handling. The Linux SIGINT/SIGTERM driver is not Windows console-event evidence. |
 | Avalonia seam | Real native pointer/keyboard sequence above, matching results/effects, normal shutdown and artifact-bound observations. An application build alone is insufficient. |
-| Performance | Actual target hardware/startup/resource results if claiming those platform budgets; the accepted reference measurements are Linux/Chromium only. |
+| Performance | Actual target hardware/startup/resource results if claiming those platform budgets. Linux/Chromium and the Mac browser dirty-world workload have dated measurements with failed/pending gates; Windows and the complete native Mac protocol remain unmeasured. |
 | Other native architectures | Repeat the automated matrix and applicable input/OS gates on macOS x64, Linux ARM64 and Windows ARM64 before claiming those RIDs. macOS ARM64 execution does not establish another OS's ARM64 result. |
 
-Remaining native menu tracking (macOS NativeMenu), screen readers, IME,
-physical fullscreen/multi-monitor DPI and complete platform rendering remain M2. Native/
-IndexedDB storage has [Linux/browser evidence](../validation/m2-storage-services.md);
-Windows/macOS file pickers and remaining browser engines still need execution.
-WAV adapters have local native/browser evidence; physical audio/device interruption
-and other-platform playback remain required.
+Remaining native tracking with deadlines/peer work, screen readers, IME,
+physical fullscreen/multi-monitor DPI and complete platform rendering remain
+explicit M2 follow-ups. Native/IndexedDB storage has
+[Linux/browser evidence](../validation/m2-storage-services.md), supplemented by
+bounded Windows/Mac picker and persistence sequences; the full failure matrix
+and remaining browser engines still need execution. WAV adapters have local
+native/browser evidence; physical audio/device interruption and remaining
+platform playback remain required. See M2-F04–F08 in the
+[closeout](../m2-closeout.md#explicit-follow-up-work) for ownership and completion criteria.
 Original-peer networking, full gameplay and release signing/installers retain
 their owning milestones. They are not silently satisfied by the
 bounded foundation result. Browser execution remains its own required evidence

@@ -8,6 +8,10 @@ Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 
 ## Complete M2 map renderer
 
+M2 development is [closed with tracked deferrals](../m2-closeout.md). Continue
+the renderer regressions below during M3 integration; failed/pending performance
+and platform acceptance stays in M2-F01–F08 rather than being relabeled as passed.
+
 Follow the [map-rendering acceptance matrix](map-rendering.md) for all P02
 MV01–MV30 rows, [interactive workloads/budgets](../performance/map-rendering.md)
 for performance, and the [visual ledger](../validation/map-visual-coverage.md)

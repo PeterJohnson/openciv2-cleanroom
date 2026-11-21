@@ -9,8 +9,9 @@ a display, graphics assets, Lua or SQLite.
 codecs, content tools, state, scoped session clients, setup/load/save workflows,
 bounded checkpoints and registered conformance operations. The application
 exercises a real session command through Avalonia and a console; optional Lua
-uses the same authority and command APIs. M2 develops rendering and platform
-integration; M3 delivers the first playable slice.
+uses the same authority and command APIs. M2's rendering and platform development
+is [closed with tracked deferrals](docs/m2-closeout.md); full performance/platform
+acceptance remains open. M3 is the main workstream for the first playable slice.
 
 ## Build and run
 
