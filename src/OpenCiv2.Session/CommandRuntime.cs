@@ -206,6 +206,11 @@ public sealed partial class SessionRuntime
             return EmptyUpdate(id, code: error);
         }
 
+        if (state.LocalPlay && state.Pending)
+        {
+            return EmptyUpdate(id, code: "decision_or_command_pending");
+        }
+
         Admission admission;
         try
         {
@@ -757,6 +762,20 @@ public sealed partial class SessionRuntime
             if (record.Update.Interaction is { Spec.Cancellable: false })
             {
                 return new(false, "not_cancellable");
+            }
+
+            if (current.LocalPlay && record.Update.Interaction is null)
+            {
+                if (record.Continuation is not null)
+                {
+                    return new(false, "input_already_queued");
+                }
+
+                // Local admission owns the only ready entry. Replace the unexecuted Begin input.
+                if (current.Ready.TryPeek(out var work) && work.Command == command)
+                {
+                    current.Ready.Dequeue();
+                }
             }
 
             return QueueInput(current, record, new(OperationInputKind.Cancel, Source: Actor(grant)));

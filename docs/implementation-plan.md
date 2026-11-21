@@ -12,7 +12,7 @@ establish that its entire family has been implemented or validated.
 | M0 | Reproducible build, specification/content inventories and evidence boundaries | Implemented with pinned .NET tooling and cross-platform CI |
 | M1 | Finite portable foundations, classic codecs, content/inspection CLI, session ownership and bounded checkpoints | Implemented; current test families and exclusions are in the coverage and validation guides |
 | M2 | Map renderer, Avalonia interaction, platform menus/storage and content installation | Development closed with explicit M2-F01–F08 deferrals; full performance/platform acceptance remains open. See the [closeout](m2-closeout.md). |
-| M3 | First playable local game slice | Main workstream after M2 closeout; the next implementation pass targets local Linux, with browser work deferred. W02 generation/world entry exists; the playable loop remains open. |
+| M3 | First playable local game slice | Alder Valley delivers the bounded Linux playable loop. Full cross-platform M3 acceptance is pending. |
 | M4 | Complete single-player mechanics, AI and expanded automation | Planned |
 | M5 | Scenarios, editors, complete UI and hotseat | Planned |
 | M6 | Original-peer multiplayer and browser transport | Planned |
@@ -411,36 +411,17 @@ Owners: F04/F05 subset, W01/W03/W04, U01–U04, C01–C06, V02/V03, P01–P06.
 
 ### Current handoff: Linux playable slice
 
-The user has scoped the next implementation pass and its validation to the local
-Linux machine. Implement and exercise the headless runtime, console and native
-Avalonia application here. Defer browser-specific implementation, WASM/browser
-validation and further Windows/macOS qualification. Keep shared code portable;
-record deferred checks rather than treating them as passes or prerequisites for
-completing this Linux slice. The full cross-platform exit gate below remains open.
+[Alder Valley](validation/m3-linux-playable.md) ships a transport-free Linux
+playable profile over the shared session and command registry. It covers
+manual land movement and exploration, founding and working one city, unit
+production, ordinary research, turn progression and classic save/resume.
+The CPU renderer remains the default and M2-F01–F08 stay tracked in the
+[M2 closeout](m2-closeout.md).
 
-Start from the [M2 closeout](m2-closeout.md), [code guide](code-guide.md),
-[application contract](application.md) and [coverage inventory](testing/coverage.md).
-The session/client dispatcher, scoped observations, renderer, dialogs and storage
-adapters exist. The showcase's only gameplay command is `unit.stack-bottom`;
-unit movement, city gameplay and ordinary turn progression still need real
-specification-backed implementations. [W02 generation](map-generation.md) exists,
-but its connectivity search is not a general unit pathfinder and its world-entry
-integration does not complete civilization creation or start placement.
-
-Build the playable loop incrementally: admitted movement and visibility through
-the same headless/console/GUI command path; city founding, workers, production
-and research; mode-owned turn progression; then classic save/reload and continued
-play. Each step needs a real caller and tests for its admitted domain. Reuse the
-existing boundaries instead of extending the authored gallery into a second
-game engine. Carry M2-F01–F08 forward, retaining CPU composition as the default;
-address a deferred issue when it directly blocks this slice. In particular, the
-browser matrix allocation failure is deferred browser work.
-
-Linux completion requires the behavioral checks in the exit gate below, including
-an automated headless/native graphical multi-turn save/reload/continue scenario
-and agreeing results through direct clients, console and GUI. Update coverage,
-validation receipts and the backlog, and commit coherent changes. Pending browser
-or other-platform checks do not block this handoff's Linux acceptance.
+Browser-specific integration, WASM validation and Windows/macOS qualification
+are deferred. The full cross-platform exit gate below remains open. W02
+generation and world entry are available for their own profile. Full
+civilization creation, start placement and generated-world play remain pending.
 
 ### Mechanics and integration scope
 
@@ -733,13 +714,13 @@ and does not replace, X02's operation-level coverage ledger.
 
 ## Immediate implementation backlog
 
-1. Deliver M3's smallest local Linux headless/native graphical playable loop using the scoped client:
-   real city/unit commands, turn progression, live renderer providers, then
-   save/reload and continuation. W02 world generation/entry is available; its
-   existence does not complete that loop.
-2. Connect playable session load/save to the native/browser file library,
-   preserving F06 failure effects, cancellation and explicit persistence completion.
-   Keep later city/report/media/editor features with their M3–M5 owners.
+1. Expand the [Linux playable profile](validation/m3-linux-playable.md) beyond
+   its authored world, one city and fixed human seat. Add generated starts,
+   unsupported gameplay joins and the remaining cross-platform M3 checks in
+   their owning subsystems.
+2. Extend the classic file workflow beyond the Alder Valley save slot. Preserve
+   F06 failure effects, cancellation and explicit persistence completion as
+   native and browser file-library integration grows.
 3. Preserve every MV01–MV30 row in the [map acceptance matrix](testing/map-rendering.md)
    as live providers replace authored fixtures. Run applicable Linux regressions
    and exact retained/fresh comparisons with source/content-bound evidence;

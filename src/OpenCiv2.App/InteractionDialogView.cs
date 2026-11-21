@@ -7,6 +7,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using OpenCiv2.Console;
 using OpenCiv2.Contracts;
 using OpenCiv2.ViewModels;
 
@@ -22,16 +23,18 @@ internal sealed class InteractionDialogView : UserControl
     private readonly TextBlock target = new() { TextWrapping = TextWrapping.Wrap, FontSize = 13 };
     private readonly Dictionary<int, DialogChoiceButton> buttons = [];
     private readonly StackPanel body;
+    private readonly TextBox? replyInput;
     private Control? returnFocus;
     private DialogIdentity? displayed;
     public DialogView? Model => model.View;
     public string Prompt => prompt.Text ?? "";
     public string Target => target.Text ?? "";
     public IReadOnlyDictionary<int, DialogChoiceButton> Choices => buttons;
+    public TextBox? ReplyInput => replyInput;
     public Button Cancel { get; private set; } = new() { Content = "Cancel command", IsEnabled = false };
     public event Action? Responded;
 
-    public InteractionDialogView(SessionPanel session, bool pinnedFonts)
+    public InteractionDialogView(SessionPanel session, bool pinnedFonts, bool consoleReplies = false)
     {
         this.session = session;
         IsVisible = false;
@@ -45,6 +48,31 @@ internal sealed class InteractionDialogView : UserControl
         }
 
         body = new StackPanel { Spacing = 14, Children = { title, prompt, target, choices, Cancel } };
+        if (consoleReplies)
+        {
+            var entry = replyInput = new() { PlaceholderText = "reply <choice> or cancel" };
+            AutomationProperties.SetAutomationId(entry, "dialog.console");
+            entry.KeyUp += (_, args) =>
+            {
+                if (args.Key != Key.Enter || displayed is not { } identity)
+                {
+                    return;
+                }
+
+                try
+                {
+                    var choice = CommandText.Decision(entry.Text ?? "");
+                    Respond(identity, choice);
+                }
+                catch (ArgumentException error)
+                {
+                    target.Text = error.Message;
+                }
+
+                args.Handled = true;
+            };
+            body.Children.Add(entry);
+        }
         KeyboardNavigation.SetTabNavigation(body, KeyboardNavigationMode.Cycle);
         var card = new Border
         {
@@ -108,6 +136,7 @@ internal sealed class InteractionDialogView : UserControl
         if (opening)
         {
             displayed = view.Identity;
+            replyInput?.Clear();
             choices.Children.Clear();
             buttons.Clear();
             // Capture this interaction's identity in every handler, including cancellation.
@@ -120,6 +149,16 @@ internal sealed class InteractionDialogView : UserControl
                     0 => "Leave the stack unchanged",
                     _ => "Use this offered choice"
                 };
+                if (!view.Spec.Cancellable && session.View.Play?.Research.FirstOrDefault(a => a.Id == value) is { } advance)
+                {
+                    label = advance.Name;
+                    detail = $"Research choice {value}";
+                }
+                else if (value == 0 && view.Spec.Target is null)
+                {
+                    detail = "Keep playing the current turn";
+                }
+
                 var button = new DialogChoiceButton(label, detail);
                 AutomationProperties.SetAutomationId(button, $"dialog.choice.{value}");
                 button.Click += (_, _) => Respond(view.Identity, value);
@@ -140,6 +179,11 @@ internal sealed class InteractionDialogView : UserControl
         {
             button.IsEnabled = !view.Submitted;
         }
+        if (replyInput is not null)
+        {
+            replyInput.IsEnabled = !view.Submitted;
+        }
+
         Cancel.IsVisible = view.Spec.Cancellable;
         Cancel.IsEnabled = view.Spec.Cancellable && !view.Submitted;
         if (opening)

@@ -53,6 +53,7 @@ public sealed class GameState
     public UnitDeletionState UnitDeletion { get; } = new();
     public CivilizationArray<int> UnitTotals;
     public bool TurnLoopActive;
+    public bool PlayerPhaseActive;
     public MovementMode MovementMode;
     public GlobalValues Globals = new();
     public WorldSetup WorldSetup;

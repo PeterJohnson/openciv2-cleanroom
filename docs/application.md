@@ -2,7 +2,7 @@
 
 The Riverbend map is the first integrated M2 graphics and interaction slice.
 The managed desktop host accepts the pinned graphics package and DejaVu faces.
-Local play is limited to inspecting the map and reordering a coherent own unit stack.
+Riverbend supports map inspection and reordering a coherent own unit stack.
 See the [M2 validation record](validation/m2-map-slice.md) for the tested Linux
 profile, measured CPU workloads and open platform gates.
 
@@ -37,6 +37,26 @@ it is not a second engine. Direct API, console, Avalonia and optional Lua client
 must use this same registration and prove confirmation/cancellation, stale-target
 failure, observer privacy and the same resulting production stack order. The
 inspection CLI has no live-command mode, so this command adds no `oc2` switch.
+
+## Alder Valley local game
+
+Start the desktop with `--game alder-valley`. Select a Pioneer or Outrider
+on the map or in the unit list and use the direction buttons. Found a city
+with the Pioneer, then set the city's worked tiles and unit production in its
+city window. The center resets automatic worker assignment. The window shows
+food, shields, support, research and tax from the same session as the map.
+
+Choose research in the sidebar or in the required turn decision. End-turn
+confirmation can be cancelled before upkeep. A research choice during upkeep
+must be settled before the player can issue another order or save. The console
+lists descriptors with `help`, reports owned targets with `units` and `cities`,
+and uses Tab to complete commands and disclosed target identities. Use
+`save` and `reload` for the same classic slot as the File menu. Decision dialogs accept `reply <choice>` or `cancel` in their console field.
+
+**Save game** writes the classic save in the application file library.
+**Reload save** resumes that slot and renews the session and its target identities.
+The file library can export the classic `.SAV` bytes. See the
+[Linux playable profile](validation/m3-linux-playable.md) for scope and test evidence.
 
 ## Client and host evidence
 

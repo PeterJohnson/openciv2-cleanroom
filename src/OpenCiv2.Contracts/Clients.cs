@@ -37,6 +37,9 @@ public interface IPlayerClient
     /// </summary>
     MapObservation? ObserveMap();
 
+    /// <summary>Returns the observer's status and city-window data in a supported local game.</summary>
+    LocalPlayObservation? ObserveLocalPlay() => null;
+
     /// <summary>
     /// Lists command descriptors permitted by this binding's access class.
     /// </summary>

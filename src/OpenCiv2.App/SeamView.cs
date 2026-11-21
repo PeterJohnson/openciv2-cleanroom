@@ -62,9 +62,14 @@ public sealed partial class SeamView : UserControl
     private string parseError = "";
     private bool changingItems;
 
-    internal SeamView(SessionPanel model, MapPainter painter, bool pinnedFonts, MapArtSelection? selection)
+    internal SeamView(SessionPanel model, MapPainter painter, bool pinnedFonts, MapArtSelection? selection, LocalGame? game = null)
     {
         this.model = model;
+        this.game = game;
+        if (game is not null)
+        {
+            input.Clear();
+        }
         contentLoaded = pinnedFonts;
         map = new(painter, clock: () => checked((long)SeamApp.Clock.Milliseconds));
         overview = new(map, painter);
@@ -79,13 +84,14 @@ public sealed partial class SeamView : UserControl
         }
 
         var root = shell = new Grid { RowDefinitions = new("Auto,Auto,*"), Background = Brush.Parse("#eee9de") };
-        menu = new ShellMenu(ShellActions.Create(model.View, null, new()), DispatchAction);
+        menu = new ShellMenu(ShellActions.Create(model.View, null, new()).Concat(PlayMenuActions()), DispatchAction);
         root.Children.Add(menu.Control);
         var header = new Grid { ColumnDefinitions = new("*,Auto"), Margin = new Thickness(22, 11) };
         var logo = new TextBlock { Text = "OpenCiv2", FontSize = 29, FontWeight = FontWeight.Bold };
         var chapter = new TextBlock
         {
-            Text = pinnedFonts ? "Authored map  /  Riverbend" : "Riverbend  /  Limited graphics preview",
+            Text = game is not null ? "Alder Valley · Local game" :
+                pinnedFonts ? "Authored map  /  Riverbend" : "Riverbend  /  Limited graphics preview",
             FontSize = 13,
             VerticalAlignment = VerticalAlignment.Center
         };
@@ -126,7 +132,8 @@ public sealed partial class SeamView : UserControl
         mapArea.Children.Add(inset);
         var mapHelp = new TextBlock
         {
-            Text = "Drag or use arrows to pan · Scroll to zoom · Ctrl+arrows to inspect · Enter to order",
+            Text = game is not null ? "Select a unit to issue orders · Drag to pan · Scroll to zoom" :
+                "Drag or use arrows to pan · Scroll to zoom · Ctrl+arrows to inspect · Enter to order",
             FontSize = 12,
             Margin = new Thickness(12, 7),
             Foreground = Brush.Parse("#e2d9c2"),
@@ -144,7 +151,14 @@ public sealed partial class SeamView : UserControl
         side.Children.Add(mapOptions);
         side.Children.Add(new TextBlock { Text = "Your units", FontSize = 16, FontWeight = FontWeight.Bold });
         side.Children.Add(units);
-        side.Children.Add(send);
+        if (game is null)
+        {
+            side.Children.Add(send);
+        }
+        else
+        {
+            side.Children.Add(BuildPlayOrders());
+        }
         side.Children.Add(
             new TextBlock
             {
@@ -160,9 +174,16 @@ public sealed partial class SeamView : UserControl
         Grid.SetColumn(scroll, 1);
         layout.Children.Add(scroll);
 
-        dialog = new InteractionDialogView(model, pinnedFonts);
+        dialog = new InteractionDialogView(model, pinnedFonts, consoleReplies: game is not null);
         dialog.Responded += () => Refresh(force: true);
-        var overlays = new Grid { Children = { root, dialog } };
+        var overlays = new Grid { Children = { root } };
+        if (game is not null)
+        {
+            BuildCityOverlay();
+            overlays.Children.Add(cityOverlay);
+        }
+
+        overlays.Children.Add(dialog);
         if (SeamApp.Storage is { } storage)
         {
             files = new(new DocumentLibrary(storage, SeamApp.FileTransfer ?? new AvaloniaFileTransfer(() => TopLevel.GetTopLevel(this))),
@@ -199,19 +220,29 @@ public sealed partial class SeamView : UserControl
                 : "";
             inspection.IsVisible = inspection.Text.Length != 0;
         };
-        map.OrderRequested += Send;
+        map.OrderRequested += () =>
+        {
+            if (game is null)
+            {
+                Send();
+            }
+            else
+            {
+                OpenOwnedCity();
+            }
+        };
         units.SelectionChanged += (_, _) => SelectListUnit();
         send.Click += (_, _) => Send();
         run.Click += (_, _) => Run();
         input.GotFocus += (_, _) => menu.SetTextEntry(true);
         input.LostFocus += (_, _) => menu.SetTextEntry(false);
-        input.KeyDown += (_, e) =>
+        input.AddHandler(KeyDownEvent, (_, e) =>
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter || (game is not null && ConsoleEditKey(e.Key)))
             {
                 e.Handled = true;
             }
-        };
+        }, RoutingStrategies.Tunnel);
         input.KeyUp += (_, e) =>
         {
             if (e.Key == Key.Enter)
@@ -247,6 +278,17 @@ public sealed partial class SeamView : UserControl
         selection = new(unit.Position, MapPickKind.Unit);
         map.Select(selection);
         DescribeSelection();
+        if (game is not null && !Busy)
+        {
+            if (activeTarget != model.View.Map?.Annotations?.ActiveUnit)
+            {
+                UnitCommand(LocalPlayCommands.Select);
+            }
+            else
+            {
+                RefreshPlay(model.View, model.View, false);
+            }
+        }
     }
 
     private void Pick(MapPick? value)
@@ -255,6 +297,21 @@ public sealed partial class SeamView : UserControl
         activeTarget = value is { Kind: MapPickKind.Unit } item ? map.Scene?.Objects(item.Position).Unit?.Target : null;
         SelectUnitRow();
         DescribeSelection();
+        if (game is not null && !Busy)
+        {
+            if (value is { Kind: MapPickKind.City } && model.View.Cities?.Records.Any(c => c.Position == value.Value.Position) == true)
+            {
+                OpenOwnedCity();
+            }
+            else if (activeTarget is not null && activeTarget != model.View.Map?.Annotations?.ActiveUnit)
+            {
+                UnitCommand(LocalPlayCommands.Select);
+            }
+            else if (model.View.Play is { })
+            {
+                RefreshPlay(model.View, model.View, false);
+            }
+        }
     }
 
     private void SelectUnitRow()
@@ -367,7 +424,18 @@ public sealed partial class SeamView : UserControl
             parseError = "";
             dialog.RememberFocus(map);
             mapOptions.Flyout?.Hide();
-            model.Submit(CommandText.Parse(input.Text ?? "", model.View.Commands));
+            string line = input.Text?.Trim() ?? "";
+            if (game is not null && line.Length > 0)
+            {
+                RememberLine(line);
+                if (ConsoleQuery(line))
+                {
+                    Refresh(force: true);
+                    return;
+                }
+            }
+
+            model.Submit(CommandText.Parse(line, model.View.Commands));
         }
         catch (ArgumentException error)
         {
@@ -395,7 +463,7 @@ public sealed partial class SeamView : UserControl
             parseError = "";
         }
         map.Show(view.Map);
-        if (view.Command is { Status: CommandStatus.Completed, Committed.Count: > 0 } completed &&
+        if (view.Command is { Status: CommandStatus.Completed, Committed.Count: > 0 } completed && game is null &&
             (previous?.Command?.Status != CommandStatus.Completed
                 || previous.Command.Correlation != completed.Correlation))
         {
@@ -412,12 +480,19 @@ public sealed partial class SeamView : UserControl
         if (newBinding || !Equals(view.Units?.Records, previous?.Units?.Records))
         {
             changingItems = true;
-            units.ItemsSource = view.Units?.Records.Select(u => $"Unit {u.Slot.Value}   ({u.Position.X}, {u.Position.Y})").ToArray()
+            units.ItemsSource = view.Units?.Records.Select(u =>
+            {
+                var name = view.Play?.Units.FirstOrDefault(p => p.Target == new UnitTarget(u.Slot, u.Token))?.Name
+                    ?? ("Unit " + u.Slot.Value);
+                return $"{name}   ({u.Position.X}, {u.Position.Y})";
+            }).ToArray()
                 ?? [];
             changingItems = false;
             if (newBinding && view.Units is { Records.Count: > 0 } starter)
             {
-                var first = starter.Records[0];
+                var first = game is not null && view.Map?.Annotations?.ActiveUnit is { } target
+                    ? starter.Records.FirstOrDefault(u => u.Slot == target.Slot && u.Token == target.Token) ?? starter.Records[0]
+                    : starter.Records[0];
                 activeTarget = new(first.Slot, first.Token);
                 selection = new(first.Position, MapPickKind.Unit);
                 map.Select(selection);
@@ -438,14 +513,24 @@ public sealed partial class SeamView : UserControl
             }
         }
 
-        shell.IsEnabled = !Busy && files?.IsVisible != true;
+        if (game is not null && view.Map?.Annotations?.ActiveUnit is { } selected && previous?.Map?.Annotations?.ActiveUnit != selected
+            && view.Units?.Records.FirstOrDefault(unit => unit.Slot == selected.Slot && unit.Token == selected.Token) is { } selectedUnit)
+        {
+            activeTarget = selected;
+            selection = new(selectedUnit.Position, MapPickKind.Unit);
+            SelectUnitRow();
+            map.Select(selection);
+        }
+
+        RefreshPlay(view, previous, newBinding);
+        shell.IsEnabled = !Busy && !transferring && !cityOverlay.IsVisible && files?.IsVisible != true;
         map.IsEnabled = overview.IsEnabled = units.IsEnabled = input.IsEnabled = !Busy;
         dialog.Refresh(map);
 
         run.IsEnabled = view.Identity is not null && !Busy;
         status.Text = parseError.Length > 0 ? parseError : view.Command is { } command
             ? $"{command.Status}{(command.Code.Length == 0 ? "" : " · " + command.Code)} · {command.Committed.Count} committed"
-            : "Stack order is available for your units.";
+            : game is null ? "Stack order is available for your units." : "Type help for commands.";
         DescribeSelection();
     }
 
@@ -519,6 +604,7 @@ public sealed partial class SeamView : UserControl
             ["message"] = status.Text,
             ["prompt"] = dialog.Prompt,
             ["dialog"] = DialogSnapshot(ControlBounds),
+            ["play"] = PlaySnapshot(view, ControlBounds),
             ["files"] = FilesSnapshot(ControlBounds),
             ["media"] = lastMedia,
             ["serviceTicks"] = serviceTicks,

@@ -15,6 +15,13 @@ WASM matrix hit an allocation failure; a logging-only diagnostic rerun passed.
 Both results are retained in the closeout, with the unresolved failure assigned
 to M2-F02/F04 rather than declaring the current browser matrix accepted.
 
+## Linux M3 playable profile
+
+The [Alder Valley record](m3-linux-playable.md) covers the local game under
+the authored rules, the direct and console flows, native graphical input,
+classic resume, loaded inspection and optional SQLite export. Full
+cross-platform M3 acceptance remains pending.
+
 ## Current local validation
 
 The [Windows M2 validation](m2-windows-2026-11-20.md) on 2026-11-20 Pacific

@@ -111,6 +111,14 @@ button regions with standard Avalonia automation peers. See the
 [menus and dialogs record](validation/m2-menus-dialogs.md) for executed hosts and
 the remaining real-platform checks.
 
+`Session/LocalGame` composes the authored Alder Valley profile and owns staged
+classic replacement. `LocalPlayCommands` admits movement, city and research
+decisions and retains the F04 continuation through upkeep. `Core/Units/LandMovement`,
+`Core/Units/LocalVisibility`, `Core/City/LocalCityEconomy` and `Core/LocalResearch`
+own their bounded mechanics. The desktop passes owned observations through
+`SessionPanel` to the existing map renderer and dialog. The loaded CLI and
+optional SQLite exporter consume a revision-stamped `LocalPlayerSnapshot`.
+
 ## Adding behavior
 
 ### Readable implementation and documentation

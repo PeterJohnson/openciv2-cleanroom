@@ -17,6 +17,14 @@ internal static class MapNeighborhoods
         new(-1, 3), new(-3, 1), new(-3, -1), new(-1, -3), new(0, 0)
     ];
 
+    internal static readonly MapPoint[] Radius =
+    [
+        .. City, new(4, 0), new(-4, 0), new(0, 4), new(0, -4),
+        new(1, -5), new(2, -4), new(3, -3), new(4, -2), new(5, -1), new(5, 1), new(4, 2),
+        new(3, 3), new(2, 4), new(1, 5), new(-1, 5), new(-2, 4), new(-3, 3), new(-4, 2),
+        new(-5, 1), new(-5, -1), new(-4, -2), new(-3, -3), new(-2, -4), new(-1, -5)
+    ];
+
     internal static MapPoint Offset(Geometry shape, MapPoint point, MapPoint offset, bool flat) =>
         new(shape.WrapX(point.X + offset.X, flat), point.Y + offset.Y);
 }

@@ -2,6 +2,7 @@
 <PropertyGroup><OutputType>Exe</OutputType><AssemblyName>oc2</AssemblyName></PropertyGroup>
 <ItemGroup>
 <ProjectReference Include="../OpenCiv2.Query/OpenCiv2.Query.csproj" />
+<ProjectReference Include="../OpenCiv2.Session/OpenCiv2.Session.csproj" />
 <ProjectReference Include="../OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" />
 </ItemGroup>
 </Project>

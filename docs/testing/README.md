@@ -6,6 +6,14 @@ and the browser host. Native I/O/API boundary tests are in `OpenCiv2.Base.Tests`
 Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 [implementation coverage](coverage.md) for admitted APIs and exclusions.
 
+## Alder Valley local play
+
+The [Linux M3 record](../validation/m3-linux-playable.md) gives the native
+graphical scenario and headless reference commands. The suite compares direct
+and console requests, and the X11 driver compares the saved and resumed state
+with the reference and loaded CLI. Browser and other desktop acceptance remain
+pending for this profile.
+
 ## Complete M2 map renderer
 
 M2 development is [closed with tracked deferrals](../m2-closeout.md). Continue

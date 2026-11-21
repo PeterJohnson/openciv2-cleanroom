@@ -51,6 +51,63 @@ public static class CommandText
         return new(descriptor.Name, new(values));
     }
 
+    /// <summary>Completes descriptor names, argument names and already disclosed owned targets.</summary>
+    public static OwnedList<string> Complete(string line, IReadOnlyList<CommandDescriptor> descriptors,
+        LiveRecords<OwnUnit>? units, LiveRecords<OwnCity>? cities)
+    {
+        int firstSpace = line.IndexOf(' ');
+        if (firstSpace < 0)
+        {
+            return new(descriptors.Select(d => d.Name).Where(n => n.StartsWith(line, StringComparison.Ordinal)));
+        }
+
+        var descriptor = descriptors.FirstOrDefault(d => d.Name == line[..firstSpace]);
+        if (descriptor is null || line.Contains('"'))
+        {
+            return OwnedList<string>.Empty;
+        }
+
+        int argumentStart = line.LastIndexOf(' ') + 1;
+        string prefix = line[..argumentStart], tail = line[argumentStart..];
+        int equals = tail.IndexOf('=');
+        IEnumerable<string> candidates;
+        if (equals < 0)
+        {
+            candidates = descriptor.Arguments.Select(a => a.Name + "=");
+        }
+        else
+        {
+            string argument = tail[..equals];
+            candidates = descriptor.Arguments.FirstOrDefault(a => a.Name == argument)?.Kind switch
+            {
+                ValueKind.Unit => units?.Records.Select(u => FormattableString.Invariant(
+                    $"{argument}={u.Slot.Value}:{u.Token.Value}")) ?? [],
+                ValueKind.City => cities?.Records.Select(c => FormattableString.Invariant(
+                    $"{argument}={c.Slot.Value}:{c.Token.Value}")) ?? [],
+                _ => []
+            };
+        }
+
+        return new(candidates.Where(c => c.StartsWith(tail, StringComparison.Ordinal)).Select(c => prefix + c));
+    }
+
+    /// <summary>Parses a reply to the currently disclosed interaction. The client owns input admission.</summary>
+    public static int? Decision(string line)
+    {
+        var tokens = Tokenize(line);
+        if (tokens.Count == 1 && tokens[0] == "cancel")
+        {
+            return null;
+        }
+
+        if (tokens.Count != 2 || tokens[0] != "reply")
+        {
+            throw new ArgumentException("Use reply <choice> or cancel.");
+        }
+
+        return Integer(tokens[1]);
+    }
+
     /// <summary>
     /// Formats a descriptor's argument names, value kinds, optional markers and help text for the console.
     /// </summary>

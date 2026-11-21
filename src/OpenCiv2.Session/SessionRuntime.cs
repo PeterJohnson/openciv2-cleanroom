@@ -93,6 +93,8 @@ public sealed partial class SessionRuntime : IDisposable
         }
     }
 
+    internal void EnableLocalPlay() => state.LocalPlay = true;
+
     public bool Active => state.Active && !state.Disposed;
 
     public GameplayRandom GameplayRandom

@@ -45,11 +45,27 @@
           "OpenCiv2.IO": "[1.0.0, )"
         }
       },
+      "openciv2.network": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.IO": "[1.0.0, )"
+        }
+      },
       "openciv2.query": {
         "type": "Project",
         "dependencies": {
           "OpenCiv2.Core": "[1.0.0, )",
           "OpenCiv2.Formats": "[1.0.0, )"
+        }
+      },
+      "openciv2.session": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Core": "[1.0.0, )",
+          "OpenCiv2.Formats": "[1.0.0, )",
+          "OpenCiv2.Network": "[1.0.0, )",
+          "OpenCiv2.Query": "[1.0.0, )"
         }
       },
       "RandN.Pcg32": {

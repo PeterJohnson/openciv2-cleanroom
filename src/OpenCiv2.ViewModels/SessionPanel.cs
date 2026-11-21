@@ -4,7 +4,8 @@ using OpenCiv2.Contracts;
 namespace OpenCiv2.ViewModels;
 
 public sealed record SessionView(ClientIdentity? Identity, LiveRecords<OwnUnit>? Units, LiveRecords<OwnCity>? Cities,
-    OwnedList<CommandDescriptor> Commands, CommandUpdate? Command, string Message, MapObservation? Map = null)
+    OwnedList<CommandDescriptor> Commands, CommandUpdate? Command, string Message, MapObservation? Map = null,
+    LocalPlayObservation? Play = null)
 {
     public static SessionView Empty { get; } = new(
         null,
@@ -44,12 +45,13 @@ public sealed class SessionPanel(bool observeMap = false)
             var units = client.OwnUnits();
             var cities = client.OwnCities();
             var descriptors = client.Commands();
+            var play = client.ObserveLocalPlay();
             var current = command is { } id ? client.Result(id) : null;
             // This model displays the complete current result, not an unbounded event history.
             client.Updates();
             var map = observeMap && (View.Map?.Identity != identity || View.Map.Revision != units.Observation.Revision)
                 ? client.ObserveMap() : View.Map;
-            View = new(identity, units, cities, descriptors, current ?? View.Command, View.Message, map);
+            View = new(identity, units, cities, descriptors, current ?? View.Command, View.Message, map, play);
         }
         catch (AccessException)
         {

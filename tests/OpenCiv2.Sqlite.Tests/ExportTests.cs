@@ -1,6 +1,8 @@
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Export.Sqlite;
 using OpenCiv2.Query;
+using OpenCiv2.Session;
 using Xunit;
 using Access = OpenCiv2.Query.FileAccess;
 
@@ -60,5 +62,34 @@ public sealed class ExportTests
             Assert.Same(failure, caught);
         }
         Assert.Equal(source, snapshot.SourceBytes); Assert.Equal(records, snapshot.Records); Assert.Equal(expected, SqliteSnapshot.Create(snapshot));
+    }
+
+    [Fact]
+    public void Live_player_export_captures_owned_snapshot_across_turns_and_cancellation()
+    {
+        using var game = new LocalGame();
+        var player = game.Player;
+        var before = LocalPlayerSnapshot.Capture(player);
+        var image = SqliteSnapshot.CreatePlayer(before);
+        Assert.True(image.AsSpan().StartsWith("SQLite format 3\0"u8));
+        Assert.Equal(before, LocalPlayerSnapshot.Capture(player));
+
+        var turn = player.Submit(new(LocalPlayCommands.EndTurn, OwnedList<NamedValue>.Empty));
+        Assert.True(game.AdvanceOne());
+        Assert.True(player.Reply(player.Result(turn.Correlation.Command)!.Interaction!.Id, 1).Accepted);
+        Assert.True(game.AdvanceOne());
+        var after = LocalPlayerSnapshot.Capture(player);
+        Assert.Equal(2, after.Play.Turn);
+        Assert.True(after.Play.PlayerPhase);
+        Assert.Equal(CommandStatus.Completed, player.Result(turn.Correlation.Command)!.Status);
+        Assert.Equal(before.Units.Records, after.Units.Records);
+        Assert.True(after.Play.Observation.Revision > before.Play.Observation.Revision);
+        Assert.NotEqual(image, SqliteSnapshot.CreatePlayer(after));
+        Assert.Equal(image, SqliteSnapshot.CreatePlayer(before));
+
+        var cancellation = new CancellationSource();
+        cancellation.RequestStop();
+        Assert.Throws<CancelledException>(() => SqliteSnapshot.CreatePlayer(after, stop: cancellation.Token));
+        Assert.Equal(after, LocalPlayerSnapshot.Capture(player));
     }
 }

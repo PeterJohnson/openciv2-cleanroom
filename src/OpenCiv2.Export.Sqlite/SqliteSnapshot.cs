@@ -109,28 +109,12 @@ public static partial class SqliteSnapshot
             throw new ArgumentException("SQLite export requires a decoded stored snapshot", nameof(snapshot));
         }
 
-        void Checkpoint(int completed)
-        {
-            stop.CheckStop();
-            progress?.Invoke(completed);
-            stop.CheckStop();
-        }
-        Checkpoint(0);
-        if (NativeVersion != RequiredVersion || NativeSqlite.CompileOption("OMIT_LOAD_EXTENSION") != 1)
-        {
-            throw new InvalidOperationException(
-                "SQLite export requires pinned SQLite " + RequiredVersion + " with extension loading disabled");
-        }
+        return CreateImage(Schema, snapshot.Records.Count, (database, checkpoint) =>
+            StoreSnapshot(database, checkpoint, snapshot), stop, progress);
+    }
 
-        int opened = NativeSqlite.Open(":memory:", out nint pointer, 2 | 4 | 0x80, 0);
-        using var database = new DatabaseHandle(pointer);
-        if (database.IsInvalid)
-        {
-            throw new OutOfMemoryException("SQLite could not allocate a database connection");
-        }
-
-        Check(database, opened);
-        Check(database, NativeSqlite.Execute(database, Schema, 0, 0, 0));
+    private static void StoreSnapshot(DatabaseHandle database, Action<int> checkpoint, StoredSnapshot snapshot)
+    {
         string identity = snapshot.SourceHash;
         using var header = new Statement(
             database,
@@ -175,7 +159,7 @@ public static partial class SqliteSnapshot
                 fieldInsert.Value(field.Value);
                 fieldInsert.Run();
             }
-            Checkpoint(i + 1);
+            checkpoint(i + 1);
         }
         using var coverage = new Statement(database, "INSERT INTO coverage VALUES(?,?,?,1)");
         foreach (var (section, count) in counts)
@@ -220,7 +204,35 @@ public static partial class SqliteSnapshot
             diagnostics.Bind(8, value.Message);
             diagnostics.Run();
         }
-        Checkpoint(snapshot.Records.Count);
+    }
+
+    private static byte[] CreateImage(string schema, int records, Action<DatabaseHandle, Action<int>> populate,
+        StopToken stop, Action<int>? progress = null)
+    {
+        void Checkpoint(int completed)
+        {
+            stop.CheckStop();
+            progress?.Invoke(completed);
+            stop.CheckStop();
+        }
+        Checkpoint(0);
+        if (NativeVersion != RequiredVersion || NativeSqlite.CompileOption("OMIT_LOAD_EXTENSION") != 1)
+        {
+            throw new InvalidOperationException(
+                "SQLite export requires pinned SQLite " + RequiredVersion + " with extension loading disabled");
+        }
+
+        int opened = NativeSqlite.Open(":memory:", out nint pointer, 2 | 4 | 0x80, 0);
+        using var database = new DatabaseHandle(pointer);
+        if (database.IsInvalid)
+        {
+            throw new OutOfMemoryException("SQLite could not allocate a database connection");
+        }
+
+        Check(database, opened);
+        Check(database, NativeSqlite.Execute(database, schema, 0, 0, 0));
+        populate(database, Checkpoint);
+        Checkpoint(records);
         Check(database, NativeSqlite.Execute(database, "COMMIT", 0, 0, 0));
         nint image = NativeSqlite.Serialize(database, "main", out long length, 0);
         try
@@ -235,7 +247,7 @@ public static partial class SqliteSnapshot
                 throw new InvalidOperationException("SQLite export exceeds the managed byte-array domain");
             }
 
-            Checkpoint(snapshot.Records.Count);
+            Checkpoint(records);
             var result = new byte[(int)length];
             Marshal.Copy(image, result, 0, result.Length);
             return result;

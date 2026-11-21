@@ -3,5 +3,6 @@
   <ItemGroup>
     <PackageReference Include="xunit.v3.mtp-v2" />
     <ProjectReference Include="../../src/OpenCiv2.Export.Sqlite/OpenCiv2.Export.Sqlite.csproj" />
+    <ProjectReference Include="../../src/OpenCiv2.Session/OpenCiv2.Session.csproj" />
   </ItemGroup>
 </Project>

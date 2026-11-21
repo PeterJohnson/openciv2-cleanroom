@@ -7,9 +7,12 @@ using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
 using OpenCiv2.App.Map;
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.IO;
 using OpenCiv2.MapRendering;
+using OpenCiv2.Session;
+using OpenCiv2.ViewModels;
 
 namespace OpenCiv2.App;
 
@@ -32,6 +35,9 @@ public sealed class SeamApp : Application
     }
 
     private SeamSession? owner;
+    private LocalGame? play;
+    private static bool startLocalGame;
+    public static void ConfigureLocalGame() => startLocalGame = true;
     private MapPainter? painter;
     private DispatcherTimer? timer;
     private GraphicsFonts? fonts;
@@ -170,16 +176,29 @@ public sealed class SeamApp : Application
             base.OnFrameworkInitializationCompleted();
             return;
         }
-        owner = new(Clock);
-        var view = new SeamView(owner.Panel, painter, selected is not null, selected?.Selected);
+        SessionPanel panel;
+        if (startLocalGame && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
+        {
+            startLocalGame = false;
+            play = new();
+            panel = new(observeMap: true);
+            panel.Bind(play.Player);
+        }
+        else
+        {
+            owner = new(Clock);
+            panel = owner.Panel;
+        }
+
+        var view = new SeamView(panel, painter, selected is not null, selected?.Selected, play);
         CurrentView = view;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new Window
             {
-                Title = "OpenCiv2 · Riverbend",
+                Title = play is null ? "OpenCiv2 · Riverbend" : "OpenCiv2 · Alder Valley",
                 Width = 1020,
-                Height = 720,
+                Height = play is null ? 720 : 850,
                 MinWidth = 640,
                 MinHeight = 640,
                 Content = view
@@ -205,7 +224,16 @@ public sealed class SeamApp : Application
         timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(25) };
         timer.Tick += (_, _) =>
         {
-            owner.Tick();
+            if (play is { } local && local.AdvanceOne())
+            {
+                panel.Refresh();
+                if (panel.View.Command is { } command && command.Status.Terminal())
+                {
+                    local.RetireCommand(command.Correlation.Command);
+                }
+            }
+
+            owner?.Tick();
             view.Refresh();
             view.AdvancePresentation();
             Observe?.Invoke(view.Snapshot());
@@ -300,6 +328,8 @@ public sealed class SeamApp : Application
         CurrentView?.StopServices();
         owner?.Dispose();
         owner = null;
+        play?.Dispose();
+        play = null;
         painter?.Dispose();
         painter = null;
         if (fonts is not null)

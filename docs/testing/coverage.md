@@ -2,7 +2,7 @@
 
 Current bounded APIs, specification ownership and test mapping. This inventory is not execution or whole-game compatibility evidence.
 
-Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/test paths and all 437 shared groups. Optional native I/O, Lua and SQLite tests have their own hosts. The inventory checks ownership and registration; [validation](../validation/README.md) records execution.
+Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/test paths and all registered shared groups. Optional native I/O, Lua and SQLite tests have their own hosts. The inventory checks ownership and registration; [validation](../validation/README.md) records execution.
 
 | Family | Contract and current surface | Status | Sources and tests |
 | --- | --- | --- | --- |
@@ -61,5 +61,6 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 | m2-shell | P01–P05, W01/W03 and F03. Observer map, pinned atlas and fonts, batched map and local stack interaction | partial | [MapProjection.cs](../../src/OpenCiv2.Query/MapProjection.cs), [MapPainter.cs](../../src/OpenCiv2.MapRendering/MapPainter.cs), [GraphicsCases.cs](../../tests/OpenCiv2.FoundationCases/GraphicsCases.cs), [MapObservationCases.cs](../../tests/OpenCiv2.FoundationCases/MapObservationCases.cs), [MapProbe](../../tests/OpenCiv2.MapProbe/Program.cs) |
 | python-validation | Repository validation tools and CLI contracts: Independent Python CLI drivers, conformance/schema/gameplay validation, legacy build/source checks | implemented | [check_graph.py](../../tools/dotnet/check_graph.py); [write_identity.py](../../tools/dotnet/write_identity.py); [test_conformance_runner.py](../../tests/test_conformance_runner.py); [test_conformance_script.py](../../tests/test_conformance_script.py) |
 | application-clients | Scoped Session commands and application contract: LocalUnitCommands.StackBottom; SessionPanel; CommandText | implemented | [CommandText.cs](../../src/OpenCiv2.Console/CommandText.cs); [LocalUnitCommands.cs](../../src/OpenCiv2.Session/LocalUnitCommands.cs); [ClientModelCases.cs](../../tests/OpenCiv2.FoundationCases/ClientModelCases.cs); [LocalUnitCommandCases.cs](../../tests/OpenCiv2.FoundationCases/LocalUnitCommandCases.cs) |
+| m3-linux-local-play | First F04/F06, U/W and C/V joins through the Alder Valley session, console, desktop, loaded CLI and SQLite | partial | [Linux profile and evidence](../validation/m3-linux-playable.md), [LocalGame.cs](../../src/OpenCiv2.Session/LocalGame.cs), [LocalPlayCases.cs](../../tests/OpenCiv2.FoundationCases/LocalPlayCases.cs), [Native input driver](../../tools/dotnet/run_local_play_native.py) |
 
 The [JSON inventory](coverage.json) contains the complete file lists, review notes and shared test IDs. Keep admitted domains and failure/resume paths explicit when extending it. A partial host row does not claim complete map rendering, menus or gameplay.

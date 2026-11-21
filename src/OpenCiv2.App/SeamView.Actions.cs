@@ -2,6 +2,7 @@ using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using OpenCiv2.Session;
 using OpenCiv2.ViewModels;
 
 namespace OpenCiv2.App;
@@ -14,10 +15,10 @@ public sealed partial class SeamView
     internal void AttachMenu(Window window) => menu.Attach(window);
 
     private IEnumerable<ShellAction> Actions() => ShellActions.Create(model.View, activeTarget,
-        new(map.Display.Grid, map.Display.Bare, map.Display.ReducedMotion))
+        new(map.Display.Grid, map.Display.Bare, map.Display.ReducedMotion)).Concat(PlayMenuActions())
         .Select(action => action with
         {
-            Enabled = action.Enabled && files?.IsVisible != true &&
+            Enabled = action.Enabled && !cityOverlay.IsVisible && !transferring && files?.IsVisible != true &&
             (action.Id != ShellActions.Files || files is not null)
         });
 
@@ -31,7 +32,8 @@ public sealed partial class SeamView
     private void OnShellKey(object? sender, KeyEventArgs e)
     {
         // Text editing and dialog choices own their keys; the menu's decorative gestures do not dispatch.
-        if (!input.IsKeyboardFocusWithin && !dialog.IsVisible && files?.IsVisible != true)
+        if (!input.IsKeyboardFocusWithin && !cityName.IsKeyboardFocusWithin && !dialog.IsVisible
+            && !cityOverlay.IsVisible && !transferring && files?.IsVisible != true)
         {
             menu.KeyDown(e);
         }
@@ -50,6 +52,21 @@ public sealed partial class SeamView
         actionDispatches++;
         switch (id)
         {
+            case PlaySave:
+                _ = Transfer(false);
+                break;
+            case PlayReload:
+                _ = Transfer(true);
+                break;
+            case PlayCity:
+                OpenOwnedCity();
+                break;
+            case LocalPlayCommands.Fortify:
+                UnitCommand(LocalPlayCommands.Fortify);
+                break;
+            case LocalPlayCommands.EndTurn:
+                PlayCommand(LocalPlayCommands.EndTurn);
+                break;
             case ShellActions.Files:
                 mapOptions.Flyout?.Hide();
                 if (files is not null)
@@ -102,6 +119,7 @@ public sealed partial class SeamView
         ["interaction"] = dialog.Model?.Identity.Interaction.ToString(),
         ["submitted"] = dialog.Model?.Submitted,
         ["target"] = dialog.Target,
+        ["console"] = bounds(dialog.ReplyInput),
         ["regions"] = new JsonObject(dialog.Choices.Select(entry =>
             new KeyValuePair<string, JsonNode?>("choice." + entry.Key, bounds(entry.Value))))
         {

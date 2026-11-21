@@ -38,7 +38,7 @@ EDGES = {
     "OpenCiv2.Query": {"OpenCiv2.Core", "OpenCiv2.Formats"},
     "OpenCiv2.IO.Native": {"OpenCiv2.IO"},
     "OpenCiv2.Platform.Native": {"OpenCiv2.Formats", "OpenCiv2.IO.Native"},
-    "OpenCiv2.Cli": {"OpenCiv2.Query", "OpenCiv2.IO.Native"},
+    "OpenCiv2.Cli": {"OpenCiv2.Query", "OpenCiv2.Session", "OpenCiv2.IO.Native"},
     "OpenCiv2.Export.Sqlite": {"OpenCiv2.Query"},
     "OpenCiv2.Cli.Sqlite": {"OpenCiv2.Cli", "OpenCiv2.Export.Sqlite"},
 }

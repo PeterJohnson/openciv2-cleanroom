@@ -15,6 +15,7 @@ internal static class Program
         try
         {
             string? storageDirectory = null;
+            bool localGame = false;
             string? assets = null,
                 fonts = null,
                 observation = null,
@@ -51,6 +52,9 @@ internal static class Program
                         break;
                     case "--installation-art" when installation is null:
                         installation = args[i + 1];
+                        break;
+                    case "--game" when !localGame && args[i + 1] == "alder-valley":
+                        localGame = true;
                         break;
                     case "--showcase" when showcase is null:
                         showcase = args[i + 1];
@@ -102,7 +106,7 @@ internal static class Program
                 throw Usage();
             }
 
-            if (size is not null && showcase is null || coldView is not null &&
+            if (localGame && showcase is not null || size is not null && showcase is null || coldView is not null &&
                 (coldView is not ("full" or "half" or "overview") || showcase != "Mixed" || size is null
                     || observation is null
                     || assets is null))
@@ -130,6 +134,11 @@ internal static class Program
 
                 SeamApp.ConfigureGraphics(atlas, fontBytes, selected);
                 admissionEnd = Stopwatch.GetTimestamp();
+            }
+
+            if (localGame)
+            {
+                SeamApp.ConfigureLocalGame();
             }
 
             if (showcase is not null)
@@ -197,5 +206,5 @@ internal static class Program
 
     private static ArgumentException Usage() =>
         new(
-            "Usage: OpenCiv2.Desktop [--assets ROOT --fonts ROOT] [--map-art ROOT] [--scenario-art ROOT] [--installation-art ROOT] [--showcase CASE [--window WIDTHxHEIGHT]] [--observe PATH] [--cold-view full|half|overview] [--map-renderer cpu|gpu] [--map-gpu-cache-mib 128..1024] [--renderer-settings PATH] [--storage-directory PATH]");
+            "Usage: OpenCiv2.Desktop [--assets ROOT --fonts ROOT] [--map-art ROOT] [--scenario-art ROOT] [--installation-art ROOT] [--game alder-valley] [--showcase CASE [--window WIDTHxHEIGHT]] [--observe PATH] [--cold-view full|half|overview] [--map-renderer cpu|gpu] [--map-gpu-cache-mib 128..1024] [--renderer-settings PATH] [--storage-directory PATH]");
 }

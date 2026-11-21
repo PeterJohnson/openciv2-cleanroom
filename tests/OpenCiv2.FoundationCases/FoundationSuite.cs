@@ -85,6 +85,8 @@ public static partial class FoundationSuite
         ("W02.admission", GenerationAdmission),
         ("W03.map-observer-privacy", MapObserverPrivacy),
         ("P05.map-target-command", MapTargetCommand),
+        ("M3.local-play-round-trip", LocalPlayRoundTrip),
+        ("M3.land-step-zones", LocalStepZones),
         ("P03.atlas-admission", AtlasAdmission),
         ("P03.png-filters-and-failures", PngFiltersAndFailures),
         ("P03.pinned-package-admission", PinnedPackageAdmission),

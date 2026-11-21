@@ -25,7 +25,17 @@ See the [validation records](validation/README.md) for dated test counts.
 Test counts describe the current bounded implementation,
 not whole-game compatibility. The CLI supports stored inspection, validation,
 diff, content resolution/validation and classic rule/name/preference conversion.
-It does not expose live commands or playable gameplay.
+An explicit loaded view is available for Alder Valley saves. It stages the
+classic file under the authored rules and returns the local player's observation.
+
+```sh
+dotnet run --project src/OpenCiv2.Cli -c Release --no-build -- \
+  inspect /path/to/alder-valley.sav --view loaded --rules alder-valley --json
+```
+
+The SQLite-enabled CLI takes the same options with
+`export FILE --sqlite NEW_DATABASE`. The live application console issues
+gameplay commands through the player's session.
 
 Apphosts are `src/OpenCiv2.Cli/bin/Release/net11.0/oc2` (`oc2.exe` on Windows).
 Framework-dependent apphosts require the runtime discoverable; set `DOTNET_ROOT`
@@ -45,6 +55,13 @@ dotnet restore solutions/OpenCiv2.App.slnx --locked-mode
 python tools/dotnet/build_audio.py
 dotnet build solutions/OpenCiv2.App.slnx -c Release --no-restore
 dotnet publish src/OpenCiv2.Desktop -c Release --no-restore
+```
+
+Launch the Alder Valley playable profile with the desktop host. The pinned
+graphics and font arguments are optional and use the same renderer as Riverbend.
+
+```sh
+dotnet run --project src/OpenCiv2.Desktop -c Release --no-build -- --game alder-valley
 ```
 
 To see Riverbend with its river, road, rail and resource sprites, verify the

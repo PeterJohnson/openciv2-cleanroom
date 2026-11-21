@@ -1,5 +1,6 @@
 using System.Text;
 using OpenCiv2.Base;
+using OpenCiv2.Contracts;
 using OpenCiv2.IO.Native;
 using OpenCiv2.Query;
 using QueryAccess = OpenCiv2.Query.FileAccess;
@@ -19,7 +20,8 @@ Usage: oc2 inspect FILE [--json] [--cities|--units|--tiles|--civilizations|--sec
        oc2 content convert-rules RULES_SOURCE NEW_RULES NEW_COMPATIBILITY
        oc2 content convert-names|convert-preferences SOURCE CONTENT_MANIFEST NEW_OUTPUT [--parent MANIFEST]...
 Options: --format save|map (default: .mp means map; all others mean save)
-         --view stored (loaded/live views are not implemented)
+         --view stored (default)
+         --view loaded --rules alder-valley (inspect or optional SQLite export)
 Stored save support: version 0x2c. Inputs are read-only.
 Exit: 0 checks passed/equal; 1 semantic errors/different; 2 usage/I/O failure;
       3 unsupported feature/version/view/comparison; 4 malformed input; 130 cancelled.
@@ -46,7 +48,8 @@ Exit: 0 checks passed/equal; 1 semantic errors/different; 2 usage/I/O failure;
 
     private static int Status(StoredSnapshot s) => s.Unsupported ? 3 : !s.Decoded ? 4 : s.HasErrors ? 1 : 0;
 
-    public static int Run(string[] args, Func<StoredSnapshot, string, bool, byte[]>? export = null)
+    public static int Run(string[] args, Func<StoredSnapshot, string, bool, byte[]>? export = null,
+        Func<LocalPlayerSnapshot, string, string, bool, byte[]>? exportLoaded = null)
     {
         try
         {
@@ -70,7 +73,8 @@ Exit: 0 checks passed/equal; 1 semantic errors/different; 2 usage/I/O failure;
             var paths = new List<string>();
             var selection = new List<Section>();
             FileKind? format = null;
-            string? destination = null;
+            string? destination = null, loadRules = null;
+            bool loaded = false;
             for (int i = 1; i < args.Length; ++i)
             {
                 string arg = args[i];
@@ -107,12 +111,19 @@ Exit: 0 checks passed/equal; 1 semantic errors/different; 2 usage/I/O failure;
                 }
                 if (arg == "--view")
                 {
-                    if (Next() != "stored")
+                    string view = Next();
+                    if (view is not ("stored" or "loaded"))
                     {
-                        Console.Error.WriteLine(
-                            "Only stored inspection is implemented; loaded/live views require session loading");
+                        Console.Error.WriteLine("Available views are stored and the Alder Valley loaded player view");
                         return 3;
                     }
+
+                    loaded = view == "loaded";
+                    continue;
+                }
+                if (arg == "--rules")
+                {
+                    loadRules = Next();
                     continue;
                 }
                 if (arg == "--format")
@@ -137,6 +148,30 @@ Exit: 0 checks passed/equal; 1 semantic errors/different; 2 usage/I/O failure;
             if (command != "inspect" && selection.Count != 0)
             {
                 throw new ArgumentException("Section selection is available only for inspect");
+            }
+
+            if (loaded)
+            {
+                if (loadRules != "alder-valley" || Kind(paths[0], format) != FileKind.Save
+                    || command is not ("inspect" or "export") || selection.Count != 0)
+                {
+                    Console.Error.WriteLine("Loaded inspection requires a save, --rules alder-valley and no stored sections");
+                    return 3;
+                }
+
+                if (command == "export" && (exportLoaded is null || destination is null))
+                {
+                    Console.Error.WriteLine("Loaded export requires the SQLite build and --sqlite NEW_DATABASE");
+                    return 3;
+                }
+
+                return LoadedView.Run(paths[0], json, command == "export"
+                    ? (snapshot, hash) => exportLoaded!(snapshot, hash, destination!, json) : null);
+            }
+
+            if (loadRules is not null)
+            {
+                throw new ArgumentException("--rules applies only to --view loaded");
             }
 
             if (command == "export")
