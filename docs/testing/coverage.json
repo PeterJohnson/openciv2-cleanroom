@@ -1737,7 +1737,7 @@
         "M2.document-envelope",
         "M2.document-workflow"
       ],
-      "review": "Application byte persistence, selection cancellation, unchanged export, preferences, explicit clocks and silent presentation. This is not live-session load/save, original-game interoperability, media decoding, or full platform acceptance."
+      "review": "Application byte persistence, selection cancellation, unchanged export, preferences, explicit clocks and silent presentation. Native storage checks include held-reader replacement, competing first publication, Windows denied-replacement preservation/recovery, staging cleanup and platform-specific failure types. This is not live-session load/save, original-game interoperability, media decoding, or full platform acceptance."
     },
     {
       "id": "platform-wav-playback",

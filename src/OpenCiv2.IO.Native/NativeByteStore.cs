@@ -63,7 +63,7 @@ public sealed class NativeByteStore(string directory) : IByteStore
                     output.Write(owned);
                     output.Flush(flushToDisk: true);
                 }
-                File.Move(temporary, path, overwrite: true);
+                Publish(temporary, path);
             }
             finally
             {
@@ -73,6 +73,29 @@ public sealed class NativeByteStore(string directory) : IByteStore
             }
         });
     }
+
+    /// <summary>Publish a closed staging file, retaining readers of the previous value.</summary>
+    private static void Publish(string temporary, string path)
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            File.Move(temporary, path, overwrite: true);
+            return;
+        }
+
+        // Windows overwrite-move rejects an open destination even with delete sharing.
+        // First try an exclusive creation so a competing publisher cannot turn a
+        // missing-file check into an overwrite-move. Replace preserves open readers.
+        try
+        {
+            File.Move(temporary, path);
+        }
+        catch (IOException) when (File.Exists(path))
+        {
+            File.Replace(temporary, path, destinationBackupFileName: null);
+        }
+    }
+
     public async Task RemoveAsync(string key)
     {
         string path = PathFor(key);

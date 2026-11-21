@@ -9,7 +9,10 @@ archives with installed-runtime roots empty.
 
 [Executed CI](../validation/README.md) already covers Linux x64, macOS ARM64 and
 Windows x64 core/CLI, Lua/SQLite, desktop compilation/publication and packages.
-Actual Windows/macOS desktop and OS delivery checks below remain pending. The
+The [Windows M2 run](../validation/m2-windows-2026-11-20.md) executes bounded
+managed/AOT input, shutdown and picker checks. Its two storage failures are fixed
+in the [follow-up validation](../validation/m2-windows-storage-fix-2026-11-20.md).
+Full Windows/macOS desktop and OS delivery acceptance remains open. The
 [Riverbend slice](../validation/m2-map-slice.md) adds Linux X11 validation with
 pinned content and software raster results for simulated 4K/5K surfaces.
 

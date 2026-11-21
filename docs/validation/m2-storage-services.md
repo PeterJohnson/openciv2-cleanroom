@@ -19,6 +19,12 @@ flush/publication work away from the UI. Reads return owned bytes. The desktop
 host defaults to the `OpenCiv2/storage` directory in the OS application-data
 folder; `--storage-directory PATH` isolates tests and alternate profiles.
 
+The [Windows storage correction](m2-windows-storage-fix-2026-11-20.md) uses
+exclusive initial publication followed by `File.Replace` for an existing Windows
+value. This preserves open readers of the old value; Windows overwrite-move
+rejects those readers even when they allow delete sharing. Unix retains rename
+replacement. Native permission/I/O errors still propagate to the caller.
+
 The browser adapter uses an origin-scoped IndexedDB database named
 `openciv2-app-v1`. It requests strict transaction durability and resolves writes
 only from `IDBTransaction.oncomplete`, never from a successful `put` request.

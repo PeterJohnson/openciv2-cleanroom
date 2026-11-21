@@ -39,15 +39,89 @@ public sealed class PlatformStorageTests : IDisposable
         Assert.Empty(Directory.GetFiles(root, "*.tmp"));
     }
     [Fact]
+    public async Task Replacement_keeps_an_open_reader_on_the_complete_previous_value()
+    {
+        // Architecture §§7–8 / IByteStore: publication changes the named value,
+        // without mutating the bytes already opened by another reader.
+        var store = new NativeByteStore(root);
+        byte[] original = Enumerable.Repeat((byte)1, 200000).ToArray();
+        byte[] replacement = Enumerable.Repeat((byte)2, 100000).ToArray();
+        await store.WriteAsync("value", original);
+
+        await using var reader = new FileStream(Path.Combine(root, "value.oc2data"),
+            FileMode.Open, FileAccess.Read, FileShare.Read | FileShare.Delete, 65536, FileOptions.Asynchronous);
+        Assert.Equal(original[0], reader.ReadByte());
+
+        await store.WriteAsync("value", replacement);
+
+        byte[] remaining = new byte[original.Length - 1];
+        await reader.ReadExactlyAsync(remaining, TestContext.Current.CancellationToken);
+        Assert.Equal(original[1..], remaining);
+        Assert.Equal(-1, reader.ReadByte());
+        Assert.Equal(replacement, await new NativeByteStore(root).ReadAsync("value"));
+        Assert.Empty(Directory.GetFiles(root, "*.tmp"));
+    }
+    [Fact]
+    public async Task Two_first_publishers_can_create_then_replace_a_complete_value()
+    {
+        // Architecture §§7–8 / IByteStore: cover a destination appearing between
+        // initial publication attempts, not general multi-writer coordination.
+        byte[][] values = Enumerable.Range(1, 2)
+            .Select(value => Enumerable.Repeat((byte)value, value * 10000).ToArray()).ToArray();
+        for (int round = 0; round < 10; round++)
+        {
+            string key = "new-" + round;
+            var start = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            Task[] writes = values.Select(async bytes =>
+            {
+                var store = new NativeByteStore(root);
+                await start.Task;
+                await store.WriteAsync(key, bytes);
+            }).ToArray();
+            start.SetResult();
+            await Task.WhenAll(writes);
+
+            byte[]? published = await new NativeByteStore(root).ReadAsync(key);
+            Assert.NotNull(published);
+            Assert.Contains(values, bytes => bytes.SequenceEqual(published));
+        }
+        Assert.Empty(Directory.GetFiles(root, "*.tmp"));
+    }
+    public static bool WindowsFileSharing => OperatingSystem.IsWindows();
+    [Fact(Skip = "Windows enforces handle delete-sharing during replacement.", SkipUnless = nameof(WindowsFileSharing))]
+    public async Task Denied_replacement_preserves_the_previous_value_and_releases_staging()
+    {
+        // Architecture §§7–8 / IByteStore: an actual publication failure must
+        // preserve committed data and leave the store usable for a later write.
+        var store = new NativeByteStore(root);
+        byte[] original = [1, 2, 3], replacement = [4, 5];
+        await store.WriteAsync("value", original);
+        using (var reader = new FileStream(Path.Combine(root, "value.oc2data"),
+            FileMode.Open, FileAccess.Read, FileShare.Read))
+        {
+            Exception? failure = await Record.ExceptionAsync(() => store.WriteAsync("value", replacement));
+            Assert.True(failure is IOException or UnauthorizedAccessException, failure?.ToString() ?? "Write succeeded");
+            Assert.Equal(original, await store.ReadAsync("value"));
+            Assert.Empty(Directory.GetFiles(root, "*.tmp"));
+        }
+        await store.WriteAsync("value", replacement);
+        Assert.Equal(replacement, await store.ReadAsync("value"));
+    }
+    [Fact]
     public async Task Failed_publication_cleans_staging_and_path_keys_cannot_escape()
     {
         Directory.CreateDirectory(Path.Combine(root, "blocked.oc2data"));
         var store = new NativeByteStore(root);
-        await Assert.ThrowsAsync<IOException>(() => store.WriteAsync("blocked", new byte[] { 7 }));
+        Exception? failure = await Record.ExceptionAsync(() => store.WriteAsync("blocked", new byte[] { 7 }));
+        // Directory collisions can be access-denied on Windows or an I/O error
+        // on Unix. The storage contract requires failure and cleanup, not one OS error type.
+        Assert.True(failure is IOException or UnauthorizedAccessException, failure?.ToString() ?? "Write succeeded");
         Assert.True(Directory.Exists(Path.Combine(root, "blocked.oc2data")));
         Assert.Empty(Directory.GetFiles(root, "*.tmp"));
         foreach (string key in new[] { "../outside", "/absolute", "C:\\file", "UPPER" })
             await Assert.ThrowsAsync<ArgumentException>(() => store.WriteAsync(key, new byte[] { 1 }));
+        await store.WriteAsync("after-failure", new byte[] { 9 });
+        Assert.Equal(new byte[] { 9 }, await store.ReadAsync("after-failure"));
     }
     [Fact]
     public async Task Selection_cancellation_rejects_late_reply_and_double_dispatch()

@@ -7,11 +7,18 @@ and whole-game compatibility. Build and test commands are in the
 
 ## Current local validation
 
+The [Windows M2 validation](m2-windows-2026-11-20.md) on 2026-11-20 Pacific
+records managed/Native AOT input and shutdown, native pickers and persistence,
+the 31-board CPU raster matrix and offline audio checks. Its two native storage
+failures are fixed in the [storage correction](m2-windows-storage-fix-2026-11-20.md):
+nine storage tests and 488 native tests pass, with one audio-device skip. Full
+platform, browser and performance gates remain open; the initial receipt is retained.
+
 The opt-in desktop Native AOT build passed
 [Linux validation](desktop-aot-2026-11-17.md) on 2026-11-17 Pacific: publication,
 six actual pointer checks and normal shutdown, plus the same checks for the
 managed default and all 454 core tests. AOT locks cover Linux x64, macOS ARM64 and
-Windows x64; only Linux AOT compilation/execution was exercised locally.
+Windows x64; that earlier record exercised only Linux AOT compilation/execution.
 
 The .NET 11 and shared SkiaSharp 4 upgrade passed
 [local Linux/Chromium validation](dotnet11-2026-11-18.md) on 2026-11-18 UTC,
