@@ -1710,6 +1710,34 @@
         "P5.local-unit-stale-target"
       ],
       "review": "Production command, observer privacy, asynchronous confirmation/cancellation, descriptor-based console admission, action availability and correlated dialog replies. Native/WASM cases exercise target changes and deadline/peer progress while awaiting a choice; full M2 platform integration remains open."
+    },
+    {
+      "id": "platform-storage-services",
+      "status": "partial",
+      "contract": "Architecture \u00a7\u00a77\u20138; F06 file-choice/byte preservation; P10 semantic completion",
+      "publicSurface": "IByteStore; NativeByteStore; StoredDocument; DocumentLibrary; IFileTransfer; IPlatformClock; SilentMedia; FileLibraryView; ShellPreferences",
+      "sources": [
+        "src/OpenCiv2.App/AvaloniaFileTransfer.cs",
+        "src/OpenCiv2.App/FileLibraryView.cs",
+        "src/OpenCiv2.App/ShellPreferences.cs",
+        "src/OpenCiv2.Base/PlatformServices.cs",
+        "src/OpenCiv2.Browser/BrowserStorage.cs",
+        "src/OpenCiv2.Browser/wwwroot/storage.js",
+        "src/OpenCiv2.IO.Native/NativeByteStore.cs",
+        "src/OpenCiv2.IO/Documents.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.Base.Tests/PlatformStorageTests.cs",
+        "tests/OpenCiv2.FoundationCases/PlatformServiceCases.cs",
+        "tools/dotnet/run_storage_browser.cjs",
+        "tools/dotnet/run_storage_native.py"
+      ],
+      "sharedGroups": [
+        "M2.clock-and-silent-media",
+        "M2.document-envelope",
+        "M2.document-workflow"
+      ],
+      "review": "Application byte persistence, selection cancellation, unchanged export, preferences, explicit clocks and silent presentation. This is not live-session load/save, original-game interoperability, media decoding, or full platform acceptance."
     }
   ]
 }

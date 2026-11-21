@@ -15,13 +15,13 @@ public static partial class FoundationSuite
         UnitTarget target = new(new(0), new(100));
         var random = f.Runtime.GameplayRandom.Capture();
         var actions = ShellActions.Create(panel.View, target, new(Grid: true));
-        Equal(6, actions.Select(action => action.Id).Distinct().Count());
+        Equal(7, actions.Select(action => action.Id).Distinct().Count());
         Equal(true, actions.Single(action => action.Id == ShellActions.StackBottom).Enabled);
         Equal(true, actions.Single(action => action.Id == ShellActions.Grid).Checked == true);
         Equal(false, actions.Single(action => action.Id == ShellActions.Bare).Checked == true);
         Equal(false, f.Runtime.HasPendingCommands); Equal(random, f.Runtime.GameplayRandom.Capture());
-        Equal(false, ShellActions.Create(panel.View, new(new(0), new(999)), new())[0].Enabled);
-        Equal(true, ShellActions.Create(panel.View with { Commands = new([]) }, target, new())[0].Hidden);
+        Equal(false, ShellActions.Create(panel.View, new(new(0), new(999)), new()).Single(action => action.Id == ShellActions.StackBottom).Enabled);
+        Equal(true, ShellActions.Create(panel.View with { Commands = new([]) }, target, new()).Single(action => action.Id == ShellActions.StackBottom).Hidden);
         Equal(false, ShellActions.Submit(panel, "unregistered", target));
         Equal(true, ShellActions.Submit(panel, ShellActions.StackBottom, target));
         Equal(false, ShellActions.Submit(panel, ShellActions.StackBottom, target));
@@ -104,7 +104,9 @@ public static partial class FoundationSuite
             Equal(CommandStatus.Completed, runtime.TakeReplies().Single().Status);
             panel.Refresh(); dialog.Refresh(panel.View); Equal(identity, dialog.View!.Identity);
         }
-        Equal(0, runtime.ExpireInteractions(49)); Equal(1, runtime.ExpireInteractions(50));
+        var clock = new ManualPlatformClock(DateTimeOffset.UnixEpoch);
+        clock.Advance(49); Equal(0, runtime.ExpireInteractions(clock.Milliseconds));
+        clock.Advance(1); Equal(1, runtime.ExpireInteractions(clock.Milliseconds));
         Equal(false, dialog.Respond(panel, identity, 4));
         Equal(true, runtime.AdvanceOne()); panel.Refresh(); dialog.Refresh(panel.View);
         Equal(CommandStatus.Completed, panel.View.Command!.Status); Equal(true, dialog.View is null);

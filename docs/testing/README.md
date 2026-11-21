@@ -145,3 +145,13 @@ text-entry isolation and resized hit regions. The browser runs at 1× and 2×.
 observer handoff, cancellation, deadlines and peer requests without graphics
 dependencies. See the [execution record](../validation/m2-menus-dialogs.md);
 macOS native menu tracking and real assistive technology are separate gates.
+
+The [storage/service drivers](../BUILDING.md#application-storage-and-service-checks)
+exercise the actual native and WASM file library, selection cancellation,
+unchanged import/export, persisted preferences, removal and restart. Browser
+fault injection aborts a write after request success and rejects quota writes;
+only transaction completion can publish success. `PlatformServiceCases` runs
+portable envelope/workflow/clock/silent-media contracts in both foundation hosts.
+`PlatformStorageTests` adds actual native atomic writes and delayed selection/
+commit lifetime cases. See the [execution record](../validation/m2-storage-services.md)
+for remaining platform and playable-session joins.

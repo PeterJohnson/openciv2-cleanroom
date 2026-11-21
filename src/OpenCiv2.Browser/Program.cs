@@ -23,19 +23,38 @@ internal static partial class Program
 
     public static async Task Main()
     {
+        var storage = new BrowserStorage();
+        await SeamApp.ConfigureServicesAsync(storage, storage);
         var backend = Option("backend") switch
         {
             null or "webgl" => BrowserRenderingMode.WebGL2,
             "software" => BrowserRenderingMode.Software2D,
             _ => throw new ArgumentException("Browser backend must be software or webgl")
         };
-        var renderer = new MapRendererOptions(MapRendererOptions.ParseMode(Option("renderer") ?? "cpu"));
+        MapRendererOptions saved = new();
+        string? warning = null;
+        try
+        {
+            if (await storage.ReadAsync("renderer-preferences") is { } bytes)
+            {
+                saved = MapRendererOptions.Read(new MemoryStream(bytes));
+            }
+        }
+        catch (Exception error) when (error is IOException or System.Text.Json.JsonException or ArgumentException or InvalidOperationException)
+        { warning = "Could not load renderer preference: " + error.Message; }
+        var renderer = new MapRendererOptions(MapRendererOptions.ParseMode(Option("renderer") ??
+            (backend == BrowserRenderingMode.Software2D ? "cpu" : saved.Mode == MapRendererMode.Gpu ? "gpu" : "cpu")), saved.GpuCacheMiB);
         if (backend == BrowserRenderingMode.Software2D && renderer.Mode == MapRendererMode.Gpu)
         {
             throw new ArgumentException("GPU map composition requires the WebGL browser backend");
         }
 
-        SeamApp.ConfigureMapRenderer(new(renderer, renderer));
+        SeamApp.ConfigureMapRenderer(new(renderer, saved, warning: warning, saveAsync: async options =>
+        {
+            using var output = new MemoryStream();
+            options.Write(output);
+            await storage.WriteAsync("renderer-preferences", output.ToArray());
+        }));
         using var client = new HttpClient { BaseAddress = new Uri(BaseUrl()) };
         Content = await BrowserContent.LoadAsync(client, Option("art"));
         SeamApp.ConfigureGraphics(Content.Atlas, Content.Fonts, Content.Art);

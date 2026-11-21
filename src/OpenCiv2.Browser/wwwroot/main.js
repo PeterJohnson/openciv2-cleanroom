@@ -1,7 +1,9 @@
 import { dotnet } from './_framework/dotnet.js';
+import * as storage from './storage.js';
 import { showFailure } from './browser-lifecycle.js';
 try {
     const runtime = await dotnet.create();
+    runtime.setModuleImports('storage', storage);
     runtime.setModuleImports('browser', {
         baseUrl: () => new URL('./', location.href).href,
         option: name => new URL(location.href).searchParams.get(name)

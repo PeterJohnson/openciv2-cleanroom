@@ -17,14 +17,14 @@ Projects live in `src/`; case libraries and executable hosts live in `tests/`.
 
 | Project | Responsibility | Useful starting point |
 | --- | --- | --- |
-| `OpenCiv2.Base`, `OpenCiv2.IO` | Arithmetic, PCG32/choices, owned values and byte/storage contracts | `Arithmetic.cs`, `Randomness/RandomContext.cs`, `Storage.cs` |
+| `OpenCiv2.Base`, `OpenCiv2.IO` | Arithmetic, PCG32/choices, owned values and byte/storage contracts | `Arithmetic.cs`, `Randomness/RandomContext.cs`, `Storage.cs`, `Documents.cs`, `PlatformServices.cs` |
 | `OpenCiv2.Contracts` | Immutable client observations, commands and setup values | `Clients.cs`, `Commands.cs` |
 | `OpenCiv2.Core` | Live state, map geometry/storage, rules and implemented gameplay leaves | `State/GameState.cs`, `MapStorage.cs`, `Rules/RuleInstaller.cs` |
 | `OpenCiv2.Formats` | Classic codecs, content decoding/conversion, portable graphics readers and versioned checkpoints | `ClassicFiles.cs`, `Content/ContentPack.cs`, `LocalCheckpointCodec.cs` |
 | `OpenCiv2.Session` | Authority, clients, continuations, setup/load/save and checkpoint ownership | `SessionRuntime.cs`, `CommandRuntime.cs`, `Checkpoint.cs` |
 | `OpenCiv2.Network` | Messages, framing, queues, compression and state images | `Stream.cs`, `SendQueue.cs`, `Sections.cs` |
 | `OpenCiv2.Query` | Stored inspection/diffs and observer-filtered live entity/map values | `StoredInspection.cs`, `LiveProjection.cs` |
-| `OpenCiv2.IO.Native`, `OpenCiv2.Platform.Native` | Native filesystem and classic text adapters | `NativeFiles.cs`, `ClassicStorage.cs`, `ClassicTextFiles.cs` |
+| `OpenCiv2.IO.Native`, `OpenCiv2.Platform.Native` | Native filesystem and classic text adapters | `NativeFiles.cs`, `ClassicStorage.cs`, `NativeByteStore.cs`, `ClassicTextFiles.cs` |
 | `OpenCiv2.Cli`, `OpenCiv2.Export.Sqlite`, `OpenCiv2.Cli.Sqlite` | CLI composition and optional native export | `Program.cs`, `SqliteSnapshot.cs` |
 | `OpenCiv2.Automation` | Optional managed Lua-CSharp interpreter, scoped player API and resource budgets | `LuaMachine.cs`, `ScriptTask.cs` |
 | `OpenCiv2.ViewModels`, `OpenCiv2.Console` | UI-independent player-client model and command parser | `SessionPanel.cs`, `CommandText.cs` |
@@ -50,6 +50,15 @@ the shared matrix, with read-only result and fresh frame exports. Its performanc
 install the shared `ScopedMapPerformanceWorld` fixture; real gallery input then
 drives production scoped projection, scene binding and drawing. BrowserContent
 supplies asynchronous HTTP streams to Formats' pinned graphics/font readers.
+
+`IO/Documents` owns asynchronous byte-storage/transfer contracts, the bounded
+private document envelope and file-library lifecycle. `IO.Native/NativeByteStore`
+implements atomic application-value replacement; it does not change
+`ClassicStorage` partial-write semantics. `App/AvaloniaFileTransfer` owns native
+picker handles and streams. Browser-only IndexedDB/file-input/download interop
+is in `BrowserStorage` and `wwwroot/storage.js`. `App/FileLibraryView` and
+`ShellPreferences` provide the real caller. Base owns explicit clock and silent
+media contracts; the host composes them into the shell/session timer.
 
 The host owns each painter's lifetime and lends a current Skia canvas/context to
 `MapRendererSession.Draw` inside its drawing lease. Observer replacement, render

@@ -6,13 +6,31 @@ using Avalonia.Media;
 using Avalonia.Themes.Fluent;
 using Avalonia.Threading;
 using OpenCiv2.App.Map;
+using OpenCiv2.Base;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.IO;
 using OpenCiv2.MapRendering;
 
 namespace OpenCiv2.App;
 
 public sealed class SeamApp : Application
 {
+    internal static IByteStore? Storage { get; private set; }
+    internal static IFileTransfer? FileTransfer { get; private set; }
+    internal static ShellPreferences? DisplayPreferences { get; private set; }
+    internal static IPlatformClock Clock { get; private set; } = new SystemPlatformClock();
+    internal static IPresentationMedia Media { get; private set; } = new SilentMedia();
+    public static async Task ConfigureServicesAsync(IByteStore storage, IFileTransfer? transfer = null,
+        IPlatformClock? clock = null, IPresentationMedia? media = null)
+    {
+        Storage = storage;
+        FileTransfer = transfer;
+        Clock = clock ?? new SystemPlatformClock();
+        Media = media ?? new SilentMedia();
+        DisplayPreferences = new(storage);
+        await DisplayPreferences.LoadAsync();
+    }
+
     private SeamSession? owner;
     private MapPainter? painter;
     private DispatcherTimer? timer;
@@ -152,7 +170,7 @@ public sealed class SeamApp : Application
             base.OnFrameworkInitializationCompleted();
             return;
         }
-        owner = new();
+        owner = new(Clock);
         var view = new SeamView(owner.Panel, painter, selected is not null, selected?.Selected);
         CurrentView = view;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -269,6 +287,7 @@ public sealed class SeamApp : Application
     private void Stop()
     {
         timer?.Stop();
+        CurrentView?.StopServices();
         owner?.Dispose();
         owner = null;
         painter?.Dispose();

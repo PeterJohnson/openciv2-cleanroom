@@ -24,6 +24,11 @@ desktop checks remain open.
 
 ## M2 map slice
 
+The [storage and service record](m2-storage-services.md) covers native/IndexedDB
+persistence, actual Linux/browser selection and export, restart behavior,
+preference writes, explicit time and silent completion. Live-session loading,
+full media playback and remaining host acceptance are separate gates.
+
 The [menus and dialogs record](m2-menus-dialogs.md) covers the shared action model,
 Linux/browser dropdowns, correlated custom choices, focus and stale-target
 handling. The macOS NativeMenu adapter still requires real native tracking tests.

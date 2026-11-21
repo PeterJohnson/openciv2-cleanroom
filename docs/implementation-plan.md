@@ -286,6 +286,13 @@ targets, observer changes, duplicate replies, deadlines and queued peer requests
 Actual macOS native tracking, Windows input, IME and assistive-technology checks
 remain platform gates; this does not implement later gameplay menu commands.
 
+The [storage and service slice](validation/m2-storage-services.md) adds a native/
+IndexedDB file library with unchanged import/export, explicit persistence
+completion, selection cancellation, display/renderer preferences and injected
+clock/silent-media services. Linux and WASM input validate host storage and
+restart behavior. This does not load a playable session or replace the existing
+classic save/load failure contracts; that caller joins the M3 setup path.
+
 - Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
   terrain/coasts/relief, every feature/network/resource, all supported unit/city
   art and annotations, ownership/status, knowledge edges, overlays, overview,
@@ -328,15 +335,17 @@ remain platform gates; this does not implement later gameplay menu commands.
   changed while the dialog is open. The correlated confirmation path now has
   shared lifecycle tests and Linux/browser input evidence; later city/report
   screens retain their owning milestone joins.
-- Add platform storage/time adapters and a browser import/export/persistence
-  flow. Check high DPI, window resizing, menu insets, atlas/texture limits,
+- Extend the implemented platform storage/time adapters and browser import/export/
+  persistence flow to playable session loading/saving and remaining hosts.
+  Check high DPI, window resizing, menu insets, atlas/texture limits,
   browser startup/download costs, and case-independent classic resource lookup.
 - Keep a pending interaction responsive to fake network traffic and deadlines.
   Test real native menu tracking rather than assuming the ordinary application
   dispatcher keeps running inside platform menu loops. Test desktop file dialogs and
   asynchronous browser file selection through their respective adapters.
-- Introduce silent media and fake-clock services; verify that unavailable audio
-  or skipped cosmetics cannot suppress semantic completion.
+- Keep silent media and explicit/fake-clock services independent of semantic
+  completion. The admitted command now completes with skipped media; extend
+  authored audio/video playback through P10 and validate remaining platforms.
 
 **Renderer functional gate:** all MV01–MV30 rows pass the acceptance matrix on
 the production native and browser paths, with semantic assertions, visual review,
@@ -659,9 +668,11 @@ and does not replace, X02's operation-level coverage ledger.
    terrain rebuilds and projection/binding as remaining costs after GPU command
    batching. Extend the diagnostic pan/zoom/world-update coverage to the complete
    protocol; retain failed/pending gates honestly.
-3. Connect file-choice/load/save workflows to native and browser storage and
-   verify cancellation, asynchronous replies and session deadlines. Add macOS
-   native menus and Avalonia Windows/Linux menus with real platform acceptance.
+3. Connect playable session load/save to the implemented native/browser file
+   library, retaining F06 failure effects and explicit persistence completion.
+   Storage cancellation/restart and shared deadline tests now have
+   [local evidence](validation/m2-storage-services.md); validate real
+   Windows/macOS pickers and macOS native menu tracking separately.
 4. Finish actual Windows/macOS desktop input/shutdown, OS interruption and full
    platform acceptance using [the checklist](testing/platforms.md); retain explicit
    evidence for target-hardware performance and additional runtime identifiers.

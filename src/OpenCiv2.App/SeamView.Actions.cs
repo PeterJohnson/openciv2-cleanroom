@@ -14,7 +14,12 @@ public sealed partial class SeamView
     internal void AttachMenu(Window window) => menu.Attach(window);
 
     private IEnumerable<ShellAction> Actions() => ShellActions.Create(model.View, activeTarget,
-        new(map.Display.Grid, map.Display.Bare, map.Display.ReducedMotion));
+        new(map.Display.Grid, map.Display.Bare, map.Display.ReducedMotion))
+        .Select(action => action with
+        {
+            Enabled = action.Enabled && files?.IsVisible != true &&
+            (action.Id != ShellActions.Files || files is not null)
+        });
 
     private void RefreshActions()
     {
@@ -26,7 +31,7 @@ public sealed partial class SeamView
     private void OnShellKey(object? sender, KeyEventArgs e)
     {
         // Text editing and dialog choices own their keys; the menu's decorative gestures do not dispatch.
-        if (!input.IsKeyboardFocusWithin && !dialog.IsVisible)
+        if (!input.IsKeyboardFocusWithin && !dialog.IsVisible && files?.IsVisible != true)
         {
             menu.KeyDown(e);
         }
@@ -45,6 +50,14 @@ public sealed partial class SeamView
         actionDispatches++;
         switch (id)
         {
+            case ShellActions.Files:
+                mapOptions.Flyout?.Hide();
+                if (files is not null)
+                {
+                    _ = files.OpenAsync();
+                }
+
+                break;
             case ShellActions.StackBottom:
                 parseError = "";
                 dialog.RememberFocus(map);
@@ -69,6 +82,17 @@ public sealed partial class SeamView
         }
         Refresh(force: true);
     }
+
+    private JsonObject? FilesSnapshot(Func<Control?, JsonObject> bounds) => files is null ? null : new()
+    {
+        ["visible"] = files.IsVisible,
+        ["busy"] = files.Model.Busy,
+        ["canCancel"] = files.Model.CanCancel,
+        ["message"] = files.Message,
+        ["entries"] = new JsonArray(files.Model.Entries.Select(entry => (JsonNode)new JsonObject
+        { ["key"] = entry.Key, ["name"] = entry.Name, ["size"] = entry.Size }).ToArray()),
+        ["controls"] = new JsonObject(files.Buttons.Select(entry => new KeyValuePair<string, JsonNode?>(entry.Key, bounds(entry.Value))))
+    };
 
     private JsonObject DialogSnapshot(Func<Control?, JsonObject> bounds) => new()
     {

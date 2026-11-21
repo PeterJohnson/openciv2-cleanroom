@@ -63,7 +63,7 @@ class X11:
         self.input.XTestFakeKeyEvent.argtypes = [C.c_void_p, C.c_uint, C.c_int, C.c_ulong]
         self.pid_atom = self.x.XInternAtom(self.display, b'_NET_WM_PID', 0)
 
-    def window_for(self, pid, excluding=None):
+    def window_for(self, pid, excluding=None, visible=False):
         pending = [self.root]
         while pending:
             window = pending.pop(); kind, length, after = C.c_ulong(), C.c_ulong(), C.c_ulong(); fmt = C.c_int(); data = C.POINTER(C.c_ubyte)()
@@ -72,7 +72,9 @@ class X11:
                 if status == 0 and fmt.value == 32 and length.value == 1 and C.cast(data, C.POINTER(C.c_ulong))[0] == pid:
                     root, x, y, width, height, border, depth = C.c_ulong(), C.c_int(), C.c_int(), C.c_uint(), C.c_uint(), C.c_uint(), C.c_uint()
                     self.x.XGetGeometry(self.display, window, C.byref(root), C.byref(x), C.byref(y), C.byref(width), C.byref(height), C.byref(border), C.byref(depth))
-                    if window != excluding and width.value > 100 and height.value > 100:
+                    attributes = WindowAttributes()
+                    mapped = self.x.XGetWindowAttributes(self.display, window, C.byref(attributes)) and attributes.map_state == 2
+                    if window != excluding and width.value > 100 and height.value > 100 and (mapped or not visible):
                         print(f'Owned native window: {window} ({width.value}x{height.value})', flush=True)
                         return window
             finally:
@@ -178,7 +180,9 @@ def main():
                 checks.append({'name': name, 'exitCode': result.returncode, 'diagnostic': result.stderr.strip()})
                 candidate.unlink()
         snapshot = Path(directory) / 'state.json'
-        process = subprocess.Popen([*args.adapter, *options, '--observe', str(snapshot)], stdout=log, stderr=subprocess.STDOUT)
+        process = subprocess.Popen([*args.adapter, *options, '--observe', str(snapshot),
+                                    '--storage-directory', str(Path(directory) / 'storage'),
+                                    '--renderer-settings', str(Path(directory) / 'renderer.json')], stdout=log, stderr=subprocess.STDOUT)
         driver = None
         try:
             driver = X11()
@@ -308,6 +312,7 @@ def main():
                 # Leave the map first so its hover text no longer reflows
                 # the sidebar between resolving and clicking the console.
                 driver.move(window, (state['width'] - 9) * state['scaling'], 8 * state['scaling'])
+                wait(lambda s: s['serviceTicks'] >= state['serviceTicks'] + 4)
                 click('input')
                 wait(lambda s: s['inputFocused'])
                 driver.key('Left')

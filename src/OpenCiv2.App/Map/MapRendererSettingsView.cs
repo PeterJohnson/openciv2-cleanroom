@@ -35,22 +35,24 @@ internal sealed class MapRendererSettingsView : StackPanel
             Choice.SelectedIndex = preferences.Saved.Mode == MapRendererMode.Gpu ? 1 : 0;
             refreshing = false;
         };
-        Choice.SelectionChanged += (_, _) =>
+        Choice.SelectionChanged += async (_, _) =>
         {
             if (refreshing)
             {
                 return;
             }
 
+            Choice.IsEnabled = false;
             try
             {
-                preferences.Save(Choice.SelectedIndex == 1 ? MapRendererMode.Gpu : MapRendererMode.Cpu);
+                await preferences.SaveAsync(Choice.SelectedIndex == 1 ? MapRendererMode.Gpu : MapRendererMode.Cpu);
                 message.Text = "Saved. Restart to apply; a command-line override takes precedence.";
             }
             catch (Exception error) when (error is IOException or UnauthorizedAccessException)
             {
                 message.Text = "Could not save renderer preference: " + error.Message;
             }
+            finally { Choice.IsEnabled = preferences.CanSave; }
         };
         map.RendererChanged += Refresh;
         Refresh();

@@ -13,6 +13,7 @@ public sealed record ShellPresentation(bool Grid = false, bool Bare = false, boo
 /// <summary>P05 action availability over owned observations. Execution still uses command admission.</summary>
 public static class ShellActions
 {
+    public const string Files = "file.library";
     public const string StackBottom = "unit.stack-bottom";
     public const string Grid = "view.grid";
     public const string Bare = "view.bare";
@@ -28,6 +29,7 @@ public static class ShellActions
         bool ownTarget = selected is { } target && view.Units?.Records.Any(
             unit => unit.Slot == target.Slot && unit.Token == target.Token) == true;
         return new([
+            new(Files, "File", "Files and preferences…", null, idle),
             new(StackBottom, "Orders", "Send to bottom of stack", "Primary+Enter", idle && registered && ownTarget,
                 Hidden: !registered),
             new(Grid, "View", "Map grid", "Primary+G", idle, Checked: display.Grid),

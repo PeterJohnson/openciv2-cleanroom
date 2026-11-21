@@ -1,5 +1,6 @@
 import { dotnet } from './_framework/dotnet.js';
 import { comparePixels } from './gpu-pixels.js';
+import * as storage from './storage.js';
 import { showFailure } from './browser-lifecycle.js';
 try {
     const parameters = new URL(location.href).searchParams;
@@ -9,6 +10,7 @@ try {
         dotnet.withEnvironmentVariables({ OPENCIV2_MAP_EXPERIMENT: '1', OPENCIV2_MAP_GPU_FEATURES: features });
     }
     const runtime = await dotnet.create();
+    runtime.setModuleImports('storage', storage);
     runtime.setModuleImports('browser', {
         comparePixels,
         baseUrl: () => new URL('./', location.href).href,

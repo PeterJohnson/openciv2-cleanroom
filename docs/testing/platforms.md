@@ -65,8 +65,10 @@ unless `--observe` is explicitly supplied.
 | Other native architectures | Repeat the automated matrix and applicable input/OS gates on macOS x64, Linux ARM64 and Windows ARM64 before claiming those RIDs. macOS ARM64 execution does not establish another OS's ARM64 result. |
 
 Full native menus (macOS NativeMenu; Windows/Linux in-window menus), screen readers,
-IME, fullscreen/multi-monitor DPI and complete rendering remain M2; durable browser
-storage, original-peer networking, full gameplay and release signing/installers
-retain their owning later milestones. They are not silently satisfied by the
+IME, fullscreen/multi-monitor DPI and complete rendering remain M2. Native/
+IndexedDB storage has [Linux/browser evidence](../validation/m2-storage-services.md);
+Windows/macOS file pickers and remaining browser engines still need execution.
+Original-peer networking, full gameplay and release signing/installers retain
+their owning milestones. They are not silently satisfied by the
 bounded foundation result. Browser execution remains its own required evidence
 and uses the separate commands in the build guide and CI.

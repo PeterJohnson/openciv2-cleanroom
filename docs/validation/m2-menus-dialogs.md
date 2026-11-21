@@ -95,3 +95,7 @@ and media/time services retain separate gates. Linux global-menu export is
 optional and is not enabled. City/report dialogs and their gameplay commands
 remain with their M3–M5 owners. The renderer performance and GPU-default blockers
 are unchanged.
+
+The subsequent [storage/service slice](m2-storage-services.md) records the
+implemented file library, native/IndexedDB persistence, preferences and
+clock/silent-media adapters; those results are separate from this earlier run.

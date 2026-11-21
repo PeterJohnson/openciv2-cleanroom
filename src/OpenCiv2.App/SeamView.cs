@@ -14,6 +14,7 @@ using OpenCiv2.Base;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
 using OpenCiv2.Formats.Graphics;
+using OpenCiv2.IO;
 using OpenCiv2.MapRendering;
 using OpenCiv2.Session;
 using OpenCiv2.ViewModels;
@@ -44,9 +45,14 @@ public sealed partial class SeamView : UserControl
         Content = "Run command"
     };
     private readonly Button mapOptions;
+    private MapRendererSettingsView? rendererSettings;
+    private ComboBox? colorChoice;
     private readonly CheckBox reducedMotion = new() { Content = "Reduced motion" };
     private readonly Dictionary<string, CheckBox> mapChoices = [];
     private readonly InteractionDialogView dialog;
+    private readonly FileLibraryView? files;
+    private string? lastMedia;
+    private ulong serviceTicks;
     private readonly ShellMenu menu;
     private readonly Grid shell;
     private SessionView? rendered;
@@ -58,7 +64,7 @@ public sealed partial class SeamView : UserControl
     internal SeamView(SessionPanel model, MapPainter painter, bool pinnedFonts, MapArtSelection? selection)
     {
         this.model = model;
-        map = new(painter);
+        map = new(painter, clock: () => checked((long)SeamApp.Clock.Milliseconds));
         overview = new(map, painter);
         AutomationProperties.SetAutomationId(units, "units");
         AutomationProperties.SetAutomationId(input, "command-input");
@@ -154,10 +160,33 @@ public sealed partial class SeamView : UserControl
 
         dialog = new InteractionDialogView(model, pinnedFonts);
         dialog.Responded += () => Refresh(force: true);
-        Content = new Grid { Children = { root, dialog } };
+        var overlays = new Grid { Children = { root, dialog } };
+        if (SeamApp.Storage is { } storage)
+        {
+            files = new(new DocumentLibrary(storage, SeamApp.FileTransfer ?? new AvaloniaFileTransfer(() => TopLevel.GetTopLevel(this))),
+                () => SeamApp.DisplayPreferences!.SaveAsync(map.Display));
+            files.Closed += () => { Refresh(force: true); map.Focus(); };
+            overlays.Children.Add(files);
+        }
+        Content = overlays;
+        if (SeamApp.DisplayPreferences is { } preferences)
+        {
+            mapChoices["grid"].IsChecked = preferences.Saved.Grid;
+            mapChoices["bare"].IsChecked = preferences.Saved.Bare;
+            reducedMotion.IsChecked = preferences.Saved.ReducedMotion;
+            mapChoices["cityRadius"].IsChecked = preferences.Saved.CityRadius;
+            mapChoices["ownership"].IsChecked = preferences.Saved.Ownership;
+            mapChoices["follow"].IsChecked = preferences.Saved.FollowActive;
+            mapChoices["detailedSentry"].IsChecked = preferences.Saved.Sentry == SentryAppearance.Greyscale;
+            colorChoice!.SelectedItem = preferences.Saved.Color;
+        }
         if (pinnedFonts)
         {
             TextElement.SetFontFamily(dialog, GraphicsFonts.Sans);
+            if (files is not null)
+            {
+                TextElement.SetFontFamily(files, GraphicsFonts.Sans);
+            }
         }
 
         map.SelectionChanged += Pick;
@@ -199,6 +228,8 @@ public sealed partial class SeamView : UserControl
             }
         });
         Refresh();
+        if (SeamApp.DisplayPreferences?.Warning is { } startupWarning)
+        { parseError = startupWarning; Refresh(force: true); }
     }
 
     private void SelectListUnit()
@@ -288,7 +319,7 @@ public sealed partial class SeamView : UserControl
             suppliedArt.IsCheckedChanged += (_, _) => map.SelectArt(suppliedArt.IsChecked == true ? selectedArt : null);
             options.Children.Add(suppliedArt);
         }
-        var color = new ComboBox { ItemsSource = Enum.GetValues<MapColorCorrection>(), SelectedIndex = 0 };
+        var color = colorChoice = new ComboBox { ItemsSource = Enum.GetValues<MapColorCorrection>(), SelectedIndex = 0 };
         AutomationProperties.SetName(color, "Map color correction");
         color.SelectionChanged += (_, _) =>
         {
@@ -301,7 +332,8 @@ public sealed partial class SeamView : UserControl
         var recover = new Button { Content = "Reload map textures" };
         recover.Click += (_, _) => map.RecoverResources();
         options.Children.Add(recover);
-        options.Children.Add(new MapRendererSettingsView(map, SeamApp.RendererPreferences));
+        rendererSettings = new MapRendererSettingsView(map, SeamApp.RendererPreferences);
+        options.Children.Add(rendererSettings);
         return new Button
         {
             Content = "Map options",
@@ -309,7 +341,12 @@ public sealed partial class SeamView : UserControl
         };
     }
 
-    internal void AdvancePresentation() => map.AdvancePresentation(Environment.TickCount64);
+    internal void AdvancePresentation()
+    {
+        serviceTicks++;
+        map.AdvancePresentation(checked((long)SeamApp.Clock.Milliseconds));
+    }
+    internal void StopServices() => files?.Model.Dispose();
 
     private bool Busy => model.View.Command?.Status is CommandStatus.Pending or CommandStatus.AwaitingInteraction;
 
@@ -360,6 +397,7 @@ public sealed partial class SeamView : UserControl
                 || previous.Command.Correlation != completed.Correlation))
         {
             map.Queue(++noticeSequence, "Stack order updated", 2400);
+            _ = PresentNoticeAsync();
         }
 
         if (selection is { } old && map.Scene?.Contains(old.Position) != true)
@@ -397,7 +435,7 @@ public sealed partial class SeamView : UserControl
             }
         }
 
-        shell.IsEnabled = !Busy;
+        shell.IsEnabled = !Busy && files?.IsVisible != true;
         map.IsEnabled = overview.IsEnabled = units.IsEnabled = input.IsEnabled = !Busy;
         dialog.Refresh(map);
 
@@ -406,6 +444,13 @@ public sealed partial class SeamView : UserControl
             ? $"{command.Status}{(command.Code.Length == 0 ? "" : " · " + command.Code)} · {command.Committed.Count} committed"
             : "Stack order is available for your units.";
         DescribeSelection();
+    }
+
+    private async Task PresentNoticeAsync()
+    {
+        try
+        { lastMedia = (await SeamApp.Media.PlayAsync(new("stack-order-updated", "Stack order updated"))).ToString(); }
+        catch (Exception error) when (error is IOException or InvalidOperationException) { lastMedia = MediaResult.Unavailable.ToString(); }
     }
 
     /// <summary>Read-only observations for application input tests, limited to the displayed client.</summary>
@@ -470,6 +515,16 @@ public sealed partial class SeamView : UserControl
             ["message"] = status.Text,
             ["prompt"] = dialog.Prompt,
             ["dialog"] = DialogSnapshot(ControlBounds),
+            ["files"] = FilesSnapshot(ControlBounds),
+            ["media"] = lastMedia,
+            ["serviceTicks"] = serviceTicks,
+            ["rendererPreferences"] = new JsonObject
+            {
+                ["saved"] = SeamApp.RendererPreferences.Saved.Mode.ToString(),
+                ["message"] = rendererSettings?.Message,
+                ["choice"] = rendererSettings is null ? null : PopupBounds(rendererSettings.Choice, scaling),
+                ["focused"] = rendererSettings?.Choice.IsKeyboardFocusWithin
+            },
             ["menu"] = MenuSnapshot(scaling),
             ["map"] = new JsonObject
             {

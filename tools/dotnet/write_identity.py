@@ -73,6 +73,7 @@ def expected_inputs(root, name):
         paths += sorted((root / "src/OpenCiv2.Browser").glob("*.cs"))
         paths += [root / "src/OpenCiv2.Browser/wwwroot/index.html"]
         paths += [root / "src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js"]
+        paths += [root / "src/OpenCiv2.Browser/wwwroot/storage.js"]
         paths += sorted((root / "tests/OpenCiv2.MapProbe").glob("NativeMapMatrix*.cs"))
         paths += [root / "tests/OpenCiv2.MapProbe" / p for p in
                   ("RendererLibraryChecks.cs", "MapPresentationChecks.cs", "ScopedMapPerformanceWorld.cs", "GpuOptimizationChecks.cs", "GpuMaskChecks.cs", "GpuPixelChecks.cs")]

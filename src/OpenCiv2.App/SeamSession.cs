@@ -16,8 +16,11 @@ internal sealed class SeamSession : IDisposable
     internal IPlayerClient Player { get; }
     public SessionPanel Panel { get; } = new(observeMap: true);
 
-    public SeamSession()
+    private readonly IPlatformClock clock;
+
+    public SeamSession(IPlatformClock? clock = null)
     {
+        this.clock = clock ?? new SystemPlatformClock();
         Runtime.RegisterCommand(LocalUnitCommands.StackBottom());
         Runtime.BeginClientSession(new(17, 23));
         AuthorWorld(Runtime.World);
@@ -117,6 +120,7 @@ internal sealed class SeamSession : IDisposable
 
     public void Tick()
     {
+        Runtime.ExpireInteractions(clock.Milliseconds);
         if (Runtime.AdvanceOne())
         {
             Panel.Refresh();

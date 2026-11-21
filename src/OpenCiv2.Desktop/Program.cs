@@ -13,6 +13,7 @@ internal static class Program
     {
         try
         {
+            string? storageDirectory = null;
             string? assets = null,
                 fonts = null,
                 observation = null,
@@ -62,6 +63,9 @@ internal static class Program
                     case "--map-gpu-cache-mib" when gpuCache is null:
                         gpuCache = args[i + 1];
                         break;
+                    case "--storage-directory" when storageDirectory is null:
+                        storageDirectory = args[i + 1];
+                        break;
                     case "--renderer-settings" when rendererSettings is null:
                         rendererSettings = args[i + 1];
                         break;
@@ -87,6 +91,9 @@ internal static class Program
                 renderer ??= Environment.GetEnvironmentVariable("OPENCIV2_MAP_COMPOSITION");
                 gpuCache ??= Environment.GetEnvironmentVariable("OPENCIV2_MAP_GPU_CACHE_MIB");
             }
+            SeamApp.ConfigureServicesAsync(new NativeByteStore(storageDirectory ?? Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OpenCiv2", "storage")))
+                .GetAwaiter().GetResult();
             SeamApp.ConfigureMapRenderer(RendererPreferences.Load(rendererSettings, renderer, gpuCache));
             bool overrides = native is not null || scenario is not null || installation is not null;
             if ((assets is null) != (fonts is null) || overrides && assets is null)
@@ -189,5 +196,5 @@ internal static class Program
 
     private static ArgumentException Usage() =>
         new(
-            "Usage: OpenCiv2.Desktop [--assets ROOT --fonts ROOT] [--map-art ROOT] [--scenario-art ROOT] [--installation-art ROOT] [--showcase CASE [--window WIDTHxHEIGHT]] [--observe PATH] [--cold-view full|half|overview] [--map-renderer cpu|gpu] [--map-gpu-cache-mib 128..1024] [--renderer-settings PATH]");
+            "Usage: OpenCiv2.Desktop [--assets ROOT --fonts ROOT] [--map-art ROOT] [--scenario-art ROOT] [--installation-art ROOT] [--showcase CASE [--window WIDTHxHEIGHT]] [--observe PATH] [--cold-view full|half|overview] [--map-renderer cpu|gpu] [--map-gpu-cache-mib 128..1024] [--renderer-settings PATH] [--storage-directory PATH]");
 }

@@ -20,6 +20,7 @@ internal sealed class MapControl : Control
 {
     private const string MissingRenderer = "Skia map renderer unavailable";
     private readonly MapPainter painter;
+    private readonly Func<long> presentationClock;
     private readonly MapRendererSession renderer;
     internal event Action? RendererChanged;
     private readonly bool tracePresentation;
@@ -119,15 +120,15 @@ internal sealed class MapControl : Control
             && timeline.Queue(
                 scene.Map.Identity,
                 new MapNotice(sequence, message, durationMs),
-                Environment.TickCount64);
+                presentationClock());
 
     internal bool Queue(MapEffect effect) =>
-        scene is not null && timeline.Queue(scene.Map.Identity, effect, Environment.TickCount64);
+        scene is not null && timeline.Queue(scene.Map.Identity, effect, presentationClock());
 
     internal void CancelPresentation()
     {
         timeline.CancelAll();
-        AdvancePresentation(Environment.TickCount64);
+        AdvancePresentation(presentationClock());
     }
 
     public long Epoch => epoch;
@@ -144,7 +145,7 @@ internal sealed class MapControl : Control
             }
 
             display = value;
-            AdvancePresentation(Environment.TickCount64);
+            AdvancePresentation(presentationClock());
             TrackIfNeeded();
             InvalidateVisual();
         }
@@ -155,9 +156,10 @@ internal sealed class MapControl : Control
     public event EventHandler? ObservationChanged;
     public event EventHandler? MapResourcesChanged;
 
-    public MapControl(MapPainter painter, bool tracePresentation = false, bool traceFirstDraw = false)
+    public MapControl(MapPainter painter, bool tracePresentation = false, bool traceFirstDraw = false, Func<long>? clock = null)
     {
         this.painter = painter;
+        presentationClock = clock ?? (() => Environment.TickCount64);
         renderer = new(painter.Options);
         this.tracePresentation = tracePresentation;
         this.traceFirstDraw = traceFirstDraw;
@@ -195,7 +197,7 @@ internal sealed class MapControl : Control
         long indexAllocatedBytes = tracePresentation ? GC.GetAllocatedBytesForCurrentThread() - allocated : 0;
         Hover(null);
         timeline.Bind(map?.Identity);
-        AdvancePresentation(Environment.TickCount64);
+        AdvancePresentation(presentationClock());
         Volatile.Write(ref epoch, painter.SetScene(scene, tracePresentation, out var binding));
         if (tracePresentation)
         {

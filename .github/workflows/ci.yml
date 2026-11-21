@@ -257,6 +257,10 @@ jobs:
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
         run: python tools/dotnet/run_application.py --report build/test-results/application-browser.json --browser-bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
+      - name: Browser file storage, restart and failure handling
+        env:
+          NODE_PATH: ${{ github.workspace }}/build/browser/node_modules
+        run: node tools/dotnet/run_storage_browser.cjs src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot build/test-results/storage-browser.json
       - name: Complete browser map matrix and WebGL gallery
         env:
           NODE_PATH: ${{ github.workspace }}/build/browser/node_modules

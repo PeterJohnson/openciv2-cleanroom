@@ -554,3 +554,30 @@ exercises history, mask and sparse-damage cases. Use
 validating a frozen executable against archived sources. The
 [optimization report](validation/m2-gpu-optimization.md) lists feature gates,
 rejected experiments and exact local reproduction commands.
+
+### Application storage and service checks
+
+**File → Files and preferences** stores imported bytes, exports unchanged copies
+and saves local display preferences. It does not yet load a playable session.
+Native application storage defaults to the OS application-data folder under
+`OpenCiv2/storage`; use `--storage-directory PATH` for an isolated profile.
+Browser data is origin-scoped IndexedDB; renderer query overrides do not rewrite
+saved preferences. Downloads report request, not durable completion.
+
+After the ordinary desktop build and production browser publish/content stage:
+
+```sh
+python3 tools/dotnet/run_xwayland_virtual.py --compositor-log build/test-results/storage-compositor.log \
+  python3 tools/dotnet/run_storage_native.py --output build/test-results/storage-native.json \
+  --adapter dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll
+node tools/dotnet/run_storage_browser.cjs \
+  src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot \
+  build/test-results/storage-browser.json
+```
+
+The Linux driver uses XTest, the actual GTK picker and ImageMagick `import` for
+owned-window screenshots. Run it again with `AVALONIA_GLOBAL_SCALE_FACTOR=2`.
+The browser driver tests both densities, process restart, byte equality and
+IndexedDB failures with the pinned Playwright/Chromium environment above.
+Continue running the existing application input and shared foundation suites.
+See [scope and evidence](validation/m2-storage-services.md).
