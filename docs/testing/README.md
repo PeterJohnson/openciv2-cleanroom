@@ -123,6 +123,10 @@ pipeline and latency drivers and their evidence are described in the
 [optimization report](../validation/m2-gpu-optimization.md).
 
 The browser terrain-offload candidate remains experimental.
+`MapProbe --gpu-sampling-checks ART_FIXTURES` and the browser driver's
+`--renderer=gpu --gpu-sampling-only` enforce fractional nearest-sampling,
+adjacent-chunk coverage and focused art/zoom CPU bounds. See the
+[sampling investigation](../validation/m2-gpu-sampling.md).
 `run_map_browser.cjs --renderer=gpu --gpu-history-only` runs the same 204
 navigation cases through the host's live WebGL context, requiring exact retained
 versus fresh GPU pixels and the existing CPU/GPU bounds, plus 100 warmed scene,

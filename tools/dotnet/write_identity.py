@@ -79,7 +79,7 @@ def expected_inputs(root, name):
         paths += [root / "src/OpenCiv2.Browser/wwwroot/audio.js"]
         paths += sorted((root / "tests/OpenCiv2.MapProbe").glob("NativeMapMatrix*.cs"))
         paths += [root / "tests/OpenCiv2.MapProbe" / p for p in
-                  ("RendererLibraryChecks.cs", "MapPresentationChecks.cs", "ScopedMapPerformanceWorld.cs", "GpuOptimizationChecks.cs", "GpuMaskChecks.cs", "GpuPixelChecks.cs")]
+                  ("RendererLibraryChecks.cs", "MapPresentationChecks.cs", "ScopedMapPerformanceWorld.cs", "GpuOptimizationChecks.cs", "GpuMaskChecks.cs", "GpuPixelChecks.cs", "GpuSamplingChecks.cs")]
     return {p.relative_to(root).as_posix(): sha(p) for p in paths}
 
 

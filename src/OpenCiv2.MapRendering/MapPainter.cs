@@ -961,6 +961,7 @@ public sealed partial class MapPainter : IDisposable
             ClearGround();
             ClearViewportRasters();
             textures.Dispose();
+            gpuNearest.Dispose();
             text.Dispose();
         }
     }

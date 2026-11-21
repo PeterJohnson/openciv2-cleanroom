@@ -556,6 +556,12 @@ validating a frozen executable against archived sources. The
 [optimization report](validation/m2-gpu-optimization.md) lists feature gates,
 rejected experiments and exact local reproduction commands.
 
+`--gpu-sampling-checks ART_FIXTURES` runs the focused nearest-sampling and chunk
+coverage regressions under hardware EGL. The equivalent browser driver option
+is `--renderer=gpu --gpu-sampling-only`, optionally with `--hardware`. Both
+require the existing CPU raster bounds; see the
+[sampling investigation](validation/m2-gpu-sampling.md).
+
 ### Application storage and service checks
 
 **File → Files and preferences** stores imported bytes, exports unchanged copies

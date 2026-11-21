@@ -164,6 +164,15 @@ internal static class GpuOptimizationChecks
                 NativeMapMatrix.Encode(actual, Path.Combine(output, $"replacement-{cycle}-actual.png"));
                 NativeMapMatrix.Encode(fresh, Path.Combine(output, $"replacement-{cycle}-fresh.png"));
                 var difference = GpuPixelChecks.Compare(actualPixels.GetPixelSpan(), freshPixels.GetPixelSpan());
+                var actualBytes = actualPixels.GetPixelSpan().ToArray();
+                var freshBytes = freshPixels.GetPixelSpan().ToArray();
+                int alphaDifferences = 0;
+                for (int i = 3; i < actualBytes.Length; i += 4)
+                    if (actualBytes[i] != freshBytes[i]) alphaDifferences++;
+                // Opaque PNG encoding can discard differing alpha bytes. Keep
+                // the original readbacks as well as the visible RGB diagnostic.
+                File.WriteAllBytes(Path.Combine(output, $"replacement-{cycle}-actual.pixels"), actualBytes);
+                File.WriteAllBytes(Path.Combine(output, $"replacement-{cycle}-fresh.pixels"), freshBytes);
                 File.WriteAllText(Path.Combine(output, "replacement-failure.json"), JsonSerializer.Serialize(new
                 {
                     cycle,
@@ -173,6 +182,8 @@ internal static class GpuOptimizationChecks
                     stats,
                     freshStats,
                     difference,
+                    alphaDifferences,
+                    colorType = actualPixels.ColorType.ToString(),
                     byteExact = false
                 }));
                 throw new InvalidOperationException($"GPU replacement {cycle} differs from fresh pixels: {difference}; actual error={stats.Error}, fresh error={freshStats.Error}");

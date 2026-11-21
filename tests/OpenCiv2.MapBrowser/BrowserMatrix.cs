@@ -49,6 +49,23 @@ internal static partial class Program
     }
 
     [JSExport]
+    public static async Task<string> RunGpuSampling()
+    {
+        await LoadAcceptanceFiles();
+        await CaptureWithContext(context =>
+        {
+            if (context is null) throw new InvalidOperationException("GPU sampling requires WebGL");
+            if (File.Exists("/results/gpu-sampling/sampling.json")) File.Delete("/results/gpu-sampling/sampling.json");
+            GpuPixelChecks.AcceleratedCompare = BrowserCompare;
+            try { GpuSamplingChecks.Run(context, Content!.Atlas, Content.Fonts, "/results/gpu-sampling", "/art"); }
+            catch when (File.Exists("/results/gpu-sampling/sampling.json")) { /* Download the rejected evidence before the driver fails. */ }
+            finally { GpuPixelChecks.AcceleratedCompare = null; }
+            return [];
+        });
+        return File.ReadAllText("/results/gpu-sampling/sampling.json");
+    }
+
+    [JSExport]
     public static async Task<string> RunGpuHistory()
     {
         await LoadAcceptanceFiles();

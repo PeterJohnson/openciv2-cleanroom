@@ -15,11 +15,11 @@
     <ProjectReference Include="../../src/OpenCiv2.App/OpenCiv2.App.csproj" />
     <Compile Include="../../src/OpenCiv2.Browser/*.cs" Link="Host/%(Filename)%(Extension)" />
     <Compile Include="../OpenCiv2.MapProbe/NativeMapMatrix*.cs" Link="Matrix/%(Filename)%(Extension)" />
-    <Compile Include="../OpenCiv2.MapProbe/RendererLibraryChecks.cs;../OpenCiv2.MapProbe/MapPresentationChecks.cs;../OpenCiv2.MapProbe/ScopedMapPerformanceWorld.cs;../OpenCiv2.MapProbe/GpuOptimizationChecks.cs;../OpenCiv2.MapProbe/GpuMaskChecks.cs;../OpenCiv2.MapProbe/GpuPixelChecks.cs" Link="Matrix/%(Filename)%(Extension)" />
+    <Compile Include="../OpenCiv2.MapProbe/RendererLibraryChecks.cs;../OpenCiv2.MapProbe/MapPresentationChecks.cs;../OpenCiv2.MapProbe/ScopedMapPerformanceWorld.cs;../OpenCiv2.MapProbe/GpuOptimizationChecks.cs;../OpenCiv2.MapProbe/GpuMaskChecks.cs;../OpenCiv2.MapProbe/GpuPixelChecks.cs;../OpenCiv2.MapProbe/GpuSamplingChecks.cs" Link="Matrix/%(Filename)%(Extension)" />
     <Content Include="../../src/OpenCiv2.Browser/wwwroot/index.html" Link="wwwroot/index.html" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js" Link="wwwroot/browser-lifecycle.js" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../src/OpenCiv2.Browser/wwwroot/storage.js" Link="wwwroot/storage.js" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="../../src/OpenCiv2.Browser/wwwroot/audio.js" Link="wwwroot/audio.js" CopyToOutputDirectory="PreserveNewest" />
-    <Oc2AdditionalIdentityInput Include="../../src/OpenCiv2.Browser/*.cs;../../src/OpenCiv2.Browser/wwwroot/index.html;../../src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js;../../src/OpenCiv2.Browser/wwwroot/storage.js;../../src/OpenCiv2.Browser/wwwroot/audio.js;../OpenCiv2.MapProbe/NativeMapMatrix*.cs;../OpenCiv2.MapProbe/RendererLibraryChecks.cs;../OpenCiv2.MapProbe/MapPresentationChecks.cs;../OpenCiv2.MapProbe/ScopedMapPerformanceWorld.cs;../OpenCiv2.MapProbe/GpuOptimizationChecks.cs;../OpenCiv2.MapProbe/GpuMaskChecks.cs;../OpenCiv2.MapProbe/GpuPixelChecks.cs" />
+    <Oc2AdditionalIdentityInput Include="../../src/OpenCiv2.Browser/*.cs;../../src/OpenCiv2.Browser/wwwroot/index.html;../../src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js;../../src/OpenCiv2.Browser/wwwroot/storage.js;../../src/OpenCiv2.Browser/wwwroot/audio.js;../OpenCiv2.MapProbe/NativeMapMatrix*.cs;../OpenCiv2.MapProbe/RendererLibraryChecks.cs;../OpenCiv2.MapProbe/MapPresentationChecks.cs;../OpenCiv2.MapProbe/ScopedMapPerformanceWorld.cs;../OpenCiv2.MapProbe/GpuOptimizationChecks.cs;../OpenCiv2.MapProbe/GpuMaskChecks.cs;../OpenCiv2.MapProbe/GpuPixelChecks.cs;../OpenCiv2.MapProbe/GpuSamplingChecks.cs" />
   </ItemGroup>
 </Project>

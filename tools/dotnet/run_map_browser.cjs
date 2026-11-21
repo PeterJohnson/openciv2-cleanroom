@@ -9,7 +9,7 @@ const driverSha256 = hash(fs.readFileSync(__filename));
 async function main() {
     if (require('playwright/package.json').version !== require('../../dependencies.json').tools.playwright) throw Error('Unpinned Playwright');
     const [bundleArg, outputArg, ...flags] = process.argv.slice(2);
-    if (!bundleArg || !outputArg) throw Error('Usage: run_map_browser.cjs BUNDLE OUTPUT [--matrix-only|--gpu-history-only|--gallery-only|--lifecycle-only|--transitions-only|--smoke] [--renderer=cpu|gpu|default] [--hardware]');
+    if (!bundleArg || !outputArg) throw Error('Usage: run_map_browser.cjs BUNDLE OUTPUT [--matrix-only|--gpu-sampling-only|--gpu-history-only|--gallery-only|--lifecycle-only|--transitions-only|--smoke] [--renderer=cpu|gpu|default] [--hardware]');
     const hardware = flags.includes('--hardware');
     const rendererChoice = flags.find(flag => flag.startsWith('--renderer='))?.split('=')[1] ?? 'cpu';
     if (!['cpu', 'gpu', 'default'].includes(rendererChoice)) throw Error('Unknown renderer');
@@ -18,6 +18,7 @@ async function main() {
     const rendererQuery = (rendererChoice === 'default' ? '' : '&renderer=' + renderer) +
         (gpuFeatures ? '&gpuFeatures=' + encodeURIComponent(gpuFeatures) : '');
     const historyOnly = flags.includes('--gpu-history-only');
+    const samplingOnly = flags.includes('--gpu-sampling-only');
     const expectedFeatures = gpuFeatures.split(',').map(s => s.trim()).sort().join(',');
     const matchesFeatures = s => !gpuFeatures || s.draw.gpuFeatures.split(',').map(s => s.trim()).sort().join(',') === expectedFeatures;
     const lifecycleOnly = flags.includes('--lifecycle-only');
@@ -55,12 +56,12 @@ async function main() {
         fs.renameSync(temporary, path.join(output, 'browser.json'));
     };
     try {
-        for (const density of selectedDensity ? [Number(selectedDensity)] : flags.includes('--matrix-only') || historyOnly || lifecycleOnly ? [1] : [1, 2]) {
+        for (const density of selectedDensity ? [Number(selectedDensity)] : flags.includes('--matrix-only') || samplingOnly || historyOnly || lifecycleOnly ? [1] : [1, 2]) {
             if (browser) await browser.close();
             browser = await chromium.launch({ headless: true, executablePath: process.env.OC2_CHROMIUM_EXECUTABLE,
                 args: [...(hardware ? ['--enable-gpu', '--ignore-gpu-blocklist', '--disable-software-rasterizer', '--use-angle=gl']
                     : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']), `--force-device-scale-factor=${density}`] });
-            for (const theme of selectedTheme ? [selectedTheme] : flags.includes('--smoke') || flags.includes('--matrix-only') || historyOnly || lifecycleOnly || transitionsOnly ? ['stock'] : ['stock', 'native', 'classic']) {
+            for (const theme of selectedTheme ? [selectedTheme] : flags.includes('--smoke') || flags.includes('--matrix-only') || samplingOnly || historyOnly || lifecycleOnly || transitionsOnly ? ['stock'] : ['stock', 'native', 'classic']) {
                 const context = await browser.newContext({ viewport: gallerySize, deviceScaleFactor: density });
                 page = await context.newPage();
                 page.setDefaultTimeout(60000);
@@ -70,7 +71,16 @@ async function main() {
                     if (message.type() === 'error') console.error('Browser:', message.text());
                     else if (/^(MV\d|Mixed|Presentation|Native matrix|GPU history|Optimization checks)/.test(message.text())) console.log(message.text());
                 });
-                await page.addInitScript(() => {
+                await page.addInitScript(({ captureShaders, forceHighp }) => {
+                    globalThis.mapShaderSources = [];
+                    if (captureShaders) {
+                        const shaderSource = WebGL2RenderingContext.prototype.shaderSource;
+                        WebGL2RenderingContext.prototype.shaderSource = function (shader, source) {
+                            if (forceHighp) source = source.replaceAll('mediump', 'highp');
+                            if (!globalThis.mapShaderSources.includes(source)) globalThis.mapShaderSources.push(source);
+                            return shaderSource.call(this, shader, source);
+                        };
+                    }
                     globalThis.mapWebGl = [];
                     globalThis.mapWebGlContexts = [];
                     globalThis.mapContextEvents = [];
@@ -89,7 +99,7 @@ async function main() {
                         }
                         return context;
                     };
-                });
+                }, { captureShaders: samplingOnly, forceHighp: flags.includes('--shader-highp') });
                 const started = performance.now();
                 await page.goto(`http://127.0.0.1:${server.address().port}/?showcase=MV01&observe=1${rendererQuery}${theme === 'stock' ? '' : '&art=' + theme}`);
                 await page.waitForFunction(() => globalThis.openCiv2Failure || globalThis.openCiv2Snapshot?.().draw?.tiles > 0, undefined, { timeout: 180000 });
@@ -160,10 +170,11 @@ async function main() {
                 await assert('startup renderer selection', s => s.draw.composition === renderer && !s.draw.rendererFallback &&
                     (renderer !== 'gpu' || matchesFeatures(s)));
                 console.log(`Loaded ${theme} at ${density}×: ${gl[0].renderer}`);
-                if (historyOnly || density === 1 && theme === 'stock' && !flags.includes('--gallery-only') && !flags.includes('--smoke') && !lifecycleOnly && !transitionsOnly) {
-                    console.log(historyOnly ? 'Running shared GPU history/lifecycle matrix' : 'Running exhaustive shared WASM matrix');
-                    const matrix = await page.evaluate(history => history ? globalThis.openCiv2GpuHistory() : globalThis.openCiv2Matrix(), historyOnly);
-                    fs.writeFileSync(path.join(output, historyOnly ? 'gpu-history.json' : 'matrix.json'), JSON.stringify(matrix, null, 2));
+                if (samplingOnly || historyOnly || density === 1 && theme === 'stock' && !flags.includes('--gallery-only') && !flags.includes('--smoke') && !lifecycleOnly && !transitionsOnly) {
+                    console.log(samplingOnly ? 'Running focused GPU sampling diagnostics' : historyOnly ? 'Running shared GPU history/lifecycle matrix' : 'Running exhaustive shared WASM matrix');
+                    const matrix = await page.evaluate(mode => mode === "sampling" ? globalThis.openCiv2GpuSampling() : mode === "history" ? globalThis.openCiv2GpuHistory() : globalThis.openCiv2Matrix(), samplingOnly ? "sampling" : historyOnly ? "history" : "matrix");
+                    fs.writeFileSync(path.join(output, samplingOnly ? 'gpu-sampling.json' : historyOnly ? 'gpu-history.json' : 'matrix.json'), JSON.stringify(matrix, null, 2));
+                    if (samplingOnly) fs.writeFileSync(path.join(output, 'shaders.json'), JSON.stringify(await page.evaluate(() => globalThis.mapShaderSources), null, 2));
                     const files = await page.evaluate(() => globalThis.openCiv2ResultFiles());
                     for (const file of files) {
                         const encoded = await page.evaluate(file => {
@@ -180,9 +191,11 @@ async function main() {
                         throw Error('GPU history, CPU bounds or replacement checks failed');
                     if (historyOnly && matrix.features.split(', ').some(feature => ['Masks', 'StableAtlas', 'MaskBatch'].includes(feature)) && matrix.masks.failures)
                         throw Error('Enabled mask experiment failed its strict alpha/rounding checks');
-                    console.log(`WASM matrix passed: ${files.length} evidence files`);
+                    if (samplingOnly && (matrix.regressions !== 4 || matrix.coverage !== 21 || matrix.failures !== 0 || matrix.rows.length !== 9 || matrix.rows.some(row => !row.withinBounds)))
+                        throw Error('GPU sampling regression or CPU bounds failed');
+                    console.log(`${samplingOnly ? 'GPU sampling checks' : 'WASM matrix'} passed: ${files.length} evidence files`);
                 }
-                if (flags.includes('--matrix-only') || historyOnly) { await context.close(); continue; }
+                if (flags.includes('--matrix-only') || samplingOnly || historyOnly) { await context.close(); continue; }
                 for (const id of lifecycleOnly || transitionsOnly ? [] : flags.includes('--smoke') ? ['MV01', 'MV10', 'MV30'] : cases) {
                     await select(id);
                     await capture(id);

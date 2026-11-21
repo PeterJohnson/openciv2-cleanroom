@@ -22,6 +22,7 @@ try {
     globalThis.openCiv2Identity = () => JSON.parse(exports.Program.Identity());
     globalThis.openCiv2Snapshot = () => JSON.parse(exports.Program.Snapshot());
     globalThis.openCiv2GpuHistory = async () => JSON.parse(await exports.Program.RunGpuHistory());
+    globalThis.openCiv2GpuSampling = async () => JSON.parse(await exports.Program.RunGpuSampling());
     globalThis.openCiv2Matrix = async () => JSON.parse(await exports.Program.RunMatrix());
     globalThis.openCiv2ResultFiles = () => JSON.parse(exports.Program.ResultFiles());
     globalThis.openCiv2ResultFile = path => exports.Program.ResultFile(path);

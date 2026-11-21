@@ -1,5 +1,9 @@
 # Browser GPU default validation
 
+The [sampling follow-up](m2-gpu-sampling.md) repairs the reproducible SwiftShader
+terrain failures below. This page retains the original promotion attempt and
+its evidence; the intermittent hardware failures remain unresolved.
+
 **Promotion is blocked; CPU remains the default in browser and desktop.**
 The broader native checks pass, but browser validation found reproducible
 SwiftShader sampling differences, a hardware presentation mismatch and an

@@ -7,6 +7,7 @@ namespace OpenCiv2.MapRendering;
 
 public sealed partial class MapPainter
 {
+    private readonly MapGpuNearest gpuNearest = new();
     private const int ChunkSize = 256, ChunkMargin = 2;
     private const int MinimumGroundBatch = 2, MinimumPackedGroundBatch = 4;
     private const int GroundBatchLimit = 24, GroundPlacementLimit = 96, GroundBatchBytes = 8 * 1024 * 1024;
@@ -216,7 +217,15 @@ public sealed partial class MapPainter
                 source.Offset(-.001f, -.001f);
             }
 
-            output.DrawImage(entry.Image, source, box, CacheSampling);
+            if (gpuComposition)
+            {
+                gpuNearest.Draw(output, entry.Image, source, box);
+            }
+            else
+            {
+                output.DrawImage(entry.Image, source, box, CacheSampling);
+            }
+
             if (uncovered is not null && entry.Image.AlphaType == SKAlphaType.Opaque)
             {
                 float scale = (float)frame.Scaling;

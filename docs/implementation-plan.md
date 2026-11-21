@@ -276,6 +276,10 @@ broader native/WASM navigation, art, density and lifetime cases. Native gates
 pass, but browser pixel failures block promotion: CPU remains the default and
 terrain offload remains experimental. Full M2 visual, performance and platform
 acceptance remains open.
+The [GPU sampling investigation](validation/m2-gpu-sampling.md) repairs the
+reproducible SwiftShader terrain errors with explicit texel-center selection and
+physical pixel coverage. Intermittent hardware presentation/resource failures
+remain distinct gates; no default or tolerance is changed.
 
 The [menus and custom dialogs slice](validation/m2-menus-dialogs.md) adds a
 single action model for the admitted Riverbend order and display actions,

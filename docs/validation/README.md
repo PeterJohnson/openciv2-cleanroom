@@ -52,6 +52,10 @@ production startup choices. Native gates pass, but browser pixel failures block
 promotion; CPU remains the default on both platforms. Full performance and
 platform gates remain open.
 
+The [GPU sampling follow-up](m2-gpu-sampling.md) isolates and repairs the
+SwiftShader terrain errors with a shared native/WASM regression probe. It keeps
+the intermittent hardware failures and GPU-default decision open.
+
 The [staged GPU optimization record](m2-gpu-optimization.md) evaluates command
 reuse, shared tint masks, stable placement, sparse damage and retained map
 regions against the preserved renderer. Its experimental visual failures and
