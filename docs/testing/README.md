@@ -155,3 +155,8 @@ portable envelope/workflow/clock/silent-media contracts in both foundation hosts
 `PlatformStorageTests` adds actual native atomic writes and delayed selection/
 commit lifetime cases. See the [execution record](../validation/m2-storage-services.md)
 for remaining platform and playable-session joins.
+
+M2 audio checks and native dependency setup are documented in the
+[authored audio profile](../content/media-profile.md). The root suite reports an
+explicit skip for device playback unless `OC2_TEST_NATIVE_AUDIO=1`; use the
+private audio helper for repeatable Linux execution without speaker output.

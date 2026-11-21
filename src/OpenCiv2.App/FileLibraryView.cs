@@ -6,6 +6,8 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Threading;
+using OpenCiv2.Base;
+using OpenCiv2.Formats;
 using OpenCiv2.IO;
 
 namespace OpenCiv2.App;
@@ -18,12 +20,19 @@ internal sealed class FileLibraryView : Border
     private readonly TextBlock message = new() { TextWrapping = TextWrapping.Wrap };
     private readonly Func<Task> savePreferences;
     private bool savingPreferences;
+    private readonly IByteStore storage;
+    private readonly IPresentationMedia media;
+    private CancellationTokenSource? playback;
+    internal bool Playing => playback is not null;
+    internal string? PlaybackResult { get; private set; }
     internal event Action? Closed;
     internal string Message => message.Text ?? "";
-    internal FileLibraryView(DocumentLibrary model, Func<Task> savePreferences)
+    internal FileLibraryView(DocumentLibrary model, Func<Task> savePreferences, IByteStore storage, IPresentationMedia media)
     {
         Model = model;
         this.savePreferences = savePreferences;
+        this.storage = storage;
+        this.media = media;
         IsVisible = false;
         Background = Brush.Parse("#99000000");
         var panel = new StackPanel { Spacing = 12, Margin = new Thickness(24) };
@@ -35,6 +44,10 @@ internal sealed class FileLibraryView : Border
         Add(actions, "export", "Export selected…", () => Selected is { } entry ? Model.ExportAsync(entry.Key) : Task.CompletedTask);
         Add(actions, "remove", "Remove stored copy", () => Selected is { } entry ? Model.RemoveAsync(entry.Key) : Task.CompletedTask);
         panel.Children.Add(actions);
+        var audio = new WrapPanel();
+        Add(audio, "play", "Play selected WAV", PlayAsync);
+        Add(audio, "stop", "Stop sound", () => { StopPlayback(); return Task.CompletedTask; });
+        panel.Children.Add(audio);
         Add(panel, "cancel", "Cancel file selection", () => { Model.CancelSelection(); return Task.CompletedTask; });
         Add(panel, "preferences", "Save display preferences", SavePreferences);
         panel.Children.Add(message);
@@ -53,7 +66,11 @@ internal sealed class FileLibraryView : Border
         {
             if (e.Key == Key.Escape)
             {
-                if (Model.CanCancel)
+                if (Playing)
+                {
+                    StopPlayback();
+                }
+                else if (Model.CanCancel)
                 {
                     Model.CancelSelection();
                 }
@@ -86,13 +103,64 @@ internal sealed class FileLibraryView : Border
     }
     private void Close()
     {
-        if (Model.Busy || savingPreferences)
+        if (Model.Busy || savingPreferences || Playing)
         {
             return;
         }
 
         IsVisible = false;
         Closed?.Invoke();
+    }
+    internal void StopPlayback() => playback?.Cancel();
+    internal void RestoreFocus()
+    {
+        if (IsVisible && !IsKeyboardFocusWithin)
+        {
+            Buttons[Playing ? "stop" : Model.CanCancel ? "cancel" : "import"].Focus();
+        }
+    }
+    private async Task PlayAsync()
+    {
+        if (Playing || Model.Busy || savingPreferences || Selected is not { } entry)
+        {
+            return;
+        }
+
+        using var cancellation = new CancellationTokenSource();
+        playback = cancellation;
+        PlaybackResult = null;
+        message.Text = "Playing “" + entry.Name + "”…";
+        Refresh(preserveMessage: true);
+        Dispatcher.UIThread.Post(() => { if (Playing) { Buttons["stop"].Focus(); } }, DispatcherPriority.Input);
+        try
+        {
+            byte[] bytes = await storage.ReadAsync(entry.Key) ?? throw new IOException("Stored file is unavailable.");
+            cancellation.Token.ThrowIfCancellationRequested();
+            var document = StoredDocument.Decode(bytes);
+            var audio = WaveAudio.Decode(document.Bytes.ToArray());
+            var result = await media.PlayAsync(new(entry.Key, document.Name, audio), cancellation.Token);
+            PlaybackResult = result.ToString();
+            message.Text = result switch
+            {
+                MediaResult.Completed => "Playback finished: " + document.Name,
+                MediaResult.Cancelled => "Playback stopped: " + document.Name,
+                MediaResult.Skipped => "Sound is disabled: " + document.Name,
+                _ => "Audio output unavailable or permission denied: " + document.Name
+            };
+        }
+        catch (OperationCanceledException)
+        { PlaybackResult = MediaResult.Cancelled.ToString(); message.Text = "Playback stopped."; }
+        catch (Exception error) when (error is IOException or InvalidDataException or ArgumentException)
+        { PlaybackResult = MediaResult.Unavailable.ToString(); message.Text = "Cannot play this file: " + error.Message; }
+        finally
+        {
+            playback = null;
+            Refresh(preserveMessage: true);
+            if (IsVisible)
+            {
+                Buttons["play"].Focus();
+            }
+        }
     }
     private async Task SavePreferences()
     {
@@ -118,13 +186,15 @@ internal sealed class FileLibraryView : Border
             Files.ItemsSource = Model.Entries;
             Files.SelectedItem = Model.Entries.FirstOrDefault(entry => entry.Key == key) ?? Model.Entries.LastOrDefault();
         }
-        bool idle = !Model.Busy && !savingPreferences;
+        bool idle = !Model.Busy && !savingPreferences && !Playing;
         Files.IsEnabled = idle;
         Buttons["import"].IsEnabled = Buttons["preferences"].IsEnabled = Buttons["close"].IsEnabled = idle;
         Buttons["export"].IsEnabled = Buttons["remove"].IsEnabled = idle && Selected is not null;
+        Buttons["play"].IsEnabled = idle && Selected is not null;
+        Buttons["stop"].IsEnabled = Playing;
         Buttons["cancel"].IsEnabled = Model.CanCancel;
         Buttons["cancel"].IsVisible = Model.CanCancel;
-        if (!preserveMessage)
+        if (!preserveMessage && !Playing)
         {
             message.Text = Model.Message;
         }

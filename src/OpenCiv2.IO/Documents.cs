@@ -196,7 +196,7 @@ public sealed class DocumentLibrary(IByteStore store, IFileTransfer transfer) : 
         try
         { await operation(); }
         catch (OperationCanceledException) { Message = "Import cancelled."; }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException)
+        catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException or ArgumentException or InvalidOperationException)
         { Message = "File operation failed: " + error.Message; }
         finally { Busy = false; selection = null; Changed?.Invoke(); }
     }

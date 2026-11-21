@@ -12,7 +12,7 @@ import sys
 import tempfile
 from measure_cli import BUDGET_PATH, quantile
 from performance_inputs import ROOT, sha
-from run_application import validate, LIBRARIES
+from run_application import validate, LIBRARIES, map_content_inputs
 from write_identity import expected_inputs, unique_object
 
 
@@ -44,6 +44,8 @@ def summarize(report, repetitions):
                 raise ValueError('Unready model/layout')
             if completed['status'] != 'Completed' or completed['changed'] is not True or completed['effects'] != 1:
                 raise ValueError('Readiness did not include functional input')
+            if not state.get('contentLoaded') or not state.get('map', {}).get('composition'):
+                raise ValueError('Readiness omitted pinned content or first map draw')
         measured = rows[3:]; values = [r['readyMs'] for r in measured]
         summary = {'p50Ms': quantile(values, .5), 'p95Ms': quantile(values, .95), 'maxMs': max(values)}
         if browser:
@@ -79,15 +81,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__); parser.add_argument('--report', required=True, type=Path)
     parser.add_argument('--smoke', action='store_true'); parser.add_argument('--node', default='node')
     parser.add_argument('--xvfb', default='Xvfb')
+    parser.add_argument('--map-assets', type=Path)
+    parser.add_argument('--map-fonts', type=Path)
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--browser-bundle', type=Path); group.add_argument('--desktop', type=Path)
     args = parser.parse_args(); browser = args.browser_bundle is not None
+    if not browser and (not args.map_assets or not args.map_fonts): parser.error('Native startup requires --map-assets and --map-fonts')
     if platform.system() != 'Linux': raise ValueError('This collection protocol currently requires Linux')
     args.report = args.report.resolve(); args.report.parent.mkdir(parents=True, exist_ok=True)
     repetitions = 1 if args.smoke else 15
     host = 'OpenCiv2.Browser' if browser else 'OpenCiv2.Desktop'
     sources = {}
-    hosts = {host} if browser else {host, 'OpenCiv2.IO.Native'}
+    hosts = {host} if browser else {host, 'OpenCiv2.IO.Native', 'OpenCiv2.Platform.Native'}
     for name in LIBRARIES | hosts: sources.update(expected_inputs(ROOT, name))
     sources.update({p.relative_to(ROOT).as_posix(): sha(p) for p in (ROOT / 'tools/dotnet').glob('*') if p.is_file()})
     sources['docs/performance/budgets.json'] = sha(BUDGET_PATH)
@@ -97,6 +102,8 @@ def main():
     executable = Path(shutil.which(args.node if browser else args.xvfb) or (args.node if browser else args.xvfb)).resolve(); paths.append(executable)
     if browser: paths.append(Path(os.environ['OC2_CHROMIUM_EXECUTABLE']).resolve())
     artifacts = {str(p): sha(p) for p in paths}
+    if not browser:
+        artifacts.update({str(p.resolve()): sha(p) for p in map_content_inputs(args.map_assets, args.map_fonts)})
     load = os.getloadavg()
     with tempfile.TemporaryDirectory(prefix='oc2-app-performance-', dir=args.report.parent) as temp:
         raw = Path(temp) / 'raw.json'
@@ -104,9 +111,12 @@ def main():
             command = [str(executable), str(ROOT / 'tools/dotnet/measure_application_browser.cjs'), str(root), str(raw), str(repetitions)]
         else:
             command = [sys.executable, str(ROOT / 'tools/dotnet/run_xvfb.py'), '--xvfb', str(executable), sys.executable,
-                       str(ROOT / 'tools/dotnet/measure_application_native.py'), '--report', str(raw), '--repetitions', str(repetitions), '--adapter', str(args.desktop.resolve())]
-        subprocess.run(command, check=True, timeout=600)
+                       str(ROOT / 'tools/dotnet/measure_application_native.py'), '--report', str(raw), '--repetitions', str(repetitions),
+                       '--map-assets', str(args.map_assets.resolve()), '--map-fonts', str(args.map_fonts.resolve()), '--adapter', str(args.desktop.resolve())]
+        subprocess.run(command, check=True, timeout=1800)
         report = json.loads(raw.read_text(), object_pairs_hook=unique_object)
+        # Preserve a complete raw population even if the fixed acceptance gates reject it.
+        shutil.copy2(raw, args.report.with_suffix('.raw.json'))
         # Preserve diagnostics/screenshots after successful execution.
         for extra in Path(temp).glob('raw.*'):
             if extra != raw:

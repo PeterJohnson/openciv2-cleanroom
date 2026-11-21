@@ -46,6 +46,9 @@ public static partial class FoundationSuite
         transfer.Document = new("failed.sav", [7]); store.FailWrites = true;
         Complete(reopened.ImportAsync());
         Check(reopened.Entries.Count == 0 && reopened.Message.StartsWith("File operation failed", StringComparison.Ordinal), "failure never publishes saved");
+        store.Values["file-corrupt"] = [0, 1, 2];
+        Complete(reopened.RefreshAsync());
+        Check(!reopened.Busy && reopened.Entries.Count == 0 && reopened.Message.StartsWith("File operation failed", StringComparison.Ordinal), "corrupt stored envelope is a visible recoverable failure");
     }
     private static void ClockAndSilentMedia()
     {

@@ -451,6 +451,8 @@ public static partial class FoundationSuite
         ("M2.document-envelope", DocumentEnvelope),
         ("M2.document-workflow", DocumentWorkflow),
         ("M2.clock-and-silent-media", ClockAndSilentMedia),
+        ("M2.wave-pcm-samples", WavePcmSamples),
+        ("M2.wave-malformed-inputs", WaveMalformedInputs),
         ("M2.shell-action-availability", ShellActionAvailability),
         ("M2.dialog-identity-lifecycle", DialogIdentityLifecycle),
         ("M2.dialog-target-revalidation", DialogTargetRevalidation),

@@ -26,8 +26,9 @@ public static partial class PinnedGraphics
         }
 
         byte[]? atlas = null;
-        foreach (var (path, pin) in files)
+        foreach (string path in inventory.RootElement.GetProperty("selectedRuntimeFiles").EnumerateArray().Select(value => value.GetString()!))
         {
+            var pin = files[path];
             using var source = open(path);
             if (path == AtlasPath)
             {

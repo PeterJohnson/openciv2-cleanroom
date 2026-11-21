@@ -27,7 +27,7 @@ COMMON = (
     "docs/algorithms/S02-event-language-and-execution.md",
     "docs/algorithms/P01-map-projection-and-interaction.md", "docs/algorithms/P02-map-rendering-and-minimap.md",
     "docs/algorithms/P03-graphics-and-asset-processing.md", "docs/algorithms/P05-input-and-command-dispatch.md",
-    "docs/algorithms/W03-visibility-and-exploration.md",
+    "docs/algorithms/W03-visibility-and-exploration.md", "docs/algorithms/P10-audio-video-and-animation.md",
     "docs/content/asset-format.md", "docs/content/assets.json", "docs/content/fonts.json",
     "docs/content/map-assets.md", "docs/content/map-asset-bindings.json",
     "docs/testing/map-rendering.md", "docs/performance/map-rendering.md",
@@ -63,17 +63,20 @@ def unique_object(pairs):
 
 
 def expected_inputs(root, name):
-    kind = "src" if name in (LIBRARIES - {"OpenCiv2.FoundationCases"}) | {"OpenCiv2.App", "OpenCiv2.MapRendering", "OpenCiv2.Desktop", "OpenCiv2.Browser", "OpenCiv2.Automation", "OpenCiv2.IO.Native"} else "tests"
+    kind = "src" if name in (LIBRARIES - {"OpenCiv2.FoundationCases"}) | {"OpenCiv2.App", "OpenCiv2.MapRendering", "OpenCiv2.Desktop", "OpenCiv2.Browser", "OpenCiv2.Automation", "OpenCiv2.IO.Native", "OpenCiv2.Platform.Native"} else "tests"
     directory = root / kind / name
     paths = [root / p for p in COMMON]
     paths += [directory / f"{name}.csproj", directory / "packages.lock.json"]
     paths += sorted(p for p in directory.rglob("*.cs") if not {"bin", "obj"} & set(p.relative_to(directory).parts))
     paths += sorted(p for p in (directory / "wwwroot").rglob("*") if p.is_file())
+    if name == "OpenCiv2.Platform.Native":
+        paths += [root / "native/audio/oc2_audio.c", root / "tools/dotnet/build_audio.py"]
     if name == "OpenCiv2.MapBrowser":
         paths += sorted((root / "src/OpenCiv2.Browser").glob("*.cs"))
         paths += [root / "src/OpenCiv2.Browser/wwwroot/index.html"]
         paths += [root / "src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js"]
         paths += [root / "src/OpenCiv2.Browser/wwwroot/storage.js"]
+        paths += [root / "src/OpenCiv2.Browser/wwwroot/audio.js"]
         paths += sorted((root / "tests/OpenCiv2.MapProbe").glob("NativeMapMatrix*.cs"))
         paths += [root / "tests/OpenCiv2.MapProbe" / p for p in
                   ("RendererLibraryChecks.cs", "MapPresentationChecks.cs", "ScopedMapPerformanceWorld.cs", "GpuOptimizationChecks.cs", "GpuMaskChecks.cs", "GpuPixelChecks.cs")]

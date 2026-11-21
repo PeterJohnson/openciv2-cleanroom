@@ -27,6 +27,7 @@ class EvidenceTests(unittest.TestCase):
         self.rejects(lambda r: r['samples'][0]['snapshot']['units'].pop())
         self.rejects(lambda r: r['samples'][0]['snapshot']['controls']['send'].update(width=0))
         self.rejects(lambda r: r['samples'][0]['completed'].update(effects=0))
+        self.rejects(lambda r: r['samples'][0]['snapshot'].update(contentLoaded=False))
 
     def test_invalid_or_excessive_timing(self):
         self.rejects(lambda r: r['samples'][0].update(readyMs=float('nan')))

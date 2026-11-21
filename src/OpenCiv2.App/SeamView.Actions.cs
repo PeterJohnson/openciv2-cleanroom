@@ -89,6 +89,8 @@ public sealed partial class SeamView
         ["busy"] = files.Model.Busy,
         ["canCancel"] = files.Model.CanCancel,
         ["message"] = files.Message,
+        ["playing"] = files.Playing,
+        ["playbackResult"] = files.PlaybackResult,
         ["entries"] = new JsonArray(files.Model.Entries.Select(entry => (JsonNode)new JsonObject
         { ["key"] = entry.Key, ["name"] = entry.Name, ["size"] = entry.Size }).ToArray()),
         ["controls"] = new JsonObject(files.Buttons.Select(entry => new KeyValuePair<string, JsonNode?>(entry.Key, bounds(entry.Value))))

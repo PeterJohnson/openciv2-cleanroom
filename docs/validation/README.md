@@ -24,10 +24,16 @@ desktop checks remain open.
 
 ## M2 map slice
 
+The [local media and platform follow-up](m2-local-closeout.md) adds native/browser
+WAV playback, explicit failure/cancellation, fullscreen modal-focus recovery,
+and current startup measurements with pinned graphics/fonts. Its handoff keeps
+physical output, other platforms, GPU pixel failures and performance budgets open.
+
 The [storage and service record](m2-storage-services.md) covers native/IndexedDB
 persistence, actual Linux/browser selection and export, restart behavior,
-preference writes, explicit time and silent completion. Live-session loading,
-full media playback and remaining host acceptance are separate gates.
+preference writes, explicit time and silent completion. The local follow-up adds
+WAV output; live-session loading, scenario video and remaining host acceptance
+retain their own gates.
 
 The [menus and dialogs record](m2-menus-dialogs.md) covers the shared action model,
 Linux/browser dropdowns, correlated custom choices, focus and stale-target

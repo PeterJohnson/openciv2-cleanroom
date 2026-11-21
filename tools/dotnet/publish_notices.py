@@ -188,7 +188,8 @@ def generate(project, assets_path, lock_path, output, dotnet_root, sdk, runtime,
             add('dotnet/SDK-' + name, (dotnet_root / name).read_bytes())
         runtime_info['note'] = 'Framework-dependent host; runtime installed separately. SDK host notices included.'
     native = {}
-    for kind, notice, receipt in [('sqlite', 'SQLITE-NOTICE.txt', 'oc2-sqlite-build.json')]:
+    for kind, notice, receipt in [('sqlite', 'SQLITE-NOTICE.txt', 'oc2-sqlite-build.json'),
+                                 ('miniaudio', 'MINIAUDIO-LICENSE.txt', 'oc2-audio-build.json')]:
         if (output / notice).is_file():
             add(kind + '/' + notice, (output / notice).read_bytes())
             native[kind] = {'noticeSha256': sha((output / notice).read_bytes())}

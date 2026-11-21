@@ -37,6 +37,7 @@
           $(Oc2RepositoryRoot)docs/algorithms/P02-map-rendering-and-minimap.md;
           $(Oc2RepositoryRoot)docs/algorithms/P03-graphics-and-asset-processing.md;
           $(Oc2RepositoryRoot)docs/algorithms/P05-input-and-command-dispatch.md;
+          $(Oc2RepositoryRoot)docs/algorithms/P10-audio-video-and-animation.md;
           $(Oc2RepositoryRoot)docs/algorithms/W03-visibility-and-exploration.md;
           $(Oc2RepositoryRoot)docs/content/map-assets.md;$(Oc2RepositoryRoot)docs/content/map-asset-bindings.json;
           $(Oc2RepositoryRoot)docs/testing/map-rendering.md;$(Oc2RepositoryRoot)docs/performance/map-rendering.md;

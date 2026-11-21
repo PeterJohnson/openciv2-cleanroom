@@ -10,6 +10,11 @@
       "version": "2.37",
       "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.tar.bz2",
       "sha256": "fa9ca4d13871dd122f61258a80d01751d603b4d3ee14095d65453b4e846e17d7"
+    },
+    "miniaudio": {
+      "version": "0.11.26",
+      "url": "https://github.com/mackron/miniaudio/archive/refs/tags/0.11.26.tar.gz",
+      "sha256": "838ba55a21c9142adf7b76bdc4351e5cd8b7ae128f46b25ec25f94ae9969c600"
     }
   },
   "tools": {

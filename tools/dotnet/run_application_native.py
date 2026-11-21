@@ -152,6 +152,12 @@ class X11:
             (C.c_long * 5)(self.x.XInternAtom(self.display, b'WM_DELETE_WINDOW', 0), 0, 0, 0, 0))
         self.x.XSendEvent(self.display, window, 0, 0, C.byref(event)); self.x.XFlush(self.display)
 
+    def fullscreen(self, window, enabled):
+        event = Event(); event.message = ClientMessage(33, 0, 1, self.display, window,
+            self.x.XInternAtom(self.display, b'_NET_WM_STATE', 0), 32,
+            (C.c_long * 5)(int(enabled), self.x.XInternAtom(self.display, b'_NET_WM_STATE_FULLSCREEN', 0), 0, 1, 0))
+        self.x.XSendEvent(self.display, self.root, 0, (1 << 19) | (1 << 20), C.byref(event)); self.x.XFlush(self.display)
+
     def close(self): self.x.XCloseDisplay(self.display)
 
 

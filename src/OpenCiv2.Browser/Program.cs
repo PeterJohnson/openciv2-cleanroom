@@ -24,7 +24,7 @@ internal static partial class Program
     public static async Task Main()
     {
         var storage = new BrowserStorage();
-        await SeamApp.ConfigureServicesAsync(storage, storage);
+        await SeamApp.ConfigureServicesAsync(storage, storage, media: new BrowserAudio());
         var backend = Option("backend") switch
         {
             null or "webgl" => BrowserRenderingMode.WebGL2,

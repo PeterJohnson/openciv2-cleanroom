@@ -176,6 +176,13 @@
           "OpenCiv2.IO": "[1.0.0, )"
         }
       },
+      "openciv2.platform.native": {
+        "type": "Project",
+        "dependencies": {
+          "OpenCiv2.Formats": "[1.0.0, )",
+          "OpenCiv2.IO.Native": "[1.0.0, )"
+        }
+      },
       "openciv2.query": {
         "type": "Project",
         "dependencies": {

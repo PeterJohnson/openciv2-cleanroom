@@ -16,9 +16,9 @@ HOSTS = {'OpenCiv2.Desktop', 'OpenCiv2.Browser', 'OpenCiv2.MapBrowser'}
 
 
 def map_content_inputs(assets, fonts):
-    asset_pin = json.loads((ROOT / 'docs/content/assets.json').read_text())['runtimeRelease']
+    asset_inventory = json.loads((ROOT / 'docs/content/assets.json').read_text())
     font_pin = json.loads((ROOT / 'docs/content/fonts.json').read_text())
-    return [assets / p for p in ['package.json', *asset_pin['files']]] + [
+    return [assets / p for p in ['package.json', *asset_inventory['selectedRuntimeFiles']]] + [
         fonts / row['file'] for row in [*font_pin['faces'], font_pin['license']]]
 
 
@@ -27,7 +27,7 @@ def validate(build, native_aot=False, source_root=None):
     if build.get('format') != 'openciv2-application-seam/1': raise ValueError('Unknown application identity')
     names = [entry['Assembly'] for entry in build['build']]
     hosts = set(names) & HOSTS
-    native = {'OpenCiv2.IO.Native'} if hosts == {'OpenCiv2.Desktop'} else set()
+    native = {'OpenCiv2.IO.Native', 'OpenCiv2.Platform.Native'} if hosts == {'OpenCiv2.Desktop'} else set()
     if len(hosts) != 1 or len(names) != len(set(names)) or set(names) != LIBRARIES | hosts | native:
         raise ValueError('Incomplete or duplicate application identity')
     if native_aot and (hosts != {'OpenCiv2.Desktop'} or build.get('dynamicCodeSupported') is not False):
@@ -62,7 +62,7 @@ def main():
         parser.error('--map-assets and --map-fonts must be used together with the desktop adapter')
     host = 'OpenCiv2.Browser' if args.browser_bundle else 'OpenCiv2.Desktop'
     sources = {}
-    hosts = {host} if args.browser_bundle else {host, 'OpenCiv2.IO.Native'}
+    hosts = {host} if args.browser_bundle else {host, 'OpenCiv2.IO.Native', 'OpenCiv2.Platform.Native'}
     for name in LIBRARIES | hosts: sources.update(identity.expected_inputs(ROOT, name))
     sources.update({p.relative_to(ROOT).as_posix(): identity.sha(p) for p in (ROOT / 'tools/dotnet').glob('*') if p.is_file()})
     if args.browser_bundle:

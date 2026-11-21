@@ -44,7 +44,7 @@ async function main() {
                 const ready = () => {
                     try {
                         const s = globalThis.openCiv2Snapshot?.();
-                        if (s?.controls?.send?.enabled && s.controls.send.width > 0 && s.observer === '1' && s.units?.map(u => u.slot).join(',') === '0,1,2') {
+                        if (s?.contentLoaded && s.map?.composition && s.controls?.send?.enabled && s.controls.send.width > 0 && s.observer === '1' && s.units?.map(u => u.slot).join(',') === '0,1,2') {
                             // Observe another paint opportunity after the model and layout exist.
                             requestAnimationFrame(() => { globalThis.oc2ReadyMs = performance.now(); }); return;
                         }
@@ -72,12 +72,17 @@ async function main() {
                 if (identity && JSON.stringify(identity) !== JSON.stringify(currentIdentity)) throw new Error('Application identity changed');
                 identity = currentIdentity;
                 if (!state.memory.memories || state.memory.bytes <= 0) throw new Error('Runtime WASM memory was not observed');
-                if (Math.abs(state.snapshot.width - 1000) > 2 || state.snapshot.units.length !== 3 || state.snapshot.scaling !== 1) throw new Error('Invalid ready UI');
+                if (!state.snapshot.contentLoaded || !state.snapshot.map.composition || Math.abs(state.snapshot.width - 1000) > 2 || state.snapshot.units.length !== 3 || state.snapshot.scaling !== 1) throw new Error('Invalid ready UI');
                 const sample = { iteration, warmup: iteration < 3, cache, ...state, networkEncodedBytes: network.reduce((a, b) => a + b, 0),
                     serverRequests: requests.slice(firstRequest) };
                 if (iteration === 3 && cache === 'cold') await page.screenshot({ path: reportArg + '.ready.png' });
                 // Verify readiness by real input after freezing startup/transfer samples.
-                const click = async name => { const b = (await page.evaluate(() => globalThis.openCiv2Snapshot())).controls[name];
+                const click = async name => {
+                    await page.waitForFunction(name => {
+                        const box = globalThis.openCiv2Snapshot().controls[name];
+                        return box?.enabled && box.width > 0 && box.height > 0;
+                    }, name);
+                    const b = (await page.evaluate(() => globalThis.openCiv2Snapshot())).controls[name];
                     if (!b.enabled) throw new Error('Disabled input'); await page.mouse.click(b.x + b.width / 2, b.y + b.height / 2); };
                 await click('send'); await page.waitForFunction(() => globalThis.openCiv2Snapshot().status === 'AwaitingInteraction');
                 await click('confirm'); await page.waitForFunction(() => globalThis.openCiv2Snapshot().status === 'Completed');

@@ -104,6 +104,8 @@ jobs:
       - run: dotnet format solutions/OpenCiv2.Sqlite.slnx --verify-no-changes --no-restore
       - run: dotnet format OpenCiv2.slnx --verify-no-changes --no-restore
       - run: python tools/dotnet/check_graph.py
+      - name: Build pinned native audio output
+        run: python tools/dotnet/build_audio.py
       - name: Build optional production application host
         run: |
           dotnet restore solutions/OpenCiv2.App.slnx --locked-mode

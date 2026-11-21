@@ -5,13 +5,17 @@ const crypto = require('node:crypto');
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 async function main() {
     if (require('playwright/package.json').version !== require('../../dependencies.json').tools.playwright) throw Error('Unpinned Playwright');
-    const [bundleArg, outputArg] = process.argv.slice(2);
+    const [bundleArg, outputArg, mode] = process.argv.slice(2);
+    const media = mode === "--media";
+    if (mode && !media) throw Error("Unknown mode");
     if (!bundleArg || !outputArg) throw Error('Usage: run_storage_browser.cjs BUNDLE OUTPUT');
     const bundle = path.resolve(bundleArg), output = path.resolve(outputArg);
     fs.mkdirSync(path.dirname(output), { recursive: true });
+    const requestedContent = new Set();
     const server = http.createServer((request, response) => {
         try {
             const name = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
+            if (name.startsWith('/content/')) requestedContent.add(name);
             const file = path.resolve(bundle, '.' + (name === '/' ? '/index.html' : name));
             if (!file.startsWith(bundle + path.sep)) throw Error('Outside bundle');
             const data = fs.readFileSync(file);
@@ -105,6 +109,7 @@ async function main() {
             await click('remove'); await waitIdle(); await check('remove-completes', s => s.files.entries.length === 0);
             await page.reload(); await page.waitForFunction(() => globalThis.openCiv2Snapshot?.().files, undefined, { timeout: 90000 });
             await open(); await check('remove-survives-reload', s => s.files.entries.length === 0);
+            if (media) await require('./check_audio_browser.cjs')({ page, click, check, read, waitIdle });
             await check('failed-preference-retains-previous-value', s => s.map.grid);
             await page.setViewportSize({ width: 680, height: 640 }); await settle();
             await check('resized-panel-controls', s => ['import', 'preferences', 'close'].every(id => { const b = s.files.controls[id]; return b.x >= 0 && b.y >= 0 && b.x + b.width <= s.width && b.y + b.height <= s.height; }));
@@ -134,9 +139,12 @@ async function main() {
             await check('renderer-override-preserves-saved-choice', s => s.rendererPreferences.saved === 'Gpu' && s.map.requestedRenderer === 'cpu');
             await context.close(); context = null;
         }
+        if ([...requestedContent].some(name => /fonts(_aa)?\.bin$/.test(name))) throw Error('Historical bitmap fonts requested at runtime');
         if (errors.length) throw Error(errors.join('\n'));
         if (JSON.stringify(artifacts) !== JSON.stringify(inventory(bundle))) throw Error('Browser artifacts changed during validation');
-        fs.writeFileSync(output, JSON.stringify({ format: 'openciv2-storage-input/1', browser: browserVersion, driverSha256, invokedArtifacts: artifacts, checks, identities, errors }, null, 2) + '\n');
+        fs.writeFileSync(output, JSON.stringify({ format: 'openciv2-storage-input/1', browser: browserVersion, driverSha256,
+            audioDriverSha256: media ? hash(fs.readFileSync(path.join(__dirname, 'check_audio_browser.cjs'))) : null,
+            requestedContent: [...requestedContent].sort(), invokedArtifacts: artifacts, checks, identities, errors }, null, 2) + '\n');
         console.log(`Passed ${checks.length} browser storage checks.`);
     } catch (error) {
         if (page && !page.isClosed()) { await page.screenshot({ path: output + '.failure.png' }).catch(() => {}); fs.writeFileSync(output + '.failure.json', JSON.stringify(await page.evaluate(() => globalThis.openCiv2Snapshot?.()).catch(() => null), null, 2)); }

@@ -28,7 +28,9 @@ public sealed class ManualPlatformClock(DateTimeOffset localNow) : IPlatformCloc
     }
 }
 
-public sealed record MediaRequest(string Identity, string Caption);
+public enum MediaKind { Sound, Video }
+public sealed record MediaRequest(string Identity, string Caption, PcmAudio? Audio = null,
+    bool Loop = false, MediaKind Kind = MediaKind.Sound);
 public enum MediaResult { Completed, Skipped, Cancelled, Unavailable }
 
 /// <summary>P10 presentation only. Semantic effects/notices are committed independently of playback.</summary>

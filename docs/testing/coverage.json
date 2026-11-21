@@ -1738,6 +1738,32 @@
         "M2.document-workflow"
       ],
       "review": "Application byte persistence, selection cancellation, unchanged export, preferences, explicit clocks and silent presentation. This is not live-session load/save, original-game interoperability, media decoding, or full platform acceptance."
+    },
+    {
+      "id": "platform-wav-playback",
+      "status": "partial",
+      "contract": "P10 media obligations and original-file input contract; Microsoft RIFF PCM",
+      "publicSurface": "WaveAudio; PcmAudio; NativeAudio; BrowserAudio; FileLibraryView playback",
+      "sources": [
+        "native/audio/oc2_audio.c",
+        "src/OpenCiv2.Base/PcmAudio.cs",
+        "src/OpenCiv2.Browser/BrowserAudio.cs",
+        "src/OpenCiv2.Browser/wwwroot/audio.js",
+        "src/OpenCiv2.Formats/WaveAudio.cs",
+        "src/OpenCiv2.Platform.Native/NativeAudio.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.Base.Tests/NativeAudioTests.cs",
+        "tests/OpenCiv2.FoundationCases/WaveAudioCases.cs",
+        "tools/dotnet/check_audio_browser.cjs",
+        "tools/dotnet/test_audio_browser.cjs",
+        "tools/dotnet/test_audio_native.py"
+      ],
+      "sharedGroups": [
+        "M2.wave-malformed-inputs",
+        "M2.wave-pcm-samples"
+      ],
+      "review": "Bounded PCM WAV decoding and device-independent completion/cancellation. Full video decoding remains M5; audible hardware/other OS acceptance is separate."
     }
   ]
 }

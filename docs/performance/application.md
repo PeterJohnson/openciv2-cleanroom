@@ -1,6 +1,57 @@
 # Production application startup measurements
 
-The measured Avalonia desktop and browser seam passed its fixed startup,
+Current .NET 11 measurements include the pinned graphics/fonts and first map draw.
+Their [receipt](application-content.json) and
+[local validation record](../validation/m2-local-closeout.md) supersede the old
+empty-seam receipt for content-loaded startup acceptance. Full-content transfer
+does not meet the fixed 25 MiB browser budget. The earlier results below remain
+historical and must not be described as a current full-content pass.
+
+## Current pinned-content measurement
+
+The full .NET 11 run preserves 54 verified launches/navigations: three warmups
+and fifteen measured samples for desktop, cold browser and cached browser.
+The SDK/runtime are 11.0.100/11.0.0, with Avalonia 12.1.6, Chromium
+151.0.7922.34 and Playwright 1.58.2 on Linux x64/Ryzen AI 9 HX 370.
+
+| Population | Median readiness | p95 / maximum | Maximum transfer / memory |
+|---|---:|---:|---|
+| Desktop, new process | 1,228 ms | 1,436 ms | Idle RSS and startup high-water 565.4 MiB |
+| Browser, empty context cache | 11,935 ms | 13,454 ms | Network 218.70 MiB; WASM capacity 703.75 MiB |
+| Browser, retained context cache | 11,449 ms | 14,250 ms | Network 211.24 MiB; WASM capacity 703.75 MiB |
+
+Desktop readiness meets 2,000 ms, but idle memory exceeds 512 MiB. Browser
+readiness exceeds both the 8,000 ms cold and 3,000 ms cached targets; both
+populations exceed the 25 MiB transfer ceiling. WASM capacity stays below
+768 MiB and conservatively bounds the managed heap; it is not browser RSS.
+These are Xvfb and WebGL/SwiftShader correctness environments, separate from
+physical-compositor, hardware rendering or other-platform performance.
+
+Cold navigation makes 84 server requests. Every cached navigation requests
+exactly one resource again: `/content/assets/data/atlas-hd.pack`, with a Brotli
+body of **221,504,382 bytes (211.24 MiB)** despite the one-hour cache header.
+Thus this browser run's retained HTTP cache does not eliminate the large atlas
+transfer. OS and browser-engine caches are uncontrolled; localhost has no
+bandwidth/latency throttling. This is not an internet download-time prediction.
+
+Excluding unused bitmap font caches removes 44.8 MiB of decoded content and
+content-only Brotli saves transport bytes, but the monolithic atlas dominates.
+A smaller initial set or partitioned/on-demand content is the next architectural
+step; increasing these budgets or serving the same atlas with different
+compression settings does not establish the required pass.
+
+The native collector now waits for each custom dialog button's enabled,
+positive-size hit region before verifying input. An earlier attempt clicked
+before dialog layout and timed out; it is excluded in full, with its diagnostic
+log retained. The accepted population uses the corrected collector throughout.
+Startup timestamps are frozen before this post-readiness input verification.
+Five evidence-validation groups pass for each current report, including rejection
+of missing content, invalid samples and nonfunctional input. These validate the
+measurements, not the failed performance budgets.
+
+## Historical empty-seam measurement
+
+The earlier Avalonia desktop and browser seam passed its fixed startup,
 transfer and memory budgets on the Linux reference machine. The
 [receipt](application.json) preserves 54 verified launches/navigations:
 three warmups and fifteen measured samples for each of desktop, cold browser and
@@ -91,6 +142,11 @@ are retained. Browser GC pause duration remains unavailable and is still `null`.
 Build the current Release desktop and publish the browser host, then run:
 
 ```sh
+python3 tools/dotnet/stage_browser_content.py \
+  --bundle src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot \
+  --assets /path/to/pinned/assets --fonts /path/to/pinned/fonts
+node tools/dotnet/compress_browser_content.cjs \
+  src/OpenCiv2.Browser/bin/Release/net11.0-browser/publish/wwwroot
 NODE_PATH=/path/to/pinned-playwright/node_modules \
 OC2_CHROMIUM_EXECUTABLE=/path/to/pinned-chromium \
 python3 tools/dotnet/measure_application.py --node /path/to/node \
@@ -99,6 +155,7 @@ python3 tools/dotnet/measure_application.py --node /path/to/node \
 DOTNET_ROOT=/path/to/pinned-dotnet \
 python3 tools/dotnet/measure_application.py --xvfb /path/to/Xvfb \
   --desktop src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop \
+  --map-assets /path/to/pinned/assets --map-fonts /path/to/pinned/fonts \
   --report build/test-results/performance-application-native.json
 python3 tools/dotnet/test_application_performance.py \
   --report build/test-results/performance-application-browser.json

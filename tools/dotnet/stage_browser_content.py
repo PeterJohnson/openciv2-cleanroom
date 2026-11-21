@@ -11,12 +11,14 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def stage(bundle, assets, fonts, art=None, acceptance=False):
     target = bundle / 'content'
-    asset_pins = json.loads((ROOT / 'docs/content/assets.json').read_text())['runtimeRelease']
+    asset_inventory = json.loads((ROOT / 'docs/content/assets.json').read_text())
+    asset_pins = asset_inventory['runtimeRelease']
     font_pins = json.loads((ROOT / 'docs/content/fonts.json').read_text())
     manifest = json.loads((assets / 'package.json').read_text())
     if manifest != dict(schema=1, kind='openciv2-assets', version=asset_pins['version'], files=asset_pins['files']):
         raise ValueError('Asset package manifest differs from the pinned release')
-    inputs = [(assets / name, target / 'assets' / name, pin) for name, pin in asset_pins['files'].items()]
+    inputs = [(assets / name, target / 'assets' / name, asset_pins['files'][name])
+              for name in asset_inventory['selectedRuntimeFiles']]
     inputs += [(fonts / pin['file'], target / 'fonts' / pin['file'], pin)
                for pin in [font_pins['license'], *font_pins['faces']]]
     # Validate every source before replacing any previously staged content.
@@ -28,6 +30,12 @@ def stage(bundle, assets, fonts, art=None, acceptance=False):
     for source, destination, _ in inputs:
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, destination)
+        # A restage must not leave stale HTTP representations of replaced bytes.
+        for suffix in ('.br', '.gz'):
+            destination.with_name(destination.name + suffix).unlink(missing_ok=True)
+    for name in asset_inventory['ignoredRuntimeFiles']:
+        for suffix in ('', '.br', '.gz'):
+            (target / 'assets' / (name + suffix)).unlink(missing_ok=True)
     shutil.copyfile(assets / 'package.json', target / 'assets/package.json')
     if art:
         staged_art = target / 'art'

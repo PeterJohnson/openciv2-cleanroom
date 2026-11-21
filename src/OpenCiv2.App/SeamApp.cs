@@ -185,6 +185,16 @@ public sealed class SeamApp : Application
                 Content = view
             };
             view.AttachMenu(desktop.MainWindow);
+            // Window-manager fullscreen/restore can clear Avalonia's focused element.
+            // Restore only a pending modal's focus, after native activation/layout settles.
+            desktop.MainWindow.Activated += (_, _) => Dispatcher.UIThread.Post(view.RestoreModalFocus, DispatcherPriority.Input);
+            desktop.MainWindow.PropertyChanged += (_, args) =>
+            {
+                if (args.Property == Window.WindowStateProperty)
+                {
+                    Dispatcher.UIThread.Post(view.RestoreModalFocus, DispatcherPriority.Input);
+                }
+            };
             desktop.Exit += (_, _) => Stop();
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime single)

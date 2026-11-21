@@ -68,6 +68,14 @@ internal sealed class InteractionDialogView : UserControl
             current is not MenuItem ? current : fallback;
     }
 
+    internal void RestoreFocus()
+    {
+        if (IsVisible && !IsKeyboardFocusWithin && Model?.Submitted == false)
+        {
+            (buttons.GetValueOrDefault(1) ?? buttons.Values.FirstOrDefault() as Control ?? Cancel).Focus();
+        }
+    }
+
     public void Refresh(Control fallback)
     {
         model.Refresh(session.View);

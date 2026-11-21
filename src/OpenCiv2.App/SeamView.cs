@@ -25,6 +25,7 @@ namespace OpenCiv2.App;
 public sealed partial class SeamView : UserControl
 {
     private readonly SessionPanel model;
+    private readonly bool contentLoaded;
     private readonly MapControl map;
     private readonly MapOverview overview;
     private readonly TextBlock inspection = new() { TextWrapping = TextWrapping.Wrap, IsVisible = false };
@@ -64,6 +65,7 @@ public sealed partial class SeamView : UserControl
     internal SeamView(SessionPanel model, MapPainter painter, bool pinnedFonts, MapArtSelection? selection)
     {
         this.model = model;
+        contentLoaded = pinnedFonts;
         map = new(painter, clock: () => checked((long)SeamApp.Clock.Milliseconds));
         overview = new(map, painter);
         AutomationProperties.SetAutomationId(units, "units");
@@ -164,7 +166,7 @@ public sealed partial class SeamView : UserControl
         if (SeamApp.Storage is { } storage)
         {
             files = new(new DocumentLibrary(storage, SeamApp.FileTransfer ?? new AvaloniaFileTransfer(() => TopLevel.GetTopLevel(this))),
-                () => SeamApp.DisplayPreferences!.SaveAsync(map.Display));
+                () => SeamApp.DisplayPreferences!.SaveAsync(map.Display), storage, SeamApp.Media);
             files.Closed += () => { Refresh(force: true); map.Focus(); };
             overlays.Children.Add(files);
         }
@@ -346,7 +348,8 @@ public sealed partial class SeamView : UserControl
         serviceTicks++;
         map.AdvancePresentation(checked((long)SeamApp.Clock.Milliseconds));
     }
-    internal void StopServices() => files?.Model.Dispose();
+    internal void StopServices() { files?.StopPlayback(); files?.Model.Dispose(); }
+    internal void RestoreModalFocus() { dialog.RestoreFocus(); files?.RestoreFocus(); }
 
     private bool Busy => model.View.Command?.Status is CommandStatus.Pending or CommandStatus.AwaitingInteraction;
 
@@ -492,6 +495,7 @@ public sealed partial class SeamView : UserControl
         return new JsonObject
         {
             ["scaling"] = scaling,
+            ["contentLoaded"] = contentLoaded,
             ["width"] = Bounds.Width,
             ["height"] = Bounds.Height,
             ["selected"] = units.SelectedIndex,

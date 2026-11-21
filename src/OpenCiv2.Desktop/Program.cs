@@ -5,6 +5,7 @@ using OpenCiv2.App;
 using OpenCiv2.Formats.Content;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.IO.Native;
+using OpenCiv2.Platform.Native;
 
 internal static class Program
 {
@@ -92,7 +93,7 @@ internal static class Program
                 gpuCache ??= Environment.GetEnvironmentVariable("OPENCIV2_MAP_GPU_CACHE_MIB");
             }
             SeamApp.ConfigureServicesAsync(new NativeByteStore(storageDirectory ?? Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OpenCiv2", "storage")))
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OpenCiv2", "storage")), media: new NativeAudio())
                 .GetAwaiter().GetResult();
             SeamApp.ConfigureMapRenderer(RendererPreferences.Load(rendererSettings, renderer, gpuCache));
             bool overrides = native is not null || scenario is not null || installation is not null;
@@ -147,7 +148,7 @@ internal static class Program
                 void WriteIdentity() =>
                     File.WriteAllText(
                         path + ".identity.json",
-                        ApplicationIdentity.Read(typeof(Program).Assembly, typeof(ContentDirectory).Assembly));
+                        ApplicationIdentity.Read(typeof(Program).Assembly, typeof(ContentDirectory).Assembly, typeof(NativeAudio).Assembly));
                 if (coldView is null)
                 {
                     WriteIdentity();

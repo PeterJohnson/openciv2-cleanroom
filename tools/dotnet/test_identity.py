@@ -68,7 +68,7 @@ class IdentityTests(unittest.TestCase):
             with self.subTest(host=host):
                 names = application.LIBRARIES | {host}
                 if host == "OpenCiv2.Desktop":
-                    names |= {"OpenCiv2.IO.Native"}
+                    names |= {"OpenCiv2.IO.Native", "OpenCiv2.Platform.Native"}
                 report = {"format": "openciv2-application-seam/1", "build": [
                     {"Assembly": name, "Sdk": "11.0.100", "Runtime": "11.0.0",
                      "Target": "net11.0-browser" if name in {"OpenCiv2.Browser", "OpenCiv2.MapBrowser"} else "net11.0",
@@ -106,7 +106,7 @@ class IdentityTests(unittest.TestCase):
         names = ['tests/OpenCiv2.MapBrowser/OpenCiv2.MapBrowser.csproj',
                  'tests/OpenCiv2.MapBrowser/packages.lock.json',
                  'src/OpenCiv2.Browser/Program.cs', 'src/OpenCiv2.Browser/wwwroot/index.html',
-                 'src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js', 'src/OpenCiv2.Browser/wwwroot/storage.js',
+                 'src/OpenCiv2.Browser/wwwroot/browser-lifecycle.js', 'src/OpenCiv2.Browser/wwwroot/storage.js', 'src/OpenCiv2.Browser/wwwroot/audio.js',
                  'tests/OpenCiv2.MapProbe/NativeMapMatrix.Binding.cs',
                  'tests/OpenCiv2.MapProbe/RendererLibraryChecks.cs',
                  'tests/OpenCiv2.MapProbe/MapPresentationChecks.cs',

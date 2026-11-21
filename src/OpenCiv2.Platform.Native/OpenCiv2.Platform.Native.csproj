@@ -1,5 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><AllowUnsafeBlocks>true</AllowUnsafeBlocks></PropertyGroup>
   <ItemGroup>
+    <Oc2AdditionalIdentityInput Include="../../native/audio/oc2_audio.c;../../tools/dotnet/build_audio.py" />
     <ProjectReference Include="../OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
     <ProjectReference Include="../OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" />
   </ItemGroup>

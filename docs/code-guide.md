@@ -24,7 +24,7 @@ Projects live in `src/`; case libraries and executable hosts live in `tests/`.
 | `OpenCiv2.Session` | Authority, clients, continuations, setup/load/save and checkpoint ownership | `SessionRuntime.cs`, `CommandRuntime.cs`, `Checkpoint.cs` |
 | `OpenCiv2.Network` | Messages, framing, queues, compression and state images | `Stream.cs`, `SendQueue.cs`, `Sections.cs` |
 | `OpenCiv2.Query` | Stored inspection/diffs and observer-filtered live entity/map values | `StoredInspection.cs`, `LiveProjection.cs` |
-| `OpenCiv2.IO.Native`, `OpenCiv2.Platform.Native` | Native filesystem and classic text adapters | `NativeFiles.cs`, `ClassicStorage.cs`, `NativeByteStore.cs`, `ClassicTextFiles.cs` |
+| `OpenCiv2.IO.Native`, `OpenCiv2.Platform.Native` | Native filesystem, classic text and audio output adapters | `NativeFiles.cs`, `ClassicStorage.cs`, `NativeByteStore.cs`, `ClassicTextFiles.cs`, `NativeAudio.cs` |
 | `OpenCiv2.Cli`, `OpenCiv2.Export.Sqlite`, `OpenCiv2.Cli.Sqlite` | CLI composition and optional native export | `Program.cs`, `SqliteSnapshot.cs` |
 | `OpenCiv2.Automation` | Optional managed Lua-CSharp interpreter, scoped player API and resource budgets | `LuaMachine.cs`, `ScriptTask.cs` |
 | `OpenCiv2.ViewModels`, `OpenCiv2.Console` | UI-independent player-client model and command parser | `SessionPanel.cs`, `CommandText.cs` |
@@ -164,3 +164,8 @@ Python tools validate specification/content data independently of the applicatio
 
 Renderer integration and its Linux-only validation are recorded in
 [the renderer-options report](validation/m2-renderer-options.md).
+
+The P10 WAV service boundary uses `Base/PcmAudio`, `Formats/WaveAudio`,
+`Platform.Native/NativeAudio` and `Browser/BrowserAudio` with `wwwroot/audio.js`.
+`native/audio/oc2_audio.c` is the opaque miniaudio bridge;
+`tools/dotnet/build_audio.py` owns its pinned build and receipt.

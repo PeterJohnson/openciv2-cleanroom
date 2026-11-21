@@ -3,6 +3,9 @@
 import argparse
 import hashlib
 import json
+import math
+import struct
+import wave
 from pathlib import Path
 import subprocess
 import tempfile
@@ -12,6 +15,7 @@ from run_application_native import X11
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--media', action='store_true')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--adapter', nargs=argparse.REMAINDER, required=True)
     args = parser.parse_args()
@@ -130,6 +134,27 @@ def main():
             check('presentation-clock-expiry', lambda s: s['effects'] == 1 and s['status'] == 'Completed')
             stop(); launch(); open_library()
             check('native-remove-after-restart', lambda s: not s['files']['entries'])
+            if args.media:
+                tone = root / 'tone.wav'
+                def import_tone(seconds):
+                    with wave.open(str(tone), 'wb') as output:
+                        output.setparams((1, 2, 22050, 0, 'NONE', 'not compressed'))
+                        output.writeframes(b''.join(struct.pack('<h', round(1200 * math.sin(i * math.pi * 2 * 440 / 22050))) for i in range(round(22050 * seconds))))
+                    click('import'); dialog = picker(); enter_path(dialog, tone); wait(lambda s: not s['files']['busy'])
+                import_tone(.2); click('play'); wait(lambda s: s['files']['playbackResult'] == 'Completed')
+                check('wav-native-output-complete', lambda s: not s['files']['playing'] and s['effects'] == 0)
+                click('remove'); wait(lambda s: not s['files']['busy'])
+                import_tone(4); click('play'); wait(lambda s: s['files']['playing'])
+                ticks = read()['serviceTicks']; wait(lambda s: s['serviceTicks'] >= ticks + 4)
+                check('wav-native-services-and-double-dispatch', lambda s: s['files']['playing'] and not s['files']['controls']['play']['enabled'])
+                driver.key('Escape'); wait(lambda s: s['files']['playbackResult'] == 'Cancelled')
+                check('wav-native-cancelled', lambda s: not s['files']['playing'] and s['effects'] == 0)
+                click('remove'); wait(lambda s: not s['files']['busy'])
+                tone.write_bytes(b'RIFF truncated')
+                click('import'); dialog = picker(); enter_path(dialog, tone); wait(lambda s: not s['files']['busy'])
+                click('play'); wait(lambda s: s['files']['playbackResult'] == 'Unavailable')
+                check('wav-native-invalid-input', lambda s: s['files']['message'].startswith('Cannot play this file:') and s['effects'] == 0)
+                subprocess.run(['import', '-window', str(window), str(args.output) + '.media.png'], check=True)
             stop(); process = None
             if inventory() != artifacts: raise RuntimeError('Native artifacts changed during validation')
             args.output.write_text(json.dumps({'format': 'openciv2-storage-native/1', 'checks': checks, 'identities': identities,
@@ -138,7 +163,9 @@ def main():
             print(f'Passed {len(checks)} native storage checks.')
         except Exception:
             Path(str(args.output) + '.failure.json').write_text(json.dumps(read(), indent=2))
-            if window: subprocess.run(['import', '-window', str(window), str(args.output) + '.failure.png'])
+            if window and process is not None and process.poll() is None:
+                try: subprocess.run(['import', '-window', str(window), str(args.output) + '.failure.png'], timeout=5)
+                except subprocess.TimeoutExpired: pass
             raise
         finally:
             if process is not None and process.poll() is None: process.terminate(); process.wait(timeout=10)

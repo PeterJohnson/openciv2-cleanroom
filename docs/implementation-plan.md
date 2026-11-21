@@ -293,6 +293,15 @@ clock/silent-media services. Linux and WASM input validate host storage and
 restart behavior. This does not load a playable session or replace the existing
 classic save/load failure contracts; that caller joins the M3 setup path.
 
+The [local media and platform follow-up](validation/m2-local-closeout.md) adds
+authored PCM WAV preview through native miniaudio and browser Web Audio, explicit
+failure/cancellation, and fullscreen modal-focus recovery. Both content loaders
+now exclude the historical bitmap font caches. Current startup measurements
+include the pinned graphics/fonts and first map draw; the earlier empty-seam
+startup receipt does not establish these costs. Cross-platform input, physical
+device/display acceptance, browser GPU pixel failures and the fixed performance
+budgets remain explicit gates. Full scenario video decoding belongs to M5.
+
 - Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
   terrain/coasts/relief, every feature/network/resource, all supported unit/city
   art and annotations, ownership/status, knowledge edges, overlays, overview,
@@ -344,8 +353,11 @@ classic save/load failure contracts; that caller joins the M3 setup path.
   dispatcher keeps running inside platform menu loops. Test desktop file dialogs and
   asynchronous browser file selection through their respective adapters.
 - Keep silent media and explicit/fake-clock services independent of semantic
-  completion. The admitted command now completes with skipped media; extend
-  authored audio/video playback through P10 and validate remaining platforms.
+  completion. The admitted command completes with skipped media; authored WAV
+  playback now has native/browser adapters and actual file-library callers.
+  Validate physical output and remaining platforms using the
+  [media profile](content/media-profile.md). Video requests explicitly report
+  unavailable here; full scenario media decoding and resolution remain M5.
 
 **Renderer functional gate:** all MV01–MV30 rows pass the acceptance matrix on
 the production native and browser paths, with semantic assertions, visual review,
@@ -664,6 +676,9 @@ and does not replace, X02's operation-level coverage ledger.
    target hardware and complete browser startup/download optimization and resource
    budgets. Browser content admission and functional resource checks have
    [their own executed record](validation/m2-browser-map.md).
+   The [local follow-up](validation/m2-local-closeout.md) excludes unused bitmap
+   fonts and measures the current full-content startup; monolithic atlas transfer
+   remains a separate download-budget problem.
    The [three-backend measurements](validation/m2-browser-performance.md) identify
    terrain rebuilds and projection/binding as remaining costs after GPU command
    batching. Extend the diagnostic pan/zoom/world-update coverage to the complete

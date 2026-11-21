@@ -13,6 +13,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report', required=True, type=Path)
     parser.add_argument('--repetitions', type=int, default=15)
+    parser.add_argument('--map-assets', type=Path, required=True)
+    parser.add_argument('--map-fonts', type=Path, required=True)
     parser.add_argument('--adapter', nargs=argparse.REMAINDER, required=True)
     args = parser.parse_args()
     if not 1 <= args.repetitions <= 30: raise ValueError('Invalid population size')
@@ -23,7 +25,9 @@ def main():
                 state_path = Path(directory) / f'state-{iteration}.json'
                 with args.report.with_suffix(f'.{iteration}.log').open('wb') as log:
                     start = time.perf_counter_ns()
-                    process = subprocess.Popen([*args.adapter, '--observe', str(state_path)], stdout=log, stderr=subprocess.STDOUT)
+                    process = subprocess.Popen([*args.adapter, '--observe', str(state_path), '--assets', str(args.map_assets),
+                        '--fonts', str(args.map_fonts), '--storage-directory', str(Path(directory) / 'storage'),
+                        '--renderer-settings', str(Path(directory) / 'renderer.json')], stdout=log, stderr=subprocess.STDOUT)
                     try:
                         def read(): return json.loads(state_path.read_text()) if state_path.exists() else {}
                         def wait(test):
@@ -34,7 +38,7 @@ def main():
                                 if test(state): return state
                                 time.sleep(.005)
                             raise RuntimeError('Application readiness/input timeout')
-                        state = wait(lambda s: s.get('controls', {}).get('send', {}).get('width', 0) > 0 and s['controls']['send']['enabled'] and
+                        state = wait(lambda s: s.get('contentLoaded') and s.get('map', {}).get('composition') and s.get('controls', {}).get('send', {}).get('width', 0) > 0 and s['controls']['send']['enabled'] and
                                      s.get('observer') == '1' and [u['slot'] for u in s.get('units', [])] == ['0', '1', '2'])
                         ready_ms = (time.perf_counter_ns() - start) / 1e6
                         window = driver.window_for(process.pid)
@@ -53,7 +57,8 @@ def main():
                             high_water.append(int(fields['VmHWM'].split()[0]) * 1024)
                             time.sleep(.1)
                         def click(name):
-                            state = read(); box = dict(state['controls'][name])
+                            state = wait(lambda s: (box := s.get('controls', {}).get(name, {})).get('enabled') and box.get('width', 0) > 0 and box.get('height', 0) > 0)
+                            box = dict(state['controls'][name])
                             for key in ('x', 'y', 'width', 'height'): box[key] *= state['scaling']
                             driver.click(window, box)
                         click('send'); wait(lambda s: s.get('status') == 'AwaitingInteraction')

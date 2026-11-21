@@ -41,6 +41,7 @@ headless solution remains independent of graphics packages.
 
 ```sh
 dotnet restore solutions/OpenCiv2.App.slnx --locked-mode
+python tools/dotnet/build_audio.py
 dotnet build solutions/OpenCiv2.App.slnx -c Release --no-restore
 dotnet publish src/OpenCiv2.Desktop -c Release --no-restore
 ```
@@ -581,3 +582,10 @@ The browser driver tests both densities, process restart, byte equality and
 IndexedDB failures with the pinned Playwright/Chromium environment above.
 Continue running the existing application input and shared foundation suites.
 See [scope and evidence](validation/m2-storage-services.md).
+
+Native WAV playback uses the pinned miniaudio build copied with the desktop.
+See [the audio profile](content/media-profile.md) for offline builds, admission
+limits, cancellation semantics and isolated native/browser validation. For
+startup transfer measurements, run `node tools/dotnet/compress_browser_content.cjs BUNDLE`
+after staging content; serve `.br` files with `Content-Encoding: br` and the
+original MIME type. This changes transport bytes only, not decoded content pins.

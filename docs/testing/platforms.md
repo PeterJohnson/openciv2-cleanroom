@@ -19,7 +19,8 @@ The existing automatic native input driver is X11-specific. On macOS/Windows run
 the real desktop host, without routing input through the Linux driver:
 
 ```sh
-dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll --observe build/test-results/desktop-observation.json
+python tools/dotnet/build_audio.py
+dotnet src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll --assets /path/to/pinned/assets --fonts /path/to/pinned/fonts --observe build/test-results/desktop-observation.json
 ```
 
 The observation option is read-only and writes the latest permitted view plus
@@ -55,6 +56,44 @@ binary and input sequence. An identity file by itself proves neither input
 delivery nor a passing scenario. The ordinary host does not write observations
 unless `--observe` is explicitly supplied.
 
+## M2 cross-platform handoff
+
+The [local follow-up](../validation/m2-local-closeout.md) records Linux/Chromium
+checks and known failures. On each remaining target, record managed and Native
+AOT publication separately; compile miniaudio with that target's native compiler
+and retain its build receipt/license. Run Windows builds in a Developer Command
+Prompt. Do not reuse the Linux audio binary on another OS or architecture.
+
+1. Run the MV01–MV30 gallery with pinned graphics/fonts, stock/native/classic
+   art and both renderer choices at 1×/2×. Keep experimental GPU differences
+   visible; CPU remains the default. Capture first draw, pan/zoom, replacement
+   and context/texture recovery with the actual backend and hardware recorded.
+2. Open a pending confirmation. Use menus, keyboard shortcuts, Tab/Shift+Tab,
+   Enter and Escape; confirm one accepted action produces one effect. On macOS,
+   hold the native menu open while deadlines/dispatcher work progress. Restore
+   keyboard focus after native file selection and fullscreen transitions.
+3. Move the window between physical displays with different scale factors,
+   resize and enter/leave fullscreen with a dialog or file panel open. Check
+   menu insets, hit regions, text, focus and target identity. Linux virtual
+   fullscreen checks do not establish mixed-monitor behavior.
+4. Exercise import/export cancellation, byte-exact files, restart persistence,
+   removal and preferences. Check denied permissions, disk/quota failures and
+   browser storage eviction with visible outcomes. Imported files do not yet
+   load a playable session; that integration belongs to M3.
+5. Import a known WAV supported by the [media profile](../content/media-profile.md).
+   Play it on real speakers/headphones, stop with the button and Escape, repeat,
+   close during playback and interrupt/remove the audio device. Check channel
+   order, audibility, responsiveness and visible failures. Try malformed and
+   unsupported files. Native virtual-sink tests do not establish physical output.
+6. Repeat browser checks in Firefox and Safari, including actual user-gesture
+   autoplay rules, reload/page exit, permission denial and storage failure.
+   Test IME composition, screen readers and keyboard navigation on each OS;
+   Unicode storage round-trips alone do not establish glyph or IME support.
+
+Measure fixed startup and changing-map budgets on target hardware. Preserve
+failures and exact source/artifact identities; do not infer a pass from Linux
+software rendering or from aggregate test counts.
+
 ## Gates still requiring native evidence
 
 | Gate | Required evidence on each target |
@@ -64,10 +103,12 @@ unless `--observe` is explicitly supplied.
 | Performance | Actual target hardware/startup/resource results if claiming those platform budgets; the accepted reference measurements are Linux/Chromium only. |
 | Other native architectures | Repeat the automated matrix and applicable input/OS gates on macOS x64, Linux ARM64 and Windows ARM64 before claiming those RIDs. macOS ARM64 execution does not establish another OS's ARM64 result. |
 
-Full native menus (macOS NativeMenu; Windows/Linux in-window menus), screen readers,
-IME, fullscreen/multi-monitor DPI and complete rendering remain M2. Native/
+Remaining native menu tracking (macOS NativeMenu), screen readers, IME,
+physical fullscreen/multi-monitor DPI and complete platform rendering remain M2. Native/
 IndexedDB storage has [Linux/browser evidence](../validation/m2-storage-services.md);
 Windows/macOS file pickers and remaining browser engines still need execution.
+WAV adapters have local native/browser evidence; physical audio/device interruption
+and other-platform playback remain required.
 Original-peer networking, full gameplay and release signing/installers retain
 their owning milestones. They are not silently satisfied by the
 bounded foundation result. Browser execution remains its own required evidence

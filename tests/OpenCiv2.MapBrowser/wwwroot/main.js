@@ -1,6 +1,7 @@
 import { dotnet } from './_framework/dotnet.js';
 import { comparePixels } from './gpu-pixels.js';
 import * as storage from './storage.js';
+import * as audio from './audio.js';
 import { showFailure } from './browser-lifecycle.js';
 try {
     const parameters = new URL(location.href).searchParams;
@@ -11,6 +12,7 @@ try {
     }
     const runtime = await dotnet.create();
     runtime.setModuleImports('storage', storage);
+    runtime.setModuleImports('audio', audio);
     runtime.setModuleImports('browser', {
         comparePixels,
         baseUrl: () => new URL('./', location.href).href,
