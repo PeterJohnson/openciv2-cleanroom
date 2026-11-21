@@ -1,4 +1,5 @@
 import { dotnet } from './_framework/dotnet.js';
+import { comparePixels } from './gpu-pixels.js';
 import { showFailure } from './browser-lifecycle.js';
 try {
     const parameters = new URL(location.href).searchParams;
@@ -9,12 +10,14 @@ try {
     }
     const runtime = await dotnet.create();
     runtime.setModuleImports('browser', {
+        comparePixels,
         baseUrl: () => new URL('./', location.href).href,
         option: name => new URL(location.href).searchParams.get(name)
     });
     const exports = await runtime.getAssemblyExports(runtime.getConfig().mainAssemblyName);
     globalThis.openCiv2Identity = () => JSON.parse(exports.Program.Identity());
     globalThis.openCiv2Snapshot = () => JSON.parse(exports.Program.Snapshot());
+    globalThis.openCiv2GpuHistory = async () => JSON.parse(await exports.Program.RunGpuHistory());
     globalThis.openCiv2Matrix = async () => JSON.parse(await exports.Program.RunMatrix());
     globalThis.openCiv2ResultFiles = () => JSON.parse(exports.Program.ResultFiles());
     globalThis.openCiv2ResultFile = path => exports.Program.ResultFile(path);

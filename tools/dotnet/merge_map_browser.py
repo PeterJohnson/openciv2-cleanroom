@@ -30,10 +30,10 @@ def merge(root):
                 raise ValueError(f'{batch}: driver identity mismatch')
             if combined is None:
                 combined = {key: report[key] for key in
-                            ('format', 'browser', 'backend', 'identity', 'driverSha256')}
+                            ('format', 'browser', 'backend', 'renderer', 'rendererChoice', 'gpuFeatures', 'identity', 'driverSha256')}
                 combined.update(completed=True, batches=[], checks=[], captures=[], requests=[], errors=[])
             elif any(report[key] != combined[key] for key in
-                     ('format', 'browser', 'backend', 'identity', 'driverSha256')):
+                     ('format', 'browser', 'backend', 'renderer', 'rendererChoice', 'gpuFeatures', 'identity', 'driverSha256')):
                 raise ValueError(f'{batch}: build/browser/driver changed between batches')
             combined['batches'].append(dict(path=f'{batch}/browser.json',
                                            sha256=hashlib.sha256(path.read_bytes()).hexdigest()))

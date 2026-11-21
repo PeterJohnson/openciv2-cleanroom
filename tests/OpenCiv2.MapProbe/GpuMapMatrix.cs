@@ -11,7 +11,6 @@ internal static class GpuMapMatrix
     // Keep an independent pre-command baseline after Commands joins the supported set.
     private const MapGpuFeatures CommandBaseline = MapGpuFeatures.Atlas | MapGpuFeatures.Direct |
         MapGpuFeatures.Textures | MapGpuFeatures.Encoded;
-    internal sealed record Difference(long Pixels, long DifferentPixels, long PixelsOver8, int MaxChannelError, double MeanChannelError);
 
     public static void Run(AssetAtlas atlas, PinnedFonts fonts, string output, string contentCases, bool experiment = false)
     {
@@ -127,36 +126,8 @@ internal static class GpuMapMatrix
         File.WriteAllText(Path.Combine(output, "gpu-matrix.json"), JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }));
     }
 
-    internal static SKBitmap Read(SKSurface surface)
-    {
-        using var image = surface.Snapshot();
-        var bitmap = new SKBitmap(new SKImageInfo(image.Width, image.Height, SKImageInfo.PlatformColorType, SKAlphaType.Opaque));
-        if (!surface.ReadPixels(bitmap.Info, bitmap.GetPixels(), bitmap.RowBytes, 0, 0))
-        {
-            bitmap.Dispose();
-            throw new InvalidOperationException("GPU readback failed");
-        }
-        return bitmap;
-    }
+    internal static SKBitmap Read(SKSurface surface) => GpuPixelChecks.Read(surface);
 
-    internal static Difference Compare(ReadOnlySpan<byte> actual, ReadOnlySpan<byte> expected)
-    {
-        NativeMapMatrix.Require(actual.Length == expected.Length, "matching pixel dimensions");
-        long different = 0, over8 = 0, total = 0;
-        int maximum = 0;
-        for (int i = 0; i < actual.Length; i += 4)
-        {
-            int pixelMax = 0;
-            for (int c = 0; c < 3; c++)
-            {
-                int delta = Math.Abs(actual[i + c] - expected[i + c]);
-                total += delta;
-                pixelMax = Math.Max(pixelMax, delta);
-            }
-            if (pixelMax != 0) different++;
-            if (pixelMax > 8) over8++;
-            maximum = Math.Max(maximum, pixelMax);
-        }
-        return new(actual.Length / 4, different, over8, maximum, total / (actual.Length / 4d * 3));
-    }
+    internal static GpuPixelChecks.Difference Compare(ReadOnlySpan<byte> actual, ReadOnlySpan<byte> expected) =>
+        GpuPixelChecks.Compare(actual, expected);
 }

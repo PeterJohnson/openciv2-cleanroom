@@ -5,6 +5,10 @@ the multi-second zoom stalls and enables bounded, single-thread terrain batching
 in WASM. It reduces the screened stalls substantially while preserving exact
 pixels. It does not close the M2 performance gate.
 
+The subsequent [GPU default validation](m2-browser-gpu-default.md) expands the
+terrain-offload checks and identifies browser promotion blockers. This report
+preserves the earlier tested configuration and results.
+
 ## Cause
 
 The [previous study](m2-browser-performance.md) retained a 2.83-second 5K frame:

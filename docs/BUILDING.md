@@ -324,6 +324,12 @@ Graphics-context loss presents a visible **Reload preview** action outside the
 canvas. Reload reopens the preview and revalidates content; it does not restore
 an unsaved session in place.
 
+Browser CPU composition remains the default. `?renderer=gpu` selects the
+existing opt-in GPU profile on WebGL; `?backend=software` uses Software2D/CPU.
+Explicit software/GPU is rejected. The broader
+[browser GPU validation](validation/m2-browser-gpu-default.md) found promotion
+blockers, so terrain offload remains test-only and no default is changed.
+
 Append `?showcase=MV01&observe=1` to open the shared authored gallery and enable
 read-only draw receipts. Optional `--art-cases ROOT` staging admits the independently
 authored native/scenario/installation fixtures. `&art=native` selects native PNGs;
@@ -427,7 +433,14 @@ workloads, every-changed-frame comparison and physical presentation remain
 separate. See the [browser performance record](validation/m2-browser-performance.md)
 for measured results and limitations. `run_map_browser.cjs --hardware
 --renderer=gpu` also exercises the existing gallery on the hardware GPU path;
-its ordinary default remains CPU composition on WebGL/SwiftShader.
+the driver's ordinary default remains CPU composition on WebGL/SwiftShader.
+Use `--renderer=default` to omit the renderer override and verify the production
+browser default. `--gpu-history-only --renderer=gpu` runs the shared 204-case
+GPU navigation suite and 100 warmed resource replacements inside the production
+Skia lease. To test terrain offload, also pass
+`--gpu-features=Atlas,Direct,Textures,Terrain,Encoded,Commands` (acceptance host
+only). Add `--hardware` to require hardware WebGL. The optional stable-layout
+mask experiment is reported separately; it is not enabled by the default profile.
 
 ## Optional SQLite and Lua
 

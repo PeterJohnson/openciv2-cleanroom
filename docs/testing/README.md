@@ -121,3 +121,18 @@ Experimental matrices record rejected history differences; require zero
 frame and warmup in `--replay-gpu-experiment`. The staged native, profiling,
 pipeline and latency drivers and their evidence are described in the
 [optimization report](../validation/m2-gpu-optimization.md).
+
+The browser terrain-offload candidate remains experimental.
+`run_map_browser.cjs --renderer=gpu --gpu-history-only` runs the same 204
+navigation cases through the host's live WebGL context, requiring exact retained
+versus fresh GPU pixels and the existing CPU/GPU bounds, plus 100 warmed scene,
+density and resource replacements. Add
+`--gpu-features=Atlas,Direct,Textures,Terrain,Encoded,Commands` to exercise that
+candidate in the test host. Replacement failures save actual/fresh PNGs, draw
+errors and the comparison receipt before the driver rejects the run. Stable-layout
+mask experiments retain their separate strict diagnostic results and are not
+promoted with this profile.
+The [browser default report](../validation/m2-browser-gpu-default.md) identifies
+executed configurations. `run_application_browser.cjs` checks default CPU (or
+`--renderer=gpu`), explicit CPU, software CPU and rejection of software/GPU in
+the trimmed host.

@@ -62,8 +62,9 @@ fallback/retry and context replacement. `MapGpuComposition` owns the shared
 context cache policy without owning Avalonia's context. The GPU implementation is in `OpenCiv2.MapRendering/MapGpuComposition.cs`.
 `MapPainter` remains the common selector/drawing implementation. The
 [prototype report](validation/m2-gpu-composition-prototype.md) records its
-historical environment switches, matched benchmarks and correctness limits; the software
-compositor remains the default.
+historical environment switches, matched benchmarks and correctness limits.
+Desktop and browser retain CPU composition by default. GPU composition is opt-in;
+browser terrain-offload promotion remains blocked by validation failures.
 The [follow-up experiments](validation/m2-gpu-experiments.md) add sprite batching,
 deferred GPU preparation, retained pictures, instrumented GL replay and native
 input-to-window-image measurements. `GpuUploadChecks` verifies CPU raster updates
@@ -80,7 +81,11 @@ change their supported defaults.
 Ground atlas batching runs serially in WASM and on the existing workers natively.
 Packing is independent of worker availability; the same bounded scratch batches
 and unpacked fresh reference are retained. See the
-[browser stall investigation](validation/m2-browser-stalls.md).
+[browser stall investigation](validation/m2-browser-stalls.md). The
+[browser default validation](validation/m2-browser-gpu-default.md) records
+shared native/WASM GPU history checks and the remaining browser failures.
+`GpuPixelChecks` owns the common readback/comparison code; `GpuOptimizationChecks`
+borrows a live host context and never owns or retains it.
 
 ## Adding behavior
 

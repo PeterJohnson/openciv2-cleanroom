@@ -5,7 +5,7 @@ using SkiaSharp;
 
 internal static class GpuMaskChecks
 {
-    internal static object Run(GRContext context, bool modulated)
+    internal static object Run(GRContext context, bool modulated, bool enforce = true)
     {
         using var bitmap = new SKBitmap(new SKImageInfo(13, 11, SKColorType.Rgba8888, SKAlphaType.Unpremul));
         using var white = new SKBitmap(bitmap.Info);
@@ -34,6 +34,7 @@ internal static class GpuMaskChecks
         var colors = MapArtCatalog.Stock.Factions.Select(faction => new SKColor(0xff000000 | faction.Rgb))
             .Concat(new SKColor[] { new(0x00123456), new(0x01808080), new(0x7f29a9df), new(0xfeff0101) }).ToArray();
         var rows = new List<object>();
+        int failures = 0;
         try
         {
             foreach (var color in colors)
@@ -71,8 +72,10 @@ internal static class GpuMaskChecks
                         if ((i & 3) == 3) alphaMaximum = Math.Max(alphaMaximum, error);
                         if (error != 0) different++;
                     }
-                    NativeMapMatrix.Require(alphaMaximum == 0 && maximum <= 1,
-                        "mask alpha equals direct filtering; premultiplied RGB differs by at most one rounding level");
+                    bool withinBounds = alphaMaximum == 0 && maximum <= 1;
+                    if (!withinBounds) failures++;
+                    if (enforce) NativeMapMatrix.Require(withinBounds,
+                        $"mask alpha equals direct filtering; premultiplied RGB differs by at most one rounding level: {color}, {scale}, RGB {maximum}, alpha {alphaMaximum}");
                     NativeMapMatrix.Require(atlas.Bytes == residentBytes && atlas.LayoutCount == residentPages && atlas.Admissions == 0,
                         "recoloring a resident mask allocates no page or slot");
                     rows.Add(new
@@ -90,6 +93,6 @@ internal static class GpuMaskChecks
                 }
         }
         finally { atlas.Clear(); }
-        return new { modulated, residentBytes, residentPages, rows };
+        return new { modulated, stableLayout = true, enforced = enforce, failures, residentBytes, residentPages, rows };
     }
 }

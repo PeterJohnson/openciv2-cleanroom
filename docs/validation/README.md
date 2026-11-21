@@ -24,6 +24,12 @@ desktop checks remain open.
 
 ## M2 map slice
 
+The [browser GPU default record](m2-browser-gpu-default.md) covers shared native
+and WASM navigation/history, art/density galleries, resource replacement and
+production startup choices. Native gates pass, but browser pixel failures block
+promotion; CPU remains the default on both platforms. Full performance and
+platform gates remain open.
+
 The [staged GPU optimization record](m2-gpu-optimization.md) evaluates command
 reuse, shared tint masks, stable placement, sparse damage and retained map
 regions against the preserved renderer. Its experimental visual failures and

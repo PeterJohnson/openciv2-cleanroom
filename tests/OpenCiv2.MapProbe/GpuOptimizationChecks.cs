@@ -10,13 +10,16 @@ using SkiaSharp;
 /// experimental pixel gate is recorded, never converted into a looser tolerance.</summary>
 internal static class GpuOptimizationChecks
 {
-    public static void Run(AssetAtlas atlas, PinnedFonts fonts, string output, string fixtures)
+    public static void Run(GRContext context, AssetAtlas atlas, PinnedFonts fonts, string output, string fixtures,
+        string renderer, string version, bool experimentalMaskDiagnostics = false)
     {
         Directory.CreateDirectory(output);
-        using var gl = new MapProbeGlContext();
         var (native, classic) = NativeMapMatrix.OverrideChecks(fixtures);
         var rows = new List<object>();
-        var masks = GpuMaskChecks.Run(gl.Context, MapGpuComposition.Features.HasFlag(MapGpuFeatures.MaskBatch));
+        // Stable-layout masks are a separate experiment, not part of the supported profile.
+        // Browser callers retain its strict diagnostic results without admitting that experiment.
+        var masks = GpuMaskChecks.Run(context, MapGpuComposition.Features.HasFlag(MapGpuFeatures.MaskBatch),
+            enforce: !experimentalMaskDiagnostics);
         var damage = DamageChecks(atlas, fonts);
         int failures = 0, checks = 0;
         foreach (var (theme, art) in new (string, MapArtSelection?)[] { ("stock", null), ("native", native), ("classic", classic) })
@@ -70,26 +73,35 @@ internal static class GpuOptimizationChecks
                 {
                     const int width = 960, height = 540;
                     var info = new SKImageInfo(width * density, height * density, SKImageInfo.PlatformColorType, SKAlphaType.Opaque);
-                    using var actual = SKSurface.Create(gl.Context, true, info);
-                    using var fresh = SKSurface.Create(gl.Context, true, info);
-                    using var current = SKSurface.Create(gl.Context, true, info);
+                    using var actual = SKSurface.Create(context, true, info);
+                    using var fresh = SKSurface.Create(context, true, info);
+                    using var current = SKSurface.Create(context, true, info);
+                    using var cpu = SKSurface.Create(info);
+                    using var cpuPainter = new MapPainter(atlas, fonts, replaced ? replacementArt : art, parallelForeground: false, packGroundTextures: false);
                     using var freshPainter = new MapPainter(atlas, fonts, replaced ? replacementArt : art);
                     using var currentPainter = new MapPainter(atlas, fonts, replaced ? replacementArt : art);
-                    actual.Canvas.Scale(density); fresh.Canvas.Scale(density); current.Canvas.Scale(density);
-                    var stats = MapGpuComposition.Draw(painter, gl.Context, actual.Canvas, painter.SetScene(value), view, width, height, density, null, board.Display, visual);
-                    var freshStats = MapGpuComposition.Draw(freshPainter, gl.Context, fresh.Canvas, freshPainter.SetScene(value), view, width, height, density, null, board.Display, visual);
-                    var baseline = MapGpuComposition.Draw(currentPainter, gl.Context, current.Canvas, currentPainter.SetScene(value), view, width, height, density, null, board.Display, visual,
+                    actual.Canvas.Scale(density); fresh.Canvas.Scale(density); current.Canvas.Scale(density); cpu.Canvas.Scale(density);
+                    var stats = MapGpuComposition.Draw(painter, context, actual.Canvas, painter.SetScene(value), view, width, height, density, null, board.Display, visual);
+                    var freshStats = MapGpuComposition.Draw(freshPainter, context, fresh.Canvas, freshPainter.SetScene(value), view, width, height, density, null, board.Display, visual);
+                    var baseline = MapGpuComposition.Draw(currentPainter, context, current.Canvas, currentPainter.SetScene(value), view, width, height, density, null, board.Display, visual,
                         features: MapGpuComposition.SupportedFeatures);
+                    var cpuStats = cpuPainter.Draw(cpu.Canvas, cpuPainter.SetScene(value), view, width, height, density, null, board.Display, visual);
+                    NativeMapMatrix.Require(cpuStats.Error is null && stats.Tiles == cpuStats.Tiles && stats.Objects == cpuStats.Objects &&
+                        stats.Labels == cpuStats.Labels && stats.Effects == cpuStats.Effects, "CPU/GPU semantic counts " + id);
                     NativeMapMatrix.Require(stats.Error is null && freshStats.Error is null && baseline.Error is null && stats.Tiles == baseline.Tiles &&
                         stats.Objects == baseline.Objects && stats.Labels == baseline.Labels && stats.Effects == baseline.Effects, "optimization semantic counts " + id);
-                    using var read = GpuMapMatrix.Read(actual);
-                    using var freshRead = GpuMapMatrix.Read(fresh);
-                    using var baselineRead = GpuMapMatrix.Read(current);
-                    var history = GpuMapMatrix.Compare(read.GetPixelSpan(), freshRead.GetPixelSpan());
-                    var difference = GpuMapMatrix.Compare(read.GetPixelSpan(), baselineRead.GetPixelSpan());
+                    using var read = GpuPixelChecks.Read(actual);
+                    using var freshRead = GpuPixelChecks.Read(fresh);
+                    using var baselineRead = GpuPixelChecks.Read(current);
+                    var history = GpuPixelChecks.Compare(read.GetPixelSpan(), freshRead.GetPixelSpan());
+                    var difference = GpuPixelChecks.Compare(read.GetPixelSpan(), baselineRead.GetPixelSpan());
+                    using var cpuPixels = cpu.PeekPixels();
+                    var cpuDifference = GpuPixelChecks.Compare(read.GetPixelSpan(), cpuPixels.GetPixelSpan());
+                    bool cpuWithinBounds = cpuDifference.MeanChannelError <= 2 && cpuDifference.PixelsOver8 <= cpuDifference.Pixels * .10;
                     if (history.DifferentPixels != 0) failures++;
                     checks++;
-                    rows.Add(new { id, theme, density, history, currentGpu = difference, stats });
+                    rows.Add(new { id, theme, density, history, currentGpu = difference, cpu = cpuDifference, cpuWithinBounds, stats });
+                    Console.WriteLine($"GPU history: {theme}/{density} {id}, exact={history.DifferentPixels == 0}, CPU bounds={cpuWithinBounds}");
                     if (theme == "stock" && density == 1 && (history.DifferentPixels != 0 || id is "initial" or "fractional" or "separated-edits"))
                     {
                         NativeMapMatrix.Encode(actual, Path.Combine(output, id + "-candidate.png"));
@@ -97,20 +109,84 @@ internal static class GpuOptimizationChecks
                     }
                 }
             }
+        object lifecycle;
+        Exception? replacementFailure = null;
+        try { lifecycle = ReplacementChecks(context, atlas, fonts, output); }
+        catch (Exception error)
+        {
+            replacementFailure = error;
+            lifecycle = new { error = error.Message };
+        }
         File.WriteAllText(Path.Combine(output, "optimization-checks.json"), JsonSerializer.Serialize(new
         {
             format = "openciv2-gpu-optimization-checks/1",
-            gl.Renderer,
-            gl.Version,
+            Renderer = renderer,
+            Version = version,
             identity = JsonDocument.Parse(ApplicationIdentity.Read(typeof(GpuOptimizationChecks).Assembly)).RootElement,
             features = MapGpuComposition.Features.ToString(),
             checks,
             historyFailures = failures,
+            lifecycle,
             masks,
             damage,
             rows
         }, new JsonSerializerOptions { WriteIndented = true }));
         Console.WriteLine($"Optimization checks: {checks}; exact history failures: {failures}");
+        if (replacementFailure is not null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(replacementFailure).Throw();
+    }
+
+    private static object ReplacementChecks(GRContext context, AssetAtlas atlas, PinnedFonts fonts, string output)
+    {
+        var board = MapGallery.Open("Mixed");
+        var camera = NativeMapMatrix.BoardCamera(board.Map);
+        using var painter = new MapPainter(atlas, fonts);
+        var sizes = new Dictionary<int, (long Pages, long Sources, long Textures, long Ground, long Viewport)>();
+        var rows = new List<object>();
+        for (int cycle = 0; cycle < 110; cycle++)
+        {
+            int phase = cycle % 2, density = 1 + phase, width = phase == 0 ? 800 : 960, height = 540;
+            var map = board.Map with { Identity = board.Map.Identity with { Observer = new((byte)(1 + phase)) } };
+            long epoch = painter.SetScene(new(map));
+            if (cycle % 10 == 0) painter.RecoverResources();
+            NativeMapMatrix.Require(painter.AtlasUsage == (0L, 0L) && painter.OptimizationUsage == (0L, 0L),
+                "observer replacement releases outgoing GPU caches");
+            var info = new SKImageInfo(width * density, height * density, SKImageInfo.PlatformColorType, SKAlphaType.Opaque);
+            using var actual = SKSurface.Create(context, true, info);
+            using var fresh = SKSurface.Create(context, true, info);
+            using var reference = new MapPainter(atlas, fonts);
+            actual.Canvas.Scale(density); fresh.Canvas.Scale(density);
+            var stats = MapGpuComposition.Draw(painter, context, actual.Canvas, epoch, camera, width, height, density, null);
+            var freshStats = MapGpuComposition.Draw(reference, context, fresh.Canvas, reference.SetScene(new(map)), camera, width, height, density, null);
+            using var actualPixels = GpuPixelChecks.Read(actual);
+            using var freshPixels = GpuPixelChecks.Read(fresh);
+            if (stats.Error is not null || freshStats.Error is not null || !actualPixels.GetPixelSpan().SequenceEqual(freshPixels.GetPixelSpan()))
+            {
+                NativeMapMatrix.Encode(actual, Path.Combine(output, $"replacement-{cycle}-actual.png"));
+                NativeMapMatrix.Encode(fresh, Path.Combine(output, $"replacement-{cycle}-fresh.png"));
+                var difference = GpuPixelChecks.Compare(actualPixels.GetPixelSpan(), freshPixels.GetPixelSpan());
+                File.WriteAllText(Path.Combine(output, "replacement-failure.json"), JsonSerializer.Serialize(new
+                {
+                    cycle,
+                    density,
+                    width,
+                    height,
+                    stats,
+                    freshStats,
+                    difference,
+                    byteExact = false
+                }));
+                throw new InvalidOperationException($"GPU replacement {cycle} differs from fresh pixels: {difference}; actual error={stats.Error}, fresh error={freshStats.Error}");
+            }
+            NativeMapMatrix.Require(painter.AtlasUsage.Pages <= 64L * 1024 * 1024 && painter.AtlasUsage.Sources <= 64L * 1024 * 1024 &&
+                stats.GroundCacheBytes <= stats.GroundCacheLimitBytes, "GPU replacement caches stay bounded");
+            if (cycle < 10) continue;
+            var size = (painter.AtlasUsage.Pages, painter.AtlasUsage.Sources, painter.TextureUsage.PixelBytes,
+                painter.GroundUsage.PixelBytes, painter.ViewportBytes);
+            if (sizes.TryGetValue(phase, out var prior)) NativeMapMatrix.Require(size == prior, "warmed GPU replacement caches do not grow");
+            else sizes.Add(phase, size);
+            rows.Add(new { cycle, density, width, height, stats.GroundCacheBytes, stats.GroundCacheLimitBytes, painter.AtlasUsage });
+        }
+        return new { warmup = 10, warmedReplacements = rows.Count, exact = true, bounded = true, rows };
     }
 
     private static object DamageChecks(AssetAtlas atlas, PinnedFonts fonts)

@@ -39,7 +39,8 @@ if (presentation)
 }
 if (optimizationChecks)
 {
-    GpuOptimizationChecks.Run(atlas, fonts, args[2], args[4]);
+    using var gl = new MapProbeGlContext();
+    GpuOptimizationChecks.Run(gl.Context, atlas, fonts, args[2], args[4], gl.Renderer, gl.Version);
     return;
 }
 if (rendererOptions)

@@ -3,7 +3,11 @@ const fs = require('node:fs'), path = require('node:path'), http = require('node
 const { chromium } = require('playwright');
 async function main() {
     if (require('playwright/package.json').version !== require('../../dependencies.json').tools.playwright) throw new Error('Unpinned Playwright');
-    const [bundleArg, outputArg] = process.argv.slice(2);
+    const [bundleArg, outputArg, ...flags] = process.argv.slice(2);
+    const renderer = flags.find(f => f.startsWith('--renderer='))?.split('=')[1] ?? 'cpu';
+    if (!['cpu', 'gpu'].includes(renderer)) throw Error('Unknown renderer');
+    const hardware = flags.includes("--hardware");
+    const gpuArgs = hardware ? ["--enable-gpu", "--ignore-gpu-blocklist", "--disable-software-rasterizer", "--use-angle=gl"] : ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"];
     if (!bundleArg || !outputArg) throw new Error('Usage: run_application_browser.cjs BUNDLE OUTPUT');
     const bundle = path.resolve(bundleArg), output = path.resolve(outputArg);
     fs.mkdirSync(path.dirname(output), { recursive: true });
@@ -23,11 +27,11 @@ async function main() {
     try {
         let identity, browserVersion;
         for (const scale of [1, 2]) {
-            browser = await chromium.launch({ headless: true, executablePath: process.env.OC2_CHROMIUM_EXECUTABLE, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', `--force-device-scale-factor=${scale}`] });
+            browser = await chromium.launch({ headless: true, executablePath: process.env.OC2_CHROMIUM_EXECUTABLE, args: [...gpuArgs, `--force-device-scale-factor=${scale}`] });
             browserVersion = browser.version();
             const context = await browser.newContext({ viewport: { width: 1000, height: 800 }, deviceScaleFactor: scale });
             const page = await context.newPage(); page.on('pageerror', error => errors.push(String(error)));
-            await page.goto(`http://127.0.0.1:${server.address().port}/`);
+            await page.goto(`http://127.0.0.1:${server.address().port}/${renderer === 'gpu' ? '?renderer=gpu' : ''}`);
             await page.waitForFunction(() => globalThis.openCiv2Failure || globalThis.openCiv2Snapshot?.().controls?.send?.width > 0, undefined, { timeout: 90000 });
             if (await page.evaluate(() => globalThis.openCiv2Failure)) throw new Error(await page.evaluate(() => globalThis.openCiv2Failure));
             const read = () => page.evaluate(() => globalThis.openCiv2Snapshot());
@@ -42,6 +46,8 @@ async function main() {
                 await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
             };
             await check('viewport-and-density', s => Math.abs(s.width - 1000) < 2 && Math.abs(s.height - 800) < 2 && Math.abs(s.scaling - scale) < .01);
+            await page.waitForFunction(() => globalThis.openCiv2Snapshot()?.map?.composition);
+            await check('startup-renderer', s => s.map.composition === renderer && s.map.requestedRenderer === renderer && !s.map.rendererFallback);
             identity = await page.evaluate(() => globalThis.openCiv2Identity());
             await check('observer-filtered-units', s => s.observer === '1' && s.units.map(u => u.slot).join(',') === '0,1,2');
             await page.screenshot({ path: output + '.initial.png' }); await click('send'); await wait('AwaitingInteraction'); await check('asynchronous-decision', s => s.effects === 0 && s.controls.confirm.enabled && !s.controls.send.enabled);
@@ -57,8 +63,20 @@ async function main() {
             await check('foreign-target-rejected', s => s.message.includes('unit_not_available') && s.effects === 0 && s.units.length === 3);
             await context.close(); await browser.close(); browser = null;
         }
+        browser = await chromium.launch({ headless: true, executablePath: process.env.OC2_CHROMIUM_EXECUTABLE, args: gpuArgs });
+        for (const [query, expected] of [['renderer=cpu', 'cpu'], ['backend=software', 'cpu'], ['backend=software&renderer=gpu', 'rejected']]) {
+            const context = await browser.newContext({ viewport: { width: 1000, height: 800 } });
+            const page = await context.newPage();
+            await page.goto(`http://127.0.0.1:${server.address().port}/?${query}`);
+            await page.waitForFunction(() => globalThis.openCiv2Failure || globalThis.openCiv2Snapshot?.().map?.composition, undefined, { timeout: 180000 });
+            const state = await page.evaluate(() => ({ failure: globalThis.openCiv2Failure, map: globalThis.openCiv2Snapshot?.().map }));
+            if (expected === 'rejected' ? !state.failure?.includes('requires the WebGL') : state.failure || state.map.composition !== expected || state.map.rendererFallback)
+                throw Error(`Renderer configuration ${query}: ${JSON.stringify(state)}`);
+            checks.push({ name: 'renderer-configuration', query, expected, state });
+            await context.close();
+        }
         if (errors.length) throw new Error(errors.join('\n'));
-        fs.writeFileSync(output, JSON.stringify({ format: 'openciv2-application-input/1', browser: browserVersion, identity, checks, errors }, null, 2) + '\n');
+        fs.writeFileSync(output, JSON.stringify({ format: 'openciv2-application-input/1', browser: browserVersion, hardware, renderer, identity, checks, errors }, null, 2) + '\n');
         console.log(`${checks.length} Avalonia browser input checks passed.`);
     } finally { if (browser) await browser.close(); await new Promise(resolve => server.close(resolve)); }
 }

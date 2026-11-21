@@ -14,6 +14,13 @@ internal static partial class Program
     [JSExport]
     public static async Task<string> RunMatrix()
     {
+        await LoadAcceptanceFiles();
+        NativeMapMatrix.Run(Content!.Atlas, Content.Fonts, "/results", "/art");
+        return File.ReadAllText("/results/matrix.json");
+    }
+
+    private static async Task LoadAcceptanceFiles()
+    {
         using var client = new HttpClient { BaseAddress = new Uri(BaseUrl()) };
         foreach (var (index, prefix, destination) in new[]
         {
@@ -30,8 +37,51 @@ internal static partial class Program
             }
         }
         Directory.SetCurrentDirectory("/");
-        NativeMapMatrix.Run(Content!.Atlas, Content.Fonts, "/results", "/art");
-        return File.ReadAllText("/results/matrix.json");
+    }
+
+    [JSImport("comparePixels", "browser")]
+    private static partial double[] ComparePixels(byte[] actual, byte[] expected);
+
+    private static GpuPixelChecks.Difference BrowserCompare(ReadOnlySpan<byte> actual, ReadOnlySpan<byte> expected)
+    {
+        var values = ComparePixels(actual.ToArray(), expected.ToArray());
+        return new((long)values[0], (long)values[1], (long)values[2], (int)values[3], values[4]);
+    }
+
+    [JSExport]
+    public static async Task<string> RunGpuHistory()
+    {
+        await LoadAcceptanceFiles();
+        await CaptureWithContext(context =>
+        {
+            if (context is null) throw new InvalidOperationException("GPU history requires WebGL");
+            // Check the accelerated test comparator against the original C# arithmetic,
+            // including identical data, alpha-only changes and all RGB difference magnitudes.
+            byte[] actual = new byte[4096], expected = new byte[4096];
+            for (int i = 0; i < actual.Length; i++) actual[i] = unchecked((byte)(i * 73));
+            foreach (int multiplier in new[] { 0, 1, 37, 255 })
+            {
+                for (int i = 0; i < expected.Length; i++) expected[i] = unchecked((byte)(i * multiplier));
+                NativeMapMatrix.Require(BrowserCompare(actual, expected) == GpuPixelChecks.CompareScalar(actual, expected),
+                    "JavaScript/C# pixel comparator agreement");
+            }
+            NativeMapMatrix.Require(BrowserCompare(actual, actual).DifferentPixels == 0, "identical pixel comparator");
+            actual.CopyTo(expected, 0);
+            for (int i = 3; i < expected.Length; i += 4) expected[i] ^= 255;
+            NativeMapMatrix.Require(BrowserCompare(actual, expected).DifferentPixels == 0, "opaque RGB metric ignores alpha");
+            if (File.Exists("/results/gpu-history/optimization-checks.json")) File.Delete("/results/gpu-history/optimization-checks.json");
+            GpuPixelChecks.AcceleratedCompare = BrowserCompare;
+            try
+            {
+                GpuOptimizationChecks.Run(context, Content!.Atlas, Content.Fonts, "/results/gpu-history", "/art",
+                    "production browser WebGL context", "reported by browser driver", experimentalMaskDiagnostics: true);
+            }
+            // Return a saved failure receipt so the driver can retain its images before rejecting it.
+            catch (Exception) when (File.Exists("/results/gpu-history/optimization-checks.json")) { }
+            finally { GpuPixelChecks.AcceleratedCompare = null; }
+            return [];
+        });
+        return File.ReadAllText("/results/gpu-history/optimization-checks.json");
     }
 
     [JSExport]
@@ -53,13 +103,16 @@ internal static partial class Program
     public static Task<string> FreshRendererFrame() => CaptureReference(true);
 
     private static async Task<string> CaptureReference(bool sameRenderer)
+        => Convert.ToBase64String(await CaptureWithContext(context => RenderReference(context, sameRenderer)));
+
+    private static async Task<byte[]> CaptureWithContext(Func<GRContext?, byte[]> render)
     {
         var gallery = SeamApp.CurrentGallery!;
         var panel = (Grid)gallery.Content!;
         var result = new TaskCompletionSource<byte[]>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var capture = new ReferenceCapture(result, sameRenderer) { Width = 1, Height = 1, IsHitTestVisible = false };
+        var capture = new ReferenceCapture(result, render) { Width = 1, Height = 1, IsHitTestVisible = false };
         panel.Children.Add(capture);
-        try { return Convert.ToBase64String(await result.Task); }
+        try { return await result.Task; }
         finally { panel.Children.Remove(capture); }
     }
 
@@ -95,12 +148,12 @@ internal static partial class Program
 
     // This test-only control obtains the production host's current Skia lease.
     // It paints no UI pixels and never retains the context beyond that lease.
-    private sealed class ReferenceCapture(TaskCompletionSource<byte[]> result, bool sameRenderer) : Control
+    private sealed class ReferenceCapture(TaskCompletionSource<byte[]> result, Func<GRContext?, byte[]> render) : Control
     {
-        public override void Render(DrawingContext context) => context.Custom(new CaptureOperation(result, sameRenderer));
+        public override void Render(DrawingContext context) => context.Custom(new CaptureOperation(result, render));
     }
 
-    private sealed class CaptureOperation(TaskCompletionSource<byte[]> result, bool sameRenderer) : ICustomDrawOperation
+    private sealed class CaptureOperation(TaskCompletionSource<byte[]> result, Func<GRContext?, byte[]> render) : ICustomDrawOperation
     {
         public Rect Bounds => new(0, 0, 1, 1);
         public bool HitTest(Point point) => false;
@@ -114,7 +167,7 @@ internal static partial class Program
                 var feature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>()
                     ?? throw new InvalidOperationException("Missing production Skia lease");
                 using var lease = feature.Lease();
-                result.SetResult(RenderReference(lease.GrContext, sameRenderer));
+                result.SetResult(render(lease.GrContext));
             }
             catch (Exception error) { result.SetException(error); }
         }

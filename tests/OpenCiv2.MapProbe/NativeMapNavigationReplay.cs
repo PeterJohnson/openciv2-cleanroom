@@ -125,7 +125,7 @@ internal static class NativeMapNavigationReplay
                             row.TryGetProperty("presentation", out var recordedPresentation) ? recordedPresentation.GetRawText() : "");
                         string? expectedHash = null;
                         bool reused = everyGpuFrame && freshHashes.TryGetValue(referenceKey, out expectedHash);
-                        var freshDiff = new GpuMapMatrix.Difference((long)width * height, 0, 0, 0, 0);
+                        var freshDiff = new GpuPixelChecks.Difference((long)width * height, 0, 0, 0, 0);
                         if (!reused || actualHash != expectedHash)
                         {
                             using var gpuFresh = SKSurface.Create(gl.Context, true, new SKImageInfo(width, height));
@@ -153,7 +153,7 @@ internal static class NativeMapNavigationReplay
                         else freshReferenceHashHits++;
                         bool exact = actualHash == expectedHash;
                         if (!gpuExperiment || everyGpuFrame) NativeMapMatrix.Require(exact, $"GPU replay fresh pixels {width}×{height} {mode} run {run} frame {verified}");
-                        GpuMapMatrix.Difference? cpuDifference = null;
+                        GpuPixelChecks.Difference? cpuDifference = null;
                         if (crossCheck)
                         {
                             Paint(reference, expected, fresh, camera, visual, selection);

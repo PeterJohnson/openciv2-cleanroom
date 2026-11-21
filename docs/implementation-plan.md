@@ -271,7 +271,11 @@ endpoints. Large zoom/dirty updates and dense overviews still miss budget.
 The [zoom-stall investigation](validation/m2-browser-stalls.md) traces the
 multi-second browser frames to synchronous terrain construction at detail/backing
 transitions and tests serial atlas batching without increasing the cache budget.
-Full M2 visual, performance and platform acceptance remains open.
+The [browser GPU default validation](validation/m2-browser-gpu-default.md) covers
+broader native/WASM navigation, art, density and lifetime cases. Native gates
+pass, but browser pixel failures block promotion: CPU remains the default and
+terrain offload remains experimental. Full M2 visual, performance and platform
+acceptance remains open.
 
 - Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
   terrain/coasts/relief, every feature/network/resource, all supported unit/city
