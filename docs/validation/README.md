@@ -14,6 +14,13 @@ failures are fixed in the [storage correction](m2-windows-storage-fix-2026-11-20
 nine storage tests and 488 native tests pass, with one audio-device skip. Full
 platform, browser and performance gates remain open; the initial receipt is retained.
 
+The [2026-11-20 Mac M2 follow-up](m2-macos-fixes-2026-11-20.md) fixes the reviewed
+P02 registry hash and initial focus of keyboard-opened native dialogs. Two
+renderer iterations reduce the 1080p browser dirty-world p95 to 54.6–55.2 ms, with
+exact endpoint images. The 16.7 ms target and remaining platform gates keep M2
+unaccepted. The [initial Mac run](m2-macos-2026-11-20.md) retains the original
+failures, broader Apple M4 native/Chromium checks and baseline timing evidence.
+
 The opt-in desktop Native AOT build passed
 [Linux validation](desktop-aot-2026-11-17.md) on 2026-11-17 Pacific: publication,
 six actual pointer checks and normal shutdown, plus the same checks for the

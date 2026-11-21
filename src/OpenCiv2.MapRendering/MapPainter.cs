@@ -667,7 +667,10 @@ public sealed partial class MapPainter : IDisposable
                 SKAlphaType.Opaque);
             bool settleGround = settledView
                 && CanPaintForegroundBands(scene, requested, new(0, 0, info.Width, info.Height));
-            bool reuseGroundAtlas = settledView && (settleGround || pixelWidth * pixelHeight >= LargeBandPixels);
+            // The single-thread browser cannot use foreground bands, but its
+            // ordinary 1080p dirty updates benefit from the same bounded atlas.
+            double atlasThreshold = OperatingSystem.IsBrowser() ? MinimumBandPixels : LargeBandPixels;
+            bool reuseGroundAtlas = settledView && (settleGround || pixelWidth * pixelHeight >= atlasThreshold);
             if (!reuseGroundAtlas)
             {
                 ClearRetainedGroundAtlas();

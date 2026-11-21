@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using OpenCiv2.Contracts;
 using OpenCiv2.ViewModels;
 
@@ -143,7 +144,17 @@ internal sealed class InteractionDialogView : UserControl
         Cancel.IsEnabled = view.Spec.Cancellable && !view.Submitted;
         if (opening)
         {
-            (buttons.GetValueOrDefault(1) ?? buttons.Values.FirstOrDefault() as Control ?? Cancel).Focus();
+            // Native keyboard dispatch can open this view before its new choices
+            // are arranged. Focus after layout, without stealing focus from a
+            // later interaction or a choice the user has already reached.
+            var identity = view.Identity;
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (displayed == identity)
+                {
+                    RestoreFocus();
+                }
+            }, DispatcherPriority.Input);
         }
     }
 

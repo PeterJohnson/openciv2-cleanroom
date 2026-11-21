@@ -147,6 +147,37 @@ public sealed partial class MapPainter
     private static SKRect BodyBounds(float x, float y, float zoom) =>
         new(x - 56 * zoom - 3, y - 52 * zoom - 3, x + 76 * zoom + 5, y + 44 * zoom + 12);
 
+    private static IEnumerable<int> VisibleDamageIndices(MapObservation map, FrameKey frame)
+    {
+        var camera = frame.Camera;
+        // Include neighboring terrain joins and every body/overlay overhang in
+        // the damage bounds below. Labels and path eligibility are compared
+        // separately. Ground-cache invalidation still covers the entire world.
+        double reachX = 96 * camera.Zoom + 16, reachY = 64 * camera.Zoom + 16;
+        int top = Math.Max(0, (int)Math.Floor((-reachY - camera.Y) / (16 * camera.Zoom)));
+        int bottom = Math.Min(map.Height - 1,
+            (int)Math.Ceiling((frame.Height + reachY - camera.Y) / (16 * camera.Zoom)));
+        int left = (int)Math.Floor((-reachX - camera.X) / (32 * camera.Zoom));
+        int right = (int)Math.Ceiling((frame.Width + reachX - camera.X) / (32 * camera.Zoom));
+        if (map.Flat)
+        {
+            left = Math.Max(0, left);
+            right = Math.Min(map.Width - 1, right);
+        }
+        for (int y = top; y <= bottom; y++)
+        {
+            int first = left + ((left ^ y) & 1);
+            // A wide wrapped viewport may show the same canonical tile more
+            // than once; the damage loop projects all its visible copies.
+            int count = Math.Min(map.Width / 2, (right - first + 2) / 2);
+            for (int offset = 0; offset < count; offset++)
+            {
+                int x = MapCamera.CanonicalX(first + 2 * offset, map.Width);
+                yield return y * (map.Width / 2) + x / 2;
+            }
+        }
+    }
+
     // Null selects a full repaint. An empty rect means the new observation
     // leaves every displayed pixel unchanged. Damage is rounded in backing pixels.
     private SKRectI? MeasureDamage(MapScene before, MapScene after, FrameKey frame,
@@ -177,9 +208,31 @@ public sealed partial class MapPainter
         }
 
         bool pathsPresent = paths is { Count: > 0 };
-        if (pathsPresent && paths!.Any(path => before.PermitsPath(path) != after.PermitsPath(path)))
+        if (pathsPresent)
         {
-            return null;
+            foreach (var path in paths!)
+            {
+                bool permitted = after.PermitsPath(path);
+                if (before.PermitsPath(path) != permitted)
+                {
+                    return null;
+                }
+                if (!permitted)
+                {
+                    continue;
+                }
+                // Knowledge anywhere along a segment, including offscreen,
+                // controls whether its visible portion may be drawn.
+                for (int i = 1; i < path.Points.Count; i++)
+                {
+                    var a = path.Points[i - 1];
+                    var b = path.Points[i];
+                    if (before.PermitsSegment(a, b, out _) != after.PermitsSegment(a, b, out _))
+                    {
+                        return null;
+                    }
+                }
+            }
         }
 
         int recolored = 0;
@@ -207,7 +260,8 @@ public sealed partial class MapPainter
         foreach (int i in after.ComparisonIndices(
             before,
             sparseOverride ?? gpuFeatures.HasFlag(MapGpuFeatures.Sparse),
-            frame.Display.CityRadius))
+            frame.Display.CityRadius,
+            VisibleDamageIndices(map, frame)))
         {
             damageComparedTiles++;
             var old = before.Map.Tiles[i];

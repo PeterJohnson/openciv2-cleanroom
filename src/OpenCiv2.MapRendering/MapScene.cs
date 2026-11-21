@@ -219,11 +219,12 @@ public sealed class MapScene
     public bool ShowsUnit(MapPoint position) => Objects(position).Unit is not null &&
         !HasCity(position) && !RememberedCity(Tile(position));
 
-    internal IEnumerable<int> ComparisonIndices(MapScene before, bool sparse, bool radius = false)
+    internal IEnumerable<int> ComparisonIndices(MapScene before, bool sparse, bool radius = false,
+        IEnumerable<int>? fallback = null)
     {
         var delta = Map.Delta;
         return sparse && delta is not null && delta.Matches(before.Map, Map) && !delta.AnnotationsChanged &&
-            !(radius && delta.CitiesChanged) ? delta.ChangedIndices : Enumerable.Range(0, Map.Tiles.Count);
+            !(radius && delta.CitiesChanged) ? delta.ChangedIndices : fallback ?? Enumerable.Range(0, Map.Tiles.Count);
     }
 
     public static MapFeatures Route(ObservedTile tile) =>

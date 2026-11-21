@@ -19,6 +19,11 @@ internal static partial class NativeMapMatrix
     public static void Run(AssetAtlas atlas, PinnedFonts fonts, string output, string contentCases, MemoryStream? diagnostic = null)
     {
         RendererLibraryChecks.Run(atlas, fonts);
+        ViewportDamageCoverageChecks(atlas, fonts);
+        Console.WriteLine("Viewport damage and offscreen route regressions passed.");
+        var (_, damageArt) = OverrideChecks(contentCases);
+        RetainedGroundAtlasChecks(atlas, fonts, damageArt);
+        Console.WriteLine("Retained terrain atlas and replacement regressions passed.");
         MapPresentationChecks.Run(atlas, fonts, output);
         Directory.CreateDirectory(output);
         var catalog = MapArtCatalog.Stock;
@@ -224,7 +229,8 @@ internal static partial class NativeMapMatrix
                 "route colors, gaps, changed targets and wrapped pixels", "moving focus, retained stack and reduced-motion restoration",
                 "whole-pixel terrain scroll, foreground recomposition, and exact flat/wrapped bounds at 1× and 2×",
                 "cached masks retain source alpha, straight tint, and immutable source pixels",
-                "MV30-chunk-batch-recovered.png" }
+                "MV30-chunk-batch-recovered.png", "viewport damage overhangs, wrapped copies, labels and offscreen cached terrain",
+                "bounded retained terrain atlas, exact unpacked reference and content/observer replacement" }
         }, Json));
         Console.WriteLine($"Native matrix rendered {cases.Count} boards, including {actualBindings.Count} explicitly asserted sprite identities.");
     }

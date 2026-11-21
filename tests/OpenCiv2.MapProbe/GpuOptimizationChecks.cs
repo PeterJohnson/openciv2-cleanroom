@@ -218,8 +218,9 @@ internal static class GpuOptimizationChecks
             sparse.Regions.SequenceEqual(full.Regions), "two distant disclosed edits remain two regions with only two comparisons");
         var stale = new MapScene(after.Map with { Tiles = new(after.Map.Tiles) });
         var fallback = painter.InspectDamage(before, stale, camera, 1920, 1080, 1, true);
-        NativeMapMatrix.Require(fallback.ComparedTiles == before.Map.Tiles.Count && fallback.Regions!.SequenceEqual(full.Regions!),
-            "mismatched snapshot metadata falls back to full comparison");
+        NativeMapMatrix.Require(fallback.ComparedTiles == full.ComparedTiles && full.ComparedTiles < before.Map.Tiles.Count &&
+            fallback.Regions!.SequenceEqual(full.Regions!),
+            "mismatched snapshot metadata falls back to viewport comparison without trusting the stale delta");
         return new
         {
             sparseCompared = sparse.ComparedTiles,
