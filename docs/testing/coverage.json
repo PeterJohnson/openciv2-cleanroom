@@ -1613,8 +1613,8 @@
     {
       "id": "m2-shell",
       "contract": "P01\u2013P05 presentation contracts; W01 \u00a7\u00a72,8; W03 \u00a71; F03 scoped runtime content",
-      "publicSurface": "Owned observer map; pinned atlas and DejaVu admission; Avalonia batched map, viewport/texture caches, picking and local stack confirmation",
-      "review": "Authored map and local stack command on Linux. Portable privacy and malformed-format cases; native pointer/keyboard input and CPU raster measurements. Browser content behavior, full knowledge and graphic binding coverage, and remaining desktop acceptance are open.",
+      "publicSurface": "Owned observer map; pinned atlas and DejaVu admission; Avalonia batched map, viewport/texture caches, picking and local stack confirmation; shared action/menu adapters and correlated custom dialogs",
+      "review": "Authored native/browser map and local stack command. Menus, custom choice regions, focus, input and resized layouts have Linux/WASM checks; portable dialog tests cover stale identities, target changes, deadlines and peer requests. Actual macOS menu tracking, Windows, IME/accessibility and full M2 performance/platform gates remain open.",
       "sharedGroups": [
         "P03.atlas-admission",
         "P03.pinned-package-admission",
@@ -1626,10 +1626,13 @@
       "sources": [
         "src/OpenCiv2.App/ApplicationIdentity.cs",
         "src/OpenCiv2.App/GraphicsFonts.cs",
+        "src/OpenCiv2.App/InteractionDialogView.cs",
         "src/OpenCiv2.App/Map/MapControl.cs",
         "src/OpenCiv2.App/SeamApp.cs",
         "src/OpenCiv2.App/SeamSession.cs",
+        "src/OpenCiv2.App/SeamView.Actions.cs",
         "src/OpenCiv2.App/SeamView.cs",
+        "src/OpenCiv2.App/ShellMenu.cs",
         "src/OpenCiv2.Browser/Program.cs",
         "src/OpenCiv2.Contracts/MapObservation.cs",
         "src/OpenCiv2.Desktop/Program.cs",
@@ -1677,17 +1680,24 @@
       "id": "application-clients",
       "status": "implemented",
       "contract": "Scoped Session commands and application contract",
-      "publicSurface": "LocalUnitCommands.StackBottom; SessionPanel; CommandText",
+      "publicSurface": "LocalUnitCommands.StackBottom; SessionPanel; CommandText; ShellActions; InteractionDialogModel",
       "sources": [
         "src/OpenCiv2.Console/CommandText.cs",
         "src/OpenCiv2.Session/LocalUnitCommands.cs",
-        "src/OpenCiv2.ViewModels/SessionPanel.cs"
+        "src/OpenCiv2.ViewModels/InteractionDialogModel.cs",
+        "src/OpenCiv2.ViewModels/SessionPanel.cs",
+        "src/OpenCiv2.ViewModels/ShellActions.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/ClientModelCases.cs",
-        "tests/OpenCiv2.FoundationCases/LocalUnitCommandCases.cs"
+        "tests/OpenCiv2.FoundationCases/LocalUnitCommandCases.cs",
+        "tests/OpenCiv2.FoundationCases/ShellInteractionCases.cs"
       ],
       "sharedGroups": [
+        "M2.dialog-deadline-and-peer-traffic",
+        "M2.dialog-identity-lifecycle",
+        "M2.dialog-target-revalidation",
+        "M2.shell-action-availability",
         "P5.client-model-cancel-revoke",
         "P5.client-model-command-parity",
         "P5.client-model-privacy-rebind",
@@ -1699,7 +1709,7 @@
         "P5.local-unit-finite-bounds",
         "P5.local-unit-stale-target"
       ],
-      "review": "Production command, observer privacy, asynchronous confirmation/cancellation and descriptor-based console admission. Full M2 rendering and platform integration remain open."
+      "review": "Production command, observer privacy, asynchronous confirmation/cancellation, descriptor-based console admission, action availability and correlated dialog replies. Native/WASM cases exercise target changes and deadline/peer progress while awaiting a choice; full M2 platform integration remains open."
     }
   ]
 }

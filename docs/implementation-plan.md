@@ -277,6 +277,15 @@ pass, but browser pixel failures block promotion: CPU remains the default and
 terrain offload remains experimental. Full M2 visual, performance and platform
 acceptance remains open.
 
+The [menus and custom dialogs slice](validation/m2-menus-dialogs.md) adds a
+single action model for the admitted Riverbend order and display actions,
+in-window menus, a macOS NativeMenu adapter, and correlated custom dialog choices.
+Linux/browser input exercises dropdown selection, checked states, focus,
+shortcuts, cancellation and resizing. Shared native/WASM cases cover stale
+targets, observer changes, duplicate replies, deadlines and queued peer requests.
+Actual macOS native tracking, Windows input, IME and assistive-technology checks
+remain platform gates; this does not implement later gameplay menu commands.
+
 - Complete all MV01–MV30 capabilities in the production desktop/browser renderer:
   terrain/coasts/relief, every feature/network/resource, all supported unit/city
   art and annotations, ownership/status, knowledge edges, overlays, overview,
@@ -312,9 +321,13 @@ acceptance remains open.
   in-window Avalonia menus on Windows/Linux/web, with optional
   Linux global-menu export. Route native and drawn selections to the
   same semantic commands, with P05 availability and execution rules distinct.
+  The shared model and both adapters now exist for admitted actions; validate
+  native macOS tracking and actual Windows behavior separately.
 - Implement dialog lifecycle and stable testable custom hit regions. Exercise
   keyboard/focus routing, double-dispatch prevention, accept/cancel, and a target
-  changed while the dialog is open.
+  changed while the dialog is open. The correlated confirmation path now has
+  shared lifecycle tests and Linux/browser input evidence; later city/report
+  screens retain their owning milestone joins.
 - Add platform storage/time adapters and a browser import/export/persistence
   flow. Check high DPI, window resizing, menu insets, atlas/texture limits,
   browser startup/download costs, and case-independent classic resource lookup.

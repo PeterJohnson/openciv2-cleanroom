@@ -136,3 +136,12 @@ The [browser default report](../validation/m2-browser-gpu-default.md) identifies
 executed configurations. `run_application_browser.cjs` checks default CPU (or
 `--renderer=gpu`), explicit CPU, software CPU and rejection of software/GPU in
 the trimmed host.
+
+The same application input drivers now exercise the M2 shell menus and custom
+confirmation dialog: every admitted action, menu/shortcut/button dispatch,
+checked-state synchronization, focus cycling, Escape, repeat suppression,
+text-entry isolation and resized hit regions. The browser runs at 1× and 2×.
+`ShellInteractionCases` separately checks stale targets and interaction identities,
+observer handoff, cancellation, deadlines and peer requests without graphics
+dependencies. See the [execution record](../validation/m2-menus-dialogs.md);
+macOS native menu tracking and real assistive technology are separate gates.

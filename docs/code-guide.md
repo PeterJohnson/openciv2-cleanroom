@@ -87,6 +87,16 @@ shared native/WASM GPU history checks and the remaining browser failures.
 `GpuPixelChecks` owns the common readback/comparison code; `GpuOptimizationChecks`
 borrows a live host context and never owns or retains it.
 
+`ViewModels/ShellActions` derives stable action identities, shortcuts, availability
+and checked states from owned observations and local display preferences.
+`App/ShellMenu` projects those actions to the in-window menu and macOS NativeMenu.
+`SeamView.Actions` routes selections and shortcuts through the same command path
+as the drawn order button. `InteractionDialogModel` owns the correlated reply
+latch; `InteractionDialogView` supplies focus containment and custom painted
+button regions with standard Avalonia automation peers. See the
+[menus and dialogs record](validation/m2-menus-dialogs.md) for executed hosts and
+the remaining real-platform checks.
+
 ## Adding behavior
 
 ### Readable implementation and documentation

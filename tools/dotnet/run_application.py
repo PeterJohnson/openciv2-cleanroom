@@ -103,7 +103,7 @@ def main():
     subprocess.run(command, check=True, timeout=240)
     report = json.loads(output.read_text(), object_pairs_hook=identity.unique_object)
     compiled = validate(report['identity'], args.native_aot)
-    expected_count = 21 if args.browser_bundle else 22 if args.map_assets else 6
+    expected_count = 41 if args.browser_bundle else 32 if args.map_assets else 16
     if report.get('format') != 'openciv2-application-input/1' or len(report['checks']) != expected_count or report.get('errors'):
         raise ValueError('Incomplete application checks')
     if any(identity.sha(ROOT / p) != digest for p, digest in sources.items()) or any(identity.sha(Path(p)) != digest for p, digest in (artifacts | content).items()):

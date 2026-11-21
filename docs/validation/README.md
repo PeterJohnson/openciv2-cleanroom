@@ -24,6 +24,10 @@ desktop checks remain open.
 
 ## M2 map slice
 
+The [menus and dialogs record](m2-menus-dialogs.md) covers the shared action model,
+Linux/browser dropdowns, correlated custom choices, focus and stale-target
+handling. The macOS NativeMenu adapter still requires real native tracking tests.
+
 The [browser GPU default record](m2-browser-gpu-default.md) covers shared native
 and WASM navigation/history, art/density galleries, resource replacement and
 production startup choices. Native gates pass, but browser pixel failures block

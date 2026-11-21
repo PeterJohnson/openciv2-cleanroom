@@ -166,6 +166,7 @@ public sealed class SeamApp : Application
                 MinHeight = 640,
                 Content = view
             };
+            view.AttachMenu(desktop.MainWindow);
             desktop.Exit += (_, _) => Stop();
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime single)

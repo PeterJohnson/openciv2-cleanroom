@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using OpenCiv2.App.Map;
 using OpenCiv2.Base;
 using OpenCiv2.Console;
@@ -20,7 +21,7 @@ using OpenCiv2.ViewModels;
 namespace OpenCiv2.App;
 
 /// <summary>P01/P04/P05 presentation over the scoped, owned model and production command lane.</summary>
-public sealed class SeamView : UserControl
+public sealed partial class SeamView : UserControl
 {
     private readonly SessionPanel model;
     private readonly MapControl map;
@@ -29,7 +30,6 @@ public sealed class SeamView : UserControl
     private ulong noticeSequence;
     private readonly ListBox units = new() { Height = 122 };
     private readonly TextBlock status = new() { TextWrapping = TextWrapping.Wrap };
-    private readonly TextBlock prompt = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBlock details = new() { TextWrapping = TextWrapping.Wrap, MinHeight = 42 };
     private readonly TextBox input = new()
     {
@@ -42,23 +42,14 @@ public sealed class SeamView : UserControl
     }, run = new()
     {
         Content = "Run command"
-    },
-        yes = new()
-        {
-            Content = "Confirm"
-        }, no = new()
-        {
-            Content = "Decline"
-        }, cancel = new()
-        {
-            Content = "Cancel command"
-        };
+    };
     private readonly Button mapOptions;
     private readonly CheckBox reducedMotion = new() { Content = "Reduced motion" };
     private readonly Dictionary<string, CheckBox> mapChoices = [];
-    private readonly Border dialog;
+    private readonly InteractionDialogView dialog;
+    private readonly ShellMenu menu;
+    private readonly Grid shell;
     private SessionView? rendered;
-    private InteractionId? shownInteraction;
     private UnitTarget? activeTarget;
     private MapPick? selection;
     private string parseError = "";
@@ -73,16 +64,15 @@ public sealed class SeamView : UserControl
         AutomationProperties.SetAutomationId(input, "command-input");
         foreach (var (button, id) in new[] {
             (send, "send"),
-            (run, "run"),
-            (yes, "confirm"),
-            (no, "decline"),
-            (cancel, "cancel")
+            (run, "run")
             })
         {
             AutomationProperties.SetAutomationId(button, id);
         }
 
-        var root = new Grid { RowDefinitions = new("Auto,*"), Background = Brush.Parse("#eee9de") };
+        var root = shell = new Grid { RowDefinitions = new("Auto,Auto,*"), Background = Brush.Parse("#eee9de") };
+        menu = new ShellMenu(ShellActions.Create(model.View, null, new()), DispatchAction);
+        root.Children.Add(menu.Control);
         var header = new Grid { ColumnDefinitions = new("*,Auto"), Margin = new Thickness(22, 11) };
         var logo = new TextBlock { Text = "OpenCiv2", FontSize = 29, FontWeight = FontWeight.Bold };
         var chapter = new TextBlock
@@ -100,6 +90,7 @@ public sealed class SeamView : UserControl
         header.Children.Add(logo);
         Grid.SetColumn(chapter, 1);
         header.Children.Add(chapter);
+        Grid.SetRow(header, 1);
         root.Children.Add(header);
 
         var layout = new Grid
@@ -108,7 +99,7 @@ public sealed class SeamView : UserControl
             Margin = new Thickness(14, 0, 14, 14),
             ColumnSpacing = 14
         };
-        Grid.SetRow(layout, 1);
+        Grid.SetRow(layout, 2);
         root.Children.Add(layout);
         var mapArea = new Grid { RowDefinitions = new("*,Auto"), Background = Brush.Parse("#172b33") };
         mapArea.Children.Add(map);
@@ -161,28 +152,13 @@ public sealed class SeamView : UserControl
         Grid.SetColumn(scroll, 1);
         layout.Children.Add(scroll);
 
-        var actions = new WrapPanel { Orientation = Orientation.Horizontal, ItemSpacing = 8, LineSpacing = 6 };
-        actions.Children.Add(yes);
-        actions.Children.Add(no);
-        actions.Children.Add(cancel);
-        var decision = new StackPanel { Spacing = 14, Children = { prompt, actions } };
-        var card = new Border
+        dialog = new InteractionDialogView(model, pinnedFonts);
+        dialog.Responded += () => Refresh(force: true);
+        Content = new Grid { Children = { root, dialog } };
+        if (pinnedFonts)
         {
-            Child = decision,
-            Padding = new Thickness(20),
-            MaxWidth = 410,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            Background = Brush.Parse("#fff8e7"),
-            BorderBrush = Brush.Parse("#a58557"),
-            BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(8)
-        };
-        dialog = new Border { Child = card, Background = Brush.Parse("#8e172b33"), IsVisible = false };
-        AutomationProperties.SetName(card, "Stack order confirmation");
-        Grid.SetRowSpan(dialog, 2);
-        root.Children.Add(dialog);
-        Content = root;
+            TextElement.SetFontFamily(dialog, GraphicsFonts.Sans);
+        }
 
         map.SelectionChanged += Pick;
         map.HoverChanged += pick =>
@@ -196,6 +172,8 @@ public sealed class SeamView : UserControl
         units.SelectionChanged += (_, _) => SelectListUnit();
         send.Click += (_, _) => Send();
         run.Click += (_, _) => Run();
+        input.GotFocus += (_, _) => menu.SetTextEntry(true);
+        input.LostFocus += (_, _) => menu.SetTextEntry(false);
         input.KeyDown += (_, e) =>
         {
             if (e.Key == Key.Enter)
@@ -211,38 +189,16 @@ public sealed class SeamView : UserControl
                 e.Handled = true;
             }
         };
-        yes.Click += (_, _) => Decide(1);
-        no.Click += (_, _) => Decide(0);
-        cancel.Click += (_, _) => Decide(null);
-        AddHandler(KeyDownEvent, OnDialogKey, RoutingStrategies.Tunnel);
+        AddHandler(KeyDownEvent, OnShellKey, RoutingStrategies.Tunnel);
+        AddHandler(KeyUpEvent, (_, e) => menu.KeyUp(e), RoutingStrategies.Tunnel, handledEventsToo: true);
+        LostFocus += (_, _) => Dispatcher.UIThread.Post(() =>
+        {
+            if (!IsKeyboardFocusWithin)
+            {
+                menu.ReleaseKeys();
+            }
+        });
         Refresh();
-    }
-
-    private void OnDialogKey(object? sender, KeyEventArgs e)
-    {
-        if (!dialog.IsVisible || e.Key != Key.Escape)
-        {
-            return;
-        }
-
-        Decide(null);
-        e.Handled = true;
-    }
-
-    private void Decide(int? choice)
-    {
-        if (shownInteraction is not { } id || model.View.Command?.Interaction?.Id != id || !yes.IsEnabled)
-        {
-            return;
-        }
-
-        bool accepted = choice is int selected ? model.Reply(selected) : model.Cancel();
-        if (accepted)
-        {
-            yes.IsEnabled = no.IsEnabled = cancel.IsEnabled = false;
-        }
-
-        Refresh(force: true);
     }
 
     private void SelectListUnit()
@@ -293,7 +249,7 @@ public sealed class SeamView : UserControl
     {
         details.Text = selection is { } pick && map.Scene is { } scene
             ? MapInspection.Describe(scene, pick, activeTarget) : "Choose a tile, city or unit.";
-        send.IsEnabled = activeTarget is not null && model.View.Identity is not null && !Busy;
+        RefreshActions();
     }
 
     private Button MapOptions(MapArtSelection? selectedArt)
@@ -303,7 +259,11 @@ public sealed class SeamView : UserControl
         {
             var box = new CheckBox { Content = title };
             mapChoices.Add(key, box);
-            box.IsCheckedChanged += (_, _) => map.Display = update(map.Display, box.IsChecked == true);
+            box.IsCheckedChanged += (_, _) =>
+            {
+                map.Display = update(map.Display, box.IsChecked == true);
+                RefreshActions();
+            };
             options.Children.Add(box);
         }
         Choice("grid", "Grid", (d, enabled) => d with { Grid = enabled });
@@ -311,9 +271,10 @@ public sealed class SeamView : UserControl
         Choice("ownership", "Disclosed ownership", (d, enabled) => d with { Ownership = enabled });
         Choice("bare", "Bare terrain", (d, enabled) => d with { Bare = enabled });
         Choice("follow", "Follow active unit", (d, enabled) => d with { FollowActive = enabled });
-        reducedMotion.IsCheckedChanged += (_, _) => map.Display = map.Display with
+        reducedMotion.IsCheckedChanged += (_, _) =>
         {
-            ReducedMotion = reducedMotion.IsChecked == true
+            map.Display = map.Display with { ReducedMotion = reducedMotion.IsChecked == true };
+            RefreshActions();
         };
         options.Children.Add(reducedMotion);
         Choice(
@@ -352,17 +313,7 @@ public sealed class SeamView : UserControl
 
     private bool Busy => model.View.Command?.Status is CommandStatus.Pending or CommandStatus.AwaitingInteraction;
 
-    private void Send()
-    {
-        if (Busy || activeTarget is not { } target)
-        {
-            return;
-        }
-
-        parseError = "";
-        model.Submit(new(LocalUnitCommands.StackBottomName, new([new("unit", new CommandValue.Unit(target))])));
-        Refresh();
-    }
+    private void Send() => DispatchAction(ShellActions.StackBottom);
 
     private void Run()
     {
@@ -374,6 +325,8 @@ public sealed class SeamView : UserControl
         try
         {
             parseError = "";
+            dialog.RememberFocus(map);
+            mapOptions.Flyout?.Hide();
             model.Submit(CommandText.Parse(input.Text ?? "", model.View.Commands));
         }
         catch (ArgumentException error)
@@ -444,33 +397,11 @@ public sealed class SeamView : UserControl
             }
         }
 
-        var interaction = view.Command?.Interaction;
-        bool hadDialog = dialog.IsVisible;
-        bool firstDisplay = interaction is not null && shownInteraction != interaction.Id;
-        shownInteraction = interaction?.Id;
-        dialog.IsVisible = interaction is not null;
-        // The shell holds input until the session consumes the prior reply.
-        if (firstDisplay)
-        {
-            yes.IsEnabled = no.IsEnabled = cancel.IsEnabled = true;
-        }
-        else if (interaction is null)
-        {
-            yes.IsEnabled = no.IsEnabled = cancel.IsEnabled = false;
-        }
-
+        shell.IsEnabled = !Busy;
         map.IsEnabled = overview.IsEnabled = units.IsEnabled = input.IsEnabled = !Busy;
-        if (firstDisplay)
-        {
-            yes.Focus();
-        }
-        else if (hadDialog && !dialog.IsVisible)
-        {
-            map.Focus();
-        }
+        dialog.Refresh(map);
 
         run.IsEnabled = view.Identity is not null && !Busy;
-        prompt.Text = interaction?.Spec.Prompt ?? "No decision pending.";
         status.Text = parseError.Length > 0 ? parseError : view.Command is { } command
             ? $"{command.Status}{(command.Code.Length == 0 ? "" : " · " + command.Code)} · {command.Committed.Count} committed"
             : "Stack order is available for your units.";
@@ -481,8 +412,12 @@ public sealed class SeamView : UserControl
     public string Snapshot()
     {
         var view = model.View;
-        JsonObject ControlBounds(Control control)
+        JsonObject ControlBounds(Control? control)
         {
+            if (control is null)
+            {
+                return new() { ["x"] = 0, ["y"] = 0, ["width"] = 0, ["height"] = 0, ["enabled"] = false };
+            }
             var point = control.TranslatePoint(default, this) ?? default;
             return new()
             {
@@ -490,7 +425,8 @@ public sealed class SeamView : UserControl
                 ["y"] = point.Y,
                 ["width"] = control.Bounds.Width,
                 ["height"] = control.Bounds.Height,
-                ["enabled"] = control.IsEnabled
+                ["enabled"] = control.IsEffectivelyEnabled,
+                ["focused"] = control.IsKeyboardFocusWithin
             };
         }
 
@@ -501,15 +437,7 @@ public sealed class SeamView : UserControl
                 return null;
             }
 
-            var origin = this.PointToScreen(default);
-            var point = control.PointToScreen(default);
-            return new()
-            {
-                ["x"] = (point.X - origin.X) / scaling,
-                ["y"] = (point.Y - origin.Y) / scaling,
-                ["width"] = control.Bounds.Width,
-                ["height"] = control.Bounds.Height
-            };
+            return PopupBounds(control, scaling);
         }
 
         var command = view.Command;
@@ -540,7 +468,9 @@ public sealed class SeamView : UserControl
                 ? changed.Value
                 : null,
             ["message"] = status.Text,
-            ["prompt"] = prompt.Text,
+            ["prompt"] = dialog.Prompt,
+            ["dialog"] = DialogSnapshot(ControlBounds),
+            ["menu"] = MenuSnapshot(scaling),
             ["map"] = new JsonObject
             {
                 ["x"] = camera.X,
@@ -570,9 +500,9 @@ public sealed class SeamView : UserControl
                 ["send"] = ControlBounds(send),
                 ["run"] = ControlBounds(run),
                 ["input"] = ControlBounds(input),
-                ["confirm"] = ControlBounds(yes),
-                ["decline"] = ControlBounds(no),
-                ["cancel"] = ControlBounds(cancel),
+                ["confirm"] = ControlBounds(dialog.Choices.GetValueOrDefault(1)),
+                ["decline"] = ControlBounds(dialog.Choices.GetValueOrDefault(0)),
+                ["cancel"] = ControlBounds(dialog.Cancel),
                 ["mapOptions"] = ControlBounds(mapOptions),
                 ["motionToggle"] = FlyoutControlBounds(reducedMotion, scaling),
                 ["modeToggles"] = new JsonObject(mapChoices.Select(entry =>

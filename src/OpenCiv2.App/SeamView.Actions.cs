@@ -1,0 +1,137 @@
+using System.Text.Json.Nodes;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using OpenCiv2.ViewModels;
+
+namespace OpenCiv2.App;
+
+public sealed partial class SeamView
+{
+    private ulong actionDispatches;
+    private string? lastAction;
+
+    internal void AttachMenu(Window window) => menu.Attach(window);
+
+    private IEnumerable<ShellAction> Actions() => ShellActions.Create(model.View, activeTarget,
+        new(map.Display.Grid, map.Display.Bare, map.Display.ReducedMotion));
+
+    private void RefreshActions()
+    {
+        var actions = Actions().ToArray();
+        menu.Refresh(actions);
+        send.IsEnabled = actions.Single(action => action.Id == ShellActions.StackBottom).Enabled;
+    }
+
+    private void OnShellKey(object? sender, KeyEventArgs e)
+    {
+        // Text editing and dialog choices own their keys; the menu's decorative gestures do not dispatch.
+        if (!input.IsKeyboardFocusWithin && !dialog.IsVisible)
+        {
+            menu.KeyDown(e);
+        }
+    }
+
+    private void DispatchAction(string id)
+    {
+        model.Refresh();
+        if (!Actions().Any(action => action.Id == id && action.Enabled && !action.Hidden))
+        {
+            Refresh(force: true);
+            return;
+        }
+
+        lastAction = id;
+        actionDispatches++;
+        switch (id)
+        {
+            case ShellActions.StackBottom:
+                parseError = "";
+                dialog.RememberFocus(map);
+                mapOptions.Flyout?.Hide();
+                ShellActions.Submit(model, id, activeTarget);
+                break;
+            case ShellActions.Grid:
+                mapChoices["grid"].IsChecked = !map.Display.Grid;
+                break;
+            case ShellActions.Bare:
+                mapChoices["bare"].IsChecked = !map.Display.Bare;
+                break;
+            case ShellActions.ReducedMotion:
+                reducedMotion.IsChecked = !map.Display.ReducedMotion;
+                break;
+            case ShellActions.MapOptions:
+                mapOptions.Flyout?.ShowAt(mapOptions);
+                break;
+            case ShellActions.Console:
+                input.Focus();
+                break;
+        }
+        Refresh(force: true);
+    }
+
+    private JsonObject DialogSnapshot(Func<Control?, JsonObject> bounds) => new()
+    {
+        ["visible"] = dialog.IsVisible,
+        ["interaction"] = dialog.Model?.Identity.Interaction.ToString(),
+        ["submitted"] = dialog.Model?.Submitted,
+        ["target"] = dialog.Target,
+        ["regions"] = new JsonObject(dialog.Choices.Select(entry =>
+            new KeyValuePair<string, JsonNode?>("choice." + entry.Key, bounds(entry.Value))))
+        {
+            ["cancel"] = bounds(dialog.Cancel)
+        }
+    };
+
+    private JsonObject? PopupBounds(Control control, double scaling)
+    {
+        if (!control.IsEffectivelyVisible || control.Bounds.Width <= 0 || TopLevel.GetTopLevel(control) is null)
+        {
+            return null;
+        }
+        var local = control.TranslatePoint(default, this);
+        if (local is null)
+        {
+            var origin = this.PointToScreen(default);
+            var point = control.PointToScreen(default);
+            // Browser screen coordinates are CSS pixels; desktop popup roots use physical pixels.
+            double divisor = OperatingSystem.IsBrowser() ? 1 : scaling;
+            local = new Point((point.X - origin.X) / divisor, (point.Y - origin.Y) / divisor);
+        }
+        return new()
+        {
+            ["x"] = local.Value.X,
+            ["y"] = local.Value.Y,
+            ["width"] = control.Bounds.Width,
+            ["height"] = control.Bounds.Height,
+            ["enabled"] = control.IsEffectivelyEnabled
+        };
+    }
+
+    private JsonObject MenuSnapshot(double scaling)
+    {
+        return new()
+        {
+            ["native"] = menu.UsesNative,
+            ["dispatches"] = actionDispatches,
+            ["lastAction"] = lastAction,
+            ["groups"] = new JsonObject(menu.Groups.Select(entry => new KeyValuePair<string, JsonNode?>(entry.Key,
+                new JsonObject
+                {
+                    ["open"] = entry.Value.IsSubMenuOpen,
+                    ["bounds"] = PopupBounds(entry.Value, scaling)
+                }))),
+            ["actions"] = new JsonObject(Actions().Select(action => new KeyValuePair<string, JsonNode?>(action.Id,
+                new JsonObject
+                {
+                    ["label"] = action.Label,
+                    ["enabled"] = action.Enabled,
+                    ["hidden"] = action.Hidden,
+                    ["checked"] = action.Checked,
+                    ["shortcut"] = action.Shortcut,
+                    ["bounds"] = menu.Groups[action.Group].IsSubMenuOpen
+                        ? PopupBounds(menu.Item(action.Id), scaling) : null
+                })))
+        };
+    }
+}

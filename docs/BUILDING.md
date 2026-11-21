@@ -93,7 +93,11 @@ python3 tools/dotnet/run_xvfb.py python3 tools/dotnet/run_application.py --repor
 ```
 
 To exercise the pinned content, pass `--map-assets ROOT --map-fonts ROOT` before
-`--adapter` in the input command above. Run the software raster probe with the same
+`--adapter` in the input command above. The input driver also checks the Orders
+and View menus and the custom confirmation dialog. The browser application driver
+exercises the same routes at both densities. See the
+[menus/dialogs record](validation/m2-menus-dialogs.md) for the current scope.
+Run the software raster probe with the same
 two extracted roots to measure preparation and redraw workloads:
 
 ```sh

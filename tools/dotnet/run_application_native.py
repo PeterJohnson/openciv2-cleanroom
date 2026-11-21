@@ -43,6 +43,7 @@ class X11:
             'XKeysymToKeycode': ([C.c_void_p, C.c_ulong], C.c_uint),
             'XGetImage': ([C.c_void_p, C.c_ulong, C.c_int, C.c_int, C.c_uint, C.c_uint, C.c_ulong, C.c_int], C.c_void_p),
             'XGetPixel': ([C.c_void_p, C.c_int, C.c_int], C.c_ulong),
+            'XResizeWindow': ([C.c_void_p, C.c_ulong, C.c_uint, C.c_uint], C.c_int),
             'XDestroyImage': ([C.c_void_p], C.c_int),
             'XRaiseWindow': ([C.c_void_p, C.c_ulong], C.c_int),
             'XSetInputFocus': ([C.c_void_p, C.c_ulong, C.c_int, C.c_ulong], C.c_int),
@@ -118,6 +119,14 @@ class X11:
         code = self.x.XKeysymToKeycode(self.display, self.x.XStringToKeysym(name.encode()))
         if code == 0: raise RuntimeError(f'No X11 keycode for {name}')
         for pressed in (1, 0):
+            self.input.XTestFakeKeyEvent(self.display, code, pressed, 0)
+            self.x.XFlush(self.display)
+            time.sleep(.05)
+
+    def chord(self, modifier, name, repeat=False):
+        codes = [self.x.XKeysymToKeycode(self.display, self.x.XStringToKeysym(value.encode())) for value in (modifier, name)]
+        if not all(codes): raise RuntimeError('No X11 chord keycode')
+        for code, pressed in [(codes[0], 1), (codes[1], 1), *([(codes[1], 1)] if repeat else []), (codes[1], 0), (codes[0], 0)]:
             self.input.XTestFakeKeyEvent(self.display, code, pressed, 0)
             self.x.XFlush(self.display)
             time.sleep(.05)
@@ -308,6 +317,71 @@ def main():
                 click('confirm')
                 status('Completed')
                 check('console-and-map-share-command', lambda s: s['effects'] == 0 and s['changed'] is False)
+            def raw_click(box):
+                scale = read()['scaling']
+                driver.move(window, (box['x'] + box['width'] / 2) * scale, (box['y'] + box['height'] / 2) * scale)
+                driver.button(1, 1); driver.button(1, 0)
+
+            def menu_action(group, action):
+                raw_click(read()['menu']['groups'][group]['bounds'])
+                wait(lambda s: s['menu']['groups'][group]['open'])
+                item = wait(lambda s: s['menu']['actions'][action]['bounds'] is not None)['menu']['actions'][action]['bounds']
+                if not item['enabled']: raise RuntimeError('Menu action disabled: ' + action)
+                raw_click(item)
+
+            initial_dispatches = read()['menu']['dispatches']
+            menu_action('Orders', 'unit.stack-bottom'); status('AwaitingInteraction')
+            check('menu-action-dialog', lambda s: s['menu']['dispatches'] == initial_dispatches + 1 and
+                  s['dialog']['visible'] and not s['menu']['groups']['Orders']['open'] and not s['menu']['actions']['unit.stack-bottom']['enabled'])
+            wait(lambda s: all(b['width'] > 60 and b['height'] > 20 for b in s['dialog']['regions'].values()))
+            check('custom-choice-regions', lambda s: s['dialog']['regions']['choice.1']['focused'] and all(
+                b['enabled'] and b['width'] > 60 and b['height'] > 20 and b['x'] >= 0 and b['y'] >= 0 and
+                b['x'] + b['width'] <= s['width'] and b['y'] + b['height'] <= s['height'] for b in s['dialog']['regions'].values()))
+            for _ in range(3): driver.key('Tab')
+            driver.chord('Control_L', 'Return'); driver.chord('Control_L', 'g')
+            raw_click(dict(x=5, y=5, width=0, height=0))
+            check('dialog-focus-cycle-and-isolation', lambda s: s['dialog']['visible'] and s['dialog']['regions']['choice.1']['focused'] and
+                  s['menu']['dispatches'] == initial_dispatches + 1 and not s['map']['grid'] and not s['controls']['mapOptions']['enabled'])
+            driver.key('Escape'); status('Cancelled')
+            check('dialog-cancel-focus-return', lambda s: not s['dialog']['visible'] and s['controls']['map']['focused'] and s['effects'] == 0)
+            driver.chord('Control_L', 'Return', repeat=True); status('AwaitingInteraction')
+            driver.key('space'); status('Completed')
+            check('central-shortcut-exactly-once', lambda s: s['menu']['dispatches'] == initial_dispatches + 2 and s['effects'] <= 1)
+            menu_action('View', 'view.grid')
+            wait(lambda s: s['map']['grid'] and s['menu']['actions']['view.grid']['checked'])
+            driver.chord('Control_L', 'g', repeat=True)
+            wait(lambda s: not s['map']['grid'])
+            check('menu-checked-and-shortcut-repeat', lambda s: s['menu']['dispatches'] == initial_dispatches + 4 and not s['menu']['actions']['view.grid']['checked'])
+            initial_motion = read()['map']['reducedMotion']
+            for action, field in [('view.bare', 'bare'), ('view.reduced-motion', 'reducedMotion')]:
+                original = read()['map'][field]
+                for enabled in (not original, original):
+                    menu_action('View', action)
+                    wait(lambda s: s['map'][field] == enabled and s['menu']['actions'][action]['checked'] == enabled)
+            menu_action('View', 'view.map-options')
+            for enabled in (True, False):
+                box = wait(lambda s: s['controls']['modeToggles']['grid'] is not None)['controls']['modeToggles']['grid']
+                raw_click(box)
+                wait(lambda s: s['map']['grid'] == enabled and s['menu']['actions']['view.grid']['checked'] == enabled)
+            driver.key('Escape'); wait(lambda s: s['controls']['modeToggles']['grid'] is None)
+            menu_action('View', 'view.console')
+            check('menu-preferences-and-console', lambda s: s['inputFocused'] and not s['map']['bare'] and not s['map']['grid'] and
+                  s['map']['reducedMotion'] == initial_motion and s['menu']['dispatches'] == initial_dispatches + 10)
+            click('input'); driver.chord('Control_L', 'g')
+            check('text-input-shortcut-isolation', lambda s: s['inputFocused'] and not s['map']['grid'] and s['menu']['dispatches'] == initial_dispatches + 10)
+            factor = read()['scaling']
+            driver.x.XResizeWindow(driver.display, window, int(680 * factor), int(640 * factor)); driver.x.XFlush(driver.display)
+            wait(lambda s: abs(s['width'] - 680) < 2 and abs(s['height'] - 640) < 2)
+            menu_action('Orders', 'unit.stack-bottom'); status('AwaitingInteraction')
+            small = wait(lambda s: all(b['width'] > 60 and b['height'] > 20 for b in s['dialog']['regions'].values()))
+            if any(b['x'] < 0 or b['y'] < 0 or b['x'] + b['width'] > small['width'] or b['y'] + b['height'] > small['height'] for b in small['dialog']['regions'].values()):
+                raise RuntimeError('Resized native dialog hit region outside viewport')
+            click('cancel'); status('Cancelled')
+            check('resized-dialog-and-cancel', lambda s: not s['dialog']['visible'] and s['effects'] == 0 and s['menu']['dispatches'] == initial_dispatches + 11)
+            driver.chord('Alt_L', 'o'); wait(lambda s: s['menu']['groups']['Orders']['open'])
+            driver.key('Down'); driver.key('Return'); status('AwaitingInteraction')
+            driver.key('Escape'); status('Cancelled')
+            check('keyboard-menu-route', lambda s: s['menu']['dispatches'] == initial_dispatches + 12 and s['effects'] == 0 and s['controls']['map']['focused'])
             driver.close_window(window)
             if process.wait(timeout=10) != 0: raise RuntimeError('Desktop did not exit successfully')
             args.output.write_text(json.dumps({'format': 'openciv2-application-input/1', 'platform': 'X11', 'input': 'XTest pointer and keyboard events at owned process window' if args.map else 'XTest pointer events at owned process window', 'identity': json.loads(Path(str(snapshot) + '.identity.json').read_text()), 'checks': checks}, indent=2) + '\n')
