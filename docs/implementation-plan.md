@@ -57,8 +57,9 @@ Key contracts are [foundations](m1-foundations.md), [state/session ownership](m1
 [commands](m1-command-contract.md), [checkpoint profile](m1-checkpoint.md),
 [stored saves](m1-stored-saves.md), [content conversion](m1-content-conversion.md),
 [inspection](m1-inspection.md) and [network primitives](m1-network-foundations.md).
-The [finite scope](m1-closeout.md) records exclusions. Complete terrain generation,
-civilization creation, balancing, acceleration, event execution, turn processing
+The [finite scope](m1-closeout.md) records exclusions. W02 terrain generation now has
+a [portable implementation and F05 caller](map-generation.md); original-target
+reconciliation remains open. Civilization creation, balancing, acceleration, event execution, turn processing
 and multiplayer sessions remain the responsibilities of later owning milestones.
 
 ### State representation boundary
@@ -447,9 +448,11 @@ as their callers require them.
 
 Implement in dependency groups, with real parent/child integration in each:
 
-1. Complete W02 generation and F05 setup/start placement; test all supported
-   topology/size/custom-rule variants and starting another game in one process.
-   Track X02's W02 original-target reconciliation gap explicitly.
+1. Complete F05 setup/start placement around the implemented
+   [W02 generation pipeline](map-generation.md). Shared tests cover presets,
+   custom-size boundaries, odd height, both topologies, signed rules and starting
+   another game in one process. Extend independent original-game evidence and
+   retain X02's W02 original-target reconciliation gap explicitly.
 2. Complete city economy, happiness, growth/support, buildings/wonders, trade,
    research, government, and full F04 city/civilization/global turn passes.
 3. Complete combat, capture/revolt, civilization elimination/civil war, diplomacy,

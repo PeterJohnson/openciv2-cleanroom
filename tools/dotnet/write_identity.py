@@ -22,6 +22,7 @@ COMMON = (
     "docs/algorithms/F01-determinism-and-arithmetic.md",
     "docs/algorithms/F02-game-state-and-invariants.md", "docs/algorithms/F03-rules-and-configuration.md", "docs/algorithms/F06-save-load-and-file-formats.md",
     "docs/algorithms/W01-map-geometry-and-spatial-state.md", "docs/algorithms/C01-city-lifecycle-and-ownership.md",
+    "docs/algorithms/W02-map-generation.md", "docs/algorithms/U03-pathfinding-and-goto.md",
     "docs/algorithms/F05-game-setup-and-starting-positions.md",
     "docs/algorithms/S01-scenario-loading-and-parameters.md",
     "docs/algorithms/S02-event-language-and-execution.md",

@@ -420,6 +420,47 @@
       ]
     },
     {
+      "id": "map-generation",
+      "contract": "W02 complete generation/finalization; W01 section 7 regions; U03 uniform-cost bounded connectivity; F05 world entry",
+      "publicSurface": "MapGenerator.Generate; MapRegions; GenerationConnectivity and retained GenerationPathWorkspace; WorldGeneration and WorldEntry production child; retained terrain marker adapter",
+      "review": "Authored controlled phase cases, retained finalization, signed custom yields, fixed-slot rule overrides, 52 size/topology/parameter runs, semantic-choice replay and fresh/reused world entry. Full original-game conditional map reconciliation remains X02 evidence work. Generation connectivity implements only the uniform-cost absent-owner U03 domain; no general unit goto or gameplay callback reentry. See docs/map-generation.md.",
+      "sharedGroups": [
+        "U03.generation-connectivity-costs",
+        "W01.generation-border-skips",
+        "W01.generation-region-labels",
+        "W02.admission",
+        "W02.alternating-rainfall",
+        "W02.contact-repair",
+        "W02.controlled-replay",
+        "W02.fertility-rules",
+        "W02.land-walks",
+        "W02.latitude-and-coverage",
+        "W02.retained-finalization",
+        "W02.river-rollback-and-boundary",
+        "W02.size-and-parameter-matrix",
+        "W02.weather-and-votes",
+        "W02.world-entry-integration"
+      ],
+      "status": "implemented",
+      "sources": [
+        "src/OpenCiv2.Core/GenerationPaths.cs",
+        "src/OpenCiv2.Core/MapGeneration.Finalization.cs",
+        "src/OpenCiv2.Core/MapGeneration.Land.cs",
+        "src/OpenCiv2.Core/MapGeneration.Rivers.cs",
+        "src/OpenCiv2.Core/MapGeneration.Terrain.cs",
+        "src/OpenCiv2.Core/MapGeneration.cs",
+        "src/OpenCiv2.Core/MapNeighborhoods.cs",
+        "src/OpenCiv2.Core/MapRegions.cs",
+        "src/OpenCiv2.Formats/MapCompatibility.cs",
+        "src/OpenCiv2.Session/WorldEntry.cs",
+        "src/OpenCiv2.Session/WorldGeneration.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MapGenerationCases.cs",
+        "tests/OpenCiv2.FoundationCases/MapGenerationIntegrationCases.cs"
+      ]
+    },
+    {
       "id": "rules",
       "contract": "F03 \u00a7\u00a72\u20137; X01 semantic names",
       "publicSurface": "Typed rule operands/tables, all normalization helpers, ordered per-table installation and reload/name retention",

@@ -31,7 +31,7 @@ does not grant technology, mutate state, draw randomness or update the year.
 The presentation child owns resolving and displaying leader/civilization names.
 
 The caller supplies the selected calendar and gameplay context. Child call
-identities append `/parameters`, `/players` and `/initialize` to the supplied
+identities append `/parameters`, `/players`, `/generation` and `/initialize` to the supplied
 unique entry identity. The shared preference service is used at both custom
 parameter completion and final player acceptance. Previous clients are revoked
 before setup; partial setup state is visible only to its owner. Successful setup
@@ -48,8 +48,14 @@ isolation and introduction filtering/order/live labels. W02, V01, balancing,
 acceleration and presentation are explicitly supplied children in these cases,
 not completed gameplay implementations or original-program captures.
 
+The additional [map-generation integration](map-generation.md) runs production
+W02 through this parent by supplying `Generation` options and leaving the
+`GenerateWorld` override null. Its retained classic-map path supplies the owning
+map's terrain-marker adapter. The original ordering tests above retain their
+explicit generation provider.
+
 Fresh-game reset is implemented. Non-new-world menu choices, application dialogs
-and content selection adapters, full W02/V01/F05 gameplay children, cooperative
+and content selection adapters, full V01/F05 gameplay children, cooperative
 command adaptation and checkpoint restore remain at their owning milestones.
 Main-menu rendering has no AI lifecycle prerequisite.
 The earlier parser-argument uncertainty no longer requires an opaque load/reload

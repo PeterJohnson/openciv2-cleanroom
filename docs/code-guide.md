@@ -38,6 +38,11 @@ fixtures. Build commands and evidence checks are in the
 [build guide](BUILDING.md). Public client APIs expose owned values;
 mutable Core records and borrowed spans stay behind the session boundary.
 
+`Core/MapGeneration*.cs` owns W02 terrain phases and finalization; `MapRegions`
+owns W01 labeling and `GenerationPaths` supplies U03's bounded uniform-cost
+connectivity domain. `Session/WorldGeneration` integrates the actual F05 world
+entry child. See [generation inputs, retained state and evidence](map-generation.md).
+
 `OpenCiv2.MapRendering` is an optional repository-local library over Base,
 Contracts, Formats and SkiaSharp. It has no Avalonia or Session dependency;
 Formats still brings Core transitively for its existing content/codec ownership.

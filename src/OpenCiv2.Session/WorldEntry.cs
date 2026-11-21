@@ -17,17 +17,21 @@ public sealed record WorldEntryServices(
     WorldParameterServices Parameters,
     IPlayerSetupInteraction Players,
     Action StopMenuSound,
-    Action<bool> GenerateWorld,
+    Action<bool>? GenerateWorld,
     NewGameServices Initialize,
     Action<int> Accelerate,
-    Action<CivilizationSlot, string> Introduce)
+    Action<CivilizationSlot, string> Introduce,
+    WorldGenerationOptions? Generation = null)
 {
     internal void Validate(NewWorldChoice choice)
     {
         ArgumentNullException.ThrowIfNull(ResetSource);
         ArgumentNullException.ThrowIfNull(LoadContent);
         ArgumentNullException.ThrowIfNull(StopMenuSound);
-        ArgumentNullException.ThrowIfNull(GenerateWorld);
+        if (GenerateWorld is null && Generation is null)
+        {
+            throw new ArgumentException("World entry requires generation options or a supplied generation child");
+        }
         ArgumentNullException.ThrowIfNull(Accelerate);
         ArgumentNullException.ThrowIfNull(Introduce);
         if (choice == NewWorldChoice.Premade)
@@ -86,8 +90,8 @@ public static class WorldEntry
     }
 
     /// <summary>F05 §2. Validate selected services, cross the fresh-game boundary, then compose setup.
-    /// Required W02/V01/balancing/acceleration/presentation children remain explicit; no session is admitted
-    /// here.</summary>
+    /// Generation uses W02 with explicit options or a supplied child. V01/balancing/acceleration/presentation
+    /// remain explicit children; no session is admitted here.</summary>
     public static bool Enter(
         SessionRuntime runtime,
         ref StartingPositions starts,
@@ -171,7 +175,16 @@ public static class WorldEntry
             Publish();
             services.StopMenuSound();
             Publish();
-            services.GenerateWorld(source != WorldSource.Generated);
+            if (services.GenerateWorld is { } generate)
+            {
+                generate(source != WorldSource.Generated);
+            }
+            else
+            {
+                var compatibility = (services.Premade?.Source as ClassicPremadeWorldSource)?.MapBytes;
+                WorldGeneration.Generate(runtime, ref starts, random, call + "/generation", services.Generation!,
+                    source != WorldSource.Generated, compatibility);
+            }
             NewGameInitialization.Initialize(runtime, random, call + "/initialize", services.Initialize);
             if (players.Acceleration != 0)
             {

@@ -33,6 +33,7 @@
           $(Oc2RepositoryRoot)docs/algorithms/N03-multiplayer-turn-sequencing.md;
           $(Oc2RepositoryRoot)docs/algorithms/N05-transport-and-wire-protocol.md;
           $(Oc2RepositoryRoot)docs/algorithms/U01-unit-lifecycle-and-stacks.md;
+          $(Oc2RepositoryRoot)docs/algorithms/U03-pathfinding-and-goto.md;
           $(Oc2RepositoryRoot)docs/algorithms/P01-map-projection-and-interaction.md;
           $(Oc2RepositoryRoot)docs/algorithms/P02-map-rendering-and-minimap.md;
           $(Oc2RepositoryRoot)docs/algorithms/P03-graphics-and-asset-processing.md;
@@ -43,6 +44,7 @@
           $(Oc2RepositoryRoot)docs/testing/map-rendering.md;$(Oc2RepositoryRoot)docs/performance/map-rendering.md;
           $(Oc2RepositoryRoot)docs/content/asset-format.md;$(Oc2RepositoryRoot)docs/content/assets.json;$(Oc2RepositoryRoot)docs/content/fonts.json;
           $(Oc2RepositoryRoot)docs/algorithms/W01-map-geometry-and-spatial-state.md;
+          $(Oc2RepositoryRoot)docs/algorithms/W02-map-generation.md;
           $(Oc2RepositoryRoot)docs/algorithms/X01-classic-compatibility-contract.md;$(Oc2RepositoryRoot)docs/architecture.md;$(Oc2RepositoryRoot)docs/m1-session-foundations.md;$(Oc2RepositoryRoot)docs/m1-command-contract.md;
           $(Oc2RepositoryRoot)docs/algorithms/X02-whole-game-conformance.md;$(Oc2RepositoryRoot)docs/m1-checkpoint.md;$(Oc2RepositoryRoot)docs/m1-closeout.md;$(Oc2RepositoryRoot)docs/application.md;
           $(Oc2RepositoryRoot)docs/m1-content-conversion.md;$(Oc2RepositoryRoot)docs/content/data-format.md;$(Oc2RepositoryRoot)docs/content/gameplay-format.md;

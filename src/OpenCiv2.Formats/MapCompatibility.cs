@@ -44,6 +44,25 @@ public sealed class MapCompatibility
     public bool BelongsTo(MapStorage map) => storage.TryGetTarget(out var original) &&
         ReferenceEquals(original, map.StorageIdentity);
 
+    /// <summary>W02 retained terrain equality and whole-terrain replacement, bound to this allocation.</summary>
+    public IGenerationTerrainMarkers GenerationMarkers(MapStorage map)
+    {
+        if (!BelongsTo(map))
+        {
+            throw new ArgumentException("Opaque tiles belong to a different map allocation", nameof(map));
+        }
+        return new GenerationMarkerAdapter(this, map);
+    }
+
+    private sealed class GenerationMarkerAdapter(MapCompatibility owner, MapStorage map) : IGenerationTerrainMarkers
+    {
+        public bool HasMarkers(int index) => (owner.Imported(map, index).TerrainFlags & 0x30) != 0;
+
+        public void Clear(int index) => owner.Imported(map, index).TerrainFlags = 0;
+
+        public void CopyFirstTileToFallback() => owner.Imported(map, null) = owner.Export(map, 0);
+    }
+
     public StoredTile Export(MapStorage map, int index) => StateConversion.PreserveOpaque(
         StateConversion.ToStored(map.Tiles[index]), Imported(map, index));
 
