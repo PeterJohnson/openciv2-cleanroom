@@ -187,7 +187,8 @@ public sealed partial class SeamView : UserControl
         if (SeamApp.Storage is { } storage)
         {
             files = new(new DocumentLibrary(storage, SeamApp.FileTransfer ?? new AvaloniaFileTransfer(() => TopLevel.GetTopLevel(this))),
-                () => SeamApp.DisplayPreferences!.SaveAsync(map.Display), storage, SeamApp.Media);
+                () => SeamApp.DisplayPreferences!.SaveAsync(map.Display), storage, SeamApp.Media,
+                game is null ? null : OpenClassicGame);
             files.Closed += () => { Refresh(force: true); map.Focus(); };
             overlays.Children.Add(files);
         }
@@ -533,7 +534,8 @@ public sealed partial class SeamView : UserControl
 
         run.IsEnabled = view.Identity is not null && !Busy;
         status.Text = parseError.Length > 0 ? parseError : view.Command is { } command
-            ? $"{command.Status}{(command.Code.Length == 0 ? "" : " · " + command.Code)} · {command.Committed.Count} committed"
+            ? game is not null ? CommandText.Result(command)
+                : $"{command.Status}{(command.Code.Length == 0 ? "" : " · " + command.Code)} · {command.Committed.Count} committed"
             : game is null ? "Stack order is available for your units." : "Type help for commands.";
         DescribeSelection();
     }

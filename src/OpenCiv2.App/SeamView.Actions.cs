@@ -110,6 +110,8 @@ public sealed partial class SeamView
         ["playbackResult"] = files.PlaybackResult,
         ["entries"] = new JsonArray(files.Model.Entries.Select(entry => (JsonNode)new JsonObject
         { ["key"] = entry.Key, ["name"] = entry.Name, ["size"] = entry.Size }).ToArray()),
+        ["rows"] = new JsonArray(files.Model.Entries.Select((_, index) =>
+            (JsonNode)bounds(files.Files.ContainerFromIndex(index))).ToArray()),
         ["controls"] = new JsonObject(files.Buttons.Select(entry => new KeyValuePair<string, JsonNode?>(entry.Key, bounds(entry.Value))))
     };
 

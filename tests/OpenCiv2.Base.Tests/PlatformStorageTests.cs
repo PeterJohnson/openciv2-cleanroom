@@ -161,6 +161,40 @@ public sealed class PlatformStorageTests : IDisposable
         await store.Started.Task; store.Commit.SetException(new IOException("authored quota error")); await pending;
         Assert.Empty(library.Entries); Assert.Contains("quota error", library.Message); Assert.False(library.Busy);
     }
+    [Fact]
+    public async Task Opening_a_selected_copy_reports_admission_and_handles_a_removed_file()
+    {
+        var store = new NativeByteStore(root);
+        using var library = new DocumentLibrary(store, new DeferredTransfer());
+        const string key = "file-saved";
+        var saved = new StoredDocument("alder-valley.sav", [1, 2, 3]);
+        await store.WriteAsync(key, saved.Encode());
+        await library.RefreshAsync();
+
+        Assert.False(await library.OpenAsync(key, document =>
+        {
+            Assert.True(library.Busy);
+            Assert.Equal(saved.Name, document.Name);
+            Assert.Equal(saved.Bytes.ToArray(), document.Bytes.ToArray());
+            return (false, "Unsupported game.");
+        }));
+        Assert.Equal("Unsupported game.", library.Message);
+        Assert.False(library.Busy);
+        Assert.True(await library.OpenAsync(key, _ => (true, "Loaded.")));
+        Assert.Equal("Loaded.", library.Message);
+
+        await store.RemoveAsync(key);
+        bool invoked = false;
+        Assert.False(await library.OpenAsync(key, _ =>
+        {
+            invoked = true;
+            return (true, "Loaded.");
+        }));
+        Assert.False(invoked);
+        Assert.Contains("The stored file no longer exists", library.Message);
+        Assert.False(library.Busy);
+    }
+
     private sealed class DeferredTransfer : IFileTransfer
     {
         internal TaskCompletionSource<StoredDocument?> Selection { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);

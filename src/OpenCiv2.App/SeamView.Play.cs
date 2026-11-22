@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Automation;
@@ -7,6 +8,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.IO;
 using OpenCiv2.Session;
 using OpenCiv2.ViewModels;
@@ -176,26 +178,7 @@ public sealed partial class SeamView
                     return;
                 }
 
-                switch (game.LoadClassic(StoredDocument.Decode(document).Bytes.ToArray()))
-                {
-                    case LocalLoadResult.Loaded:
-                        model.Bind(game.Player);
-                        Refresh(force: true);
-                        parseError = "Classic save loaded.";
-                        break;
-                    case LocalLoadResult.Busy:
-                        parseError = "Finish the pending command before loading.";
-                        break;
-                    case LocalLoadResult.InvalidFile:
-                        parseError = "The classic save could not be read.";
-                        break;
-                    case LocalLoadResult.UnsupportedVersion:
-                        parseError = "This classic save version is unavailable.";
-                        break;
-                    case LocalLoadResult.UnsupportedGame:
-                        parseError = "This mode opens Alder Valley saves.";
-                        break;
-                }
+                parseError = OpenClassicGame(StoredDocument.Decode(document)).Message;
             }
             else
             {
@@ -205,7 +188,8 @@ public sealed partial class SeamView
                 model.Refresh();
             }
         }
-        catch (Exception error) when (error is IOException or ArgumentException or InvalidOperationException)
+        catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException
+            or ArgumentException or InvalidOperationException)
         {
             parseError = error.Message;
         }
@@ -213,6 +197,26 @@ public sealed partial class SeamView
         {
             transferring = false;
             Refresh(force: true);
+        }
+    }
+
+    private (bool Opened, string Message) OpenClassicGame(StoredDocument document)
+    {
+        switch (game!.LoadClassic(document.Bytes.ToArray()))
+        {
+            case LocalLoadResult.Loaded:
+                model.Bind(game.Player);
+                Refresh(force: true);
+                parseError = "Classic save loaded.";
+                return (true, parseError);
+            case LocalLoadResult.Busy:
+                return (false, "Finish the pending command before loading.");
+            case LocalLoadResult.InvalidFile:
+                return (false, "The classic save could not be read.");
+            case LocalLoadResult.UnsupportedVersion:
+                return (false, "This classic save version is unavailable.");
+            default:
+                return (false, "This mode opens Alder Valley saves.");
         }
     }
 
@@ -399,6 +403,7 @@ public sealed partial class SeamView
         {
             case "help":
                 parseError = "Enter units, cities, map or research to inspect the game. Use save or reload for the classic slot.\n"
+                    + "Enter tile x y to inspect one known tile.\n"
                     + "Tab completes a command or owned target.\n"
                     + "Alder Valley supports one city. Combat, AI, huts, terrain work, trade routes and multiplayer are unavailable.\n"
                     + string.Join("\n", view.Commands.Select(CommandText.Help));
@@ -421,11 +426,41 @@ public sealed partial class SeamView
             case "research":
                 parseError = string.Join("\n", view.Play?.Research.Select(a => $"{a.Id} · {a.Name}") ?? []);
                 break;
+            case "tile":
+            case var _ when line.StartsWith("tile ", StringComparison.Ordinal):
+                parseError = KnownTile(line);
+                break;
             default:
                 return false;
         }
 
         return true;
+    }
+
+    private string KnownTile(string line)
+    {
+        string[] words = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length != 3 || !int.TryParse(words[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int x)
+            || !int.TryParse(words[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out int y))
+        {
+            return "Use tile x y.";
+        }
+
+        var point = new MapPoint(x, y);
+        if (map.Scene is not { } scene || !scene.Contains(point))
+        {
+            return "Tile is outside the map.";
+        }
+
+        var tile = scene.Tile(point);
+        if (tile.Terrain is not { } terrain)
+        {
+            return "Tile is unexplored.";
+        }
+
+        var improvements = tile.Improvements & ~(MapFeatures.Unit | MapFeatures.CitySite);
+        return $"({x},{y}) · {(Terrain)terrain}{(tile.River ? " · River" : "")}" +
+            (improvements == MapFeatures.None ? "" : $" · {improvements}");
     }
 
     private JsonObject? PlaySnapshot(SessionView view, Func<Control?, JsonObject> bounds)

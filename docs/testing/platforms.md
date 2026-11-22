@@ -87,8 +87,9 @@ Prompt. Do not reuse the Linux audio binary on another OS or architecture.
    fullscreen checks do not establish mixed-monitor behavior.
 4. Exercise import/export cancellation, byte-exact files, restart persistence,
    removal and preferences. Check denied permissions, disk/quota failures and
-   browser storage eviction with visible outcomes. Imported files do not yet
-   load a playable session; that integration belongs to M3.
+   browser storage eviction with visible outcomes. The Linux Alder Valley
+   scenario also exercises loading and continuing an imported save.
+   [Validation record](../validation/m3-linux-playable.md)
 5. Import a known WAV supported by the [media profile](../content/media-profile.md).
    Play it on real speakers/headphones, stop with the button and Escape, repeat,
    close during playback and interrupt/remove the audio device. Check channel

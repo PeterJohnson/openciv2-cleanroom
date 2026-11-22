@@ -117,6 +117,19 @@ public static partial class FoundationSuite
         Equal<UnitTarget?>(rider, player.ObserveMap()!.Annotations!.ActiveUnit);
         Equal(2, player.ObserveLocalPlay()!.Units.Single(u => u.Target == rider).MovesLeft);
 
+        if (console)
+        {
+            var baseline = LocalPlayerSnapshot.Capture(player);
+            for (int i = 0; i < 16; i++)
+            {
+                var observed = LocalPlayerSnapshot.Capture(player);
+                Equal(baseline, observed);
+                Equal(null, observed.Map.Tiles[0].Terrain);
+                Equal(MapFeatures.None, observed.Map.Tiles[0].Improvements);
+                Equal(2, CommandText.Complete("unit.move unit=", player.Commands(), observed.Units, observed.Cities).Count);
+            }
+        }
+
         var id = SubmitLocal(game, console, stepSouth, LocalPlayCommands.Move, unit, south);
         Equal(true, game.AdvanceOne());
         var result = player.Result(id)!;
@@ -165,6 +178,7 @@ public static partial class FoundationSuite
         RunLocal(game, console, $"city.found unit={st} name=\"Alder Crossing\"", LocalPlayCommands.Found, settlerValue,
             new("name", new CommandValue.Text("Alder Crossing")));
         Equal("unit_not_available", player.Submit(new(LocalPlayCommands.Select, new([settlerValue]))).Code);
+        Equal(0, CommandText.Complete($"unit.select unit={st}", player.Commands(), player.OwnUnits(), player.OwnCities()).Count);
         var city = player.OwnCities().Records.Single();
         var target = new CityTarget(city.Slot, city.Token);
         var cityValue = new NamedValue("city", new CommandValue.City(target));

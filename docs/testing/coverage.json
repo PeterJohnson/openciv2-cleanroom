@@ -1809,8 +1809,8 @@
     {
       "id": "m3-linux-local-play",
       "contract": "First G03, G05, G08, G19 and G20 joins through F04/F06, W03, U01/U02/U04, C01\u2013C06, V03 and P05/P06.",
-      "publicSurface": "LocalGame, LocalPlayCommands, observer-scoped LocalPlayerSnapshot, desktop Alder Valley, loaded CLI and optional SQLite player export.",
-      "review": "One authored rules profile, local human seat, ordinary land movement, one city, console and GUI actions, cancellable end-turn confirmation, required research, classic replacement and continued play. Full M3 cross-platform acceptance is pending.",
+      "publicSurface": "LocalGame, LocalPlayCommands, observer-scoped LocalPlayerSnapshot, desktop Alder Valley console and file library, loaded CLI and optional SQLite player export.",
+      "review": "One authored rules profile, local human seat, ordinary land movement, one city, console and GUI actions, cancellable end-turn confirmation, required research, classic slot and imported-file replacement, and continued play. Full M3 cross-platform acceptance is pending.",
       "sharedGroups": [
         "M3.land-step-zones",
         "M3.local-play-exhausted-step",
@@ -1819,8 +1819,10 @@
       ],
       "status": "partial",
       "sources": [
+        "src/OpenCiv2.App/FileLibraryView.cs",
         "src/OpenCiv2.App/SeamView.Play.cs",
         "src/OpenCiv2.Cli/LoadedView.cs",
+        "src/OpenCiv2.Console/CommandText.cs",
         "src/OpenCiv2.Contracts/LocalPlayObservation.cs",
         "src/OpenCiv2.Contracts/LocalPlayerSnapshot.cs",
         "src/OpenCiv2.Core/City/LocalCityEconomy.cs",
@@ -1828,6 +1830,7 @@
         "src/OpenCiv2.Core/Units/LandMovement.cs",
         "src/OpenCiv2.Core/Units/LocalVisibility.cs",
         "src/OpenCiv2.Export.Sqlite/LocalPlayerExport.cs",
+        "src/OpenCiv2.IO/Documents.cs",
         "src/OpenCiv2.Session/LocalGame.cs",
         "src/OpenCiv2.Session/LocalGameRules.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.City.cs",
@@ -1836,6 +1839,7 @@
         "src/OpenCiv2.Session/LocalPlayProjection.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.Base.Tests/PlatformStorageTests.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.Sqlite.Tests/ExportTests.cs",
         "tools/dotnet/run_local_play_native.py"

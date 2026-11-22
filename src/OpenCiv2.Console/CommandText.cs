@@ -115,6 +115,31 @@ public static class CommandText
         descriptor.Name + " " + string.Join(" ", descriptor.Arguments.Select(a =>
         $"{a.Name}=<{a.Kind.ToString().ToLowerInvariant()}>{(a.Required ? "" : "?")}")) + " — " + descriptor.Help;
 
+    /// <summary>Formats a controller-scoped result and its ordered committed effects.</summary>
+    public static string Result(CommandUpdate update)
+    {
+        var fields = new List<string> { update.Status.ToString() };
+        if (update.Code.Length != 0)
+        {
+            fields.Add(update.Code);
+        }
+
+        fields.AddRange(update.Result.Select(value => $"{value.Name}={FormatValue(value.Value)}"));
+        fields.AddRange(update.Committed.Select(effect => $"#{effect.Index} {effect.Name}"));
+        return string.Join(" · ", fields);
+    }
+
+    private static string FormatValue(CommandValue value) => value switch
+    {
+        CommandValue.Integer integer => integer.Value.ToString(CultureInfo.InvariantCulture),
+        CommandValue.Boolean boolean => boolean.Value ? "true" : "false",
+        CommandValue.Text text => text.Value,
+        CommandValue.Civilization civilization => civilization.Value.Value.ToString(CultureInfo.InvariantCulture),
+        CommandValue.Unit unit => FormattableString.Invariant($"{unit.Value.Slot.Value}:{unit.Value.Token.Value}"),
+        CommandValue.City city => FormattableString.Invariant($"{city.Value.Slot.Value}:{city.Value.Token.Value}"),
+        _ => throw new ArgumentOutOfRangeException(nameof(value))
+    };
+
     /// <summary>
     /// Splits bounded input on unquoted whitespace and handles only escaped quote/backslash inside quoted text.
     /// </summary>

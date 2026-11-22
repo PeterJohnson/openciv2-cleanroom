@@ -409,12 +409,16 @@ its outstanding work to the named follow-ups without claiming it has passed.
 
 Owners: F04/F05 subset, W01/W03/W04, U01–U04, C01–C06, V02/V03, P01–P06.
 
-### Current handoff: Linux playable slice
+### Linux desktop playable slice
 
 [Alder Valley](validation/m3-linux-playable.md) ships a transport-free Linux
 playable profile over the shared session and command registry. It covers
 manual land movement and exploration, founding and working one city, unit
 production, ordinary research, turn progression and classic save/resume.
+The desktop can also import and open a classic Alder Valley save from the file
+library. Both reload paths stage and validate the candidate before replacing
+the live session. The authored Linux desktop slice passed its headless and
+native graphical acceptance runs.
 The CPU renderer remains the default and M2-F01–F08 stay tracked in the
 [M2 closeout](m2-closeout.md).
 
@@ -718,9 +722,9 @@ and does not replace, X02's operation-level coverage ledger.
    its authored world, one city and fixed human seat. Add generated starts,
    unsupported gameplay joins and the remaining cross-platform M3 checks in
    their owning subsystems.
-2. Extend the classic file workflow beyond the Alder Valley save slot. Preserve
-   F06 failure effects, cancellation and explicit persistence completion as
-   native and browser file-library integration grows.
+2. Extend the classic file workflow beyond the Alder Valley rules profile.
+   Preserve F06 failure effects, cancellation and explicit persistence completion
+   as desktop and browser file-library integration grows.
 3. Preserve every MV01–MV30 row in the [map acceptance matrix](testing/map-rendering.md)
    as live providers replace authored fixtures. Run applicable Linux regressions
    and exact retained/fresh comparisons with source/content-bound evidence;

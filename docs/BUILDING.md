@@ -583,7 +583,8 @@ require the existing CPU raster bounds; see the
 ### Application storage and service checks
 
 **File → Files and preferences** stores imported bytes, exports unchanged copies
-and saves local display preferences. It does not yet load a playable session.
+and saves local display preferences. With `--game alder-valley`, **Open selected
+game** also resumes an admitted classic save from the library.
 Native application storage defaults to the OS application-data folder under
 `OpenCiv2/storage`; use `--storage-directory PATH` for an isolated profile.
 Browser data is origin-scoped IndexedDB; renderer query overrides do not rewrite

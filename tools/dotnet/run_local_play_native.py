@@ -78,8 +78,14 @@ def drive(args, app, observation, storage):
         driver.click(window, scaled)
 
     def click(name):
-        state = wait(lambda s: (box := s['play']['controls'].get(name)) is not None
-                     and box['enabled'] and box['width'] > 0 and box['height'] > 0)
+        def ready(state):
+            box = state['play']['controls'].get(name)
+            return box is not None and box['enabled'] and box['width'] > 0 and box['height'] > 0
+
+        state = wait(ready)
+        # A command can expose a previously measured control before Avalonia arranges it.
+        ticks = state['serviceTicks']
+        state = wait(lambda s: s['serviceTicks'] >= ticks + 2 and ready(s))
         click_box(state['play']['controls'][name], state)
 
     def command(action, expected='Completed'):
@@ -87,18 +93,26 @@ def drive(args, app, observation, storage):
         action()
         return wait(lambda s: s['status'] == expected and s['play']['command'] != before)
 
-    def type_line(text, dialog=False):
+    def type_text(text):
+        for char in text:
+            if char == ':':
+                driver.chord('Shift_L', 'semicolon')
+            elif char == '_':
+                driver.chord('Shift_L', 'minus')
+            else:
+                driver.key({' ': 'space', '.': 'period', '=': 'equal', '-': 'minus', '/': 'slash'}.get(char, char))
+
+    def enter_line(text, dialog=False):
         def text_box(state):
             return state['dialog']['console'] if dialog else state['controls']['input']
 
         state = wait(lambda s: s['dialog']['visible'] == dialog and text_box(s)['width'] > 0)
         click_box(text_box(state), state)
         driver.chord('Control_L', 'a')
-        for char in text:
-            if char == ':':
-                driver.chord('Shift_L', 'semicolon')
-            else:
-                driver.key({' ': 'space', '.': 'period', '=': 'equal', '-': 'minus'}.get(char, char))
+        type_text(text)
+
+    def type_line(text, dialog=False):
+        enter_line(text, dialog)
         driver.key('Return')
 
     def select(slot):
@@ -124,6 +138,7 @@ def drive(args, app, observation, storage):
         click('end')
         confirmation = wait(lambda s: s['status'] == 'AwaitingInteraction')
         assert not confirmation['play']['controls']['save']['enabled']
+        assert not confirmation['menu']['actions']['file.library']['enabled']
         if console_reply:
             type_line('reply 1', dialog=True)
         else:
@@ -151,6 +166,30 @@ def drive(args, app, observation, storage):
     window = driver.window_for(app.pid, visible=True)
     assert window
     driver.wait_placement(window)
+    type_line('help')
+    wait(lambda s: 'Enter tile x y' in s['message'] and 'unit.move' in s['message'])
+    enter_line('tile 0 0')
+    driver.key('Left')
+    driver.chord('Control_L', 's')
+    driver.key('Return')
+    hidden = wait(lambda s: s['message'] == 'Tile is unexplored.')
+    assert hidden['play']['command'] == initial['play']['command']
+    assert all(hidden['map'][key] == initial['map'][key] for key in ('x', 'y'))
+    assert not (storage / 'file-alder-valley.oc2data').exists()
+    type_line('tile 8 8')
+    wait(lambda s: s['message'].startswith('(8,8) · '))
+    driver.key('Up')
+    driver.key('Up')
+    driver.key('Return')
+    wait(lambda s: s['message'] == 'Tile is unexplored.')
+    pioneer = initial['play']['units'][0]
+    enter_line(f"unit.select unit={pioneer['slot']}:")
+    driver.key('Tab')
+    completed = command(lambda: driver.key('Return'))
+    assert f"unit={pioneer['slot']}:{pioneer['token']}" in completed['message']
+    assert 'unit.selected' in completed['message']
+    checks.append('console help, focus, history, live completion, scoped tile queries and structured results')
+
     select(1)
     moved = command(lambda: click('move.1'))['play']
     rider = next(u for u in moved['units'] if u['slot'] == 1)
@@ -211,7 +250,8 @@ def drive(args, app, observation, storage):
 
     loaded = inspect(classic)
     assert semantic(loaded) == semantic(saved)
-    checks.append('classic file and isolated loaded CLI agree with native state')
+    assert loaded == inspect(classic)
+    checks.append('repeatable isolated loaded CLI agrees with native state')
 
     if args.sqlite_cli:
         database = observation.with_name('loaded.sqlite')
@@ -245,6 +285,59 @@ def drive(args, app, observation, storage):
     assert semantic(inspect(reference_save)) == semantic(saved)
     assert semantic(inspect(reference_end)) == semantic(resumed)
     checks.append('direct client and native UI agree before reload and after continuation')
+
+    def menu_click(state, bounds):
+        assert bounds['enabled']
+        scale = state['scaling']
+        driver.move(window, (bounds['x'] + bounds['width'] / 2) * scale,
+                    (bounds['y'] + bounds['height'] / 2) * scale)
+        driver.button(1, 1)
+        driver.button(1, 0)
+
+    def stored_control(name):
+        state = wait(lambda s: s['files']['visible'] and not s['files']['busy']
+                     and s['files']['controls'][name]['enabled'])
+        click_box(state['files']['controls'][name], state)
+
+    def import_save(path):
+        stored_control('import')
+        wait(lambda s: s['files']['canCancel'])
+        deadline = time.monotonic() + 10
+        while not (picker := driver.window_for(app.pid, excluding=window, visible=True)):
+            if time.monotonic() >= deadline:
+                raise AssertionError('Native file picker did not open')
+            time.sleep(.05)
+        driver.wait_placement(picker)
+        driver.x.XRaiseWindow(driver.display, picker)
+        driver.x.XSetInputFocus(driver.display, picker, 1, 0)
+        driver.chord('Control_L', 'l')
+        driver.chord('Control_L', 'a')
+        type_text(str(path))
+        driver.key('Return')
+        state = wait(lambda s: not s['files']['busy'] and s['files']['message'] == f'Stored {path.name}.')
+        index = next(i for i, entry in enumerate(state['files']['entries']) if entry['name'] == path.name)
+        state = wait(lambda s: s['files']['rows'][index]['width'] > 0)
+        click_box(state['files']['rows'][index], state)
+
+    state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+    menu_click(state, state['menu']['groups']['File']['bounds'])
+    state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+    menu_click(state, state['menu']['actions']['file.library']['bounds'])
+    invalid = observation.with_name('invalid.sav')
+    invalid.write_bytes(classic.read_bytes()[:20])
+    import_save(invalid)
+    stored_control('open')
+    rejected = wait(lambda s: s['files']['message'] == 'The classic save could not be read.')
+    assert rejected['files']['visible'] and rejected['play']['runtime'] == resumed['runtime']
+    assert semantic(rejected['play']) == semantic(resumed)
+    import_save(classic)
+    stored_control('open')
+    imported = wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')['play']
+    assert imported['runtime'] != resumed['runtime']
+    assert semantic(imported) == semantic(saved)
+    assert semantic(end_turn(8)) == semantic(resumed)
+    checks.append('native file picker import, invalid load preserves live session, valid load resumes identically')
+
     driver.close_window(window)
     assert app.wait(timeout=10) == 0
     checks.append('normal desktop shutdown')

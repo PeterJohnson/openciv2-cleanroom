@@ -105,7 +105,7 @@ public sealed class DocumentLibrary(IByteStore store, IFileTransfer transfer) : 
     public void Dispose() { disposed = true; CancelSelection(); Changed = null; }
     public bool Busy { get; private set; }
     public bool CanCancel => selection is not null;
-    public string Message { get; private set; } = "Imported files are stored here; opening a playable game is not available yet.";
+    public string Message { get; private set; } = "Choose a stored file or import one.";
     public OwnedList<DocumentEntry> Entries { get; private set; } = OwnedList<DocumentEntry>.Empty;
     public event Action? Changed;
 
@@ -142,9 +142,7 @@ public sealed class DocumentLibrary(IByteStore store, IFileTransfer transfer) : 
 
     public Task ExportAsync(string key) => Run(async () =>
     {
-        RequireEntry(key);
-        byte[] bytes = await store.ReadAsync(key) ?? throw new IOException("The stored file no longer exists");
-        var result = await transfer.ExportAsync(StoredDocument.Decode(bytes));
+        var result = await transfer.ExportAsync(await ReadDocument(key));
         Message = result switch
         {
             ExportResult.Written => "Export completed.",
@@ -152,6 +150,29 @@ public sealed class DocumentLibrary(IByteStore store, IFileTransfer transfer) : 
             _ => "Export cancelled."
         };
     });
+
+    /// <summary>Reads a selected copy and hands its bytes to the host while the library owns the busy gate.</summary>
+    public async Task<bool> OpenAsync(string key, Func<StoredDocument, (bool Opened, string Message)> open)
+    {
+        ArgumentNullException.ThrowIfNull(open);
+        bool opened = false;
+        await Run(async () =>
+        {
+            var document = await ReadDocument(key);
+            if (!disposed)
+            {
+                (opened, Message) = open(document);
+            }
+        });
+        return opened;
+    }
+
+    private async Task<StoredDocument> ReadDocument(string key)
+    {
+        RequireEntry(key);
+        byte[] bytes = await store.ReadAsync(key) ?? throw new IOException("The stored file no longer exists");
+        return StoredDocument.Decode(bytes);
+    }
 
     public Task RemoveAsync(string key) => Run(async () =>
     {

@@ -10,7 +10,9 @@ Start the desktop with `--game alder-valley`. The city dialog and console use
 the same commands as a direct client. The command list and console completion
 include only entitled commands and known owned target handles. The scoped
 update queue delivers committed effects in order, once per controller, with an
-effect index local to each command. The game uses the existing map projection,
+effect index local to each command. The console displays result fields and
+ordered effects. `tile x y` reports explored terrain and remembered improvements
+from the same scoped map as the renderer. The game uses the existing map projection,
 minimap, CPU renderer by default and correlated interaction dialog.
 
 ## Implemented joins
@@ -36,7 +38,9 @@ Classic files and local replay checkpoints are separate contracts.
 The native save slot resides in the application file library. The F06
 operation writes bytes before the native store wraps them for durable
 publication. The file library exports the enclosed bytes as a normal
-`.SAV`. A rejected load leaves the live session and its bindings intact. The
+`.SAV`. To resume a different copy, choose **File → Files and preferences**,
+import the file, and use **Open selected game**. A rejected file leaves the
+library open and keeps the live session and its bindings intact. The
 profile admits entertainers. The loader rejects saves containing a scientist
 or tax collector in any specialist slot before city recalculation. The CLI
 declares the entry mode, rules and RNG seeds. Classic reload initializes
@@ -51,8 +55,13 @@ Build the root, App and optional SQLite solutions in Release as described in
 the [build guide](../BUILDING.md). The headless suite runs the same scenario
 through direct and descriptor-parsed console requests, compares the classic
 bytes and checks cancellation, stale identities, scope and continuation. The
-native driver compares both sides of reload against the direct-client probe
-and against an isolated CLI load. The optional exporter emits only its scoped
+console path repeats snapshot and completion queries immediately before the
+seeded partial step and compares the outcome to the direct path. The native
+driver checks focus, history, live completion and fog privacy, then compares
+both sides of reload against the direct-client probe and an isolated CLI load.
+It imports a truncated save and a valid save through the native picker,
+checks rejection and session replacement, and continues the restored game.
+The optional exporter emits only its scoped
 rows with observer, runtime, session and revision metadata.
 
 ```sh
@@ -60,6 +69,8 @@ dotnet tests/OpenCiv2.Base.Tests/bin/Release/net11.0/OpenCiv2.Base.Tests.dll
 dotnet tests/OpenCiv2.Sqlite.Tests/bin/Release/net11.0/OpenCiv2.Sqlite.Tests.dll
 
 python3 tools/dotnet/run_xvfb.py --screen 1440x1000x24 \
+  env -u WAYLAND_DISPLAY -u WAYLAND_SOCKET -u DBUS_SESSION_BUS_ADDRESS \
+  GDK_BACKEND=x11 GTK_IM_MODULE=gtk-im-context-simple \
   python3 tools/dotnet/run_local_play_native.py \
   --report build/test-results/m3-linux-play.json \
   --desktop src/OpenCiv2.Desktop/bin/Release/net11.0/OpenCiv2.Desktop.dll \
@@ -68,6 +79,7 @@ python3 tools/dotnet/run_xvfb.py --screen 1440x1000x24 \
   --sqlite-cli src/OpenCiv2.Cli.Sqlite/bin/Release/net11.0/oc2-sqlite.dll
 ```
 
+The native picker exercise uses the GTK 3 runtime on the isolated X11 display.
 Pass the pinned extraction roots with `--assets ROOT --fonts ROOT` to exercise
 stock map art and fonts in the same driver.
 
@@ -113,11 +125,35 @@ with the loaded CLI and SQLite checks, and all 32 Riverbend input checks
 passed. The follow-up receipts in `build/test-results` use the
 `m3-correctness-` prefix.
 
+## Linux desktop acceptance on 2026-11-22
+
+Release builds and formatting verification passed for the root, App and SQLite
+solutions. Linux headless tests passed 507 cases with the same two skips.
+SQLite passed five tests, native X02 passed 57 selected cases and Riverbend
+passed all 32 native input checks.
+
+The Alder Valley run passed all 11 native checks on the isolated Xvfb display
+using CPU composition, stock map art and DejaVu fonts. It saved on turn 7,
+reloaded through the quick slot and through the file library, and reached the
+same turn 8 state for both paths. The city reached size 2 with three units and
+49 explored tiles. A truncated save imported through GTK left the live runtime
+and player state intact. The loaded CLI produced identical results on repeated
+reads and the optional SQLite export omitted unseen tiles.
+
+| Receipt in `build/test-results` | SHA-256 |
+| --- | --- |
+| `m3-linux-desktop-play.json` | `a6d58e963eb0b128279ab592a75401706bc723fbe5fd479f34777eaa318352e4` |
+| `m3-linux-desktop-riverbend.json` | `b60300b9248b423be3e039b14c7f350ba2670489d33182f0a98b7bfddaa33e4f` |
+| `m3-linux-desktop-headless.xml` | `35d750502fad61301ef2fc5f7d6b20f49fda230a0285d8889d4a6f976c703645` |
+| `m3-linux-desktop-sqlite.xml` | `6c218547df8d70bc1ca30a4c6421c3b081ed1df36a5330e09b5f37a25f6aa6eb` |
+| `m3-linux-desktop-x02.json` | `f348c54a6adf6fe3fa84f15d70e7ea8a7e55c038f792b3cc667c2563d011f76b` |
+
 ## Acceptance boundary
 
-Full M3 acceptance remains pending. Browser-specific work, WASM runs and further
-Windows/macOS qualification are deferred. The Linux result covers this authored
-game and observer scope. Original-file interoperability on the complete game
-domain, expanded F04/F05 gameplay, peer modes and the full G03/G05/G08/G19/G20
-matrix retain their milestone gates. The [M2 deferrals](../m2-closeout.md#explicit-follow-up-work)
-remain tracked and CPU remains the renderer default.
+The Linux desktop gate passed for the authored game and observer scope above.
+Full cross-platform M3 acceptance remains pending. Browser-specific work, WASM
+runs and further Windows/macOS qualification are deferred. Original-file
+interoperability on the complete game domain, expanded F04/F05 gameplay, peer
+modes and the full G03/G05/G08/G19/G20 matrix retain their milestone gates.
+CPU remains the renderer default and the M2 deferrals remain tracked.
+[M2 closeout](../m2-closeout.md#explicit-follow-up-work)

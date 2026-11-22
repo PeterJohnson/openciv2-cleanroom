@@ -19,6 +19,7 @@ internal sealed class FileLibraryView : Border
     internal Dictionary<string, Button> Buttons { get; } = [];
     private readonly TextBlock message = new() { TextWrapping = TextWrapping.Wrap };
     private readonly Func<Task> savePreferences;
+    private readonly Func<StoredDocument, (bool Opened, string Message)>? openGame;
     private bool savingPreferences;
     private readonly IByteStore storage;
     private readonly IPresentationMedia media;
@@ -27,20 +28,33 @@ internal sealed class FileLibraryView : Border
     internal string? PlaybackResult { get; private set; }
     internal event Action? Closed;
     internal string Message => message.Text ?? "";
-    internal FileLibraryView(DocumentLibrary model, Func<Task> savePreferences, IByteStore storage, IPresentationMedia media)
+    internal FileLibraryView(DocumentLibrary model, Func<Task> savePreferences, IByteStore storage,
+        IPresentationMedia media, Func<StoredDocument, (bool Opened, string Message)>? openGame = null)
     {
         Model = model;
         this.savePreferences = savePreferences;
+        this.openGame = openGame;
         this.storage = storage;
         this.media = media;
         IsVisible = false;
         Background = Brush.Parse("#99000000");
         var panel = new StackPanel { Spacing = 12, Margin = new Thickness(24) };
         panel.Children.Add(new TextBlock { Text = "Files and preferences", FontSize = 24, FontWeight = FontWeight.Bold });
-        panel.Children.Add(new TextBlock { Text = "Keep imported files here and export an unchanged copy. Opening a playable game is not available yet.", TextWrapping = TextWrapping.Wrap });
+        panel.Children.Add(new TextBlock
+        {
+            Text = openGame is null
+                ? "Keep imported files here and export an unchanged copy."
+                : "Open a stored Alder Valley save or export an unchanged copy.",
+            TextWrapping = TextWrapping.Wrap
+        });
         panel.Children.Add(Files);
         var actions = new WrapPanel();
         Add(actions, "import", "Import file…", () => Model.ImportAsync());
+        if (openGame is not null)
+        {
+            Add(actions, "open", "Open selected game", OpenGameAsync);
+        }
+
         Add(actions, "export", "Export selected…", () => Selected is { } entry ? Model.ExportAsync(entry.Key) : Task.CompletedTask);
         Add(actions, "remove", "Remove stored copy", () => Selected is { } entry ? Model.RemoveAsync(entry.Key) : Task.CompletedTask);
         panel.Children.Add(actions);
@@ -110,6 +124,15 @@ internal sealed class FileLibraryView : Border
 
         IsVisible = false;
         Closed?.Invoke();
+    }
+
+    private async Task OpenGameAsync()
+    {
+        if (openGame is not null && !Playing && !savingPreferences && Selected is { } entry
+            && await Model.OpenAsync(entry.Key, openGame))
+        {
+            Close();
+        }
     }
     internal void StopPlayback() => playback?.Cancel();
     internal void RestoreFocus()
@@ -191,6 +214,10 @@ internal sealed class FileLibraryView : Border
         Buttons["import"].IsEnabled = Buttons["preferences"].IsEnabled = Buttons["close"].IsEnabled = idle;
         Buttons["export"].IsEnabled = Buttons["remove"].IsEnabled = idle && Selected is not null;
         Buttons["play"].IsEnabled = idle && Selected is not null;
+        if (Buttons.TryGetValue("open", out var open))
+        {
+            open.IsEnabled = idle && Selected is not null;
+        }
         Buttons["stop"].IsEnabled = Playing;
         Buttons["cancel"].IsEnabled = Model.CanCancel;
         Buttons["cancel"].IsVisible = Model.CanCancel;
