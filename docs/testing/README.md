@@ -94,8 +94,13 @@ narrowing, emissary draws and resets, Barracks credit/failure order, Philosophy,
 raw-location wonder expiry, real Leonardo and recursive Great Library effects.
 Government prompt cases use the actual V02 direct setter. Direct/console desktop
 tests verify counter wrap and first-discoverer retention across completion,
-save/reload and another turn. General completion/free advances, full choice UI,
-catch-up and Darwin caller integration remain pending.
+save/reload and another turn. Research-flow groups cover selection resume and
+single recommendation sampling, advice ordering, informational goal paths,
+completion mode2, future labels, ability order, Philosophy/free-advance chaining,
+progress overflow, actual production/government children and terminal failures.
+The desktop regression suspends before forced building liquidation and verifies
+that accepting research resumes maintenance before `turn.advanced`. General
+presentation, catch-up, Darwin and generated-game caller integration remain open.
 
 ## Complete M2 map renderer
 

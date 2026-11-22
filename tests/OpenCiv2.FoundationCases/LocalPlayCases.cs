@@ -281,12 +281,25 @@ public static partial class FoundationSuite
                 new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
             var saved = ClassicFiles.DecodeStoredSave(game.SaveClassic());
             var civilizations = saved.Civilizations.ToArray();
-            civilizations[1] = civilizations[1] with { Researching = 0, ResearchProgress = 32000, NumAdvances = 255, ResearchCostAdvances = 7 };
+            civilizations[1] = civilizations[1] with { Researching = 0, ResearchProgress = 32000, NumAdvances = 255, ResearchCostAdvances = 7, Gold = int.MaxValue };
             var first = saved.Globals.FirstDiscoverer.ToArray(); first[0] = 4;
             var known = saved.Globals.AdvanceKnownBy.ToArray(); known[0] = 0;
             var input = saved with { Civilizations = new(civilizations), Globals = saved.Globals with { FirstDiscoverer = new(first), AdvanceKnownBy = new(known) } };
             Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
-            var result = EndLocalTurn(game, console, 2); Equal(true, result.Committed.Any(e => e.Name == "research.completed"));
+            var id = SubmitLocal(game, console, "turn.end", LocalPlayCommands.EndTurn);
+            Decide(game.Player, console, AwaitLocal(game, id), 1); Equal(true, game.AdvanceOne());
+            var pending = game.Player.Result(id)!;
+            Equal(CommandStatus.AwaitingInteraction, pending.Status);
+            Equal(true, pending.Committed.Any(e => e.Name == "research.completed"));
+            Equal(false, pending.Committed.Any(e => e.Name is "city.improvement_lost" or "turn.advanced"));
+            Equal(true, game.Player.ObserveLocalPlay()!.Gold < 0); // Tax precedes the choice; forced building sale follows it.
+            Equal(false, game.Player.Cancel(id).Accepted);
+            Decide(game.Player, console, pending, pending.Interaction!.Spec.Choices[0]); Equal(true, game.AdvanceOne());
+            var result = game.Player.Result(id)!; Equal(CommandStatus.Completed, result.Status);
+            var order = result.Committed.Select(e => e.Name).ToList();
+            Equal(true, order.IndexOf("research.selected") < order.IndexOf("city.improvement_lost"));
+            Equal(true, order.IndexOf("city.improvement_lost") < order.IndexOf("turn.advanced"));
+            game.Player.Updates();
             var after = ClassicFiles.DecodeStoredSave(game.SaveClassic());
             Equal((byte)0, after.Civilizations[1].NumAdvances); Equal((byte)7, after.Civilizations[1].ResearchCostAdvances);
             Equal((byte)5, after.Globals.FirstDiscoverer[0]); Equal((byte)2, after.Globals.AdvanceKnownBy[0]);
@@ -538,7 +551,7 @@ public static partial class FoundationSuite
         var update = player.Result(id)!;
         if (update.Interaction is { } research)
         {
-            Equal(true, update.Committed.Any(e => e.Name == "turn.advanced"));
+            Equal(false, update.Committed.Any(e => e.Name == "turn.advanced")); // Research suspends inside city upkeep.
             Equal(turn, player.ObserveLocalPlay()!.Turn);
             Equal(false, player.ObserveLocalPlay()!.PlayerPhase);
             Equal(false, player.Cancel(id).Accepted);

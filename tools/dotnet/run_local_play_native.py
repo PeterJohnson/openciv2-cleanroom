@@ -145,7 +145,7 @@ def drive(args, app, observation, storage):
             choice(1)
         state = wait(lambda s: s['play']['turn'] == turn and s['status'] in ('Completed', 'AwaitingInteraction'))
         if state['status'] == 'AwaitingInteraction':
-            assert not state['play']['phase'] and 'turn.advanced' in state['play']['effects']
+            assert not state['play']['phase'] and 'turn.advanced' not in state['play']['effects']
             assert not state['dialog']['regions']['cancel']['enabled']
             offered = sorted(int(key.split('.')[1]) for key in state['dialog']['regions'] if key.startswith('choice.'))
             choice(offered[0])

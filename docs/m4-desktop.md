@@ -1123,3 +1123,63 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-research-headless.xml` | `e673af3166a6d5d3c91478d02891e040d741dac12e36cc77ba8f3c67a933d80b` |
 | `m4-desktop-research-native.json` | `8f580fd83a4e57bcf55ac803d7506996c94263c41817e98b393a479640c20862` |
 | `m4-desktop-research-identity.json` | `5fcb95207eb3b51071bcdedff2c32cbcbf560511e250ab8a004778a21fdf7e63` |
+
+
+## Resumable research completion and free advances
+
+`ResearchSelection` implements V03's single retained recommendation, human/AI/
+forced/autoplay gates and accepted choice, including Help and goal rebuilds
+without another recommendation draw. It yields an owned request and resumes with
+an admitted reply. `ResearchGoals` provides advice with the five-item ordered
+limit, category lists/help and research/theft paths, preserving the first-candidate
+exemption and full exclude-current arithmetic. It changes no research goal or
+knowledge. These are semantic presentation interfaces; native dialog timing,
+layout and localized list formatting stay with presentation.
+
+`ResearchFlow` now implements completion and positive science accumulation using
+actual shared grants, C06 production reset, C03 cached mood queries and V02
+research prompts. It preserves mode2 progress, captured completion identity,
+post-grant Future Technology labels, ability notices, and the final research
+choice before government prompts. Philosophy can trigger a second completion in
+the same accumulation. The free flag is cleared before that completion, even
+below the ordinary threshold; an initially absent target only requests a choice.
+Signed progress overflow and nonpositive-point early exits remain unchanged.
+Failed operations cannot resume and replay their committed grant prefix.
+
+The desktop city pass now suspends inside this flow. Accepted research resumes
+before C08 maintenance and `turn.advanced`; the old partial accumulation and
+end-of-upkeep choice are removed. Deferred callbacks borrow only the current
+resume context. The production phase is retained while awaiting research and
+released on completion/disposal. Direct research commands admit the actual
+option list. A direct/console test combines counter wrap with a treasury overflow:
+the research request sees the negative treasury, and accepting it precedes the
+forced Palace sale and turn completion. Save/reload and another turn still run.
+
+The authored desktop profile continues to admit its three ordinary advances.
+Shared tests exercise the broader completion/choice/goal mechanics; the desktop
+adapter does not yet present general encyclopedia, goal, emissary, government or
+wonder dialogs. A02's full production policy, V01 catch-up, Darwin's acquisition
+caller, full F04 and generated-game acceptance remain open. This checkpoint does
+not close M4. Browser and cross-platform execution remain deferred; no Lua
+changes are included.
+
+Validation on Linux: root and App formatting/verification and Release builds
+passed, with zero build warnings/errors. The native suite passed **731 tests**
+with the two existing audio-output/Windows handle-sharing skips (733 total).
+All **699 shared groups** passed; identity verification covered **431 compiled
+inputs**. Graph, conformance, **81-family** coverage, eight identity-tool tests,
+three coverage-tool tests and gameplay-schema validation passed.
+
+All ten Xvfb CPU desktop checks passed with the new mid-upkeep request boundary,
+including GUI/console replies, saved turn7/resumed turn8, direct/CLI/native
+agreement, file-picker import, replacement and normal shutdown. This verifies
+the admitted desktop profile; it is not evidence of a complete generated game.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-flow-play.json` | `4d85bc154605d2305034c3a60c17dee423ef6f2544e97d4275166dabf1153750` |
+| `m4-desktop-flow-headless.xml` | `08be0d5181761eae61aa84b9995aa69c89bbf76c32c411e42947e00fa9f4fe05` |
+| `m4-desktop-flow-native.json` | `38fb8bcdb16c1c95d15a6ec3b75da97dd05510d74d2a7681ff554e475775daf9` |
+| `m4-desktop-flow-identity.json` | `111e5c5011269beacacafa9746be0188f8749ea542378457dbe60810991c7655` |

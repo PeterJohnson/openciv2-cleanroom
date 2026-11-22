@@ -150,16 +150,22 @@ civilization reset scan. `GameState.Production` retains snapshot and notice stat
 new worlds receive fresh state. Automatic requests require the A02 chooser as a
 mutating child. The desktop production command starts its authored selection
 transaction, saves the snapshot and uses this setter; the desktop city pass
-publishes the civilization-turn phase input. General P06 interaction, V03 reset
-callers and A02's actual policy remain separate work.
+publishes the civilization-turn phase input. The V03 reset caller is composed by
+`ResearchFlow`; general P06 interaction and A02's actual policy remain separate
+work.
 
 `Research.Cost` owns the full V03 cost formula and `Research.Options` its offered
 technology identities. `ResearchGrants` composes shared storage, actual C08
 Leonardo/ownership and recursive Great Library grants, including first-discovery,
 Barracks, announcement and emissary boundaries. `ResearchGovernmentPrompts` calls
-actual V02 transitions for accepted research prompts. The authored desktop
-threshold uses these grants through `LocalResearch`; general completion/choice,
-free advances, V01 catch-up and Darwin integration remain open.
+actual V02 transitions for accepted research prompts. `ResearchFlow` composes
+those children with C06 production reset and C03 mood queries for general
+completion and accumulation, including free advances.
+`ResearchSelection` suspends for an accepted choice and retains its recommendation;
+`ResearchGoals` owns informational goal/advice data. The desktop city pass waits
+on this flow before maintenance. `LocalResearch` retains only authored-profile
+eligibility/cost queries. V01 catch-up, Darwin, full A02 policy and generated-game
+caller integration remain open.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this
@@ -239,8 +245,9 @@ the remaining real-platform checks.
 `Session/LocalGame` composes the authored Alder Valley profile and owns staged
 classic replacement. `LocalPlayCommands` admits movement, city and research
 decisions and retains the F04 continuation through upkeep. `Core/Units/LandMovement`,
-`Core/Units/LocalVisibility`, `Core/City/LocalCityEconomy` and `Core/LocalResearch`
-own their bounded mechanics. The desktop passes owned observations through
+`Core/Units/LocalVisibility`, `Core/City/LocalCityEconomy` and the remaining
+`Core/LocalResearch` queries own their bounded mechanics. The desktop passes owned
+observations through
 `SessionPanel` to the existing map renderer and dialog. The loaded CLI and
 optional SQLite exporter consume a revision-stamped `LocalPlayerSnapshot`.
 

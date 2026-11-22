@@ -2525,8 +2525,8 @@
     {
       "id": "research-grants",
       "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
-      "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; LocalResearch ordinary accumulation adapter",
-      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Presentation and emissary decisions remain interfaces; complete research choice/completion/free-advance accumulation, V01 catch-up integration, Darwin callers and general F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
+      "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Presentation and emissary decisions remain interfaces; resumable selection/completion/accumulation is joined by the research-flow family; general desktop presentation, V01 catch-up integration, Darwin callers and general F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
       "status": "partial",
       "sharedGroups": [
         "M3.land-step-zones",
@@ -2565,6 +2565,46 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchGrantCases.cs"
+      ]
+    },
+    {
+      "id": "research-flow",
+      "contract": "V03 sections 5\u20136,8\u20139; C06 production reset; C03 mood query; V02 research prompts; desktop city upkeep",
+      "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation",
+      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Production choices and presentation replies are supplied; full A02 policy, general desktop dialogs, V01 catch-up, Darwin and generated-game callers remain open. Browser/cross-platform execution is deferred.",
+      "status": "partial",
+      "sharedGroups": [
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn",
+        "V03.completion-government-failure",
+        "V03.research-accumulation-philosophy-and-free-advance",
+        "V03.research-accumulation-widths-and-initial-choice",
+        "V03.research-advice-ordering-and-future-labels",
+        "V03.research-completion-ai-production-and-no-target",
+        "V03.research-completion-modes-and-ability-order",
+        "V03.research-goal-options-paths-and-replies",
+        "V03.research-selection-gates-and-empty-options",
+        "V03.research-selection-resume-and-advice"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/LocalResearch.cs",
+        "src/OpenCiv2.Core/ResearchFlow.cs",
+        "src/OpenCiv2.Core/ResearchSelection.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
+        "tests/OpenCiv2.FoundationCases/ResearchFlowCases.cs"
       ]
     }
   ]

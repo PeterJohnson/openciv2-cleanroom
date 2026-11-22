@@ -58,7 +58,7 @@ public static partial class LocalPlayCommands
     private static bool SetResearch(OperationContext context, int advance)
     {
         int owner = context.Actor.Civilization.Value;
-        if (!LocalResearch.Available(context.World, context.Process.Rules.Definitions, owner, advance))
+        if (!ResearchChoices(context.World, context.Process.Rules.Definitions, owner).Contains(advance))
         {
             return false;
         }
@@ -100,8 +100,35 @@ public static partial class LocalPlayCommands
     private sealed class EndPlayerPhase : IContinuation
     {
         private bool upkeepCommitted;
+        private int nextCity;
+        private CitySlot researchCity;
+        private ResearchOperation? research;
+        private ResearchChoiceNotice? pendingResearch;
+        private GameState? activeWorld;
+        private OperationContext? currentContext;
+        private OperationContext Current => currentContext ?? throw new InvalidOperationException("No active turn step");
 
         public OperationStep Resume(OperationContext context, OperationInput input)
+        {
+            currentContext = context;
+            try
+            { return ResumeStep(context, input); }
+            finally { currentContext = null; }
+        }
+
+        public void Dispose()
+        {
+            if (activeWorld is { } world)
+            {
+                world.Production.CivilizationTurnInProgress = false;
+            }
+
+            activeWorld = null;
+            research = null;
+            pendingResearch = null;
+        }
+
+        private OperationStep ResumeStep(OperationContext context, OperationInput input)
         {
             var world = context.World;
             if (input.Kind == OperationInputKind.Begin)
@@ -126,42 +153,69 @@ public static partial class LocalPlayCommands
                 return new(CommandStatus.Cancelled, Code: "cancelled");
             }
 
-            if (upkeepCommitted)
+            ResearchReply? reply = null;
+            if (pendingResearch is { } pending)
             {
-                if (input.Choice is not int selected || !SetResearch(context, selected))
+                if (input.Kind != OperationInputKind.Choice || input.Choice is not int selected
+                    || !pending.Options.Any(o => o.Identity == selected))
                 {
-                    return ResearchDecision(context);
+                    return ResearchDecision(pending);
                 }
-            }
-            else
-            {
-                bool needsResearch = Advance(context);
-                upkeepCommitted = true;
-                if (needsResearch && ResearchDecision(context) is { Interaction: not null } waiting)
-                {
-                    return waiting;
-                }
-            }
 
+                reply = new(selected);
+            }
+            if (!upkeepCommitted)
+            {
+                AdvanceStart(context);
+                upkeepCommitted = true;
+                activeWorld = world;
+                world.Production.CivilizationTurnInProgress = true;
+                nextCity = world.Entities.Cities.End - 1;
+            }
+            while (true)
+            {
+                if (research is not null)
+                {
+                    pendingResearch = research.Resume(reply);
+                    reply = null;
+                    if (pendingResearch is { } request)
+                    {
+                        return ResearchDecision(request);
+                    }
+
+                    research = null;
+                    MaintainBuildings(context, researchCity);
+                }
+                if (nextCity < 0)
+                {
+                    break;
+                }
+
+                var slot = new CitySlot((ushort)nextCity--);
+                if (world.Entities.Cities.At(slot).Token.Occupied && world.Entities.Cities.At(slot).Owner == context.Actor.Civilization)
+                {
+                    researchCity = slot;
+                    research = CityTurn(context, slot);
+                }
+            }
+            world.Production.CivilizationTurnInProgress = false;
+            activeWorld = null;
+            world.Globals.ActiveUnit = null;
+            SelectReadyUnit(world, context.Process.Rules.Definitions);
+            context.Effect("turn.advanced", TurnValue(world));
             world.PlayerPhaseActive = true;
             context.Publish();
             return new(Result: TurnValue(world));
         }
 
-        private static OperationStep ResearchDecision(OperationContext context)
-        {
-            var world = context.World;
-            int owner = context.Actor.Civilization.Value;
-            var choices = ResearchChoices(world, context.Process.Rules.Definitions, owner);
-            return choices.Length == 0 || world.Civilizations[owner].Researching >= 0 ? new() :
-                new(CommandStatus.AwaitingInteraction,
-                    Interaction: new("Choose the next advance.", null, null, new(choices), Cancellable: false));
-        }
+        private static OperationStep ResearchDecision(ResearchChoiceNotice pending) =>
+            new(CommandStatus.AwaitingInteraction,
+                Interaction: new("Choose the next advance.", null, null, new(pending.Options.Select(o => o.Identity)), Cancellable: false));
 
         private static OwnedList<NamedValue> TurnValue(GameState world) =>
             new([new("turn", new CommandValue.Integer(world.Globals.Turn))]);
 
-        private static bool Advance(OperationContext context)
+        private static void AdvanceStart(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -193,25 +247,6 @@ public static partial class LocalPlayCommands
             ref var treasury = ref world.Civilizations[owner].Gold;
             treasury = Math.Max(treasury, 0);
 
-            bool needsResearch = false;
-            world.Production.CivilizationTurnInProgress = true;
-            try
-            {
-                for (int i = world.Entities.Cities.End - 1; i >= 0; i--)
-                {
-                    ref var city = ref world.Entities.Cities.Storage[i];
-                    if (city.Token.Occupied && city.Owner.Value == owner)
-                    {
-                        needsResearch |= CityTurn(context, new((ushort)i));
-                    }
-                }
-            }
-            finally { world.Production.CivilizationTurnInProgress = false; }
-
-            globals.ActiveUnit = null;
-            SelectReadyUnit(world, rules);
-            context.Effect("turn.advanced", TurnValue(world));
-            return needsResearch;
         }
 
         private static void ResetUnits(GameState world)
@@ -246,7 +281,7 @@ public static partial class LocalPlayCommands
             }
         }
 
-        private static bool CityTurn(OperationContext context, CitySlot slot)
+        private ResearchOperation? CityTurn(OperationContext context, CitySlot slot)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -258,7 +293,7 @@ public static partial class LocalPlayCommands
             var food = CreateFood(context);
             if (food.Run(slot))
             {
-                return false;
+                return null;
             }
 
             if (city.Size != before)
@@ -291,27 +326,30 @@ public static partial class LocalPlayCommands
                 _ => throw new InvalidOperationException("The authored profile has no government rate decision path"),
                 _ => throw new InvalidOperationException("The authored profile has no AI government path"));
             new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, surplus);
-            bool needsResearch = false;
-            var researchEffects = new AuthoredResearchEffects();
+            var researchEffects = new AuthoredResearchEffects(() => Current);
             var researchPrompts = new ResearchGovernmentPrompts(world, governments, researchEffects);
             var grants = new ResearchGrants(world, rules, context.Gameplay,
-                new WonderEffects(world, rules, notice => context.Effect("unit.upgraded", new([
+                new WonderEffects(world, rules, notice => Current.Effect("unit.upgraded", new([
                     new("unit", new CommandValue.Unit(new(notice.Unit, world.Entities.Units.At(notice.Unit).Token))),
                     new("old", new CommandValue.Integer(notice.OldType.Value)), new("new", new CommandValue.Integer(notice.NewType.Value))])),
-                    moodEffects.RedrawTile),
+                    point => new CityTurnEffects(Current).RedrawTile(point)),
                 researchPrompts.Run, researchEffects);
-            if (LocalResearch.Accumulate(world, rules, grants, city.Owner.Value, city.Science, $"local-research/{world.Globals.Turn}/{slot.Value}") is int advance)
-            {
-                context.Effect("research.completed", new([new("advance", new CommandValue.Integer(advance))]));
-                needsResearch = true;
-            }
+            var flow = new ResearchFlow(world, context.Process.Rules, context.Gameplay, grants, researchPrompts,
+                new ProductionOrders(world, rules, _ => throw new InvalidOperationException("The authored profile has no research production-reset path"),
+                    _ => throw new InvalidOperationException("The authored profile has no research wonder-change path")),
+                new CityEconomy(world, context.Process.Rules, new(world, new(5_000_000, 64))), researchEffects, researchEffects);
+            return flow.AddPoints(city.Owner.Value, city.Science, $"local-research/{world.Globals.Turn}/{slot.Value}");
+        }
+
+        private static void MaintainBuildings(OperationContext context, CitySlot slot)
+        {
+            var world = context.World;
             // This profile has no pollution-producing population/industry or nuclear plant.
-            // C08 follows research at the human-city upkeep boundary.
-            new BuildingMaintenance(world, rules, notice => context.Effect("city.improvement_lost", new([
+            // C08 follows the completed research operation at the human-city upkeep boundary.
+            new BuildingMaintenance(world, context.Process.Rules.Definitions, notice => context.Effect("city.improvement_lost", new([
                 new("city", new CommandValue.City(new(notice.City, world.Entities.Cities.At(notice.City).Token))),
                 new("owner", new CommandValue.Integer(notice.Owner)), new("building", new CommandValue.Integer(notice.Building)),
                 new("name", new CommandValue.Text(notice.Name)), new("credit", new CommandValue.Integer(notice.Credit))]))).Run(slot);
-            return needsResearch || (city.Science > 0 && civ.ResearchProgress != 0 && civ.Researching < 0);
         }
 
         private static void RetireUnsupportedUnits(OperationContext context, CitySlot city)
@@ -328,9 +366,21 @@ public static partial class LocalPlayCommands
 
         // The admitted ordinary advances0..2 have no grant notices, emissary, Barracks or
         // first-discovery wonder effects. Completion/next-selection remain session continuations.
-        private sealed class AuthoredResearchEffects : IResearchGrantEffects, IResearchGovernmentEffects
+        private sealed class AuthoredResearchEffects(Func<OperationContext> current) : IResearchGrantEffects, IResearchGovernmentEffects, IResearchChoiceEffects, IResearchCompletionEffects
         {
             public bool DiplomacyActive => false;
+            public int NoticeMode => 0;
+            public CitySlot? SelectedCity => null;
+            public void Completed(ResearchCompletionNotice notice) => current().Effect("research.completed", new([new("advance", new CommandValue.Integer(notice.Advance))]));
+            public void Selected(int civilization, int advance) => current().Effect("research.selected", new([new("advance", new CommandValue.Integer(advance))]));
+            public void Ability(ResearchAbilityNotice notice) => current().Effect("research.ability", new([new("ability", new CommandValue.Text(notice.Ability.ToString()))]));
+            public void FirstCivilization(int civilization) => current().Effect("research.first_civilization", new([]));
+            public void Advice(ResearchAdvice advice) => current().Effect("research.advice", new([new("advance", new CommandValue.Integer(advice.Recommendation))]));
+            public void CloseAdvice() { }
+            public void Encyclopedia(ResearchTopic topic, int identity) => throw OutsideProfile();
+            public ResearchReply GoalChoice(ResearchGoalNotice notice) => throw OutsideProfile();
+            public int GoalHelp(ResearchTopic topic, int identity, int prerequisite) => throw OutsideProfile();
+            public void GoalPath(ResearchPathNotice notice) => throw OutsideProfile();
             private static InvalidOperationException OutsideProfile() => new("The authored profile has no research-grant presentation path");
             public void Acquired(AdvanceAcquisitionNotice notice) => throw OutsideProfile();
             public bool ReceiveEmissary(int civilization) => throw OutsideProfile();
