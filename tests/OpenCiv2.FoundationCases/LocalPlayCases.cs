@@ -420,11 +420,13 @@ public static partial class FoundationSuite
             var original = ClassicFiles.DecodeStoredSave(game.SaveClassic());
             foreach (var (stock, capacity) in new[] { (32767, false), (100, false), (100, true) })
             {
+                var flags = StateConversion.DecodeCityStatus(original.Cities.Single().Flags);
+                flags.Autobuild = flags.UnitsOnlyAutomation = flags.ImprovementsOnlyAutomation = true;
                 var civilizations = original.Civilizations.ToArray();
                 if (capacity) civilizations[1] = civilizations[1] with { MilitaryCount = 1949 };
                 var input = original with
                 {
-                    Cities = new([original.Cities.Single() with { ShieldBox = (short)stock }]),
+                    Cities = new([original.Cities.Single() with { ShieldBox = (short)stock, Flags = StateConversion.EncodeCityStatus(flags) }]),
                     Civilizations = new(civilizations)
                 };
                 if (capacity)
@@ -446,6 +448,8 @@ public static partial class FoundationSuite
                     var changed = ClassicFiles.DecodeStoredSave(game.SaveClassic());
                     Equal((short)stock, changed.Cities.Single().ShieldBox);
                     Equal((sbyte)type, changed.Cities.Single().Production);
+                    var changedFlags = StateConversion.DecodeCityStatus(changed.Cities.Single().Flags);
+                    Equal(false, changedFlags.Autobuild); Equal(false, changedFlags.UnitsOnlyAutomation); Equal(false, changedFlags.ImprovementsOnlyAutomation);
                     Equal((byte)(type == 2 ? 1 : 0), changed.Civilizations[1].UnitsInProduction[2]);
                     Equal((byte)(type == 4 ? 1 : 0), changed.Civilizations[1].UnitsInProduction[4]);
                 }

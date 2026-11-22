@@ -38,6 +38,7 @@ public static partial class FoundationSuite
         public void Purchased(ProductionPurchaseQuote quote)
         { Events.Add("paid"); if (FailPurchased) throw new InvalidOperationException("presentation failed"); }
         public void Sold(ProductionSaleQuote quote) => Events.Add("sold");
+        public void Changed(ProductionChangeQuote quote, bool accepted) => Events.Add(accepted ? "changed" : "rejected");
     }
 
     private static void PlayerPurchasePricesAndCompletion()
@@ -112,5 +113,37 @@ public static partial class FoundationSuite
         Equal(true, f.Service.BeginSale(new(0), 1)!.Complete(true)); Equal(false, f.City.Improvements.Contains(1));
         f.World.Civilizations[1].Gold = int.MaxValue;
         Equal(true, f.Service.BeginSale(new(0), 6)!.Complete(true)); Equal(unchecked(int.MaxValue + 30), f.World.Civilizations[1].Gold);
+    }
+
+    private static void PlayerProductionChangeRetainsSnapshot()
+    {
+        var f = new PlayerProductionFixture(); f.City.ShieldBox = 101; f.Orders.Orders.SaveBuildState(new(0));
+        f.World.Civilizations[1].UnitsInProduction[2] = 1;
+        f.City.Flags.Autobuild = f.City.Flags.UnitsOnlyAutomation = f.City.Flags.ImprovementsOnlyAutomation = true;
+        var change = f.Service.BeginChange(new(0), -4)!;
+        Equal(true, change.Quote.ConfirmationRequired); Equal(51, change.Quote.Stock); Equal(50, change.Quote.PenaltyPercent);
+        Equal(false, f.City.Flags.Autobuild); Equal(false, f.City.Flags.UnitsOnlyAutomation); Equal(false, f.City.Flags.ImprovementsOnlyAutomation);
+        Equal(false, change.Complete(false)); Equal((sbyte)2, f.City.Production); Equal((short)101, f.City.ShieldBox);
+        Equal((byte)1, f.World.Civilizations[1].UnitsInProduction[2]); Equal(101, f.World.Production.SavedStock);
+        change = f.Service.BeginChange(new(0), -4)!; Equal(true, change.Complete(true));
+        Equal((short)51, f.City.ShieldBox); Equal((byte)0, f.World.Civilizations[1].UnitsInProduction[2]);
+        change = f.Service.BeginChange(new(0), 2)!; Equal(false, change.Quote.ConfirmationRequired); Equal(true, change.Complete(true));
+        Equal((short)101, f.City.ShieldBox); Equal(101, f.World.Production.SavedStock); Equal((byte)1, f.World.Civilizations[1].UnitsInProduction[2]);
+        Equal(0, f.Orders.Choices.Count); Equal(0, f.Orders.Notices.Count);
+        Throws<InvalidOperationException>(() => change.Complete(true)); Equal((byte)1, f.World.Civilizations[1].UnitsInProduction[2]);
+    }
+
+    private static void PlayerProductionChangeSuppressionAndDirectAi()
+    {
+        var f = new PlayerProductionFixture(); f.City.ShieldBox = 101; f.Orders.Orders.SaveBuildState(new(0));
+        f.World.Globals.MessageOptions.ProductionPenalty = true;
+        var change = f.Service.BeginChange(new(0), -39)!; Equal(false, change.Quote.ConfirmationRequired);
+        f.World.Globals.HumanPlayers = default; f.World.Globals.RevealMap = 1;
+        Equal(true, change.Complete(true)); Equal((short)51, f.City.ShieldBox); Equal(0, f.Orders.Notices.Count);
+        f.World.Globals.Difficulty = Difficulty.Chieftain; change = f.Service.BeginChange(new(0), -4)!;
+        Equal(101, change.Quote.Stock); Equal(true, change.Complete(true)); Equal((short)101, f.City.ShieldBox);
+        f.World.Globals.Difficulty = Difficulty.King; f.World.Production.SavedStock = -1;
+        change = f.Service.BeginChange(new(0), -4)!; Equal(-32768, change.Quote.Stock); Equal(true, change.Complete(true));
+        Equal(short.MinValue, f.City.ShieldBox);
     }
 }

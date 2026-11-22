@@ -9,6 +9,7 @@ namespace OpenCiv2.Core.City;
 public enum ProductionCategory { Units, Buildings, OtherNonunit }
 public record struct WonderNoticeStatus { public bool Started, Abandoned; }
 public enum ProductionWonderNoticeKind { Start, Switch, Abandon }
+public sealed record ProductionOption(int Item, string Name, int Stock, int Turns, bool ExpiredWonder);
 public sealed record ProductionWonderNotice(ProductionWonderNoticeKind Kind, CitySlot City, int Owner,
     int Wonder, int? PreviousWonder, string Civilization, string Name, string? PreviousName);
 
@@ -57,6 +58,36 @@ public sealed class ProductionOrders(GameState world, RuleTables rules, Func<Cit
             int rate = Arithmetic.ClampC(world.Calculation.Shields - world.Calculation.ShieldSupport, 1, 99);
             return Arithmetic.ClampC((cost * world.Calculation.ShieldRows - 1 - stock) / rate + 1, 1, 999);
         }
+    }
+
+    /// <summary>C06 offered items in unit, improvement and wonder order, using the retained
+    /// opening snapshot. The caller runs cached calculation/advice before constructing this list.</summary>
+    public IReadOnlyList<ProductionOption> Options(CitySlot slot, WonderBuildRestrictions? scenario = null)
+    {
+        int owner = unchecked((sbyte)world.Entities.Cities.At(slot).Owner.Value);
+        var result = new List<ProductionOption>();
+        void Add(int item, string name, bool expired = false)
+        {
+            int stock = ShieldsAfterChange(item);
+            result.Add(new(item, name, stock, BuildTurns(item, stock), expired));
+        }
+        for (int i = 0; i < RuleLimits.UnitTypes; ++i)
+        {
+            if (UnitAvailability.CanBuild(world, rules, owner, slot, new((byte)i)))
+            {
+                Add(i, rules.Units[i].Identity.Name);
+            }
+        }
+
+        for (int i = 1; i < rules.Improvements.Length; ++i)
+        {
+            if (BuildingAvailability.Improvement(world, rules, owner, slot, i, scenario))
+            {
+                Add(-i, rules.Improvements[i].Identity.Name, i > BuildingIds.Capitalization && BuildingQueries.Expired(world, rules, i - 39));
+            }
+        }
+
+        return result;
     }
 
     public void Set(CitySlot slot, int request)

@@ -28,8 +28,7 @@ internal static class LocalGameRules
     internal static bool ProductionAvailable(GameState world, RuleTables rules, int type, CitySlot? city = null) =>
         type is Guard or Rider ? UnitAvailability.CanBuild(world, rules, Owner, city, new((byte)type))
         : type is Temple or Library && city is { } slot
-            && CivilizationKnowledge.KnowsAdvance(world.Civilizations, Owner, (int)rules.Improvements[-type].Prerequisite)
-            && !BuildingQueries.HasBuilding(world, slot, -type);
+            && BuildingAvailability.Improvement(world, rules, Owner, slot, -type);
 
     internal static bool SupportedBuildings(ImprovementSet buildings) =>
         buildings.With(BuildingIds.Palace, false).With(BuildingIds.Temple, false).With(BuildingIds.Library, false) == default;

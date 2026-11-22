@@ -12,6 +12,8 @@ public enum ProductionTransactionSound { Purchase, Sale, Denied }
 public sealed record ProductionPurchaseQuote(CityTarget City, int Owner, int Item, string Name,
     int Price, int Treasury, ProductionPurchaseAvailability Availability);
 public sealed record ProductionSaleQuote(CityTarget City, int Improvement, string Name, int Price);
+public sealed record ProductionChangeQuote(CityTarget City, int Owner, int Item, int Stock,
+    string PreviousName, string Name, int PenaltyPercent, bool ConfirmationRequired);
 
 public interface IPlayerProductionEffects
 {
@@ -19,9 +21,10 @@ public interface IPlayerProductionEffects
     void SaleDenied(CityTarget city, ProductionSaleDenial reason);
     void Purchased(ProductionPurchaseQuote quote);
     void Sold(ProductionSaleQuote quote);
+    void Changed(ProductionChangeQuote quote, bool accepted);
 }
 
-/// <summary>C06 local player purchase and sale. Accepted commands retain a semantic target;
+/// <summary>C06 local player purchase, sale and ordinary production choice. Accepted commands retain a semantic target;
 /// incidental window selection and original list-row offsets do not retarget a pending decision.
 /// The session owns serialization, cancellation and stale-target admission.</summary>
 public sealed class PlayerProduction(GameState world, RuleTables rules, CityEconomy economy,
@@ -101,6 +104,74 @@ public sealed class PlayerProduction(GameState world, RuleTables rules, CityEcon
     {
         effects.Sound(ProductionTransactionSound.Denied);
         effects.SaleDenied(Target(slot), reason);
+    }
+
+    /// <summary>C06 ordinary Choose action after an offered item is selected. The caller owns
+    /// eligibility/advice and opening the saved-stock snapshot; this command never refreshes it.</summary>
+    public Change? BeginChange(CitySlot slot, int item)
+    {
+        MapKnowledge.RequireLocal(world);
+        if (item <= -rules.Improvements.Length || item >= RuleLimits.UnitTypes)
+        {
+            throw new ArgumentOutOfRangeException(nameof(item));
+        }
+
+        economy.Calculate(slot, false);
+        ref var city = ref world.Entities.Cities.At(slot);
+        int owner = unchecked((sbyte)city.Owner.Value);
+        if (!MayControl(owner))
+        {
+            return null;
+        }
+
+        city.Flags.Autobuild = city.Flags.UnitsOnlyAutomation = city.Flags.ImprovementsOnlyAutomation = false;
+        int stock = orders.ShieldsAfterChange(item);
+        string Name(int identity) => identity >= 0 ? rules.Units[identity].Identity.Name : rules.Improvements[-identity].Identity.Name;
+        return new(this, new(Target(slot), owner, item, stock, Name(city.Production), Name(item),
+            rules.Cosmic.ProductionSwitchLossPercent, stock < city.ShieldBox && !world.Globals.MessageOptions.ProductionPenalty));
+    }
+
+    public sealed class Change
+    {
+        private readonly PlayerProduction parent;
+        public ProductionChangeQuote Quote { get; }
+        public bool Finished { get; private set; }
+        internal Change(PlayerProduction parent, ProductionChangeQuote quote) { this.parent = parent; Quote = quote; }
+        public bool Complete(bool accepted)
+        {
+            if (Finished)
+            {
+                throw new InvalidOperationException("Production choice already ended.");
+            }
+
+            Finished = true;
+            if (!parent.Live(Quote.City))
+            {
+                return false;
+            }
+
+            var world = parent.World;
+            MapKnowledge.RequireLocal(world);
+            if (accepted)
+            {
+                ref var city = ref world.Entities.Cities.At(Quote.City.Slot);
+                if (city.Production is >= 0 and < RuleLimits.UnitTypes)
+                {
+                    world.Civilizations[Quote.Owner].UnitsInProduction[city.Production] = unchecked((byte)(world.Civilizations[Quote.Owner].UnitsInProduction[city.Production] - 1));
+                }
+
+                city.Production = unchecked((sbyte)Quote.Item);
+                if (city.Production is >= 0 and < RuleLimits.UnitTypes)
+                {
+                    world.Civilizations[Quote.Owner].UnitsInProduction[city.Production] = unchecked((byte)(world.Civilizations[Quote.Owner].UnitsInProduction[city.Production] + 1));
+                }
+
+                city.ShieldBox = unchecked((short)Quote.Stock);
+            }
+            parent.Economy.Calculate(Quote.City.Slot);
+            parent.Effects.Changed(Quote, accepted);
+            return accepted;
+        }
     }
 
     public sealed class Purchase

@@ -129,8 +129,8 @@ building storage, wonder ownership/effects, spaceship retargeting/assembly and
 resumable Darwin research. It retains cost/net/item across choices, applies the
 human wonder-priority early return, and runs the common tail once. The desktop
 city pass now uses it; Temple and Library choices extend the authored profile.
-General build eligibility/selection, the A02 policy and generated-game callers
-remain open.
+Shared unit/improvement/wonder eligibility is available; the scenario wonder-flag
+binding, full production dialog, A02 policy and generated-game callers remain open.
 
 `SpaceshipPerformance` owns V07 calculation and group selection, using selected
 spaceship/calendar values and retained `GameState.Spaceship` scratch. The capacity
@@ -158,20 +158,31 @@ order assignment/counters, AI wonder start/switch/abandon continuation and
 civilization reset scan. `GameState.Production` retains snapshot and notice state;
 new worlds receive fresh state. Automatic requests require the A02 chooser as a
 mutating child. The desktop production command starts its authored selection
-transaction, saves the snapshot and uses this setter; the desktop city pass
-publishes the civilization-turn phase input. The V03 reset caller is composed by
+transaction and saves its opening snapshot, then uses the direct manual-change
+operation; the desktop city pass publishes the civilization-turn phase input.
+The V03 reset caller is composed by
 `ResearchFlow`; general P06 interaction and A02's actual policy remain separate
 work.
 
-`PlayerProduction` owns local C06 player purchase/sale quotes and confirmed
+`BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
+stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
+are explicit semantic inputs while their original-file binding remains a gap;
+missing inputs stop scenario queries rather than defaulting to permissive rules.
+`ProductionOrders.Options` lists units, facilities and wonders in contract order,
+using retained stock/turn forecasts and an expiration marker.
+
+`PlayerProduction` owns local C06 player purchase/sale/change quotes and confirmed
 mutations. It uses actual C03 cached/full calculation and C06 snapshot refresh;
 purchase fills shields without completing an item. Sales enforce the Palace and
 once-per-turn rules with the reveal-map/scenario exception. Pending decisions
 retain target tokens and quoted prices; terminal failures cannot repeat payment.
-`LocalPlayCommands` exposes both through correlated interactions, the desktop city
+`LocalPlayCommands` exposes these transactions through correlated interactions, the desktop city
 window and console. The city-turn entry clears the sale flag; classic save/load
-retains it between turns. General production-change dialogs/advice and network
-busy/deferred execution remain separate work.
+retains it between turns. Ordinary production changes clear automation flags,
+retain the opening snapshot across the penalty decision and update counters
+directly without AI wonder notices. Acceptance and rejection both recalculate.
+General production dialogs/advice/automatic/cheat actions and network busy/deferred
+execution remain separate work.
 
 `Research.Cost` owns the full V03 cost formula and `Research.Options` its offered
 technology identities. `ResearchGrants` composes shared storage, actual C08

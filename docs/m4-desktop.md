@@ -1310,3 +1310,60 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-transactions-headless.xml` | `d06ca8263c1dcd79b87e1a578b639c29319a35dc07d730362701469903107cbb` |
 | `m4-desktop-transactions-native.json` | `01dfa106fa504369ca96d46526bf828666ea697fca599049d5d18a7796b6a390` |
 | `m4-desktop-transactions-identity.json` | `f9f94ae4a25607c954a41718d2b01e428e308526a21004796f095f941fe0268f` |
+
+
+## Shared eligibility and ordinary production changes
+
+`BuildingAvailability` completes C06's nonunit predicates using actual C08
+facility/effect queries and civilization knowledge. It covers prerequisite
+chains and their prerequisite-knowledge checks, water access, wonder substitutes,
+plant replacement, Hydro geography and spaceship gates. City-less queries skip
+all city-specific gates after the initial prerequisite. Destroyed Apollo permits
+ship choices, destroyed wonders cannot be rebuilt, and expiration alone does not
+remove an unbuilt wonder. Ship capacity is deliberately not an eligibility gate.
+
+The NoNewWonders/AllowManhattan semantic inputs are explicit for scenario queries.
+The repository does not define their original-file bit mapping; an unrevealed
+scenario query without those inputs stops with that specification gap. Non-scenario
+and reveal/editor queries require no invented flags. This does not close S01/F06
+binding work. Coastal Fortress identity28 follows C08's declared catalog order.
+
+`ProductionOrders.Options` supplies ascending unit, improvement and wonder choices
+with the shared saved-stock penalty, turn forecast and wonder-expiration marker.
+`PlayerProduction.BeginChange` implements the ordinary Choose continuation:
+clear all automation flags, retain the proposed stock, request a penalty decision
+when applicable, update unit counters and production directly on acceptance,
+then recalculate on either acceptance or rejection. It does not refresh the
+opening snapshot or invoke AI wonder-change behavior. Repeated choices can return
+to the original snapshot category/stock. Terminal operations cannot repeat counts.
+
+The authored desktop command now calls this direct change operation and the real
+building predicate. Each atomic Chieftain command starts its own selection
+snapshot; the general persistent city dialog remains open work. Shared tests
+exercise penalty decisions at other difficulties and negative retained stocks.
+The direct/console stock/save scenarios import automation flags and confirm that
+manual choices clear them before real turn completion.
+
+Full A02 policy, optional advice, automatic/encyclopedia/cheat dialog actions,
+general desktop production-list presentation, network busy/deferred work and
+full generated-game F04 callers remain open. Browser/cross-platform qualification
+is deferred. M4 remains in progress.
+
+Validation: root/App formatting and verification passed, and both Release builds
+completed with zero warnings/errors. Native tests passed **752 of 754**, with the
+two existing platform/opt-in skips. The native shared probe passed **720 groups**
+and identity verification covered **437 compiled inputs**. Graph, conformance,
+**84-family** coverage, identity/coverage tool tests and gameplay schemas passed.
+All **12 Xvfb CPU desktop checks** passed through the changed manual-production
+path, including direct/console/native/CLI agreement, building completion,
+purchase/sale confirmation, save/reload and next-turn completion. Full M4
+human/AI generated-game acceptance remains open.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-choices-play.json` | `14127939a9af47cc9e150ac25dde2204335903d87f06141eed297f8003cb2715` |
+| `m4-desktop-choices-headless.xml` | `a9f5bca3e2f587fc075573225d324c2bc744fd024eaff9b79a8d657731a73ebe` |
+| `m4-desktop-choices-native.json` | `6f82ff1a3277c875847a790d3a07db048337d67e80ef9bb96f5b2ff1992dba85` |
+| `m4-desktop-choices-identity.json` | `aa38d7237dd9e728f6f13b95be20cb0b9aa96cb04722e07e177e3e9478074606` |

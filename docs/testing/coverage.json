@@ -2496,17 +2496,22 @@
     {
       "id": "production-orders",
       "contract": "C06 category/snapshot/switch forecast, production setting, AI wonder-change continuation and civilization reset",
-      "publicSurface": "ProductionWorkspace and ProductionOrders category, SaveBuildState, ShieldsAfterChange, BuildTurns, Set and ResetCivilization; desktop production command",
+      "publicSurface": "ProductionWorkspace and ProductionOrders category, SaveBuildState, ShieldsAfterChange, BuildTurns, Set and ResetCivilization; desktop production command; Options ordered availability/forecast list",
       "review": "Shared groups cover full-request categories, unsigned-low16 switch penalties, retained snapshot previews, signed unit versus unsigned building forecasts, counter wrap, chooser sentinels and failure prefixes, captured owner and live human/phase inputs. Actual C08 ownership queries participate in AI start/switch/abandon effects, group bonuses, direct rival redirects and notice state. Reset tests cover hotseat suppression, signed/unsigned owner matching, regions and live scan bounds. An integration group composes actual production-order setting with actual AI purchasing around a controlled A02 reply. Desktop direct/console tests preserve stock and counts across repeated switches, completion and save/resume. ResearchFlow and CityProduction now join research reset and nonunit completion. Automatic chooser policy, full P06 transactions and full generated games remain pending. Local mutations reject network execution; browser and cross-platform execution are deferred.",
       "status": "partial",
       "sharedGroups": [
         "C06.ai-wonder-abandon",
         "C06.ai-wonder-rivals-switch",
         "C06.ai-wonder-start-bonus",
+        "C06.building-eligibility-facility-chains-and-effects",
+        "C06.building-eligibility-knowledge-and-coasts",
+        "C06.building-eligibility-power-replacement",
+        "C06.building-eligibility-spaceships-and-scenario-wonders",
         "C06.production-build-forecast",
         "C06.production-chooser-phase-owner",
         "C06.production-chooser-sentinels-failure",
         "C06.production-human-counters-narrowing",
+        "C06.production-options-ordered-snapshot-and-expiration",
         "C06.production-reset-filters-live-bounds",
         "C06.production-snapshot-penalty",
         "C06.production-workspace-lifetime",
@@ -2532,6 +2537,7 @@
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/BuildingAvailabilityCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.FoundationCases/ProductionOrdersCases.cs"
       ]
@@ -2672,11 +2678,13 @@
     },
     {
       "id": "player-production",
-      "contract": "C06 local player purchase and sale, F04 sale reset and F06 retention",
-      "publicSurface": "PlayerProduction purchase/sale operations; city.buy/city.sell pending commands; desktop city controls and owned facility projection",
-      "review": "Real C03 calculations and ProductionOrders snapshots surround retained purchase/sale decisions. Cases cover price families, zero-stock doubling, unsigned building and signed unit costs, cap/narrowing, affordability/disorder, cancellation, terminal failure, Palace/scenario exceptions and once-per-turn sales. Direct/console callers preserve full save agreement, sale flags across reload and reset at the next city turn; purchasing creates nothing until normal production runs. The native driver exercises real GUI confirmations and cancellation. Semantic target tokens prevent incidental selection from retargeting a command. General production-change/advice, full generated callers and network busy/deferred execution remain pending; browser/cross-platform execution is deferred.",
+      "contract": "C06 local player purchase, sale and ordinary Choose action; F04 sale reset and F06 retention",
+      "publicSurface": "PlayerProduction purchase/sale operations; city.buy/city.sell pending commands; desktop city controls and owned facility projection; BeginChange retained penalty decision and direct production/counter writes",
+      "review": "Real C03 calculations and ProductionOrders snapshots surround retained purchase/sale decisions. Cases cover price families, zero-stock doubling, unsigned building and signed unit costs, cap/narrowing, affordability/disorder, cancellation, terminal failure, Palace/scenario exceptions and once-per-turn sales. Direct/console callers preserve full save agreement, sale flags across reload and reset at the next city turn; purchasing creates nothing until normal production runs. The native driver exercises real GUI confirmations and cancellation. Semantic target tokens prevent incidental selection from retargeting a command. Ordinary Choose clears automation before either decision, preserves its opening snapshot and directly changes production/counters with full recalculation on acceptance/rejection. General dialog/advice/automatic/cheat actions, full generated callers and network busy/deferred execution remain pending; browser/cross-platform execution is deferred.",
       "status": "partial",
       "sharedGroups": [
+        "C06.player-production-change-retains-snapshot",
+        "C06.player-production-change-suppression-and-direct-ai",
         "C06.player-purchase-denial-cancellation-and-failure",
         "C06.player-purchase-prices-and-completion",
         "C06.player-purchase-signed-costs-and-limits",
@@ -2706,6 +2714,29 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.FoundationCases/PlayerProductionCases.cs"
+      ]
+    },
+    {
+      "id": "building-eligibility",
+      "contract": "C06 nonunit eligibility and ordered production options using C08 storage/effects and knowledge",
+      "publicSurface": "BuildingAvailability.Improvement/Wonder, explicit WonderBuildRestrictions and ProductionOrders.Options; desktop facility selection",
+      "review": "Cases cover knowledge and city-less bypass, coastal/ocean gates, dependent facilities and their prerequisites, active/expired wonder substitutes, industrial/plant replacement and Hydro geography, spaceship raw Apollo/year/scenario/bloodlust/launch gates, explicit scenario wonder restrictions and missing-binding stop. Ordered options retain snapshot stock and forecasts and mark expiration without suppressing availability. Desktop choices use the shared predicates. Scenario NoNewWonders/AllowManhattan original-file binding, general dialog/advice/A02 callers and full generated-game execution remain pending; browser/cross-platform execution is deferred.",
+      "status": "partial",
+      "sharedGroups": [
+        "C06.building-eligibility-facility-chains-and-effects",
+        "C06.building-eligibility-knowledge-and-coasts",
+        "C06.building-eligibility-power-replacement",
+        "C06.building-eligibility-spaceships-and-scenario-wonders",
+        "C06.production-options-ordered-snapshot-and-expiration"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/BuildingAvailability.cs",
+        "src/OpenCiv2.Core/City/ProductionOrders.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalGameRules.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/BuildingAvailabilityCases.cs"
       ]
     }
   ]

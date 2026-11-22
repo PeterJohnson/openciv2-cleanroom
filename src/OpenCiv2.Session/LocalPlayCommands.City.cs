@@ -23,8 +23,11 @@ public static partial class LocalPlayCommands
             FoundCity, ValidateUnit));
         runtime.RegisterCommand(Define(Worker, "Toggle a worked radius tile (0–20). Select 20 to reset workers.",
             [new("city", ValueKind.City), new("tile")], [new("city", ValueKind.City)], AssignWorker, ValidateCity));
-        runtime.RegisterCommand(Define(Production, "Choose a listed production item for an owned city.",
-            [new("city", ValueKind.City), new("type")], [new("city", ValueKind.City)], ChangeProduction, ValidateCity));
+        runtime.RegisterCommand(new(
+            new(1, Production, "Choose a listed production item for an owned city.", AccessClass.Player,
+                new([new("city", ValueKind.City), new("type")]), new([new("city", ValueKind.City)])),
+            (actor, request, world) => new(ValidatePhase(actor, world) ?? ValidateCity(actor, request, world)),
+            request => new ProductionTransaction(request, false, change: true)));
         foreach (bool sale in new[] { false, true })
         {
             runtime.RegisterCommand(new(
@@ -112,30 +115,11 @@ public static partial class LocalPlayCommands
         return Commit(context, "city.workers", new NamedValue("city", new CommandValue.City(target)));
     }
 
-    private static OperationStep ChangeProduction(OperationContext context, CommandRequest request)
-    {
-        var target = CityArgument(request);
-        int type = Number(request, "type");
-        var world = context.World;
-        if (!LocalGameRules.ProductionAvailable(world, context.Process.Rules.Definitions, type, target.Slot))
-        {
-            return new(CommandStatus.Failed, Code: "production_not_available");
-        }
-
-        var production = new ProductionOrders(world, context.Process.Rules.Definitions,
-            _ => throw new InvalidOperationException("Automatic production requires its A02 policy"),
-            _ => throw new InvalidOperationException("The authored profile has no AI wonder change path"));
-        // This atomic authored-profile command starts a selection transaction on Chieftain;
-        // general P06 previews retain their opening snapshot.
-        production.SaveBuildState(target.Slot);
-        production.Set(target.Slot, type);
-        return Commit(context, "city.production", new NamedValue("city", new CommandValue.City(target)));
-    }
-
-    private sealed class ProductionTransaction(CommandRequest request, bool sale) : IContinuation, IPlayerProductionEffects
+    private sealed class ProductionTransaction(CommandRequest request, bool sale, bool change = false) : IContinuation, IPlayerProductionEffects
     {
         private PlayerProduction.Purchase? purchase;
         private PlayerProduction.Sale? selling;
+        private PlayerProduction.Change? changing;
         private OperationContext? current;
         private OperationContext Current => current ?? throw new InvalidOperationException("No active production command");
 
@@ -148,6 +132,7 @@ public static partial class LocalPlayCommands
                 {
                     purchase?.Complete(false);
                     selling?.Complete(false);
+                    changing?.Complete(false);
                     return new(CommandStatus.Cancelled, Code: "cancelled");
                 }
                 if (input.Kind == OperationInputKind.Begin)
@@ -159,11 +144,39 @@ public static partial class LocalPlayCommands
 
                     var world = context.World;
                     var rules = context.Process.Rules;
-                    var service = new PlayerProduction(world, rules.Definitions,
-                        new(world, rules, new(world, new(5_000_000, 64))),
-                        new(world, rules.Definitions, _ => throw new InvalidOperationException("Buying/selling does not choose production"),
-                            _ => throw new InvalidOperationException("Buying/selling does not change wonders")), this);
                     var city = CityArgument(request);
+                    if (change && !LocalGameRules.ProductionAvailable(world, rules.Definitions, Number(request, "type"), city.Slot))
+                    {
+                        return new(CommandStatus.Failed, Code: "production_not_available");
+                    }
+
+                    var orders = new ProductionOrders(world, rules.Definitions,
+                        _ => throw new InvalidOperationException("Manual production transactions do not choose automatically"),
+                        _ => throw new InvalidOperationException("Manual production transactions do not invoke AI wonder changes"));
+                    var service = new PlayerProduction(world, rules.Definitions,
+                        new(world, rules, new(world, new(5_000_000, 64))), orders, this);
+                    if (change)
+                    {
+                        // This atomic command opens one selection; the general city dialog keeps
+                        // its opening snapshot across previews. The authored profile is Chieftain.
+                        orders.SaveBuildState(city.Slot);
+                        changing = service.BeginChange(city.Slot, Number(request, "type"));
+                        if (changing is null)
+                        {
+                            return new(CommandStatus.Failed, Code: "production_not_available");
+                        }
+
+                        var proposal = changing.Quote;
+                        if (proposal.ConfirmationRequired)
+                        {
+                            return new(CommandStatus.AwaitingInteraction, Interaction: new(
+                                $"Change {proposal.PreviousName} to {proposal.Name}? The {proposal.PenaltyPercent}% category penalty leaves {proposal.Stock} shields.",
+                                null, null, new([0, 1])));
+                        }
+
+                        changing.Complete(true);
+                        return new(Result: new([new("city", new CommandValue.City(city))]));
+                    }
                     if (sale)
                     {
                         selling = service.BeginSale(city.Slot, Number(request, "improvement"));
@@ -192,7 +205,7 @@ public static partial class LocalPlayCommands
                         new(quote.Availability == ProductionPurchaseAvailability.Available ? [0, 1] : [0])));
                 }
                 bool accepted = input.Kind == OperationInputKind.Choice && input.Choice == 1;
-                bool completed = sale ? selling!.Complete(accepted) : purchase!.Complete(accepted);
+                bool completed = change ? changing!.Complete(accepted) : sale ? selling!.Complete(accepted) : purchase!.Complete(accepted);
                 return completed ? new(Result: new([new("city", new CommandValue.City(CityArgument(request)))]))
                     : new(CommandStatus.Cancelled, Code: "cancelled");
             }
@@ -208,6 +221,8 @@ public static partial class LocalPlayCommands
         public void Sold(ProductionSaleQuote quote) => Current.Effect("city.improvement_sold",
             new([new("city", new CommandValue.City(quote.City)), new("improvement", new CommandValue.Integer(quote.Improvement)),
                 new("price", new CommandValue.Integer(quote.Price))]));
+        public void Changed(ProductionChangeQuote quote, bool accepted) => Current.Effect(accepted ? "city.production" : "city.production_rejected",
+            new([new("city", new CommandValue.City(quote.City))]));
     }
 
     internal static UnitSlot? CreateUnit(SessionRuntime runtime, int type, MapPoint position, CitySlot? home) =>

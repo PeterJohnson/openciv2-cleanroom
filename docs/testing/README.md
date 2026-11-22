@@ -281,3 +281,13 @@ M2 audio checks and native dependency setup are documented in the
 [authored audio profile](../content/media-profile.md). The root suite reports an
 explicit skip for device playback unless `OC2_TEST_NATIVE_AUDIO=1`; use the
 private audio helper for repeatable Linux execution without speaker output.
+
+
+C06 eligibility/choice groups cover prerequisite chains, coastal/ocean access,
+active/expired wonder effects, plant replacement, spaceship gates and explicit
+scenario restrictions. Ordered option lists retain the opening stock and mark
+expired but available wonders. Manual-change cases cover rejected penalties with
+automation cleared, accepted counter changes, switching back to the opening
+category, suppression/Chieftain gates and direct AI editing without wonder notices.
+The desktop stock/save scenarios now import automation flags and verify that
+manual selection clears them before the next city turn.
