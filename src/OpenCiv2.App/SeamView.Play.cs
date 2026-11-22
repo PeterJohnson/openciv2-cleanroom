@@ -334,6 +334,17 @@ public sealed partial class SeamView
         }
 
         cityBody.Children.Add(production);
+        cityBody.Children.Add(PlayButton("city.buy", "Buy production…", () =>
+            PlayCommand(LocalPlayCommands.Buy, new NamedValue("city", new CommandValue.City(modelCity.Target)))));
+        var facilities = new WrapPanel();
+        foreach (var improvement in modelCity.Improvements)
+        {
+            var sell = PlayButton("city.sell." + improvement.Id, $"Sell {improvement.Name}…", () =>
+                CityCommand(LocalPlayCommands.Sell, modelCity.Target, "improvement", improvement.Id));
+            sell.IsEnabled = !modelCity.ImprovementSold && improvement.Id != 1;
+            facilities.Children.Add(sell);
+        }
+        cityBody.Children.Add(facilities);
         cityBody.Children.Add(new TextBlock { Text = "Worked tiles · Food / Shields / Trade" });
         var workers = new WrapPanel { ItemWidth = 117 };
         foreach (var tile in modelCity.Tiles)

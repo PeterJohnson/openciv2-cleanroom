@@ -98,6 +98,7 @@ internal static class LocalGameRules
             CostRows = 2,
             Abilities = new() { SeeTwo = true }
         };
+        tables.Improvements[BuildingIds.Palace] = new() { Identity = new("palace", "Palace") };
         tables.Improvements[BuildingIds.Temple] = new() { Identity = new("temple", "Temple"), CostRows = 2, Upkeep = 1, Prerequisite = (AdvanceReference)0 };
         tables.Improvements[BuildingIds.Library] = new() { Identity = new("library", "Library"), CostRows = 3, Upkeep = 1, Prerequisite = (AdvanceReference)1 };
         tables.Advances[0] = Advance("land-surveys", "Land Surveys");

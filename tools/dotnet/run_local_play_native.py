@@ -363,6 +363,38 @@ def drive(args, app, observation, storage):
     assert 'city.invalid_build' in duplicate['effects'] and 'city.improvement_built' not in duplicate['effects']
     checks.append('building chosen through city controls, completed, saved/reloaded and duplicate build rejected without spending')
 
+    click('city')
+    command(lambda: click('city.sell.4'), 'AwaitingInteraction')
+    choice(0)
+    declined = wait(lambda s: s['status'] == 'Cancelled')['play']
+    assert declined['gold'] == duplicate['gold'] and 'city.sell.4' in declined['controls']
+    command(lambda: click('city.sell.4'), 'AwaitingInteraction')
+    choice(1)
+    sold = wait(lambda s: s['status'] == 'Completed' and 'city.improvement_sold' in s['play']['effects'])['play']
+    assert sold['gold'] == duplicate['gold'] + 8 and 'city.sell.4' not in sold['controls']
+    assert not sold['controls']['city.sell.1']['enabled']
+    command(lambda: click('city.production.4'))
+    command(lambda: click('city.buy'), 'AwaitingInteraction')
+    type_line('cancel', dialog=True)
+    cancelled = wait(lambda s: s['status'] == 'Cancelled')['play']
+    assert cancelled['gold'] == sold['gold'] and cancelled['city']['shieldBox'] == sold['city']['shieldBox']
+    command(lambda: click('city.buy'), 'AwaitingInteraction')
+    choice(1)
+    bought = wait(lambda s: s['status'] == 'Completed' and 'city.production_bought' in s['play']['effects'])['play']
+    remaining = max(0, min(999, 8 - cancelled['city']['shieldBox']))
+    price = (remaining * remaining // 20 + 2 * remaining) * (2 if cancelled['city']['shieldBox'] == 0 else 1)
+    assert bought['gold'] == cancelled['gold'] - price and bought['city']['shieldBox'] == 8
+    assert bought['units'] == cancelled['units']
+    click('city.close')
+    click('save')
+    paid_save = wait(lambda s: s['message'] == 'Classic save written.')['play']
+    click('load')
+    paid_reload = wait(lambda s: s['message'] == 'Classic save loaded.')['play']
+    assert semantic(paid_save) == semantic(paid_reload)
+    finished_purchase = end_turn(bought['turn'] + 1)
+    assert 'unit.produced' in finished_purchase['effects'] and len(finished_purchase['units']) == len(bought['units']) + 1
+    checks.append('native sale and purchase confirmations, cancellation, prices, save/reload and next-turn completion')
+
     driver.close_window(window)
     assert app.wait(timeout=10) == 0
     checks.append('normal desktop shutdown')

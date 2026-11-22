@@ -47,6 +47,11 @@ city window. Land Surveys enables Temple construction; Clay Casting enables
 Library construction. Completed buildings remain the manual production order
 until another item is selected. The center resets automatic worker assignment. The window shows
 food, shields, support, research and tax from the same session as the map.
+Buy production quotes the current shield purchase before confirmation; it fills
+the stock and leaves completion to the city turn. Owned facilities have Sell
+controls with confirmation, limited to one sale per city turn. Palace cannot be
+sold in this profile. These actions also use `city.buy` and `city.sell` in the
+console, with the same pending decision and cancellation behavior.
 
 Choose research in the sidebar or in the required turn decision. End-turn
 confirmation can be cancelled before upkeep. A research choice during upkeep

@@ -92,7 +92,9 @@ public sealed partial class SessionRuntime
             return new(new(slot, city.Token), city.TotalFood, city.Size * rules.Cosmic.FoodPerCitizen,
                 (city.Size + 1) * rules.Cosmic.FoodBoxRows, city.TotalShields, Math.Max(0, support - city.Size),
                 (city.Production >= 0 ? rules.Units[city.Production].CostRows : rules.Improvements[-city.Production].CostRows) * rules.Cosmic.ShieldBoxRows,
-                city.Science, city.Tax, city.SpecialistCount, new(tiles), new(production));
+                city.Science, city.Tax, city.SpecialistCount, new(tiles), new(production),
+                new(Enumerable.Range(BuildingIds.Palace, BuildingIds.Last).Where(i => BuildingQueries.HasBuilding(world, slot, i))
+                    .Select(i => new PlayOption(i, rules.Improvements[i].Identity.Name))), city.Flags.ImprovementSold);
         }
     }
 }

@@ -1820,6 +1820,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
@@ -2196,6 +2197,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
@@ -2255,6 +2257,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
@@ -2328,6 +2331,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
@@ -2372,6 +2376,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
@@ -2464,6 +2469,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
@@ -2514,6 +2520,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
@@ -2544,6 +2551,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
@@ -2590,6 +2598,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
@@ -2620,7 +2629,7 @@
       "id": "city-production",
       "contract": "C06 local production parent and nonunit completion; C08 buildings/wonders; V03 Darwin; V07 spaceship; W03 Apollo",
       "publicSurface": "CityProduction resumable local dispatch; retained CompletedImprovement; desktop production choices/turn/load for Temple and Library",
-      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. A02 decisions and presentation remain interfaces; general eligibility, buy/sell/change interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred.",
+      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. A02 decisions and presentation remain interfaces; general eligibility, full production-change interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred.",
       "status": "partial",
       "sharedGroups": [
         "C06.city-production-ai-spaceship-retarget",
@@ -2639,6 +2648,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
@@ -2658,6 +2668,44 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/CityProductionCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+      ]
+    },
+    {
+      "id": "player-production",
+      "contract": "C06 local player purchase and sale, F04 sale reset and F06 retention",
+      "publicSurface": "PlayerProduction purchase/sale operations; city.buy/city.sell pending commands; desktop city controls and owned facility projection",
+      "review": "Real C03 calculations and ProductionOrders snapshots surround retained purchase/sale decisions. Cases cover price families, zero-stock doubling, unsigned building and signed unit costs, cap/narrowing, affordability/disorder, cancellation, terminal failure, Palace/scenario exceptions and once-per-turn sales. Direct/console callers preserve full save agreement, sale flags across reload and reset at the next city turn; purchasing creates nothing until normal production runs. The native driver exercises real GUI confirmations and cancellation. Semantic target tokens prevent incidental selection from retargeting a command. General production-change/advice, full generated callers and network busy/deferred execution remain pending; browser/cross-platform execution is deferred.",
+      "status": "partial",
+      "sharedGroups": [
+        "C06.player-purchase-denial-cancellation-and-failure",
+        "C06.player-purchase-prices-and-completion",
+        "C06.player-purchase-signed-costs-and-limits",
+        "C06.player-sale-restrictions-and-commit",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
+        "M3.local-support-retirement",
+        "M4.local-buying-and-selling",
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
+        "M4.local-research-grant-turn"
+      ],
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Contracts/LocalPlayObservation.cs",
+        "src/OpenCiv2.Core/City/PlayerProduction.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.City.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/LocalPlayProjection.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
+        "tests/OpenCiv2.FoundationCases/PlayerProductionCases.cs"
       ]
     }
   ]

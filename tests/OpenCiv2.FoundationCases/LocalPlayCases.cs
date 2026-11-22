@@ -351,6 +351,64 @@ public static partial class FoundationSuite
         }
     }
 
+    private static void LocalPlayBuyingAndSelling()
+    {
+        byte[]? direct = null;
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, console, $"city.found unit={pioneer.Slot.Value}:{pioneer.Token.Value} name=Market", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Market")));
+            var saved = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            var civilizations = saved.Civilizations.ToArray();
+            var civ = StateConversion.ToLive(civilizations[1]); civ.Gold = 500;
+            civ.Advances = default(AdvanceSet).With(0).With(1); civ.NumAdvances = 2; civ.Researching = 2;
+            civilizations[1] = StateConversion.ToStored(civ);
+            var city = StateConversion.ToLive(saved.Cities[0]); city.Production = 4; city.ShieldBox = 2;
+            city.Improvements = city.Improvements.With(4).With(6);
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(saved with
+            { Civilizations = new(civilizations), Cities = new([StateConversion.ToStored(city)]) })));
+
+            CommandId Submit(string name, int? improvement = null)
+            {
+                var owned = game.Player.OwnCities().Records.Single();
+                var arg = new NamedValue("city", new CommandValue.City(new(owned.Slot, owned.Token)));
+                string line = $"{name} city={owned.Slot.Value}:{owned.Token.Value}";
+                return improvement is int item ? SubmitLocal(game, console, line + $" improvement={item}", name,
+                    arg, new("improvement", new CommandValue.Integer(item))) : SubmitLocal(game, console, line, name, arg);
+            }
+            CommandUpdate Finish(CommandId id, int? choice)
+            {
+                var pending = AwaitLocal(game, id); Decide(game.Player, console, pending, choice);
+                Equal(true, game.AdvanceOne()); return game.Player.Result(id)!;
+            }
+            Equal(CommandStatus.Cancelled, Finish(Submit(LocalPlayCommands.Buy), null).Status);
+            Equal(500, game.Player.ObserveLocalPlay()!.Gold); Equal((short)2, game.Player.OwnCities().Records.Single().ShieldBox);
+            int units = game.Player.OwnUnits().Records.Count;
+            var bought = Finish(Submit(LocalPlayCommands.Buy), 1);
+            Equal(CommandStatus.Completed, bought.Status); Equal(true, bought.Committed.Any(e => e.Name == "city.production_bought"));
+            Equal(487, game.Player.ObserveLocalPlay()!.Gold); Equal((short)8, game.Player.OwnCities().Records.Single().ShieldBox);
+            Equal(units, game.Player.OwnUnits().Records.Count);
+            Equal(CommandStatus.Cancelled, Finish(Submit(LocalPlayCommands.Sell, 4), 0).Status);
+            Equal(true, game.Player.ObserveLocalPlay()!.City!.Improvements.Any(i => i.Id == 4));
+            Equal(CommandStatus.Completed, Finish(Submit(LocalPlayCommands.Sell, 4), 1).Status);
+            Equal(495, game.Player.ObserveLocalPlay()!.Gold); Equal(true, game.Player.ObserveLocalPlay()!.City!.ImprovementSold);
+            Equal(false, game.Player.ObserveLocalPlay()!.City!.Improvements.Any(i => i.Id == 4));
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(game.SaveClassic()));
+            var blocked = Submit(LocalPlayCommands.Sell, 6); Equal(true, game.AdvanceOne());
+            Equal(CommandStatus.Failed, game.Player.Result(blocked)!.Status);
+            Equal(true, game.Player.Result(blocked)!.Committed.Any(e => e.Name == "city.sale_denied"));
+            EndLocalTurn(game, console, 2);
+            Equal(units + 1, game.Player.OwnUnits().Records.Count); Equal(false, game.Player.ObserveLocalPlay()!.City!.ImprovementSold);
+            int treasury = game.Player.ObserveLocalPlay()!.Gold;
+            Equal(CommandStatus.Completed, Finish(Submit(LocalPlayCommands.Sell, 6), 1).Status);
+            Equal(treasury + 12, game.Player.ObserveLocalPlay()!.Gold);
+            var final = game.SaveClassic();
+            if (direct is null) direct = final; else BytesEqual(direct, final);
+        }
+    }
+
     private static void LocalPlayProductionStocks()
     {
         foreach (bool console in new[] { false, true })

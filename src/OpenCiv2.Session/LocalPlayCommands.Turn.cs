@@ -303,6 +303,7 @@ public static partial class LocalPlayCommands
             var rules = context.Process.Rules.Definitions;
             ref var city = ref world.Entities.Cities.At(slot);
             ref var civ = ref world.Civilizations[city.Owner.Value];
+            city.Flags.ImprovementSold = false;
             CityTarget target = new(slot, city.Token);
             int before = city.Size;
             int previousFood = city.FoodBox;

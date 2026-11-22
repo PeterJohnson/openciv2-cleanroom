@@ -20,7 +20,9 @@ public sealed record PlayCity(
     int Tax,
     int Specialists,
     OwnedList<WorkerTile> Tiles,
-    OwnedList<PlayOption> Production);
+    OwnedList<PlayOption> Production,
+    OwnedList<PlayOption> Improvements,
+    bool ImprovementSold);
 
 /// <summary>Owned player-phase and city-window values for the bounded local ruleset.</summary>
 public sealed record LocalPlayObservation(

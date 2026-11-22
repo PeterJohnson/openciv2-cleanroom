@@ -163,6 +163,16 @@ publishes the civilization-turn phase input. The V03 reset caller is composed by
 `ResearchFlow`; general P06 interaction and A02's actual policy remain separate
 work.
 
+`PlayerProduction` owns local C06 player purchase/sale quotes and confirmed
+mutations. It uses actual C03 cached/full calculation and C06 snapshot refresh;
+purchase fills shields without completing an item. Sales enforce the Palace and
+once-per-turn rules with the reveal-map/scenario exception. Pending decisions
+retain target tokens and quoted prices; terminal failures cannot repeat payment.
+`LocalPlayCommands` exposes both through correlated interactions, the desktop city
+window and console. The city-turn entry clears the sale flag; classic save/load
+retains it between turns. General production-change dialogs/advice and network
+busy/deferred execution remain separate work.
+
 `Research.Cost` owns the full V03 cost formula and `Research.Options` its offered
 technology identities. `ResearchGrants` composes shared storage, actual C08
 Leonardo/ownership and recursive Great Library grants, including first-discovery,

@@ -23,6 +23,13 @@ join generated maps, all starting civilizations, real accelerated packages and
 the retained uniform road path, including fresh replay and cancellation. Browser
 execution and cross-platform qualification are deferred for this
 workstream; leaf tests do not close complete human/AI-game desktop acceptance.
+Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
+costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
+terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct
+and console scenario confirms purchases and sales through real pending decisions,
+compares complete saves and verifies later turn completion and sale-flag reset.
+The native driver exercises the same controls, cancellation, quoted prices and
+save/reload before completion.
 Shared C02 worker/yield tests cover real stacks, facilities, knowledge, water
 sources and pollution visits, including signed rules, retained assignments,
 AI cadence, specialist wrap and fresh-world isolation. The local desktop

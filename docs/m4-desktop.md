@@ -1254,3 +1254,59 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-nonunit-headless.xml` | `963f536089baa8115e92e771e3a9d249afa1c7439f6d0b3cbb892e2f0042679f` |
 | `m4-desktop-nonunit-native.json` | `64abea758da793adec9f66167abc0d0c75ba2d301676154d10b3f2ea76f0b116` |
 | `m4-desktop-nonunit-identity.json` | `ae4c35269bfcf95da326fc3c38419c35e866a8734f7e36a442ec457871ba52aa` |
+
+
+## Player purchases and facility sales
+
+`PlayerProduction` implements C06 local purchases and sales with actual C03
+calculation and C06 snapshots. The purchase quote retains owner, item, signed
+unit/unsigned improvement cost, price and affordability across the confirmation.
+It uses raw shield-box rows, the required price families, zero-stock doubling and
+remaining-stock clamp. Disorder blocks unit buying but permits nonunit buying;
+Capitalization has no purchase. Confirmation pays once, fills signed shield stock,
+refreshes the saved category/stock, then fully recalculates. It creates no unit or
+building until the normal production pass.
+
+Sales use semantic owned-facility identities. Palace and repeat sales are denied
+except with both reveal-map and scenario mode. Confirmation clears the building,
+credits its retained price, sets ImprovementSold and refreshes actual city values.
+Signed treasury wrap remains defined. Both operations retain city tokens rather
+than emulating incidental UI selection changes, and become terminal before effects
+so a failed notification cannot duplicate payment.
+
+The desktop exposes `city.buy` and `city.sell` with correlated decisions shared by
+GUI and console. The city window lists owned facilities and enables available
+sales. Cancel/decline preserves stock, facilities and treasury; an unaffordable
+quote offers no affirmative choice. F04 city entry clears ImprovementSold, while
+classic save/load retains it within the turn. The direct/console integration case
+compares complete saves after purchase, sale, reload, turn completion and another
+sale. The native driver adds the actual controls and save-before-completion path.
+
+General production-change/advice dialogs, full eligibility, A02 policy and the
+remaining generated-game/civilization/turn integration are still open. Local
+transactions do not implement N02 busy/deferred execution. Browser execution and
+cross-platform qualification remain deferred. No Lua automation changed; M4
+remains in progress.
+
+Validation: root/App formatting and verification passed; both Release builds
+finished with zero warnings/errors. Native tests passed **745 of 747**, with the
+two existing platform/opt-in skips. The shared probe passed **713 groups**;
+identity verification covered **435 compiled inputs**. Graph, conformance,
+**83-family** coverage, identity/coverage tool tests, content schemas and all six
+gameplay component schemas passed.
+
+All **12 Xvfb CPU desktop checks** passed, including native sale/purchase
+confirmations, decline/cancel, exact quoted prices, unchanged unit count at
+purchase, save/reload and actual production during the next city turn. Existing
+turn7/turn8 direct/CLI/native agreement, imports and normal shutdown also passed.
+These checks cover the admitted desktop profile; the full M4 generated-game
+exit gate remains open.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-transactions-play.json` | `6b866358c3bb9c180a995174e18529a7a19c9ed7410a19a19c07a71e13540280` |
+| `m4-desktop-transactions-headless.xml` | `d06ca8263c1dcd79b87e1a578b639c29319a35dc07d730362701469903107cbb` |
+| `m4-desktop-transactions-native.json` | `01dfa106fa504369ca96d46526bf828666ea697fca599049d5d18a7796b6a390` |
+| `m4-desktop-transactions-identity.json` | `f9f94ae4a25607c954a41718d2b01e428e308526a21004796f095f941fe0268f` |
