@@ -158,7 +158,17 @@ def drive(args, app, observation, storage):
     assert initial['play']['explored'] < moved['explored'] < 192
     checks.append('map movement and fog expansion')
 
-    select(0)
+    south = command(lambda: click('move.3'))
+    assert south['selected'] == 1
+    rider = next(u for u in south['play']['units'] if u['slot'] == 1)
+    assert (rider['x'], rider['y'], rider['moves']) == (12, 10, 4)
+    spent = command(lambda: click('move.3'), 'Failed')
+    assert 'movement_spent' in spent['message'] and spent['play']['effects'] == ['unit.movement_spent']
+    rider = next(u for u in spent['play']['units'] if u['slot'] == 1)
+    assert (rider['x'], rider['y'], rider['moves']) == (12, 10, 6)
+    assert spent['selected'] == 0 and (spent['map']['tileX'], spent['map']['tileY']) == (8, 8)
+    checks.append('selection follows a moving unit and advances after a failed partial step')
+
     founded = command(lambda: click('found'))['play']
     assert founded['cityOpen'] and founded['city']['size'] == 1
     assert all(unit['type'] != 0 for unit in founded['units'])

@@ -87,6 +87,8 @@ public static partial class FoundationSuite
         ("P05.map-target-command", MapTargetCommand),
         ("M3.local-play-round-trip", LocalPlayRoundTrip),
         ("M3.land-step-zones", LocalStepZones),
+        ("M3.local-play-specialist-admission", LocalPlaySpecialistAdmission),
+        ("M3.local-play-exhausted-step", LocalPlayExhaustedStep),
         ("P03.atlas-admission", AtlasAdmission),
         ("P03.png-filters-and-failures", PngFiltersAndFailures),
         ("P03.pinned-package-admission", PinnedPackageAdmission),

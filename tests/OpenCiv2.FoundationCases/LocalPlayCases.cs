@@ -3,6 +3,7 @@ using OpenCiv2.Base.Randomness;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
+using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
 using OpenCiv2.Core.Units;
@@ -35,6 +36,102 @@ public static partial class FoundationSuite
         BytesEqual(direct.SaveClassic(), console.SaveClassic());
     }
 
+    private static void LocalPlaySpecialistAdmission()
+    {
+        using var game = new LocalGame();
+        var player = game.Player;
+        var pioneer = player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+        RunLocal(game, false, "found test city", LocalPlayCommands.Found,
+            new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))),
+            new("name", new CommandValue.Text("Alder Crossing")));
+
+        var stored = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+        var worked = default(CityWorkSet).With(LocalCityEconomy.Center);
+        var cityView = player.ObserveLocalPlay()!.City!;
+        foreach (var tile in cityView.Tiles.Where(tile => tile.Index != LocalCityEconomy.Center).Take(4))
+        {
+            worked = worked.With(tile.Index);
+        }
+
+        var specialists = new SpecialistArray<SpecialistKind>();
+        specialists[0] = SpecialistKind.Entertainer;
+        var city = stored.Cities.Single() with
+        {
+            Size = 5,
+            WorkedTiles = StateConversion.EncodeCityWork(worked, specialists: 1),
+            SpecialistKinds = StateConversion.EncodeSpecialists(specialists)
+        };
+        var civilizations = stored.Civilizations.ToArray();
+        civilizations[1] = civilizations[1] with { TotalCitySize = 5 };
+        stored = stored with { Civilizations = new(civilizations) };
+
+        var before = LocalPlayerSnapshot.Capture(player);
+        foreach (var (index, kind) in new[]
+        {
+            (0, SpecialistKind.Scientist),
+            (0, SpecialistKind.TaxCollector),
+            (CityLimits.Specialists - 1, SpecialistKind.Scientist)
+        })
+        {
+            var unsupportedKinds = specialists;
+            unsupportedKinds[index] = kind;
+            var unsupported = city with { SpecialistKinds = StateConversion.EncodeSpecialists(unsupportedKinds) };
+            Equal(LocalLoadResult.UnsupportedGame,
+                game.LoadClassic(ClassicFiles.EncodeStoredSave(stored with { Cities = new([unsupported]) })));
+            Equal(player.Identity, game.Player.Identity);
+            Equal(before, LocalPlayerSnapshot.Capture(player));
+        }
+
+        Equal(LocalLoadResult.Loaded,
+            game.LoadClassic(ClassicFiles.EncodeStoredSave(stored with { Cities = new([city]) })));
+        Equal((sbyte)5, game.Player.OwnCities().Records.Single().Size);
+        Equal(1, game.Player.ObserveLocalPlay()!.City!.Specialists);
+        Equal(city.SpecialistKinds, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Cities.Single().SpecialistKinds);
+    }
+
+    private static void LocalPlayExhaustedStep()
+    {
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var player = game.Player;
+            var units = player.ObserveLocalPlay()!.Units;
+            var pioneer = units.Single(u => u.CanFound).Target;
+            var rider = units.Single(u => !u.CanFound).Target;
+            NamedValue unit = new("unit", new CommandValue.Unit(rider));
+            string target = $"{rider.Slot.Value}:{rider.Token.Value}";
+            RunLocal(game, console, $"unit.select unit={target}", LocalPlayCommands.Select, unit);
+            RunLocal(game, console, $"unit.move unit={target} direction=1", LocalPlayCommands.Move,
+                unit, new("direction", new CommandValue.Integer(1)));
+            ExhaustOutrider(game, console, pioneer, rider);
+        }
+    }
+
+    private static void ExhaustOutrider(LocalGame game, bool console, UnitTarget pioneer, UnitTarget rider)
+    {
+        var player = game.Player;
+        NamedValue unit = new("unit", new CommandValue.Unit(rider));
+        NamedValue south = new("direction", new CommandValue.Integer(3));
+        string stepSouth = $"unit.move unit={rider.Slot.Value}:{rider.Token.Value} direction=3";
+        RunLocal(game, console, stepSouth, LocalPlayCommands.Move, unit, south);
+        Equal<UnitTarget?>(rider, player.ObserveMap()!.Annotations!.ActiveUnit);
+        Equal(2, player.ObserveLocalPlay()!.Units.Single(u => u.Target == rider).MovesLeft);
+
+        var id = SubmitLocal(game, console, stepSouth, LocalPlayCommands.Move, unit, south);
+        Equal(true, game.AdvanceOne());
+        var result = player.Result(id)!;
+        Equal(CommandStatus.Failed, result.Status);
+        Equal("movement_spent", result.Code);
+        var effect = result.Committed.Single();
+        Equal("unit.movement_spent", effect.Name);
+        Equal(unit, effect.Values.Single());
+        Equal(new MapPoint(12, 10), player.OwnUnits().Records.Single(u => u.Slot == rider.Slot).Position);
+        var play = player.ObserveLocalPlay()!;
+        Equal(0, play.Units.Single(u => u.Target == rider).MovesLeft);
+        Equal(3, play.Units.Single(u => u.Target == pioneer).MovesLeft);
+        Equal<UnitTarget?>(pioneer, player.ObserveMap()!.Annotations!.ActiveUnit);
+    }
+
     private static byte[] PlayAlderValley(LocalGame game, bool console)
     {
         var player = game.Player;
@@ -63,6 +160,7 @@ public static partial class FoundationSuite
         Equal(true, player.ObserveMap()!.Tiles.Count(t => t.Terrain is not null) >
             initial.Tiles.Count(t => t.Terrain is not null));
         Equal(null, player.ObserveMap()!.Tiles[0].Terrain);
+        ExhaustOutrider(game, console, new(settler.Slot, settler.Token), new(rider.Slot, rider.Token));
 
         RunLocal(game, console, $"city.found unit={st} name=\"Alder Crossing\"", LocalPlayCommands.Found, settlerValue,
             new("name", new CommandValue.Text("Alder Crossing")));

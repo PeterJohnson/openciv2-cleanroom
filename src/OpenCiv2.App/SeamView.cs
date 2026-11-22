@@ -513,8 +513,12 @@ public sealed partial class SeamView : UserControl
             }
         }
 
-        if (game is not null && view.Map?.Annotations?.ActiveUnit is { } selected && previous?.Map?.Annotations?.ActiveUnit != selected
-            && view.Units?.Records.FirstOrDefault(unit => unit.Slot == selected.Slot && unit.Token == selected.Token) is { } selectedUnit)
+        if (game is not null && view.Map?.Annotations?.ActiveUnit is { } selected
+            && view.Units?.Records.FirstOrDefault(unit =>
+                unit.Slot == selected.Slot && unit.Token == selected.Token) is { } selectedUnit
+            && (previous?.Map?.Annotations?.ActiveUnit != selected
+                || previous?.Units?.Records.Any(unit => unit.Slot == selected.Slot && unit.Token == selected.Token
+                    && unit.Position != selectedUnit.Position) == true))
         {
             activeTarget = selected;
             selection = new(selectedUnit.Position, MapPickKind.Unit);

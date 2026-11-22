@@ -1813,7 +1813,9 @@
       "review": "One authored rules profile, local human seat, ordinary land movement, one city, console and GUI actions, cancellable end-turn confirmation, required research, classic replacement and continued play. Full M3 cross-platform acceptance is pending.",
       "sharedGroups": [
         "M3.land-step-zones",
-        "M3.local-play-round-trip"
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission"
       ],
       "status": "partial",
       "sources": [

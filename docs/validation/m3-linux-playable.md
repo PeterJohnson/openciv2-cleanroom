@@ -37,8 +37,13 @@ The native save slot resides in the application file library. The F06
 operation writes bytes before the native store wraps them for durable
 publication. The file library exports the enclosed bytes as a normal
 `.SAV`. A rejected load leaves the live session and its bindings intact. The
-CLI declares the entry mode, rules and RNG seeds. Classic reload initializes
+profile admits entertainers. The loader rejects saves containing a scientist
+or tax collector in any specialist slot before city recalculation. The CLI
+declares the entry mode, rules and RNG seeds. Classic reload initializes
 its own RNG contexts. The saved file supplies the retained classic values.
+
+When a partial-movement roll exhausts the active unit, the failed command
+commits the movement spent and publishes the next eligible unit selection.
 
 ## Reproducing the Linux checks
 
@@ -97,6 +102,16 @@ Receipts under `build/test-results` record the executed inputs and results.
 | `m3-linux-headless.xml` | `aa0089ae3dd19992dc57d9e38bbf23054923f53e0c07cfab9af1ac9e4e3f497f` |
 | `m3-linux-sqlite.xml` | `3970ec1817708802d53a5b95405731154fa69a421ebc3f24146de713c0db4b4d` |
 | `m3-linux-x02.json` | `9f2a3e69cfb0f78951255dca2e99d54173687e3d901d530fd6b440ddae31f814` |
+
+## Specialist and movement follow-up
+
+The Linux headless suite passed 506 cases with the same two skips. The new
+coverage checks that unsupported specialist kinds leave the current session
+intact and that the E, S, S sequence reselects the Pioneer through direct and
+console commands. The native round trip now runs the same sequence. It passed
+with the loaded CLI and SQLite checks, and all 32 Riverbend input checks
+passed. The follow-up receipts in `build/test-results` use the
+`m3-correctness-` prefix.
 
 ## Acceptance boundary
 

@@ -76,18 +76,24 @@ public static partial class LocalPlayCommands
     private static OperationStep MoveUnit(OperationContext context, CommandRequest request)
     {
         var target = UnitArgument(request);
-        var (code, changed) = LandMovement.Step(context.World, context.Process.Rules.Definitions,
-            target.Slot, Number(request, "direction"), context.Gameplay);
+        var world = context.World;
+        var rules = context.Process.Rules.Definitions;
+        var (code, changed) = LandMovement.Step(world, rules, target.Slot, Number(request, "direction"), context.Gameplay);
         NamedValue unit = new("unit", new CommandValue.Unit(target));
         if (code == "moved")
         {
-            context.World.Globals.ActiveUnit = target.Slot;
-            SelectReadyUnit(context.World, context.Process.Rules.Definitions);
+            world.Globals.ActiveUnit = target.Slot;
+            SelectReadyUnit(world, rules);
             return Commit(context, "unit.moved", unit);
         }
 
         if (changed)
         {
+            if (code == "movement_spent" && world.Globals.ActiveUnit == target.Slot)
+            {
+                SelectReadyUnit(world, rules);
+            }
+
             context.Effect("unit." + code, new([unit]));
         }
 
