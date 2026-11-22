@@ -125,6 +125,14 @@ with retained F04 human wonder ranges, regional policy and real V07 race queries
 Alder Valley now calls this service instead of its previous completion shortcut and uses shared `UnitAvailability`.
 Nonunit completion and the full production parent remain pending.
 
+`SpaceshipPerformance` owns V07 calculation and group selection, using selected
+spaceship/calendar values and retained `GameState.Spaceship` scratch. The capacity
+queries consume those values explicitly. `SpaceshipConstruction` performs actual
+assembly and automatic/local launch, including first-ship contacts and directed
+diplomacy effects. `DiplomaticRelations` supplies V04's bilateral flag cascades.
+A02 city reselection and human choices/presentation remain required children;
+C06 nonunit completion, spaceship reports and F04 arrival outcomes are still open.
+
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this
 workspace within a world. `TerritoryQueries.PeaceOwner` supplies the directed

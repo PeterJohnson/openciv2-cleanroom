@@ -44,26 +44,26 @@ public static partial class FoundationSuite
         for (int p = 1; p < 6; ++p)
         {
             w.Civilizations[1].SpaceshipParts[0] = (short)(first[p] - 1);
-            Equal(0, SpaceshipQueries.PartLimit(w, 1, p));
+            Equal(0, SpaceshipQueries.PartLimit(w, ClassicShip, 1, p));
             w.Civilizations[1].SpaceshipParts[0] = (short)first[p];
-            Equal(1, SpaceshipQueries.PartLimit(w, 1, p));
+            Equal(1, SpaceshipQueries.PartLimit(w, ClassicShip, 1, p));
         }
         w.Civilizations[1].SpaceshipParts[0] = 39;
         w.Civilizations[2].SpaceshipParts[0] = 39;
         for (int p = 3; p < 6; ++p)
         {
-            Equal(4, SpaceshipQueries.PartLimit(w, 1, p));
-            Equal(1, SpaceshipQueries.PartLimit(w, 2, p));
+            Equal(4, SpaceshipQueries.PartLimit(w, ClassicShip, 1, p));
+            Equal(1, SpaceshipQueries.PartLimit(w, ClassicShip, 2, p));
         }
         w.Civilizations[1].SpaceshipParts[0] = -10;
         w.Civilizations[1].SpaceshipParts[1] = 8;
         w.Civilizations[1].SpaceshipParts[3] = 4;
-        Equal(-2, SpaceshipQueries.PartLimit(w, 1, 1));
-        Equal(-2, SpaceshipQueries.PartCount(w, 1, 1));
-        Equal(0, SpaceshipQueries.PartCount(w, 1, 3));
+        Equal(-2, SpaceshipQueries.PartLimit(w, ClassicShip, 1, 1));
+        Equal(-2, SpaceshipQueries.PartCount(w, ClassicShip, 1, 1));
+        Equal(0, SpaceshipQueries.PartCount(w, ClassicShip, 1, 3));
         Equal((short)8, w.Civilizations[1].SpaceshipParts[1]);
-        Equal(39, SpaceshipQueries.PartLimit(w, 999, 0)); // Structural maximum does not read a civilization.
-        Throws<IndexOutOfRangeException>(() => SpaceshipQueries.PartLimit(w, 1, 6));
+        Equal(39, SpaceshipQueries.PartLimit(w, ClassicShip, 999, 0)); // Structural maximum does not read a civilization.
+        Throws<IndexOutOfRangeException>(() => SpaceshipQueries.PartLimit(w, ClassicShip, 1, 6));
         Sequence(new[] { 0, 1, 2, 3, 4, 6, 8, 11, 14 }, Enumerable.Range(0, 9).Select(SpaceshipQueries.Thrust));
         Equal(0, SpaceshipQueries.Thrust(-1)); Equal(int.MaxValue - 12, SpaceshipQueries.Thrust(int.MaxValue));
     }
@@ -71,30 +71,30 @@ public static partial class FoundationSuite
     private static void SpaceshipGroupRawAndSupportedCounts()
     {
         var f = new PurchaseFixture(); var w = f.World;
-        Equal(true, SpaceshipQueries.GroupAtLimit(w, 1, 1));
-        Equal(true, SpaceshipQueries.GroupCanBuild(w, f.Rules, 1, 1)); // Empty unsupported group may start.
+        Equal(true, SpaceshipQueries.GroupAtLimit(w, ClassicShip, 1, 1));
+        Equal(true, SpaceshipQueries.GroupCanBuild(w, f.Rules, ClassicShip, 1, 1)); // Empty unsupported group may start.
         w.Civilizations[1].SpaceshipParts[1] = 1;
-        Equal(false, SpaceshipQueries.GroupCanBuild(w, f.Rules, 1, 1));
+        Equal(false, SpaceshipQueries.GroupCanBuild(w, f.Rules, ClassicShip, 1, 1));
         w.Civilizations[1].SpaceshipParts[1] = 16;
-        Equal(true, SpaceshipQueries.GroupFull(w, 1, 1));
-        Equal(false, SpaceshipQueries.PartMaxed(w, 1, BuildingIds.Component));
+        Equal(true, SpaceshipQueries.GroupFull(w, ClassicShip, 1, 1));
+        Equal(false, SpaceshipQueries.PartMaxed(w, ClassicShip, 1, BuildingIds.Component));
         Equal(16, SpaceshipQueries.GroupCount(w, 1, 1));
-        Equal(0, SpaceshipQueries.GroupCountClamped(w, 1, 1));
+        Equal(0, SpaceshipQueries.GroupCountClamped(w, ClassicShip, 1, 1));
         w.Civilizations[1].SpaceshipParts[0] = 39;
         w.Civilizations[1].SpaceshipParts[1] = w.Civilizations[1].SpaceshipParts[2] = 8;
-        Equal(true, SpaceshipQueries.PartMaxed(w, 1, BuildingIds.Component));
-        Equal(16, SpaceshipQueries.GroupLimit(w, 1, 1));
+        Equal(true, SpaceshipQueries.PartMaxed(w, ClassicShip, 1, BuildingIds.Component));
+        Equal(16, SpaceshipQueries.GroupLimit(w, ClassicShip, 1, 1));
         for (int p = 3; p < 6; ++p) w.Civilizations[1].SpaceshipParts[p] = short.MaxValue;
         Equal(98301, SpaceshipQueries.GroupCount(w, 1, -35));
-        Equal(3, SpaceshipQueries.GroupCountClamped(w, 1, -35));
-        Equal(12, SpaceshipQueries.GroupMaximum(-35));
-        Equal(true, SpaceshipQueries.PartMaxed(w, 1, -100));
+        Equal(3, SpaceshipQueries.GroupCountClamped(w, ClassicShip, 1, -35));
+        Equal(12, SpaceshipQueries.GroupMaximum(ClassicShip, -35));
+        Equal(true, SpaceshipQueries.PartMaxed(w, ClassicShip, 1, -100));
         for (int p = 3; p < 6; ++p) w.Civilizations[1].SpaceshipParts[p] = 0;
         f.Rules.Improvements[0] = f.Rules.Improvements[0] with { Prerequisite = AdvanceReference.None };
         w.Globals.Rules.Bloodlust = true; w.Civilizations[1].SpaceshipFlags.Launched = true;
-        Equal(true, SpaceshipQueries.GroupCanBuild(w, f.Rules, 1, -35)); // Caller-owned race gates are absent here.
+        Equal(true, SpaceshipQueries.GroupCanBuild(w, f.Rules, ClassicShip, 1, -35)); // Caller-owned race gates are absent here.
         f.Rules.Improvements[0] = f.Rules.Improvements[0] with { Prerequisite = AdvanceReference.Never };
-        Equal(false, SpaceshipQueries.GroupCanBuild(w, f.Rules, 1, -35));
+        Equal(false, SpaceshipQueries.GroupCanBuild(w, f.Rules, ClassicShip, 1, -35));
     }
 
     private static void SpaceshipRaceAndArrivalPredicates()

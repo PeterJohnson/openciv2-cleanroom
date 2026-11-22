@@ -61,6 +61,14 @@ overrides, negative remaining cost, refund failure prefixes, fixed nuclear ident
 and repeated almost-wonder notices without a second completion pass. Direct/console
 desktop tests cover overflow, excess stock, capacity failure and save/resume through this shared path.
 
+V07 construction groups now join actual calendar, performance, group selection,
+assembly, launch and bilateral treaty mutations. Cases cover loaded custom part
+maxima/mass, the missing-kind supplement and separate estimates, Fusion and shared
+scratch retention, year wrap, human retries, first-ship contacts, AI launch
+thresholds/slot0 comparison, directed diplomacy and callback failure prefixes.
+Player presentation and A02 reselection remain boundary fixtures; complete C06
+nonunit turns and spaceship desktop reports/outcomes remain pending.
+
 ## Complete M2 map renderer
 
 M2 development is [closed with tracked deferrals](../m2-closeout.md). Continue

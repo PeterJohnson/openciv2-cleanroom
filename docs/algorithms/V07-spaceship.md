@@ -85,6 +85,10 @@ One mass unit represents100 tons; one habitation unit represents10,000 people.
 Flight values below are tenths of a year. These numeric scales affect rounding;
 a different internal representation must preserve the same results.
 
+The table gives classic values. Selected custom maxima, masses and population
+display scale follow [gameplay-format §3](../content/gameplay-format.md#3-spaceship);
+the capacity, selection and arithmetic procedures remain unchanged.
+
 Use F01's behavioral arithmetic, truncating division, arithmetic right shifts
 and ordered `clampAB(x,lo,hi)`. Nominal part counts are integers 0…39 for
 Structural, 0…8 for each Component, and 0…4 for each Module; supported capacities
@@ -217,10 +221,17 @@ its saved preview fields. It draws no random value.
     If now launched, skip all four publications, leaving their previous values.
 
 Displayed mass and flight split the integer into quotient/remainder by10; this
-presentation does not change calculation precision. The calculated arrival year
-uses B's missing-kind mass, whereas displayed flight uses A's actual mass. The
+presentation does not change calculation precision. Following steps2 and7, the
+calculated arrival year uses B's captured raw-part mass, whereas displayed flight
+uses A's shared mass with the missing-kind supplement. The
 shared projected year uses D's raw engines and can be earlier than the saved
 arrival for an under-supported ship.
+
+This wording resolves an earlier inversion in this explanatory paragraph; the
+ordered calculation above is unchanged. For `[39,8,8,4,0,4]` at P75, raw-part
+mass is231, shared mass is247, displayed flight is131, and saved/projected
+arrival is calendar+12. Omitting the support multiplier leaves success100;
+including it makes success0.
 
 A nominal full human ship `[39,8,8,4,4,4]` has mass295, all ratios100, flight156
 and success100 at stock P75. With Fusion, P becomes56, flight117. A human ship

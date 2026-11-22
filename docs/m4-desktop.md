@@ -16,7 +16,7 @@ in the [M2 closeout](m2-closeout.md).
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration and the C06 unit-production branch now run in Alder Valley using real local V02/U01/C01 children. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing/Apollo, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
-| Outcomes | V07 capacity/race/arrival predicates, reset/loss and V01 destruction history are implemented. Spaceship construction/launch/arrival, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
+| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 nonunit integration, spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. The new leaf tests do not satisfy this gate. |
 
@@ -878,3 +878,60 @@ No Lua automation was changed.
 | `m4-desktop-purchase-headless.xml` | `35312dd1434656ed70c78b1b8aaf2a4f662542947b5e076d17059799230f2ca2` |
 | `m4-desktop-purchase-native.json` | `bf4b2641a007229d4d5788b89266f4804ae7ad6893cd265feba26f6bb921e006` |
 | `m4-desktop-purchase-identity.json` | `e50d1532c99f1814f2327394c6ad649b7e403c05e5b239fd687218e4cdf1e1fc` |
+
+
+## Spaceship performance, construction and launch
+
+`SpaceshipPerformance` implements V07's three distinct flight estimates using
+actual F04 calendar calls and shared within-world scratch. It preserves Fusion
+retention, raw count mass, the supplement for exactly-zero kinds, support omission,
+post-division paradigm scaling, signed preview years and retained launched metadata.
+The specification's explanatory mass sentence was inverted relative to its numbered
+procedure; it now matches the unchanged procedure, with a discriminating missing-Life-
+support example. No external implementation or historical harness was used.
+
+The capacity APIs now require selected `SpaceshipValues`. The previous checkpoint's
+fixed maxima did not cover the declared custom gameplay format. Loaded custom values
+now govern capacity, group maxima, per-kind maxima, assembly limits and raw/missing
+mass consistently; structural-support formulas and AI module caps remain fixed.
+
+Group choice preserves preview-only human arrival comparisons, descending group
+search and the emergency component equality exception. Assembly implements human
+retry/custom backed replies, AI selection ties, first-ship contact resets, signed
+count writes and the AI return value3. Automatic launch preserves success thresholds,
+the earliest human race, the slot0 comparison and power/gold alternatives. Local
+launch mutates its first-launch marker before callbacks and uses actual V04 bilateral
+Incident or directed reverse relation changes. `DiplomaticRelations` also implements
+the ordered Alliance/Peace/War/Contact cascades, including contradictory flag sets.
+
+Required A02/C06 city reselection and player choice/presentation boundaries remain
+explicit. Tests observe those boundaries; they do not implement a production policy
+or spaceship window. C06 nonunit completion, graphical/text spaceship reports,
+launch media, F04 arrival processing, V08 scoring/outcomes and full generated desktop
+acceptance remain open. This checkpoint advances their dependencies without closing M4.
+
+
+### Spaceship-construction validation on Linux, 2026-11-22
+
+Root and App Release builds passed with zero warnings/errors. Both solutions
+passed formatting verification. Native tests reported **682 passed and two
+existing skips** (native audio opt-in and Windows delete-sharing); all **650
+shared groups** passed, including thirteen new groups. Source identity verified
+**418 compiled inputs**, and coverage accounts for 77 API/test families. Graph,
+conformance metadata, identity (8 cases) and coverage (3 cases) validators passed.
+The gameplay-data validator passed using the existing pinned schema environment;
+the classic semantic fingerprint is unchanged. V07's reviewed documentation hash
+was refreshed in both the conformance registry and gameplay provenance ledger.
+
+The isolated Xvfb CPU desktop driver passed all ten authored-profile checks:
+production controls, native/direct/CLI agreement, picker import, invalid-load
+retention, save at turn7, resumed turn8 and shutdown. This does not establish a
+playable spaceship UI or complete generated human/AI games. Browser execution
+and cross-platform qualification remain deferred. No Lua automation was changed.
+
+| Local receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-spaceship-play.json` | `6bcb0c38ca99f0078c21142df11b060dfd70d30d0dea26588b47b28f46192aee` |
+| `m4-desktop-spaceship-headless.xml` | `94d09ab0062ef453bbea02fd81df48006e34b61d353c9faa09c69c833e99f869` |
+| `m4-desktop-spaceship-native.json` | `421846c374640442ade4798543ca9a20d8225825ef7dcbba028227433ba69060` |
+| `m4-desktop-spaceship-identity.json` | `b6ccf733d5b1db16fd42759c61e2aff4ec9a709be5e8d5db0209f51aaa519fdb` |

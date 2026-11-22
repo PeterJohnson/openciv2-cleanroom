@@ -10,11 +10,9 @@ namespace OpenCiv2.Core;
 /// calculate performance, mutate preview years or process arrival outcomes.</summary>
 public static class SpaceshipQueries
 {
-    private static readonly int[] Maxima = [39, 8, 8, 4, 4, 4];
-
-    public static int PartLimit(GameState world, int owner, int part)
+    public static int PartLimit(GameState world, SpaceshipValues values, int owner, int part)
     {
-        int maximum = Maxima[part];
+        int maximum = values.Parts[part].MaximumCount;
         if (part == 0)
         {
             return maximum;
@@ -35,29 +33,29 @@ public static class SpaceshipQueries
         return Math.Max(0, limit);
     }
 
-    public static int PartCount(GameState world, int owner, int part) =>
-        Arithmetic.ClampAB(world.Civilizations[owner].SpaceshipParts[part], 0, PartLimit(world, owner, part));
+    public static int PartCount(GameState world, SpaceshipValues values, int owner, int part) =>
+        Arithmetic.ClampAB(world.Civilizations[owner].SpaceshipParts[part], 0, PartLimit(world, values, owner, part));
 
-    public static int GroupMaximum(int group) => group switch { 0 => 39, 1 => 16, _ => 12 };
+    public static int GroupMaximum(SpaceshipValues values, int group) => Sum(group, p => values.Parts[p].MaximumCount);
     public static int GroupCount(GameState world, int owner, int group) => Sum(group, p => world.Civilizations[owner].SpaceshipParts[p]);
-    public static int GroupLimit(GameState world, int owner, int group) => Sum(group, p => PartLimit(world, owner, p));
-    public static int GroupCountClamped(GameState world, int owner, int group) => Sum(group, p => PartCount(world, owner, p));
-    public static bool GroupFull(GameState world, int owner, int group) => GroupMaximum(group) <= GroupCount(world, owner, group);
-    public static bool GroupAtLimit(GameState world, int owner, int group) => GroupLimit(world, owner, group) <= GroupCount(world, owner, group);
+    public static int GroupLimit(GameState world, SpaceshipValues values, int owner, int group) => Sum(group, p => PartLimit(world, values, owner, p));
+    public static int GroupCountClamped(GameState world, SpaceshipValues values, int owner, int group) => Sum(group, p => PartCount(world, values, owner, p));
+    public static bool GroupFull(GameState world, SpaceshipValues values, int owner, int group) => GroupMaximum(values, group) <= GroupCount(world, owner, group);
+    public static bool GroupAtLimit(GameState world, SpaceshipValues values, int owner, int group) => GroupLimit(world, values, owner, group) <= GroupCount(world, owner, group);
 
-    public static bool GroupCanBuild(GameState world, RuleTables rules, int owner, int group) =>
-        (!GroupAtLimit(world, owner, group) || GroupCount(world, owner, group) == 0)
-        && !GroupFull(world, owner, group)
+    public static bool GroupCanBuild(GameState world, RuleTables rules, SpaceshipValues values, int owner, int group) =>
+        (!GroupAtLimit(world, values, owner, group) || GroupCount(world, owner, group) == 0)
+        && !GroupFull(world, values, owner, group)
         && CivilizationKnowledge.KnowsAdvance(world.Civilizations, owner, (int)rules.Improvements[unchecked(group + 35)].Prerequisite);
 
-    public static bool PartMaxed(GameState world, int owner, int improvement)
+    public static bool PartMaxed(GameState world, SpaceshipValues values, int owner, int improvement)
     {
         ref var parts = ref world.Civilizations[owner].SpaceshipParts;
         return improvement switch
         {
-            BuildingIds.Structural => parts[0] >= 39,
-            BuildingIds.Component => parts[1] >= 8 && parts[2] >= 8,
-            _ => parts[3] >= 4 && parts[4] >= 4 && parts[5] >= 4
+            BuildingIds.Structural => parts[0] >= values.Parts[0].MaximumCount,
+            BuildingIds.Component => parts[1] >= values.Parts[1].MaximumCount && parts[2] >= values.Parts[2].MaximumCount,
+            _ => parts[3] >= values.Parts[3].MaximumCount && parts[4] >= values.Parts[4].MaximumCount && parts[5] >= values.Parts[5].MaximumCount
         };
     }
 

@@ -2367,7 +2367,7 @@
       "status": "partial",
       "contract": "C06 local AI purchase phase; F04 retained human wonder extrema; V07 sections2,8 capacity/group queries, race and arrival predicates",
       "publicSurface": "AiProductionPurchase.Run; HumanWonderRanges.Update; SpaceshipQueries; actual unit-production purchase tail and local pre-advancement summary refresh",
-      "review": "Purchasing uses unsigned costs, retained A01/F04 inputs, ordered overrides, fixed Nuclear Missile identity, reversed-bound clamp, exact refund divisions and repeated almost-wonder notices. V07 predicates distinguish raw/supported counts, uneven group maxima, destroyed Apollo, dead human seats and independent ship flags. Tests cover custom and negative scalars, retained summaries, failed divisions/announcements and real unit completion followed by purchasing without another completion pass. A02 reselection remains a required child. Nonunit production, player purchases/sales, spaceship performance/assembly/launch/arrival handling and full generated desktop turns remain pending; this is not complete M4 acceptance.",
+      "review": "Purchasing uses unsigned costs, retained A01/F04 inputs, ordered overrides, fixed Nuclear Missile identity, reversed-bound clamp, exact refund divisions and repeated almost-wonder notices. V07 predicates distinguish raw/supported counts, uneven group maxima, destroyed Apollo, dead human seats and independent ship flags. Tests cover custom and negative scalars, retained summaries, failed divisions/announcements and real unit completion followed by purchasing without another completion pass. A02 reselection remains a required child. Nonunit production, player purchases/sales, spaceship report/arrival handling and full generated desktop turns remain pending; this is not complete M4 acceptance.",
       "sources": [
         "src/OpenCiv2.Core/City/AiProductionPurchase.cs",
         "src/OpenCiv2.Core/City/CityUnitProduction.cs",
@@ -2392,6 +2392,38 @@
         "V07.group-raw-supported",
         "V07.part-capacity-thrust",
         "V07.race-arrival-predicates"
+      ]
+    },
+    {
+      "id": "spaceship-construction",
+      "status": "partial",
+      "contract": "V07 sections2\u20136 configurable capacities, performance, group choice, part assembly and local launch; V04 section3 bilateral flag cascades; actual F04 calendar",
+      "publicSurface": "SpaceshipPerformance.Calculate/ChooseGroup; SpaceshipConstruction.AddPart/Launch; SpaceshipWorkspace; configurable SpaceshipQueries; DiplomaticRelations.Set/Clear",
+      "review": "Shared world scratch and actual calendar preserve Fusion retention, missing-kind mass, distinct supported/raw flight estimates, post-division scale, preview wrap and launched metadata. Group selection and assembly retain custom maxima, race-close/emergency equality, human retry and backed custom reply behavior, first-ship contacts, AI ties/return3 and slot0 launch comparison. Launch uses real bilateral Incident mutations or ordered directed changes and retains failure prefixes; AI production reselection and player presentation remain required children. Thirteen shared groups include values loaded through the content bundle, actual calendar era change, reset/fresh-world retention and relation cascades. C06 nonunit production integration, spaceship UI/video/report operations, F04 arrival outcomes, scoring and full desktop games remain pending.",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomaticRelations.cs",
+        "src/OpenCiv2.Core/SpaceshipConstruction.cs",
+        "src/OpenCiv2.Core/SpaceshipPerformance.cs",
+        "src/OpenCiv2.Core/SpaceshipQueries.cs",
+        "src/OpenCiv2.Core/State/GameState.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SpaceshipConstructionCases.cs"
+      ],
+      "sharedGroups": [
+        "V04.relation-cascades",
+        "V07.ai-launch-race-slot-zero",
+        "V07.ai-launch-thresholds",
+        "V07.configured-maxima-mass",
+        "V07.first-ship-ai-selection",
+        "V07.group-choice-race",
+        "V07.group-emergency-equality",
+        "V07.human-launch-relations",
+        "V07.human-selection-repeats",
+        "V07.launch-mutations-callbacks",
+        "V07.performance-classic-fusion",
+        "V07.performance-missing-unsupported",
+        "V07.preview-retention-calendar"
       ]
     }
   ]

@@ -73,6 +73,7 @@ public sealed class GameState
     public CityMoodWorkspace Mood { get; } = new();
     public CityCalculationWorkspace Calculation { get; } = new();
     public HumanWonderRanges HumanWonders { get; } = new();
+    public SpaceshipWorkspace Spaceship { get; } = new();
     public GenerationPathWorkspace Paths { get; } = new();
     public MapStorage Map { get; }
 }
