@@ -53,10 +53,13 @@ Shared C06 unit-production tests cover actual creation and capacity failure,
 signed stock/cost behavior, disorder/barbarian accumulation, upgrade selection,
 veteran facilities/wonders, transport counters, settler refusal/cancellation and
 city-disband recreation through real C01/V01 services. AI diplomat and nuclear
-contact cases preserve branch/draw behavior. Cargo, AI choice and purchase
-fixtures test required continuation boundaries and retained failure effects;
-they are not full policy implementations. Direct/console desktop tests cover
-overflow, excess stock, capacity failure and save/resume through this shared path.
+contact cases preserve branch/draw behavior. Cargo and AI choice fixtures test
+required continuation boundaries and retained failure effects; they are not full policy implementations. Actual AI purchasing
+now follows unit completion, using retained human wonder ranges and real V07
+race predicates. Separate cases cover spaceship capacities and raw group counts. Shared cases cover unsigned costs, ordered spending
+overrides, negative remaining cost, refund failure prefixes, fixed nuclear identity
+and repeated almost-wonder notices without a second completion pass. Direct/console
+desktop tests cover overflow, excess stock, capacity failure and save/resume through this shared path.
 
 ## Complete M2 map renderer
 

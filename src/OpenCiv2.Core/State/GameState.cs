@@ -72,6 +72,7 @@ public sealed class GameState
     public MapView[] Views { get; } = new MapView[EntityLimits.Civilizations];
     public CityMoodWorkspace Mood { get; } = new();
     public CityCalculationWorkspace Calculation { get; } = new();
+    public HumanWonderRanges HumanWonders { get; } = new();
     public GenerationPathWorkspace Paths { get; } = new();
     public MapStorage Map { get; }
 }

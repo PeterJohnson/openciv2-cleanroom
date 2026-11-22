@@ -20,10 +20,10 @@ public static partial class FoundationSuite
         public List<UnitType> BuiltTypes { get; } = [];
         public List<string> Order { get; } = [];
         public bool Abandon;
-        public int AbandonRequests, Checks, Choices, Purchases, PurchaseNet, CargoSelections;
+        public int AbandonRequests, Checks, Choices, CargoSelections;
         public Action<CitySlot>? Choose;
         public Action<UnitSlot>? Cargo;
-        public Action? Buy;
+        public List<AlmostWonderNotice> AlmostWonders { get; } = [];
 
         public UnitProductionFixture()
         {
@@ -43,12 +43,12 @@ public static partial class FoundationSuite
         public UnitProductionResult Run() => Production.Run(new(0), "production");
         public void ReconsiderProduction(CitySlot city) { ++Choices; Order.Add("choose"); Choose?.Invoke(city); }
         public void ChooseTradeCargo(CitySlot city, int owner, UnitSlot unit) { ++CargoSelections; Order.Add("cargo"); Cargo?.Invoke(unit); }
-        public void Purchase(CitySlot city, int owner, int netShields) { ++Purchases; PurchaseNet = netShields; Order.Add("buy"); Buy?.Invoke(); }
         public int CheckCivilization(int owner, int killer) { ++Checks; Order.Add("eliminate"); return Lifecycle.Elimination.Check(owner, killer, "production-elimination"); }
         public bool AbandonCity(CitySlot city, UnitType type) { ++AbandonRequests; return Abandon; }
         public void Upgraded(CitySlot city, UnitType oldType, UnitType newType) => Upgrades.Add((oldType, newType));
         public void Built(CityTarget city, UnitType type) { BuiltTypes.Add(type); Order.Add("built"); }
         public void Redraw(MapPoint position) => Order.Add("draw");
+        public void AlmostWonder(AlmostWonderNotice notice) => AlmostWonders.Add(notice);
     }
 
     private static void UnitProductionStocksAndCapacity()
@@ -81,7 +81,7 @@ public static partial class FoundationSuite
         f = new(); f.City.Owner = new(0); f.World.Civilizations[0].ContinentMilitary[1] = 17;
         f.City.ShieldBox = 19; f.Data.AddUnit(0, 2, 4, f.City.Position);
         Equal(UnitProductionOutcome.NotReady, f.Run().Outcome); Equal((short)0, f.City.ShieldBox);
-        Equal(4, f.PurchaseNet); Equal(1, f.Purchases); // Any occupying unit owner activates the barbarian reset.
+        Equal(1, f.Choices); Equal(0, f.World.Civilizations[0].Gold); // Any occupying unit owner activates the barbarian reset.
         f.World.Civilizations[0].ContinentMilitary[1] = 16; f.City.ShieldBox = 19;
         Equal(UnitProductionOutcome.Completed, f.Run().Outcome); Equal((short)3, f.City.ShieldBox);
         Equal((byte)0, f.World.Entities.Units.Storage[1].Owner.Value);
@@ -205,7 +205,7 @@ public static partial class FoundationSuite
                 Equal(f.City.Position, f.Data.Unit(result.Unit!.Value.Slot.Value).Position);
                 Equal(true, f.Data.Unit(result.Unit.Value.Slot.Value).Flags.Veteran);
             }
-            Equal(1, f.Choices); Equal(1, f.Purchases); Equal(false, f.City.Flags.DefenderLost);
+            Equal(2, f.Choices); Equal(0, f.World.Civilizations[1].Gold); Equal(false, f.City.Flags.DefenderLost);
             Equal(false, f.Data.Unit(0).Flags.Veteran); // Failed creation never touches a neighboring unit.
             f.Lifecycle.Random.RequireChoicesConsumed(); // The unusual distance comparison does not create a placement draw.
         }
@@ -233,9 +233,10 @@ public static partial class FoundationSuite
         f.Run(); Equal(2, f.Choices); // Success branch and common tail each request reconsideration.
         Equal(false, f.City.Flags.Autobuild || f.City.Flags.UnitsOnlyAutomation || f.City.Flags.ImprovementsOnlyAutomation);
         f = new(); f.World.Globals.HumanPlayers = CivilizationSet.Only(2); f.City.ShieldBox = 16;
-        f.Buy = () => throw new InvalidOperationException("Purchase failed");
-        Throws<InvalidOperationException>(() => f.Run());
-        Equal((short)0, f.City.ShieldBox); Equal(true, f.Data.Unit(0).Token.Occupied);
-        Equal(true, f.City.Flags.DefenderLost); Sequence(new[] { "choose", "buy" }, f.Order);
+        f.World.Civilizations[1].Gold = 512; f.World.Globals.PowerRank[f.World.Globals.BestHumanRank] = 8;
+        Throws<DivideByZeroException>(() => f.Run());
+        Equal((short)8, f.City.ShieldBox); Equal(512, f.World.Civilizations[1].Gold);
+        Equal(true, f.Data.Unit(0).Token.Occupied);
+        Equal(true, f.City.Flags.DefenderLost); Sequence(new[] { "choose", "choose" }, f.Order);
     }
 }

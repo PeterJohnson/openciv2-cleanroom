@@ -178,6 +178,7 @@ public static partial class LocalPlayCommands
             world.Multiplayer.ResumeCiv = world.Multiplayer.Saved.ResumeCiv = 0;
 
             // Global advance and all-unit reset precede civilization recovery and its city pass.
+            world.HumanWonders.Update(world);
             ref var globals = ref world.Globals;
             ++globals.Turn;
             if (globals.Turn > 199)
@@ -365,14 +366,15 @@ public static partial class LocalPlayCommands
                 throw new InvalidOperationException("Automatic production requires its A02 policy");
             public void ChooseTradeCargo(CitySlot city, int owner, UnitSlot unit) =>
                 throw new InvalidOperationException("The authored profile has no caravan production path");
-            public void Purchase(CitySlot city, int owner, int netShields) =>
-                throw new InvalidOperationException("The authored profile has no AI purchase path");
             public bool AbandonCity(CitySlot city, UnitType type) =>
                 throw new InvalidOperationException("The authored profile cannot build settlers");
             public void Upgraded(CitySlot city, UnitType oldType, UnitType newType) => context.Effect("city.production_upgraded", new([
                 CityValue(city), new("oldType", new CommandValue.Integer(oldType.Value)), new("newType", new CommandValue.Integer(newType.Value))]));
             public void Built(CityTarget city, UnitType type) => context.Effect("unit.built", new([
                 new("city", new CommandValue.City(city)), new("type", new CommandValue.Integer(type.Value))]));
+            public void AlmostWonder(AlmostWonderNotice notice) => context.Effect("city.wonder_almost", new([
+                CityValue(notice.City), new("owner", new CommandValue.Integer(notice.Owner)),
+                new("wonder", new CommandValue.Integer(notice.Wonder))]));
 
             public void SupportShortage(CitySlot city, UnitTarget selected, UnitType type) =>
                 context.Effect("unit.support_shortage", new([new("unit", new CommandValue.Unit(selected)),

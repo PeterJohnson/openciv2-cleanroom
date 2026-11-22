@@ -112,16 +112,17 @@ calls actual `GovernmentChanges.Change`, including incoming Vendetta clearing,
 all-city C03 recalculation and fixed Fanatics-to-Riflemen production substitution.
 `GovernmentChanges` also owns availability, rate caps and local AI change notices;
 player government selection and rate decisions remain explicit continuations.
-The local desktop turn now uses the shared mood handler. C06 AI production,
-remaining V02 operations and general F04 scheduling remain separate work.
+The local desktop turn now uses the shared mood handler. C06 nonunit production
+and A02 choice, remaining V02 operations and general F04 scheduling remain separate work.
 
 `CityUnitProduction` handles C06's unit-at-entry branch with actual U01 creation,
 veteran/transport initialization, first obsolete-type replacement, stock spending
 and settler population/city-removal consequences. Its AI diplomat path uses real
 nearest-unit queries and preserves the specified distance comparison. Required
-A02 selection, C07 cargo selection and C06 purchase continuations remain explicit;
-boundary tests do not supply those policies. Alder Valley now calls this service
-instead of its previous completion shortcut and uses shared `UnitAvailability`.
+A02 selection and C07 cargo selection remain explicit continuations; boundary
+tests do not supply those policies. The AI common tail runs `AiProductionPurchase`
+with retained F04 human wonder ranges, regional policy and real V07 race queries.
+Alder Valley now calls this service instead of its previous completion shortcut and uses shared `UnitAvailability`.
 Nonunit completion and the full production parent remain pending.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by

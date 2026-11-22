@@ -19,7 +19,6 @@ public interface ICityUnitProductionContinuations
 {
     void ReconsiderProduction(CitySlot city);
     void ChooseTradeCargo(CitySlot city, int owner, UnitSlot unit);
-    void Purchase(CitySlot city, int owner, int netShields);
     int CheckCivilization(int owner, int killer);
     bool AbandonCity(CitySlot city, UnitType type);
 }
@@ -29,6 +28,7 @@ public interface ICityUnitProductionEffects
     void Upgraded(CitySlot city, UnitType oldType, UnitType newType);
     void Built(CityTarget city, UnitType type);
     void Redraw(MapPoint position);
+    void AlmostWonder(AlmostWonderNotice notice);
 }
 
 /// <summary>C06's local unit-production branch, with its entry accumulation and common tail.
@@ -38,6 +38,7 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
     UnitDeletion deletion, CityRemoval removal, GameplayRandom random,
     ICityUnitProductionContinuations continuations, ICityUnitProductionEffects effects)
 {
+    private readonly AiProductionPurchase purchase = new(world, rules, continuations.ReconsiderProduction, effects.AlmostWonder);
     private CityCalculationWorkspace Work => world.Calculation;
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
     private bool Knows(int owner, int advance) => CivilizationKnowledge.KnowsAdvance(world.Civilizations, owner, advance);
@@ -208,7 +209,7 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
             }
             if (!Human(owner))
             {
-                continuations.Purchase(slot, owner, net);
+                purchase.Run(slot, owner, net);
             }
 
             live.Flags.DefenderLost = false;

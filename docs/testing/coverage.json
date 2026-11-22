@@ -2330,8 +2330,9 @@
       "status": "partial",
       "contract": "C06 unit-at-entry local production: shield accumulation, upgrading, creation/veterans, settler consequences, AI diplomats and common tail",
       "publicSurface": "CityUnitProduction.Run; ICityUnitProductionContinuations; ICityUnitProductionEffects; local desktop unit-production phase and shared unit availability",
-      "review": "Actual U01 creation/deletion, C01 removal and V01 elimination cover signed costs/stocks, disorder and barbarian accumulation, first upgrade without availability or chaining, veteran rules, transport counters and ordered city-disband recreation. AI diplomat creation retains the unusual distance comparison and safely omits the failed-creation veteran write; first nuclear-type creation resets incoming contacts. Tests cover required cargo, chooser and purchasing boundaries and failure prefixes, not implementations of those policies. Alder Valley uses the shared production path and unit availability, with direct/console stock overflow, capacity failure and save/resume cases. Nonunit completion, wonder races/effects, shared completed-improvement state, production switching, purchases/sales, A02/C07 owning policies and generated desktop turn integration remain pending.",
+      "review": "Actual U01 creation/deletion, C01 removal and V01 elimination cover signed costs/stocks, disorder and barbarian accumulation, first upgrade without availability or chaining, veteran rules, transport counters and ordered city-disband recreation. AI diplomat creation retains the unusual distance comparison and safely omits the failed-creation veteran write; first nuclear-type creation resets incoming contacts. Tests cover required cargo and chooser boundaries; the AI common tail now runs actual C06 purchasing with retained failure effects. Alder Valley uses the shared production path and unit availability, with direct/console stock overflow, capacity failure and save/resume cases. Nonunit completion, wonder races/effects, shared completed-improvement state, production switching, player purchases/sales, A02/C07 owning policies and generated desktop turn integration remain pending.",
       "sources": [
+        "src/OpenCiv2.Core/City/AiProductionPurchase.cs",
         "src/OpenCiv2.Core/City/CityUnitProduction.cs",
         "src/OpenCiv2.Core/City/UnitAvailability.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
@@ -2359,6 +2360,38 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement"
+      ]
+    },
+    {
+      "id": "ai-production-purchase",
+      "status": "partial",
+      "contract": "C06 local AI purchase phase; F04 retained human wonder extrema; V07 sections2,8 capacity/group queries, race and arrival predicates",
+      "publicSurface": "AiProductionPurchase.Run; HumanWonderRanges.Update; SpaceshipQueries; actual unit-production purchase tail and local pre-advancement summary refresh",
+      "review": "Purchasing uses unsigned costs, retained A01/F04 inputs, ordered overrides, fixed Nuclear Missile identity, reversed-bound clamp, exact refund divisions and repeated almost-wonder notices. V07 predicates distinguish raw/supported counts, uneven group maxima, destroyed Apollo, dead human seats and independent ship flags. Tests cover custom and negative scalars, retained summaries, failed divisions/announcements and real unit completion followed by purchasing without another completion pass. A02 reselection remains a required child. Nonunit production, player purchases/sales, spaceship performance/assembly/launch/arrival handling and full generated desktop turns remain pending; this is not complete M4 acceptance.",
+      "sources": [
+        "src/OpenCiv2.Core/City/AiProductionPurchase.cs",
+        "src/OpenCiv2.Core/City/CityUnitProduction.cs",
+        "src/OpenCiv2.Core/HumanWonderRanges.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/SpaceshipQueries.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ProductionPurchaseCases.cs"
+      ],
+      "sharedGroups": [
+        "C06.purchase-almost-wonder",
+        "C06.purchase-ordered-overrides",
+        "C06.purchase-policy-reselection",
+        "C06.purchase-refund-failure",
+        "C06.purchase-spaceship-threat",
+        "C06.purchase-wonder-thresholds",
+        "C06.unit-actual-purchase",
+        "F04.human-wonder-summary",
+        "V07.group-raw-supported",
+        "V07.part-capacity-thrust",
+        "V07.race-arrival-predicates"
       ]
     }
   ]

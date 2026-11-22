@@ -15,8 +15,8 @@ in the [M2 closeout](m2-closeout.md).
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration and the C06 unit-production branch now run in Alder Valley using real local V02/U01/C01 children. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing/Apollo, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
-| Classic AI | A08 advance valuation is integrated with V03 recommendation. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
-| Outcomes | V07 reset/loss and V01 destruction history are implemented. Spaceship construction/launch/arrival, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
+| Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
+| Outcomes | V07 capacity/race/arrival predicates, reset/loss and V01 destruction history are implemented. Spaceship construction/launch/arrival, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. The new leaf tests do not satisfy this gate. |
 
@@ -827,3 +827,54 @@ cross-platform qualification remain deferred. No Lua automation was changed.
 | `m4-desktop-unit-production-headless.xml` | `8cded63ee8d3f21b392e8764ba12836c0bae2ad95be60b97c6198d9f1625b6fb` |
 | `m4-desktop-unit-production-native.json` | `37a168924e24c064feee134d7f54fef6ecd6010cc10ad6970dde38ec98e71da6` |
 | `m4-desktop-unit-production-identity.json` | `f962dfd8f57433a1819a02d6a91f1e1c38c35c4c8900891af146aae0904f560e` |
+
+
+## AI production spending and spaceship predicates
+
+`AiProductionPurchase` replaces the unit-production purchase continuation with
+C06's actual local spending phase. It retains unsigned rule costs, regional
+policy inputs, the ordered wonder/ship/disorder/defense/Palace/nuclear overrides
+and the fixed Nuclear Missile slot45 identity. Human wonder-group extrema are
+retained in the world and refreshed before the local global advancement; the
+purchase phase does not refresh their source counts or the regional census.
+
+The reversed-bound clamp permits negative spending for excess stocks. Stock is
+written before the two refund divisions, so a zero divisor leaves that write and
+prevents the treasury charge and announcement. Best/worst selectors are direct
+civilization indices. Almost-wonder notices use live whole shield/support values
+even during disorder, have no one-time flag and require the raw Unbuilt location.
+The parent clears DefenderLost only after successful return, and purchasing does
+not run a second completion pass.
+
+`SpaceshipQueries` supplies V07 capacity, raw/effective group counts, buildability,
+part maxima, thrust, race and arrival predicates. It preserves negative component
+capacities, the AI module cap, empty unsupported-group eligibility, uneven raw
+count distinctions, destroyed Apollo, dead human seats and raw weighted progress.
+Arrival tests only launched status and the saved year. These queries do not
+implement performance calculation, group choice, assembly, launch or arrival
+outcomes. A02 production reselection remains a required policy child; nonunit
+completion and general generated-game turns remain pending.
+
+
+### AI-purchase validation on Linux, 2026-11-22
+
+Root and App Release builds passed with zero warnings/errors, and both solutions
+passed formatting verification. Native tests reported **669 passed and two
+existing skips** (native audio opt-in and Windows delete-sharing). All **637
+shared groups** passed, including eleven new groups. Source identity verified
+**414 compiled inputs**; coverage accounts for 76 API/test families. Graph,
+conformance metadata, identity (8 cases) and coverage (3 cases) checks passed.
+
+The isolated Xvfb CPU desktop driver passed all ten checks, including production
+controls, native/direct/CLI agreement, native picker import, invalid-load retention,
+save at turn7, resumed turn8 and normal shutdown. These desktop checks remain the
+authored Alder Valley regression; they do not establish complete generated-game,
+AI or endgame acceptance. Browser and cross-platform qualification remain deferred.
+No Lua automation was changed.
+
+| Local receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-purchase-play.json` | `c8b1d674a407e9850bacc1af5ba1812eefda338dbb39e2f0d2940330bd6017d9` |
+| `m4-desktop-purchase-headless.xml` | `35312dd1434656ed70c78b1b8aaf2a4f662542947b5e076d17059799230f2ca2` |
+| `m4-desktop-purchase-native.json` | `bf4b2641a007229d4d5788b89266f4804ae7ad6893cd265feba26f6bb921e006` |
+| `m4-desktop-purchase-identity.json` | `e50d1532c99f1814f2327394c6ad649b7e403c05e5b239fd687218e4cdf1e1fc` |

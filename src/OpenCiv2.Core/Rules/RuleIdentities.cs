@@ -53,6 +53,6 @@ public static class UnitTypeIds
     public const int Settlers = 0, Warriors = 2, Phalanx = 3, Archers = 4, Legion = 5, Pikemen = 6, Musketeers = 7, Fanatics = 8, Partisans = 9;
     public const int Horsemen = 15, Chariot = 16, Elephant = 17, Knights = 19;
     public const int Bomber = 28, Trireme = 32, Caravel = 33, Frigate = 35, Transport = 43;
-    public const int Diplomat = 46, Spy = 47;
+    public const int NuclearMissile = 45, Diplomat = 46, Spy = 47;
     public const int Riflemen = 11;
 }
