@@ -271,6 +271,33 @@ public static partial class FoundationSuite
         }
     }
 
+    private static void LocalPlayResearchGrant()
+    {
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, console, $"city.found unit={pioneer.Slot.Value}:{pioneer.Token.Value} name=\"Alder Crossing\"", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
+            var saved = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            var civilizations = saved.Civilizations.ToArray();
+            civilizations[1] = civilizations[1] with { Researching = 0, ResearchProgress = 32000, NumAdvances = 255, ResearchCostAdvances = 7 };
+            var first = saved.Globals.FirstDiscoverer.ToArray(); first[0] = 4;
+            var known = saved.Globals.AdvanceKnownBy.ToArray(); known[0] = 0;
+            var input = saved with { Civilizations = new(civilizations), Globals = saved.Globals with { FirstDiscoverer = new(first), AdvanceKnownBy = new(known) } };
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
+            var result = EndLocalTurn(game, console, 2); Equal(true, result.Committed.Any(e => e.Name == "research.completed"));
+            var after = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            Equal((byte)0, after.Civilizations[1].NumAdvances); Equal((byte)7, after.Civilizations[1].ResearchCostAdvances);
+            Equal((byte)5, after.Globals.FirstDiscoverer[0]); Equal((byte)2, after.Globals.AdvanceKnownBy[0]);
+            Equal((byte)0, after.Civilizations[1].AdvanceSource[0]); Equal((short)0, after.Civilizations[1].ResearchProgress);
+            Equal(true, StateConversion.ToLive(after.Civilizations[1]).Advances.Contains(0));
+            var bytes = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(bytes));
+            Equal((byte)5, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Globals.FirstDiscoverer[0]);
+            EndLocalTurn(game, console, 3);
+        }
+    }
+
     private static void LocalPlayProductionStocks()
     {
         foreach (bool console in new[] { false, true })

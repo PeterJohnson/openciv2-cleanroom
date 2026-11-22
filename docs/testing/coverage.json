@@ -1820,7 +1820,8 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
-        "M4.local-maintenance-reputation-turn"
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn"
       ],
       "status": "partial",
       "sources": [
@@ -2194,7 +2195,8 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
-        "M4.local-maintenance-reputation-turn"
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn"
       ],
       "sources": [
         "src/OpenCiv2.Core/City/CityRetirement.cs",
@@ -2251,7 +2253,8 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
-        "M4.local-maintenance-reputation-turn"
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn"
       ],
       "status": "partial",
       "sources": [
@@ -2323,6 +2326,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn",
         "V02.government-ai-announcements",
         "V02.government-arguments-decisions",
         "V02.government-queries-identities",
@@ -2364,7 +2368,8 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
-        "M4.local-maintenance-reputation-turn"
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn"
       ]
     },
     {
@@ -2455,6 +2460,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn",
         "V04.attitude-primitives",
         "V04.global-reputation-maintenance",
         "W03.apollo-knowledge-publication"
@@ -2502,7 +2508,8 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
-        "M4.local-maintenance-reputation-turn"
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn"
       ],
       "sources": [
         "src/OpenCiv2.Core/City/ProductionOrders.cs",
@@ -2513,6 +2520,51 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.FoundationCases/ProductionOrdersCases.cs"
+      ]
+    },
+    {
+      "id": "research-grants",
+      "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
+      "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; LocalResearch ordinary accumulation adapter",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Presentation and emissary decisions remain interfaces; complete research choice/completion/free-advance accumulation, V01 catch-up integration, Darwin callers and general F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
+      "status": "partial",
+      "sharedGroups": [
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-research-grant-turn",
+        "V03.full-research-cost-vectors",
+        "V03.golden-age-weighted-selection",
+        "V03.government-prompt-transitions",
+        "V03.government-tutorial-return-gates",
+        "V03.grant-announcements-prompts",
+        "V03.grant-barracks-failure",
+        "V03.grant-duplicate-future-first-marker",
+        "V03.grant-emissary-draw-reset",
+        "V03.grant-failure-prefixes",
+        "V03.grant-leonardo-great-library",
+        "V03.grant-philosophy-wonder-expiry",
+        "V03.grant-turn-zero-scalar-prefixes",
+        "V03.scenario-cost-bounds",
+        "V03.selection-option-rules"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/LocalResearch.cs",
+        "src/OpenCiv2.Core/Research.cs",
+        "src/OpenCiv2.Core/ResearchGovernmentPrompts.cs",
+        "src/OpenCiv2.Core/ResearchGrants.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
+        "tests/OpenCiv2.FoundationCases/ResearchGrantCases.cs"
       ]
     }
   ]

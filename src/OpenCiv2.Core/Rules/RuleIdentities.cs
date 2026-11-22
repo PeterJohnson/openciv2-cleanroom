@@ -15,6 +15,7 @@ public static class AdvanceIds
     public const int BridgeBuilding = 7, Construction = 18, Currency = 20, Monarchy = 54, TheWheel = 87;
     public const int Railroad = 67;
     public const int MobileWarfare = 53;
+    public const int Seafaring = 75, Trade = 84, Writing = 88;
     public const int Electronics = 24, Environmentalism = 26, Plastics = 62, Sanitation = 74;
 }
 
@@ -41,6 +42,7 @@ public static class WonderIds
     public const int MarcoPolo = 9, StatueOfLiberty = 19, UnitedNations = 24;
     public const int SunTzu = 7;
     public const int Leonardo = 14, AdamSmith = 17;
+    public const int GreatLibrary = 4;
 }
 
 /// <summary>C07 commodity identities. Display names and rule labels do not redirect their formulas.</summary>

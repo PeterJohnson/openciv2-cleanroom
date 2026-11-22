@@ -153,6 +153,14 @@ transaction, saves the snapshot and uses this setter; the desktop city pass
 publishes the civilization-turn phase input. General P06 interaction, V03 reset
 callers and A02's actual policy remain separate work.
 
+`Research.Cost` owns the full V03 cost formula and `Research.Options` its offered
+technology identities. `ResearchGrants` composes shared storage, actual C08
+Leonardo/ownership and recursive Great Library grants, including first-discovery,
+Barracks, announcement and emissary boundaries. `ResearchGovernmentPrompts` calls
+actual V02 transitions for accepted research prompts. The authored desktop
+threshold uses these grants through `LocalResearch`; general completion/choice,
+free advances, V01 catch-up and Darwin integration remain open.
+
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this
 workspace within a world. `TerritoryQueries.PeaceOwner` supplies the directed

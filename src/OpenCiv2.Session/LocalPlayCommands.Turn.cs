@@ -69,8 +69,7 @@ public static partial class LocalPlayCommands
     }
 
     internal static int[] ResearchChoices(GameState world, RuleTables rules, int owner) =>
-        Enumerable.Range(0, rules.Advances.Length)
-            .Where(a => LocalResearch.Available(world, rules, owner, a)).ToArray();
+        Core.Research.Options(world, rules, owner).Where(a => a != CivilizationKnowledge.FutureTechnology).ToArray();
 
     internal static void SelectReadyUnit(GameState world, RuleTables rules)
     {
@@ -293,7 +292,15 @@ public static partial class LocalPlayCommands
                 _ => throw new InvalidOperationException("The authored profile has no AI government path"));
             new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, surplus);
             bool needsResearch = false;
-            if (LocalResearch.Accumulate(world, rules, city.Owner.Value, city.Science) is int advance)
+            var researchEffects = new AuthoredResearchEffects();
+            var researchPrompts = new ResearchGovernmentPrompts(world, governments, researchEffects);
+            var grants = new ResearchGrants(world, rules, context.Gameplay,
+                new WonderEffects(world, rules, notice => context.Effect("unit.upgraded", new([
+                    new("unit", new CommandValue.Unit(new(notice.Unit, world.Entities.Units.At(notice.Unit).Token))),
+                    new("old", new CommandValue.Integer(notice.OldType.Value)), new("new", new CommandValue.Integer(notice.NewType.Value))])),
+                    moodEffects.RedrawTile),
+                researchPrompts.Run, researchEffects);
+            if (LocalResearch.Accumulate(world, rules, grants, city.Owner.Value, city.Science, $"local-research/{world.Globals.Turn}/{slot.Value}") is int advance)
             {
                 context.Effect("research.completed", new([new("advance", new CommandValue.Integer(advance))]));
                 needsResearch = true;
@@ -317,6 +324,26 @@ public static partial class LocalPlayCommands
             var deletion = new UnitDeletion(world, rules, budget, effects);
             var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
             new CityRetirement(world, rules, deletion, loss, effects).Run(city);
+        }
+
+        // The admitted ordinary advances0..2 have no grant notices, emissary, Barracks or
+        // first-discovery wonder effects. Completion/next-selection remain session continuations.
+        private sealed class AuthoredResearchEffects : IResearchGrantEffects, IResearchGovernmentEffects
+        {
+            public bool DiplomacyActive => false;
+            private static InvalidOperationException OutsideProfile() => new("The authored profile has no research-grant presentation path");
+            public void Acquired(AdvanceAcquisitionNotice notice) => throw OutsideProfile();
+            public bool ReceiveEmissary(int civilization) => throw OutsideProfile();
+            public void EmissaryKnowledge(int civilization, int advance) => throw OutsideProfile();
+            public void ResetDiplomacy() => throw OutsideProfile();
+            public void Encyclopedia(int advance) => throw OutsideProfile();
+            public void BarracksSold(BarracksSaleNotice notice) => throw OutsideProfile();
+            public void GoldenAge(GoldenAgeNotice notice) => throw OutsideProfile();
+            public void WonderExpired(WonderExpiryNotice notice) => throw OutsideProfile();
+            public void RefreshStatus() => throw OutsideProfile();
+            public int ConfirmGovernment(ResearchGovernmentChoice choice) => throw OutsideProfile();
+            public void RevolutionStarting(int civilization) => throw OutsideProfile();
+            public void Tutorial(int civilization, ResearchTutorial tutorial) => throw OutsideProfile();
         }
 
         private static CityUnitProduction CreateProduction(OperationContext context)

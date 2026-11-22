@@ -88,6 +88,15 @@ reply. Desktop direct/console cases repeatedly change production while preservin
 stock and per-type counts, then complete/save/resume. Chooser fixtures are not
 complete A02 policy or V03 research-reset integration.
 
+V03 cost/options/grant cases cover retained counters, human/AI/scenario scaling,
+selection exemptions, duplicate and future grants, first-discoverer OR, source
+narrowing, emissary draws and resets, Barracks credit/failure order, Philosophy,
+raw-location wonder expiry, real Leonardo and recursive Great Library effects.
+Government prompt cases use the actual V02 direct setter. Direct/console desktop
+tests verify counter wrap and first-discoverer retention across completion,
+save/reload and another turn. General completion/free advances, full choice UI,
+catch-up and Darwin caller integration remain pending.
+
 ## Complete M2 map renderer
 
 M2 development is [closed with tracked deferrals](../m2-closeout.md). Continue

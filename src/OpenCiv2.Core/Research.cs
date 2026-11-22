@@ -1,3 +1,4 @@
+using OpenCiv2.Base;
 using OpenCiv2.Base.Randomness;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core.Ai;
@@ -6,7 +7,7 @@ using OpenCiv2.Core.State;
 
 namespace OpenCiv2.Core;
 
-/// <summary>V03 §§2–4 shared eligibility, ordered prerequisite walks and randomized recommendation.</summary>
+/// <summary>V03 shared eligibility, prerequisite walks, recommendation, choice options and research cost.</summary>
 public static class Research
 {
     /// <summary>F05 §8 / V03 §§5,9–10: actual research completion during local start balancing, before
@@ -56,6 +57,12 @@ public static class Research
         {
             throw new InvalidOperationException("Starting grants require local turn zero");
         }
+        StoreAdvance(world, civilization, advance, source);
+    }
+
+    /// <summary>V03 §10's storage prefix. The owning grant supplies phase-specific later effects.</summary>
+    internal static bool StoreAdvance(GameState world, int civilization, int advance, int source)
+    {
         ref var civ = ref world.Civilizations[civilization];
         if (civ.Researching == advance)
         {
@@ -65,14 +72,117 @@ public static class Research
         if (advance == CivilizationKnowledge.FutureTechnology || advance >= RuleLimits.Advances)
         {
             civ.FutureTechs = unchecked((byte)(civ.FutureTechs + 1));
+            return false;
         }
         else
         {
             civ.Advances = civ.Advances.With(advance);
             civ.AdvanceSource[advance] = unchecked((byte)source);
+            bool first = world.Globals.AdvanceKnownBy[advance].Count == 0;
             world.Globals.AdvanceKnownBy[advance] = world.Globals.AdvanceKnownBy[advance].With(civilization);
+            return first;
         }
+    }
 
+    /// <summary>V03 §5 offered identities. The first option bypasses the later modulo filter;
+    /// forced and scenario choices differ from the recommendation's filtering.</summary>
+    public static int[] Options(GameState world, RuleTables rules, int civilization, int forced = 0)
+    {
+        var options = new List<int>();
+        for (int a = 0; a < RuleLimits.Advances; ++a)
+        {
+            if (!Available(world, rules, civilization, a)
+                || rules.Advances[a].Prerequisites[0] == AdvanceReference.Never && rules.Advances[a].Prerequisites[1] == AdvanceReference.Never)
+            {
+                continue;
+            }
+
+            if (options.Count == 0 || unchecked((byte)world.Globals.Difficulty) == (byte)Difficulty.Chieftain || forced != 0
+                || world.Globals.Status.HasScenario || (a - world.Civilizations[civilization].NumAdvances) % 3 != 0)
+            {
+                options.Add(a);
+            }
+        }
+        return options.ToArray();
+    }
+
+    /// <summary>V03 §7 full human/AI research cost, using retained counts and the rank itself as a slot.</summary>
+    public static int Cost(GameState world, RuleTables rules, int civilization)
+    {
+        unchecked
+        {
+            int Sum(int c) => world.Civilizations[c].NumAdvances + world.Civilizations[c].ResearchCostAdvances;
+            int n = Sum(civilization);
+            if (n < 2)
+            {
+                n = 1;
+            }
+
+            int difficulty = (byte)world.Globals.Difficulty;
+            int multiplier = Arithmetic.ClampAB(difficulty, 0, 4);
+            multiplier = world.Globals.HumanPlayers.Contains(civilization & 31) ? 2 * multiplier + 6 : 14 - multiplier;
+            bool scenario = world.Globals.Status.HasScenario;
+            if (!scenario || world.Scenario.YearIncrement == 0)
+            {
+                int leader = world.Globals.BestHumanRank;
+                if (n < Sum(leader))
+                {
+                    if (difficulty != (byte)Difficulty.Chieftain)
+                    {
+                        --multiplier;
+                    }
+
+                    if (difficulty == (byte)Difficulty.Deity && n + 4 < Sum(leader) && world.Globals.Turn > 150)
+                    {
+                        --multiplier;
+                    }
+                }
+                else
+                {
+                    multiplier += (n - Sum(leader)) / 3;
+                }
+
+                if (n > 19)
+                {
+                    multiplier += Arithmetic.ClampAB(n - world.Globals.Turn / 8, 0, 6);
+                }
+            }
+            int paradigm = scenario ? world.Scenario.TechnologyParadigm : rules.Cosmic.TechnologyCostParadigm;
+            if (paradigm != 10)
+            {
+                multiplier = paradigm * multiplier / 10;
+            }
+
+            int extra = multiplier * 3 >> 2;
+            if (Sum(civilization) < 20)
+            {
+                extra = Sum(civilization) * extra / 20;
+            }
+
+            multiplier += extra;
+            if ((short)rules.EnabledAdvanceCount > 67)
+            {
+                multiplier = multiplier * 67 / (short)rules.EnabledAdvanceCount;
+            }
+
+            if (world.Globals.Status.LargeMap)
+            {
+                multiplier = multiplier * 5 / 4;
+            }
+
+            if (world.Globals.Status.SmallMap)
+            {
+                multiplier = multiplier * 4 / 5;
+            }
+
+            if (world.Globals.HumanPlayers.Contains(civilization & 31) && multiplier < 11 - n)
+            {
+                multiplier = 11 - n;
+            }
+
+            int cost = multiplier * n;
+            return cost is < 1 or > 32000 ? 32000 : cost;
+        }
     }
 
     /// <summary>Enabled, unknown and both prerequisites known, in that order.

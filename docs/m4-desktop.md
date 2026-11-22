@@ -201,7 +201,8 @@ sources were consulted.
 `Research.GrantStarting` implements the turn-zero grant exit including duplicate
 sources and future-tech counters. `CompleteStarting` rejects only the recipient's
 owned production-reset targets, allowing earlier civilizations' accelerated
-cities. All nonzero-turn grant effects remain future work. `GameState.Paths`
+cities. The nonzero-turn grant service is implemented in the later research-grants
+checkpoint; these start operations retain their turn-zero boundary. `GameState.Paths`
 now retains W02's real flood into later F05 queries; fresh worlds get new
 workspaces. `TerritoryQueries.PeaceOwner` distinguishes claims, occupants,
 directed peace and alliance. Road improvements can skip blocked tiles while
@@ -1058,3 +1059,67 @@ cross-platform qualification remain deferred. No Lua automation changed.
 | `m4-desktop-orders-headless.xml` | `930b64dc68f6a8158f992eab2e55b014badfc936db381dc3d2c944c91d97cc63` |
 | `m4-desktop-orders-native.json` | `2fc695322ca111981717e1b04539e395b591b3869888fcbff6bfe315fcf63c97` |
 | `m4-desktop-orders-identity.json` | `db032c656484138978f4ba20549fa08e551f54c72f513ac1095ad8f33e7e3c85` |
+
+## Research costs, choice options and local advance grants
+
+`Research.Cost` now implements V03's full human/AI/scenario formula. It retains
+the ordinary and research-cost counters, rank-as-slot leader comparison, scenario
+calendar bypass, signed rule count/paradigm, separate map scaling steps and human
+floor. `LocalResearch.Cost` delegates to it. `Research.Options` supplies the
+ordered first-option/modulo filters with forced/scenario exemptions; the authored
+desktop research-choice list now uses it while excluding unsupported Future
+Technology from that profile.
+
+`ResearchGrants` implements the local advance-grant sequence with actual C08
+storage, active ownership and Leonardo operations. Turn-zero storage is shared
+with the start caller. Nonzero grants preserve duplicate/future counter wrapping,
+source replacement, first-discoverer bitwise OR, acquisition/emissary gates and
+secondary draw timing, Barracks liquidation using raw cosmic rows, Philosophy's
+free-advance flag and weighted last-tie Golden Age city, raw-location wonder
+expiry notices and recursive Great Library grants. The Library counts inactive
+knowledge holders. Disabled prerequisite cycles stop explicitly after the valid
+grant prefix rather than inventing a completed walk.
+
+`ResearchGovernmentPrompts` owns V03's government/tutorial decisions and calls
+actual V02 direct Anarchy transitions on reply1. It preserves the Republic
+tutorial return, government-specific early exits and the caller-owned human/
+local/autoplay gates. Presentation and accepted player decisions remain explicit
+interfaces; the emissary reset is still supplied by its diplomacy owner.
+
+Alder Valley's ordinary science threshold now invokes this shared grant service
+instead of directly changing the technology bits/counts. Direct/console cases
+load a retained counter255 and first-discoverer4, complete research and verify
+counter0 and first-discoverer5, then save/reload and continue. The profile keeps
+its existing ordinary completion and session selection boundary. Its declared
+advances0..2 do not reach grant dialogs, government decisions or Barracks sales;
+the adapter rejects an unexpected presentation path.
+
+The complete research-selection/advice/goal interface, general completion and
+free-advance accumulation, nonzero V01 catch-up caller, Darwin's two completions,
+full A02 production reset and general F04/generated-game acceptance remain open.
+These shared grants do not by themselves close those parent operations or M4.
+Network authority/publication, browser execution and cross-platform qualification
+remain deferred.
+
+Validation on Linux: the root and App Release builds succeeded with no warnings
+or errors; root/App formatting and formatting verification passed. The native
+suite passed **722 tests**, with the existing audio-output and Windows
+handle-sharing skips (724 total). All **690 shared groups** passed, with **428
+compiled inputs** verified. Graph, conformance, 80-family coverage, eight identity
+tests, three coverage-tool tests and gameplay-schema checks passed.
+
+The Xvfb CPU desktop driver passed all ten checks, including pending research,
+GUI/console replies, multi-turn play, save/resume, direct/CLI/native agreement,
+file-picker import, session replacement and shutdown. These are implementation
+regressions for the admitted authored profile, not full-game compatibility
+acceptance. No Lua automation changed; browser and cross-platform execution
+remain deferred.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-research-play.json` | `c60c88f933005a5cf2acda4092d442f2194a82e932b215d84b52e79a6bab13b1` |
+| `m4-desktop-research-headless.xml` | `e673af3166a6d5d3c91478d02891e040d741dac12e36cc77ba8f3c67a933d80b` |
+| `m4-desktop-research-native.json` | `8f580fd83a4e57bcf55ac803d7506996c94263c41817e98b393a479640c20862` |
+| `m4-desktop-research-identity.json` | `5fcb95207eb3b51071bcdedff2c32cbcbf560511e250ab8a004778a21fdf7e63` |
