@@ -106,7 +106,14 @@ industrial production, W05 intensity and distribution. `CitySupport` provides
 C05 box factors and military/support counts; `CityHappiness` provides C04's five
 stages and normalization. The local founding/turn/load caller invokes this parent;
 pure local display previews still use the authored profile's restricted yield
-view. City-turn consequences and general F04 scheduling remain separate work.
+view. `CityMoodTurn` applies disorder duration/restoration, tax, celebration and
+celebration growth using those live whole counters. Repeated Democracy disorder
+calls actual `GovernmentChanges.Change`, including incoming Vendetta clearing,
+all-city C03 recalculation and fixed Fanatics-to-Riflemen production substitution.
+`GovernmentChanges` also owns availability, rate caps and local AI change notices;
+player government selection and rate decisions remain explicit continuations.
+The local desktop turn now uses the shared mood handler. C06 AI production,
+remaining V02 operations and general F04 scheduling remain separate work.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this

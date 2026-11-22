@@ -43,7 +43,12 @@ restarts, interrupted spy escape, spaceship reset/loss, history and retained
 human/alive/knowledge state. Controlled V06 choices verify escape odds, promotion,
 nearest-city ties and actual relocation/exhaustion. Diplomacy incidents, restart
 catch-up grants, C06 AI production and full defeat handling remain open.
-General city-turn consequences and generated-game turn acceptance remain open.
+V02/C04 groups cover local government queries/transitions, actual all-city C03
+recalculation, fixed production substitution, observer-dependent AI tax/notices,
+disorder duration/restoration and real Democracy collapse, tax wrap and celebration
+growth/facility limits. Direct/console tests exercise the desktop mood phase and
+save/resume. Player government/rate choices, C06 production, remaining city-turn
+consequences and generated-game turn acceptance remain open.
 
 ## Complete M2 map renderer
 

@@ -1814,6 +1814,7 @@
       "sharedGroups": [
         "M3.land-step-zones",
         "M3.local-food-turn",
+        "M3.local-mood-turn",
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
@@ -2185,6 +2186,7 @@
         "C05.retirement-protection-domains",
         "M3.land-step-zones",
         "M3.local-food-turn",
+        "M3.local-mood-turn",
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
@@ -2239,6 +2241,7 @@
         "C05.food-wonders-scalar-wrap",
         "M3.land-step-zones",
         "M3.local-food-turn",
+        "M3.local-mood-turn",
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
@@ -2281,6 +2284,41 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/EliminationCases.cs"
+      ]
+    },
+    {
+      "id": "government-city-mood",
+      "status": "partial",
+      "contract": "V02 sections2\u20134 local government queries/transitions; C04 city-turn disorder, tax and celebration with actual C03/C05/V02 children",
+      "publicSurface": "GovernmentChanges.MaximumRate/Available/Set/Change; CityMoodTurn.Run; ICityMoodEffects; local desktop mood/tax phase",
+      "review": "Real government transitions clear incoming Vendetta and run full human-city recalculation with fixed Fanatics/Riflemen production substitution. Local AI notifications and tax depend on observer eligibility; player selection and rate decisions remain required continuations. C04 consumes whole live mood/yield counters, preserves disorder duration, scenario-gated Democracy collapse and celebration-only growth, and replaces the authored desktop mood/tax shortcut. Native groups include fixed identities, custom/scalar cases, real all-city recalculation, decision-failure retention, actual collapse and direct/console save-resume. Full selector/rates, government maintenance, C06 AI production, generated turn orchestration and desktop full-game acceptance remain pending.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityMoodTurn.cs",
+        "src/OpenCiv2.Core/GovernmentChanges.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GovernmentMoodCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+      ],
+      "sharedGroups": [
+        "C04.celebration-growth-facilities",
+        "C04.celebration-qualification-notices",
+        "C04.disorder-democracy-collapse",
+        "C04.disorder-duration-restoration",
+        "C04.mood-tax-wrap-gates",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-support-retirement",
+        "V02.government-ai-announcements",
+        "V02.government-arguments-decisions",
+        "V02.government-queries-identities",
+        "V02.government-recalculation-production"
       ]
     }
   ]

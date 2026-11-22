@@ -286,10 +286,13 @@ public static partial class LocalPlayCommands
 
             RetireUnsupportedUnits(context, slot);
 
-            support = LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
-            city.Flags.MoodOnEdge = city.Happy == 0 && city.TotalShields > support && surplus >= 0;
-            city.Flags.Celebrating = city.Size > 2 && city.Happy >= (city.Size + 1) / 2;
-            civ.Gold = unchecked(civ.Gold + city.Tax);
+            LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
+            var moodEffects = new CityTurnEffects(context);
+            var governments = new GovernmentChanges(world, context.Process.Rules, new(world, new(5_000_000, 64)),
+                _ => throw new InvalidOperationException("The authored profile has no government selection path"),
+                _ => throw new InvalidOperationException("The authored profile has no government rate decision path"),
+                _ => throw new InvalidOperationException("The authored profile has no AI government path"));
+            new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, surplus);
             if (LocalResearch.Accumulate(world, rules, city.Owner.Value, city.Science) is int advance)
             {
                 context.Effect("research.completed", new([new("advance", new CommandValue.Integer(advance))]));
@@ -327,7 +330,7 @@ public static partial class LocalPlayCommands
 
         private sealed class CityTurnEffects(OperationContext context)
             : ICityRetirementEffects, IUnitLossEffects, IUnitDeletionEffects, ICityFoodEffects, ICityFoodContinuations,
-                ISpyEscapeEffects, ICivilizationEliminationEffects
+                ISpyEscapeEffects, ICivilizationEliminationEffects, ICityMoodEffects
         {
             private CivilizationElimination? elimination;
             private int eliminationCall;
@@ -341,6 +344,15 @@ public static partial class LocalPlayCommands
                 context.Effect("city.growth_halted", new([CityValue(city), new("facility", new CommandValue.Integer(facility))]));
             public void FoodShortage(CitySlot city) => context.Effect("city.food_shortage", new([CityValue(city)]));
             public void RedrawCity(CitySlot city) => RedrawTile(context.World.Entities.Cities.At(city).Position);
+            public void MoodNotice(CityMoodNotice notice)
+            {
+                if (!context.World.Multiplayer.Saved.AutoplayActive)
+                {
+                    context.Effect("city.mood", new([CityValue(notice.City),
+                        new("kind", new CommandValue.Text(notice.Kind.ToString())),
+                        new("government", new CommandValue.Integer((int)notice.Government))]));
+                }
+            }
             public void ReconsiderProduction(CitySlot city) =>
                 throw new InvalidOperationException("The authored profile has no AI production path");
 

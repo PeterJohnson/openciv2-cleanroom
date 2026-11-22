@@ -13,7 +13,7 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. City-turn consequences, remaining C01–C08, V02/V03 and F04 integration are pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration now uses actual local V02 transitions and runs in Alder Valley. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing/Apollo, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
 | Outcomes | V07 reset/loss and V01 destruction history are implemented. Spaceship construction/launch/arrival, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
@@ -21,8 +21,10 @@ in the [M2 closeout](m2-closeout.md).
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. The new leaf tests do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
-catch-up policies, C06 production selection, C04 disorder/tax/celebration and full
-F04 turn processing needed by the generated desktop game.
+catch-up policies, C06 production selection, remaining V02 government/rate choices
+and full F04 turn processing needed by the generated desktop game. C04's shared
+disorder/tax/celebration handler now joins actual V02 local government transitions
+and runs in the authored desktop turn; this does not complete general turn processing.
 `GeneratedGameInitialization` now supplies actual starting creation/balancing;
 `WorldEntry` selects it when its initialization service is absent. Its supplied
 acceleration delegate is optional when acceleration naming content is available;
@@ -703,3 +705,58 @@ M4 remains active with the outstanding dependencies recorded above.
 | `m4-desktop-elimination-headless.xml` | `7f57fde63b57a25886b378872d4e21a0c1bb56a9102bef397a23a4d7f4a2dc5d` |
 | `m4-desktop-elimination-native.json` | `7e699353e9c525bae1f9faf5d297d85b7d059874f83148506413d973d9f50acb` |
 | `m4-desktop-elimination-identity.json` | `20e13bc6280794b1cf8efbf68d83dac71a2250f76d010317f06fa688dbf04e41` |
+
+## Government transitions and city mood turns
+
+`GovernmentChanges` implements V02 §§2–4 for local games: fixed advance/wonder
+availability, unsigned-government rate caps, direct setters and announced changes.
+A changed human government runs full C03 recalculation for every live owned city
+in ascending slot order, then directly substitutes Riflemen for fixed Fanatics
+production outside Fundamentalism. Production stock and census counters remain
+unchanged. Incoming Vendetta clearing retains outgoing and other treaty flags.
+AI announcement eligibility uses actual embassy/wonder/reveal state, and only an
+eligible observer causes the associated tax formula. Human nonzero changes
+require the government-selector continuation; direct positive setters require the
+rate-decision continuation even for an unchanged government. These choices are
+not implemented by the test boundary observers or the authored profile.
+
+`CityMoodTurn` implements C04 disorder duration/restoration, wrapped treasury
+collection, scenario-gated repeated Democracy collapse, celebration transitions
+and strict food/facility-limited celebration growth. It consumes live whole mood
+and yield counters, with no synthetic recalculation. Collapse calls the actual
+V02 change and retains its all-city recalculation effects. First celebration
+sets the flag without growth; continuing celebration leaves food stock and
+workspace identity unchanged even when size wraps. Semantic notices carry the
+owner and government for presentation; native buffers and popup choreography are
+not simulated. C06 AI reconsideration remains a required continuation.
+
+Alder Valley now calls this handler after its second C03 calculation, replacing
+its previous mood-flag/tax shortcut. Shared tests cover the wider mechanical
+branches; direct/console tests cover its admitted imported celebration, retained
+duration flags, treasury and save/resume. Its Despotism-only rules and high
+contentment still exclude natural disorder/Democracy collapse. General government
+selection, rates, maintenance, production and generated-game turn integration
+remain open, as does full desktop presentation/acceptance.
+
+
+### Government and mood validation on Linux, 2026-11-22
+
+Root and App Release builds passed with zero warnings/errors. Both solutions
+passed formatting verification. Native tests reported **649 passed and two
+existing skips** (native audio opt-in and Windows delete-sharing); all **617
+shared groups** passed. Source identity verified **408 compiled inputs**.
+Coverage accounted for 74 API/test families; graph, conformance metadata,
+identity (8 cases) and coverage (3 cases) checks passed.
+
+The isolated Xvfb CPU desktop driver passed all ten checks, including direct
+client/native/CLI state agreement, native picker import, rejected-load retention,
+save at turn7, resumed turn8 and shutdown. This remains the authored Alder Valley
+regression, not generated-game, AI or endgame acceptance. Browser execution and
+cross-platform qualification remain deferred. No Lua automation was changed.
+
+| Local receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-mood-play.json` | `e88ebd02a2670b8dd9bc44f152bc464e99e553f1c1eeb7946295b482b6655313` |
+| `m4-desktop-mood-headless.xml` | `4101d48ae1d5f729aeb14decb0d91ea7d5ce37758413f77462f2e69e55f8da9a` |
+| `m4-desktop-mood-native.json` | `5414d4b9fa1a86c4aa9d246d5e551d39e6e03877ef95c71c48ef0d0042f99911` |
+| `m4-desktop-mood-identity.json` | `aeebd17381e5cb38fa8c683afc6f33b6838f1846e689e255acd0e7f3824a4b27` |

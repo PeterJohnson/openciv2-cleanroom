@@ -9,7 +9,7 @@ public static class AdvanceIds
     public const int GuerrillaWarfare = 34, Gunpowder = 35, HorsebackRiding = 36, Industrialization = 37;
     public const int Invention = 38, IronWorking = 39, Leadership = 42, MapMaking = 46, Masonry = 47;
     public const int Miniaturization = 52, Monotheism = 55, Mysticism = 56, Navigation = 57, NuclearFission = 58, NuclearPower = 59;
-    public const int Philosophy = 60;
+    public const int Fundamentalism = 31, Philosophy = 60, Republic = 71;
     public const int Polytheism = 64, Rocketry = 73, SpaceFlight = 76, Steel = 79, Tactics = 81, Theology = 82;
     public const int University = 85, WarriorCode = 86;
     public const int BridgeBuilding = 7, Construction = 18, Currency = 20, Monarchy = 54, TheWheel = 87;
@@ -37,6 +37,7 @@ public static class WonderIds
     public const int Pyramids = 0, Colossus = 2, KingRichard = 8;
     public const int HangingGardens = 1, Oracle = 5, Copernicus = 11, Shakespeare = 13, Bach = 15, Newton = 16;
     public const int WomensSuffrage = 21, HooverDam = 22, Seti = 26, CureForCancer = 27;
+    public const int MarcoPolo = 9, StatueOfLiberty = 19, UnitedNations = 24;
 }
 
 /// <summary>C07 commodity identities. Display names and rule labels do not redirect their formulas.</summary>
@@ -52,4 +53,5 @@ public static class UnitTypeIds
     public const int Horsemen = 15, Chariot = 16, Elephant = 17, Knights = 19;
     public const int Bomber = 28, Trireme = 32, Caravel = 33, Frigate = 35, Transport = 43;
     public const int Diplomat = 46, Spy = 47;
+    public const int Riflemen = 11;
 }

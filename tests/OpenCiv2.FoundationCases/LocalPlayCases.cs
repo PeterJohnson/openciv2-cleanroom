@@ -202,6 +202,33 @@ public static partial class FoundationSuite
         }
     }
 
+    private static void LocalPlayMoodTurn()
+    {
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, console, $"city.found unit={pioneer.Slot.Value}:{pioneer.Token.Value} name=\"Alder Crossing\"", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
+            var saved = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            // Imported celebration ends on an unqualified city; stale duration flags without Disorder survive.
+            var city = saved.Cities.Single() with { Flags = saved.Cities.Single().Flags | 0x2U | 0x2000U | 0x100000U };
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(saved with { Cities = new([city]) })));
+            int before = game.Player.ObserveLocalPlay()!.Gold;
+            var result = EndLocalTurn(game, console, 2);
+            Equal(true, result.Committed.Any(e => e.Name == "city.mood"));
+            var after = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            var flags = StateConversion.DecodeCityStatus(after.Cities.Single().Flags);
+            Equal(false, flags.Celebrating || flags.Disorder);
+            Equal(true, flags.SecondDisorderTurn && flags.LongDisorder);
+            Equal(before + after.Cities.Single().Tax, game.Player.ObserveLocalPlay()!.Gold);
+            var bytes = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(bytes));
+            Equal(after.Cities.Single().Flags, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Cities.Single().Flags);
+            var continuation = EndLocalTurn(game, console, 3);
+            Equal(false, continuation.Committed.Any(e => e.Name == "city.mood"));
+        }
+    }
+
     private static void ExhaustOutrider(LocalGame game, bool console, UnitTarget pioneer, UnitTarget rider)
     {
         var player = game.Player;
