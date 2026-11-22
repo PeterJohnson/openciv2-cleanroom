@@ -113,15 +113,16 @@ all-city C03 recalculation and fixed Fanatics-to-Riflemen production substitutio
 `GovernmentChanges` also owns availability, rate caps and local AI change notices;
 player government selection and rate decisions remain explicit continuations.
 The local desktop turn now uses the shared mood handler and complete local
-production dispatch. A02 choice, remaining V02 operations and general F04
-scheduling remain separate work.
+production dispatch with actual A02 choice. Remaining V02 operations and general
+F04 scheduling remain separate work.
 
 `CityUnitProduction` handles C06's unit-at-entry branch with actual U01 creation,
 veteran/transport initialization, first obsolete-type replacement, stock spending
 and settler population/city-removal consequences. Its AI diplomat path uses real
-nearest-unit queries and preserves the specified distance comparison. Required
-A02 selection and C07 cargo selection remain explicit continuations; boundary
-tests do not supply those policies. The AI common tail runs `AiProductionPurchase`
+nearest-unit queries and preserves the specified distance comparison. C07 cargo
+selection remains an explicit owning continuation. A02 selection is provided by
+`CityProductionChoice`; isolated production tests also retain controlled replies.
+The AI common tail runs `AiProductionPurchase`
 with retained F04 human wonder ranges, regional policy and real V07 race queries.
 Alder Valley now calls this service instead of its previous completion shortcut and uses shared `UnitAvailability`.
 `CityProduction` supplies the local unit/nonunit parent, using actual ordinary
@@ -130,14 +131,14 @@ resumable Darwin research. It retains cost/net/item across choices, applies the
 human wonder-priority early return, and runs the common tail once. The desktop
 city pass now uses it; Temple and Library choices extend the authored profile.
 Shared unit/improvement/wonder eligibility is available; the scenario wonder-flag
-binding, full production dialog, A02 policy and generated-game callers remain open.
+binding, full production dialog and generated-game callers remain open.
 
 `SpaceshipPerformance` owns V07 calculation and group selection, using selected
 spaceship/calendar values and retained `GameState.Spaceship` scratch. The capacity
 queries consume those values explicitly. `SpaceshipConstruction` performs actual
 assembly and automatic/local launch, including first-ship contacts and directed
 diplomacy effects. `DiplomaticRelations` supplies V04's bilateral flag cascades.
-A02 city reselection and human choices/presentation remain required children;
+A02 city reselection uses `CityProductionChoice`; human choices/presentation remain required children;
 C06 nonunit completion now composes these services; spaceship reports and F04
 arrival outcomes remain open.
 
@@ -161,8 +162,18 @@ mutating child. The desktop production command starts its authored selection
 transaction and saves its opening snapshot, then uses the direct manual-change
 operation; the desktop city pass publishes the civilization-turn phase input.
 The V03 reset caller is composed by
-`ResearchFlow`; general P06 interaction and A02's actual policy remain separate
-work.
+`ResearchFlow`; the desktop composes actual A02 policy. General P06 interaction
+remains open.
+
+`CityProductionChoice` owns A02's ordered survey and scoring with explicit
+CITYPREF, optional unit/building recommendation destinations and actual child
+services. Each call retains local captures across sales/airlift. The owner records
+X01 repairs for invalid exhausted rule/treaty reads and rejects unbacked retained
+city sizes. `TerrainImprovementChoice` supplies A03 §2; `SpatialControl` supplies
+U02 adjacent nonallied and same-medium queries, shared with land movement.
+`AiProductionAirlift` preserves orders, performs actual relocation/deletion and
+uses semantic secondary draws for reachable human fighters. These do not implement
+full A01 strategy, A03 worker tasks, player airlift or generated-game turns.
 
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
@@ -195,7 +206,7 @@ completion and accumulation, including free advances.
 `ResearchGoals` owns informational goal/advice data. The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile
 eligibility/cost queries. Darwin now invokes two sequential completions from
-`CityProduction`; V01 catch-up, full A02 policy and generated-game callers remain
+`CityProduction`; V01 catch-up, full A01 strategy and generated-game callers remain
 open.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by

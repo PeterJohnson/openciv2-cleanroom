@@ -3,6 +3,7 @@ namespace OpenCiv2.Core.Rules;
 /// <summary>Fixed F03 advance identities used by identity-specific mechanics. Names and prerequisites remain data.</summary>
 public static class AdvanceIds
 {
+    public const int AdvancedFlight = 0, Explosives = 28, Robotics = 72;
     public const int Alphabet = 1, Automobile = 5, Banking = 6, BronzeWorking = 8, CeremonialBurial = 9, Chemistry = 10, CodeOfLaws = 12;
     public const int Combustion = 14, Economics = 22, Electricity = 23, MassProduction = 48, Pottery = 65, Refrigeration = 70;
     public const int Communism = 15, Computers = 16, Conscription = 17, Democracy = 21, FusionPower = 32;
@@ -43,7 +44,7 @@ public static class WonderIds
     public const int MarcoPolo = 9, StatueOfLiberty = 19, UnitedNations = 24;
     public const int SunTzu = 7;
     public const int Leonardo = 14, AdamSmith = 17;
-    public const int GreatLibrary = 4, Darwin = 18;
+    public const int GreatLibrary = 4, GreatWall = 6, Darwin = 18;
 }
 
 /// <summary>C07 commodity identities. Display names and rule labels do not redirect their formulas.</summary>
@@ -55,6 +56,9 @@ public enum Commodity
 /// <summary>A08 fixed unit identities used to read customizable rule prerequisites.</summary>
 public static class UnitTypeIds
 {
+    public const int AlpineTroops = 10, Marines = 12, Crusaders = 18, Dragoons = 20;
+    public const int Fighter = 27, Helicopter = 29, StealthFighter = 30, StealthBomber = 31;
+    public const int Ironclad = 36, Destroyer = 37, Cruiser = 38, AegisCruiser = 39, Battleship = 40, Submarine = 41, Carrier = 42, CruiseMissile = 44;
     public const int Settlers = 0, Warriors = 2, Phalanx = 3, Archers = 4, Legion = 5, Pikemen = 6, Musketeers = 7, Fanatics = 8, Partisans = 9;
     public const int Horsemen = 15, Chariot = 16, Elephant = 17, Knights = 19;
     public const int Bomber = 28, Trireme = 32, Caravel = 33, Frigate = 35, Transport = 43;

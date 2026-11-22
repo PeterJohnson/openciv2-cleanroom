@@ -75,6 +75,29 @@ For the required profile, a rivalry lookup outside the 28 wonder entries returns
 zero. The original adjacent-local mappings and supplied-byte cases are diagnostic
 evidence only; they do not define AI inputs. Other valid scoring/ties are unchanged.
 
+### Production safety repairs
+
+X01 overrides the diagnostic backing requests in Appendix A. The production
+chooser uses the following narrow repairs; no original stack or adjacent record
+bytes are inputs:
+
+- The exhausted unit-rule index 62 has no rule backing. Skip that conditional
+  role block: Flagged and Homeless stay zero, while every owned unit still
+  contributes to Ut and its valid regional N entry. Settler scores can therefore
+  differ from executions whose unrelated byte happened to denote Settle.
+- The exhausted diplomacy treaty index 8 has no treaty backing. Skip its
+  Ceasefire/Peace adjustment, preserving the actual last qualifying target.
+  Attitude[0] does not act as a ninth treaty. This may change diplomat scores.
+- A retained city cursor still reads the size of a backed inactive slot. An
+  unbacked cursor stops at that read after preceding effects; it does not use
+  the current city's size or invent a zero-sized city.
+- Non-wonder rivalry is zero, as already required by X01. Consequently the
+  uninitialized quota/ship-cost/role frame bytes are never read through rivalry.
+
+These are contract-derived repairs, not original-game equivalence observations.
+Tests cover their branch outcomes and retained preceding mutations. Valid scalar
+wrap, ties, donor cursors and inactive backed city sizes remain unchanged.
+
 ## 1. Boundary, domains and notation
 
 Input: an existing city K; optional unit and building recommendation outputs;

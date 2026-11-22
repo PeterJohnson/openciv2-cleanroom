@@ -1,6 +1,7 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
+using OpenCiv2.Core.Ai;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
@@ -374,8 +375,7 @@ public static partial class LocalPlayCommands
             var researchPrompts = new ResearchGovernmentPrompts(world, governments, researchEffects);
             var grants = new ResearchGrants(world, rules, context.Gameplay, CreateWonders(context), researchPrompts.Run, researchEffects);
             return new ResearchFlow(world, context.Process.Rules, context.Gameplay, grants, researchPrompts,
-                new ProductionOrders(world, rules, _ => throw new InvalidOperationException("The authored profile has no research production-reset path"),
-                    _ => throw new InvalidOperationException("The authored profile has no research wonder-change path")),
+                CreateProductionOrders(context),
                 new CityEconomy(world, context.Process.Rules, new(world, new(5_000_000, 64))), researchEffects, researchEffects);
         }
 
@@ -440,13 +440,31 @@ public static partial class LocalPlayCommands
             var rules = context.Process.Rules.Definitions;
             var values = GameplayContent.Builtin.Values;
             var effects = new AuthoredProductionEffects(() => Current);
-            var orders = new ProductionOrders(world, rules,
-                _ => throw new InvalidOperationException("Automatic production requires its A02 policy"),
-                _ => throw new InvalidOperationException("The authored profile has no AI wonder notice"));
+            var orders = CreateProductionOrders(context);
             return new(world, rules, CreateUnitProduction(context), orders, CreateResearch(context), CreateWonders(context),
                 new(world, rules, values.Spaceship, values.Calendar),
                 new(world, rules, values.Spaceship, values.Calendar, city => orders.Set(city, 99), effects),
                 values.Spaceship, new(world, context.Process.Rules, new(world, new(5_000_000, 64))), effects);
+        }
+
+        private static ProductionOrders CreateProductionOrders(OperationContext context)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            var values = GameplayContent.Builtin.Values;
+            var budget = new StackBudget(5_000_000, 64);
+            var stacks = new StackOperations(world, budget);
+            var effects = new CityTurnEffects(context);
+            var airlift = new AiProductionAirlift(world, rules, stacks, new(world, rules, budget, effects), context.Gameplay,
+                notice => context.Effect(notice.ShotDown ? "unit.airlift_shot" : "unit.airlift_seen", new([
+                    new("city", new CommandValue.City(new(notice.Destination, world.Entities.Cities.At(notice.Destination).Token))),
+                    new("name", new CommandValue.Text(notice.Name))])));
+            // Alder Valley has no CITYPREF content; the general policy accepts the installed list explicitly.
+            var chooser = new CityProductionChoice(world, context.Process.Rules, new(), new(world, context.Process.Rules, stacks), stacks,
+                new(world, rules, values.Spaceship, values.Calendar), airlift);
+            int sequence = 0;
+            return new(world, rules, city => chooser.Choose(city, $"local-choice/{world.Globals.Turn}/{city.Value}/{sequence++}"),
+                _ => throw new InvalidOperationException("The authored profile has no AI wonder notice"));
         }
 
         private sealed class AuthoredProductionEffects(Func<OperationContext> current) : ICityProductionEffects, ISpaceshipConstructionEffects
@@ -529,8 +547,7 @@ public static partial class LocalPlayCommands
                         new("government", new CommandValue.Integer((int)notice.Government))]));
                 }
             }
-            public void ReconsiderProduction(CitySlot city) =>
-                throw new InvalidOperationException("Automatic production requires its A02 policy");
+            public void ReconsiderProduction(CitySlot city) => CreateProductionOrders(context).Set(city, 99);
             public void ChooseTradeCargo(CitySlot city, int owner, UnitSlot unit) =>
                 throw new InvalidOperationException("The authored profile has no caravan production path");
             public bool AbandonCity(CitySlot city, UnitType type) =>

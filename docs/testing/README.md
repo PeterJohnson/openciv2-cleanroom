@@ -23,6 +23,13 @@ join generated maps, all starting civilizations, real accelerated packages and
 the retained uniform road path, including fresh replay and cancellation. Browser
 execution and cross-platform qualification are deferred for this
 workstream; leaf tests do not close complete human/AI-game desktop acceptance.
+A02 groups now cover the complete ordered chooser with actual A03 tile
+recommendation and U05 AI airlift children: survey captures, free irrigation,
+redundant sales, donor termination, secondary interception, directed spatial
+control, facility/wonder/unit selection, human preferences, cutoff and repaired
+invalid reads. A direct/console desktop case imports automatic production flags,
+completes real unit production and compares continued saves after reload. Full
+A01 strategy, general advice/auto UI and generated-game turns remain open.
 Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
 costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
 terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct

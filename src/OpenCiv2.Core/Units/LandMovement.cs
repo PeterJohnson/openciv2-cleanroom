@@ -85,31 +85,6 @@ public static class LandMovement
     }
 
     /// <summary>U02 same-medium nonallied unit control. A city at the tested endpoint exempts it.</summary>
-    private static bool InZone(GameState world, int owner, MapPoint origin)
-    {
-        var map = world.Map;
-        var tile = map.TileAt(origin);
-        if (tile.City)
-        {
-            return false;
-        }
-
-        foreach (var offset in MapNeighborhoods.Directions)
-        {
-            var point = MapNeighborhoods.Offset(map.Geometry, origin, offset, world.Globals.Rules.FlatWorld);
-            if (!map.Geometry.Canonical(point))
-            {
-                continue;
-            }
-
-            var neighbor = map.TileAt(point);
-            if (neighbor.Ocean == tile.Ocean && neighbor.Unit && neighbor.Owner is byte foreign && foreign != owner
-                && !world.Civilizations[owner].Treaties[foreign].Alliance)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+    private static bool InZone(GameState world, int owner, MapPoint origin) =>
+        SpatialControl.InEnemyZone(world, origin, owner) is not null;
 }

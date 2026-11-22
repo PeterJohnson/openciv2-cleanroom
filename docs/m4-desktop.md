@@ -15,13 +15,13 @@ in the [M2 closeout](m2-closeout.md).
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. Remaining C01–C08 operations, V02 choices/rates, general research presentation/capture/catch-up and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
-| Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
+| Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 orchestration, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
-catch-up policies, C06 production selection, remaining V02 government/rate choices
+catch-up policies, A01 assessment/orchestration, remaining V02 government/rate choices
 and full F04 turn processing needed by the generated desktop game. C04's shared
 disorder/tax/celebration handler now joins actual V02 local government transitions
 and runs in the authored desktop turn; this does not complete general turn processing.
@@ -1367,3 +1367,67 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-choices-headless.xml` | `a9f5bca3e2f587fc075573225d324c2bc744fd024eaff9b79a8d657731a73ebe` |
 | `m4-desktop-choices-native.json` | `6f82ff1a3277c875847a790d3a07db048337d67e80ef9bb96f5b2ff1992dba85` |
 | `m4-desktop-choices-identity.json` | `aa38d7237dd9e728f6f13b95be20cb0b9aa96cb04722e07e177e3e9478074606` |
+
+
+## Ordered city production policy and desktop automatic turns
+
+`CityProductionChoice` implements A02's ordered survey, facility/wonder scoring,
+special and ordinary unit scoring, human CITYPREF selection and final automation
+policy. Optional recommendations retain their own IDs/scores before final Palace,
+Temple or current-wonder substitutions. Raw wonder preference can change both IDs
+while preserving a previous weighted minimum; tests distinguish that from sorting
+weighted scores. Census, leader traits, regional policies and human wonder ranges
+remain the live/retained inputs owned by A01/F04.
+
+The policy calls actual C03 cached calculation, C06 eligibility, C08 facilities,
+V07 part-group/race queries, A03 tile-improvement recommendation and U05 AI airlift.
+The latter preserves orders, moves/exhausts the unit, checks directed human fighter
+war and consumes one semantic secondary result per reachable fighter, then uses
+actual basic deletion on interception. U02 spatial-control queries are shared with
+ordinary land movement. Free irrigation, sales and donor transfer precede scoring;
+the chooser preserves those effects when a later arithmetic/backing read fails.
+
+A02's owner now documents narrow X01 repairs: skip the nonexistent rule62 role
+block and treaty8 adjustment, and use zero rivalry outside the wonder table.
+Backed inactive city sizes remain retained inputs; an unbacked cursor stops at its
+read. These repairs are declared contract behavior, not recovered original bytes.
+Additional fixed unit/advance identities use only the user-authorized original
+`data/gameplay/classic-mge-5.4.0f/rules.json` data on local branch
+`codex/classic-menus-civilopedia`, SHA-256
+`163cae26da033a8418342bac81e33c9d586edcafedc4549d0935ed02d4e209be`.
+
+Desktop production, research reset and city-mood callbacks now compose actual A02.
+An imported unit-only Autobuild city completes units and continues after save/load;
+direct and console requests yield identical saves. The 20 added shared groups
+cover recommendation/return differences, cutoff500, negative scores, signed roles,
+naval borders, diplomat targets, redundant sales, free-irrigation visibility,
+first-donor termination, intercepted transfers, invalid survey writes, retained
+size reads and failure prefixes. These are authored specification tests, not
+original-game capture evidence.
+
+Full A01 strategy/census, A03 worker tasks, other U05 movement, general desktop
+advice/automation controls and generated-game F04 callers remain open. Browser and
+cross-platform execution are deferred. M4's complete human/AI-game gate is still
+open; this batch does not close the milestone.
+
+Validation: root/App formatting and verification passed; both Release builds
+completed with zero warnings/errors. Native tests passed **772 of 774**, with the
+two existing opt-in/platform skips. The native probe passed **740 shared groups**;
+source identity verification covered **448 compiled inputs**, now including the
+A03/U05 owner documents. Graph, conformance, **85-family** coverage,
+identity/coverage tool tests, content schemas and gameplay schemas passed.
+
+All **12 Xvfb CPU desktop checks** passed, including manual production, purchases,
+sales, building completion, save/reload, turn7/turn8 direct/native/CLI agreement,
+imports and normal shutdown. Automatic production's new execution evidence is
+the direct/console save/resume group; the graphical driver does not yet exercise
+an automation control. Full generated-game desktop acceptance remains open.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-policy-play.json` | `f3971cf694235bd25e04405cb2f462f97f43ee3dd39a533e2a552cbd26afd6ff` |
+| `m4-desktop-policy-headless.xml` | `afeae214b443765b77340c977ed1106b8c2785aead51979fc5d4f9caad1c8081` |
+| `m4-desktop-policy-native.json` | `c68369210952e767be103523b1628da0642c7719aec38bb05e62c99675f28aad` |
+| `m4-desktop-policy-identity.json` | `98aea84c9c95617643bfd25211904c4234af39230d6a4fb284f00d68eebb31ae` |

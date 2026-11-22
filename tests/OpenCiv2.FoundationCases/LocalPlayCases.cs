@@ -351,6 +351,33 @@ public static partial class FoundationSuite
         }
     }
 
+    private static void LocalPlayAutomaticProduction()
+    {
+        byte[]? direct = null;
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, console, $"city.found unit={pioneer.Slot.Value}:{pioneer.Token.Value} name=Autobuild", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Autobuild")));
+            var stored = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            var flags = StateConversion.DecodeCityStatus(stored.Cities[0].Flags);
+            flags.Autobuild = flags.UnitsOnlyAutomation = true;
+            stored = stored with { Cities = new([stored.Cities[0] with { Production = 2, ShieldBox = 40, Flags = StateConversion.EncodeCityStatus(flags) }]) };
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(stored)));
+            int unitsBefore = game.Player.OwnUnits().Records.Count;
+            EndLocalTurn(game, console, 2);
+            Equal(unitsBefore + 1, game.Player.OwnUnits().Records.Count);
+            stored = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            Equal((sbyte)2, stored.Cities[0].Production);
+            Equal(true, StateConversion.DecodeCityStatus(stored.Cities[0].Flags).Autobuild);
+            var saved = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(saved));
+            EndLocalTurn(game, console, 3);
+            var continued = game.SaveClassic();
+            if (direct is null) direct = continued; else BytesEqual(direct, continued);
+        }
+    }
+
     private static void LocalPlayBuyingAndSelling()
     {
         byte[]? direct = null;

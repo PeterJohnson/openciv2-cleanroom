@@ -45,7 +45,7 @@ on the map or in the unit list and use the direction buttons. Found a city
 with the Pioneer, then set the city's worked tiles and production in its
 city window. Land Surveys enables Temple construction; Clay Casting enables
 Library construction. Completed buildings remain the manual production order
-until another item is selected. The center resets automatic worker assignment. The window shows
+until another item is selected. Imported Autobuild flags now use the shared A02 policy during city turns, including unit-only selection and save/resume. General advice and automation controls are still pending. The center resets automatic worker assignment. The window shows
 food, shields, support, research and tax from the same session as the map.
 Buy production quotes the current shield purchase before confirmation; it fills
 the stock and leaves completion to the city turn. Owned facilities have Sell
