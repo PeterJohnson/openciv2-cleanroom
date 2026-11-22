@@ -38,6 +38,7 @@ public static class WonderIds
     public const int HangingGardens = 1, Oracle = 5, Copernicus = 11, Shakespeare = 13, Bach = 15, Newton = 16;
     public const int WomensSuffrage = 21, HooverDam = 22, Seti = 26, CureForCancer = 27;
     public const int MarcoPolo = 9, StatueOfLiberty = 19, UnitedNations = 24;
+    public const int SunTzu = 7;
 }
 
 /// <summary>C07 commodity identities. Display names and rule labels do not redirect their formulas.</summary>

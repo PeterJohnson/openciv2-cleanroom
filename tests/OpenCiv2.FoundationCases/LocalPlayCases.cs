@@ -229,6 +229,52 @@ public static partial class FoundationSuite
         }
     }
 
+    private static void LocalPlayProductionStocks()
+    {
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, false, "found production city", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
+            var original = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            foreach (var (stock, capacity) in new[] { (32767, false), (100, false), (100, true) })
+            {
+                var civilizations = original.Civilizations.ToArray();
+                if (capacity) civilizations[1] = civilizations[1] with { MilitaryCount = 1949 };
+                var input = original with
+                {
+                    Cities = new([original.Cities.Single() with { ShieldBox = (short)stock }]),
+                    Civilizations = new(civilizations)
+                };
+                if (capacity)
+                {
+                    // U01 reuses holes before applying extension limits. Remove the founder's
+                    // free slot so the retained high military count exercises actual refusal.
+                    input = input with
+                    {
+                        Units = new([original.Units.Single(u => u.Token.Occupied) with { Previous = -1, Next = -1 }]),
+                        Globals = input.Globals with { UnitEnd = 1, ActiveUnit = 0 }
+                    };
+                }
+                Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
+                var before = game.Player.ObserveLocalPlay()!;
+                int net = Math.Max(0, before.City!.Shields - before.City.ShieldSupport);
+                var result = EndLocalTurn(game, console, 2);
+                var after = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+                bool built = stock == 100 && !capacity;
+                Equal(built, result.Committed.Any(e => e.Name == "unit.produced"));
+                Equal(capacity, result.Committed.Any(e => e.Name == "city.production_spent"));
+                Equal(before.Units.Count + (built ? 1 : 0), game.Player.OwnUnits().Records.Count);
+                int expected = stock == 32767 ? unchecked((short)(stock + net)) : capacity ? stock + net - before.City.ShieldCost : 0;
+                Equal((short)expected, after.Cities.Single().ShieldBox);
+                var saved = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(saved));
+                Equal((short)expected, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Cities.Single().ShieldBox);
+                EndLocalTurn(game, console, 3);
+            }
+        }
+    }
+
     private static void ExhaustOutrider(LocalGame game, bool console, UnitTarget pioneer, UnitTarget rider)
     {
         var player = game.Player;

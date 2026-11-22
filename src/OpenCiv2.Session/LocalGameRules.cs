@@ -1,5 +1,6 @@
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
+using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
 
@@ -25,7 +26,7 @@ internal static class LocalGameRules
 
     internal static bool ProductionAvailable(GameState world, RuleTables rules, int type) =>
         type is Guard or Rider
-        && CivilizationKnowledge.KnowsAdvance(world.Civilizations, Owner, (int)rules.Units[type].Prerequisite);
+        && UnitAvailability.CanBuild(world, rules, Owner, null, new((byte)type));
 
     internal static RuleInput Input()
     {

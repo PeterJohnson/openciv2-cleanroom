@@ -49,6 +49,14 @@ disorder duration/restoration and real Democracy collapse, tax wrap and celebrat
 growth/facility limits. Direct/console tests exercise the desktop mood phase and
 save/resume. Player government/rate choices, C06 production, remaining city-turn
 consequences and generated-game turn acceptance remain open.
+Shared C06 unit-production tests cover actual creation and capacity failure,
+signed stock/cost behavior, disorder/barbarian accumulation, upgrade selection,
+veteran facilities/wonders, transport counters, settler refusal/cancellation and
+city-disband recreation through real C01/V01 services. AI diplomat and nuclear
+contact cases preserve branch/draw behavior. Cargo, AI choice and purchase
+fixtures test required continuation boundaries and retained failure effects;
+they are not full policy implementations. Direct/console desktop tests cover
+overflow, excess stock, capacity failure and save/resume through this shared path.
 
 ## Complete M2 map renderer
 

@@ -263,25 +263,17 @@ public static partial class LocalPlayCommands
                     new("size", new CommandValue.Integer(city.Size))]));
             }
 
-            int support = LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
+            LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
             int surplus = food.Accumulate(slot, previousFood);
-            int type = city.Production;
-            city.ShieldBox += (short)Math.Max(0, city.TotalShields - support);
-            int cost = rules.Units[type].CostRows * rules.Cosmic.ShieldBoxRows;
-            if (city.ShieldBox >= cost)
+            var production = CreateProduction(context).Run(slot, $"local-production/{world.Globals.Turn}/{slot.Value}");
+            if (production is { Outcome: UnitProductionOutcome.Completed, Unit: { } produced })
             {
-                city.ShieldBox -= (short)cost;
-                if (CreateUnit(world, context.Process, type, city.Position, slot) is { } created)
-                {
-                    city.ShieldBox = 0;
-                    var token = world.Entities.Units.At(created).Token;
-                    context.Effect("unit.produced", new([new("unit", new CommandValue.Unit(new(created, token))),
-                        new("city", new CommandValue.City(target))]));
-                }
-                else
-                {
-                    context.Effect("city.production_spent", new([new("city", new CommandValue.City(target))]));
-                }
+                context.Effect("unit.produced", new([new("unit", new CommandValue.Unit(produced)),
+                    new("city", new CommandValue.City(target))]));
+            }
+            else if (production.Outcome == UnitProductionOutcome.CreationFailed)
+            {
+                context.Effect("city.production_spent", new([new("city", new CommandValue.City(target))]));
             }
 
             RetireUnsupportedUnits(context, slot);
@@ -314,6 +306,21 @@ public static partial class LocalPlayCommands
             new CityRetirement(world, rules, deletion, loss, effects).Run(city);
         }
 
+        private static CityUnitProduction CreateProduction(OperationContext context)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            var budget = new StackBudget(1000000, 64);
+            var stacks = new StackOperations(world, budget);
+            var effects = new CityTurnEffects(context);
+            var deletion = new UnitDeletion(world, rules, budget, effects);
+            var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
+            var removal = new CityRemoval(world, rules, stacks, loss, target =>
+                context.Effect("city.removed", new([new("city", new CommandValue.City(target))])));
+            var creation = new UnitCreation(world, context.Process, stacks, new LocalCreation(world, rules, stacks));
+            return new(world, rules, creation, deletion, removal, context.Gameplay, effects, effects);
+        }
+
         private static CityFood CreateFood(OperationContext context)
         {
             var world = context.World;
@@ -330,7 +337,8 @@ public static partial class LocalPlayCommands
 
         private sealed class CityTurnEffects(OperationContext context)
             : ICityRetirementEffects, IUnitLossEffects, IUnitDeletionEffects, ICityFoodEffects, ICityFoodContinuations,
-                ISpyEscapeEffects, ICivilizationEliminationEffects, ICityMoodEffects
+                ISpyEscapeEffects, ICivilizationEliminationEffects, ICityMoodEffects,
+                ICityUnitProductionContinuations, ICityUnitProductionEffects
         {
             private CivilizationElimination? elimination;
             private int eliminationCall;
@@ -354,7 +362,17 @@ public static partial class LocalPlayCommands
                 }
             }
             public void ReconsiderProduction(CitySlot city) =>
-                throw new InvalidOperationException("The authored profile has no AI production path");
+                throw new InvalidOperationException("Automatic production requires its A02 policy");
+            public void ChooseTradeCargo(CitySlot city, int owner, UnitSlot unit) =>
+                throw new InvalidOperationException("The authored profile has no caravan production path");
+            public void Purchase(CitySlot city, int owner, int netShields) =>
+                throw new InvalidOperationException("The authored profile has no AI purchase path");
+            public bool AbandonCity(CitySlot city, UnitType type) =>
+                throw new InvalidOperationException("The authored profile cannot build settlers");
+            public void Upgraded(CitySlot city, UnitType oldType, UnitType newType) => context.Effect("city.production_upgraded", new([
+                CityValue(city), new("oldType", new CommandValue.Integer(oldType.Value)), new("newType", new CommandValue.Integer(newType.Value))]));
+            public void Built(CityTarget city, UnitType type) => context.Effect("unit.built", new([
+                new("city", new CommandValue.City(city)), new("type", new CommandValue.Integer(type.Value))]));
 
             public void SupportShortage(CitySlot city, UnitTarget selected, UnitType type) =>
                 context.Effect("unit.support_shortage", new([new("unit", new CommandValue.Unit(selected)),
@@ -370,7 +388,9 @@ public static partial class LocalPlayCommands
                 new([new("x", new CommandValue.Integer(position.X)), new("y", new CommandValue.Integer(position.Y))]));
             public void RefreshHomeCity(int city) => context.Effect("city.support_changed",
                 new([new("city", new CommandValue.City(new(new((ushort)city), context.World.Entities.Cities.Storage[city].Token)))]));
-            public void CheckCivilization(int owner, int killer)
+            public void CheckCivilization(int owner, int killer) => Eliminate(owner, killer);
+            int ICityUnitProductionContinuations.CheckCivilization(int owner, int killer) => Eliminate(owner, killer);
+            private int Eliminate(int owner, int killer)
             {
                 if (elimination is null)
                 {
@@ -385,7 +405,7 @@ public static partial class LocalPlayCommands
                     elimination = new(world, deletion, escape,
                         _ => throw new InvalidOperationException("The authored profile has no AI restart path"), this);
                 }
-                elimination.Check(owner, killer, "local-elimination/" + eliminationCall++);
+                return elimination.Check(owner, killer, "local-elimination/" + eliminationCall++);
             }
             public void Notice(SpyNotice notice) => context.Effect("unit.spy_fate", new([
                 new("unit", new CommandValue.Unit(notice.Unit)), new("fate", new CommandValue.Text(notice.Fate.ToString()))]));

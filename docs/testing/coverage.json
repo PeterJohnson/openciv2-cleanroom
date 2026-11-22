@@ -1818,6 +1818,7 @@
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
         "M3.local-support-retirement"
       ],
       "status": "partial",
@@ -2190,6 +2191,7 @@
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
         "M3.local-support-retirement"
       ],
       "sources": [
@@ -2245,6 +2247,7 @@
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
         "M3.local-support-retirement"
       ],
       "status": "partial",
@@ -2314,11 +2317,48 @@
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
         "M3.local-support-retirement",
         "V02.government-ai-announcements",
         "V02.government-arguments-decisions",
         "V02.government-queries-identities",
         "V02.government-recalculation-production"
+      ]
+    },
+    {
+      "id": "city-unit-production",
+      "status": "partial",
+      "contract": "C06 unit-at-entry local production: shield accumulation, upgrading, creation/veterans, settler consequences, AI diplomats and common tail",
+      "publicSurface": "CityUnitProduction.Run; ICityUnitProductionContinuations; ICityUnitProductionEffects; local desktop unit-production phase and shared unit availability",
+      "review": "Actual U01 creation/deletion, C01 removal and V01 elimination cover signed costs/stocks, disorder and barbarian accumulation, first upgrade without availability or chaining, veteran rules, transport counters and ordered city-disband recreation. AI diplomat creation retains the unusual distance comparison and safely omits the failed-creation veteran write; first nuclear-type creation resets incoming contacts. Tests cover required cargo, chooser and purchasing boundaries and failure prefixes, not implementations of those policies. Alder Valley uses the shared production path and unit availability, with direct/console stock overflow, capacity failure and save/resume cases. Nonunit completion, wonder races/effects, shared completed-improvement state, production switching, purchases/sales, A02/C07 owning policies and generated desktop turn integration remain pending.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityUnitProduction.cs",
+        "src/OpenCiv2.Core/City/UnitAvailability.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalGameRules.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityUnitProductionCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+      ],
+      "sharedGroups": [
+        "C06.unit-ai-diplomat-nuclear",
+        "C06.unit-disorder-barbarian",
+        "C06.unit-first-upgrade",
+        "C06.unit-policy-failure-prefixes",
+        "C06.unit-settler-cancel-removal",
+        "C06.unit-settler-refusal-population",
+        "C06.unit-stock-capacity",
+        "C06.unit-veterans-transport",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
+        "M3.local-support-retirement"
       ]
     }
   ]

@@ -13,7 +13,7 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration now uses actual local V02 transitions and runs in Alder Valley. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration and the C06 unit-production branch now run in Alder Valley using real local V02/U01/C01 children. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing/Apollo, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
 | Outcomes | V07 reset/loss and V01 destruction history are implemented. Spaceship construction/launch/arrival, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
@@ -760,3 +760,70 @@ cross-platform qualification remain deferred. No Lua automation was changed.
 | `m4-desktop-mood-headless.xml` | `4101d48ae1d5f729aeb14decb0d91ea7d5ce37758413f77462f2e69e55f8da9a` |
 | `m4-desktop-mood-native.json` | `5414d4b9fa1a86c4aa9d246d5e551d39e6e03877ef95c71c48ef0d0042f99911` |
 | `m4-desktop-mood-identity.json` | `aeebd17381e5cb38fa8c683afc6f33b6838f1846e689e255acd0e7f3824a4b27` |
+
+
+## Unit production and desktop completion
+
+`CityUnitProduction` implements C06's local unit-at-entry path and common tail.
+It uses the caller's actual C05 shield factor and whole C03 shield/support values,
+including disorder suppression, signed16 accumulation and the barbarian regional
+military/occupant gate. Obsolete units select the first matching prerequisite and
+role without availability checks or an upgrade chain. Signed unit costs are spent
+before actual U01 creation; a capacity failure retains the remainder, whereas
+ordinary human success clears excess stock.
+
+Creation uses real revelation, home assignment, counters and lifetime tokens.
+Veteran tests preserve the Communist diplomat exception, classic-combat branch,
+facilities, active wonders, disposable units and transport city-counter encoding.
+Settler cases distinguish the Chieftain refusal, last-city early return, declined
+or autoplay city abandonment, ordinary size decrement and signed-size wrap.
+Accepted size-one abandonment runs actual C01 removal and V01 checking, then
+performs a separate U01 creation after the first unit has been removed. Tests
+verify both lifetime tokens and the surviving unit's new home.
+
+AI diplomat placement keeps C06's unusual distance comparison and does not invent
+a placement-chance draw in normal state. Failed creation omits the invalid veteran
+write while preserving the remaining continuation. The first unit of a type with signed attack>=99
+resets incoming contact turns for normal seats. A02 production reconsideration,
+C07 cargo selection and C06 AI purchasing remain required continuations. Tests
+observe those boundaries and their failure prefixes; they do not implement the
+missing policies. Nonunit completion, wonder acquisition/effects, the shared
+completed-improvement result, switches, buying/selling and the full C06/F04 parent
+remain open.
+
+Alder Valley uses this shared production service for its supported military
+orders, and its availability check now delegates to existing `UnitAvailability`.
+Direct/console tests cover overflow to negative stock, successful excess-stock
+removal, capacity failure with retained spent-cost remainder, and save/resume.
+The authored profile still has no settler, trade, nonunit or automatic-production
+policy. General generated-game integration and full desktop acceptance remain
+pending; this batch does not close M4.
+
+
+### Unit-production validation on Linux, 2026-11-22
+
+Root and App Release builds passed with zero warnings/errors, and both solutions
+passed formatting verification. Native tests reported **658 passed and two
+existing skips** (native audio opt-in and Windows delete-sharing). All **626
+shared groups** passed; source identity verified **410 compiled inputs**.
+Coverage accounts for 75 API/test families. Graph, conformance metadata,
+identity (8 cases) and coverage (3 cases) validators passed.
+
+The capacity regression initially reused the founder's free slot, correctly
+bypassing U01's extension limit. The final fixture removes that hole before
+using the retained high military count and now verifies actual refusal without
+changing allocator semantics. Both direct and console paths retain the spent
+cost and resume from the saved remainder.
+
+The isolated Xvfb CPU desktop driver passed all ten checks, including production
+controls, native/direct/CLI agreement, native picker import, invalid-load retention,
+save at turn7, resumed turn8 and normal shutdown. This remains authored-profile
+regression evidence; generated full-game/AI acceptance is pending. Browser and
+cross-platform qualification remain deferred. No Lua automation was changed.
+
+| Local receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-unit-production-play.json` | `9dbcd37a3779e5b26745ec886c8550b3a04550195a2c12f0ee946b660ed41a5c` |
+| `m4-desktop-unit-production-headless.xml` | `8cded63ee8d3f21b392e8764ba12836c0bae2ad95be60b97c6198d9f1625b6fb` |
+| `m4-desktop-unit-production-native.json` | `37a168924e24c064feee134d7f54fef6ecd6010cc10ad6970dde38ec98e71da6` |
+| `m4-desktop-unit-production-identity.json` | `f962dfd8f57433a1819a02d6a91f1e1c38c35c4c8900891af146aae0904f560e` |
