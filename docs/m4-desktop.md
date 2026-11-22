@@ -13,8 +13,8 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration and the C06 unit-production branch now run in Alder Valley using real local V02/U01/C01 children. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing/Apollo, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit production, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing and Apollo completion callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 nonunit integration, spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
@@ -105,7 +105,7 @@ U04 sentry/goto changes. Required meeting and pre-meeting disclosure services
 remain explicit boundaries; no no-op diplomacy implementation is supplied.
 The session owns final observer publication and repaint policy. Local revelation
 rejects network mode before mutation; peer tile synchronization is not claimed.
-Map exchange, Apollo and complete V04/V05 audiences remain unfinished.
+Map exchange, Apollo completion callers and complete V04/V05 audiences remain unfinished; the local Apollo publication service is now implemented below.
 
 `RevelationCases.cs` and `UnitCreationCases.cs` add twelve shared contract groups,
 including real creation-to-revelation integration. Child-boundary tests isolate
@@ -935,3 +935,63 @@ and cross-platform qualification remain deferred. No Lua automation was changed.
 | `m4-desktop-spaceship-headless.xml` | `94d09ab0062ef453bbea02fd81df48006e34b61d353c9faa09c69c833e99f869` |
 | `m4-desktop-spaceship-native.json` | `421846c374640442ade4798543ca9a20d8225825ef7dcbba028227433ba69060` |
 | `m4-desktop-spaceship-identity.json` | `b6ccf733d5b1db16fd42759c61e2aff4ec9a709be5e8d5db0209f51aaa519fdb` |
+
+
+## Building maintenance, wonder effects and reputation
+
+`BuildingMaintenance` implements the C08 quote and payment pass, including
+full-width Barracks costs, the disabled first-prerequisite walk, Adam Smith's
+exact-one exemption and Fundamentalist religious upkeep. Disabled cycles report
+a bounded stop; they do not invent a cost. The payer preserves ordered forced
+loss, the captured owner, fresh post-notice credit inputs, scalar wrap and prior
+effects when a child fails. It does not invoke manual sale, repair capital hints
+or refund production stock.
+
+Alder Valley calls this payer after its research phase. Its authored population,
+industry and admitted facilities have no pollution-producing path. A wrapped tax
+treasury can remove even its zero-upkeep Palace; the resume domain now accepts a
+city with no facilities as well as Palace only. Direct and console tests run
+this loss, save/reload, and another turn; other facilities remain rejected.
+
+`WonderEffects` supplies local Eiffel acquisition and Leonardo upgrades. Eiffel
+uses actual `DiplomaticAttitudes` guards and selected-pair scratch before clearing
+incoming Vendetta. Leonardo scans the live unit bound, selects the last qualifying
+replacement, publishes once per old type per invocation, and preserves damage,
+movement, orders and counters. W03 `ApolloRevelation` updates exploration, normal
+civilization feature memory and live city knowledge for all eight seats without
+revealing units. These are actual child operations, with C06/V03/C09/N02 callers
+still pending; no substitute research completion is introduced for Darwin.
+
+V04 attitude storage/categories/hostility and global reputation maintenance are
+also implemented. The desktop global phase now invokes reputation maintenance
+after unit reset. Tests cover inactive seats, Eiffel expiry/scenario suppression,
+ordinary endpoint1, Eiffel endpoint0, unsigned difficulty and human-only credit
+normalization. Local effect services reject network execution before mutation;
+network publication, browser execution and cross-platform qualification remain
+deferred. General F04 scheduling and complete generated human/AI games remain
+open, so this batch does not complete M4.
+
+
+### Building-effects validation on Linux, 2026-11-22
+
+Root and App Release builds passed with zero warnings/errors, and both solutions
+passed formatting verification. Native tests reported **695 passed and two
+existing skips** (native audio opt-in and Windows delete-sharing). All **663
+shared groups** passed, including thirteen new groups. Source identity verified
+**423 compiled inputs**. Coverage accounts for 78 API/test families. Graph,
+conformance metadata, identity (8 cases), coverage (3 cases) and gameplay-data
+validators passed; the classic semantic fingerprint remains unchanged.
+
+The isolated Xvfb CPU desktop driver passed all ten authored-profile checks,
+including native/direct/CLI agreement, save at turn7, resumed turn8, picker
+import, invalid-load retention, session replacement and shutdown. This proves the
+bounded desktop regression; full generated games and the remaining wonder callers
+are not covered by that driver. Browser execution and cross-platform qualification
+remain deferred. No Lua automation changed.
+
+| Local receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-wonder-play.json` | `0249325f4dfb1a73212010b81ab68651fdd8009bf7e69ac71f24f355915c6c35` |
+| `m4-desktop-wonder-headless.xml` | `d1e213d581f073c6f34c84c3eddef237448a598e44bf6bb636b81f105328a4f3` |
+| `m4-desktop-wonder-native.json` | `1927a236ca59aaa7621a2bdbfe4de4cd6c832918826c8fa0f082f7e85c53f8cf` |
+| `m4-desktop-wonder-identity.json` | `9ca94cd8a1090615c2d778fb437f1c98121815f2fa3cf03a25f4948b31a58a60` |

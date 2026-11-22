@@ -133,6 +133,17 @@ diplomacy effects. `DiplomaticRelations` supplies V04's bilateral flag cascades.
 A02 city reselection and human choices/presentation remain required children;
 C06 nonunit completion, spaceship reports and F04 arrival outcomes are still open.
 
+`BuildingMaintenance` owns C08's quote and ordered payment/forced-loss pass.
+The desktop city turn calls it after research; no facilities or pollution sources
+outside the authored profile are admitted. A forced Palace loss can be saved and
+resumed. `WonderEffects` supplies Eiffel's one-time acquisition and Leonardo's
+local upgrade pass, using `DiplomaticAttitudes` for V04's directed attitude guards
+and retained evaluation scratch. That class also supplies global reputation
+decay, now called after the desktop turn's unit reset. `ApolloRevelation` publishes
+W03 exploration, feature memory and city sizes through actual world storage.
+Complete C06/V03 acquisition/advance callers remain pending; these services do
+not themselves acquire wonders or complete research.
+
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this
 workspace within a world. `TerritoryQueries.PeaceOwner` supplies the directed

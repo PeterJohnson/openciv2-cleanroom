@@ -236,7 +236,7 @@ public sealed class LocalGame : IDisposable
         if (civ.CityCount == 1 && (!city.Token.Occupied || city.Owner.Value != owner
             || city.Size is < 1 or > 8 || !geometry.Canonical(city.Position) || map.TileAt(city.Position).Ocean
             || city.Production is not (LocalGameRules.Guard or LocalGameRules.Rider)
-            || city.Improvements != default(ImprovementSet).With(LocalGameRules.Palace)
+            || (city.Improvements != default && city.Improvements != default(ImprovementSet).With(LocalGameRules.Palace))
             || city.RouteCount != 0 || city.SpecialistCount > city.Size || !HasSupportedSpecialists(city)
             || city.Flags.Disorder))
         {

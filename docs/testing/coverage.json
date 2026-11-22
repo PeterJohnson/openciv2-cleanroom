@@ -1819,7 +1819,8 @@
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
-        "M3.local-support-retirement"
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn"
       ],
       "status": "partial",
       "sources": [
@@ -2192,7 +2193,8 @@
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
-        "M3.local-support-retirement"
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn"
       ],
       "sources": [
         "src/OpenCiv2.Core/City/CityRetirement.cs",
@@ -2248,7 +2250,8 @@
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
-        "M3.local-support-retirement"
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn"
       ],
       "status": "partial",
       "sources": [
@@ -2319,6 +2322,7 @@
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
         "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn",
         "V02.government-ai-announcements",
         "V02.government-arguments-decisions",
         "V02.government-queries-identities",
@@ -2359,7 +2363,8 @@
         "M3.local-play-round-trip",
         "M3.local-play-specialist-admission",
         "M3.local-production-stocks",
-        "M3.local-support-retirement"
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn"
       ]
     },
     {
@@ -2424,6 +2429,50 @@
         "V07.performance-classic-fusion",
         "V07.performance-missing-unsupported",
         "V07.preview-retention-calendar"
+      ]
+    },
+    {
+      "id": "building-effects-reputation",
+      "contract": "C08 maintenance/forced loss, Eiffel and Leonardo; V04 sections 2,11; W03 section 8; bounded F04 desktop integration",
+      "publicSurface": "BuildingMaintenance quote/payment; WonderEffects Eiffel/Leonardo; DiplomaticAttitudes storage, categories, hostility and global maintenance; ApolloRevelation local publication",
+      "review": "Specification-derived groups cover full-width Barracks upkeep and disabled first-prerequisite walks, ordered multi-building loss, fresh notice inputs/captured owner, scalar wrap and failure prefixes. Actual V04 attitude guards/scratch serve Eiffel; global decay uses active wonder rules and normalizes only human reputation credits. Leonardo uses last-candidate selection, signed defense/capacity, live scan bounds, notice-per-old-type state, retained unit fields and callback failure boundaries. Apollo publishes all-seat exploration/city sizes and normal-seat feature memory without revealing units or setting a cheat. Direct/console desktop tests join tax overflow, Palace loss, save/resume and inactive-seat reputation decay. Local effects reject network execution before mutation; browser/cross-platform work, complete C06/V03/C09/N02 caller joins, general F04 scheduling and full desktop games remain pending.",
+      "sharedGroups": [
+        "C08.eiffel-acquisition",
+        "C08.leonardo-defensive-same-type",
+        "C08.leonardo-live-continuation-failure",
+        "C08.leonardo-selection-retention",
+        "C08.maintenance-live-continuation",
+        "C08.maintenance-ordered-losses",
+        "C08.maintenance-prerequisite-walk",
+        "C08.maintenance-quotes",
+        "C08.maintenance-wrap-failure",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn",
+        "V04.attitude-primitives",
+        "V04.global-reputation-maintenance",
+        "W03.apollo-knowledge-publication"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/BuildingMaintenance.cs",
+        "src/OpenCiv2.Core/City/WonderEffects.cs",
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Core/Units/ApolloRevelation.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/BuildingEffectsCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
       ]
     }
   ]

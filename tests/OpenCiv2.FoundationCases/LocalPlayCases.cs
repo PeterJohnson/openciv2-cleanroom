@@ -229,6 +229,48 @@ public static partial class FoundationSuite
         }
     }
 
+    private static void LocalPlayMaintenanceAndReputation()
+    {
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, console, $"city.found unit={pioneer.Slot.Value}:{pioneer.Token.Value} name=\"Alder Crossing\"", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
+            var saved = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            var civilizations = saved.Civilizations.ToArray();
+            for (int c = 0; c < civilizations.Length; ++c)
+            {
+                var credit = civilizations[c].ReputationCredit.ToArray(); credit[1] = (sbyte)(c % 2 == 0 ? -5 : 7); credit[2] = 7;
+                civilizations[c] = civilizations[c] with { Reputation = 2, ReputationCredit = new(credit) };
+            }
+            civilizations[1] = civilizations[1] with { Gold = int.MaxValue };
+            var input = saved with { Globals = saved.Globals with { Turn = 23 }, Civilizations = new(civilizations) };
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
+            var before = game.Player.ObserveLocalPlay()!.City!;
+            var result = EndLocalTurn(game, console, 24);
+            var after = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            Equal(true, after.Cities.Single().Tax > 0); // Tax wraps the admitted treasury negative before C08.
+            Equal(true, result.Committed.Any(e => e.Name == "city.improvement_lost"));
+            Equal(0, after.Civilizations[1].Gold); Equal(default(ImprovementSet), StateConversion.ToLive(after.Cities.Single()).Improvements);
+            Equal(saved.Civilizations[1].CapitalX, after.Civilizations[1].CapitalX);
+            Equal(false, StateConversion.DecodeCityStatus(after.Cities.Single().Flags).ImprovementSold);
+            Equal((short)(saved.Cities.Single().ShieldBox + Math.Max(0, before.Shields - before.ShieldSupport)), after.Cities.Single().ShieldBox);
+            for (int c = 0; c < civilizations.Length; ++c)
+            {
+                Equal((byte)1, after.Civilizations[c].Reputation); // Includes inactive seats.
+                Equal((sbyte)(c % 2 == 0 ? 0 : 1), after.Civilizations[c].ReputationCredit[1]);
+                Equal((sbyte)7, after.Civilizations[c].ReputationCredit[2]);
+            }
+            var bytes = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(bytes));
+            Equal(false, EndLocalTurn(game, console, 25).Committed.Any(e => e.Name == "city.improvement_lost"));
+            // Forced Palace loss extends the admitted profile only to no facilities.
+            var city = StateConversion.ToLive(after.Cities.Single()); city.Improvements = city.Improvements.With(BuildingIds.Library);
+            var unsupported = after with { Cities = new([StateConversion.ToStored(city)]) };
+            Equal(LocalLoadResult.UnsupportedGame, game.LoadClassic(ClassicFiles.EncodeStoredSave(unsupported)));
+        }
+    }
+
     private static void LocalPlayProductionStocks()
     {
         foreach (bool console in new[] { false, true })

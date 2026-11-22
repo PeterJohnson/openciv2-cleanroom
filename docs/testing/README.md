@@ -69,6 +69,16 @@ thresholds/slot0 comparison, directed diplomacy and callback failure prefixes.
 Player presentation and A02 reselection remain boundary fixtures; complete C06
 nonunit turns and spaceship desktop reports/outcomes remain pending.
 
+C08 maintenance and wonder-effect groups cover unsigned upkeep, disabled
+first-prerequisite walks, ordered forced losses and notice-time mutations,
+signed scalar wrap, Eiffel's real V04 attitude path and Leonardo's live upgrade
+scan. V04 tests cover hotseat guards, independent attitude scratch, hostility,
+reputation intervals, active-wonder suppression and human-only credit changes.
+W03 Apollo cases cover all-seat exploration/city size memory, feature publication,
+unchanged unit visibility and local failure boundaries. Direct/console turn tests
+join real tax overflow to Palace loss, save/resume and global reputation decay.
+Complete production/research wonder callers and general F04 turns remain open.
+
 ## Complete M2 map renderer
 
 M2 development is [closed with tracked deferrals](../m2-closeout.md). Continue

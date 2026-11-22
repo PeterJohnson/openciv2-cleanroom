@@ -189,6 +189,7 @@ public static partial class LocalPlayCommands
             globals.Year = (short)Calendar.Year(globals.Turn, globals, world.Scenario, GameplayContent.Builtin.Values.Calendar);
             globals.TransientFlags.EndOfTurn = false;
             ResetUnits(world);
+            DiplomaticAttitudes.MaintainReputation(world, rules);
             globals.TurnCiv = (sbyte)owner;
             ref var treasury = ref world.Civilizations[owner].Gold;
             treasury = Math.Max(treasury, 0);
@@ -286,13 +287,19 @@ public static partial class LocalPlayCommands
                 _ => throw new InvalidOperationException("The authored profile has no government rate decision path"),
                 _ => throw new InvalidOperationException("The authored profile has no AI government path"));
             new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, surplus);
+            bool needsResearch = false;
             if (LocalResearch.Accumulate(world, rules, city.Owner.Value, city.Science) is int advance)
             {
                 context.Effect("research.completed", new([new("advance", new CommandValue.Integer(advance))]));
-                return true;
+                needsResearch = true;
             }
-
-            return city.Science > 0 && civ.ResearchProgress != 0 && civ.Researching < 0;
+            // This profile has no pollution-producing population/industry or nuclear plant.
+            // C08 follows research at the human-city upkeep boundary.
+            new BuildingMaintenance(world, rules, notice => context.Effect("city.improvement_lost", new([
+                new("city", new CommandValue.City(new(notice.City, world.Entities.Cities.At(notice.City).Token))),
+                new("owner", new CommandValue.Integer(notice.Owner)), new("building", new CommandValue.Integer(notice.Building)),
+                new("name", new CommandValue.Text(notice.Name)), new("credit", new CommandValue.Integer(notice.Credit))]))).Run(slot);
+            return needsResearch || (city.Science > 0 && civ.ResearchProgress != 0 && civ.Researching < 0);
         }
 
         private static void RetireUnsupportedUnits(OperationContext context, CitySlot city)
