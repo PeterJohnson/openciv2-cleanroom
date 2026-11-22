@@ -995,3 +995,66 @@ remain deferred. No Lua automation changed.
 | `m4-desktop-wonder-headless.xml` | `d1e213d581f073c6f34c84c3eddef237448a598e44bf6bb636b81f105328a4f3` |
 | `m4-desktop-wonder-native.json` | `1927a236ca59aaa7621a2bdbfe4de4cd6c832918826c8fa0f082f7e85c53f8cf` |
 | `m4-desktop-wonder-identity.json` | `9ca94cd8a1090615c2d778fb437f1c98121815f2fa3cf03a25f4948b31a58a60` |
+
+
+## Production snapshots, setting orders and AI wonder changes
+
+`ProductionOrders` implements C06 categories, the shared saved-category/stock
+snapshot, switch penalties and build-turn forecasts. Classification uses the
+full requested item before the signed production store. Penalty multiplication
+uses unsigned low16 stock and preserves the full saved stock in the subtraction;
+previews and assignments do not refresh the snapshot. Unit forecasts use signed
+costs, while improvement forecasts use unsigned costs and C05's shared shield
+factor.
+
+The setter owns per-type counter changes around the mutating A02 chooser,
+including automatic sentinels, captured-owner behavior and retained failure
+prefixes. Its AI continuation implements first-wonder stock halving, retained
+builder counts, direct redirects from an already claimed wonder, Started and
+Abandoned state, real C08 active ownership and the zero-stock group bonus.
+Civilization reset honors hotseat suppression, low-byte owner matching, regional
+filtering and a live city upper bound. The state belongs to the world and resets
+with a new world. Network execution is explicitly unsupported here.
+
+Alder Valley's production command now starts its atomic selection transaction,
+saves current build state and uses the shared setter. Its two admitted unit
+choices at Chieftain preserve stock across repeated switches. The desktop city
+pass publishes the civilization-turn phase input. Direct/console regression
+cases inspect stock and counts through repeated commands, then completion and
+save/resume. A shared integration case runs actual C06 order changes and AI
+purchasing around a controlled chooser reply. This does not implement A02's
+choice policy or the complete P06 transaction; those and the V03 production
+reset callers remain pending alongside nonunit completion and general turns.
+
+A separate eligibility binding gap remains: C06 names scenario inputs
+`NoNewWonders` and `AllowManhattan`, but does not map them to S01/F06's declared
+scenario option fields. S01 mentions wonder and Manhattan consumers under other
+option names without explicitly equating those inputs. Do not guess their stored
+bits or aliases. Resolve this mapping from the behavioral contract or independent
+original-game observations before claiming scenario wonder availability. This
+batch does not implement or depend on that predicate.
+
+
+### Production-order validation on Linux, 2026-11-22
+
+Root and App Release builds passed with zero warnings/errors; both solutions
+passed formatting verification. Native tests reported **707 passed and two
+existing skips** (native audio opt-in and Windows delete-sharing). All **675
+shared groups** passed, including twelve new groups. Source identity verified
+**425 compiled inputs**, and coverage accounts for 79 API/test families. Graph,
+conformance metadata, identity (8 cases) and coverage (3 cases) validators passed.
+No gameplay data or specification bindings changed.
+
+The isolated Xvfb CPU desktop driver passed all ten authored-profile checks,
+including production controls, native/direct/CLI agreement, save at turn7,
+resumed turn8, picker import, invalid-load retention, session replacement and
+shutdown. This covers the admitted production commands, not complete A02 policy,
+nonunit completion or generated-game acceptance. Browser execution and
+cross-platform qualification remain deferred. No Lua automation changed.
+
+| Local receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-orders-play.json` | `0b65ed39499036fa8e7660d12890d1ad6d6935ad457b0f68cef435e9162a995b` |
+| `m4-desktop-orders-headless.xml` | `930b64dc68f6a8158f992eab2e55b014badfc936db381dc3d2c944c91d97cc63` |
+| `m4-desktop-orders-native.json` | `2fc695322ca111981717e1b04539e395b591b3869888fcbff6bfe315fcf63c97` |
+| `m4-desktop-orders-identity.json` | `db032c656484138978f4ba20549fa08e551f54c72f513ac1095ad8f33e7e3c85` |

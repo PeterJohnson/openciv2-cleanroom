@@ -2334,7 +2334,7 @@
       "status": "partial",
       "contract": "C06 unit-at-entry local production: shield accumulation, upgrading, creation/veterans, settler consequences, AI diplomats and common tail",
       "publicSurface": "CityUnitProduction.Run; ICityUnitProductionContinuations; ICityUnitProductionEffects; local desktop unit-production phase and shared unit availability",
-      "review": "Actual U01 creation/deletion, C01 removal and V01 elimination cover signed costs/stocks, disorder and barbarian accumulation, first upgrade without availability or chaining, veteran rules, transport counters and ordered city-disband recreation. AI diplomat creation retains the unusual distance comparison and safely omits the failed-creation veteran write; first nuclear-type creation resets incoming contacts. Tests cover required cargo and chooser boundaries; the AI common tail now runs actual C06 purchasing with retained failure effects. Alder Valley uses the shared production path and unit availability, with direct/console stock overflow, capacity failure and save/resume cases. Nonunit completion, wonder races/effects, shared completed-improvement state, production switching, player purchases/sales, A02/C07 owning policies and generated desktop turn integration remain pending.",
+      "review": "Actual U01 creation/deletion, C01 removal and V01 elimination cover signed costs/stocks, disorder and barbarian accumulation, first upgrade without availability or chaining, veteran rules, transport counters and ordered city-disband recreation. AI diplomat creation retains the unusual distance comparison and safely omits the failed-creation veteran write; first nuclear-type creation resets incoming contacts. Tests cover required cargo and chooser boundaries; the AI common tail now runs actual C06 purchasing with retained failure effects. Alder Valley uses the shared production path and unit availability, with direct/console stock overflow, capacity failure and save/resume cases. Nonunit completion, wonder races/effects, shared completed-improvement state, full player production-change flow, player purchases/sales, A02/C07 owning policies and generated desktop turn integration remain pending.",
       "sources": [
         "src/OpenCiv2.Core/City/AiProductionPurchase.cs",
         "src/OpenCiv2.Core/City/CityUnitProduction.cs",
@@ -2473,6 +2473,46 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/BuildingEffectsCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+      ]
+    },
+    {
+      "id": "production-orders",
+      "contract": "C06 category/snapshot/switch forecast, production setting, AI wonder-change continuation and civilization reset",
+      "publicSurface": "ProductionWorkspace and ProductionOrders category, SaveBuildState, ShieldsAfterChange, BuildTurns, Set and ResetCivilization; desktop production command",
+      "review": "Shared groups cover full-request categories, unsigned-low16 switch penalties, retained snapshot previews, signed unit versus unsigned building forecasts, counter wrap, chooser sentinels and failure prefixes, captured owner and live human/phase inputs. Actual C08 ownership queries participate in AI start/switch/abandon effects, group bonuses, direct rival redirects and notice state. Reset tests cover hotseat suppression, signed/unsigned owner matching, regions and live scan bounds. An integration group composes actual production-order setting with actual AI purchasing around a controlled A02 reply. Desktop direct/console tests preserve stock and counts across repeated switches, completion and save/resume. Automatic chooser policy, full P06 transactions, research reset callers, nonunit completion and full generated games remain pending. Local mutations reject network execution; browser and cross-platform execution are deferred.",
+      "status": "partial",
+      "sharedGroups": [
+        "C06.ai-wonder-abandon",
+        "C06.ai-wonder-rivals-switch",
+        "C06.ai-wonder-start-bonus",
+        "C06.production-build-forecast",
+        "C06.production-chooser-phase-owner",
+        "C06.production-chooser-sentinels-failure",
+        "C06.production-human-counters-narrowing",
+        "C06.production-reset-filters-live-bounds",
+        "C06.production-snapshot-penalty",
+        "C06.production-workspace-lifetime",
+        "C06.purchase-actual-order-setting",
+        "C06.wonder-live-continuation",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/ProductionOrders.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.City.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
+        "tests/OpenCiv2.FoundationCases/ProductionOrdersCases.cs"
       ]
     }
   ]

@@ -144,6 +144,15 @@ W03 exploration, feature memory and city sizes through actual world storage.
 Complete C06/V03 acquisition/advance callers remain pending; these services do
 not themselves acquire wonders or complete research.
 
+`ProductionOrders` owns C06's shared category/stock snapshot, switch forecast,
+order assignment/counters, AI wonder start/switch/abandon continuation and
+civilization reset scan. `GameState.Production` retains snapshot and notice state;
+new worlds receive fresh state. Automatic requests require the A02 chooser as a
+mutating child. The desktop production command starts its authored selection
+transaction, saves the snapshot and uses this setter; the desktop city pass
+publishes the civilization-turn phase input. General P06 interaction, V03 reset
+callers and A02's actual policy remain separate work.
+
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this
 workspace within a world. `TerritoryQueries.PeaceOwner` supplies the directed

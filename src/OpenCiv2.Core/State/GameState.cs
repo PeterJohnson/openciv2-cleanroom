@@ -75,6 +75,7 @@ public sealed class GameState
     public HumanWonderRanges HumanWonders { get; } = new();
     public SpaceshipWorkspace Spaceship { get; } = new();
     public DiplomacyWorkspace Diplomacy { get; } = new();
+    public ProductionWorkspace Production { get; } = new();
     public GenerationPathWorkspace Paths { get; } = new();
     public MapStorage Map { get; }
 }

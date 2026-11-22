@@ -195,14 +195,19 @@ public static partial class LocalPlayCommands
             treasury = Math.Max(treasury, 0);
 
             bool needsResearch = false;
-            for (int i = world.Entities.Cities.End - 1; i >= 0; i--)
+            world.Production.CivilizationTurnInProgress = true;
+            try
             {
-                ref var city = ref world.Entities.Cities.Storage[i];
-                if (city.Token.Occupied && city.Owner.Value == owner)
+                for (int i = world.Entities.Cities.End - 1; i >= 0; i--)
                 {
-                    needsResearch |= CityTurn(context, new((ushort)i));
+                    ref var city = ref world.Entities.Cities.Storage[i];
+                    if (city.Token.Occupied && city.Owner.Value == owner)
+                    {
+                        needsResearch |= CityTurn(context, new((ushort)i));
+                    }
                 }
             }
+            finally { world.Production.CivilizationTurnInProgress = false; }
 
             globals.ActiveUnit = null;
             SelectReadyUnit(world, rules);

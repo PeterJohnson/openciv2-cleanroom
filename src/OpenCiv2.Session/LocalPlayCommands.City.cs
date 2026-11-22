@@ -111,11 +111,13 @@ public static partial class LocalPlayCommands
             return new(CommandStatus.Failed, Code: "production_not_available");
         }
 
-        ref var city = ref world.Entities.Cities.At(target.Slot);
-        ref var counts = ref world.Civilizations[city.Owner.Value].UnitsInProduction;
-        --counts[city.Production];
-        city.Production = (sbyte)type;
-        ++counts[type];
+        var production = new ProductionOrders(world, context.Process.Rules.Definitions,
+            _ => throw new InvalidOperationException("Automatic production requires its A02 policy"),
+            _ => throw new InvalidOperationException("The authored profile has no AI wonder change path"));
+        // This atomic authored-profile command starts a selection transaction. Both admitted
+        // choices are units on Chieftain; general P06 previews retain their opening snapshot.
+        production.SaveBuildState(target.Slot);
+        production.Set(target.Slot, type);
         return Commit(context, "city.production", new NamedValue("city", new CommandValue.City(target)));
     }
 

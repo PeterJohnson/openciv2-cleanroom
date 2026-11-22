@@ -79,6 +79,15 @@ unchanged unit visibility and local failure boundaries. Direct/console turn test
 join real tax overflow to Palace loss, save/resume and global reputation decay.
 Complete production/research wonder callers and general F04 turns remain open.
 
+C06 order-setting groups exercise retained switch snapshots, full request
+classification, unsigned-low16 penalties, signed/unsigned cost forecasts,
+counter wrap, automatic chooser replies and failures, AI wonder start/switch/
+abandon effects and live civilization reset scans. An integration case joins
+actual C06 order setting to actual AI purchase spending with a controlled A02
+reply. Desktop direct/console cases repeatedly change production while preserving
+stock and per-type counts, then complete/save/resume. Chooser fixtures are not
+complete A02 policy or V03 research-reset integration.
+
 ## Complete M2 map renderer
 
 M2 development is [closed with tracked deferrals](../m2-closeout.md). Continue

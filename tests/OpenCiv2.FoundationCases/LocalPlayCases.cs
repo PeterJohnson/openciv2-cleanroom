@@ -300,6 +300,17 @@ public static partial class FoundationSuite
                     };
                 }
                 Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
+                var city = game.Player.OwnCities().Records.Single();
+                foreach (int type in new[] { 4, 2, 4, (int)original.Cities.Single().Production })
+                {
+                    RunLocal(game, console, $"city.production city={city.Slot.Value}:{city.Token.Value} type={type}", LocalPlayCommands.Production,
+                        new("city", new CommandValue.City(new(city.Slot, city.Token))), new("type", new CommandValue.Integer(type)));
+                    var changed = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+                    Equal((short)stock, changed.Cities.Single().ShieldBox);
+                    Equal((sbyte)type, changed.Cities.Single().Production);
+                    Equal((byte)(type == 2 ? 1 : 0), changed.Civilizations[1].UnitsInProduction[2]);
+                    Equal((byte)(type == 4 ? 1 : 0), changed.Civilizations[1].UnitsInProduction[4]);
+                }
                 var before = game.Player.ObserveLocalPlay()!;
                 int net = Math.Max(0, before.City!.Shields - before.City.ShieldSupport);
                 var result = EndLocalTurn(game, console, 2);
