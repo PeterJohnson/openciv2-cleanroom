@@ -265,7 +265,7 @@ public static partial class FoundationSuite
             var bytes = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(bytes));
             Equal(false, EndLocalTurn(game, console, 25).Committed.Any(e => e.Name == "city.improvement_lost"));
             // Forced Palace loss extends the admitted profile only to no facilities.
-            var city = StateConversion.ToLive(after.Cities.Single()); city.Improvements = city.Improvements.With(BuildingIds.Library);
+            var city = StateConversion.ToLive(after.Cities.Single()); city.Improvements = city.Improvements.With(BuildingIds.Marketplace);
             var unsupported = after with { Cities = new([StateConversion.ToStored(city)]) };
             Equal(LocalLoadResult.UnsupportedGame, game.LoadClassic(ClassicFiles.EncodeStoredSave(unsupported)));
         }
@@ -308,6 +308,46 @@ public static partial class FoundationSuite
             var bytes = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(bytes));
             Equal((byte)5, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Globals.FirstDiscoverer[0]);
             EndLocalTurn(game, console, 3);
+        }
+    }
+
+    private static void LocalPlayNonunitProduction()
+    {
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, console, $"city.found unit={pioneer.Slot.Value}:{pioneer.Token.Value} name=Workshop", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Workshop")));
+            var saved = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            var civilizations = saved.Civilizations.ToArray();
+            var civ = StateConversion.ToLive(civilizations[1]); civ.Advances = default(AdvanceSet).With(0).With(1);
+            civ.NumAdvances = 2; civ.Researching = 2; civilizations[1] = StateConversion.ToStored(civ);
+            var input = saved with { Civilizations = new(civilizations), Cities = new([saved.Cities[0] with { ShieldBox = 40 }]) };
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
+            var city = game.Player.OwnCities().Records.Single();
+            foreach (int item in new[] { -BuildingIds.Temple, -BuildingIds.Library })
+                Equal(true, game.Player.ObserveLocalPlay()!.City!.Production.Any(p => p.Id == item));
+            RunLocal(game, console, $"city.production city={city.Slot.Value}:{city.Token.Value} type=-4", LocalPlayCommands.Production,
+                new("city", new CommandValue.City(new(city.Slot, city.Token))), new("type", new CommandValue.Integer(-4)));
+            var result = EndLocalTurn(game, console, 2);
+            Equal(true, result.Committed.Any(e => e.Name == "city.improvement_built"));
+            var built = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            Equal(true, StateConversion.ToLive(built.Cities[0]).Improvements.Contains(4)); Equal((short)0, built.Cities[0].ShieldBox);
+            Equal((sbyte)-4, built.Cities[0].Production); Equal(false, game.Player.ObserveLocalPlay()!.City!.Production.Any(p => p.Id == -4));
+            result = EndLocalTurn(game, console, 3); Equal(true, result.Committed.Any(e => e.Name == "city.invalid_build"));
+            Equal(false, result.Committed.Any(e => e.Name == "city.improvement_built"));
+            RunLocal(game, console, $"city.production city={city.Slot.Value}:{city.Token.Value} type=-6", LocalPlayCommands.Production,
+                new("city", new CommandValue.City(new(city.Slot, city.Token))), new("type", new CommandValue.Integer(-6)));
+            int turn = 3;
+            do { result = EndLocalTurn(game, console, ++turn); } while (!result.Committed.Any(e => e.Name == "city.improvement_built") && turn < 12);
+            Equal(true, result.Committed.Any(e => e.Name == "city.improvement_built"));
+            var bytes = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(bytes));
+            built = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            Equal(true, StateConversion.ToLive(built.Cities[0]).Improvements.Contains(4));
+            Equal(true, StateConversion.ToLive(built.Cities[0]).Improvements.Contains(6));
+            Equal((sbyte)-6, built.Cities[0].Production);
+            Equal(false, EndLocalTurn(game, console, ++turn).Committed.Any(e => e.Name == "city.improvement_built"));
         }
     }
 

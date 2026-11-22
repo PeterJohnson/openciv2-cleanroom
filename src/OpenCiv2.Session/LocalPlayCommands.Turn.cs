@@ -103,6 +103,8 @@ public static partial class LocalPlayCommands
         private int nextCity;
         private CitySlot researchCity;
         private ResearchOperation? research;
+        private CityProduction.Operation? production;
+        private int foodSurplus;
         private ResearchChoiceNotice? pendingResearch;
         private GameState? activeWorld;
         private OperationContext? currentContext;
@@ -125,6 +127,7 @@ public static partial class LocalPlayCommands
 
             activeWorld = null;
             research = null;
+            production = null;
             pendingResearch = null;
         }
 
@@ -174,6 +177,19 @@ public static partial class LocalPlayCommands
             }
             while (true)
             {
+                if (production is not null)
+                {
+                    pendingResearch = production.Resume(reply);
+                    reply = null;
+                    if (pendingResearch is { } choice)
+                    {
+                        return ResearchDecision(choice);
+                    }
+
+                    var result = production.Result!;
+                    production = null;
+                    research = AfterProduction(context, researchCity, result);
+                }
                 if (research is not null)
                 {
                     pendingResearch = research.Resume(reply);
@@ -195,7 +211,7 @@ public static partial class LocalPlayCommands
                 if (world.Entities.Cities.At(slot).Token.Occupied && world.Entities.Cities.At(slot).Owner == context.Actor.Civilization)
                 {
                     researchCity = slot;
-                    research = CityTurn(context, slot);
+                    production = BeginCityProduction(context, slot);
                 }
             }
             world.Production.CivilizationTurnInProgress = false;
@@ -281,7 +297,7 @@ public static partial class LocalPlayCommands
             }
         }
 
-        private ResearchOperation? CityTurn(OperationContext context, CitySlot slot)
+        private CityProduction.Operation? BeginCityProduction(OperationContext context, CitySlot slot)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -305,14 +321,21 @@ public static partial class LocalPlayCommands
             }
 
             LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
-            int surplus = food.Accumulate(slot, previousFood);
-            var production = CreateProduction(context).Run(slot, $"local-production/{world.Globals.Turn}/{slot.Value}");
-            if (production is { Outcome: UnitProductionOutcome.Completed, Unit: { } produced })
+            foodSurplus = food.Accumulate(slot, previousFood);
+            return CreateProduction(context).Begin(slot, $"local-production/{world.Globals.Turn}/{slot.Value}");
+        }
+
+        private ResearchOperation AfterProduction(OperationContext context, CitySlot slot, CityProductionResult production)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            ref var city = ref world.Entities.Cities.At(slot);
+            CityTarget target = new(slot, city.Token);
+            if (production.Unit is { Outcome: UnitProductionOutcome.Completed, Unit: { } produced })
             {
-                context.Effect("unit.produced", new([new("unit", new CommandValue.Unit(produced)),
-                    new("city", new CommandValue.City(target))]));
+                context.Effect("unit.produced", new([new("unit", new CommandValue.Unit(produced)), new("city", new CommandValue.City(target))]));
             }
-            else if (production.Outcome == UnitProductionOutcome.CreationFailed)
+            else if (production.Unit?.Outcome == UnitProductionOutcome.CreationFailed)
             {
                 context.Effect("city.production_spent", new([new("city", new CommandValue.City(target))]));
             }
@@ -321,24 +344,38 @@ public static partial class LocalPlayCommands
 
             LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
             var moodEffects = new CityTurnEffects(context);
-            var governments = new GovernmentChanges(world, context.Process.Rules, new(world, new(5_000_000, 64)),
+            var governments = CreateGovernments(context);
+            new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, foodSurplus);
+            return CreateResearch(context).AddPoints(city.Owner.Value, city.Science, $"local-research/{world.Globals.Turn}/{slot.Value}");
+        }
+
+        private static GovernmentChanges CreateGovernments(OperationContext context) =>
+            new(context.World, context.Process.Rules, new(context.World, new(5_000_000, 64)),
                 _ => throw new InvalidOperationException("The authored profile has no government selection path"),
                 _ => throw new InvalidOperationException("The authored profile has no government rate decision path"),
                 _ => throw new InvalidOperationException("The authored profile has no AI government path"));
-            new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, surplus);
+
+        private WonderEffects CreateWonders(OperationContext context)
+        {
+            var world = context.World;
+            return new(world, context.Process.Rules.Definitions, notice => Current.Effect("unit.upgraded", new([
+                new("unit", new CommandValue.Unit(new(notice.Unit, world.Entities.Units.At(notice.Unit).Token))),
+                new("old", new CommandValue.Integer(notice.OldType.Value)), new("new", new CommandValue.Integer(notice.NewType.Value))])),
+                point => new CityTurnEffects(Current).RedrawTile(point));
+        }
+
+        private ResearchFlow CreateResearch(OperationContext context)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            var governments = CreateGovernments(context);
             var researchEffects = new AuthoredResearchEffects(() => Current);
             var researchPrompts = new ResearchGovernmentPrompts(world, governments, researchEffects);
-            var grants = new ResearchGrants(world, rules, context.Gameplay,
-                new WonderEffects(world, rules, notice => Current.Effect("unit.upgraded", new([
-                    new("unit", new CommandValue.Unit(new(notice.Unit, world.Entities.Units.At(notice.Unit).Token))),
-                    new("old", new CommandValue.Integer(notice.OldType.Value)), new("new", new CommandValue.Integer(notice.NewType.Value))])),
-                    point => new CityTurnEffects(Current).RedrawTile(point)),
-                researchPrompts.Run, researchEffects);
-            var flow = new ResearchFlow(world, context.Process.Rules, context.Gameplay, grants, researchPrompts,
+            var grants = new ResearchGrants(world, rules, context.Gameplay, CreateWonders(context), researchPrompts.Run, researchEffects);
+            return new ResearchFlow(world, context.Process.Rules, context.Gameplay, grants, researchPrompts,
                 new ProductionOrders(world, rules, _ => throw new InvalidOperationException("The authored profile has no research production-reset path"),
                     _ => throw new InvalidOperationException("The authored profile has no research wonder-change path")),
                 new CityEconomy(world, context.Process.Rules, new(world, new(5_000_000, 64))), researchEffects, researchEffects);
-            return flow.AddPoints(city.Owner.Value, city.Science, $"local-research/{world.Globals.Turn}/{slot.Value}");
         }
 
         private static void MaintainBuildings(OperationContext context, CitySlot slot)
@@ -396,7 +433,47 @@ public static partial class LocalPlayCommands
             public void Tutorial(int civilization, ResearchTutorial tutorial) => throw OutsideProfile();
         }
 
-        private static CityUnitProduction CreateProduction(OperationContext context)
+        private CityProduction CreateProduction(OperationContext context)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            var values = GameplayContent.Builtin.Values;
+            var effects = new AuthoredProductionEffects(() => Current);
+            var orders = new ProductionOrders(world, rules,
+                _ => throw new InvalidOperationException("Automatic production requires its A02 policy"),
+                _ => throw new InvalidOperationException("The authored profile has no AI wonder notice"));
+            return new(world, rules, CreateUnitProduction(context), orders, CreateResearch(context), CreateWonders(context),
+                new(world, rules, values.Spaceship, values.Calendar),
+                new(world, rules, values.Spaceship, values.Calendar, city => orders.Set(city, 99), effects),
+                values.Spaceship, new(world, context.Process.Rules, new(world, new(5_000_000, 64))), effects);
+        }
+
+        private sealed class AuthoredProductionEffects(Func<OperationContext> current) : ICityProductionEffects, ISpaceshipConstructionEffects
+        {
+            public bool WindowShown => false;
+            private void Item(string name, CitySlot city, int item) => current().Effect(name, new([
+                new("city", new CommandValue.City(new(city, current().World.Entities.Cities.At(city).Token))),
+                new("improvement", new CommandValue.Integer(item))]));
+            public void DrawProduction(CitySlot city) => current().Publish();
+            public void DrawImprovements(CitySlot city) => current().Publish();
+            public void InvalidBuild(CitySlot city, int improvement, string name) => Item("city.invalid_build", city, improvement);
+            public void BadSpace(CitySlot city, int improvement, string name) => Item("city.bad_space", city, improvement);
+            public void Manhattan(CitySlot city, int recipient) => throw OutsideProfile();
+            public void CompletionSound(CitySlot city, int improvement) => Item("city.construction_sound", city, improvement);
+            public void Built(ImprovementCompletionNotice notice) => Item("city.improvement_built", notice.City.Slot, notice.Improvement);
+            public void WonderMovie(int wonder) => throw OutsideProfile();
+            public void CapitalMoved(CitySlot city, int owner, string name, string adjective) => Item("city.capital_moved", city, BuildingIds.Palace);
+            public void RedrawMaps() => current().Publish();
+            public void Astronauts() => throw OutsideProfile();
+            public void AlmostWonder(AlmostWonderNotice notice) => throw OutsideProfile();
+            public int ChoosePart(SpaceshipPartChoice choice) => throw OutsideProfile();
+            public void NoFurther(int civilization, int part) => throw OutsideProfile();
+            public void Launched(SpaceshipLaunchNotice notice) => throw OutsideProfile();
+            public void ShowShip(int civilization) => throw OutsideProfile();
+            private static InvalidOperationException OutsideProfile() => new("The authored profile has no wonder or spaceship presentation path");
+        }
+
+        private static CityUnitProduction CreateUnitProduction(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;

@@ -86,12 +86,12 @@ public sealed partial class SessionRuntime
                 }
             }
 
-            var production = new[] { LocalGameRules.Guard, LocalGameRules.Rider }
-                .Where(i => LocalGameRules.ProductionAvailable(world, rules, i))
-                .Select(i => new PlayOption(i, rules.Units[i].Identity.Name));
+            var production = new[] { LocalGameRules.Guard, LocalGameRules.Rider, -BuildingIds.Temple, -BuildingIds.Library }
+                .Where(i => LocalGameRules.ProductionAvailable(world, rules, i, slot))
+                .Select(i => new PlayOption(i, i >= 0 ? rules.Units[i].Identity.Name : rules.Improvements[-i].Identity.Name));
             return new(new(slot, city.Token), city.TotalFood, city.Size * rules.Cosmic.FoodPerCitizen,
                 (city.Size + 1) * rules.Cosmic.FoodBoxRows, city.TotalShields, Math.Max(0, support - city.Size),
-                rules.Units[city.Production].CostRows * rules.Cosmic.ShieldBoxRows,
+                (city.Production >= 0 ? rules.Units[city.Production].CostRows : rules.Improvements[-city.Production].CostRows) * rules.Cosmic.ShieldBoxRows,
                 city.Science, city.Tax, city.SpecialistCount, new(tiles), new(production));
         }
     }

@@ -858,6 +858,7 @@ required tests, including fresh-game isolation and the named C07/A02/C05 repairs
 | Deferred kinds7/8 | Buy/Change; original control ID and two live selection-derived arguments retained. |
 | Treaty mask6 | Ceasefire or Peace excludes an AI diplomat target; a generic allied/war predicate is not substituted. |
 | Wonder notice flags1/2 | Started/Abandoned per civilization and wonder; the switch path does not set these flags. |
+| Darwin's Voyage fixed identity | Wonder18, improvement57. Its two research-completion calls are identity-dependent, not name matching. |
 | Completion wording label IDs | Default187; Cure for Cancer184; Women's Suffrage185; Marco Polo, Sun Tzu, King Richard, Leonardo, Darwin and Magellan186. Diplomacy-unit wording182; ordinary Settler wording187; caravan uses its own dialog. P04 owns localized text lookup. |
 | Building completion sounds | Barracks5, Aqueduct4, Bank47, Cathedral11, University55, Stock Exchange69; other ordinary building2; spaceship/wonder use their named construction/new-wonder sounds. Purchase uses positive sound104. P10 owns playback policy. |
 | Advisor report IDs | Change refreshes Cities1 then Units2. Sale refreshes Trade5, Attitude4, Science6. P07 owns report content and open-window gates. |

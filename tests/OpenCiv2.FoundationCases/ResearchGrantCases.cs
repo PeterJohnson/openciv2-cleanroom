@@ -12,7 +12,7 @@ public static partial class FoundationSuite
     // V03 §§5,7,10 specification-derived values and actual C08 effect integrations.
     private sealed class GrantFixture : IResearchGrantEffects, IResearchGovernmentEffects
     {
-        public RevelationFixture Data { get; } = new();
+        public RevelationFixture Data { get; }
         public GameState World => Data.World;
         public RuleTables Rules => Data.Rules;
         public GameplayRandom Random { get; }
@@ -35,8 +35,10 @@ public static partial class FoundationSuite
         public Action<BarracksSaleNotice>? OnSale;
         public Action? OnGolden, OnPrompt;
 
-        public GrantFixture(params Choice[] choices)
+        public GrantFixture(params Choice[] choices) : this(null, choices) { }
+        public GrantFixture(RevelationFixture? data, params Choice[] choices)
         {
+            Data = data ?? new();
             Random = new(new ControlledChoices(new(choices)), "research-grants");
             World.Globals.Turn = 10; World.Globals.CivsAlive = CivilizationSet.Only(1);
             World.Globals.BestHumanRank = 1;

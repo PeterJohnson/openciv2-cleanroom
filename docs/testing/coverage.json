@@ -1821,6 +1821,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
       ],
       "status": "partial",
@@ -2196,6 +2197,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
       ],
       "sources": [
@@ -2254,6 +2256,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
       ],
       "status": "partial",
@@ -2326,6 +2329,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
         "V02.government-ai-announcements",
         "V02.government-arguments-decisions",
@@ -2369,6 +2373,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
       ]
     },
@@ -2409,7 +2414,7 @@
       "status": "partial",
       "contract": "V07 sections2\u20136 configurable capacities, performance, group choice, part assembly and local launch; V04 section3 bilateral flag cascades; actual F04 calendar",
       "publicSurface": "SpaceshipPerformance.Calculate/ChooseGroup; SpaceshipConstruction.AddPart/Launch; SpaceshipWorkspace; configurable SpaceshipQueries; DiplomaticRelations.Set/Clear",
-      "review": "Shared world scratch and actual calendar preserve Fusion retention, missing-kind mass, distinct supported/raw flight estimates, post-division scale, preview wrap and launched metadata. Group selection and assembly retain custom maxima, race-close/emergency equality, human retry and backed custom reply behavior, first-ship contacts, AI ties/return3 and slot0 launch comparison. Launch uses real bilateral Incident mutations or ordered directed changes and retains failure prefixes; AI production reselection and player presentation remain required children. Thirteen shared groups include values loaded through the content bundle, actual calendar era change, reset/fresh-world retention and relation cascades. C06 nonunit production integration, spaceship UI/video/report operations, F04 arrival outcomes, scoring and full desktop games remain pending.",
+      "review": "Shared world scratch and actual calendar preserve Fusion retention, missing-kind mass, distinct supported/raw flight estimates, post-division scale, preview wrap and launched metadata. Group selection and assembly retain custom maxima, race-close/emergency equality, human retry and backed custom reply behavior, first-ship contacts, AI ties/return3 and slot0 launch comparison. Launch uses real bilateral Incident mutations or ordered directed changes and retains failure prefixes; AI production reselection and player presentation remain required children. Thirteen shared groups include values loaded through the content bundle, actual calendar era change, reset/fresh-world retention and relation cascades. C06 nonunit production now composes these services; spaceship UI/video/report operations, F04 arrival outcomes, scoring and full desktop games remain pending.",
       "sources": [
         "src/OpenCiv2.Core/DiplomaticRelations.cs",
         "src/OpenCiv2.Core/SpaceshipConstruction.cs",
@@ -2460,6 +2465,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
         "V04.attitude-primitives",
         "V04.global-reputation-maintenance",
@@ -2485,7 +2491,7 @@
       "id": "production-orders",
       "contract": "C06 category/snapshot/switch forecast, production setting, AI wonder-change continuation and civilization reset",
       "publicSurface": "ProductionWorkspace and ProductionOrders category, SaveBuildState, ShieldsAfterChange, BuildTurns, Set and ResetCivilization; desktop production command",
-      "review": "Shared groups cover full-request categories, unsigned-low16 switch penalties, retained snapshot previews, signed unit versus unsigned building forecasts, counter wrap, chooser sentinels and failure prefixes, captured owner and live human/phase inputs. Actual C08 ownership queries participate in AI start/switch/abandon effects, group bonuses, direct rival redirects and notice state. Reset tests cover hotseat suppression, signed/unsigned owner matching, regions and live scan bounds. An integration group composes actual production-order setting with actual AI purchasing around a controlled A02 reply. Desktop direct/console tests preserve stock and counts across repeated switches, completion and save/resume. Automatic chooser policy, full P06 transactions, research reset callers, nonunit completion and full generated games remain pending. Local mutations reject network execution; browser and cross-platform execution are deferred.",
+      "review": "Shared groups cover full-request categories, unsigned-low16 switch penalties, retained snapshot previews, signed unit versus unsigned building forecasts, counter wrap, chooser sentinels and failure prefixes, captured owner and live human/phase inputs. Actual C08 ownership queries participate in AI start/switch/abandon effects, group bonuses, direct rival redirects and notice state. Reset tests cover hotseat suppression, signed/unsigned owner matching, regions and live scan bounds. An integration group composes actual production-order setting with actual AI purchasing around a controlled A02 reply. Desktop direct/console tests preserve stock and counts across repeated switches, completion and save/resume. ResearchFlow and CityProduction now join research reset and nonunit completion. Automatic chooser policy, full P06 transactions and full generated games remain pending. Local mutations reject network execution; browser and cross-platform execution are deferred.",
       "status": "partial",
       "sharedGroups": [
         "C06.ai-wonder-abandon",
@@ -2509,6 +2515,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn"
       ],
       "sources": [
@@ -2526,7 +2533,7 @@
       "id": "research-grants",
       "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
       "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller",
-      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Presentation and emissary decisions remain interfaces; resumable selection/completion/accumulation is joined by the research-flow family; general desktop presentation, V01 catch-up integration, Darwin callers and general F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Presentation and emissary decisions remain interfaces; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; general desktop presentation, V01 catch-up integration and general F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
       "status": "partial",
       "sharedGroups": [
         "M3.land-step-zones",
@@ -2538,6 +2545,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
         "V03.full-research-cost-vectors",
         "V03.golden-age-weighted-selection",
@@ -2571,7 +2579,7 @@
       "id": "research-flow",
       "contract": "V03 sections 5\u20136,8\u20139; C06 production reset; C03 mood query; V02 research prompts; desktop city upkeep",
       "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation",
-      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Production choices and presentation replies are supplied; full A02 policy, general desktop dialogs, V01 catch-up, Darwin and generated-game callers remain open. Browser/cross-platform execution is deferred.",
+      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Production choices and presentation replies are supplied; full A02 policy, general desktop dialogs, V01 catch-up and generated-game callers remain open; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred.",
       "status": "partial",
       "sharedGroups": [
         "M3.land-step-zones",
@@ -2583,6 +2591,7 @@
         "M3.local-production-stocks",
         "M3.local-support-retirement",
         "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
         "V03.completion-government-failure",
         "V03.research-accumulation-philosophy-and-free-advance",
@@ -2605,6 +2614,50 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchFlowCases.cs"
+      ]
+    },
+    {
+      "id": "city-production",
+      "contract": "C06 local production parent and nonunit completion; C08 buildings/wonders; V03 Darwin; V07 spaceship; W03 Apollo",
+      "publicSurface": "CityProduction resumable local dispatch; retained CompletedImprovement; desktop production choices/turn/load for Temple and Library",
+      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. A02 decisions and presentation remain interfaces; general eligibility, buy/sell/change interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred.",
+      "status": "partial",
+      "sharedGroups": [
+        "C06.city-production-ai-spaceship-retarget",
+        "C06.city-production-darwin-sequential-research",
+        "C06.city-production-dispatch-stocks-and-duplicates",
+        "C06.city-production-manhattan-and-wonder-children",
+        "C06.city-production-notice-order-and-failure",
+        "C06.city-production-palace-and-ai-remainder",
+        "C06.city-production-spaceship-and-automation",
+        "C06.city-production-wonder-race-and-loss",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-mood-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-production-stocks",
+        "M3.local-support-retirement",
+        "M4.local-maintenance-reputation-turn",
+        "M4.local-nonunit-production",
+        "M4.local-research-grant-turn"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/CityProduction.cs",
+        "src/OpenCiv2.Core/City/CityUnitProduction.cs",
+        "src/OpenCiv2.Core/City/ProductionOrders.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalGameRules.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.City.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/LocalPlayProjection.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityProductionCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
       ]
     }
   ]

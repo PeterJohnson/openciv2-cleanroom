@@ -10,6 +10,7 @@ namespace OpenCiv2.Session;
 internal static class LocalGameRules
 {
     internal const int Owner = 1, Settler = 0, Guard = 2, Rider = 4, Palace = 1;
+    internal const int Temple = -BuildingIds.Temple, Library = -BuildingIds.Library;
     internal const int Width = 24, Height = 16;
     internal const ushort Seed = 47;
     internal static readonly MapPoint StartingTile = new(8, 8);
@@ -24,9 +25,14 @@ internal static class LocalGameRules
     internal static MapFeatures Features(MapPoint point) =>
         point.Y == 8 && point.X is >= 6 and <= 16 ? MapFeatures.Road : MapFeatures.None;
 
-    internal static bool ProductionAvailable(GameState world, RuleTables rules, int type) =>
-        type is Guard or Rider
-        && UnitAvailability.CanBuild(world, rules, Owner, null, new((byte)type));
+    internal static bool ProductionAvailable(GameState world, RuleTables rules, int type, CitySlot? city = null) =>
+        type is Guard or Rider ? UnitAvailability.CanBuild(world, rules, Owner, city, new((byte)type))
+        : type is Temple or Library && city is { } slot
+            && CivilizationKnowledge.KnowsAdvance(world.Civilizations, Owner, (int)rules.Improvements[-type].Prerequisite)
+            && !BuildingQueries.HasBuilding(world, slot, -type);
+
+    internal static bool SupportedBuildings(ImprovementSet buildings) =>
+        buildings.With(BuildingIds.Palace, false).With(BuildingIds.Temple, false).With(BuildingIds.Library, false) == default;
 
     internal static RuleInput Input()
     {
@@ -92,6 +98,8 @@ internal static class LocalGameRules
             CostRows = 2,
             Abilities = new() { SeeTwo = true }
         };
+        tables.Improvements[BuildingIds.Temple] = new() { Identity = new("temple", "Temple"), CostRows = 2, Upkeep = 1, Prerequisite = (AdvanceReference)0 };
+        tables.Improvements[BuildingIds.Library] = new() { Identity = new("library", "Library"), CostRows = 3, Upkeep = 1, Prerequisite = (AdvanceReference)1 };
         tables.Advances[0] = Advance("land-surveys", "Land Surveys");
         tables.Advances[1] = Advance("clay-casting", "Clay Casting");
         tables.Advances[2] = Advance("field-ledgers", "Field Ledgers", 0);

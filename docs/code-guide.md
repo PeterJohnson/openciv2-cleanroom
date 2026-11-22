@@ -112,8 +112,9 @@ calls actual `GovernmentChanges.Change`, including incoming Vendetta clearing,
 all-city C03 recalculation and fixed Fanatics-to-Riflemen production substitution.
 `GovernmentChanges` also owns availability, rate caps and local AI change notices;
 player government selection and rate decisions remain explicit continuations.
-The local desktop turn now uses the shared mood handler. C06 nonunit production
-and A02 choice, remaining V02 operations and general F04 scheduling remain separate work.
+The local desktop turn now uses the shared mood handler and complete local
+production dispatch. A02 choice, remaining V02 operations and general F04
+scheduling remain separate work.
 
 `CityUnitProduction` handles C06's unit-at-entry branch with actual U01 creation,
 veteran/transport initialization, first obsolete-type replacement, stock spending
@@ -123,7 +124,13 @@ A02 selection and C07 cargo selection remain explicit continuations; boundary
 tests do not supply those policies. The AI common tail runs `AiProductionPurchase`
 with retained F04 human wonder ranges, regional policy and real V07 race queries.
 Alder Valley now calls this service instead of its previous completion shortcut and uses shared `UnitAvailability`.
-Nonunit completion and the full production parent remain pending.
+`CityProduction` supplies the local unit/nonunit parent, using actual ordinary
+building storage, wonder ownership/effects, spaceship retargeting/assembly and
+resumable Darwin research. It retains cost/net/item across choices, applies the
+human wonder-priority early return, and runs the common tail once. The desktop
+city pass now uses it; Temple and Library choices extend the authored profile.
+General build eligibility/selection, the A02 policy and generated-game callers
+remain open.
 
 `SpaceshipPerformance` owns V07 calculation and group selection, using selected
 spaceship/calendar values and retained `GameState.Spaceship` scratch. The capacity
@@ -131,7 +138,8 @@ queries consume those values explicitly. `SpaceshipConstruction` performs actual
 assembly and automatic/local launch, including first-ship contacts and directed
 diplomacy effects. `DiplomaticRelations` supplies V04's bilateral flag cascades.
 A02 city reselection and human choices/presentation remain required children;
-C06 nonunit completion, spaceship reports and F04 arrival outcomes are still open.
+C06 nonunit completion now composes these services; spaceship reports and F04
+arrival outcomes remain open.
 
 `BuildingMaintenance` owns C08's quote and ordered payment/forced-loss pass.
 The desktop city turn calls it after research; no facilities or pollution sources
@@ -141,8 +149,9 @@ local upgrade pass, using `DiplomaticAttitudes` for V04's directed attitude guar
 and retained evaluation scratch. That class also supplies global reputation
 decay, now called after the desktop turn's unit reset. `ApolloRevelation` publishes
 W03 exploration, feature memory and city sizes through actual world storage.
-Complete C06/V03 acquisition/advance callers remain pending; these services do
-not themselves acquire wonders or complete research.
+C06 production and V03 grant callers now compose these services. Other acquisition
+callers remain pending; the effect services do not themselves acquire wonders or
+complete research.
 
 `ProductionOrders` owns C06's shared category/stock snapshot, switch forecast,
 order assignment/counters, AI wonder start/switch/abandon continuation and
@@ -164,8 +173,9 @@ completion and accumulation, including free advances.
 `ResearchSelection` suspends for an accepted choice and retains its recommendation;
 `ResearchGoals` owns informational goal/advice data. The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile
-eligibility/cost queries. V01 catch-up, Darwin, full A02 policy and generated-game
-caller integration remain open.
+eligibility/cost queries. Darwin now invokes two sequential completions from
+`CityProduction`; V01 catch-up, full A02 policy and generated-game callers remain
+open.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this

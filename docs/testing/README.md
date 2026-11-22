@@ -100,7 +100,17 @@ completion mode2, future labels, ability order, Philosophy/free-advance chaining
 progress overflow, actual production/government children and terminal failures.
 The desktop regression suspends before forced building liquidation and verifies
 that accepting research resumes maintenance before `turn.advanced`. General
-presentation, catch-up, Darwin and generated-game caller integration remain open.
+presentation, catch-up and generated-game caller integration remain open.
+
+C06 production-parent cases join nonunit completion to real building storage,
+research grants/selection, spaceship group choice/assembly and Eiffel/Leonardo/
+Apollo operations. They cover human wonder priority using raw shield rows,
+retained stock/item, duplicate and lost builds, notice/failure order, AI Palace
+reselection, two sequential Darwin completions, AI part retargeting and common
+automation tails. Desktop direct/console cases build Temple and Library, retain
+manual orders, save/reload and reject duplicate completion without spending.
+The native driver additionally builds a Temple through city controls and reloads
+its save. General A02 policy, eligibility and generated-game integration are open.
 
 ## Complete M2 map renderer
 

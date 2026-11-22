@@ -338,6 +338,31 @@ def drive(args, app, observation, storage):
     assert semantic(end_turn(8)) == semantic(resumed)
     checks.append('native file picker import, invalid load preserves live session, valid load resumes identically')
 
+    click('city')
+    command(lambda: click('city.production.-4'))
+    click('city.close')
+    building = None
+    for turn in range(9, 17):
+        candidate = end_turn(turn)
+        if 'city.improvement_built' in candidate['effects']:
+            building = candidate
+            break
+    assert building is not None and building['city']['production'] == -4 and building['city']['shieldBox'] == 0
+    click('city')
+    wait(lambda s: s['play']['cityOpen'] and 'city.production.-4' not in s['play']['controls'])
+    click('city.close')
+    click('save')
+    building_saved = wait(lambda s: s['message'] == 'Classic save written.')['play']
+    click('load')
+    building_loaded = wait(lambda s: s['message'] == 'Classic save loaded.')['play']
+    assert semantic(building_saved) == semantic(building_loaded)
+    click('city')
+    wait(lambda s: s['play']['cityOpen'] and 'city.production.-4' not in s['play']['controls'])
+    click('city.close')
+    duplicate = end_turn(building['turn'] + 1)
+    assert 'city.invalid_build' in duplicate['effects'] and 'city.improvement_built' not in duplicate['effects']
+    checks.append('building chosen through city controls, completed, saved/reloaded and duplicate build rejected without spending')
+
     driver.close_window(window)
     assert app.wait(timeout=10) == 0
     checks.append('normal desktop shutdown')

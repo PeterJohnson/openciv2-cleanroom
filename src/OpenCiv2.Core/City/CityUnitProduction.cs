@@ -32,7 +32,7 @@ public interface ICityUnitProductionEffects
 }
 
 /// <summary>C06's local unit-production branch, with its entry accumulation and common tail.
-/// Uses actual U01 creation/deletion and C01 removal. Nonunit completion is a separate pending branch;
+/// Uses actual U01 creation/deletion and C01 removal. CityProduction owns nonunit completion;
 /// a chooser changing the next item does not run a second completion pass.</summary>
 public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCreation creation,
     UnitDeletion deletion, CityRemoval removal, GameplayRandom random,
@@ -56,6 +56,7 @@ public sealed class CityUnitProduction(GameState world, RuleTables rules, UnitCr
             throw new ArgumentOutOfRangeException(nameof(slot), "Unit production requires a unit order");
         }
 
+        world.Production.CompletedImprovement = null;
         int owner = unchecked((sbyte)city.Owner.Value);
         CityTarget target = new(slot, city.Token);
         int net = city.Flags.Disorder ? 0 : Math.Max(0, unchecked(Work.Shields - Work.ShieldSupport));

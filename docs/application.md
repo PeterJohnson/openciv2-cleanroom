@@ -42,8 +42,10 @@ inspection CLI has no live-command mode, so this command adds no `oc2` switch.
 
 Start the desktop with `--game alder-valley`. Select a Pioneer or Outrider
 on the map or in the unit list and use the direction buttons. Found a city
-with the Pioneer, then set the city's worked tiles and unit production in its
-city window. The center resets automatic worker assignment. The window shows
+with the Pioneer, then set the city's worked tiles and production in its
+city window. Land Surveys enables Temple construction; Clay Casting enables
+Library construction. Completed buildings remain the manual production order
+until another item is selected. The center resets automatic worker assignment. The window shows
 food, shields, support, research and tax from the same session as the map.
 
 Choose research in the sidebar or in the required turn decision. End-turn

@@ -13,12 +13,12 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit production, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. Remaining C01–C08, V02 choices/rates, V03 and full F04 integration are pending. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing and Apollo completion callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. Remaining C01–C08 operations, V02 choices/rates, general research presentation/capture/catch-up and full F04 integration are pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A01 orchestration and the remaining A02–A08 policies and turn scheduling remain pending. |
-| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 nonunit integration, spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
+| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
-| Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. The new leaf tests do not satisfy this gate. |
+| Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
 catch-up policies, C06 production selection, remaining V02 government/rate choices
@@ -1183,3 +1183,74 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-flow-headless.xml` | `08be0d5181761eae61aa84b9995aa69c89bbf76c32c411e42947e00fa9f4fe05` |
 | `m4-desktop-flow-native.json` | `38fb8bcdb16c1c95d15a6ec3b75da97dd05510d74d2a7681ff554e475775daf9` |
 | `m4-desktop-flow-identity.json` | `111e5c5011269beacacafa9746be0188f8749ea542378457dbe60810991c7655` |
+
+
+## Building and wonder production parent
+
+`CityProduction` now dispatches the actual unit child or the C06 nonunit branch.
+It retains owner/net/item/cost, resets the completed-improvement publication,
+handles Capitalization without stock accumulation, warns on invalid builds
+without changing orders, and preserves signed stock arithmetic. Human spaceship
+launch/max gates precede readiness; AI spaceship choice uses actual V07 group
+selection, recomputes the new group's cost and never builds the old group as a
+fallback. Normal exits execute the common automation/AI purchase tail once.
+
+Wonder races use raw locations and the human threshold's raw cosmic shield rows.
+The AI early return keeps accumulated stock and DefenderLost. Local acquisition
+publishes location/WonderBuilt before completion effects. Ordinary AI facilities
+retain surplus; manual human completions discard surplus but keep their order.
+Palace relocation clears other owned Palaces and publishes only capital-x.
+Completion notices preserve preference/autoplay/local gates, sound-before-notice,
+wording identities and movie order. Failed operations cannot replay their prefix.
+
+The parent invokes actual spaceship assembly, Eiffel diplomacy, Leonardo upgrades
+and Apollo publication. Darwin invokes two actual `ResearchFlow.Complete` calls,
+sequentially, allowing research choices between them. The second uses the first
+call's selected target. AI cities building the completed wonder are reconsidered
+only after these children. Presentation and A02 chooser inputs remain explicit;
+tests supplying a production choice do not implement that policy.
+
+The desktop city pass now suspends production as well as science accumulation.
+Its ordinary profile offers Temple after Land Surveys and Library after Clay
+Casting, with authored costs/upkeep and real C03/C04/C08 consequences. Production
+projection handles signed building items; load admission preserves Palace/Temple/
+Library combinations and their retained manual orders. Direct/console cases
+complete both facilities, save/reload, and verify duplicate-build warnings without
+another completion or cost deduction. Marketplace remains outside this profile.
+
+Darwin's fixed mapping is now explicit in C06 Appendix A: wonder18/improvement57.
+It was checked only against the original-game data conversion in the authorized
+local `codex/classic-menus-civilopedia` branch,
+`data/gameplay/classic-mge-5.4.0f/rules.json` (SHA-256
+`163cae26da033a8418342bac81e33c9d586edcafedc4549d0935ed02d4e209be`).
+The ordered C08 catalog agrees. No external implementation or historical harness
+was consulted. The current C06 conformance pin was updated for this definition.
+
+General player buying/selling/selection, full build eligibility (including the
+recorded scenario-option binding gap), full A02 policy, V01 catch-up, all-city/
+civilization F04 integration and generated-game acceptance remain open. This
+local parent does not implement network wonder acquisition. General desktop
+wonder/spaceship presentation remains open. Browser execution and cross-platform
+qualification remain deferred; no Lua automation changed. M4 remains in progress.
+
+Validation for this batch: root and App formatting plus verification passed;
+Release builds completed with zero warnings/errors. Native tests passed
+**740 of 742**, with only the two existing platform/opt-in skips. The shared
+native probe passed **708 groups**, and identity verification covered **433
+compiled inputs**. Graph, conformance, **82-family** coverage, eight identity-tool
+tests, three coverage-tool tests and gameplay-schema validation passed.
+
+All **11 Xvfb CPU desktop checks** passed, including building a Temple through
+city controls, save/reload, retained production and duplicate-build handling.
+The existing saved turn7/resumed turn8, direct/CLI/native agreement, file-picker
+import, replacement and normal-shutdown checks also passed. This validates the
+admitted desktop profile, not the full generated-game M4 exit gate.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-nonunit-play.json` | `cb8c01e8f39197c968edc64e6bfcfffcf735ff61f2af232da04a9fcfee48f8b1` |
+| `m4-desktop-nonunit-headless.xml` | `963f536089baa8115e92e771e3a9d249afa1c7439f6d0b3cbb892e2f0042679f` |
+| `m4-desktop-nonunit-native.json` | `64abea758da793adec9f66167abc0d0c75ba2d301676154d10b3f2ea76f0b116` |
+| `m4-desktop-nonunit-identity.json` | `ae4c35269bfcf95da326fc3c38419c35e866a8734f7e36a442ec457871ba52aa` |

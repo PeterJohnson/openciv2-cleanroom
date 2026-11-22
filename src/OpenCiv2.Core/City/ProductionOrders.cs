@@ -18,6 +18,7 @@ public sealed class ProductionWorkspace
 {
     public ProductionCategory SavedCategory;
     public int SavedStock;
+    public int? CompletedImprovement;
     public bool CivilizationTurnInProgress;
     public CivilizationArray<WonderArray<WonderNoticeStatus>> WonderNotices;
 }

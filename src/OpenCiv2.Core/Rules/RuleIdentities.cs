@@ -42,7 +42,7 @@ public static class WonderIds
     public const int MarcoPolo = 9, StatueOfLiberty = 19, UnitedNations = 24;
     public const int SunTzu = 7;
     public const int Leonardo = 14, AdamSmith = 17;
-    public const int GreatLibrary = 4;
+    public const int GreatLibrary = 4, Darwin = 18;
 }
 
 /// <summary>C07 commodity identities. Display names and rule labels do not redirect their formulas.</summary>

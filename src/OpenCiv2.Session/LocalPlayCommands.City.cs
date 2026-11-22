@@ -21,7 +21,7 @@ public static partial class LocalPlayCommands
             FoundCity, ValidateUnit));
         runtime.RegisterCommand(Define(Worker, "Toggle a worked radius tile (0–20). Select 20 to reset workers.",
             [new("city", ValueKind.City), new("tile")], [new("city", ValueKind.City)], AssignWorker, ValidateCity));
-        runtime.RegisterCommand(Define(Production, "Choose an available unit type for an owned city.",
+        runtime.RegisterCommand(Define(Production, "Choose a listed production item for an owned city.",
             [new("city", ValueKind.City), new("type")], [new("city", ValueKind.City)], ChangeProduction, ValidateCity));
     }
 
@@ -106,7 +106,7 @@ public static partial class LocalPlayCommands
         var target = CityArgument(request);
         int type = Number(request, "type");
         var world = context.World;
-        if (!LocalGameRules.ProductionAvailable(world, context.Process.Rules.Definitions, type))
+        if (!LocalGameRules.ProductionAvailable(world, context.Process.Rules.Definitions, type, target.Slot))
         {
             return new(CommandStatus.Failed, Code: "production_not_available");
         }

@@ -233,7 +233,9 @@ public static partial class FoundationSuite
         f.City.Production = 2;
         var sameWorld = new ProductionOrders(f.World, f.Rules, _ => throw new InvalidOperationException(), _ => throw new InvalidOperationException("repeat notice"));
         sameWorld.Set(new(0), -39); Equal(101, f.World.Production.SavedStock);
+        f.World.Production.CompletedImprovement = 4;
         var fresh = new GameState(f.Data.Process);
+        Equal((int?)null, fresh.Production.CompletedImprovement); Equal((int?)4, f.World.Production.CompletedImprovement);
         Equal(0, fresh.Production.SavedStock); Equal(ProductionCategory.Units, fresh.Production.SavedCategory);
         Equal(false, fresh.Production.WonderNotices[1][0].Started); Equal(false, fresh.Production.CivilizationTurnInProgress);
         Equal(true, f.World.Production.WonderNotices[1][0].Started);

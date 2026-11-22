@@ -11,7 +11,7 @@ public static partial class FoundationSuite
 {
     private sealed class ResearchFlowFixture : IResearchChoiceEffects, IResearchCompletionEffects
     {
-        public GrantFixture Grant { get; } = new();
+        public GrantFixture Grant { get; }
         public GameState World => Grant.World;
         public RuleState Rules => Grant.Data.Process.Rules;
         public GameplayRandom Random { get; } = new(37, "research-flow");
@@ -31,8 +31,9 @@ public static partial class FoundationSuite
         public Action? OnCompleted, OnFirst;
         public Func<CitySlot, int> ChooseProduction = _ => 2;
 
-        public ResearchFlowFixture()
+        public ResearchFlowFixture(GrantFixture? grant = null)
         {
+            Grant = grant ?? new();
             for (int a = 0; a < RuleLimits.Advances; ++a)
                 Rules.Definitions.Advances[a] = new()
                 {
