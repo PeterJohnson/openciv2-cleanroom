@@ -5,6 +5,7 @@ namespace OpenCiv2.Core;
 /// <summary>W01 §3 ordered neighborhoods. Order participates in generation and path ties.</summary>
 internal static class MapNeighborhoods
 {
+    internal static readonly MapPoint[] Diagonal = [new(1, -1), new(1, 1), new(-1, 1), new(-1, -1), new(0, 0)];
     internal static readonly MapPoint[] Directions =
         [new(1, -1), new(2, 0), new(1, 1), new(0, 2), new(-1, 1), new(-2, 0), new(-1, -1), new(0, -2)];
     internal static readonly MapPoint[] Coarse =

@@ -3,7 +3,7 @@ using OpenCiv2.Core.Rules;
 
 namespace OpenCiv2.Core;
 
-/// <summary>U03 retained reverse-flood state for W02's uniform-cost connectivity queries.
+/// <summary>U03 retained reverse-flood state for W02 connectivity and F05 accelerated roads.
 /// Reuse within a generation or explicitly retained game; use a new workspace for a fresh game.
 /// This is not the general unit-goto/occupancy pathfinder.</summary>
 public sealed class GenerationPathWorkspace
@@ -15,6 +15,9 @@ public sealed class GenerationPathWorkspace
     public MapPoint Goal { get; internal set; }
     public int SelectedUnitType { get; internal set; }
     public int ResultCost { get; internal set; }
+    public int Owner { get; set; } = -1;
+    public bool UniformCost { get; set; }
+    public bool RoadsOnly { get; set; }
 
     internal void Reset()
     {
@@ -24,15 +27,19 @@ public sealed class GenerationPathWorkspace
         CachedGoal = null;
         Goal = default;
         SelectedUnitType = ResultCost = 0;
+        Owner = -1;
+        UniformCost = false;
+        RoadsOnly = false;
     }
 }
 
-/// <summary>U03 bounded distance and coarse rebuilding in W02's uniform-cost, absent-owner domain.
+/// <summary>U03 local directions, bounded distance and coarse rebuilding in the uniform-cost, absent-owner domain.
 /// Custom fixed-slot domains and coast penalties, FIFO limits and stale-goal cache reuse remain significant.</summary>
 public static class GenerationConnectivity
 {
     public static void Rebuild(MapStorage map, bool flat, RuleTables rules, GenerationPathWorkspace workspace)
     {
+        workspace.UniformCost = true;
         for (int graph = 0; graph < 2; ++graph)
         {
             map.CoarseGrid(graph).Fill(0);
@@ -73,6 +80,7 @@ public static class GenerationConnectivity
                 }
             }
         }
+        workspace.UniformCost = false;
     }
 
     /// <summary>U03 bounded query with uniform costs and no occupancy restrictions. A successful cache hit
@@ -97,10 +105,30 @@ public static class GenerationConnectivity
         {
             return -1;
         }
-        workspace.SelectedUnitType = bySea ? 33 : 2;
+        workspace.SelectedUnitType = bySea ? UnitTypeIds.Caravel : UnitTypeIds.Warriors;
+        workspace.Goal = goal;
+        int owner = workspace.Owner;
+        workspace.Owner = -1;
+        int direction = UniformDirection(map, flat, rules, workspace, source, limit);
+        int result = direction >= 0 ? workspace.ResultCost : direction;
+        workspace.Owner = owner;
+        return result;
+    }
+
+    /// <summary>U03 nextDirection for uniform cost and absent owner. Retains the goal-only cache, FIFO
+    /// limits, coast penalties and directional ties. Callers own the mode/owner selectors; other path
+    /// domains require the general movement pathfinder.</summary>
+    public static int UniformDirection(
+        MapStorage map, bool flat, RuleTables rules, GenerationPathWorkspace workspace, MapPoint source, int limit)
+    {
+        if (workspace.Owner >= 0)
+        {
+            throw new InvalidOperationException("Uniform connectivity requires an absent path owner");
+        }
+        var shape = map.Geometry;
+        var goal = workspace.Goal;
         var unit = rules.Units[workspace.SelectedUnitType];
         bool naval = unit.Domain == RuleDomain.Sea;
-        workspace.Goal = goal;
         workspace.ResultCost = 0;
         var normalizedSource = Normalize(shape, source, goal, flat);
         if (workspace.CachedGoal != goal || Cost(workspace, normalizedSource, goal) == 0)
@@ -141,7 +169,12 @@ public static class GenerationConnectivity
                 }
             }
         }
-        return direction >= 0 ? workspace.ResultCost : -1;
+        if (direction < 0 && workspace.CachedGoal is { } cached)
+        {
+            workspace.Goal = cached;
+        }
+
+        return direction;
     }
 
     private static MapPoint Normalize(Geometry shape, MapPoint point, MapPoint center, bool flat)

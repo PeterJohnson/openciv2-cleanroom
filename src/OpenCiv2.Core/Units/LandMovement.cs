@@ -9,23 +9,10 @@ namespace OpenCiv2.Core.Units;
 public static class LandMovement
 {
     public static int Left(GameState world, RuleTables rules, Unit unit) =>
-        Math.Max(0, Allowance(world, rules, unit) - unit.MovesUsed);
+        UnitMovement.Left(world, rules, unit);
 
-    public static int Allowance(GameState world, RuleTables rules, Unit unit)
-    {
-        var rule = rules.Units[unit.Type.Value];
-        int moves = unchecked((sbyte)rule.Movement);
-        if (moves == 0 || unit.Damage == 0 || !world.Globals.Rules.NormalCombat)
-        {
-            return moves;
-        }
-
-        int hp = unchecked((sbyte)rule.HitPoints);
-        int road = rules.Cosmic.RoadMovementMultiplier;
-        int scaled = Math.Max(0, hp - unit.Damage) * moves / Math.Max(1, hp);
-        int remainder = scaled % road;
-        return Math.Max(road, remainder == 0 ? scaled : scaled + road - remainder);
-    }
+    public static int Allowance(GameState world, RuleTables rules, Unit unit) =>
+        UnitMovement.Allowance(world, rules, unit);
 
     /// <summary>Executes an ordinary land step and returns the committed outcome or a public denial code.</summary>
     public static (string Code, bool Changed) Step(

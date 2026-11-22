@@ -1,4 +1,5 @@
 using OpenCiv2.Contracts;
+using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 
 namespace OpenCiv2.Core.State;
@@ -51,9 +52,11 @@ public sealed class GameState
     public EntityPools Entities { get; } = new();
     public UnitStackState UnitStacks { get; } = new();
     public UnitDeletionState UnitDeletion { get; } = new();
+    public bool CityDeletionActive;
     public CivilizationArray<int> UnitTotals;
     public bool TurnLoopActive;
     public bool PlayerPhaseActive;
+    public EndReason PendingEndReason;
     public MovementMode MovementMode;
     public GlobalValues Globals = new();
     public WorldSetup WorldSetup;
@@ -68,5 +71,7 @@ public sealed class GameState
     public Layout Layout;
     public MapView[] Views { get; } = new MapView[EntityLimits.Civilizations];
     public CityMoodWorkspace Mood { get; } = new();
+    public CityCalculationWorkspace Calculation { get; } = new();
+    public GenerationPathWorkspace Paths { get; } = new();
     public MapStorage Map { get; }
 }

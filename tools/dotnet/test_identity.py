@@ -3,6 +3,7 @@
 import copy
 import json
 from pathlib import Path
+import re
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -12,6 +13,13 @@ import run_application as application
 
 
 class IdentityTests(unittest.TestCase):
+    def test_behavior_specifications_match_build_manifest(self):
+        target = (identity.ROOT / 'Directory.Build.targets').read_text()
+        compiled = set(re.findall(r'\$\(Oc2RepositoryRoot\)(docs/algorithms/[^;\s]+\.md)', target))
+        expected = {path for path in identity.COMMON if path.startswith('docs/algorithms/')}
+        self.assertTrue(compiled)
+        self.assertEqual(compiled, expected)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

@@ -14,6 +14,37 @@ and console requests, and the X11 driver compares the saved and resumed state
 with the reference and loaded CLI. Browser and other desktop acceptance remain
 pending for this profile.
 
+The [M4 desktop work record](../m4-desktop.md) tracks the next mechanics and AI
+dependencies. Start search, generated-map joins, start scoring, research
+recommendation/valuation and building/wonder queries run in the native foundation
+suite. Shared city creation, spatial queries and full commodity refresh are also
+covered; the local founding caller composes the real constructor. Native tests
+join generated maps, all starting civilizations, real accelerated packages and
+the retained uniform road path, including fresh replay and cancellation. Browser
+execution and cross-platform qualification are deferred for this
+workstream; leaf tests do not close complete human/AI-game desktop acceptance.
+Shared C02 worker/yield tests cover real stacks, facilities, knowledge, water
+sources and pollution visits, including signed rules, retained assignments,
+AI cadence, specialist wrap and fresh-world isolation. The local desktop
+founding/turn/load caller now runs the full C03 calculation with C05 support,
+C04 mood stages, C07 commodity refresh and U03 road/rail links. Tests include
+all-city recalculation after actual generated/accelerated setup and fresh replay.
+U01 cargo/loss groups exercise actual stacking, grouping and deletion, including
+priority, off-map staging, repeated capacity queries and complete physical-stack
+loss. C07 route groups exercise ordered mutation, valuation, refresh gates and
+retained failure effects. C05 retirement now calls actual support and U01 loss,
+including a forced-shortage desktop-profile save/resume test. C01 local removal
+calls actual garrison queries, cargo loss, route removal and radius repair.
+C05 food-turn tests cover starvation, growth/refill and accumulation using real
+C01/U01/C07 children, plus direct/console desktop-profile save/resume. A further
+case joins actual city/unit removal and V01 elimination to the pending defeat
+reason. Local lifecycle cases exercise recursive settler checks, actual AI
+restarts, interrupted spy escape, spaceship reset/loss, history and retained
+human/alive/knowledge state. Controlled V06 choices verify escape odds, promotion,
+nearest-city ties and actual relocation/exhaustion. Diplomacy incidents, restart
+catch-up grants, C06 AI production and full defeat handling remain open.
+General city-turn consequences and generated-game turn acceptance remain open.
+
 ## Complete M2 map renderer
 
 M2 development is [closed with tracked deferrals](../m2-closeout.md). Continue

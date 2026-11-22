@@ -9,8 +9,7 @@ public static class LocalResearch
 {
     public static bool Available(GameState world, RuleTables rules, int owner, int advance) =>
         advance >= 0 && advance < rules.Advances.Length && advance != CivilizationKnowledge.FutureTechnology
-        && rules.Advances[advance].Enabled && !CivilizationKnowledge.KnowsAdvance(world.Civilizations, owner, advance)
-        && rules.Advances[advance].Prerequisites.All(p => CivilizationKnowledge.KnowsAdvance(world.Civilizations, owner, (int)p));
+        && Research.Available(world, rules, owner, advance);
 
     public static int Cost(GameState world, RuleTables rules, int owner)
     {

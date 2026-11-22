@@ -43,6 +43,78 @@ owns W01 labeling and `GenerationPaths` supplies U03's bounded uniform-cost
 connectivity domain. `Session/WorldGeneration` integrates the actual F05 world
 entry child. See [generation inputs, retained state and evidence](map-generation.md).
 
+`Core/StartingSites` and `Session/StartingPositionOperation` own F05 start search,
+scoring and V01's late hint boundary. `Core/Research` composes V03 recommendation
+with `Ai/AdvanceValuation` (A08), using `City/BuildingQueries` for C08 wonder
+effects. These are the initial M4 dependency operations; the
+[desktop work record](m4-desktop.md) distinguishes them from complete setup,
+research, AI and desktop-game integration.
+`Units/UnitMovement` and `UnitActivation` provide shared U02 movement budgets
+and U04 selection rules used by the existing local commands.
+`Units/UnitCreation` owns U01 initialization and composes the required revelation
+and notice children. `UnitRevelation`, `MapKnowledge` and `UnitOrders` implement
+local W03 surroundings/knowledge and U04 contact orders, using real A01 goal
+insertion. The local creation caller uses this path; general V04 meeting services
+and the generated desktop gameplay caller are still separate work.
+`Core/CivilizationCreation` and `City/UnitAvailability` provide V01 local
+reset/leader/admission/placement and C06 unit eligibility.
+`Session/GeneratedGameInitialization` combines these with real U01/W03 and
+F05 compensation, with cancellation and bounded search polls. `WorldEntry`
+uses this implementation when its `Initialize` service is null. Accelerated
+city packages are composed by `Core/AcceleratedStarts` and the cooperative
+`Session/GeneratedGameAcceleration`. A null `WorldEntry.Accelerate` selects that
+operation using explicit naming content. F05's Pikemen identity is fixed slot6,
+verified from the user-identified original-data conversion and recorded in F05
+Appendix D. The generated desktop gameplay caller remains open.
+
+`City/CityCreation` owns local C01 allocation and initialization, composing
+actual naming, C06 defender eligibility, C08 presence, U01 creation, W03
+knowledge, `CityArea` claims and C07 `Commodities`. The local founding command
+uses this constructor before the full C03 worker/output calculation.
+`CityQueries` also supplies region/port and coastal predicates. Commodity
+refresh includes the specified zero road-accumulator repair. `TradeRoutes` supplies
+C07 directional removal, slot writing, append/replacement and refresh, using the
+actual U03 connection query. Caravan cargo selection and delivery remain separate
+work. `Units/UnitCargo` supplies U01 transport grouping, lifting and repeated
+capacity queries; `UnitLoss` composes actual grouping and basic deletion for
+whole-stack/cargo-aware loss. `StackOperations.ShipsFirst` uses the two real
+staging passes. `CityRetirement` now joins real C05 charges with U01 cargo-aware
+and basic loss, and the local desktop turn calls it. `CityRemoval` joins descending supported-unit
+processing, real U01 role/stack queries, cargo loss, C07 route removal and C01
+radius repair. It notifies the view owner after committed removal; the remote
+request wrapper remains separate. `CityFood` runs C05 starvation/growth before
+recalculation and food accumulation after it, using actual removal/loss and
+routes. `CivilizationElimination` supplies V01's local last-city check with actual
+U01 deletion, `SpyEscape`, `SpaceshipLifecycle` reset/loss and civilization
+recreation. Famine-to-defeat, recursive last-settler checks, history, AI restart
+and exploration clearing are tested together. V06 incident decisions and V03
+restart catch-up grants remain required owning policies; forced retirement,
+civil war and full outcome handling are separate work. Alder Valley's deletion
+adapter now uses the real last-city check, although its admitted city-center
+yields and absence of food routes/homed settlers cannot cause last-city famine.
+C06 production selection remains a required food-turn continuation. Semantic
+notifications leave tutorial hints, message preferences and view refresh to
+presentation.
+
+`City/CityWorking` owns C02 availability, signed tile yields, terrain suggestions,
+ordered worker allocation and nominal specialist operations. Its world-owned
+`CityCalculationWorkspace` retains totals, support inputs and job/mode state;
+`TerrainSources` supplies the real W04 irrigation predicate, and availability
+counts W05 AI pollution visits. `CityEconomy` supplies the full C03 calculation
+parent, including capital/overlap, recurring food/trade, corruption/waste,
+industrial production, W05 intensity and distribution. `CitySupport` provides
+C05 box factors and military/support counts; `CityHappiness` provides C04's five
+stages and normalization. The local founding/turn/load caller invokes this parent;
+pure local display previews still use the authored profile's restricted yield
+view. City-turn consequences and general F04 scheduling remain separate work.
+
+`GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
+W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this
+workspace within a world. `TerritoryQueries.PeaceOwner` supplies the directed
+peace/alliance radius gate. `RoadConnections` checks the chosen uniform route
+for C03 road/rail links, including retained cache and owner/airport interactions.
+General movement and goto remain separate pathfinding work.
+
 `OpenCiv2.MapRendering` is an optional repository-local library over Base,
 Contracts, Formats and SkiaSharp. It has no Avalonia or Session dependency;
 Formats still brings Core transitively for its existing content/codec ownership.

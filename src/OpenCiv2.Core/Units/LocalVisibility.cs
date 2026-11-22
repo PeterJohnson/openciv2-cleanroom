@@ -12,11 +12,8 @@ public static class LocalVisibility
     /// <summary>Copies live features only at a revelation boundary, preserving earlier memory elsewhere.</summary>
     public static bool Remember(GameState world, int observer, MapPoint point)
     {
-        ref var tile = ref world.Map.TileAt(point);
-        ref var memory = ref world.Map.Remembered(observer, point);
-        bool changed = !tile.RevealedTo.Contains(observer) || memory != tile.Features;
-        tile.RevealedTo = tile.RevealedTo.With(observer);
-        memory = tile.Features;
+        bool changed = MapKnowledge.Remember(world, observer, point);
+        changed |= MapKnowledge.Explore(world, observer, point);
         return changed;
     }
 
@@ -38,46 +35,6 @@ public static class LocalVisibility
     }
 
     /// <summary>Publishes W03 direct unit or city knowledge that accompanies a denied ZOC step.</summary>
-    public static bool RevealAdjacentOccupants(GameState world, int observer, MapPoint origin)
-    {
-        var map = world.Map;
-        bool changed = false;
-        foreach (var offset in MapNeighborhoods.Directions)
-        {
-            var point = MapNeighborhoods.Offset(map.Geometry, origin, offset, world.Globals.Rules.FlatWorld);
-            if (!map.Geometry.Canonical(point) || map.TileAt(point).Ocean != map.TileAt(origin).Ocean
-                || map.UnitOwner(point) is null)
-            {
-                continue;
-            }
-
-            changed |= Remember(world, observer, point);
-            if (map.CityOwner(point) is not null)
-            {
-                foreach (ref var city in world.Entities.Cities.Scanned)
-                {
-                    if (city.Token.Occupied && city.Position == point)
-                    {
-                        changed |= !city.KnownTo.Contains(observer) || city.RememberedSize[observer] != city.Size;
-                        city.KnownTo = city.KnownTo.With(observer);
-                        city.RememberedSize[observer] = unchecked((byte)city.Size);
-                        break;
-                    }
-                }
-
-                continue;
-            }
-
-            foreach (ref var unit in world.Entities.Units.Scanned)
-            {
-                if (unit.Token.Occupied && unit.Position == point && unit.Owner.Value != observer)
-                {
-                    changed |= !unit.Visibility.Contains(observer);
-                    unit.Visibility = unit.Visibility.With(observer);
-                }
-            }
-        }
-
-        return changed;
-    }
+    public static bool RevealAdjacentOccupants(GameState world, int observer, MapPoint origin) =>
+        MapKnowledge.RevealAdjacentUnits(world, new(world, new(100000, 64)), observer, origin);
 }

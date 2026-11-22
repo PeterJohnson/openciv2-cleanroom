@@ -104,7 +104,7 @@
     {
       "id": "C07",
       "path": "docs/algorithms/C07-trade-and-commodities.md",
-      "sha256": "e5ba44bf4c9ab905aadb1e3828e767ff097e1c010cb1829db36779f985e57177",
+      "sha256": "9b501f0a8b6ba0de4bc0464c3aa1b2e35a5f4464edb0190286e3a2b43b10c84c",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },
@@ -153,7 +153,7 @@
     {
       "id": "F05",
       "path": "docs/algorithms/F05-game-setup-and-starting-positions.md",
-      "sha256": "8050b68b2446eba5f51182f005a4a9eb519124f1aca1eda4decb2f2a29a8dc58",
+      "sha256": "bc7e0e10b04315fff18e476d70eb6620949b10b4edd0fdf147350b741d15fe58",
       "specificationStatus": "specified",
       "registrationStatus": "not-registered"
     },

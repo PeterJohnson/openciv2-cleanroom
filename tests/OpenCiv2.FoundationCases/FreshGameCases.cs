@@ -18,6 +18,9 @@ public static partial class FoundationSuite
         world.UnitStacks.Suppression = 9; world.UnitStacks.AnimationActive = world.UnitStacks.DetachActive = world.UnitStacks.AttachActive = world.UnitStacks.RelocateActive = world.UnitStacks.BottomActive = true;
         world.UnitStacks.DetachReply = world.UnitStacks.AttachReply = world.UnitStacks.RelocateReply = world.UnitStacks.BottomReply = 11;
         world.UnitDeletion.Active = true; world.UnitDeletion.Reply = -2; world.UnitTotals[1] = 123; world.TurnLoopActive = true; world.MovementMode = (MovementMode)99;
+        world.UnitStacks.CargoActive = world.UnitStacks.LiftActive = true;
+        world.UnitDeletion.CargoActive = world.UnitDeletion.DestroyActive = true;
+        world.CityDeletionActive = true;
         world.Globals.Turn = 123; world.Globals.HumanPlayers = StateConversion.DecodeCivilizations(255); world.Globals.ActiveUnit = new UnitSlot(99);
         for (int i = 0; i < 8; ++i)
         {
@@ -27,6 +30,9 @@ public static partial class FoundationSuite
         world.Multiplayer.LocalHuman = world.Multiplayer.ResumeCiv = 7; world.Multiplayer.NetworkHost = true; world.Multiplayer.NetworkTurnCiv = 6; world.Multiplayer.HotseatParticipants = StateConversion.DecodeCivilizations(254);
         world.Events.Loaded = true; world.Events.Collection.Append().SetString(0, new EventString("prior")); world.PowerHistory[2][3] = 99;
         world.Layout.Valid = true; world.Views[1] = new(true, true, new(3, 4), 5); world.Mood.City = new(2); world.Mood.Happy = 40; world.Mood.Unhappy = -20;
+        world.Calculation.Totals[0] = 77; world.Calculation.TileYield[2] = 33;
+        world.Calculation.Processing = world.Calculation.ApplyYield = world.Calculation.JobFound = true;
+        world.Calculation.JobPriority = 88; world.Calculation.Unassigned = 64;
         world.Map.Allocate(new(8, 6)); world.Map.Tiles.Fill(new Tile { Features = MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Irrigation | MapFeatures.Mine | MapFeatures.Road | MapFeatures.Railroad | MapFeatures.Fortification | MapFeatures.Pollution, Region = 11, RevealedTo = new CivilizationSet().With(1).With(2).With(3).With(4).With(5).With(6).With(7) });
         for (int civ = 1; civ < 8; ++civ) world.Map.RememberedLayer(civ).Fill(MapFeatures.Unit | MapFeatures.Irrigation | MapFeatures.Mine | MapFeatures.Fortification);
         for (int grid = 0; grid < 4; ++grid) world.Map.CoarseGrid(grid).Fill(98);
@@ -47,11 +53,17 @@ public static partial class FoundationSuite
         Equal(0, world.Entities.Units.End); Equal(0, world.Entities.Cities.End); Equal(new OwnedList<Unit>(cold.Entities.Units.Storage.ToArray()), new(world.Entities.Units.Storage.ToArray())); Equal(new OwnedList<City>(cold.Entities.Cities.Storage.ToArray()), new(world.Entities.Cities.Storage.ToArray()));
         Equal(0, world.UnitStacks.Suppression); Equal(false, world.UnitStacks.AnimationActive || world.UnitStacks.DetachActive || world.UnitStacks.AttachActive || world.UnitStacks.RelocateActive || world.UnitStacks.BottomActive);
         Equal(0, world.UnitStacks.DetachReply | world.UnitStacks.AttachReply | world.UnitStacks.RelocateReply | world.UnitStacks.BottomReply); Equal(false, world.UnitDeletion.Active); Equal(0, world.UnitDeletion.Reply);
+        Equal(false, world.UnitStacks.CargoActive || world.UnitStacks.LiftActive || world.UnitDeletion.CargoActive || world.UnitDeletion.DestroyActive);
+        Equal(false, world.CityDeletionActive);
         Equal(false, world.TurnLoopActive); Equal((int)MovementMode.View, (int)world.MovementMode); Equal(cold.UnitTotals, world.UnitTotals); Equal(cold.Globals, world.Globals); Equal(cold.WorldSetup, world.WorldSetup);
         foreach (ref var civ in cold.Civilizations.AsSpan()) { foreach (ref var goal in (Span<CivilizationGoal>)civ.Goals) goal = new(new(0, 0), -1, 0); foreach (ref var goal in (Span<CivilizationGoal>)civ.StandingGoals) goal = new(new(0, 0), -1, 0); }
         Equal(new OwnedList<Civilization>(cold.Civilizations), new(world.Civilizations)); Equal(new OwnedList<CivilizationNames>(cold.Names), new(world.Names)); Equal(new OwnedList<sbyte>(cold.PendingLeaderOverrides), new(world.PendingLeaderOverrides)); Equal(cold.Multiplayer, world.Multiplayer);
         Equal(false, world.Events.Loaded); Equal(0, world.Events.Collection.Count); Equal(cold.PowerHistory, world.PowerHistory); Equal(cold.Eliminations, world.Eliminations); Equal(cold.Scenario, world.Scenario); Equal(cold.Layout, world.Layout); Equal(new OwnedList<MapView>(cold.Views), new(world.Views));
         Equal(true, world.Mood.City is null); Equal(0, world.Mood.Happy); Equal(0, world.Mood.Unhappy); Equal(false, world.Map.Allocated); Throws<InvalidOperationException>(() => _ = world.Map.Geometry); Throws<InvalidOperationException>(() => _ = world.Map.Tiles.Length);
+        Equal(false, ReferenceEquals(oldWorld.Calculation, world.Calculation));
+        Equal(0, world.Calculation.Totals[0]); Equal(0, world.Calculation.TileYield[2]);
+        Equal(false, world.Calculation.Processing || world.Calculation.ApplyYield || world.Calculation.JobFound);
+        Equal(0, world.Calculation.JobPriority); Equal(0, world.Calculation.Unassigned);
         Equal((ushort)0, world.Map.PatternSeed); Equal((ushort)0, world.Map.StoredTopology); Equal(new OwnedList<RegionSummary>(cold.Map.Regions.ToArray()), new(world.Map.Regions.ToArray())); Equal(0, world.Map.RememberedBarbarian.Length);
         runtime.BeginClientSession(new(13, 17)); var next = SessionClient(runtime); Equal(false, next.Identity.Session == identity.Session); Equal(false, next.Identity.Participant == identity.Participant); Equal(false, next.Identity.Controller == identity.Controller); CheckRevoked(client, AccessFailure.Revoked); Equal(0, next.OwnUnits().Records.Count);
         oldWorld.Entities.Units.Storage[0].Token = new(999); Equal(0, next.OwnUnits().Records.Count);

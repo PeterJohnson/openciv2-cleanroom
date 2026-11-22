@@ -37,6 +37,7 @@ public static class MapGenerator
         ArgumentNullException.ThrowIfNull(random);
         ArgumentException.ThrowIfNullOrEmpty(call);
         var map = world.Map;
+        paths ??= world.Paths;
         bool flat = world.Globals.Rules.FlatWorld;
         if (!retainMap)
         {
@@ -65,7 +66,6 @@ public static class MapGenerator
             map.StoredTopology = flat ? (ushort)0x8000 : (ushort)0;
             // New spatial allocation has no imported markers or incoming flood.
             markers = null;
-            paths ??= new();
             paths.Reset();
         }
         else
@@ -88,7 +88,7 @@ public static class MapGenerator
             generation.Voting();
             generation.Rivers();
         }
-        generation.Finalize(rules, paths ?? new(), retainMap, wideLayout);
+        generation.Finalize(rules, paths, retainMap, wideLayout);
     }
 }
 

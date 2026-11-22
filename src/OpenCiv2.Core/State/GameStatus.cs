@@ -1,5 +1,8 @@
 namespace OpenCiv2.Core.State;
 
+/// <summary>V08 pending end-sequence reason. This is distinct from saved Won/Scored status.</summary>
+public enum EndReason { None, LocalSpace, OtherSpace, Conquest, Defeat, Retirement }
+
 /// <summary>F06 §2 game status. Unknown classic flag bits belong to the format adapter.</summary>
 public record struct GameStatus
 {

@@ -5,7 +5,7 @@ using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Core.City;
 
-/// <summary>C02–C05 working, yields and upkeep under the authored single-city Despotism rules.</summary>
+/// <summary>Alder Valley command/display bridge to shared city calculation; pure display previews use its authored rules.</summary>
 public static class LocalCityEconomy
 {
     public const int Center = 20;
@@ -84,20 +84,8 @@ public static class LocalCityEconomy
 
     private static int Despotism(int value, bool celebrating) => value > 2 && !celebrating ? value - 1 : value;
 
-    private static Yield ApplyTile(GameState world, RuleTables rules, in State.City city, int index)
-    {
-        ref var tile = ref world.Map.TileAt(Position(world, city.Position, index));
-        tile.Claimant = city.Owner.Value;
-        if (!tile.City && !tile.Unit)
-        {
-            tile.Owner = city.Owner.Value;
-        }
-
-        return TileYield(world, rules, city, index);
-    }
-
     /// <summary>Applies the C02 manual tile-click rules and recalculates retained assignments and output.</summary>
-    public static void Toggle(GameState world, RuleTables rules, CitySlot slot, int index)
+    public static void Toggle(GameState world, RuleState rules, CitySlot slot, int index)
     {
         ref var city = ref world.Entities.Cities.At(slot);
         if (index == Center || (!city.WorkedTiles.Contains(index) && city.SpecialistCount == 0))
@@ -115,177 +103,20 @@ public static class LocalCityEconomy
         Recalculate(world, rules, slot);
     }
 
-    /// <summary>Keeps valid manual assignments and fills vacant worker positions by C02's ordered scores.</summary>
-    public static int Recalculate(GameState world, RuleTables rules, CitySlot slot)
+    /// <summary>Runs the complete C03 calculation and returns its C05 shield support.</summary>
+    public static int Recalculate(GameState world, RuleState rules, CitySlot slot)
     {
-        ref var city = ref world.Entities.Cities.At(slot);
-        int targetSpecialists = city.SpecialistCount;
-        int unassigned = city.Size + 1;
-        Yield total = default;
-        for (int i = 0; i <= Center; i++)
-        {
-            if (city.WorkedTiles.Contains(i) && !Available(world, city, i))
-            {
-                city.WorkedTiles = city.WorkedTiles.With(i, false);
-            }
-
-            if (city.WorkedTiles.Contains(i))
-            {
-                --unassigned;
-            }
-        }
-
-        if (unassigned < 0)
-        {
-            city.WorkedTiles = default;
-            unassigned = city.Size + 1;
-        }
-
-        if (city.WorkedTiles.Contains(Center))
-        {
-            total = ApplyTile(world, rules, city, Center);
-        }
-
-        for (int i = 0; i < Center; i++)
-        {
-            if (city.WorkedTiles.Contains(i))
-            {
-                total += ApplyTile(world, rules, city, i);
-            }
-        }
-
-        int foodRequired = city.Size * rules.Cosmic.FoodPerCitizen;
-        int support = Support(world, slot);
-        if (unassigned > 0 && unassigned != targetSpecialists)
-        {
-            if (!city.WorkedTiles.Contains(Center))
-            {
-                city.WorkedTiles = city.WorkedTiles.With(Center);
-                total += ApplyTile(world, rules, city, Center);
-                --unassigned;
-            }
-
-            while (unassigned > targetSpecialists)
-            {
-                bool foodFirst = city.Size < 3 ||
-                    total.Food + unassigned / Math.Max(1, (int)rules.Cosmic.FoodPerCitizen) < foodRequired;
-                int next = BestTile(world, rules, city, total, foodRequired, support, unassigned, foodFirst);
-                if (next < 0 && foodFirst)
-                {
-                    next = BestTile(world, rules, city, total, foodRequired, support, unassigned, false);
-                }
-
-                if (next < 0)
-                {
-                    break;
-                }
-
-                city.WorkedTiles = city.WorkedTiles.With(next);
-                total += ApplyTile(world, rules, city, next);
-                --unassigned;
-            }
-        }
-
-        city.SpecialistCount = (byte)unassigned;
-        city.Specialists = default;
-        for (int i = 0; i < unassigned; i++)
-        {
-            city.Specialists[i] = SpecialistKind.Entertainer;
-        }
-
-        if (total.Food < foodRequired && city.FoodBox == 0)
-        {
-            city.FoodBox = -1;
-        }
-        else if (total.Food >= foodRequired && city.FoodBox < 0)
-        {
-            city.FoodBox = 0;
-        }
-
-        city.TotalFood = (byte)total.Food;
-        city.TotalShields = (byte)total.Shields;
-        // The capital's corruption and waste are zero in this one-city profile.
-        city.BaseTrade = city.Trade = (short)total.Trade;
-        ref var civ = ref world.Civilizations[city.Owner.Value];
-        int luxury = Math.Clamp((total.Trade * (10 - civ.ScienceRate - civ.TaxRate) + 4) / 10, 0, total.Trade);
-        city.Science = (short)Math.Clamp((total.Trade * civ.ScienceRate + 4) / 10, 0, total.Trade - luxury);
-        city.Tax = (short)(total.Trade - luxury - city.Science);
-        // Under the authored content limit, every worker starts content. C04 caps
-        // luxury happiness by the number of workers after counting entertainers.
-        city.Happy = (byte)Math.Min(luxury / 2 + unassigned, city.Size - unassigned);
-        city.Unhappy = 0;
-        return support;
+        new CityEconomy(world, rules, new StackOperations(world, new(5_000_000, 64))).Calculate(slot);
+        return world.Calculation.ShieldSupport;
     }
 
-    private static int BestTile(
-        GameState world, RuleTables rules, in State.City city, Yield total, int foodRequired, int support,
-        int unassigned, bool foodFirst)
+    public static int Support(GameState world, RuleTables rules, CitySlot slot)
     {
-        int best = -1, bestScore = 0, bestSecondary = 0;
-        for (int i = 0; i < Center; i++)
-        {
-            if (city.WorkedTiles.Contains(i) || !Available(world, city, i))
-            {
-                continue;
-            }
-
-            var tile = TileYield(world, rules, city, i);
-            if (foodFirst && unassigned == 1 && total.Shields == 0 && tile.Shields == 0)
-            {
-                continue;
-            }
-
-            int score = foodFirst ? tile.Food :
-                16 / Math.Clamp(total.Food - foodRequired, 1, 99) * tile.Food
-                + city.Size * 3 / Math.Clamp(total.Shields - support, 1, 99) * tile.Shields
-                + city.Size * 2 / Math.Clamp(total.Trade, 1, 99) * tile.Trade;
-            int secondary = foodFirst ? tile.Shields * 2 + tile.Trade : 0;
-            if (score > bestScore || (score == bestScore && secondary > bestSecondary))
-            {
-                best = i;
-                bestScore = score;
-                bestSecondary = secondary;
-            }
-        }
-
-        return best;
+        new CitySupport(world, rules).Calculate(slot);
+        return world.Calculation.ShieldSupport;
     }
 
-    /// <summary>Recomputes C05 despotism support for the profile's homed military units, in slot order.</summary>
-    public static int Support(GameState world, CitySlot slot)
-    {
-        var city = world.Entities.Cities.At(slot);
-        int count = 0;
-        foreach (ref var unit in world.Entities.Units.Scanned)
-        {
-            if (unit.Token.Occupied && unit.Owner == city.Owner && unit.Home == slot)
-            {
-                unit.Flags.CostsShield = ++count > city.Size;
-                unit.Flags.Aggressive = unit.Position != city.Position && !world.Map.TileAt(unit.Position).City;
-            }
-        }
-
-        return Math.Max(0, count - city.Size);
-    }
-
-    public static void ClaimRadius(GameState world, in State.City city)
-    {
-        for (int i = 0; i < MapNeighborhoods.Radius.Length; i++)
-        {
-            var point = Position(world, city.Position, i);
-            if (!world.Map.Geometry.Canonical(point))
-            {
-                continue;
-            }
-
-            ref var tile = ref world.Map.TileAt(point);
-            tile.Fertility %= 8;
-            if (i <= Center)
-            {
-                tile.Claimant = city.Owner.Value;
-            }
-        }
-    }
+    public static void ClaimRadius(GameState world, in State.City city) => CityArea.Refresh(world, city.Position, city.Owner);
 
     public static void RememberCity(GameState world, ref State.City city)
     {

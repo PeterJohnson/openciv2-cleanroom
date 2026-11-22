@@ -626,6 +626,12 @@ Only the first city-creation result is guarded here. Subsequent unit results
 used for fortification/home writes and second-city creation failure can lead
 to invalid record access; do not reinterpret them as a successful empty package.
 
+**Fixed identity:** Pikemen is unit slot **6**, independent of its edited display
+name or rule attributes. This closes F05-Pikemen using the original-text data
+conversion identified in the data evidence below. The other package identities
+are defined by F03/V03/W06 and C08's ordered building catalog. Callers do not
+supply an alternative identity for this named classic package rule.
+
 ### Advanced second-city selection
 
 Initialize best score and selected direction to −1 for this civilization.
@@ -643,12 +649,16 @@ Capture the first city's original starting region. Scan directions 0…7:
    one for a river. Replace the selected direction only on strictly greater
    score; the earliest equal-scoring direction wins.
 
-The original does **not initialize `lastUnitDistance`**. When no eligible unit
-has yet written it, the comparison requires its incoming stack value. This can
-happen on nominal starts where every unit is on a city tile. An original-memory
-fixture must supply that value, or stop at the first affected comparison after
-preserving earlier effects. A deterministic default such as 5 is a policy
-change, not a recovered classic rule; Appendix B records that reconstruction fix.
+The original does **not initialize `lastUnitDistance`**. This can affect nominal
+starts where every unit is on a city tile. Under X01's supported repair policy,
+initialize it to **5 once at acceleration entry**, before visiting civilizations.
+This is the smallest integer passing the existing >4 gate when no eligible unit
+has supplied a distance. Do not initialize it again per candidate or civilization:
+every measured distance still overwrites it and retains the specified last-unit
+behavior. This repair can change second-city placement, fallback bonuses, roads
+and later gameplay compared with arbitrary original stack contents; it is not an
+original-game equivalence claim. Original-memory diagnostics may supply their
+observed incoming word separately, but production never requires one.
 
 If no direction was selected:
 
@@ -788,9 +798,9 @@ completed game launch.
   colors, menu indexes, region indexes, owners, counts, strings or capacities
   can instead reach adjacent records/storage. Do not invent a safe default at
   an unrecovered access. File validation and bounded backing belong to F03/F06/X01.
-- Advanced second-city distance has an uninitialized-input obligation even
-  without malformed input. Distinguish that case from deterministic signed
-  wrap, retry-state retention and the observed last-unit-versus-minimum test.
+- Advanced second-city distance uses the documented one-time initializer above.
+  Preserve later last-unit-versus-minimum behavior, deterministic signed wrap and
+  within-call retention; the repair does not replace them with a spacing heuristic.
 - A failed first accelerated city is skipped after its technology grants. A
   failed second city or a unit used immediately afterward has no corresponding
   success guard. Earlier grants, draws, cities, units and improvements survive.
@@ -977,3 +987,28 @@ not as a new requirement to accept unsupported inputs.
   implementation can reject such text before narrowing, with a declared
   narrower acceptance domain; it must still preserve arithmetic for accepted
   executions. Decimal conversion itself follows F03/F01's parsing contract.
+
+
+## Appendix D. Original-data identity evidence
+
+F05-Pikemen was resolved on 2026-11-22.
+
+The user identified the local `codex/classic-menus-civilopedia` branch as the
+original-data source. At commit
+`03b586456fd42f3c55a4533deff65f190eb30753`, its
+`data/gameplay/classic-mge-5.4.0f/rules.json` contains `unit.pikemen`, named Pikemen;
+`classic-compatibility.json` maps that stable ID explicitly to unit slot 6.
+The array's position is not the mapping authority. Both observed file hashes
+match `classic-data-provenance.json`, which identifies conversion of original
+English `RULES.TXT` without executable or reconstruction inputs.
+
+| Input | SHA-256 |
+| --- | --- |
+| `rules.json` | `163cae26da033a8418342bac81e33c9d586edcafedc4549d0935ed02d4e209be` |
+| `classic-compatibility.json` | `eef0748ffebc575f3b2f566287205b9db6b5e224510a617b9b8add089e48e6c4` |
+| `classic-data-provenance.json` | `15641b5a9f5057a167da9f24eaf26b7308e9893d44237bd6b40ea206615e901b` |
+| Original `RULES.TXT`, as recorded by that receipt | `8a6f98b8260405091cd41d574c30bb05aa805c99a1f4357c49a73cf382fc2c03` |
+
+This verifies the data identity, not original-executable acceleration behavior.
+The required slot definition is now stated in the package contract above;
+production and tests do not depend on the other branch or its implementation.

@@ -1813,9 +1813,11 @@
       "review": "One authored rules profile, local human seat, ordinary land movement, one city, console and GUI actions, cancellable end-turn confirmation, required research, classic slot and imported-file replacement, and continued play. Full M3 cross-platform acceptance is pending.",
       "sharedGroups": [
         "M3.land-step-zones",
+        "M3.local-food-turn",
         "M3.local-play-exhausted-step",
         "M3.local-play-round-trip",
-        "M3.local-play-specialist-admission"
+        "M3.local-play-specialist-admission",
+        "M3.local-support-retirement"
       ],
       "status": "partial",
       "sources": [
@@ -1843,6 +1845,442 @@
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.Sqlite.Tests/ExportTests.cs",
         "tools/dotnet/run_local_play_native.py"
+      ]
+    },
+    {
+      "id": "starting-sites",
+      "contract": "F05 \u00a7\u00a77\u20138; V01 \u00a72; U01/C01 nearest queries",
+      "publicSurface": "Incremental start search, session pin/cancel/late hints, captured start scores and nearest entity queries",
+      "review": "Exact relaxation/inset boundaries, AI versus human retry behavior, copied inputs and world lifetime, signed regions, claimant/occupant distinction and later ties. Placement, compensation and accelerated setup remain open.",
+      "sharedGroups": [
+        "F05.start-generated-world-integration",
+        "F05.start-nearest-queries",
+        "F05.start-score-contract",
+        "F05.start-search-coordinates",
+        "F05.start-search-limits-and-hints",
+        "F05.start-search-relaxation",
+        "F05.start-search-session-lifetime"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityQueries.cs",
+        "src/OpenCiv2.Core/StartingSites.cs",
+        "src/OpenCiv2.Core/Units/UnitQueries.cs",
+        "src/OpenCiv2.Session/StartingPositionOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/StartingSiteCases.cs"
+      ]
+    },
+    {
+      "id": "research-policy",
+      "contract": "V03 \u00a7\u00a72\u20134,5,9\u201310; A08 \u00a72; C08 queries",
+      "publicSurface": "Research eligibility/walks/recommendation, classic advance valuation, local pre-city turn-zero grants and building/wonder queries",
+      "review": "Human/AI sampling and filters, trait/region/tribe/race effects, signed custom data, reached cycle failures, repeated prerequisite counting, expiry and stored/active distinctions. Full research/AI/production/maintenance callers remain open.",
+      "sharedGroups": [
+        "A08.research-valuation-expansion-and-race",
+        "A08.research-valuation-state",
+        "A08.research-valuation-tribes-and-knowledge",
+        "C08.building-and-wonder-queries",
+        "V03.recommendation-and-starting-grant",
+        "V03.research-queries-and-walks"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AdvanceValuation.cs",
+        "src/OpenCiv2.Core/City/BuildingQueries.cs",
+        "src/OpenCiv2.Core/Research.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ResearchPolicyCases.cs"
+      ]
+    },
+    {
+      "id": "movement-selection",
+      "contract": "U02 allowance/HP/exhaustion; U04 eligibility and next-unit search",
+      "publicSurface": "Signed/domain-aware movement budgets, sea technology/wonder bonuses, separate selectable/awake predicates and three-pass Waiting selection",
+      "review": "Normal/simplified combat HP effects, sea/air/coast-bound rules, expiry, zero/signed movement, rectangular bounds, active ties and protected/global Waiting clears. Integrated local caller; full movement/orders and transport remain open.",
+      "sharedGroups": [
+        "U02.unit-movement-allowances",
+        "U04.activation-predicates",
+        "U04.activation-waiting-and-ties"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/Units/LandMovement.cs",
+        "src/OpenCiv2.Core/Units/UnitActivation.cs",
+        "src/OpenCiv2.Core/Units/UnitMovement.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitMovementCases.cs"
+      ]
+    },
+    {
+      "id": "unit-creation-revelation",
+      "contract": "U01 creation/stack publication; C01 exact lookup; W03 local knowledge and surroundings; U04 contact order changes",
+      "publicSurface": "UnitCreation; UnitRevelation; MapKnowledge; UnitOrders; StackOperations.Count/MarkSeen; CityQueries.At; authored local creation and ZOC revelation callers",
+      "review": "First-hole capacity, retained damage at simultaneous creation, zero-token placement, nearest-unrestricted home selection, live tutorial markers and failure prefixes. Separate exploration/memory/city/unit channels; ordered adjacent/outer scans, submarine gates, live contact continuation, real A01 goals and U04 orders. Local revelation rejects network mode; V04 audiences, map exchange/Apollo and network synchronization remain separate unfinished children.",
+      "sharedGroups": [
+        "U01.creation-capacity-and-failures",
+        "U01.creation-notices",
+        "U01.creation-placement-and-home",
+        "U01.creation-retained-damage-and-wrap",
+        "U04.shared-contact-orders",
+        "W03.adjacent-cities",
+        "W03.adjacent-detection",
+        "W03.contact-continuation",
+        "W03.knowledge-channels",
+        "W03.outer-observers",
+        "W03.surroundings-footprint",
+        "W03.tile-and-stack-publication"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityQueries.cs",
+        "src/OpenCiv2.Core/Units/LocalVisibility.cs",
+        "src/OpenCiv2.Core/Units/MapKnowledge.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs",
+        "src/OpenCiv2.Core/Units/UnitCreation.cs",
+        "src/OpenCiv2.Core/Units/UnitOrders.cs",
+        "src/OpenCiv2.Core/Units/UnitRevelation.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.City.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RevelationCases.cs",
+        "tests/OpenCiv2.FoundationCases/UnitCreationCases.cs"
+      ]
+    },
+    {
+      "id": "civilization-starting-setup",
+      "contract": "V01 \u00a7\u00a72\u20135 local creation; C06 unit eligibility; F05 \u00a75/\u00a78 generated initialization and compensation",
+      "publicSurface": "CivilizationCreation resumable operation; UnitAvailability; StartingSites.Compensate; GeneratedGameInitialization polling; actual WorldEntry default starting children",
+      "review": "Partial reset retains selected research/future-techs/regions; ordered goal refresh and catch-up; inactive/no-leader returns, leader override/reuse, late hints, admission deadlines and pending conquest. Real U01/W03 placement and C06 eligibility; real V03/A08 starting compensation. Actual W02-to-V01/F05 joins cover preset/custom maps, both topologies, fresh replacement, poll-budget invariance, cancellation and child failure. Nonzero-turn research grants remain required children; full revival diplomacy/elimination, acceleration, desktop generated-game play and end sequences are pending.",
+      "sharedGroups": [
+        "C06.unit-build-eligibility",
+        "F05.generated-civilization-integration",
+        "F05.generated-initialization-lifetime",
+        "F05.starting-compensation",
+        "F05.world-entry-civilization-creation",
+        "V01.creation-admission-and-failure",
+        "V01.creation-catch-up",
+        "V01.creation-early-returns-and-leaders",
+        "V01.creation-hints-and-rejection",
+        "V01.creation-reset",
+        "V01.creation-revival-placement",
+        "V01.creation-search-rescue"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/UnitAvailability.cs",
+        "src/OpenCiv2.Core/CivilizationCreation.cs",
+        "src/OpenCiv2.Core/StartingSites.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Core/State/GameStatus.cs",
+        "src/OpenCiv2.Session/GeneratedGameInitialization.cs",
+        "src/OpenCiv2.Session/NewGameInitialization.cs",
+        "src/OpenCiv2.Session/WorldEntry.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CivilizationCreationCases.cs",
+        "tests/OpenCiv2.FoundationCases/GeneratedInitializationCases.cs"
+      ]
+    },
+    {
+      "id": "city-creation-commodities",
+      "contract": "C01 local creation and radius; C06 initial defender eligibility; C07 survey, scores, ranking and suppression",
+      "publicSurface": "CityCreation; CityArea; Commodities.Refresh; actual constructor used by the local founding command; region/port nearest and coastal body/sea summary queries",
+      "review": "Specification score vector, independent resource/road weights, zero road-base repair, signed rounding, technology/facility/tribe modifiers, ranking ties and partial publication, exceptional-slot collisions, last reciprocal route and unsigned home suppression. Creation covers retained holes, wrapped tokens/counts, real naming/eligibility/commodity/unit children, first-AI-city thresholds, raw Apollo and repeated region63 coast visits. Network creation, general founding/deletion, worker/economy calculation and remaining trade operations remain open.",
+      "sharedGroups": [
+        "C01.coastal-queries",
+        "C01.creation-ai-first-city",
+        "C01.creation-coast-area",
+        "C01.creation-initialization",
+        "C01.creation-limits-wrap",
+        "C01.creation-production-failures",
+        "C01.region-port-queries",
+        "C07.commodity-exceptional-suppression",
+        "C07.commodity-facilities-tribes",
+        "C07.commodity-gates-ranking",
+        "C07.commodity-published-vector",
+        "C07.commodity-survey-road-repair",
+        "C07.commodity-technology-signed-scores"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityArea.cs",
+        "src/OpenCiv2.Core/City/CityCreation.cs",
+        "src/OpenCiv2.Core/City/CityQueries.cs",
+        "src/OpenCiv2.Core/City/Commodities.cs",
+        "src/OpenCiv2.Core/City/LocalCityEconomy.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.City.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityCreationCases.cs",
+        "tests/OpenCiv2.FoundationCases/CommodityCases.cs"
+      ]
+    },
+    {
+      "id": "accelerated-starts",
+      "contract": "F05 \u00a7\u00a79\u201310 and documented distance initializer; V03 turn-zero grant/completion; U03 uniform reverse flood; W01 peace radius",
+      "publicSurface": "AcceleratedStarts; Research.GrantStarting; GeneratedGameAcceleration; WorldEntry default acceleration; GenerationConnectivity.UniformDirection and world-owned Paths; TerritoryQueries.PeaceOwner",
+      "review": "Real research/city/unit/commodity/facility/knowledge/path children. Tests cover early/advanced/fallback packages, captured starts, last-distance retention, identity branches, development, blocked road edits, first-city/defender failure prefixes, generated maps and complete WorldEntry joins, fresh replay and cancellation. Classic Pikemen is fixed slot6 from F05 Appendix D original-data mapping; renamed-unit regression verifies the identity branch. General goto, economy/turn processing and generated desktop gameplay remain open.",
+      "sharedGroups": [
+        "F05.accelerated-advanced-packages",
+        "F05.accelerated-early-package",
+        "F05.accelerated-failure-prefixes",
+        "F05.accelerated-identities-research",
+        "F05.accelerated-last-unit-retention",
+        "F05.accelerated-roads-peace",
+        "F05.accelerated-tile-development",
+        "F05.generated-acceleration-integration",
+        "F05.generated-acceleration-lifetime",
+        "F05.world-entry-acceleration",
+        "V03.starting-grant-city-domains"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/AcceleratedStarts.cs",
+        "src/OpenCiv2.Core/GenerationPaths.cs",
+        "src/OpenCiv2.Core/MapGeneration.cs",
+        "src/OpenCiv2.Core/Research.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Core/TerritoryQueries.cs",
+        "src/OpenCiv2.Session/GeneratedGameAcceleration.cs",
+        "src/OpenCiv2.Session/GeneratedGameInitialization.cs",
+        "src/OpenCiv2.Session/WorldEntry.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AccelerationCases.cs"
+      ]
+    },
+    {
+      "id": "city-workers",
+      "contract": "C02 availability, tile yields, allocation and nominal specialist operations; W04 irrigation source; W05 AI pollution visits; C05 food requirement",
+      "publicSurface": "CityWorking; CityCalculationWorkspace; TerrainSources; shared worker calculation in LocalCityEconomy",
+      "review": "Real U01 stacks, W01 resource/ownership, C08 facilities/wonders, V03 knowledge and W04 water predicate. Signed rules, ordered allocation, previews, jobs, pollution, retained assignments, AI cadence, support inputs and specialist modulo are tested. CityEconomy now supplies the real capital/support/economy/mood parent. Negative specialist indices/kinds are outside this API domain; manual UI continuation and network synchronization remain separate work.",
+      "sharedGroups": [
+        "C02.availability-pollution-visits",
+        "C02.failure-isolation",
+        "C02.specialist-domains",
+        "C02.terrain-suggestions-water",
+        "C02.tile-resources-signed-rules",
+        "C02.tile-yield-modifiers",
+        "C02.worker-ai-cadence-support",
+        "C02.worker-greedy-stages",
+        "C02.worker-ties-retention"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/CityCalculationWorkspace.cs",
+        "src/OpenCiv2.Core/City/CityWorking.Assignment.cs",
+        "src/OpenCiv2.Core/City/CityWorking.Tiles.cs",
+        "src/OpenCiv2.Core/City/LocalCityEconomy.cs",
+        "src/OpenCiv2.Core/TerrainSources.cs"
+      ],
+      "status": "partial",
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityWorkingCases.cs"
+      ]
+    },
+    {
+      "id": "city-recalculation",
+      "contract": "C03 complete local recalculation, C04 five mood stages, C05 support/box factors and growth-facility query, U03 road connection, W05 pollution intensity",
+      "publicSurface": "CityEconomy; CityHappiness; CitySupport; RoadConnections; LocalCityEconomy shared parent",
+      "review": "Actual availability/overlap/support/assignment/food routes/specialists/production/pollution/waste/commodity/trade/distribution/mood parent, with stored partner totals and retained path/cache/workspace state. Tests include published vectors, signed/wrapped custom rules, AI factor boundaries, low-five rank selector, raw home255, scalar/failure prefixes, generated all-city calculation and fresh replay. Existing desktop founding/turn/load caller now uses the full calculation. City-turn growth, starvation, disorder/celebration, payments, production and general F04 scheduling remain separate work; no original-game comparison evidence is implied.",
+      "sharedGroups": [
+        "C03.capital-raw-overlap",
+        "C03.capitalization-publication",
+        "C03.distribution-facilities-wonders",
+        "C03.distribution-rates-specialists",
+        "C03.failure-prefixes",
+        "C03.food-route-multiplicity",
+        "C03.full-calculation-cache",
+        "C03.generated-calculation-integration",
+        "C03.loss-examples",
+        "C03.production-pollution-waste",
+        "C03.recurring-trade-snapshots",
+        "C04.mood-normalization",
+        "C04.mood-stages-military",
+        "C05.box-factors",
+        "C05.growth-facility-order",
+        "C05.military-membership",
+        "C05.support-charge-domains",
+        "U03.road-connection-semantics"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/CityCalculationWorkspace.cs",
+        "src/OpenCiv2.Core/City/CityEconomy.Trade.cs",
+        "src/OpenCiv2.Core/City/CityEconomy.cs",
+        "src/OpenCiv2.Core/City/CityHappiness.cs",
+        "src/OpenCiv2.Core/City/CitySupport.cs",
+        "src/OpenCiv2.Core/City/LocalCityEconomy.cs",
+        "src/OpenCiv2.Core/GenerationPaths.cs",
+        "src/OpenCiv2.Core/RoadConnections.cs"
+      ],
+      "status": "partial",
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityDistributionCases.cs",
+        "tests/OpenCiv2.FoundationCases/CityEconomyCases.cs",
+        "tests/OpenCiv2.FoundationCases/CitySupportCases.cs"
+      ]
+    },
+    {
+      "id": "unit-cargo-loss",
+      "contract": "U01 sections 4, 6 and 7: ships-first, cargo selection, lifted groups and stack/cargo-aware deletion",
+      "publicSurface": "StackOperations.ShipsFirst; UnitStaging; UnitOrders.SetSleep; UnitCargo; UnitLoss",
+      "review": "Uses actual stack placement, validation and basic deletion; authored specification cases cover stable ordering, mixed owners, preexisting staging groups, human/AI priorities, aircraft/submarines, negative capacity, repeated mark queries, whole-stack loss and retained failure effects. Local operations are implemented; transport callbacks remain explicit services and remote request orchestration, V01 elimination, full U05 movement and city-turn callers remain separate work. No original-game capture evidence is implied.",
+      "sharedGroups": [
+        "U01.cargo-ai-regional-policy",
+        "U01.cargo-aircraft-signed-capacity",
+        "U01.cargo-failure-authority",
+        "U01.cargo-human-priority",
+        "U01.cargo-lift-repeat-queries",
+        "U01.cargo-loss-sea-land-staging",
+        "U01.ships-first-staging"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/State/Entities.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs",
+        "src/OpenCiv2.Core/Units/UnitCargo.cs",
+        "src/OpenCiv2.Core/Units/UnitLoss.cs",
+        "src/OpenCiv2.Core/Units/UnitOrders.cs"
+      ],
+      "status": "partial",
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CargoCases.cs"
+      ]
+    },
+    {
+      "id": "city-route-mutation",
+      "contract": "C07 directional route removal, slot writing, insertion and replacement with actual commodity and U03 children",
+      "publicSurface": "TradeRoutes",
+      "review": "Preserves signed count iteration, trailing payload, narrowing, pre-clamp duplicate tests, spare-capacity food routes, first minimum tie, connection/airport/owner valuation and raw destination comparison. The X01/C07 uninitialized replacement-index repair retains existing routes. Invalid reads/writes stop with earlier changes retained. Caravan delivery/payment/cargo selection and city deletion/starvation callers remain pending.",
+      "sharedGroups": [
+        "C07.route-append-duplicates",
+        "C07.route-failure-prefixes",
+        "C07.route-remove-write",
+        "C07.route-replacement-repair"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/TradeRoutes.cs"
+      ],
+      "status": "partial",
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/TradeRouteCases.cs"
+      ]
+    },
+    {
+      "id": "city-unit-retirement",
+      "contract": "C05 unsupported-unit and affordable disorder retirement with actual C05 support/U01 loss; desktop turn caller",
+      "publicSurface": "CityRetirement; LocalPlayCommands turn support retirement",
+      "review": "Captures owner/government, charges in slot order, selects by weighted distance without owner filtering, distinguishes shortage from affordable AI retirement, preserves fortress/city/role protections and restarts only after actual loss. Uses actual cargo-aware and basic deletion children. Tests include foreign/free candidates, ties, cargo, coordination scores, signed/raw-home domains, failure prefixes and loaded desktop-profile shortage/save/resume. General F04 and V01 elimination remain pending.",
+      "sharedGroups": [
+        "C05.retirement-affordable-policy",
+        "C05.retirement-failure-prefixes",
+        "C05.retirement-foreign-restart",
+        "C05.retirement-free-cargo",
+        "C05.retirement-protection-domains",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-support-retirement"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/CityRetirement.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "status": "partial",
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityRetirementCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+      ]
+    },
+    {
+      "id": "city-removal",
+      "contract": "C01 local city deletion with actual U01 support/garrison/loss, C07 route removal and C01 radius repair",
+      "publicSurface": "CityRemoval; StackOperations.CountRole",
+      "review": "Descending supported-unit scan restarts after real cargo-aware destruction; fixed Partisans and lone AI defenders retain their distinct home rules. Routes/wonders, one-tail decrement, retained payload, radius fertility/claims, nearby visibility union and ordered reapplication are tested with raw-home255 and failure prefixes. Views close/refresh through the supplied semantic notification; network deletion and V01 elimination remain separate operations. This is not full C01 or generated-game acceptance.",
+      "sharedGroups": [
+        "C01.removal-failure-prefixes",
+        "C01.removal-raw-homes-guards",
+        "C01.removal-routes-wonders",
+        "C01.removal-spatial-visibility",
+        "C01.removal-supported-garrisons"
+      ],
+      "sources": [
+        "src/OpenCiv2.Core/City/CityRemoval.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs"
+      ],
+      "status": "partial",
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityRemovalCases.cs"
+      ]
+    },
+    {
+      "id": "city-food-turn",
+      "contract": "C05 starvation, ordinary growth/refill and post-C03 food accumulation; C01/U01/C07 actual children; bounded desktop caller",
+      "publicSurface": "CityFood.Run/Accumulate; ICityFoodContinuations; ICityFoodEffects; LocalPlayCommands food phase",
+      "review": "Uses incoming route workspace before recalculation, ascending raw-home settler selection without owner filtering, known-to-human deletion gate, ordered food-route cancellation, actual city/cargo removal, fixed Pyramids and raw-rule granary refill. Tests cover blocked growth, AI factors, signed wrap, delayed accumulation, warnings, real C03 joins and direct/console save/resume. Elimination and AI request99 are explicit required continuation boundaries, not implemented policies. The authored profile cannot reach last-city famine with its admitted center yields and absence of food routes/homed settlers; general V01/end-sequence integration is pending. Presentation owns tutorial/preferences without emulating native hint bits. Full F04 and generated-game acceptance remain pending.",
+      "sharedGroups": [
+        "C05.famine-cargo-raw-home",
+        "C05.famine-city-removal",
+        "C05.famine-routes-workspace",
+        "C05.famine-selection-visibility",
+        "C05.food-accumulation-warning",
+        "C05.food-ai-factors-production",
+        "C05.food-growth-blocked-refill",
+        "C05.food-recalculation-boundaries",
+        "C05.food-wonders-scalar-wrap",
+        "M3.land-step-zones",
+        "M3.local-food-turn",
+        "M3.local-play-exhausted-step",
+        "M3.local-play-round-trip",
+        "M3.local-play-specialist-admission",
+        "M3.local-support-retirement"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityFood.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityFoodCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+      ]
+    },
+    {
+      "id": "civilization-elimination",
+      "status": "partial",
+      "contract": "V01 section6 local last-city check; V06 section2 escape/capture; V07 section8 reset/loss; actual C05 starvation integration",
+      "publicSurface": "CivilizationElimination.Check; SpyEscape.Try/Caught; SpaceshipLifecycle.Reset/Lost; desktop food/retirement deletion adapter",
+      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. Espionage incidents and nonzero-turn catch-up grants remain required owning services; those policies are not supplied by these boundary fixtures. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
+      "sources": [
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/SpaceshipLifecycle.cs",
+        "src/OpenCiv2.Core/Units/SpyEscape.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "sharedGroups": [
+        "C05.famine-elimination-integration",
+        "V01.elimination-history-spaceship",
+        "V01.elimination-hotseat-retention",
+        "V01.elimination-last-human-recursion",
+        "V01.elimination-restart-exploration",
+        "V01.elimination-survivor-spy",
+        "V06.capture-ordinary-failure",
+        "V06.escape-odds-promotion",
+        "V06.escape-relocation-gates"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/EliminationCases.cs"
       ]
     }
   ]

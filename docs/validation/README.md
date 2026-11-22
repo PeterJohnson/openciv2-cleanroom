@@ -7,8 +7,9 @@ and whole-game compatibility. Build and test commands are in the
 
 **M2 development is closed with tracked deferrals.** The
 [closeout review](../m2-closeout.md) reconciles the Linux, Mac, Windows and browser
-records and assigns M2-F01–F08 to follow-up work. M3 is the main implementation
-workstream. Original full performance/platform acceptance remains open; the
+records and assigns M2-F01–F08 to follow-up work. The current implementation
+workstream is [M4 desktop](../m4-desktop.md), following the bounded Linux M3 game.
+Original full performance/platform acceptance remains open; the
 dated failures and skips below are preserved, and CPU remains the default.
 The combined Linux checkout passes native tests and CPU/GPU matrices. Its shared
 WASM matrix hit an allocation failure; a logging-only diagnostic rerun passed.

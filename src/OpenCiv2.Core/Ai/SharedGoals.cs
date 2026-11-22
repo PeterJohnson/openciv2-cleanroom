@@ -2,6 +2,7 @@ using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
+using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Core.Ai;
 
@@ -11,6 +12,13 @@ public interface IUnitMovementQueries
     bool CanAct(UnitSlot unit);
 
     int RemainingMoves(UnitSlot unit);
+}
+
+internal sealed class MovementGoalQueries(GameState world, RuleTables rules) : IUnitMovementQueries
+{
+    public bool CanAct(UnitSlot unit) => UnitActivation.AwakeWithMoves(world, rules, unit.Value);
+
+    public int RemainingMoves(UnitSlot unit) => UnitMovement.Left(world, rules, world.Entities.Units.At(unit));
 }
 /// <summary>A01 §2 engine operations. Session authority and client admission belong to the caller.</summary>
 public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovementQueries queries)

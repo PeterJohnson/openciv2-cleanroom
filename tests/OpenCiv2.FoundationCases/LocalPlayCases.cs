@@ -89,6 +89,41 @@ public static partial class FoundationSuite
         Equal(city.SpecialistKinds, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Cities.Single().SpecialistKinds);
     }
 
+    private static void LocalPlaySupportRetirement()
+    {
+        using var game = new LocalGame();
+        var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+        RunLocal(game, false, "found support city", LocalPlayCommands.Found,
+            new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
+        var stored = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+        var prototype = stored.Units.Single(unit => unit.Token.Occupied);
+        var units = Enumerable.Range(0, 12).Select(i => prototype with
+        {
+            Token = new((uint)(100 + i)),
+            Home = new(0),
+            Type = new(4),
+            Previous = (short)(i - 1),
+            Next = (short)(i == 11 ? -1 : i + 1)
+        }).ToArray();
+        stored = stored with { Units = new(units), Globals = stored.Globals with { UnitEnd = 12, ActiveUnit = 0 } };
+        Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(stored)));
+        Equal(12, game.Player.OwnUnits().Records.Count);
+        var result = EndLocalTurn(game, false, 2);
+        var retired = result.Committed.Where(e => e.Name == "unit.unsupported")
+            .Select(e => ((CommandValue.Unit)CommandDescriptor.Value(e.Values, "unit")).Value.Slot.Value).ToArray();
+        Equal(true, retired.Length > 0);
+        Sequence(Enumerable.Range(0, retired.Length).Select(i => (ushort)i), retired); // Equal-distance candidates retire in slot order.
+        Equal(12 - retired.Length, game.Player.OwnUnits().Records.Count);
+        var remaining = game.Player.OwnUnits().Records.Select(unit => (unit.Slot, unit.Position, unit.Type, unit.Home)).ToArray();
+        var before = game.Player.ObserveLocalPlay()!;
+        var save = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(save));
+        Sequence(remaining, game.Player.OwnUnits().Records.Select(unit => (unit.Slot, unit.Position, unit.Type, unit.Home)));
+        var after = game.Player.ObserveLocalPlay()!;
+        Equal(before.City!.ShieldSupport, after.City!.ShieldSupport); Equal(before.Gold, after.Gold);
+        Equal(before.ResearchProgress, after.ResearchProgress); Equal(before.City.Food, after.City.Food);
+        EndLocalTurn(game, false, 3);
+    }
+
     private static void LocalPlayExhaustedStep()
     {
         foreach (bool console in new[] { false, true })
@@ -104,6 +139,66 @@ public static partial class FoundationSuite
             RunLocal(game, console, $"unit.move unit={target} direction=1", LocalPlayCommands.Move,
                 unit, new("direction", new CommandValue.Integer(1)));
             ExhaustOutrider(game, console, pioneer, rider);
+        }
+    }
+
+    private static void LocalPlayFoodTurn()
+    {
+        foreach (bool console in new[] { false, true })
+        {
+            using var game = new LocalGame();
+            var pioneer = game.Player.OwnUnits().Records.Single(u => u.Type.Value == 0);
+            RunLocal(game, false, "found food city", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
+            var original = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+            foreach (var (size, stock, expectedSize, effect) in new[]
+            {
+                (1, 12, 2, "city.population"), (2, -1, 1, "city.famine"), (8, 54, 8, "city.growth_halted")
+            })
+            {
+                var civilizations = original.Civilizations.ToArray();
+                civilizations[1] = civilizations[1] with { TotalCitySize = (short)size };
+                var inputCity = original.Cities.Single() with { Size = (sbyte)size, FoodBox = (short)stock };
+                if (stock < 0)
+                {
+                    // Keep a real deficit through the load-time C03 recalculation: only the center
+                    // works, and both citizens are entertainers. Sufficient food would repair stock to0.
+                    var specialists = new SpecialistArray<SpecialistKind>();
+                    specialists[0] = specialists[1] = SpecialistKind.Entertainer;
+                    inputCity = inputCity with
+                    {
+                        WorkedTiles = StateConversion.EncodeCityWork(default(CityWorkSet).With(20), specialists: (byte)size),
+                        SpecialistKinds = StateConversion.EncodeSpecialists(specialists)
+                    };
+                }
+                var stored = original with
+                {
+                    Civilizations = new(civilizations),
+                    Cities = new([inputCity])
+                };
+                Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(stored)));
+                var result = EndLocalTurn(game, console, 2);
+                if (!result.Committed.Any(e => e.Name == effect))
+                {
+                    throw new InvalidOperationException($"Missing {effect} for size {size}, stock {stock}; effects: {string.Join(',', result.Committed.Select(e => e.Name))}");
+                }
+                Equal((sbyte)expectedSize, game.Player.OwnCities().Records.Single().Size);
+                var city = ClassicFiles.DecodeStoredSave(game.SaveClassic()).Cities.Single();
+                // Every branch resets stock before the real C03 collection; no granary in this authored profile.
+                Equal((short)(city.TotalFood - expectedSize * 2), city.FoodBox);
+                var saved = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(saved));
+                Equal(city.FoodBox, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Cities.Single().FoodBox);
+                Equal((sbyte)expectedSize, game.Player.OwnCities().Records.Single().Size);
+                EndLocalTurn(game, console, 3);
+            }
+            var removal = original with { Cities = new([original.Cities.Single() with { FoodBox = -1 }]) };
+            Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(removal)));
+            // Every admitted center feeds size1 and there are no food routes or homed settlers.
+            // C02 repairs this imported negative stock before the turn, without a false famine.
+            Equal((short)0, ClassicFiles.DecodeStoredSave(game.SaveClassic()).Cities.Single().FoodBox);
+            var repaired = EndLocalTurn(game, console, 2);
+            Equal(false, repaired.Committed.Any(e => e.Name == "city.famine"));
+            Equal((sbyte)1, game.Player.OwnCities().Records.Single().Size);
         }
     }
 

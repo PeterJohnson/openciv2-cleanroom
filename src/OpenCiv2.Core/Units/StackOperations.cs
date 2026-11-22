@@ -1,5 +1,6 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
 
 namespace OpenCiv2.Core.Units;
@@ -43,6 +44,50 @@ public sealed class StackOperations
     public int FirstForOwnerAt(int owner, MapPoint position) => local.FirstForOwnerAt(owner, position);
 
     public int FirstAt(MapPoint position) => local.FirstAt(position);
+
+    /// <summary>U01 count aggregate, including validated traversal and the sum cutoff.</summary>
+    public int Count(int slot)
+    {
+        int count = 0;
+        for (int current = First(slot); current >= 0 && count < EntityLimits.Units; current = Next(current))
+        {
+            local.Step();
+            ++count;
+        }
+        return count;
+    }
+
+    /// <summary>U01 §2: signed role equality across the complete validated chain, without aggregate sum cutoff.</summary>
+    public int CountRole(int slot, int role, RuleTables rules)
+    {
+        int count = 0;
+        for (int current = First(slot); current >= 0; current = Next(current))
+        {
+            local.Step();
+            if (unchecked((sbyte)rules.Units[local.BackedUnit(current).Type.Value].Role) == role)
+            {
+                count = unchecked(count + 1);
+            }
+        }
+        return count;
+    }
+
+    /// <summary>U01 stack publication excludes each member's own owner and preserves prior knowledge.</summary>
+    public bool MarkSeen(int slot, int observer)
+    {
+        bool changed = false;
+        for (int current = First(slot); current >= 0; current = Next(current))
+        {
+            local.Step();
+            ref var unit = ref local.BackedUnit(current);
+            if (observer >= 0 && unchecked((sbyte)unit.Owner.Value) != observer)
+            {
+                changed |= !unit.Visibility.Contains(observer);
+                unit.Visibility = unit.Visibility.With(observer);
+            }
+        }
+        return changed;
+    }
 
     private ref bool Active(PlacementOperation operation)
     {
@@ -155,5 +200,36 @@ public sealed class StackOperations
             current = savedNext;
         }
         Synchronize(sync);
+    }
+
+    /// <summary>U01 §4: two relocation passes preserve ship order, including preexisting staging groups.</summary>
+    public void ShipsFirst(int slot, RuleTables rules, bool sync)
+    {
+        if (slot < 0)
+        {
+            return;
+        }
+        var position = local.BackedUnit(slot).Position;
+        int lastShip = -1;
+        for (int current = First(slot); current >= 0;)
+        {
+            int next = Next(current);
+            ref var unit = ref local.BackedUnit(current);
+            if (rules.Units[unit.Type.Value].Domain == RuleDomain.Sea)
+            {
+                Relocate(current, UnitStaging.Ships(unchecked((sbyte)unit.Owner.Value)), sync);
+                lastShip = current;
+            }
+            current = next;
+        }
+        if (lastShip >= 0)
+        {
+            for (int current = First(lastShip); current >= 0;)
+            {
+                int next = Next(current);
+                Relocate(current, position, sync);
+                current = next;
+            }
+        }
     }
 }

@@ -18,10 +18,11 @@ public sealed record WorldEntryServices(
     IPlayerSetupInteraction Players,
     Action StopMenuSound,
     Action<bool>? GenerateWorld,
-    NewGameServices Initialize,
-    Action<int> Accelerate,
+    NewGameServices? Initialize,
+    Action<int>? Accelerate,
     Action<CivilizationSlot, string> Introduce,
-    WorldGenerationOptions? Generation = null)
+    WorldGenerationOptions? Generation = null,
+    AccelerationOptions? Acceleration = null)
 {
     internal void Validate(NewWorldChoice choice)
     {
@@ -32,7 +33,6 @@ public sealed record WorldEntryServices(
         {
             throw new ArgumentException("World entry requires generation options or a supplied generation child");
         }
-        ArgumentNullException.ThrowIfNull(Accelerate);
         ArgumentNullException.ThrowIfNull(Introduce);
         if (choice == NewWorldChoice.Premade)
         {
@@ -56,8 +56,7 @@ public sealed record WorldEntryServices(
         }
 
         ArgumentNullException.ThrowIfNull(Players);
-        ArgumentNullException.ThrowIfNull(Initialize);
-        Initialize.Validate();
+        Initialize?.Validate();
     }
 }
 public static class WorldEntry
@@ -90,8 +89,10 @@ public static class WorldEntry
     }
 
     /// <summary>F05 §2. Validate selected services, cross the fresh-game boundary, then compose setup.
-    /// Generation uses W02 with explicit options or a supplied child. V01/balancing/acceleration/presentation
-    /// remain explicit children; no session is admitted here.</summary>
+    /// Generation uses W02 with explicit options or a supplied child. A null Initialize selects actual local
+    /// V01/F05 starting operations. A null Accelerate selects actual acceleration with its naming content.
+    /// No client session is admitted here. Cooperative hosts can use the generated
+    /// initialization/acceleration operations directly for cancellable polling.</summary>
     public static bool Enter(
         SessionRuntime runtime,
         ref StartingPositions starts,
@@ -185,11 +186,31 @@ public static class WorldEntry
                 WorldGeneration.Generate(runtime, ref starts, random, call + "/generation", services.Generation!,
                     source != WorldSource.Generated, compatibility);
             }
-            NewGameInitialization.Initialize(runtime, random, call + "/initialize", services.Initialize);
+            if (services.Initialize is { } initialization)
+            {
+                NewGameInitialization.Initialize(runtime, random, call + "/initialize", initialization);
+            }
+            else
+            {
+                using var initializationOperation = new GeneratedGameInitialization(runtime, starts, random, call + "/initialize");
+                while (!initializationOperation.Poll(256))
+                { }
+            }
             if (players.Acceleration != 0)
             {
                 Publish();
-                services.Accelerate(players.Acceleration);
+                if (services.Accelerate is { } accelerate)
+                {
+                    accelerate(players.Acceleration);
+                }
+                else
+                {
+                    using var acceleration = new GeneratedGameAcceleration(runtime, random, call + "/accelerate",
+                        players.Acceleration - 1, services.Acceleration
+                            ?? throw new InvalidOperationException("Generated acceleration requires its naming content"));
+                    while (!acceleration.Poll())
+                    { }
+                }
             }
             int player = runtime.World.Globals.PlayerCiv;
             if (player is < 1 or >= EntityLimits.Civilizations)

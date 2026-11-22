@@ -254,6 +254,7 @@ public sealed class UnitStackState
 {
     public int Suppression;
     public bool AnimationActive, DetachActive, AttachActive, RelocateActive, BottomActive;
+    public bool CargoActive, LiftActive;
     public int DetachReply, AttachReply, RelocateReply, BottomReply;
 }
 /// <summary>
@@ -262,6 +263,7 @@ public sealed class UnitStackState
 public sealed class UnitDeletionState
 {
     public bool Active;
+    public bool CargoActive, DestroyActive;
     public int Reply;
 }
 /// <summary>

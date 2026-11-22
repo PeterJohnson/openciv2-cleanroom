@@ -136,7 +136,7 @@ public sealed class LocalGame : IDisposable
             // F04 ordinary resume skips global reset and upkeep. Rebuild only unsaved city outputs.
             if (world.Entities.Cities.Live(new(0)))
             {
-                LocalCityEconomy.Recalculate(world, runtime.Process.Rules.Definitions, new(0));
+                LocalCityEconomy.Recalculate(world, runtime.Process.Rules, new(0));
             }
 
             LocalPlayCommands.SelectReadyUnit(world, runtime.Process.Rules.Definitions);

@@ -13,7 +13,7 @@ establish that its entire family has been implemented or validated.
 | M1 | Finite portable foundations, classic codecs, content/inspection CLI, session ownership and bounded checkpoints | Implemented; current test families and exclusions are in the coverage and validation guides |
 | M2 | Map renderer, Avalonia interaction, platform menus/storage and content installation | Development closed with explicit M2-F01–F08 deferrals; full performance/platform acceptance remains open. See the [closeout](m2-closeout.md). |
 | M3 | First playable local game slice | Alder Valley delivers the bounded Linux playable loop. Full cross-platform M3 acceptance is pending. |
-| M4 | Complete single-player mechanics, AI and expanded automation | Planned |
+| M4 | Complete single-player mechanics, AI and expanded automation | In progress for desktop; browser and cross-platform work deferred. See the [desktop work record](m4-desktop.md). |
 | M5 | Scenarios, editors, complete UI and hotseat | Planned |
 | M6 | Original-peer multiplayer and browser transport | Planned |
 | M7 | Complete conformance evidence and distributable releases | Planned |
@@ -32,9 +32,10 @@ The [source guide](code-guide.md) maps existing projects and APIs. The
 and tests. The root solution builds headless libraries and the CLI; optional
 solutions build Avalonia, automation, SQLite export and performance probes.
 
-The application host exposes one bounded production command over an authored
-world. It proves the scoped-client, console and asynchronous interaction path.
-It is not a playable game or a fully qualified cross-platform UI. M2's renderer
+The application host exposes the bounded Alder Valley local game as well as the
+authored Riverbend interaction fixture. These use scoped clients, the console
+and asynchronous interactions. Alder Valley is a playable prototype; complete
+single-player mechanics and platform qualification remain open. M2's renderer
 and platform implementation is closed under the [explicit handoff](m2-closeout.md),
 with its failed/pending acceptance gates retained. The optional Lua-CSharp adapter
 exercises the same session APIs with explicit resource and authority limits.
@@ -114,7 +115,7 @@ Owners: P01–P05 foundations, P10 service boundary; F03/P03 content lookup.
 
 **Development closed with tracked deferrals.** The [M2 closeout](m2-closeout.md)
 records the accepted Mac/Windows review, resolved findings, delivered scope and
-M2-F01–F08 follow-ups. M3 is the main implementation workstream. The functional,
+M2-F01–F08 follow-ups. M4 desktop is the current implementation workstream. The functional,
 performance and full-acceptance criteria below remain technical obligations;
 the user-approved closeout changes milestone scheduling, not pass/fail results.
 The following slice history retains its original evidence boundaries.
@@ -485,6 +486,12 @@ inputs without leaking an earlier game's view or duplicating a completed action.
 
 Owners: all F/W/U/C/V/A mechanics, with S02 and presentation hooks integrated
 as their callers require them.
+
+The current workstream targets desktop, with execution on the available Linux
+host. Browser integration/WASM execution and cross-platform qualification are
+deferred; this does not reduce the mechanics or AI scope below. The
+[desktop work record](m4-desktop.md) tracks delivered operations, remaining
+dependencies and acceptance evidence without claiming complete M4 from leaf tests.
 
 Implement in dependency groups, with real parent/child integration in each:
 

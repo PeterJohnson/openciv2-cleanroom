@@ -22,5 +22,8 @@ public readonly record struct CivilizationSet
     public static CivilizationSet Only(int civilization) => new CivilizationSet().With(civilization);
 
     public CivilizationSet Union(CivilizationSet other) => new((byte)(members | other.members));
+
+    /// <summary>Whether the two sets share at least one civilization, including the barbarian seat.</summary>
+    public bool Intersects(CivilizationSet other) => (members & other.members) != 0;
     public CivilizationSet Except(CivilizationSet other) => new((byte)(members & ~other.members));
 }

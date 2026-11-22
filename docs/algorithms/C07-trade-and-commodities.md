@@ -146,7 +146,7 @@ It does not draw random numbers. On entry to the active path:
    ascending, clear its demand score, copy that zero to its supply score, and
    initialize both ranking identities to that index. The two score arrays are
    shared state; `roadBase` is not among the initialized counters.
-5. Visit W01 radius A indices 0..20 in order, using captured center coordinates.
+5. Visit W01 city-radius B indices 0..20 in order, using captured center coordinates.
    Wrap x once, then test bounds. For an in-bounds tile, read its terrain and
    increment that terrain's count. Query its resource; any nonzero resource
    adds **three more** to the already retained terrain count. Then query the

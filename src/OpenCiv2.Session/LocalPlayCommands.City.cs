@@ -58,52 +58,20 @@ public static partial class LocalPlayCommands
             return new(CommandStatus.Failed, Code: "founding_not_available");
         }
 
-        // One-city profile. C01 creates the city before U01 erases the founder, so deletion
-        // does not enter its last-settler civilization check.
-        const int index = 0;
-        CitySlot slot = new(index);
-        var cities = world.Entities.Cities;
-        cities.SetEnd(1);
-        world.Globals.CityEnd = 1;
-        var token = context.Process.Tokens.AssignCity();
-        ref var city = ref cities.At(slot);
-        city = new()
+        // The bounded profile supplies an accepted player name and has no default-name catalog.
+        // C01 creates before U01 erases the founder, avoiding the last-settler elimination branch.
+        var stacks = new StackOperations(world, new(100000, 64));
+        var units = new UnitCreation(world, context.Process, stacks, new LocalCreation(world, rules, stacks));
+        var creator = new CityCreation(world, context.Process, new NameCatalog([], StringComparer.OrdinalIgnoreCase.Equals), units,
+            () => throw new InvalidOperationException("City capacity cannot be reached in the one-city profile"));
+        if (creator.Create(unit.Owner, point) is not { } slot)
         {
-            Token = token,
-            Position = point,
-            Owner = unit.Owner,
-            Founder = unit.Owner,
-            Size = 1,
-            Name = name,
-            Production = LocalGameRules.Guard,
-            Improvements = default(ImprovementSet).With(LocalGameRules.Palace),
-            Flags = new() { TradeDirty = true }
-        };
-        civ.CityCount = 1;
-        civ.LastCityTurn = world.Globals.Turn;
-        civ.CapitalX = (short)point.X;
-        civ.TotalCitySize = 1;
-        ++civ.UnitsInProduction[LocalGameRules.Guard];
-
-        tile.Features = (tile.Features | MapFeatures.CitySite) & ~MapFeatures.Fortification;
-        LocalCityEconomy.ClaimRadius(world, city);
-        for (int i = 0; i <= 8; i++)
-        {
-            var adjacent = i == 8 ? point : LocalCityEconomy.Position(world, point, i);
-            if (!map.Geometry.Canonical(adjacent))
-            {
-                continue;
-            }
-
-            var neighbor = map.TileAt(adjacent);
-            city.Flags.HydroPossible |= neighbor.River || neighbor.Terrain == Terrain.Mountains;
-            if (neighbor.Ocean)
-            {
-                city.Flags.OceanAccess |= map.Regions[neighbor.Region].Water > 1
-                    && (neighbor.Region < 63 || city.Flags.Coastal);
-                city.Flags.Coastal = true;
-            }
+            return new(CommandStatus.Failed, Code: "city_capacity");
         }
+        ref var city = ref world.Entities.Cities.At(slot);
+        city.Name = name;
+        var token = city.Token;
+        civ.TotalCitySize = 1;
 
         EraseLocalUnit(world, rules, target.Slot);
         tile.Features &= ~(MapFeatures.Irrigation | MapFeatures.Mine | MapFeatures.Road | MapFeatures.Railroad);
@@ -113,7 +81,7 @@ public static partial class LocalPlayCommands
         }
 
         LocalCityEconomy.RememberCity(world, ref city);
-        LocalCityEconomy.Recalculate(world, rules, slot);
+        LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
         SelectReadyUnit(world, rules);
         return Commit(context, "city.founded", new NamedValue("city", new CommandValue.City(new(slot, token))));
     }
@@ -129,7 +97,7 @@ public static partial class LocalPlayCommands
             return new(CommandStatus.Failed, Code: "worker_tile_not_available");
         }
 
-        LocalCityEconomy.Toggle(world, context.Process.Rules.Definitions, target.Slot, index);
+        LocalCityEconomy.Toggle(world, context.Process.Rules, target.Slot, index);
         return Commit(context, "city.workers", new NamedValue("city", new CommandValue.City(target)));
     }
 
@@ -156,37 +124,38 @@ public static partial class LocalPlayCommands
 
     private static UnitSlot? CreateUnit(GameState world, ProcessContext process, int type, MapPoint position, CitySlot? home)
     {
-        CivilizationSlot owner = new(LocalGameRules.Owner);
-        var pool = world.Entities.Units;
-        ref var civ = ref world.Civilizations[owner.Value];
-        if (EntityAllocation.ReserveUnit(pool, owner, civ.MilitaryCount, world.Globals.HumanPlayers) is not { } slot)
+        var stacks = new StackOperations(world, new(100000, 64));
+        var creator = new UnitCreation(world, process, stacks, new LocalCreation(world, process.Rules.Definitions, stacks));
+        var slot = creator.Create(new((byte)type), new(LocalGameRules.Owner), position);
+        if (slot is { } created)
         {
-            return null;
+            world.Entities.Units.At(created).Home = home;
         }
-
-        var rule = process.Rules.Definitions.Units[type];
-        world.Globals.UnitEnd = (short)pool.End;
-        ++civ.UnitsActive[type];
-        ++world.UnitTotals[owner.Value];
-        if (rule.Role < RuleRole.Settle)
-        {
-            ++civ.MilitaryCount;
-        }
-
-        ref var unit = ref pool.At(slot);
-        unit = new()
-        {
-            Owner = owner,
-            Type = new((byte)type),
-            Token = process.Tokens.AssignUnit(),
-            Home = home,
-            LastDirection = byte.MaxValue,
-            Position = new(-1, -1),
-            Destination = new(-1, -1)
-        };
-        new StackOperations(world, new(100000, 64)).AttachAtFront(slot.Value, position, false);
-        LocalVisibility.RevealAround(world, unit, rule);
         return slot;
+    }
+
+    private sealed class LocalCreation(GameState world, RuleTables rules, StackOperations stacks)
+        : IUnitCreationEffects, IUnitRevelationEffects
+    {
+        public void RevealSurroundings(int slot, bool allowContact) =>
+            new UnitRevelation(world, rules, stacks, this).Reveal(slot, allowContact);
+
+        public void Notice(UnitCreationNotice notice)
+        {
+            if (notice != UnitCreationNotice.TooManyUnits)
+            {
+                throw new InvalidOperationException("Creation tutorials require their session presentation service");
+            }
+            // The production caller reports capacity refusal with its own city result.
+        }
+
+        public void RevealOrigin(MapPoint position) =>
+            throw new InvalidOperationException("Foreign contact is outside the authored local profile");
+
+        public void Meet(int actingCivilization, int otherCivilization, MapPoint position) =>
+            throw new InvalidOperationException("Diplomacy requires its owning session service");
+
+        public void SynchronizeCreation() => throw new InvalidOperationException("Transport is unavailable");
     }
 
     private static void EraseLocalUnit(GameState world, RuleTables rules, UnitSlot slot) =>

@@ -45,7 +45,7 @@ public static partial class LocalPlayCommands
     }
 
     private static void Exhaust(GameState world, RuleTables rules, ref Unit unit) =>
-        unit.MovesUsed = unchecked((byte)LandMovement.Allowance(world, rules, unit));
+        UnitMovement.Exhaust(world, rules, ref unit);
 
     private static OperationStep ChooseResearch(OperationContext context, CommandRequest request)
     {
@@ -76,26 +76,8 @@ public static partial class LocalPlayCommands
     {
         var pool = world.Entities.Units;
         var current = world.Globals.ActiveUnit;
-        var origin = current is { } slot && pool.Live(slot) ? pool.At(slot).Position : LocalGameRules.StartingTile;
-        int minimumDistance = int.MaxValue;
-        UnitSlot? best = null;
-        for (ushort i = 0; i < pool.End; i++)
-        {
-            ref var unit = ref pool.Storage[i];
-            if (!unit.Token.Occupied || unit.Owner.Value != world.Globals.TurnCiv
-                || unit.Orders is UnitOrder.Fortified or UnitOrder.Sleeping
-                || LandMovement.Left(world, rules, unit) == 0)
-            {
-                continue;
-            }
-
-            int distance = world.Map.Geometry.WeightedDistance(origin, unit.Position, world.Globals.Rules.FlatWorld);
-            if (distance < minimumDistance || (distance == minimumDistance && current?.Value == i))
-            {
-                minimumDistance = distance;
-                best = new(i);
-            }
-        }
+        var best = UnitActivation.NextSelectable(world, rules, current, LocalGameRules.StartingTile,
+            searchMode: 0, world.Multiplayer.LocalHuman);
 
         world.Globals.ActiveUnit = best;
         if (best is { } selected)
@@ -266,20 +248,11 @@ public static partial class LocalPlayCommands
             ref var civ = ref world.Civilizations[city.Owner.Value];
             CityTarget target = new(slot, city.Token);
             int before = city.Size;
-            if (city.FoodBox < 0)
+            int previousFood = city.FoodBox;
+            var food = CreateFood(context);
+            if (food.Run(slot))
             {
-                // Every allowed city center feeds a size-one city. The profile has no food routes or homed settlers.
-                --city.Size;
-                city.FoodBox = 0;
-            }
-            else if (city.FoodBox >= (city.Size + 1) * rules.Cosmic.FoodBoxRows)
-            {
-                if (city.Size < rules.Cosmic.AqueductSize)
-                {
-                    ++city.Size;
-                }
-
-                city.FoodBox = 0;
+                return false;
             }
 
             if (city.Size != before)
@@ -290,9 +263,8 @@ public static partial class LocalPlayCommands
                     new("size", new CommandValue.Integer(city.Size))]));
             }
 
-            int support = LocalCityEconomy.Recalculate(world, rules, slot);
-            int surplus = city.TotalFood - city.Size * rules.Cosmic.FoodPerCitizen;
-            city.FoodBox = unchecked((short)(city.FoodBox + surplus));
+            int support = LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
+            int surplus = food.Accumulate(slot, previousFood);
             int type = city.Production;
             city.ShieldBox += (short)Math.Max(0, city.TotalShields - support);
             int cost = rules.Units[type].CostRows * rules.Cosmic.ShieldBoxRows;
@@ -312,12 +284,9 @@ public static partial class LocalPlayCommands
                 }
             }
 
-            while (LocalCityEconomy.Support(world, slot) > city.TotalShields)
-            {
-                RemoveUnsupportedUnit(context, slot, city.Position);
-            }
+            RetireUnsupportedUnits(context, slot);
 
-            support = LocalCityEconomy.Recalculate(world, rules, slot);
+            support = LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
             city.Flags.MoodOnEdge = city.Happy == 0 && city.TotalShields > support && surplus >= 0;
             city.Flags.Celebrating = city.Size > 2 && city.Happy >= (city.Size + 1) / 2;
             civ.Gold = unchecked(civ.Gold + city.Tax);
@@ -330,30 +299,93 @@ public static partial class LocalPlayCommands
             return city.Science > 0 && civ.ResearchProgress != 0 && civ.Researching < 0;
         }
 
-        private static void RemoveUnsupportedUnit(OperationContext context, CitySlot home, MapPoint city)
+        private static void RetireUnsupportedUnits(OperationContext context, CitySlot city)
         {
             var world = context.World;
-            var pool = world.Entities.Units.Scanned;
-            int best = -1, distance = -1;
-            for (int i = 0; i < pool.Length; i++)
+            var rules = context.Process.Rules.Definitions;
+            var budget = new StackBudget(1000000, 64);
+            var stacks = new StackOperations(world, budget);
+            var effects = new CityTurnEffects(context);
+            var deletion = new UnitDeletion(world, rules, budget, effects);
+            var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
+            new CityRetirement(world, rules, deletion, loss, effects).Run(city);
+        }
+
+        private static CityFood CreateFood(OperationContext context)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            var budget = new StackBudget(1000000, 64);
+            var stacks = new StackOperations(world, budget);
+            var effects = new CityTurnEffects(context);
+            var deletion = new UnitDeletion(world, rules, budget, effects);
+            var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
+            var removal = new CityRemoval(world, rules, stacks, loss, target =>
+                context.Effect("city.removed", new([new("city", new CommandValue.City(target))])));
+            return new(world, rules, removal, loss, effects, effects);
+        }
+
+        private sealed class CityTurnEffects(OperationContext context)
+            : ICityRetirementEffects, IUnitLossEffects, IUnitDeletionEffects, ICityFoodEffects, ICityFoodContinuations,
+                ISpyEscapeEffects, ICivilizationEliminationEffects
+        {
+            private CivilizationElimination? elimination;
+            private int eliminationCall;
+            private NamedValue CityValue(CitySlot city) =>
+                new("city", new CommandValue.City(new(city, context.World.Entities.Cities.At(city).Token)));
+
+            public void Famine(CitySlot city, FamineCause cause, string? detail) =>
+                context.Effect("city.famine", new([CityValue(city), new("cause", new CommandValue.Text(cause.ToString())),
+                    new("detail", new CommandValue.Text(detail ?? ""))]));
+            public void GrowthHalted(CitySlot city, int facility) =>
+                context.Effect("city.growth_halted", new([CityValue(city), new("facility", new CommandValue.Integer(facility))]));
+            public void FoodShortage(CitySlot city) => context.Effect("city.food_shortage", new([CityValue(city)]));
+            public void RedrawCity(CitySlot city) => RedrawTile(context.World.Entities.Cities.At(city).Position);
+            public void ReconsiderProduction(CitySlot city) =>
+                throw new InvalidOperationException("The authored profile has no AI production path");
+
+            public void SupportShortage(CitySlot city, UnitTarget selected, UnitType type) =>
+                context.Effect("unit.support_shortage", new([new("unit", new CommandValue.Unit(selected)),
+                    new("type", new CommandValue.Integer(type.Value))]));
+
+            public void UnitRemoved(CitySlot city, UnitTarget selected, bool shortage) =>
+                context.Effect(shortage ? "unit.unsupported" : "unit.retired", new([new("unit", new CommandValue.Unit(selected))]));
+
+            // Session publication rebuilds the map/city projections from these committed effects.
+            public void UnitsChangedAt(MapPoint position) => RedrawTile(position);
+            public void UnitRemoved(MapPoint position) => RedrawTile(position);
+            public void RedrawTile(MapPoint position) => context.Effect("map.changed",
+                new([new("x", new CommandValue.Integer(position.X)), new("y", new CommandValue.Integer(position.Y))]));
+            public void RefreshHomeCity(int city) => context.Effect("city.support_changed",
+                new([new("city", new CommandValue.City(new(new((ushort)city), context.World.Entities.Cities.Storage[city].Token)))]));
+            public void CheckCivilization(int owner, int killer)
             {
-                ref readonly var unit = ref pool[i];
-                if (!unit.Token.Occupied || unit.Home != home)
+                if (elimination is null)
                 {
-                    continue;
+                    var world = context.World;
+                    var rules = context.Process.Rules.Definitions;
+                    var budget = new StackBudget(1000000, 64);
+                    var stacks = new StackOperations(world, budget);
+                    var deletion = new UnitDeletion(world, rules, budget, this);
+                    var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, this);
+                    var escape = new SpyEscape(world, rules, stacks, loss, context.Gameplay,
+                        (_, _) => throw new InvalidOperationException("The authored profile has no foreign espionage path"), this);
+                    elimination = new(world, deletion, escape,
+                        _ => throw new InvalidOperationException("The authored profile has no AI restart path"), this);
                 }
-
-                int score = world.Map.Geometry.WeightedDistance(city, unit.Position, world.Globals.Rules.FlatWorld);
-                if (score > distance)
-                {
-                    best = i;
-                    distance = score;
-                }
+                elimination.Check(owner, killer, "local-elimination/" + eliminationCall++);
             }
-
-            UnitTarget target = new(new((ushort)best), pool[best].Token);
-            EraseLocalUnit(world, context.Process.Rules.Definitions, target.Slot);
-            context.Effect("unit.unsupported", new([new("unit", new CommandValue.Unit(target))]));
+            public void Notice(SpyNotice notice) => context.Effect("unit.spy_fate", new([
+                new("unit", new CommandValue.Unit(notice.Unit)), new("fate", new CommandValue.Text(notice.Fate.ToString()))]));
+            public void Redraw(MapPoint position) => RedrawTile(position);
+            public void Destroyed(CivilizationDestroyedNotice notice) => context.Effect("civilization.destroyed", new([
+                new("civilization", new CommandValue.Integer(notice.Civilization)), new("killer", new CommandValue.Integer(notice.Killer)),
+                new("adjective", new CommandValue.Text(notice.Adjective)), new("killerName", new CommandValue.Text(notice.KillerName))]));
+            public void SpaceshipLost(SpaceshipLossNotice notice) => context.Effect("spaceship.lost", new([
+                new("civilization", new CommandValue.Integer(notice.Civilization)), new("returning", new CommandValue.Boolean(notice.Returning))]));
+            public void RedrawMaps() => context.Effect("map.refresh", new([]));
+            public void SynchronizeLoss(MapPoint? redraw) => throw new InvalidOperationException("Transport is unavailable");
+            public void SynchronizeDeletion(MapPoint position, CitySlot? home) => throw new InvalidOperationException("Transport is unavailable");
         }
     }
 }
