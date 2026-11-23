@@ -3833,3 +3833,41 @@ eight identity tests and three coverage tests passed.
 | --- | --- |
 | `m4-cooperative-native.json` | `2fd1f6209a6cbbe7aaf32ab2f4d327a66aa300d9343326bdd29a11879f8df8ee` |
 | `m4-cooperative-identity.json` | `af1d592ba763fb56b123126b7476449408479b779ebe6a4cc8f7080766e7578a` |
+
+## Retained research-grant checkpoint
+
+Production movement composition exposed synchronous government and emissary
+questions in V03 grants reachable from hut rewards and captured technology.
+ResearchGrants now supplies a retained operation with actual V05 reception/reset
+and V02 government children. Stored knowledge and advance counts precede the
+question; first-discovery, Leonardo and recursive Great Library effects resume
+in their specified order. Nested grants forward their decisions without repeating
+earlier mutations. Required notice failures retain their committed prefix;
+cosmetic leader-window failures remain diagnostics.
+
+ResearchGovernmentPrompts now supplies a retained operation while preserving its
+synchronous compatibility entry. ResearchGrantOperation routes government and
+emissary choices to the private recipient; cancel/timeout decline, while an
+intelligence-window close follows the existing reception contract. The retained
+grant constructor requires actual child services and rejects synchronous Grant
+calls before mutation. Existing synchronous callers remain operational but need
+explicit migration: captured technology, theft, huts, civilization catch-up and
+research completion. This checkpoint does not yet wire those choices into the
+production desktop movement command or complete M4 acceptance.
+
+Five new shared groups cover accepted/declined government changes, tutorial and
+turn-zero gates, recursive Library acquisition, actual emissary greeting/reset,
+private recipient routing, cancel/timeout, disposal and failure prefixes. Existing
+grant and government cases continue to exercise the shared algorithm through
+the synchronous adapters. Browser and cross-platform work remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1152 of 1154**, with the two existing
+platform/audio skips. The shared probe passed **1119 groups** across 130 coverage
+families; source identity verified **640 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-grant-retained-native.json` | `fb9e2a1c672ef9cab9a8635ea5c3ccf255d8708ff0e5130b25697fffff8e9d03` |
+| `m4-grant-retained-identity.json` | `ac621ba654f2b4b2ba08383c53bd6f5913231ecc386ca426af628a77ebeea767` |

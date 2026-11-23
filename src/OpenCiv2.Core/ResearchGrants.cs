@@ -32,24 +32,110 @@ public interface IResearchGrantEffects
     void RefreshStatus();
 }
 
+public abstract record ResearchGrantDecision
+{
+    public sealed record Government(ResearchGovernmentChoice Choice) : ResearchGrantDecision;
+    public sealed record Emissary(EmissaryDecision Decision) : ResearchGrantDecision;
+}
+
 /// <summary>V03 §10 locally authorized grants and first-discovery effects. Composes actual C08
 /// Leonardo/ownership/storage and recursively completes Great Library grants. Government/tutorial
 /// prompts remain an explicit owning child; network authority and publication are not supplied here.</summary>
 public sealed class ResearchGrants(GameState world, RuleTables rules, GameplayRandom random, WonderEffects wonders,
     Action<int, int> governmentPrompts, IResearchGrantEffects effects)
 {
+    private readonly ResearchGovernmentPrompts? retainedGovernments;
+    private readonly EmissaryReception? retainedEmissary;
+    private GameState World => world;
+
+    /// <summary>Production retained composition. Use Begin so real government and emissary choices
+    /// can suspend without repeating the stored advance or its earlier effects.</summary>
+    public ResearchGrants(GameState world, RuleTables rules, GameplayRandom random, WonderEffects wonders,
+        ResearchGovernmentPrompts governments, EmissaryReception emissary, IResearchGrantEffects effects)
+        : this(world, rules, random, wonders, governments.Run, effects)
+    { retainedGovernments = governments; retainedEmissary = emissary; }
+
+    public Operation Begin(int civilization, int advance, int source, bool skipPedia, string call)
+    {
+        if (retainedGovernments is null || retainedEmissary is null)
+        { throw new InvalidOperationException("Retained research grants require government and emissary services"); }
+        return new(this, civilization, advance, source, skipPedia, call, true);
+    }
+    public sealed class Operation : IDisposable
+    {
+        private readonly ResearchGrants parent;
+        private readonly IEnumerator<ResearchGrantDecision?> steps;
+        private readonly List<Exception> failures = [];
+        private int? reply;
+        private bool faulted, disposed;
+        internal bool Retained { get; }
+        public bool Completed { get; private set; }
+        public ResearchGrantDecision? Pending { get; private set; }
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal Operation(ResearchGrants parent, int civilization, int advance, int source, bool skipPedia, string call, bool retained)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(call);
+            this.parent = parent;
+            Retained = retained;
+            steps = parent.Execute(this, civilization, advance, source, skipPedia, call).GetEnumerator();
+        }
+        internal int? TakeReply() { var answer = reply; reply = null; return answer; }
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
+        internal void Report(Exception? error)
+        {
+            if (error is not null)
+            {
+                failures.Add(error);
+            }
+        }
+        public ResearchGrantDecision? Resume(int? answer = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
+            { throw new InvalidOperationException("A failed research grant cannot resume"); }
+            if (Completed)
+            { return null; }
+            try
+            {
+                MapKnowledge.RequireLocal(parent.World);
+                if (Pending is not null && answer is null)
+                { return Pending; }
+                reply = Pending is null ? null : answer;
+                Pending = null;
+                if (steps.MoveNext())
+                { return Pending = steps.Current; }
+                Completed = true;
+                steps.Dispose();
+                return null;
+            }
+            catch { faulted = true; steps.Dispose(); throw; }
+        }
+        public void Dispose() { disposed = true; steps.Dispose(); }
+    }
+
     private bool Human(int c) => world.Globals.HumanPlayers.Contains(c & 31);
     private bool Knows(int c, int a) => CivilizationKnowledge.KnowsAdvance(world.Civilizations, c, a);
     private bool Wonder(int c, int w) => BuildingQueries.HasWonder(world, rules, c, w);
 
+    /// <summary>Synchronous compatibility entry for callers supplying synchronous decision adapters.
+    /// Retained service graphs must use Begin; they cannot silently answer a human prompt.</summary>
     public void Grant(int civilization, int advance, int source, bool skipPedia, string call)
     {
-        MapKnowledge.RequireLocal(world);
-        ArgumentException.ThrowIfNullOrEmpty(call);
+        if (retainedGovernments is not null)
+        { throw new InvalidOperationException("Use Begin for retained research grants"); }
+        using var operation = new Operation(this, civilization, advance, source, skipPedia, call, false);
+        while (!operation.Completed)
+        {
+            if (operation.Resume() is not null)
+            { throw new InvalidOperationException("A synchronous grant cannot suspend for a decision"); }
+        }
+    }
+    private IEnumerable<ResearchGrantDecision?> Execute(Operation operation, int civilization, int advance, int source, bool skipPedia, string call)
+    {
         bool first = Research.StoreAdvance(world, civilization, advance, source);
         if (world.Globals.Turn == 0)
         {
-            return;
+            yield break;
         }
 
         world.Civilizations[civilization].NumAdvances = unchecked((byte)(world.Civilizations[civilization].NumAdvances + 1));
@@ -65,12 +151,25 @@ public sealed class ResearchGrants(GameState world, RuleTables rules, GameplayRa
             && !Wonder(world.Multiplayer.LocalHuman, WonderIds.UnitedNations)
             && !Wonder(world.Multiplayer.LocalHuman, WonderIds.MarcoPolo))
         {
-            if (effects.ReceiveEmissary(civilization))
+            if (operation.Retained)
             {
-                effects.EmissaryKnowledge(civilization, advance);
+                using var reception = retainedEmissary!.Begin(world.Multiplayer.LocalHuman, civilization, null, call + "/emissary");
+                while (reception.Accepted is null)
+                {
+                    if (reception.Resume(operation.TakeReply()) is { } question)
+                    { yield return new ResearchGrantDecision.Emissary(question); }
+                }
+                operation.Report(reception.PresentationFailures);
+                if (reception.Accepted == true)
+                { effects.EmissaryKnowledge(civilization, advance); }
+                operation.Report(retainedEmissary.Reset());
             }
-
-            effects.ResetDiplomacy();
+            else
+            {
+                if (effects.ReceiveEmissary(civilization))
+                { effects.EmissaryKnowledge(civilization, advance); }
+                effects.ResetDiplomacy();
+            }
         }
 
         if (Human(civilization) && civilization == world.Multiplayer.LocalHuman && source != 0 && !world.Multiplayer.Saved.AutoplayActive)
@@ -80,7 +179,17 @@ public sealed class ResearchGrants(GameState world, RuleTables rules, GameplayRa
                 effects.Encyclopedia(advance);
             }
 
-            governmentPrompts(civilization, advance);
+            if (operation.Retained)
+            {
+                using var government = retainedGovernments!.Begin(civilization, advance);
+                while (!government.Completed)
+                {
+                    if (government.Resume(operation.TakeReply()) is { } question)
+                    { yield return new ResearchGrantDecision.Government(question); }
+                }
+            }
+            else
+            { governmentPrompts(civilization, advance); }
         }
 
         int mobile = (int)RuleNormalization.FollowDisabled((AdvanceReference)AdvanceIds.MobileWarfare, rules.Advances);
@@ -130,7 +239,15 @@ public sealed class ResearchGrants(GameState world, RuleTables rules, GameplayRa
 
             if (count > 1)
             {
-                Grant(library, advance, -2, false, call + "/library/" + library);
+                using var child = new Operation(this, library, advance, -2, false, call + "/library/" + library, operation.Retained);
+                while (!child.Completed)
+                {
+                    if (child.Resume(operation.TakeReply()) is { } question)
+                    { yield return question; }
+                    else if (!child.Completed)
+                    { yield return null; }
+                }
+                operation.Report(child.PresentationFailures);
             }
         }
     }

@@ -22,12 +22,60 @@ public sealed class ResearchGovernmentPrompts(GameState world, GovernmentChanges
 
     public void Run(int c, int advance)
     {
-        MapKnowledge.RequireLocal(world);
+        using var operation = Begin(c, advance);
+        int? reply = null;
+        while (!operation.Completed)
+        {
+            var question = operation.Resume(reply);
+            reply = question is null ? null : effects.ConfirmGovernment(question);
+        }
+    }
+
+    public Operation Begin(int civilization, int advance) => new(this, civilization, advance);
+    public sealed class Operation : IDisposable
+    {
+        private readonly ResearchGovernmentPrompts parent;
+        private readonly IEnumerator<ResearchGovernmentChoice> steps;
+        private int? reply;
+        private bool faulted, disposed;
+        public bool Completed { get; private set; }
+        public ResearchGovernmentChoice? Pending { get; private set; }
+        internal Operation(ResearchGovernmentPrompts parent, int civilization, int advance)
+        { this.parent = parent; steps = parent.Execute(this, civilization, advance).GetEnumerator(); }
+        internal int TakeReply() { int answer = reply!.Value; reply = null; return answer; }
+        public ResearchGovernmentChoice? Resume(int? answer = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
+            { throw new InvalidOperationException("A failed research government prompt cannot resume"); }
+            if (Completed)
+            { return null; }
+            try
+            {
+                MapKnowledge.RequireLocal(parent.World);
+                if (Pending is not null && answer is null)
+                { return Pending; }
+                reply = Pending is null ? null : answer;
+                Pending = null;
+                if (steps.MoveNext())
+                { return Pending = steps.Current; }
+                Completed = true;
+                steps.Dispose();
+                return null;
+            }
+            catch { faulted = true; steps.Dispose(); throw; }
+        }
+        public void Dispose() { disposed = true; steps.Dispose(); }
+    }
+    private GameState World => world;
+    private IEnumerable<ResearchGovernmentChoice> Execute(Operation operation, int c, int advance)
+    {
         if (advance == AdvanceIds.Monarchy)
         {
             if (Current(c) == Government.Despotism)
             {
-                Ask(c, advance, Government.Monarchy, true);
+                yield return new(c, advance, Current(c), Government.Monarchy, true);
+                Accept(operation, c);
             }
         }
         else if (advance is AdvanceIds.Republic or AdvanceIds.Democracy or AdvanceIds.Communism or AdvanceIds.Fundamentalism)
@@ -36,7 +84,7 @@ public sealed class ResearchGovernmentPrompts(GameState world, GovernmentChanges
                 && unchecked((byte)world.Civilizations[c].Government) < (byte)Government.Communism)
             {
                 effects.Tutorial(c, ResearchTutorial.Republic);
-                return;
+                yield break;
             }
             var proposed = advance switch
             {
@@ -47,12 +95,13 @@ public sealed class ResearchGovernmentPrompts(GameState world, GovernmentChanges
             };
             if (advance != AdvanceIds.Democracy && Current(c) == proposed)
             {
-                return;
+                yield break;
             }
 
             if (Current(c) is not (Government.Democracy or Government.Anarchy))
             {
-                Ask(c, advance, proposed, false);
+                yield return new(c, advance, Current(c), proposed, false);
+                Accept(operation, c);
             }
         }
         if (world.Globals.GameOptions.Tutorial)
@@ -73,9 +122,9 @@ public sealed class ResearchGovernmentPrompts(GameState world, GovernmentChanges
         }
     }
 
-    private void Ask(int c, int advance, Government proposed, bool monarchy)
+    private void Accept(Operation operation, int c)
     {
-        if (effects.ConfirmGovernment(new(c, advance, Current(c), proposed, monarchy)) == 1)
+        if (operation.TakeReply() == 1)
         {
             effects.RevolutionStarting(c);
             governments.Set(c, (int)Government.Anarchy);

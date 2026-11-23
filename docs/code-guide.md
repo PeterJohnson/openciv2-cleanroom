@@ -263,6 +263,11 @@ Barracks, announcement and emissary boundaries. `ResearchGovernmentPrompts` call
 actual V02 transitions for accepted research prompts. `ResearchFlow` composes
 those children with C06 production reset and C03 mood queries for general
 completion and accumulation, including free advances.
+`ResearchGrants.Begin` retains acquisition state across actual V05 emissary and
+V02 government decisions, including recursive Great Library grants.
+`ResearchGrantOperation` routes those choices privately and declines on cancel or
+timeout. The retained constructor requires both child services and rejects the
+synchronous `Grant` entry; existing acquisition parents still need migration.
 `ResearchSelection` suspends for an accepted choice and retains its recommendation;
 `ResearchGoals` owns informational goal/advice data. The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile
