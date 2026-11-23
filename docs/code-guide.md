@@ -802,3 +802,10 @@ gate is unresolved in U02, while selected lift/return can change stack order.
 `Session/LandEntryOperation` shares private prompts and reply decoding with the
 existing caravan and mission adapters, including cached visit/capture windows.
 The outer movement dispatcher still owns boarding, ordinary arrival and cleanup.
+
+`Units/LongMove` supplies U04's retained long-move warning and signed timer/reversal
+arithmetic; `Session/LongMoveOperation` privately routes continue/stop and defaults
+cancellation to continue. U02 must call it before storing last direction.
+`Units/MovementCleanup` applies local bound-sensitive cleanup, captured-owner AI
+orders/timer and live transport state, returning the full result. Dispatcher
+lifetime and the deferred network authority path remain outside this helper.

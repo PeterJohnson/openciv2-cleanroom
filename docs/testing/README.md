@@ -671,3 +671,9 @@ owner-only reload after bribery, signed HP/Barracks repair before exhaustion,
 original-unit restoration, private session cancellation and terminal failure prefixes.
 The entry selector is an explicit input pending U02 specification resolution;
 these cases do not claim complete movement or desktop/full-game acceptance.
+
+U04 long-move and U02 cleanup groups cover signed timer boundaries, reversal and
+negative direction, full-order versus Automated admission, private stop/cancel,
+retained replies, changed unit bound versus dead occupied slots, captured AI owner,
+live transport counter and conditional exhaustion. These do not claim the full
+movement-finish caller or network synchronization.

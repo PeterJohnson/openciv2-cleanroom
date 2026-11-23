@@ -3954,6 +3954,28 @@
         "U02.land-entry-unit-owner-reload",
         "U02.land-entry-zone-ordering"
       ]
+    },
+    {
+      "id": "movement-tail",
+      "status": "partial",
+      "contract": "U04 Long-move handling; U02 Cleanup",
+      "publicSurface": "LongMove.Begin/Resume; LongMoveOperation; MovementCleanup.Apply",
+      "review": "Local long-move handling retains signed timer/reversal arithmetic and private stop/continue choice before last-direction write. Full Goto or Automated enables timer increments; nonlocal state is retained, other local orders reset it. Nonzero replies clear live orders and Automated and either reply resets the timer. Local cleanup compares actual slot bound, retains full nonzero result, preserves captured-owner AI rules, live transport role/counter and signed timer exhaustion. Tests cover byte wraps, negative directions, pending/idempotent replies, private cancellation, bound versus occupancy and retained state on unsupported network calls. Outer movement finish, hut/longmove caller integration, authority synchronization and desktop/full-game acceptance remain pending. Browser/cross-platform deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/LongMove.cs",
+        "src/OpenCiv2.Core/Units/MovementCleanup.cs",
+        "src/OpenCiv2.Session/LongMoveOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MovementTailCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.cleanup-ai-transport",
+        "U02.cleanup-bound-result",
+        "U04.long-move-private-session",
+        "U04.long-move-retained-failures",
+        "U04.long-move-timer-reversal"
+      ]
     }
   ]
 }
