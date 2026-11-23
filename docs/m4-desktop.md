@@ -4132,3 +4132,38 @@ A04 barbarian/work/off-map entry, trespass/forced-city admission, specialized
 routing, guards and movement planning remain open, as do the complete AI caller,
 desktop service composition, full turns and generated human/AI-game acceptance.
 Browser and cross-platform execution remain deferred.
+
+## A04 city and fortress guard phases
+
+`GroundGuard` now supplies the scenario/ferry gate, foreign-fortress routing and
+city guard around the separate specialized/partisan phases. Actual U06 defender
+selection sees temporary Fortified orders; normal return restores them before
+periodic order release. The actual U01 reserve-defender aggregate excludes the
+current head by its predecessor field. Shared goals, Palace/neighbor quotas,
+signed city sizes, retained settler-phase flags and live walls/garrison strength
+produce the specified guard and movement-planner routes.
+
+Authored cases cover Scenario versus export-only status, live actor x with
+captured home context, ferry-to-guard transitions, foreign-fortress treaty and
+obsolescence gates, exact stack-order ties, reserve thresholds and negative
+quotas. Recovery at a foreign city with no captured owned city reaches the
+specified missing-home read boundary: it stops explicitly, retaining Hold/Guard
+and prior unit state. No arbitrary city/backing value or unestablished fallback
+is supplied. That continuation remains a scoped limitation for the complete AI
+caller; successful ordinary cases do not resolve it.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1198 of 1200**, with the two existing
+platform/audio skips. The shared probe passed **1165 groups** across 133 coverage
+families; source identity verified **660 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-guard-native.json` | `3a5f1b99aee06dff1a277352a817d64694bf40f0fba693428ee97d8481df3759` |
+| `m4-guard-identity.json` | `a44d1b3f62075f67acfbbecad99652e866028752dcb1daef459e7d1ac3a9464a` |
+
+A04 entry/trespass/forced-city logic, specialized/site/partisan phases, transport
+and movement planning, full AI/turn scheduling, desktop composition and complete
+human/AI-game acceptance remain open. Browser and cross-platform execution remain
+deferred.

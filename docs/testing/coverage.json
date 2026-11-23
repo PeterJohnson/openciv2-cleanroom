@@ -4255,6 +4255,31 @@
         "U04.home-cities-regions",
         "U04.home-fuel-arrival"
       ]
+    },
+    {
+      "id": "ai-ground-guard",
+      "status": "partial",
+      "contract": "A04 section 3 scenario/ferry admission, foreign fortress routing and city guard; U01 reserve-defender aggregate",
+      "publicSurface": "GroundGuard.Scenario/ForeignFortress/City; StackOperations.CountReserveDefenders",
+      "review": "Actual defender selection, validated stack traversals, building checks and shared goals determine guard routes. Preserves Scenario versus export-only state, live x with captured home context, ferry StayHome, foreign-fortress reputation/alliance/distance and obsolete-unit rules, signed quota and Palace floor, temporary Fortified selection and restoration, head-excluding reserve count, periodic sleeping-order release, retained SettlerType, goal publication and live walls/garrison strength. Tests cover actual stack-order ties, quota and goal thresholds, negative city size, ferry-to-guard routing and recovery-to-missing-home failure prefixes. An absent captured home at the required City Walls read stops explicitly; no city or backing state is substituted. Specialized/site/partisan phases, full chooser scheduling and desktop/full-game acceptance remain pending.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/GroundGuard.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GroundGuardCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.guard-defender-quota-goals",
+        "A04.guard-foreign-fortress",
+        "A04.guard-missing-home",
+        "A04.guard-scenario-ferry",
+        "A04.guard-settler-phase-state",
+        "A04.guard-temporary-reserve",
+        "A04.guard-walls-live-strength"
+      ]
     }
   ]
 }

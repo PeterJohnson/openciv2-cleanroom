@@ -27,7 +27,7 @@ public sealed class UnitTacticsContext
     public int Policy { get; }
     public bool EnemyZone { get; set; }
     public bool Fortress { get; set; }
-    public bool ForceAttack, Hold, Guard, HasOrders, NoMoves;
+    public bool ForceAttack, Hold, Guard, HasOrders, NoMoves, StayHome, SettlerType;
 
     public UnitTacticsContext(GameState world, RuleTables rules, UnitSlot unit)
     {

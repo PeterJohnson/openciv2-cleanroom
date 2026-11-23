@@ -88,6 +88,22 @@ public sealed class StackOperations
         return sum;
     }
     public int CountAircraftCarriers(int slot, RuleTables rules) => CountMatching(slot, rules, rule => rule.Abilities.CarryAircraft);
+
+    /// <summary>U01 reserve-defender aggregate: count Defend members whose current predecessor
+    /// is present, with the ordinary aggregate sum cutoff and validated traversal.</summary>
+    public int CountReserveDefenders(int slot, RuleTables rules)
+    {
+        int count = 0;
+        for (int current = First(slot); current >= 0 && count < EntityLimits.Units; current = Next(current))
+        {
+            local.Step();
+            ref var unit = ref local.BackedUnit(current);
+            if (unit.Previous is not null && unchecked((sbyte)rules.Units[unit.Type.Value].Role) == (int)RuleRole.Defend)
+            { ++count; }
+        }
+        return count;
+    }
+
     private int CountMatching(int slot, RuleTables rules, Func<UnitRule, bool> predicate)
     {
         int count = 0;

@@ -755,6 +755,13 @@ runs the damage, rest and return-home branches with actual stack/spatial queries
 and returns the required next phase. It can install orders consumed by the real
 U04 executor; it does not substitute for the unfinished complete AI chooser.
 
+`Ai/GroundGuard` supplies the scenario/ferry gate, foreign-fortress routing and
+city guard phases around specialized unit dispatch. It uses actual combat
+defender selection, shared goals and the U01 reserve-defender aggregate, keeping
+temporary Fortified orders visible to those queries. Its route results preserve
+the parent's specialized/partisan boundaries. Missing captured home backing stops
+at the specified read; no fallback city is supplied.
+
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
 and ends after the first eligible paratrooper even on refusal. Otherwise it

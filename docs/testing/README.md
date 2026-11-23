@@ -758,3 +758,10 @@ city and peace priorities, remote air versus sea visibility, severe recovery and
 transport companions. An actual Sea recovery Goto executes through U04/U03/U02.
 These phases return their specified parent routes; the full A04 chooser and
 desktop game loop remain incomplete.
+
+A04 guard groups use actual defender selection and shared goals to check scenario
+and ferry admission, foreign-fortress rules, Palace/neighbor quotas, temporary
+fortification, stack-order ties and reserve counts, periodic order release,
+retained settler state and live walls/garrison strength. Recovery into CityGuard
+with absent captured home retains its prefix and stops at the required read.
+Specialized/partisan dispatch, the full chooser and desktop acceptance remain open.
