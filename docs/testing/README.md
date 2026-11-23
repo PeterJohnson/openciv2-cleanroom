@@ -618,3 +618,15 @@ verify private reception/report/payment decisions and cancel/timeout behavior.
 Cosmetic failures do not prevent accepted gameplay; required notice failures
 retain their committed prefix. These service/session cases do not claim full
 audience controllers, U06 final notices or desktop acceptance.
+
+
+U06 execution groups now run from actual preparation through the final returned
+movement result. They cover charge/no-charge execution, bounded round yields,
+ordinary win/loss, zero-firepower loss, cancellation/no-target returns, nuclear
+early return, barbarian stack casualties and ransom. Aftermath cases cover local
+notice priority, autoplay/viewers, unsigned reward/treasury wrapping, actual ally
+activation/help and cosmetic versus required-publication failures. Runtime cases
+route real last-settler incidents and ally-help/payment/war decisions privately
+without repeating casualty history, movement charge or rewards. These tests use
+the explicit S02 dispatcher/presentation boundaries; they do not claim desktop
+combat input or complete-game acceptance.

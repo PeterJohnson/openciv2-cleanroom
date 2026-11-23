@@ -748,3 +748,16 @@ retaining offered payments across decisions. Session adapters route all choices
 privately and require an intelligence-window provider. Camera, leader and status
 failures are diagnostic results; callers must report them. Full audience,
 exchange, research/contact and combat/desktop callers remain separate work.
+
+
+`Units/CombatAftermath` owns U06 publication, multiple-casualty notices, barbarian
+leader reward, real V04 ally activation, treaty/ally notices and real V05 help.
+`Units/CombatExecution` composes preparation, entry, opening, nuclear delivery or
+bounded rounds, resolution, aftermath and survivor handling. Its result retains
+U06's movement meanings (999 no target, 1 cancellation/ordinary survival, 0 loss,
+consumption/nuclear/AI continuation). U02 still supplies movement admission and
+the incoming moving unit. Zero captured firepower on both sides skips rounds but
+runs normal loss/promotion/aftermath. `Session/CombatOperation` routes all nested
+choices privately through shared interaction helpers; repeated yields do not
+replay accepted effects. Required S02 and presentation adapters, scenario visibility,
+U02 movement dispatch and desktop command composition remain owning joins.
