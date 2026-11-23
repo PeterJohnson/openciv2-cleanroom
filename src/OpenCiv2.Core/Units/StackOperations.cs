@@ -89,6 +89,20 @@ public sealed class StackOperations
     }
     public int CountAircraftCarriers(int slot, RuleTables rules) => CountMatching(slot, rules, rule => rule.Abilities.CarryAircraft);
 
+    /// <summary>U01 signed rule aggregates stop on the accumulated sum, not the number of members.</summary>
+    public int ProductionCost(int slot, RuleTables rules) => SumRules(slot, rules, rule => unchecked((sbyte)rule.CostRows));
+    public int Attack(int slot, RuleTables rules) => SumRules(slot, rules, rule => unchecked((sbyte)rule.Attack));
+    private int SumRules(int slot, RuleTables rules, Func<UnitRule, int> value)
+    {
+        int sum = 0;
+        for (int current = First(slot); current >= 0 && sum < EntityLimits.Units; current = Next(current))
+        {
+            local.Step();
+            sum = unchecked(sum + value(rules.Units[local.BackedUnit(current).Type.Value]));
+        }
+        return sum;
+    }
+
     /// <summary>U01 reserve-defender aggregate: count Defend members whose current predecessor
     /// is present, with the ordinary aggregate sum cutoff and validated traversal.</summary>
     public int CountReserveDefenders(int slot, RuleTables rules)

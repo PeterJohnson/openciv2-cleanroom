@@ -774,7 +774,11 @@ session `PillageOperation` retains private attack warnings. `PillageCommand`
 adds player eligibility, retained improvement choices, actual V04 declaration
 and a fresh core child; `PillageCommandOperation` routes its private menu and
 nested warnings. Desktop command registration still awaits the wider gameplay
-composition. Specialized/transport phases and ordinary movement planning remain open.
+composition. `GroundMovementPlanner` supplies the complete ordinary eight-direction
+scan, actual U01 aggregates/U06 preview/V06 bribery, independent scaled/unscaled
+scores and retained-order decision. Its session adapter routes nested private
+mission decisions; the chooser still owns applying the result through
+`GroundOrders`. Entry and specialized/site/transport dispatch remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

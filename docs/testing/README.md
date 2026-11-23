@@ -789,3 +789,13 @@ positive-city declaration, AI wrapper confirmation, retained menu/coordinates,
 second core confirmation and cancellation after an actual prior declaration.
 Private session menu/warnings and invalid-choice/disposal/cosmetic failures are
 covered. The restricted desktop profile does not yet register this command.
+
+A04 movement-planner groups cover strict directional ties, retained orders/Hold,
+role promotion, invisible and Air base scoring, captured IgnoreZOC, stack admission,
+signed/cutoff aggregates, self-indexed claimant credit, empty-city replacement,
+exploration and doubled settler food. Actual U06 preview is exercised through
+attack/guard and zero-cost failure; distinct scaled/unscaled scores can force
+Hold after a valid low-movement partisan attack. Peaceful diplomat scoring skips
+the ordinary tail. Actual fallback/opportunistic V06 bribery, private session
+choices, disposal and publication-failure prefixes preserve changes while rejecting
+the candidate. Full tactical entry/dispatch and complete-game acceptance remain open.

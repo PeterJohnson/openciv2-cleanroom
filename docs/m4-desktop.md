@@ -4260,3 +4260,46 @@ desktop composition, A04 entry/trespass/forced-city and movement planning,
 specialized/site/transport policies, full AI/turn scheduling and complete
 human/AI-game acceptance remain open. Browser and cross-platform execution remain
 deferred.
+
+## A04 ordinary movement, attack and bribery planner
+
+`GroundMovementPlanner` now implements the eight-direction procedure with real
+stack traversal/aggregates, spatial queries, U06 best-defender/preview and V06
+bribery. It retains captured abilities and the mutable effective role, consumed
+draws on later rejection, peaceful-territory/owner effects, empty-city changes
+to Hold/HasOrders, exploration/food and polar scoring. Independent scaled and
+unscaled maxima govern the final Hold/attack/order-retention result. The caller
+applies that result through `GroundOrders`; planning does not relocate the actor.
+
+Foreign-unit scoring includes the ordinary combat route, peaceful diplomat
+exception and fallback/opportunistic bribery. Actual transfer can commit even
+when the candidate is rejected, and a required publication failure preserves
+that transfer while making the operation terminal. The session adapter retains
+private mission choices and cooperative child yields. A04 now explicitly names
+Q→human for its first hostility scan, matching the directed pair already stated
+for the repeated scan immediately below; cases distinguish it from C→human and
+distinguish the any-human and all-human conditions.
+
+Authored groups also cover strict ties, holding/existing orders, role promotion,
+Air draw replacement, signed aggregates/cutoffs, captured IgnoreZOC, zero-cost
+failure after actual preview, low-movement partisan scaling, city direction/order
+production, C01's last visited sea rather than largest sea, empty foreign airbases
+and polar candidates. Expectations derive from repository contracts and actual
+child composition, not supplied gameplay-success callbacks or external harnesses.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1232 of 1234**, with the two existing
+platform/audio skips. The shared probe passed **1199 groups** across 137 coverage
+families; source identity verified **675 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-ground-planner-native.json` | `ba307954febbafb095b9c1360f0b0d8a5373b72495311d751b105c33d0ed3fad` |
+| `m4-ground-planner-identity.json` | `7c6b259621ae73bdb9f71b05ff6d0dc7f1e9561ca23f7b3aaefcd2905dac18e8` |
+
+A04 entry/trespass/forced-city and specialized/site/transport dispatch, the full
+AI chooser/turn schedule, wider desktop composition and complete human/AI-game
+acceptance remain open. Reached missing nearest/home-city reads remain explicit
+boundaries rather than invented backing values. Browser and cross-platform
+execution remain deferred.

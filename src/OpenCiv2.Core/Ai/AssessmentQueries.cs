@@ -15,6 +15,7 @@ public static class AiTaskIds
     public const byte Recover = 100, SevereRecovery = 68, Fortify = 70;
     public const byte Idle = 48;
     public const byte HuntNonmilitary = 80, PartisanPillage = 112;
+    public const byte ChooseMove = 57;
 }
 
 /// <summary>A01 §2 role, defense quota and sparse city/land-region contact queries.</summary>

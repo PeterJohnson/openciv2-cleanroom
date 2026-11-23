@@ -23,7 +23,8 @@ public sealed class UnitTacticsContext
     public int HomeDistance { get; }
     public int NearestRegion { get; }
     public int HomeRegion { get; }
-    public int Role { get; }
+    public int Role { get; set; }
+    public UnitAbilities Abilities { get; }
     public RuleDomain Domain { get; }
     public int Policy { get; }
     public bool EnemyZone { get; set; }
@@ -53,6 +54,7 @@ public sealed class UnitTacticsContext
         if ((HomeDistance > 8 || Region != HomeRegion) && !world.Globals.HumanPlayers.Contains(Owner))
         { actor.Flags.Colonist = false; }
         Role = AssessmentQueries.Role(rules, actor);
+        Abilities = rules.Units[actor.Type.Value].Abilities;
         Domain = rules.Units[actor.Type.Value].Domain;
         Policy = world.Civilizations[Owner].ContinentPolicy[Region];
     }

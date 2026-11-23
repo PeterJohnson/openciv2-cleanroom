@@ -638,8 +638,10 @@ Otherwise opportunistic bribery requires either:
 - P=Attack and r=Attack.
 
 If neither holds, reject. If `(r=Diplomacy or H=N) and difficulty>Prince` is
-false, additionally require V Fortified and a nonzero V04 hostile-query result
-for at least one human civilization in slots 1…7. Scan all seven slots and keep
+false, additionally require V Fortified and a nonzero V04 `hostile(Q,human)` result
+for at least one human civilization in slots 1…7. This is the same directed pair
+as the repeated scan below: the target owner Q toward each human, not C toward
+the human or the reverse relation. Scan all seven slots and keep
 calling for later humans after the first success. This query is V04's specific
 helper, not a replacement “at war” flag test.
 

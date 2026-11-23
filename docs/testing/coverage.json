@@ -4352,6 +4352,42 @@
         "W04.pillage-command-retained-core",
         "W04.pillage-command-session-failure"
       ]
+    },
+    {
+      "id": "ai-ground-movement-planner",
+      "status": "partial",
+      "contract": "A04 sections 6-7 ordinary movement, attack preview and bribery decisions; U01 signed stack aggregates",
+      "publicSurface": "GroundMovementPlanner.Begin; GroundMovementOperation; StackOperations.ProductionCost/Attack",
+      "review": "Full eight-direction procedure uses actual stack/spatial/city/treaty queries, U06 preview and retained V06 bribery. Captured abilities and mutable effective role feed admission; scoring preserves random laws, visibility branches, friendly-stack formulas, peaceful territory, owner penalties, empty-city side effects, exploration/food, polar division and independent scaled/unscaled selection. Foreign routes retain ranged-air/transport/amphibious admission, live combat multipliers, peaceful diplomats and fallback/opportunistic bribery. Tests exercise actual children, private prompts, committed transfer before publication failure and order production through GroundOrders. Missing required nearest/home city reads remain explicit boundaries. The complete chooser, specialized policies, desktop composition and full-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/GroundMovementPlanner.Foreign.cs",
+        "src/OpenCiv2.Core/Ai/GroundMovementPlanner.Scores.cs",
+        "src/OpenCiv2.Core/Ai/GroundMovementPlanner.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs",
+        "src/OpenCiv2.Session/GroundMovementOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GroundPlannerCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.planner-actual-preview",
+        "A04.planner-admission",
+        "A04.planner-base-air",
+        "A04.planner-coast-airbase-pole",
+        "A04.planner-exploration-food",
+        "A04.planner-fallback-failure",
+        "A04.planner-friendly-aggregates",
+        "A04.planner-hostility-scans",
+        "A04.planner-human-air-gate",
+        "A04.planner-peaceful-diplomat",
+        "A04.planner-private-session-disposal",
+        "A04.planner-retained-bribery",
+        "A04.planner-scaled-attack",
+        "A04.planner-territory-city",
+        "A04.planner-ties-orders-roles"
+      ]
     }
   ]
 }
