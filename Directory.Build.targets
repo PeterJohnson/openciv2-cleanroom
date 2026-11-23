@@ -47,6 +47,7 @@
           $(Oc2RepositoryRoot)docs/algorithms/C07-trade-and-commodities.md;
           $(Oc2RepositoryRoot)docs/algorithms/V02-governments-and-tax-rates.md;
           $(Oc2RepositoryRoot)docs/algorithms/V04-diplomacy-and-treaties.md;
+          $(Oc2RepositoryRoot)docs/algorithms/V05-diplomatic-negotiation.md;
           $(Oc2RepositoryRoot)docs/algorithms/V06-espionage-and-bribery.md;
           $(Oc2RepositoryRoot)docs/algorithms/V07-spaceship.md;
           $(Oc2RepositoryRoot)docs/algorithms/U07-nuclear-attacks.md;

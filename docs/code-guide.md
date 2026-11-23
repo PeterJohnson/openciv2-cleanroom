@@ -735,3 +735,16 @@ Nested lifecycle and paradrop/capture decisions are exposed by the operation and
 routed privately by `Session/CombatContinuationOperation`. Cosmetic redraw
 failures remain available as diagnostics for the owning command. Final rewards,
 notices, V05 help and full combat/desktop orchestration remain pending.
+
+
+`Core/EmissaryReception` implements V05 reception, greeting and meeting reset.
+It uses actual A08 stance and C08 wonders, retains shared response/asked state,
+and exposes reception and intelligence-report decisions. Semantic notice data
+contains live names, gender, attitude category, greeting variant and nuclear
+information; localized wording and leader rendering belong to adapters.
+`Core/AllyHelp` composes that reception with regional threat/payment, actual V04
+mediated war and cancellation/expulsion. It captures the local recipient while
+retaining offered payments across decisions. Session adapters route all choices
+privately and require an intelligence-window provider. Camera, leader and status
+failures are diagnostic results; callers must report them. Full audience,
+exchange, research/contact and combat/desktop callers remain separate work.

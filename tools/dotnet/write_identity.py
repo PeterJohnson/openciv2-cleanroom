@@ -58,6 +58,7 @@ COMMON = (
     "docs/algorithms/C07-trade-and-commodities.md",
     "docs/algorithms/V02-governments-and-tax-rates.md",
     "docs/algorithms/V04-diplomacy-and-treaties.md",
+    "docs/algorithms/V05-diplomatic-negotiation.md",
     "docs/algorithms/V06-espionage-and-bribery.md",
     "docs/algorithms/V07-spaceship.md",
     "docs/algorithms/V08-scoring-victory-and-retirement.md",

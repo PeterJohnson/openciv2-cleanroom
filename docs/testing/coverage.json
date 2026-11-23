@@ -3817,6 +3817,36 @@
         "A04.response-paradrop-precedence",
         "A04.response-pending-failures"
       ]
+    },
+    {
+      "id": "emissary-and-ally-help",
+      "status": "partial",
+      "contract": "V05 section 2 emissary admission/greeting/reset and section 5 ally-demand-help, using actual A08 stance, C08 wonders and V04 war/cancellation",
+      "publicSurface": "EmissaryReception.Begin/Greet/Reset; EmissaryDecision/Offer/Notice/Intelligence; IEmissaryEffects; AllyHelp.Begin; AllyHelpDecision/Request; IAllyHelpEffects; EmissaryOperation; AllyHelpOperation; DiplomacyWorkspace meeting fields",
+      "review": "Preserves autoplay and prior-response admission, asked/response retention, actual stance before nuclear-forced reception, local-human embassy/UN/Marco Polo intelligence gates, report closure/repetition, secondary greeting variants, customized leader/title/gender text and nuclear-threat updates. Meeting reset clears only its owned active/asked/response/initial-evaluation fields. Ally help captures the recipient, tests directed alliance/war admission, calculates threat over regions 1 through 62, retains negative treasury clamping and cached payment across real decisions, and invokes actual mediated V04 declaration or alliance cancellation with unit expulsion. Refusal uses the live shared evaluation attitude; initial rejection skips reset. Cases cover prior responses/autoplay, signed and regional boundaries, repeated intelligence windows, fresh state, captured recipients, live treasury wrapping, private session routing, cancel/timeout and terminal failures/disposal. Cosmetic leader/camera/status failures remain diagnostics without aborting accepted gameplay; required semantic notices still fail truthfully. Full audience/exchange/proposal controllers, research/contact and U06 final-notice callers, saved pending negotiations and desktop complete-game acceptance remain open. Browser and cross-platform execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/AllyHelp.cs",
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/EmissaryReception.cs",
+        "src/OpenCiv2.Session/AllyHelpOperation.cs",
+        "src/OpenCiv2.Session/EmissaryOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AllyHelpCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.ally-help-admission-refusal",
+        "V05.ally-help-rejection-failure",
+        "V05.ally-help-session-privacy",
+        "V05.ally-help-threat-payment",
+        "V05.ally-help-war-recipient",
+        "V05.emissary-failures-disposal",
+        "V05.emissary-help-session-cancellation",
+        "V05.emissary-nuclear-greeting",
+        "V05.emissary-reception-intelligence",
+        "V05.emissary-retention-reset",
+        "V05.emissary-wonder-gates"
+      ]
     }
   ]
 }

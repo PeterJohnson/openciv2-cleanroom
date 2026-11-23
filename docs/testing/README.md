@@ -607,3 +607,14 @@ resolution and survivor handling shares one world and controlled random stream.
 Cosmetic redraw failures retain gameplay effects and diagnostic exceptions.
 Final rewards/notices, V05 help and full combat/desktop acceptance remain open;
 browser and cross-platform execution stay deferred.
+
+
+V05 emissary/ally-help groups use real stance, wonder queries, treaty changes,
+war declarations and unit expulsion. They cover autoplay/prior responses,
+forced nuclear reception, report repetition, semantic greeting variants, narrow
+meeting reset, directed admission, regions 1 through 62, retained payment and
+live treasury wrapping, refusal attitude and captured recipients. Session cases
+verify private reception/report/payment decisions and cancel/timeout behavior.
+Cosmetic failures do not prevent accepted gameplay; required notice failures
+retain their committed prefix. These service/session cases do not claim full
+audience controllers, U06 final notices or desktop acceptance.
