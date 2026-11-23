@@ -559,3 +559,12 @@ deletion continuations. They cover saturation versus wrapping, the 300-slot ring
 raw next links, nested last-settler decisions and session privacy. Required S02
 and presentation/content callbacks are boundary fixtures; these cases do not
 claim the complete event executor or full combat/city/desktop integration.
+
+U06 resolution cases now compose actual rounds, result presentation, promotion,
+cargo/stack casualties, city population loss, removal/elimination, knowledge and
+AI production reset. They cover sound/fallback/viewer rules, origin-medium and
+protection exceptions, byte population wrap, retained notices, deleted-city
+retasking, suspended last-settler loss and presentation failure prefixes. A05
+retasking cases include signed capacity, directed Peace, strict weighted distance,
+damage-adjusted full movement, retained tasks/spent moves and flat/wrapped maps.
+These close the post-round stage, not the full player/AI attack command.

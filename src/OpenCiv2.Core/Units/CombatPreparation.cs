@@ -19,6 +19,10 @@ public sealed class CombatWorkspace
     public CivilizationArray<bool> Seen;
     public bool AnyViewer, ExplosionShown;
     public int AnimationInterval, ExplosionKind, KillCount;
+    public UnitSlot? AnimationDefender;
+    public bool ActiveUnitLost, AggregateTreatyNotice;
+    public CombatResultSound? LastSound;
+    public int SoundArgument;
 }
 
 /// <summary>U06 strength primitives and validated defender selection, including their cache effects.</summary>

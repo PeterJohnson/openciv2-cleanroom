@@ -676,3 +676,12 @@ dispatch and actual basic deletion through `CivilizationElimination`, preserving
 captured raw stack links and nested decisions. `Session/CombatCasualtyOperation`
 routes those decisions privately. Result presentation, loser-group selection,
 city consequences and the full combat command remain separate pending joins.
+
+`Units/CombatResolution` owns U06's post-round composition: result presentation,
+promotion, cargo-aware loser grouping, actual casualties and defender-city
+population/removal consequences. It uses C06 production reset with the real A02
+chooser and A05 `Ai/ExposedCityTransports` for human exposed-city retasking,
+including the retained city slot after deletion. Nested lifecycle decisions
+propagate through its continuation. This stage returns captured winner/loser,
+ransom eligibility and city information; final effects, surviving-attacker
+handling and the full movement/AI/desktop combat parent remain pending.
