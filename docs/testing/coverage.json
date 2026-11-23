@@ -4480,6 +4480,42 @@
         "A05.ports-flags-connectivity-congestion",
         "A05.ports-ties-recruitment"
       ]
+    },
+    {
+      "id": "ai-naval-unloading-controller",
+      "status": "partial",
+      "contract": "A05 sections 3 and 5 transport control/unloading; F06 consumed regional and relationship state; W06 low-seven settlement gate",
+      "publicSurface": "NavalTransport.Choose; NavalUnload.Choose; NavalChoice; RegionalPresence.TransportRequested; Relationship.RetainedHighFlags",
+      "review": "Controller composes actual ports, first actual Settle relocation, reinforcement suppression and forced retry/NoMoves unloading. Landing decisions retain last Trade home including absent, signed route counts, directed Peace, regional quota/policy/demand ordering, Goto match persistence, exploration marking, Room threats, damage overrides and absent-unit-owner hostility using real subversion and retained relation bits. Actual landing selection, goals, movement exhaustion and role wakeup implement reposition, cargo/trade completion and raw midpoint fallback without relocating passengers. Cases join ordinary entry/cargo and A04 order completion, test actual format conversion and preserve W06 low-seven behavior. Missing consumed Goto-region state stops after earlier effects. Full naval destination policy, A04 orchestration, desktop composition and complete-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/NavalTransport.cs",
+        "src/OpenCiv2.Core/Ai/NavalUnload.cs",
+        "src/OpenCiv2.Core/HutEntry.cs",
+        "src/OpenCiv2.Core/State/SemanticFlags.cs",
+        "src/OpenCiv2.Formats/FlagConversion.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/HutCases.cs",
+        "tests/OpenCiv2.FoundationCases/NavalUnloadCases.cs"
+      ],
+      "sharedGroups": [
+        "A05.transport-reorder-retry",
+        "A05.unload-absent-owner-relations",
+        "A05.unload-last-home-routes",
+        "A05.unload-midpoint-missing-state",
+        "A05.unload-no-moves-exploration-formats",
+        "A05.unload-reposition-direction",
+        "A05.unload-room-threat-damage",
+        "A05.unload-trade-wake-peace",
+        "W06.hut-barbarian-placement-types",
+        "W06.hut-mercenary-types-home",
+        "W06.hut-metals-admission",
+        "W06.hut-nomads-scrolls-redirects",
+        "W06.hut-override-regional-flags",
+        "W06.hut-private-city-failures",
+        "W06.hut-redirect-gates-capacity",
+        "W06.hut-tribe-creation-failures"
+      ]
     }
   ]
 }

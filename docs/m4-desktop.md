@@ -4433,3 +4433,45 @@ Unloading, naval destination policy and complete transport dispatch remain open,
 alongside other specialized/site/barbarian choices, full AI/turn scheduling,
 wider desktop composition and complete human/AI-game acceptance. Browser and
 cross-platform execution remain deferred.
+
+## A05 unloading and transport control
+
+`NavalTransport.Choose` now composes actual port selection, first actual Settle
+relocation and unloading around the negative-counter, NoMoves, reinforcement
+and retry gates. Port Hold returns before stack reordering; an exhausted ship
+can complete unloading before its parent's direct no-moves return.
+
+`NavalUnload` retains trade-home/route decisions, cargo-demand overrides,
+Goto-region matches, exploration markers, damage and directed treaty behavior.
+It uses actual landing scores for repositioning, current goals, movement
+exhaustion and role wakeup for cargo/trade completion, and raw arithmetic
+midpoints for the final naval goal. Passengers are woken without relocation.
+Missing consumed Goto-region state remains an explicit boundary after earlier
+valid effects, including a transport-request marker.
+
+The live model and F06 conversion now retain TransportRequested and the upper
+relationship bits used by A05's absent-unit-owner hostility read. Tests exercise
+the subversion/relationship calculation, round trips, clearing or changing live
+values through opaque-preserving export, and unchanged W06 low-seven settlement
+checks. Controller groups cover NoMoves before port selection, first matching
+sleeper, actual direction completion, trade Peace, last absent home, signed
+route counts, Room/damage overrides, first actual settler relocation, port Hold
+and reinforcement/retry/turn gates. A nearby-city fixture initially favored
+repositioning correctly; moving that destination farther away isolates the
+intended immediate-unload case.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1264 of 1266**, with the two existing
+platform/audio skips. The shared probe passed **1231 groups** across 142 coverage
+families; source identity verified **688 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-naval-unload-native.json` | `6041e4e5b3aedc0a685a9ca709046f7cb9ff6a34593e0d14f42ac28891fe8792` |
+| `m4-naval-unload-identity.json` | `733706b20541f344abd1f5302f874a14c784db7b2292a11899df51dc89ce258d` |
+
+Naval war/trade/exploration destinations and the complete sea prefix remain
+open, alongside other specialized/site/barbarian choices, full A04/A01 and turn
+scheduling, wider desktop composition and complete human/AI-game acceptance.
+Browser and cross-platform execution remain deferred.

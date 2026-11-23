@@ -86,7 +86,7 @@ public static partial class FoundationSuite
     private static void HutOverrideAndRegionalFlags()
     {
         for (int bits = 0; bits < 256; ++bits)
-        { Equal((byte)(bits & 127), StateConversion.EncodeRegionalPresence(StateConversion.DecodeRegionalPresence((byte)bits))); }
+        { Equal((byte)bits, StateConversion.EncodeRegionalPresence(StateConversion.DecodeRegionalPresence((byte)bits))); }
         foreach (int bits in new[] { 0, 1, 32, 64, 128, 192 })
         {
             bool overrideCity = (bits & 127) == 0;

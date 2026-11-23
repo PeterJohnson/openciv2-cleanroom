@@ -831,3 +831,14 @@ signed capacity, fallback draws, shared-distance replacement and retained policy
 reads. They complete fallback Hold through A04 and execute a selected port Goto
 through actual U04/U03/U02 movement. Port/unload/controller composition and full
 game acceptance remain open.
+
+A05 unloading/controller cases run actual entry, cargo scan, port selection,
+landing scoring, exhaustion, goals and wakeup. They cover NoMoves before port
+selection, first matching sleeper, reposition orders, trade-only peace gates,
+last absent home and signed route counts, retained Goto-region matches, damage
+overrides, absent-unit-owner hostility, raw midpoint goals, first actual settler
+relocation, port Hold and reinforcement/retry/turn gates. F06 conversions preserve
+the consumed upper relationship bits and TransportRequested; W06 low-seven
+settlement checks remain unchanged. Missing relevant Goto-region state retains
+prior transport marking. Full naval destination policy and game acceptance remain
+open.

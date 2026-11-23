@@ -94,6 +94,9 @@ public record struct Relationship
     public bool CityCaptured;
     public bool MetThisTurn;
     public bool SpyChat;
+    // A05's absent-unit-owner hostility read consumes the unnamed upper relationship bits.
+    // SpyChat owns bit zero of this octet; the remaining bits retain their F06 values.
+    public byte RetainedHighFlags;
 }
 
 /// <summary>F02 Appendix A: logical settings; unassigned stored bits belong to adapters.</summary>
@@ -117,6 +120,9 @@ public record struct RegionalPresence
     // W06 settlement override consumes these two additional retained regional restrictions.
     // F06 maps their independent values to the remaining low-seven flag components.
     public byte SettlementRestrictions;
+    public bool TransportRequested;
+    public readonly bool HasSettlementRestrictions => CitiesWithoutPeace || CitiesWithPeace || MilitaryWithoutPeace
+        || MilitaryWithPeace || StrongerEnemy || SettlementRestrictions != 0;
 }
 
 /// <summary>S01 Appendix A: logical settings; unassigned stored bits belong to adapters.</summary>

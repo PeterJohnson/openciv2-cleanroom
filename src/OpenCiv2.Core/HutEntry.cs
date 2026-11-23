@@ -108,7 +108,7 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
         {
             int region = world.Map.TileAt(point).Region;
             if (world.Civilizations[actor].ContinentCities[region] == 0
-                && (world.Civilizations[actor].ContinentFlags[region] == default || near > 12)
+                && (!world.Civilizations[actor].ContinentFlags[region].HasSettlementRestrictions || near > 12)
                 && world.Civilizations[actor].ContinentCities[region] == 0)
             { outcome = 0; }
         }

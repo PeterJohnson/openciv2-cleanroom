@@ -133,7 +133,7 @@ public static partial class StateConversion
         (value.HasAllied ? 0x100U : 0U) |
         (value.FemaleLeader ? 0x200U : 0U));
 
-    public const uint RelationshipMask = 0x1ff7fff;
+    public const uint RelationshipMask = 0xffff7fff;
 
     public static Relationship DecodeRelationship(uint bits) => new()
     {
@@ -160,7 +160,8 @@ public static partial class StateConversion
         WarThisTurn = (bits & 0x200000) != 0,
         CityCaptured = (bits & 0x400000) != 0,
         MetThisTurn = (bits & 0x800000) != 0,
-        SpyChat = (bits & 0x1000000) != 0
+        SpyChat = (bits & 0x1000000) != 0,
+        RetainedHighFlags = (byte)((bits >> 24) & 0xfe)
     };
 
     public static uint EncodeRelationship(Relationship value) => (uint)(
@@ -187,7 +188,8 @@ public static partial class StateConversion
         (value.WarThisTurn ? 0x200000U : 0U) |
         (value.CityCaptured ? 0x400000U : 0U) |
         (value.MetThisTurn ? 0x800000U : 0U) |
-        (value.SpyChat ? 0x1000000U : 0U));
+        (value.SpyChat ? 0x1000000U : 0U) |
+        ((uint)(value.RetainedHighFlags & 0xfe) << 24));
 
     public const byte SpaceshipStatusMask = 0x1f;
 
@@ -207,7 +209,7 @@ public static partial class StateConversion
         (value.FusionAtLaunch ? 0x8U : 0U) |
         (value.FirstArrivalVictory ? 0x10U : 0U));
 
-    public const byte RegionalPresenceMask = 0x7f;
+    public const byte RegionalPresenceMask = 0xff;
 
     public static RegionalPresence DecodeRegionalPresence(byte bits) => new()
     {
@@ -216,7 +218,8 @@ public static partial class StateConversion
         MilitaryWithoutPeace = (bits & 0x4) != 0,
         MilitaryWithPeace = (bits & 0x8) != 0,
         StrongerEnemy = (bits & 0x10) != 0,
-        SettlementRestrictions = (byte)((bits >> 5) & 3)
+        SettlementRestrictions = (byte)((bits >> 5) & 3),
+        TransportRequested = (bits & 0x80) != 0
     };
 
     public static byte EncodeRegionalPresence(RegionalPresence value) => (byte)(
@@ -225,7 +228,8 @@ public static partial class StateConversion
         (value.MilitaryWithoutPeace ? 0x4U : 0U) |
         (value.MilitaryWithPeace ? 0x8U : 0U) |
         (value.StrongerEnemy ? 0x10U : 0U) |
-        ((uint)(value.SettlementRestrictions & 3) << 5));
+        ((uint)(value.SettlementRestrictions & 3) << 5) |
+        (value.TransportRequested ? 0x80U : 0U));
 
     public const ushort ScenarioOptionsMask = 0x807f;
 

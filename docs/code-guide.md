@@ -796,7 +796,13 @@ retains cargo and port/landing state across retries. `NavalPorts.Select` uses
 actual connectivity, regional quota, stack counts, Goto and current-goal services
 for strict port selection and fallback recruitment. Its Hold result belongs to
 A04's shared completion path; fallback can replace the shared nearest distance
-with the actual home settler count.
+with the actual home settler count. `NavalTransport.Choose` composes real port
+selection, first-settler relocation and `NavalUnload` around NoMoves/retry and
+reinforcement gates. Unloading uses actual landing scores, goals, exhaustion
+and role wakeup; it selects orders without relocating passengers. The format
+adapter now carries TransportRequested and the upper relationship bits consumed
+by A05's absent-unit-owner hostility query. Hut settlement still tests only
+the regional low-seven components. Full sea-goal selection remains open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
