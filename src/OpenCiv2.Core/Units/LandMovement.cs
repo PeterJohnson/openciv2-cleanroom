@@ -1,5 +1,6 @@
 using OpenCiv2.Base.Randomness;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
 
@@ -16,7 +17,7 @@ public static class LandMovement
 
     /// <summary>Executes an ordinary land step and returns the committed outcome or a public denial code.</summary>
     public static (string Code, bool Changed) Step(
-        GameState world, RuleTables rules, UnitSlot slot, int direction, GameplayRandom random)
+        GameState world, RuleTables rules, UnitSlot slot, int direction, GameplayRandom random, string call = "land-step")
     {
         ref var unit = ref world.Entities.Units.At(slot);
         var flags = unit.Flags;
@@ -53,27 +54,22 @@ public static class LandMovement
             return ("step_not_available", false);
         }
 
-        int road = rules.Cosmic.RoadMovementMultiplier;
-        const MapFeatures rail = MapFeatures.CitySite | MapFeatures.Railroad;
-        const MapFeatures roads = MapFeatures.CitySite | MapFeatures.Road;
-        var origin = map.TileAt(from);
-        int cost = (origin.Features & rail) != 0 && (target.Features & rail) != 0 ? 0
-            : rule.Abilities.Alpine || (origin.Features & roads) != 0 && (target.Features & roads) != 0
-            || origin.River && target.River && Math.Abs(offset.X) == 1 && Math.Abs(offset.Y) == 1 ? 1
-            : unchecked((sbyte)rules.Terrain[(int)target.Terrain].MovementCost) * road;
-        int left = Left(world, rules, unit);
-        if (unit.MovesUsed != 0 && left < cost && random.PrimaryModulo("U02.partial-movement", cost) >= left)
+        var stacks = new StackOperations(world, new(100000, 64));
+        int first = stacks.FirstAt(to);
+        var step = new MovementStep(owner, rule.Domain, from, to, target.Terrain, direction,
+            first < 0 ? null : new((ushort)first), map.CityOrUnitOwner(to), CityQueries.At(world, to));
+        byte oldSpent = unit.MovesUsed;
+        var charge = new MovementCharge(world, rules, stacks, random).Apply(slot, step, new(true, true),
+            !world.Multiplayer.Saved.AutoplayActive && world.Multiplayer.LocalHuman == owner, call);
+        if (!charge.Proceed)
         {
-            unit.MovesUsed = unchecked((byte)Allowance(world, rules, unit));
-            return ("movement_spent", true);
+            return (charge.Outcome == MovementChargeOutcome.PartialFailure ? "movement_spent" : "step_not_available", unit.MovesUsed != oldSpent);
         }
 
-        unit.MovesUsed = unchecked((byte)(unit.MovesUsed + cost));
         unit.Flags.Moved = true;
         unit.Flags.Garrison = false;
         unit.LastDirection = (byte)direction;
         unit.Visibility = default;
-        var stacks = new StackOperations(world, new(100000, 64));
         stacks.Relocate(slot.Value, to, false);
         if (rule.Attack == 0)
         {

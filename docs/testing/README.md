@@ -504,3 +504,10 @@ context across yields, complete authored option reading, UN/Manhattan and
 technology gates, ordered AI selection and session actor/victim/capture routing.
 Custom hidden replies reach the real bodies; custom network Chat stops explicitly.
 These are service/content/session checks, not generated desktop-game acceptance.
+
+U02 movement-charge groups cover city-mediated control across land/sea, captured
+versus live cost inputs, road/rail/river precedence, conditional lotteries and
+ordered AI approach/reversal/crowding stops using actual stacks. The desktop
+land-step caller uses the shared charge service; relocation, exhaustion and
+choice failures are checked together. Full directional movement and complete
+generated-game acceptance remain separate from this ordinary-step integration.

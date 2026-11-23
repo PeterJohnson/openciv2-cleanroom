@@ -3602,6 +3602,31 @@
         "V06.city-retained-visits",
         "V06.city-session-routing"
       ]
+    },
+    {
+      "id": "movement-charge",
+      "status": "partial",
+      "contract": "U02 city-aware adjacent control, ordinary step cost, partial-movement lottery and ordered AI charge gates",
+      "publicSurface": "SpatialControl.AdjacentNonalliedCivilization; UnitMovement.StepCost; MovementCharge.Apply; LandMovement.Step",
+      "review": "City-first adjacency preserves the ordered medium bridge, directed Alliance and first-owner result without extra domain/attack/detection filters. Step cost uses captured domain/terrain and live features, Alpine ability and signed terrain costs; mixed City/Road/Rail components and wrapped diagonal rivers are distinct. Charge preserves first-step lottery bypass, prompt/execute/observer/AI gating, partial failure exhaustion, preview mutations, wrapping spent and retained-charge AI approach/reversal/crowding stops with real geometry/control/stack queries. The desktop land-step command now uses this shared service and command-scoped choice keys. Tests cover query medium transitions, cost priority/captures, lottery mode matrix, actual stack gates and direct land-step relocation/failure. This does not complete the U02 dispatcher: mission/combat/transport admission, full publication/arrival/finish/cleanup and generated desktop games remain open; browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/LandMovement.cs",
+        "src/OpenCiv2.Core/Units/MovementCharge.cs",
+        "src/OpenCiv2.Core/Units/SpatialControl.cs",
+        "src/OpenCiv2.Core/Units/UnitMovement.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MovementChargeCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.charge-ai-approach",
+        "U02.charge-ai-reversal-crowding",
+        "U02.charge-failure-land-join",
+        "U02.charge-lottery-preview",
+        "U02.civilization-control",
+        "U02.step-cost-rules"
+      ]
     }
   ]
 }

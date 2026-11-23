@@ -84,7 +84,8 @@ public static partial class LocalPlayCommands
         var target = UnitArgument(request);
         var world = context.World;
         var rules = context.Process.Rules.Definitions;
-        var (code, changed) = LandMovement.Step(world, rules, target.Slot, Number(request, "direction"), context.Gameplay);
+        var (code, changed) = LandMovement.Step(world, rules, target.Slot, Number(request, "direction"), context.Gameplay,
+            FormattableString.Invariant($"move/{context.Correlation.Session.Value}/{context.Correlation.Command.Value}"));
         NamedValue unit = new("unit", new CommandValue.Unit(target));
         if (code == "moved")
         {

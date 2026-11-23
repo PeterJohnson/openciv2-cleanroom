@@ -1,3 +1,4 @@
+using OpenCiv2.Contracts;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
@@ -8,6 +9,29 @@ namespace OpenCiv2.Core.Units;
 /// records and rules; they do not validate a player's command or execute a step.</summary>
 public static class UnitMovement
 {
+    /// <summary>U02 actual step cost. Domain and destination terrain are captured by the movement
+    /// iteration; tile features, unit Alpine ability and rule values are read at charge time.</summary>
+    public static int StepCost(GameState world, RuleTables rules, in Unit unit, RuleDomain domain,
+        MapPoint from, MapPoint to, Terrain destinationTerrain)
+    {
+        int road = rules.Cosmic.RoadMovementMultiplier;
+        if (domain != RuleDomain.Land)
+        { return road; }
+        var origin = world.Map.TileAt(from);
+        var destination = world.Map.TileAt(to);
+        const MapFeatures rail = MapFeatures.CitySite | MapFeatures.Railroad;
+        const MapFeatures roads = MapFeatures.CitySite | MapFeatures.Road;
+        if ((origin.Features & rail) != 0 && (destination.Features & rail) != 0)
+        { return 0; }
+        if (rules.Units[unit.Type.Value].Abilities.Alpine
+            || (origin.Features & roads) != 0 && (destination.Features & roads) != 0
+            || origin.River && destination.River
+            && world.Map.Geometry.WrappedDx(from.X, to.X, world.Globals.Rules.FlatWorld) == 1
+            && Math.Abs(from.Y - to.Y) == 1)
+        { return 1; }
+        return unchecked((sbyte)rules.Terrain[(int)destinationTerrain].MovementCost * road);
+    }
+
     public static int MaximumHitPoints(RuleTables rules, in Unit unit) =>
         unchecked((sbyte)rules.Units[unit.Type.Value].HitPoints);
 

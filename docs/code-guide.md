@@ -613,3 +613,12 @@ options; the caller supplies the Spy annotation and filename/search context.
 `Session/CityMissionOperation` routes menu/body/incident/capture decisions and
 requires actual P06/P07 presentation adapters. Movement admission, full desktop
 content binding and network chat interception remain separate work.
+
+`Units/MovementCharge` owns U02's ordinary charge and ordered AI gates after
+entry/mission/combat checks. `UnitMovement.StepCost` distinguishes captured domain
+and terrain from live features, abilities and costs. The city-aware
+`SpatialControl.AdjacentNonalliedCivilization` query can bridge terrain media as
+it scans cities. `LandMovement.Step` and the desktop player command now use this
+charge service, preserving partial-movement failures and actual relocation.
+The full directional dispatcher still owns admission, publication, arrival,
+common finish and cleanup; these are not supplied by the charge helper.
