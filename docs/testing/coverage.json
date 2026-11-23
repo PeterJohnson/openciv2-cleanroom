@@ -4650,6 +4650,34 @@
         "A06.air-superiority-admission-strength",
         "A06.air-superiority-stack-gates"
       ]
+    },
+    {
+      "id": "city-founding-player-and-ai",
+      "status": "partial",
+      "contract": "C01 Founding from a unit and Player Build City / Join City command",
+      "publicSurface": "CityFounding.Begin/BeginPlayer; CityFounding.Operation.Resume",
+      "review": "Composes actual CityCreation, basic U01 deletion, C01 removal and nested V01/V06 lifecycle decisions. Cases cover creation-before-loss, surviving stack companions, captured-center feature clearing, memory without exploration, supplied foreign/inactive city slots and direct custom role/ocean inputs. Names accept fifteen Unicode scalars and reject oversized direct arguments after creation while retaining effects. Player cases cover exact adjacency, airbases, signed size/unsigned Aqueduct thresholds, owner-independent joining without recalculation, created-city naming, live year/tutorial/final processing mode, cancellation naming resets, token/capital prefixes, supported-unit destruction and a real nested spy incident. Cosmetic failures remain diagnostic; required notice/removal failure and disposal retain prefixes. General text-response session/desktop wiring, A03 caller composition and complete-game acceptance remain open; browser/cross-platform execution remains deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityFounding.Player.cs",
+        "src/OpenCiv2.Core/City/CityFounding.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityFoundingCases.cs"
+      ],
+      "sharedGroups": [
+        "C01.founding-cancellation-effects",
+        "C01.founding-cancellation-supported-units",
+        "C01.founding-capacity-authority",
+        "C01.founding-creation-memory",
+        "C01.founding-direct-custom-name-bounds",
+        "C01.founding-failure-disposal",
+        "C01.founding-naming-city-visit",
+        "C01.founding-nested-lifecycle",
+        "C01.founding-player-admission",
+        "C01.founding-player-join",
+        "C01.founding-supplied-city",
+        "C01.founding-visibility-cosmetic-failure"
+      ]
     }
   ]
 }

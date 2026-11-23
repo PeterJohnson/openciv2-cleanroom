@@ -71,6 +71,13 @@ Appendix D. The generated desktop gameplay caller remains open.
 actual naming, C06 defender eligibility, C08 presence, U01 creation, W03
 knowledge, `CityArea` claims and C07 `Commodities`. The local founding command
 uses this constructor before the full C03 worker/output calculation.
+`City/CityFounding` now composes C01 founding and player Build/Join City with
+actual basic unit deletion, city removal and nested lifecycle decisions. Naming
+pauses after creation; cancellation removes that city and then adjusts the live
+name cursor. Accepted founding clears center improvements and remembers features;
+joining only changes size and deletes the unit. Its final city visit retains the
+calculation processing mode until a reply. General session text replies, desktop
+registration and A03 composition remain open.
 `CityQueries` also supplies region/port and coastal predicates. Commodity
 refresh includes the specified zero road-accumulator repair. `TradeRoutes` supplies
 C07 directional removal, slot writing, append/replacement and refresh, using the

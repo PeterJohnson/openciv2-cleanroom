@@ -892,3 +892,13 @@ reach, first bases, sequential Airlifted objectives, Vendetta and absent-home
 zero/Hold. Raids retain raw regions, all friendly-neighbor bonuses, later ties,
 HasOrders and historical-scenario bypass. Actual recovery Goto executes through
 A04/U04/U03/U02. Full tactical/turn/desktop acceptance remains open.
+
+C01 founding groups cover actual creation/deletion, surviving stack companions,
+feature memory without exploration, supplied foreign/inactive city slots and
+separate player eligibility. Joining preserves signed-size wrapping, unsigned
+Aqueduct thresholds and existing economy values. Naming acceptance, empty/Unicode
+names, cancellation resets, supported-unit destruction, final city visits and
+real nested lifecycle incidents preserve committed effects. Cosmetic failures
+remain diagnostic; required failures and disposal do not roll back creation.
+The public interaction API still needs text replies before general desktop
+naming can be wired; these groups do not claim desktop/full-game acceptance.

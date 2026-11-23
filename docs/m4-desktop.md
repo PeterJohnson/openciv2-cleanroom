@@ -4661,3 +4661,49 @@ eight identity tests and three coverage tests passed.
 A03 settlement/work and full C01 founding, W06 barbarians, full A04/A01/turn
 orchestration, generated desktop composition and complete human/AI-game
 acceptance remain open. Browser and cross-platform execution remain deferred.
+
+## C01 founding and player Build/Join City mechanics
+
+`CityFounding` now supplies the direct founding helper and resumable player
+Build/Join City procedure. Creation uses actual C01 naming/allocation; founding
+uses basic U01 deletion with real nested V01/V06 checks, clears the specified
+center improvements and remembers features for civilizations 1 through 7 without
+adding exploration. Supplied city slots preserve the helper's lack of location,
+owner or occupancy checks. Oversized direct names stop safely after preceding
+creation effects; fifteen Unicode scalar characters are supported.
+
+Player admission retains actual Settle role, Ocean and exact adjacent-city
+checks. Joining uses signed city size against the unsigned Aqueduct threshold,
+without an owner/facility gate or new economy recalculation. Naming pauses after
+city creation. Cancellation performs actual city removal, including supported
+unit loss, before decrementing the live leader name cursor; it does not restore
+creation tokens, capital summaries or earlier naming resets. Acceptance runs
+founding, actual calendar year, required notices/tutorial and a final city visit
+whose reply explicitly clears calculation processing mode.
+
+Twelve groups cover surviving stack companions, feature memory, direct/custom
+inputs, empty/Unicode names, signed population wrapping, cancellation prefixes,
+supported-unit destruction, a real private lifecycle decision, cosmetic failures,
+required publication failures and disposal. Fixture corrections removed access
+to nonexistent barbarian memory, restored the intended turn after incident
+fixture setup and distinguished no-killer loss from conquest history.
+
+The core exposes typed name and city-window decisions. The public session API
+currently only accepts numbered choices; text replies, the founding session
+adapter, desktop registration and generated-game composition remain required.
+The existing restricted Alder Valley command has not been replaced by this step.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1326 of 1328**, with the two existing
+platform/audio skips. The shared probe passed **1293 groups** across 148 coverage
+families; source identity verified **708 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-city-founding-native.json` | `f3fcbc9a89bf06f9f4fac171852bf37cd8f84de74dfe72effcb01086e445c1a5` |
+| `m4-city-founding-identity.json` | `930eb64f9cd4fcfe2a853d0fecc4446013f38ae3b462b5649a69f6d168d595fa` |
+
+A03 settlement/work and its founding join, W06 barbarians, full A04/A01/turn
+orchestration, generated desktop composition and complete human/AI-game
+acceptance remain open. Browser and cross-platform execution remain deferred.
