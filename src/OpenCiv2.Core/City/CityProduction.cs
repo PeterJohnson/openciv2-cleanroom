@@ -67,11 +67,11 @@ public sealed class CityProduction
     private bool Human(int c) => world.Globals.HumanPlayers.Contains(c & 31);
     public Operation Begin(CitySlot city, string call) => new(this, city, call);
 
-    public sealed class Operation(CityProduction production, CitySlot slot, string call)
+    public sealed class Operation(CityProduction production, CitySlot slot, string call) : IDisposable
     {
         private enum Phase { Begin, FirstResearch, SecondResearch, AfterEffects, Finish, Done }
         private Phase phase;
-        private bool faulted;
+        private bool faulted, disposed;
         private int owner, net, cost;
         private int? improvement, wonder;
         private ResearchOperation? child;
@@ -83,8 +83,9 @@ public sealed class CityProduction
         public bool Finished { get; private set; }
         public CityProductionResult? Result { get; private set; }
 
-        public ResearchChoiceNotice? Resume(ResearchReply? reply = null)
+        public ResearchDecision? Resume(ResearchReply? reply = null)
         {
+            ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
             {
                 throw new InvalidOperationException("Failed city production cannot resume.");
@@ -92,10 +93,11 @@ public sealed class CityProduction
 
             try
             { return ResumeCore(reply); }
-            catch { faulted = true; throw; }
+            catch { faulted = true; child?.Dispose(); throw; }
         }
+        public void Dispose() { disposed = true; child?.Dispose(); }
 
-        private ResearchChoiceNotice? ResumeCore(ResearchReply? reply)
+        private ResearchDecision? ResumeCore(ResearchReply? reply)
         {
             MapKnowledge.RequireLocal(World);
             if (Finished)
@@ -126,6 +128,10 @@ public sealed class CityProduction
                         }
 
                         reply = null;
+                        if (!child.Finished)
+                        { return null; }
+                        child.Dispose();
+                        child = null;
                         if (phase == Phase.FirstResearch)
                         {
                             child = production.research.Complete(owner, 0, call + "/darwin/1");

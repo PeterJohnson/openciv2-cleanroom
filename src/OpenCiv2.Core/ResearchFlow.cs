@@ -20,15 +20,24 @@ public interface IResearchCompletionEffects
     void FirstCivilization(int civilization);
 }
 
-/// <summary>A session-owned research operation. Resume advances through synchronous effects and
-/// yields only at a research choice. The owner admits replies and protects the world between calls.</summary>
-public abstract class ResearchOperation
+public abstract record ResearchDecision
+{
+    public sealed record Grant(ResearchGrantDecision Decision) : ResearchDecision;
+}
+
+/// <summary>A session-owned research operation with retained selection and acquisition decisions.
+/// The owner admits replies and protects the world between calls.</summary>
+public abstract class ResearchOperation : IDisposable
 {
     public bool Finished { get; protected set; }
     public int? Result { get; protected set; }
-    private bool faulted;
-    public ResearchChoiceNotice? Resume(ResearchReply? reply = null)
+    private bool faulted, disposed;
+    private readonly List<Exception> presentationFailures = [];
+    public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
+    protected void Report(IEnumerable<Exception> failures) => presentationFailures.AddRange(failures);
+    public ResearchDecision? Resume(ResearchReply? reply = null)
     {
+        ObjectDisposedException.ThrowIf(disposed, this);
         if (faulted)
         {
             throw new InvalidOperationException("A failed research operation cannot resume.");
@@ -36,9 +45,11 @@ public abstract class ResearchOperation
 
         try
         { return ResumeCore(reply); }
-        catch { faulted = true; throw; }
+        catch { faulted = true; Release(); throw; }
     }
-    protected abstract ResearchChoiceNotice? ResumeCore(ResearchReply? reply);
+    protected abstract ResearchDecision? ResumeCore(ResearchReply? reply);
+    protected virtual void Release() { }
+    public void Dispose() { disposed = true; Release(); }
 }
 
 /// <summary>V03 §§8–9 full accumulation and completion, with real grant, production reset, city
@@ -61,12 +72,14 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
 
     private sealed class Completion(ResearchFlow flow, int c, int source, string call) : ResearchOperation
     {
-        private enum Phase { Begin, InitialChoice, Grant, FinalChoice, Done }
+        private enum Phase { Begin, InitialChoice, BeginGrant, Grant, FinalChoice, Government, Done }
         private Phase phase;
         private ResearchSelection? selection;
+        private ResearchGrants.Operation? grant;
+        private ResearchGovernmentPrompts.Operation? government;
         private int completed;
 
-        protected override ResearchChoiceNotice? ResumeCore(ResearchReply? reply)
+        protected override ResearchDecision? ResumeCore(ResearchReply? reply)
         {
             MapKnowledge.RequireLocal(flow.World);
             if (Finished)
@@ -87,7 +100,7 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                         }
                         else
                         {
-                            phase = Phase.Grant;
+                            phase = Phase.BeginGrant;
                         }
 
                         break;
@@ -99,16 +112,27 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
 
                         reply = null;
                         completed = flow.World.Civilizations[c].Researching;
-                        phase = completed < 0 ? Phase.Done : Phase.Grant;
+                        phase = completed < 0 ? Phase.Done : Phase.BeginGrant;
                         break;
-                    case Phase.Grant:
+                    case Phase.BeginGrant:
                         if (flow.Effects.NoticeMode != 2)
                         {
                             flow.World.Civilizations[c].ResearchProgress = 0;
                         }
 
                         flow.World.Civilizations[c].Researching = -1;
-                        flow.Grants.Grant(c, completed, source, false, call + "/grant");
+                        grant = flow.Grants.Begin(c, completed, source, false, call + "/grant");
+                        phase = Phase.Grant;
+                        break;
+                    case Phase.Grant:
+                        if (grant!.Resume(reply?.Selected) is { } acquisition)
+                        { return new ResearchDecision.Grant(acquisition); }
+                        reply = null;
+                        if (!grant.Completed)
+                        { return null; }
+                        Report(grant.PresentationFailures);
+                        grant.Dispose();
+                        grant = null;
                         if (flow.World.Globals.Turn == 0 || !flow.Human(c))
                         {
                             var selected = flow.Effects.SelectedCity;
@@ -138,7 +162,15 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                         }
 
                         reply = null;
-                        flow.GovernmentPrompts.Run(c, completed);
+                        government = flow.GovernmentPrompts.Begin(c, completed);
+                        phase = Phase.Government;
+                        break;
+                    case Phase.Government:
+                        if (government!.Resume(reply?.Selected) is { } change)
+                        { return new ResearchDecision.Grant(new ResearchGrantDecision.Government(change)); }
+                        reply = null;
+                        government.Dispose();
+                        government = null;
                         phase = Phase.Done;
                         break;
                     default:
@@ -148,6 +180,7 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                 }
             }
         }
+        protected override void Release() { grant?.Dispose(); government?.Dispose(); }
     }
 
     private void LocalNotices(int c, int completed, string call)
@@ -204,7 +237,7 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
         private ResearchOperation? completion;
         private ResearchSelection? selection;
 
-        protected override ResearchChoiceNotice? ResumeCore(ResearchReply? reply)
+        protected override ResearchDecision? ResumeCore(ResearchReply? reply)
         {
             if (Finished)
             {
@@ -243,6 +276,11 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                         }
 
                         reply = null;
+                        if (!completion.Finished)
+                        { return null; }
+                        Report(completion.PresentationFailures);
+                        completion.Dispose();
+                        completion = null;
                         phase = phase == Phase.Threshold ? Phase.FreeCheck : Phase.ChoiceCheck;
                         break;
                     case Phase.FreeCheck:
@@ -290,5 +328,6 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                 }
             }
         }
+        protected override void Release() => completion?.Dispose();
     }
 }

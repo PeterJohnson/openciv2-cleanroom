@@ -268,8 +268,13 @@ V02 government decisions, including recursive Great Library grants.
 `ResearchGrantOperation` routes those choices privately and declines on cancel or
 timeout. The retained constructor requires both child services and rejects the
 synchronous `Grant` entry. `Begin` also accepts explicitly supplied synchronous
-adapters during migration. Captured technology, theft and huts use the continuation;
-civilization catch-up and research completion still need migration.
+adapters during migration. Captured technology, theft, huts and research completion
+use the continuation; civilization catch-up still needs migration.
+`ResearchOperation` is disposable and returns selection or acquisition decisions.
+Completion retains its grant and final government prompt; accumulation waits for
+completion before its free-advance check. Darwin retains both sequential completions
+before its production tail. `ResearchFlowOperation` and the desktop turn route the
+shared decisions and dispose their nested operations on exit.
 `ResearchSelection` suspends for an accepted choice and retains its recommendation;
 `ResearchGoals` owns informational goal/advice data. The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile

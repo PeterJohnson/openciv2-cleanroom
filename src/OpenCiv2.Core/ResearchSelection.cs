@@ -11,7 +11,7 @@ public enum ResearchTopic { Advance, Unit, Improvement }
 public enum ResearchAdviceKind { None, Unlocks, SubsequentAdvances }
 public sealed record ResearchOption(int Identity, string Name, int? FutureNumber = null, int? Prerequisite = null, string? PrerequisiteName = null);
 public sealed record ResearchAdvice(int Recommendation, string Name, int? FutureNumber, ResearchAdviceKind Kind, OwnedList<ResearchOption> Items);
-public sealed record ResearchChoiceNotice(int Civilization, int Recommendation, bool HasInvention, bool AlternatePosition, OwnedList<ResearchOption> Options);
+public sealed record ResearchChoiceNotice(int Civilization, int Recommendation, bool HasInvention, bool AlternatePosition, OwnedList<ResearchOption> Options) : ResearchDecision;
 public readonly record struct ResearchReply(int Selected, int Extra = 0);
 public sealed record ResearchGoalNotice(int Civilization, ResearchTopic Category, bool Icons, OwnedList<ResearchOption> Options, OwnedList<ResearchTopic> OtherCategories);
 public sealed record ResearchPathNotice(int Civilization, int Goal, string Name, bool Stealing, OwnedList<ResearchOption> Path);

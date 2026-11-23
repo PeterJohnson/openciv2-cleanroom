@@ -2569,9 +2569,10 @@
       "id": "research-grants",
       "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
       "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller; retained ResearchGrants/ResearchGovernmentPrompts operations and private ResearchGrantOperation",
-      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Synchronous adapters remain for existing callers; remaining acquisition-parent migration and desktop composition remain pending; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred. Begin also permits explicitly supplied synchronous adapters during caller migration; the retained constructor still rejects synchronous Grant. Captured technology, ordinary/targeted theft and hut scrolls now use Begin; civilization catch-up and research completion remain to migrate.",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Synchronous adapters remain for existing callers; remaining acquisition-parent migration and desktop composition remain pending; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred. Begin also permits explicitly supplied synchronous adapters during caller migration; the retained constructor still rejects synchronous Grant. Captured technology, ordinary/targeted theft and hut scrolls now use Begin; civilization catch-up and research completion remain to migrate. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation and civilization catch-up remain open.",
       "status": "partial",
       "sharedGroups": [
+        "C06.darwin-retained-government-order",
         "M3.land-step-zones",
         "M3.local-food-turn",
         "M3.local-mood-turn",
@@ -2586,8 +2587,12 @@
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
         "U02.movement-retained-hut-grant",
+        "V03.accumulation-retained-free-order",
         "V03.acquisition-grant-private-sessions",
         "V03.captured-technology-retained-grant",
+        "V03.completion-retained-emissary",
+        "V03.completion-retained-order",
+        "V03.flow-private-government-failure",
         "V03.full-research-cost-vectors",
         "V03.golden-age-weighted-selection",
         "V03.government-prompt-transitions",
@@ -2623,6 +2628,7 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
+        "tests/OpenCiv2.FoundationCases/ResearchFlowContinuationCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchGrantContinuationCases.cs"
       ]
@@ -2630,10 +2636,11 @@
     {
       "id": "research-flow",
       "contract": "V03 sections 5\u20136,8\u20139; C06 production reset; C03 mood query; V02 research prompts; desktop city upkeep",
-      "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation",
-      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs and generated-game callers remain open; V01 catch-up joins ResearchGrants; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred.",
+      "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation; disposable ResearchOperation with ResearchDecision; private ResearchFlowOperation",
+      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs and generated-game callers remain open; V01 catch-up joins ResearchGrants; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation and civilization catch-up remain open.",
       "status": "partial",
       "sharedGroups": [
+        "C06.darwin-retained-government-order",
         "M3.land-step-zones",
         "M3.local-food-turn",
         "M3.local-mood-turn",
@@ -2647,7 +2654,11 @@
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
+        "V03.accumulation-retained-free-order",
         "V03.completion-government-failure",
+        "V03.completion-retained-emissary",
+        "V03.completion-retained-order",
+        "V03.flow-private-government-failure",
         "V03.research-accumulation-philosophy-and-free-advance",
         "V03.research-accumulation-widths-and-initial-choice",
         "V03.research-advice-ordering-and-future-labels",
@@ -2663,18 +2674,20 @@
         "src/OpenCiv2.Core/ResearchSelection.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/ResearchFlowOperation.cs",
         "tools/dotnet/run_local_play_native.py"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
-        "tests/OpenCiv2.FoundationCases/ResearchFlowCases.cs"
+        "tests/OpenCiv2.FoundationCases/ResearchFlowCases.cs",
+        "tests/OpenCiv2.FoundationCases/ResearchFlowContinuationCases.cs"
       ]
     },
     {
       "id": "city-production",
       "contract": "C06 local production parent and nonunit completion; C08 buildings/wonders; V03 Darwin; V07 spaceship; W03 Apollo",
       "publicSurface": "CityProduction resumable local dispatch; retained CompletedImprovement; desktop production choices/turn/load for Temple and Library",
-      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred.",
+      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation and civilization catch-up remain open.",
       "status": "partial",
       "sharedGroups": [
         "C06.city-production-ai-spaceship-retarget",
@@ -2685,6 +2698,7 @@
         "C06.city-production-palace-and-ai-remainder",
         "C06.city-production-spaceship-and-automation",
         "C06.city-production-wonder-race-and-loss",
+        "C06.darwin-retained-government-order",
         "M3.land-step-zones",
         "M3.local-food-turn",
         "M3.local-mood-turn",
@@ -2697,7 +2711,11 @@
         "M4.local-buying-and-selling",
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
-        "M4.local-research-grant-turn"
+        "M4.local-research-grant-turn",
+        "V03.accumulation-retained-free-order",
+        "V03.completion-retained-emissary",
+        "V03.completion-retained-order",
+        "V03.flow-private-government-failure"
       ],
       "sources": [
         "src/OpenCiv2.Core/City/CityProduction.cs",
@@ -2713,7 +2731,8 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/CityProductionCases.cs",
-        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+        "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
+        "tests/OpenCiv2.FoundationCases/ResearchFlowContinuationCases.cs"
       ]
     },
     {

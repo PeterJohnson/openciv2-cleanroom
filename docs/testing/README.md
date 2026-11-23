@@ -53,8 +53,13 @@ technology, both theft paths and hut scrolls now suspend inside actual grants.
 Integration cases preserve the distinct theft-flag/escape order, captured-city
 presentation after grant completion, and U02 movement charge/relocation before a
 private hut government choice, with final direction/cleanup afterward. The real
-Anarchy setter recalculates owned cities. Civilization catch-up and research
-completion remain to migrate; desktop production composition is still pending.
+Anarchy setter recalculates owned cities. Research completion and accumulation now
+retain grant/emissary and final government choices, including the two independently
+ordered government proposals and the free-advance flag check. Darwin cases wait
+through the first government question before the second completion and later
+production reset. Private recipient, cancel/timeout and disposal/failure cases
+exercise actual children. Civilization catch-up still needs migration; complete
+desktop production composition is pending.
 Embassy/investigation groups distinguish plain deletion, cargo destruction and
 escape, captured Spy/type state, live investigation flags and one-point movement.
 They exercise actual nested elimination before final notices. Session cases verify

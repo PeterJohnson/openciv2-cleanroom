@@ -111,7 +111,8 @@ public static partial class LocalPlayCommands
         private CityProduction.Operation? production;
         private int foodSurplus;
         private bool largeBalancedCity, cityDisorder;
-        private ResearchChoiceNotice? pendingResearch;
+        private ResearchDecision? pendingResearch;
+        private InteractionSpec? researchIntelligence;
         private bool cityPassFinished, maintenanceFinished, assessed;
         private int startGold;
         private CivilizationFinanceOperation? finance;
@@ -138,7 +139,9 @@ public static partial class LocalPlayCommands
             }
 
             activeWorld = null;
+            research?.Dispose();
             research = null;
+            production?.Dispose();
             production = null;
             pendingResearch = null;
             governmentTurn = null;
@@ -217,17 +220,7 @@ public static partial class LocalPlayCommands
                 input = new();
             }
 
-            ResearchReply? reply = null;
-            if (pendingResearch is { } pending)
-            {
-                if (input.Kind != OperationInputKind.Choice || input.Choice is not int selected
-                    || !pending.Options.Any(o => o.Identity == selected))
-                {
-                    return ResearchDecision(pending);
-                }
-
-                reply = new(selected);
-            }
+            ResearchReply? reply = ResearchFlowInteraction.Reply(pendingResearch, input);
             if (!upkeepCommitted)
             {
                 startGold = CivilizationFinances.NormalizeTreasury(world, context.Actor.Civilization.Value);
@@ -245,10 +238,12 @@ public static partial class LocalPlayCommands
                     reply = null;
                     if (pendingResearch is { } choice)
                     {
-                        return ResearchDecision(choice);
+                        return ResearchPrompt(context, choice);
                     }
-
+                    if (!production.Finished)
+                    { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
                     var result = production.Result!;
+                    production.Dispose();
                     production = null;
                     research = AfterProduction(context, researchCity, result);
                 }
@@ -258,9 +253,11 @@ public static partial class LocalPlayCommands
                     reply = null;
                     if (pendingResearch is { } request)
                     {
-                        return ResearchDecision(request);
+                        return ResearchPrompt(context, request);
                     }
-
+                    if (!research.Finished)
+                    { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
+                    research.Dispose();
                     research = null;
                     MaintainBuildings(context, researchCity);
                     FinishCity(context, researchCity);
@@ -396,9 +393,13 @@ public static partial class LocalPlayCommands
             public void SeekWarAlly(int from, int human) => throw Outside();
         }
 
-        private static OperationStep ResearchDecision(ResearchChoiceNotice pending) =>
-            new(CommandStatus.AwaitingInteraction,
-                Interaction: new("Choose the next advance.", null, null, new(pending.Options.Select(o => o.Identity)), Cancellable: false));
+        private OperationStep ResearchPrompt(OperationContext context, ResearchDecision pending)
+        {
+            context.Publish();
+            return new(CommandStatus.AwaitingInteraction, Interaction: ResearchFlowInteraction.Prompt(context, pending,
+                c => c == context.Actor.Civilization.Value ? context.Actor.Participant
+                    : throw new InvalidOperationException("The authored profile has no other research recipient"), ref researchIntelligence));
+        }
 
         private static OwnedList<NamedValue> TurnValue(GameState world) =>
             new([new("turn", new CommandValue.Integer(world.Globals.Turn))]);
@@ -667,7 +668,8 @@ public static partial class LocalPlayCommands
             public void WonderExpired(WonderExpiryNotice notice) => throw OutsideProfile();
             public void RefreshStatus() => throw OutsideProfile();
             public int ConfirmGovernment(ResearchGovernmentChoice choice) => throw OutsideProfile();
-            public void RevolutionStarting(int civilization) => throw OutsideProfile();
+            public void RevolutionStarting(int civilization) => current().Effect("government.revolution_started",
+                new([new("civilization", new CommandValue.Integer(civilization))]));
             public void Tutorial(int civilization, ResearchTutorial tutorial) => throw OutsideProfile();
         }
 

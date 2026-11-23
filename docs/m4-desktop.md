@@ -3915,3 +3915,43 @@ tests and three coverage tests passed.
 | --- | --- |
 | `m4-acquisition-native.json` | `f445d1283cfe5fa79f850153609e5e54e26dfc8cb65ad49c8af637281fc25c15` |
 | `m4-acquisition-identity.json` | `63119e9417a673d41f983feb7a399304640c43923c3df653d720a41a84577daa` |
+
+## Retained research completion and Darwin checkpoint
+
+ResearchFlow now retains its actual grant before querying live human/turn state,
+resetting AI production or presenting completion notices. Its final government
+prompt follows the next-research selection and uses the completed identity.
+Declining a source-nonzero grant-time government proposal can therefore lead to
+the independently ordered final proposal; neither stage repeats storage, counts
+or completion notices. Mode2 retains progress across the pause.
+
+Accumulation waits for the threshold completion before testing and clearing the
+one free-advance flag. Darwin likewise waits for the first complete research
+operation, including its government decision, before the second completion and
+the later production effects. ResearchOperation and CityProduction.Operation now
+dispose retained children on cancellation/failure without completing their tails.
+Actual AI emissary reception precedes the production reset; cosmetic reception
+errors propagate through research operations as diagnostics.
+
+ResearchFlowOperation routes private selection, government and emissary decisions.
+The existing desktop turn accepts the same decision union, publishes the pending
+state and disposes completed/abandoned research and production children. Its
+authored profile still admits only its three research identities; this change does
+not claim an executed full desktop government/research game. Informational goal
+presentation, civilization catch-up migration, production movement composition
+and complete M4 acceptance remain open. Browser/cross-platform work is deferred.
+
+Five new shared groups cover both government stages, progress retention,
+free-advance ordering, actual emissary/AI-reset timing, private session decisions,
+cancel/timeout, terminal failures/disposal and Darwin's retained production tail.
+Existing direct/console authored turns and save/resume cases still pass.
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1163 of 1165**, with the two existing
+platform/audio skips. The shared probe passed **1130 groups** across 130 coverage
+families; source identity verified **643 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-research-flow-native.json` | `9f89a638910c366ed68afa9fe469d8d7281d82db7c58aad8bb4b660380ed570e` |
+| `m4-research-flow-identity.json` | `95b247cb567b2c3199a44025bd98acd0b7d870ef1a0954d15674ad135bb2f3be` |

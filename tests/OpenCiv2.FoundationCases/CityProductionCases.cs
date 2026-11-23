@@ -24,9 +24,9 @@ public static partial class FoundationSuite
         public bool WindowShown { get; set; }
         public Action? OnBuilt, OnDraw;
         public Func<CitySlot, int>? OnChoose;
-        public CityProductionFixture()
+        public CityProductionFixture(bool retainGrants = false)
         {
-            Research = new(new GrantFixture(Units.Data));
+            Research = new(new GrantFixture(Units.Data), retainGrants);
             Rules.Cosmic = Rules.Cosmic with { SpaceshipMassThrustParadigm = 75 };
             var orders = new ProductionOrders(World, Rules, c => { Choices.Add(c); return OnChoose?.Invoke(c) ?? NextItem; }, n => Events.Add("wonder-change"));
             Production = new(World, Rules, Units.Production, orders, Research.Flow,

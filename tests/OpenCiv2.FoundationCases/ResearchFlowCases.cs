@@ -16,6 +16,7 @@ public static partial class FoundationSuite
         public RuleState Rules => Grant.Data.Process.Rules;
         public GameplayRandom Random { get; } = new(37, "research-flow");
         public ResearchFlow Flow { get; }
+        public RetainedGrantFixture? Retained { get; }
         public ResearchGoals Goals { get; }
         public bool DiplomacyActive { get; set; }
         public int NoticeMode { get; set; }
@@ -31,7 +32,7 @@ public static partial class FoundationSuite
         public Action? OnCompleted, OnFirst;
         public Func<CitySlot, int> ChooseProduction = _ => 2;
 
-        public ResearchFlowFixture(GrantFixture? grant = null)
+        public ResearchFlowFixture(GrantFixture? grant = null, bool retainGrants = false)
         {
             Grant = grant ?? new();
             for (int a = 0; a < RuleLimits.Advances; ++a)
@@ -46,7 +47,8 @@ public static partial class FoundationSuite
             for (int i = 0; i < RuleLimits.Improvements; ++i)
                 Rules.Definitions.Improvements[i] = Rules.Definitions.Improvements[i] with { Prerequisite = AdvanceReference.Never };
             Goals = new(World, Rules.Definitions, this);
-            Flow = new(World, Rules, Random, Grant.Grants, Grant.GovernmentPrompts,
+            Retained = retainGrants ? new(Grant) : null;
+            Flow = new(World, Rules, Random, Retained?.Grants ?? Grant.Grants, Retained?.Governments ?? Grant.GovernmentPrompts,
                 new(World, Rules.Definitions, slot => ChooseProduction(slot), n => Order.Add("production:" + n.Kind)),
                 new(World, Rules, Grant.Data.Stacks), this, this);
         }
@@ -142,14 +144,14 @@ public static partial class FoundationSuite
         f.Rules.Definitions.Improvements[24] = f.Rules.Definitions.Improvements[24] with { Prerequisite = (AdvanceReference)18 };
         f.Rules.Definitions.Cosmic = f.Rules.Definitions.Cosmic with { ParadropRange = 255 };
         f.OnCompleted = () => { f.World.Globals.GameOptions.AdvanceCivilopedia = true; f.World.Civilizations[1].Researching = 7; };
-        var op = f.Flow.Complete(1, 0, "completion"); var request = op.Resume()!;
+        var op = f.Flow.Complete(1, 0, "completion"); var request = (ResearchChoiceNotice)op.Resume()!;
         Equal((short)100, f.World.Civilizations[1].ResearchProgress); Equal(true, f.World.Civilizations[1].Advances.Contains(18));
         Sequence(new[] { ResearchAbility.Transform, ResearchAbility.Fortress, ResearchAbility.Airlift, ResearchAbility.Farmland, ResearchAbility.Paradrop }, f.Abilities.Select(n => n.Ability));
         Equal((int?)255, f.Abilities.Last().Range); Equal(true, f.Order.Contains("pedia:18")); Equal(0, f.Grant.Prompts.Count);
         op.Resume(new(request.Options[0].Identity)); Equal((int?)18, op.Result); Equal(true, op.Finished);
         Equal((short)0, f.World.Civilizations[1].Researching);
         f = new(); f.Enable(89); f.World.Civilizations[1].Researching = 89; f.World.Civilizations[1].FutureTechs = 255;
-        op = f.Flow.Complete(1, 0, "future"); request = op.Resume()!;
+        op = f.Flow.Complete(1, 0, "future"); request = (ResearchChoiceNotice)op.Resume()!;
         Equal((int?)0, f.Completions.Single().FutureNumber); Equal((int?)1, request.Options.Single().FutureNumber);
         op.Resume(new(89)); Equal((int?)89, op.Result);
     }
@@ -180,7 +182,7 @@ public static partial class FoundationSuite
         f.World.Civilizations[1].Researching = -1; f.World.Civilizations[1].ResearchProgress = 0;
         f.World.Civilizations[1].Flags.PendingFreeAdvance = true; f.World.Globals.GameOptions.Tutorial = true;
         f.OnFirst = () => { f.World.Globals.GameOptions.Tutorial = false; f.World.Civilizations[1].Researching = 9; };
-        op = f.Flow.AddPoints(1, 65537, "initial"); var choice = op.Resume()!;
+        op = f.Flow.AddPoints(1, 65537, "initial"); var choice = (ResearchChoiceNotice)op.Resume()!;
         Equal((short)1, f.World.Civilizations[1].ResearchProgress); Equal("first", f.Order.Single());
         op.Resume(new(choice.Options[0].Identity)); Equal(true, op.Finished); Equal(0, f.Completions.Count);
         Equal(true, f.World.Civilizations[1].Flags.PendingFreeAdvance); // Initial absent-target branch does not consume it.
@@ -203,7 +205,9 @@ public static partial class FoundationSuite
         f.World.Civilizations[1].Government = Government.Despotism; f.Grant.RevolutionReply = 1;
         var op = f.Flow.Complete(1, 0, "government"); op.Resume();
         Equal(Government.Despotism, f.World.Civilizations[1].Government); Equal(0, f.Grant.GovernmentChoices.Count);
-        op.Resume(new(0)); Equal(Government.Anarchy, f.World.Civilizations[1].Government); Equal(1, f.Grant.GovernmentChoices.Count);
+        Equal(true, op.Resume(new(0)) is ResearchDecision.Grant { Decision: ResearchGrantDecision.Government });
+        Equal(Government.Despotism, f.World.Civilizations[1].Government); op.Resume(new(1));
+        Equal(Government.Anarchy, f.World.Civilizations[1].Government); Equal(0, f.Grant.GovernmentChoices.Count);
         f = new(); f.Enable(0); f.World.Civilizations[1].Researching = 0; f.World.Civilizations[1].ResearchProgress = 100;
         f.OnCompleted = () => throw new InvalidOperationException("Presentation stopped");
         op = f.Flow.Complete(1, 0, "failure"); Throws<InvalidOperationException>(() => op.Resume());
