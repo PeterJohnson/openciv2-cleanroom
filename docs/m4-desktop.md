@@ -4952,3 +4952,47 @@ eight identity tests and three coverage tests passed.
 The owning W06 barbarian chooser, full A04/A01/F04 orchestration, generated
 desktop composition and complete human/AI-game acceptance remain open. Browser
 and cross-platform execution remain deferred.
+
+## W06 barbarian order chooser — 2026-11-23
+
+`BarbarianOrders` implements the local chooser before ordinary A04 entry. Hold
+exhausts movement and preserves the specified role/fortress order behavior;
+selecting a direction only assigns AiGoto for later U04 execution. Finish reads
+the retained slot even on the transport deletion path that returns zero. Polar
+removal uses actual cargo deletion and other removals use actual synchronized
+loss/lifecycle operations.
+
+The capacity-first transport branch retains signed-byte age, ordered adjacent
+landing/attack, first treasury-score ties and the actual A05 coastal helper.
+Landing publishes the specified visibility, wakes cargo and consumes ship
+movement without relocating units. Nontransport behavior covers garrison and
+periodic removal, actual U03 pursuit with the specified southward bias, leader
+escort/hold/removal, Partisans and candidate-specific secondary draws. Neighbor
+scoring retains later ties and post-draw rejection. Real W04 pillage still leads
+to exhaustion after refusal; actual ransom payment can remove the actor and
+returns without the ordinary finish tail.
+
+`BarbarianOrderOperation` routes private ransom, lifecycle and pillage decisions.
+The existing ransom adapter shares its prompt/reply mapping with the chooser.
+Sixteen new groups cover these branches, including actual U04 movement after
+selection, deletion return distinctions, coastal fallback, cosmetic failures,
+required random-input failure, cancellation/disposal and private/stale replies.
+The tests use repository-authored world/rules/content and actual gameplay
+children. Fixture corrections supplied required pathfinding state and fixed
+near-distance and role assumptions; no production behavior was changed to
+satisfy an incorrect expected result.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1406 of 1408**, with the two existing
+platform/audio skips. The shared probe passed **1373 groups** across 154 coverage
+families; source identity verified **730 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-barbarian-orders-native.json` | `2834059bd59a1141f487d5e933a6cf6c472175702ab3083fdc87d759885c17c5` |
+| `m4-barbarian-orders-identity.json` | `0e9496d1e9a28edde561572d36555065db8b4cd5e03e81c3e2d3c0e080e853d1` |
+
+Full A04/A01/F04 orchestration, generated desktop composition and complete
+human/AI-game acceptance remain open. This delivers the chooser and its actual
+children, not complete M4. Browser and cross-platform execution remain deferred.

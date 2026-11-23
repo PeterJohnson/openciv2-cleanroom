@@ -4826,7 +4826,7 @@
       "status": "partial",
       "contract": "W06 city ransom; P04/F03 CITY content; U01 stack deletion; V01/V06 nested lifecycle; Session private interaction",
       "publicSurface": "BarbarianRansom.Begin/Operation.Resume; ClassicRansomText.Read; TextReader.ParseDecimal; BarbarianRansomOperation",
-      "review": "Demand retains nearest-city size before target replacement; strongest-civilization pricing, eligibility, missing/no-variant/autoplay routes, current treasury payment and ordered radius stack deletion preserve the specification. Actual CITY scenario/install and language lookup, decimal wrap/counts, signed variant selection and malformed-message diagnostics use the shared reader. Imported mixed-owner linked stacks exercise whole-stack removal and real last-settler elimination/spy incidents. Session cases cover victim privacy, refusal/cancel/timeout, stale replies and nested recipient changes. Cosmetic diagnostics and required failures retain committed payment/deletion. The owning barbarian chooser/full turn/generated desktop integration remains open; browser/cross-platform execution deferred.",
+      "review": "Demand retains nearest-city size before target replacement; strongest-civilization pricing, eligibility, missing/no-variant/autoplay routes, current treasury payment and ordered radius stack deletion preserve the specification. Actual CITY scenario/install and language lookup, decimal wrap/counts, signed variant selection and malformed-message diagnostics use the shared reader. Imported mixed-owner linked stacks exercise whole-stack removal and real last-settler elimination/spy incidents. Session cases cover victim privacy, refusal/cancel/timeout, stale replies and nested recipient changes. Cosmetic diagnostics and required failures retain committed payment/deletion. The owning barbarian chooser is covered separately; full turn/generated desktop integration remains open; browser/cross-platform execution deferred.",
       "sources": [
         "src/OpenCiv2.Core/BarbarianRansom.cs",
         "src/OpenCiv2.Formats/Classic/RansomText.cs",
@@ -4848,6 +4848,42 @@
         "W06.ransom-private-session",
         "W06.ransom-strongest-admission",
         "W06.ransom-timeout-private-lifecycle"
+      ]
+    },
+    {
+      "id": "barbarian-order-chooser",
+      "status": "partial",
+      "contract": "W06 barbarian order selection; actual U01/U03/U04, W04, A05, ransom and V01 children; private Session routing",
+      "publicSurface": "BarbarianOrders.Begin/Operation.Resume; BarbarianOrderOperation",
+      "review": "Capacity-first transport dispatch, signed lifetime, ordered landing/attack, visibility and cargo wake, first treasury-score tie, actual coastal routing, polar/cadenced removal and deleted-slot Finish are covered. Nontransport cases retain garrison/leader holds, actual escort/path queries, southward pursuit bias, Partisans provisional hold, later scoring ties, candidate-specific secondary draws before rejection, domain and ZOC gates. Actual U04 movement executes a selected order; actual W04 pillage includes refusal followed by exhaustion. Real ransom payment, private routing, cancellation, disposal and required/cosmetic failures preserve committed prefixes. Full A04/A01/F04 invocation, generated desktop composition and complete-game acceptance remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/BarbarianOrders.Neighbors.cs",
+        "src/OpenCiv2.Core/BarbarianOrders.Transport.cs",
+        "src/OpenCiv2.Core/BarbarianOrders.cs",
+        "src/OpenCiv2.Session/BarbarianOrderOperation.cs",
+        "src/OpenCiv2.Session/BarbarianRansomOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/BarbarianOrderCases.cs"
+      ],
+      "sharedGroups": [
+        "W06.orders-actual-pillage",
+        "W06.orders-coast-custom-domain",
+        "W06.orders-failure-cancellation",
+        "W06.orders-hold-and-garrison",
+        "W06.orders-leader-orders",
+        "W06.orders-military-scoring",
+        "W06.orders-partisans",
+        "W06.orders-polar-and-periodic",
+        "W06.orders-private-session",
+        "W06.orders-pursuit",
+        "W06.orders-ransom",
+        "W06.orders-ties-and-movement",
+        "W06.orders-transport-empty-landing-and-attack",
+        "W06.orders-transport-landing",
+        "W06.orders-transport-lifetime",
+        "W06.orders-transport-targets"
       ]
     }
   ]

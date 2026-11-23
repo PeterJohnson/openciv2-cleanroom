@@ -964,8 +964,13 @@ replacing its city, then composes actual stack deletion and nested lifecycle
 decisions after payment. `Formats/ClassicRansomText` reads CITY/BARBARIANS with
 the shared scenario/install reader; missing selected message content fails with
 a P04 diagnostic. `Session/BarbarianRansomOperation` routes payment privately to
-the victim, then any nested decision to its own recipient. The owning barbarian
-chooser and full F04 invocation remain separate work.
+the victim, then any nested decision to its own recipient. `BarbarianOrders` owns
+W06's capacity-first transport/landing branch and land/leader neighbor scoring.
+It composes actual deletion, pathfinding, coastal routing, ransom and pillage;
+selected AiGoto orders remain for U04 execution. Landing wakes cargo and consumes
+the ship's movement without relocating units. `Session/BarbarianOrderOperation`
+shares private ransom/lifecycle routing and forwards pillage confirmation.
+Full A04/A01/F04 invocation remains separate work.
 
 `Units/MovementCompletion` composes U02 ordinary arrival, common finish and local
 cleanup. It calls actual C09 capture, W03 revelation, U05 special/transport finish,

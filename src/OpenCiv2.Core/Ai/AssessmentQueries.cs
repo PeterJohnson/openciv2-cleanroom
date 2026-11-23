@@ -27,6 +27,7 @@ public static class AiTaskIds
     public const byte RoadWork = 114, RailroadWork = 82, MoveToWork = 115;
     public const byte MineDestination = 109, IrrigationDestination = 105, RoadDestination = 114;
     public const byte ReturnHome = 99, ReturnForPopulation = 66;
+    public const byte UnloadRaid = 0x55, LeaderFollow = 0x58, RaidTransport = 0x70;
 }
 
 /// <summary>A01 §2 role, defense quota and sparse city/land-region contact queries.</summary>

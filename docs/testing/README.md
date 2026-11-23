@@ -945,4 +945,16 @@ order without the center. Imported mixed-owner links exercise the complete
 stack child and nested last-settler/spy incidents. Session cases cover private
 victim routing, refusal/cancel/timeout, stale replies and changing nested
 recipients; cosmetic and required failures retain their committed prefixes.
-The owning barbarian chooser and full-game desktop integration remain open.
+The owning chooser is covered by the W06 order groups below; full-game desktop
+integration remains open.
+
+W06 order groups cover transport lifetime wrap, capacity-first dispatch, polar
+cargo deletion, ordered adjacent attack/landing, cargo wake/visibility without
+relocation, treasury ties and actual A05 coastal routing. Nontransport cases
+cover garrison and leader holds, periodic removal, escort goto, actual U03
+pursuit with the southward bias, Partisans, later neighbor ties and random draws
+before rejection. Actual U04 executes a selected move. Actual W04 pillage covers
+successful removal and refusal followed by exhaustion. Real ransom payment,
+private prompts, cancel/disposal, required failures and cosmetic diagnostics
+preserve committed state. Full A04/A01/F04 invocation and generated desktop
+acceptance remain open; browser/cross-platform execution is deferred.
