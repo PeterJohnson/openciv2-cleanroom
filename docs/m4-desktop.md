@@ -4396,3 +4396,40 @@ Port selection/recruitment, unloading, naval destination policy and complete
 transport dispatch remain open, alongside other specialized/site/barbarian
 choices, full AI/turn scheduling, wider desktop composition and complete
 human/AI-game acceptance. Browser and cross-platform execution remain deferred.
+
+## A05 port selection and recruitment
+
+`NavalPorts.Select` now uses actual cargo output, city/ocean connectivity,
+regional defense quotas, validated stack counts and current goals. It retains
+strict score ties, ferry counter matching, zero-distance congestion thresholds,
+signed capacity, attack discounts and selected trade/policy state independently
+of the last candidate's cargo demand. Attractive ports receive actual Goto,
+FerryPort/FreshPort flags and recruitment goals.
+
+Fallback preserves previously published Goto, uses selected-port priority and
+the specified home versus live-destination coordinates, and replaces the shared
+nearest-city distance with the actual home settler count. Irrelevant missing
+policy does not stop a fallback rejection; a later consumed missing policy
+retains preceding guaranteed effects. `NavalTransportContext` carries these
+values across future controller retries.
+
+Authored groups join fallback Hold to actual A04 completion and a selected
+port order to U04/U03/U02 movement. The first probe exposed a mistaken test
+expectation: weighted distance minus the attack discount produced a tie, which
+correctly retained the first port. The corrected case uses a strict improvement.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1256 of 1258**, with the two existing
+platform/audio skips. The shared probe passed **1223 groups** across 141 coverage
+families; source identity verified **685 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-naval-ports-native.json` | `972ee5d64ee7c14decc2dc265188725c17cb29929a8db8ca94842f050ac35fa6` |
+| `m4-naval-ports-identity.json` | `c472b2a6b94748e92b13fb14b8fdb1ee7ee9660f576ec10a77fad4f52e0c296c` |
+
+Unloading, naval destination policy and complete transport dispatch remain open,
+alongside other specialized/site/barbarian choices, full AI/turn scheduling,
+wider desktop composition and complete human/AI-game acceptance. Browser and
+cross-platform execution remain deferred.

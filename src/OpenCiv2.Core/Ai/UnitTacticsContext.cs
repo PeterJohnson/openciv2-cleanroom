@@ -19,7 +19,7 @@ public sealed class UnitTacticsContext
     public CitySlot? NearestCity { get; }
     public CitySlot? HomeCity { get; }
     public CitySlot? CitySelector { get; set; }
-    public int NearestDistance { get; }
+    public int NearestDistance { get; set; }
     public int HomeDistance { get; }
     public int NearestRegion { get; }
     public int HomeRegion { get; }

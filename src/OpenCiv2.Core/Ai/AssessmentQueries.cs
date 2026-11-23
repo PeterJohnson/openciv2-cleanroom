@@ -16,6 +16,9 @@ public static class AiTaskIds
     public const byte Idle = 48;
     public const byte HuntNonmilitary = 80, PartisanPillage = 112;
     public const byte ChooseMove = 57;
+    public const byte RecruitPort = 0x33, OverseasAttack = 0x34, AnotherLandmassPort = 0x35, ExploreNearby = 0x36;
+    public const byte ReinforcePort = 0x41, RaidEmptyCity = 0x49, OverseasTrade = 0x54;
+    public const byte UnloadCargo = 0x55, ExploreRegion = 0x56, RepositionLanding = 0x62, UnloadTrade = 0x75;
 }
 
 /// <summary>A01 §2 role, defense quota and sparse city/land-region contact queries.</summary>

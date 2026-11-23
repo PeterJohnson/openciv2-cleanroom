@@ -791,7 +791,12 @@ uses the desired-defender quota retained by `GroundGuard` to reserve or release
 actual Land members across the complete stack, returning role slots and both
 counts. `UnitOrders.WakeByRole` uses the same modulo-32 role set and changes only
 full Sleep orders. A quota not produced by a reached guard phase remains
-unresolved; only a cargo branch that consumes it requires it.
+unresolved; only a cargo branch that consumes it requires it. `NavalTransportContext`
+retains cargo and port/landing state across retries. `NavalPorts.Select` uses
+actual connectivity, regional quota, stack counts, Goto and current-goal services
+for strict port selection and fallback recruitment. Its Hold result belongs to
+A04's shared completion path; fallback can replace the shared nearest distance
+with the actual home settler count.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

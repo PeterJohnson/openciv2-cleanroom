@@ -4455,6 +4455,31 @@
         "A05.cargo-unreached-quota-prefix",
         "U04.cargo-role-wake-preservation"
       ]
+    },
+    {
+      "id": "ai-naval-ports",
+      "status": "partial",
+      "contract": "A05 section 4 selecting and recruiting at a port, with retained transport state",
+      "publicSurface": "NavalPorts.Select; NavalPortResult; NavalTransportContext",
+      "review": "Actual cargo scans, city/ocean connectivity, stack role counts, regional quotas and goal services feed strict port selection. Ferry matching, congestion thresholds, signed hold, military/trade shortages, attack discounts and last-candidate demand retain the selected policy and trade-only result independently. Goto publications survive fallback; recruitment uses selected-port priority, home versus live-destination goal coordinates and replaces shared nearest distance with the actual settler count. Missing irrelevant policy is not read; a consumed missing policy stops after prior guaranteed effects. Tests use actual A04 Hold completion and real U04/U03/U02 port arrival. Full controller/unload/destination policies, desktop composition and complete-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/NavalPorts.cs",
+        "src/OpenCiv2.Core/Ai/NavalTransportContext.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NavalPortCases.cs"
+      ],
+      "sharedGroups": [
+        "A05.ports-actual-movement",
+        "A05.ports-cargo-thresholds",
+        "A05.ports-demand-selected-policy",
+        "A05.ports-fallback-distance-finish",
+        "A05.ports-fallback-draw-policy",
+        "A05.ports-flags-connectivity-congestion",
+        "A05.ports-ties-recruitment"
+      ]
     }
   ]
 }

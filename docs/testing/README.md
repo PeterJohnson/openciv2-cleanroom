@@ -823,3 +823,11 @@ defender reservation, fortified bypass and per-scan reset. Missing reached quota
 reads retain earlier order changes; unconsumed quota is not invented. U04 role
 wakeup checks validated order, first-match stopping and preservation of carrier,
 destination and movement. The complete transport controller remains open.
+
+A05 port groups join actual cargo scan, city connectivity, regional quotas and
+goal publication. Cases cover strict ties, ferry counter matching, congestion,
+shortage/trade admission, attack discounts, selected versus last-candidate state,
+signed capacity, fallback draws, shared-distance replacement and retained policy
+reads. They complete fallback Hold through A04 and execute a selected port Goto
+through actual U04/U03/U02 movement. Port/unload/controller composition and full
+game acceptance remain open.
