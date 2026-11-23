@@ -202,8 +202,8 @@ services. `AssessmentQueries` owns the small role/quota/coastal queries;
 rates/strategic scoring and government selection; F04 still supplies preceding
 score accumulation and its complete maintenance caller. The desktop turn publishes
 power before advancing and assesses its human civilization after city processing.
-The A01 outer unit passes and full tactical composition stay open; U04 execution
-is owned by `UnitOrderExecution`.
+The A01 outer unit passes remain open. `UnitTactics` composes shared tactical
+selection, and `UnitOrderExecution` owns U04 execution.
 
 `TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
 It uses actual stacks, movement exhaustion, map mutations, remembered features
@@ -757,8 +757,7 @@ do not execute movement themselves. `Units/UnitOrderExecution` composes them wit
 actual fortification, terrain work and retained movement, including pending
 decisions and conditional arrival/exhaustion writes. `UnitOrderOperation` shares
 private `MovementInteraction` routing with direct movement and advances cooperative
-yields through the runtime queue. Full AI order selection, active-unit scheduling
-and desktop wiring remain open.
+yields through the runtime queue. Outer AI scheduling and desktop wiring remain open.
 
 `Units/UnitRecovery` implements U04 GoHome with actual city/carrier selection,
 raw-region and fuel-reach rules, without changing home affiliation or moving.
@@ -766,7 +765,7 @@ raw-region and fuel-reach rules, without changing home affiliation or moving.
 including the AI colonist clear before effective-role selection. `GroundRecovery`
 runs the damage, rest and return-home branches with actual stack/spatial queries
 and returns the required next phase. It can install orders consumed by the real
-U04 executor; it does not substitute for the unfinished complete AI chooser.
+U04 executor; the complete chooser composes these routes below.
 
 `Ai/GroundGuard` supplies the scenario/ferry gate, foreign-fortress routing and
 city guard phases around specialized unit dispatch. It uses actual combat
@@ -795,7 +794,15 @@ mission decisions; the chooser still owns applying the result through
 directed trespass response, adjacent empty-city forcing and real recovery with
 early Hold/Finish completion. It retains the adjacent foreign civilization in
 the context; civilization zero requires the separate W06 chooser.
-Specialized/site dispatch and the full parent remain open. `Ai/NavalTargets` supplies
+`Ai/UnitTactics` now composes barbarian dispatch, ordinary entry/recovery,
+specialized/site/paratrooper choices, fortress/city guards, the retryable
+transport/work loop and the ordinary planner. All dependencies are concrete
+owning services. It retains one context and transport state, honors direct
+returns, reloads position after nuclear staging and applies direction/finish
+through `GroundOrders`. `Session/UnitTacticsOperation` routes real child
+choices privately and retains bounded continuation. Selected orders are tested
+through actual U04 execution; A01/F04 scheduling and desktop composition remain
+open. `Ai/NavalTargets` supplies
 A05's landing direction and near-shore Goto helpers using actual W01 queries
 and U04 order writes. Landing scoring retains later ties and directed hostile
 city bonuses; coastal targeting retains first matches, raw regions and original
@@ -803,9 +810,11 @@ target fallback. Neither helper executes relocation or cargo unloading. `NavalCa
 uses the desired-defender quota retained by `GroundGuard` to reserve or release
 actual Land members across the complete stack, returning role slots and both
 counts. `UnitOrders.WakeByRole` uses the same modulo-32 role set and changes only
-full Sleep orders. A quota not produced by a reached guard phase remains
-unresolved; only a cargo branch that consumes it requires it. `NavalTransportContext`
-retains cargo and port/landing state across retries. `NavalPorts.Select` uses
+full Sleep orders. `NavalTransportContext.ForChooser` implements A05's X01
+production initializer: no defender reservation, no landing match or cargo
+demand and ordinary port priority until actual producers replace them. The
+context retains cargo and port/landing state across retries. Explicit unresolved
+inputs remain available only to isolated helper diagnostics. `NavalPorts.Select` uses
 actual connectivity, regional quota, stack counts, Goto and current-goal services
 for strict port selection and fallback recruitment. Its Hold result belongs to
 A04's shared completion path; fallback can replace the shared nearest distance
@@ -820,35 +829,37 @@ other-port and exploration destinations with actual connectivity, retained
 civilization state and F01 sampling. `NavalSeaTactics` composes cargo, standing
 goal cleanup, transport and destination policies; its distinct ReturnOne route
 bypasses common Finish for exhausted ships. Continue returns to A04 even after
-a Goto publication. Full A04/retry and desktop composition remain open.
+a Goto publication. The complete chooser now owns the actual retry; A01/F04
+and desktop composition remain open.
 
 `Ai/SpecialUnitDestinations` supplies A07 caravan and diplomat/spy destination
 policies. It keeps captured context, ordered scoring, retained orders and actual
 V07 race queries; no-target destruction uses real U01/V01/V06 children.
 `SpecialUnitDestinationOperation` routes their private lifecycle decisions and
 bounded continuation. A destination does not execute trade or espionage. The
-full A04 parent still awaits composition. `ParatrooperTactics` implements the
+shared chooser now composes these destination policies. `ParatrooperTactics` implements the
 proactive A07 drop policy using that parent's retained city selector, actual
 U05 execution and C09 capture. Landing scores survive cancelled searches; a
 selected drop returns zero directly even on refusal. Its session adapter routes
 actual capture decisions. `SettlementTactics.Site` now produces the A03 selector;
-its actual A07 consumer is tested across a later nearest-city change. Full parent
-wiring remains open.
+its actual A07 consumer is tested across a later nearest-city change and through
+the complete chooser.
 
 `Ai/NuclearTargets` implements A06 nuclear selection with actual SDI, stack,
 movement-allowance and diplomatic services. It stages the actor before returning
 an attack direction; A04 must reload working position before applying it.
 Staging itself does not consume movement or execute the blast. Tests join the
 result through actual A04/U04/U03/U02/U07, including nearby SDI interception.
-The full tactical/desktop composition remains open.
+The shared chooser now reloads the staged position before direction application;
+A01/F04 and desktop composition remain open.
 
 `Ai/AirTactics` supplies A06 fuel recovery, expended attacks, superiority,
 strike/basing and city raids. It uses actual GoHome, stack aggregates, staging
 relocation and Goto publication, returning a route to A04. Captured A04 context
 and live rules remain distinct; pure nearest-city query scratch stays local
 because no subsequent gameplay consumer uses its last candidate identity.
-Recovery-order tests execute the selected Goto through U04/U03/U02. Full A04
-and desktop turn composition remain open.
+Recovery-order tests execute the selected Goto through U04/U03/U02. The shared
+chooser now owns air routing; outer AI and desktop turn composition remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
@@ -970,7 +981,8 @@ It composes actual deletion, pathfinding, coastal routing, ransom and pillage;
 selected AiGoto orders remain for U04 execution. Landing wakes cargo and consumes
 the ship's movement without relocating units. `Session/BarbarianOrderOperation`
 shares private ransom/lifecycle routing and forwards pillage confirmation.
-Full A04/A01/F04 invocation remains separate work.
+The shared chooser now invokes this operation; full A01/F04 scheduling remains
+separate work.
 
 `Units/MovementCompletion` composes U02 ordinary arrival, common finish and local
 cleanup. It calls actual C09 capture, W03 revelation, U05 special/transport finish,
@@ -1020,4 +1032,5 @@ coordinate parities and publishes actual A01 standing goals.
 including retained GotoCity, separate recommendation/threshold policies, rotated
 movement and actual standing/current goals. `SettlerPopulationReturn` composes
 crowded-region return or city growth with actual cargo-aware destruction and
-nested lifecycle checks. Full tactical/turn composition remains open.
+nested lifecycle checks. The shared chooser now owns this work loop; A01/F04
+and desktop composition remain open.

@@ -747,8 +747,7 @@ or refused movement, ordinary/AI arrival, path-owner reset asymmetry, live targe
 changes, AI exhaustion gates and transport counters. Pending LongMove, disposal
 and required-publication failures retain prefixes. Private runtime cases cover
 reply/cancel and a passenger restart through automatic cooperative continuation.
-General AI orders, active-unit scheduling and desktop/full-game acceptance remain
-open; browser and cross-platform execution remain deferred.
+Outer AI scheduling and desktop/full-game acceptance remain open; browser and cross-platform execution remain deferred.
 
 U04 recovery-search cases distinguish ordinary from weighted city selection,
 first ties, raw Land regions on Ocean, unrestricted carrier candidates, submarine
@@ -756,8 +755,8 @@ missiles, foreign airbases, signed fuel/range and zero-multiplier failure. A04
 cases cover context/colonist retention, signed HP damage classes, no-moves cargo,
 city and peace priorities, remote air versus sea visibility, severe recovery and
 transport companions. An actual Sea recovery Goto executes through U04/U03/U02.
-These phases return their specified parent routes; the full A04 chooser and
-desktop game loop remain incomplete.
+These phases return their specified routes to the complete chooser below;
+the desktop game loop remains incomplete.
 
 A04 guard groups use actual defender selection and shared goals to check scenario
 and ferry admission, foreign-fortress rules, Palace/neighbor quotas, temporary
@@ -956,5 +955,19 @@ pursuit with the southward bias, Partisans, later neighbor ties and random draws
 before rejection. Actual U04 executes a selected move. Actual W04 pillage covers
 successful removal and refusal followed by exhaustion. Real ransom payment,
 private prompts, cancel/disposal, required failures and cosmetic diagnostics
-preserve committed state. Full A04/A01/F04 invocation and generated desktop
+preserve committed state. The shared A04 chooser now invokes this service;
+full A01/F04 scheduling and generated desktop acceptance remain open; browser/cross-platform execution is deferred.
+
+A04 complete-chooser groups use the actual W06, recovery, guard, A03, A05, A06,
+A07 and ordinary planner operations. They cover early work/off-map/barbarian
+priority, real recovery, scenario/ferry gates, city guarding, site founding,
+worker orders, population absorption, pillage, special-unit destruction/Goto,
+air return, nuclear staging/reload, actual paradrop capture and U04 execution.
+Transport cases exercise exhausted ships with Defend cargo, actual retained-Goto
+retry, reached quota replacement and the documented A05 initialization repair.
+Port fallback and landing-match retention also use real owning helpers. Private
+session cases drive ransom and planner bribery through payment/cancellation,
+recipient privacy and stale replies. Required failures and disposal retain
+committed prefixes; cosmetic founding/population failures remain diagnostics.
+Full A01/F04 scheduling, generated desktop composition and complete-game
 acceptance remain open; browser/cross-platform execution is deferred.

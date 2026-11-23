@@ -113,6 +113,8 @@ public sealed partial class SettlementTactics(GameState world, RuleTables rules,
         private readonly string call;
         private bool started, faulted, disposed;
         private CityFounding.Operation? child;
+        private readonly List<Exception> failures = [];
+        public IReadOnlyList<Exception> PresentationFailures => child?.PresentationFailures ?? failures.AsReadOnly();
         public SpecialUnitChoice? Result { get; private set; }
         public FoundingOutcome? FoundingResult { get; private set; }
         internal SiteOperation(SettlementTactics parent, UnitTacticsContext context, StartingPositions starts, string call)
@@ -148,7 +150,7 @@ public sealed partial class SettlementTactics(GameState world, RuleTables rules,
                 }
                 var pending = child!.Resume(reply);
                 if (child.Completed)
-                { FoundingResult = child.Result; Result = new(SpecialUnitRoute.ReturnOne); child.Dispose(); child = null; }
+                { FoundingResult = child.Result; failures.AddRange(child.PresentationFailures); Result = new(SpecialUnitRoute.ReturnOne); child.Dispose(); child = null; }
                 return pending;
             }
             catch { faulted = true; child?.Dispose(); throw; }

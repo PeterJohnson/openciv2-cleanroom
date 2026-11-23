@@ -4522,7 +4522,7 @@
       "status": "partial",
       "contract": "A05 sections 2 and 6\u20138 complete sea prefix and ordered war/trade/exploration destinations",
       "publicSurface": "NavalGoals.Choose/War/Trade/Other; NavalSeaTactics.Choose; NavalRoute.ReturnOne",
-      "review": "Actual cargo, transport, connectivity, stack traversal, treaty state, current/standing goals and Goto publication compose the shared sea prefix. War cases cover reinforcement thresholds, directed allied raids, first ties, counter stride, last human ally and sequential score reductions. Trade retains last present passenger home and the actual reached civilization cursor, including the specified city-memory read, signed trade arithmetic and failure prefixes. Other ports retain modulo-32 policy membership; exploration preserves y/x sampling, reused coordinates, region boundaries and all 22 ray draws with later replacement. Tests run an actual selected sea order through U04/U03/U02 and verify direct NoMoves versus immediate transport completion, enemy-zone gates and standing-goal cleanup. A04 parent/retry orchestration, desktop composition and full-game acceptance remain open; browser and cross-platform execution remain deferred.",
+      "review": "Actual cargo, transport, connectivity, stack traversal, treaty state, current/standing goals and Goto publication compose the shared sea prefix. War cases cover reinforcement thresholds, directed allied raids, first ties, counter stride, last human ally and sequential score reductions. Trade retains last present passenger home and the actual reached civilization cursor, including the specified city-memory read, signed trade arithmetic and failure prefixes. Other ports retain modulo-32 policy membership; exploration preserves y/x sampling, reused coordinates, region boundaries and all 22 ray draws with later replacement. Tests run an actual selected sea order through U04/U03/U02 and verify direct NoMoves versus immediate transport completion, enemy-zone gates and standing-goal cleanup. The shared-unit-tactics family now covers A04 parent/retry orchestration; desktop composition and full-game acceptance remain open; browser and cross-platform execution remain deferred.",
       "sources": [
         "src/OpenCiv2.Core/Ai/NavalGoals.Explore.cs",
         "src/OpenCiv2.Core/Ai/NavalGoals.Trade.cs",
@@ -4553,7 +4553,7 @@
       "status": "partial",
       "contract": "A07 sections 2 and 3 caravan and diplomat/spy destinations with actual U01/V01/V06 no-target destruction",
       "publicSurface": "SpecialUnitDestinations.Caravan/Diplomat; SpecialUnitChoice; SpecialUnitDestinationOperation",
-      "review": "Caravan choice preserves existing Goto, raw-origin regional size for first positive landing ties, retained actual/fallback home, ordered route/attitude/nearest-city reductions and actual-home-only fallback. Diplomat choice retains unprotected foreign Goto, ocean planning intent, raw absent-home partition, Road distance threshold, fixed Spy identity, treaty/rank/government/regional strength gates, actual spaceship race queries and ordered contribution reductions. Owned winners retain existing orders. No-target paths use cargo-aware destruction and actual nested elimination/spy incidents/recreation, with private session reply/cancel and retained removal prefixes. Unsupported route reads beyond three partners stop explicitly; no synthetic query callbacks are introduced. Paratrooper policy, full A04 composition, subsequent movement/trade/espionage and desktop full-game acceptance remain open.",
+      "review": "Caravan choice preserves existing Goto, raw-origin regional size for first positive landing ties, retained actual/fallback home, ordered route/attitude/nearest-city reductions and actual-home-only fallback. Diplomat choice retains unprotected foreign Goto, ocean planning intent, raw absent-home partition, Road distance threshold, fixed Spy identity, treaty/rank/government/regional strength gates, actual spaceship race queries and ordered contribution reductions. Owned winners retain existing orders. No-target paths use cargo-aware destruction and actual nested elimination/spy incidents/recreation, with private session reply/cancel and retained removal prefixes. Unsupported route reads beyond three partners stop explicitly; no synthetic query callbacks are introduced. The shared-unit-tactics family now composes these policies and actual paratrooper capture; subsequent trade/espionage and desktop full-game acceptance remain open.",
       "sources": [
         "src/OpenCiv2.Core/Ai/SpecialUnitDestinations.Caravan.cs",
         "src/OpenCiv2.Core/Ai/SpecialUnitDestinations.Diplomat.cs",
@@ -4826,7 +4826,7 @@
       "status": "partial",
       "contract": "W06 city ransom; P04/F03 CITY content; U01 stack deletion; V01/V06 nested lifecycle; Session private interaction",
       "publicSurface": "BarbarianRansom.Begin/Operation.Resume; ClassicRansomText.Read; TextReader.ParseDecimal; BarbarianRansomOperation",
-      "review": "Demand retains nearest-city size before target replacement; strongest-civilization pricing, eligibility, missing/no-variant/autoplay routes, current treasury payment and ordered radius stack deletion preserve the specification. Actual CITY scenario/install and language lookup, decimal wrap/counts, signed variant selection and malformed-message diagnostics use the shared reader. Imported mixed-owner linked stacks exercise whole-stack removal and real last-settler elimination/spy incidents. Session cases cover victim privacy, refusal/cancel/timeout, stale replies and nested recipient changes. Cosmetic diagnostics and required failures retain committed payment/deletion. The owning barbarian chooser is covered separately; full turn/generated desktop integration remains open; browser/cross-platform execution deferred.",
+      "review": "Demand retains nearest-city size before target replacement; strongest-civilization pricing, eligibility, missing/no-variant/autoplay routes, current treasury payment and ordered radius stack deletion preserve the specification. Actual CITY scenario/install and language lookup, decimal wrap/counts, signed variant selection and malformed-message diagnostics use the shared reader. Imported mixed-owner linked stacks exercise whole-stack removal and real last-settler elimination/spy incidents. Session cases cover victim privacy, refusal/cancel/timeout, stale replies and nested recipient changes. Cosmetic diagnostics and required failures retain committed payment/deletion. The owning barbarian and shared A04 choosers are covered separately; full turn/generated desktop integration remains open; browser/cross-platform execution deferred.",
       "sources": [
         "src/OpenCiv2.Core/BarbarianRansom.cs",
         "src/OpenCiv2.Formats/Classic/RansomText.cs",
@@ -4855,7 +4855,7 @@
       "status": "partial",
       "contract": "W06 barbarian order selection; actual U01/U03/U04, W04, A05, ransom and V01 children; private Session routing",
       "publicSurface": "BarbarianOrders.Begin/Operation.Resume; BarbarianOrderOperation",
-      "review": "Capacity-first transport dispatch, signed lifetime, ordered landing/attack, visibility and cargo wake, first treasury-score tie, actual coastal routing, polar/cadenced removal and deleted-slot Finish are covered. Nontransport cases retain garrison/leader holds, actual escort/path queries, southward pursuit bias, Partisans provisional hold, later scoring ties, candidate-specific secondary draws before rejection, domain and ZOC gates. Actual U04 movement executes a selected order; actual W04 pillage includes refusal followed by exhaustion. Real ransom payment, private routing, cancellation, disposal and required/cosmetic failures preserve committed prefixes. Full A04/A01/F04 invocation, generated desktop composition and complete-game acceptance remain open; browser/cross-platform execution deferred.",
+      "review": "Capacity-first transport dispatch, signed lifetime, ordered landing/attack, visibility and cargo wake, first treasury-score tie, actual coastal routing, polar/cadenced removal and deleted-slot Finish are covered. Nontransport cases retain garrison/leader holds, actual escort/path queries, southward pursuit bias, Partisans provisional hold, later scoring ties, candidate-specific secondary draws before rejection, domain and ZOC gates. Actual U04 movement executes a selected order; actual W04 pillage includes refusal followed by exhaustion. Real ransom payment, private routing, cancellation, disposal and required/cosmetic failures preserve committed prefixes. The shared A04 chooser now invokes this service; full A01/F04 scheduling, generated desktop composition and complete-game acceptance remain open; browser/cross-platform execution deferred.",
       "sources": [
         "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
         "src/OpenCiv2.Core/BarbarianOrders.Neighbors.cs",
@@ -4884,6 +4884,47 @@
         "W06.orders-transport-landing",
         "W06.orders-transport-lifetime",
         "W06.orders-transport-targets"
+      ]
+    },
+    {
+      "id": "shared-unit-tactics",
+      "status": "partial",
+      "contract": "A04 complete shared chooser; actual W06/A03/A05/A06/A07/U04/W04/V06 children; A05/X01 production initialization; private Session routing",
+      "publicSurface": "UnitTactics.Begin/Operation.Resume; UnitTacticsServices; UnitTacticsOperation; NavalTransportContext.ForChooser",
+      "review": "Concrete owning services compose priority dispatch, recovery/scenario/ferry gates, specialized orders, site founding, guards, transport/work retry, retained Goto, population return and movement planning. One captured context survives children and decisions; nuclear staging reloads position and direct returns bypass common Finish. Actual U04 executes a selected move, real C01 founds and absorbs, U05 captures by paradrop, W04 pillages and V06 handles private planner bribery. Ransom and bribery session cases preserve recipients, cancellation, payment, stale-reply rejection and resumed finish. Required failure/disposal prefixes and cosmetic diagnostics remain observable. The documented production repair initializes unwritten quota/match/demand/policy once, preserves actual producers and retains retry state; real fallback/landing helpers and exhausted Defend cargo cover downstream behavior. Full A01/F04 scheduling, generated desktop composition and complete human/AI-game acceptance remain open; browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/NavalTransportContext.cs",
+        "src/OpenCiv2.Core/Ai/SettlementTactics.cs",
+        "src/OpenCiv2.Core/Ai/UnitTactics.Specialized.cs",
+        "src/OpenCiv2.Core/Ai/UnitTactics.Work.cs",
+        "src/OpenCiv2.Core/Ai/UnitTactics.cs",
+        "src/OpenCiv2.Session/BarbarianOrderOperation.cs",
+        "src/OpenCiv2.Session/CityFoundingOperation.cs",
+        "src/OpenCiv2.Session/UnitTacticsOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitTacticsCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.chooser-actual-order-execution",
+        "A04.chooser-actual-paradrop",
+        "A04.chooser-air-and-nuclear",
+        "A04.chooser-city-guard-and-ferry",
+        "A04.chooser-early-entry",
+        "A04.chooser-failure-and-disposal",
+        "A04.chooser-founding-and-work",
+        "A04.chooser-naval-initialization",
+        "A04.chooser-nuclear-reload",
+        "A04.chooser-ordinary-planner-and-retained-goto",
+        "A04.chooser-paratrooper-home",
+        "A04.chooser-pillage-and-partisan",
+        "A04.chooser-population-return",
+        "A04.chooser-private-bribe",
+        "A04.chooser-private-ransom",
+        "A04.chooser-recovery-and-scenario",
+        "A04.chooser-sea-no-moves",
+        "A04.chooser-special-destinations",
+        "A04.chooser-transport-retry"
       ]
     }
   ]

@@ -83,7 +83,8 @@ RetryTransport and NoMoves. A04 can enter here without executing city-guard
 setup, particularly when a type with nonzero cargo capacity has no moves left.
 A retry keeps the original context and the retained values below.
 
-Additional logical state:
+Additional logical state and original producer relationships follow. The
+production initialization repair below supplies otherwise unwritten values.
 
 | Name | Meaning and initialization |
 | --- | --- |
@@ -121,6 +122,31 @@ summaries, positive capacities and supported role values. Accepted custom data
 can produce negative signed capacities/counts or unusual policies. Preserve
 defined comparisons and arithmetic; do not silently clamp them. A narrower
 implementation may declare and reject those inputs before entry.
+
+### Production initialization repair
+
+The complete A04 chooser initializes otherwise unwritten Q/G/E/PS once per
+activation: Q=0, G=false, E=false and PS=0. A reached city-guard quota replaces Q;
+port and landing producers replace the other values as specified. Transport
+retry retains all four values rather than reinitializing them.
+
+This is an independent deterministic repair under X01, not an equivalence claim
+for native stack contents or historical supplied-byte tests. Q=0 reserves no
+defenders before a quota has been calculated; G=false records no established
+landing-region match; E=false records no established cargo demand. PS=0 gives
+the ordinary priority 2 until a selected port supplies its policy, rather than
+inventing capacity pressure and priority 4. The missing-producer cases can
+therefore release cargo, leave the landing counter unchanged, decline fallback
+recruitment, or publish ordinary-priority goals where arbitrary original locals
+would produce different results. Valid reached producers and their subsequent
+retention are unchanged.
+
+The isolated helpers may still accept explicit retained state for diagnostics;
+an unresolved diagnostic input is not the production chooser's entry contract.
+Tests must cover exhausted ships bypassing city guarding, Defend cargo away
+from home, fallback demand/priority, landing match retention and transport retry.
+Other missing identities or unsupported semantic inputs retain their own bounded
+failure contracts; this initializer does not manufacture a port or city.
 
 Out-of-bounds writes are excluded bugs under
 [X01](X01-classic-compatibility-contract.md#out-of-bounds-writes-are-excluded-bugs).

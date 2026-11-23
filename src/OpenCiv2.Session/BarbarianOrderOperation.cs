@@ -20,26 +20,12 @@ public sealed class BarbarianOrderOperation(BarbarianOrders.Operation operation,
         { return completed; }
         try
         {
-            int? answer = pending switch
-            {
-                BarbarianOrderDecision.Lifecycle life => LifecycleInteraction.Reply(life.Decision, input),
-                BarbarianOrderDecision.Ransom ransom => BarbarianRansomInteraction.Reply(ransom.Decision, input),
-                BarbarianOrderDecision.Pillage => AttackConfirmationInteraction.Reply(input),
-                _ => null
-            };
+            int? answer = BarbarianOrderInteraction.Reply(pending, input);
             pending = operation.Resume(answer);
             if (pending is not null)
             {
                 context.Publish();
-                var prompt = pending switch
-                {
-                    BarbarianOrderDecision.Lifecycle life => LifecycleInteraction.Prompt(context, life.Decision, recipient,
-                        ref intelligenceWindow, intelligence),
-                    BarbarianOrderDecision.Ransom ransom => BarbarianRansomInteraction.Prompt(context, ransom.Decision, recipient,
-                        ref intelligenceWindow, intelligence),
-                    BarbarianOrderDecision.Pillage pillage => AttackConfirmationInteraction.Prompt(pillage.Warning, recipient(pillage.Warning.Actor.Civilization)),
-                    _ => throw new InvalidOperationException("Unknown barbarian order decision")
-                };
+                var prompt = BarbarianOrderInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence);
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (operation.Result is null)
@@ -51,4 +37,25 @@ public sealed class BarbarianOrderOperation(BarbarianOrders.Operation operation,
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class BarbarianOrderInteraction
+{
+    internal static int? Reply(BarbarianOrderDecision? pending, OperationInput input) => pending switch
+    {
+        BarbarianOrderDecision.Lifecycle life => LifecycleInteraction.Reply(life.Decision, input),
+        BarbarianOrderDecision.Ransom ransom => BarbarianRansomInteraction.Reply(ransom.Decision, input),
+        BarbarianOrderDecision.Pillage => AttackConfirmationInteraction.Reply(input),
+        _ => null
+    };
+    internal static InteractionSpec Prompt(OperationContext context, BarbarianOrderDecision pending, Func<int, ParticipantId> recipient,
+        ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence) => pending switch
+        {
+            BarbarianOrderDecision.Lifecycle life => LifecycleInteraction.Prompt(context, life.Decision, recipient,
+                ref intelligenceWindow, intelligence),
+            BarbarianOrderDecision.Ransom ransom => BarbarianRansomInteraction.Prompt(context, ransom.Decision, recipient,
+                ref intelligenceWindow, intelligence),
+            BarbarianOrderDecision.Pillage pillage => AttackConfirmationInteraction.Prompt(pillage.Warning, recipient(pillage.Warning.Actor.Civilization)),
+            _ => throw new InvalidOperationException("Unknown barbarian order decision")
+        };
 }

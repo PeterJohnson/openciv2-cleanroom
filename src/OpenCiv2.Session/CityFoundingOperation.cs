@@ -27,31 +27,12 @@ public sealed class CityFoundingOperation(CityFounding.Operation operation, Func
 
         try
         {
-            FoundingReply? answer = pending switch
-            {
-                FoundingDecision.Lifecycle life => LifecycleInteraction.Reply(life.Decision, input) is { } choice ? new(choice) : null,
-                FoundingDecision.Name => input.Kind switch
-                {
-                    OperationInputKind.Choice => new(input.Choice ?? 1, input.Text),
-                    OperationInputKind.Cancel => new(1),
-                    OperationInputKind.Timeout => new(input.Choice ?? 1, input.Text),
-                    _ => null
-                },
-                FoundingDecision.Window when input.Kind is OperationInputKind.Choice or OperationInputKind.Cancel or OperationInputKind.Timeout => new(0),
-                _ => null
-            };
+            var answer = CityFoundingInteraction.Reply(pending, input);
             pending = operation.Resume(answer);
             if (pending is not null)
             {
                 context.Publish();
-                var prompt = pending switch
-                {
-                    FoundingDecision.Name name => new InteractionSpec("Name the new city", recipient(name.Owner), new CommandValue.City(name.City), new([0]))
-                    { Options = new([new(0, "Found city")]), TextInput = new("City name", name.InitialName, name.MaximumLength, 0) },
-                    FoundingDecision.Lifecycle life => LifecycleInteraction.Prompt(context, life.Decision, recipient, ref intelligenceWindow, intelligence),
-                    FoundingDecision.Window city => (visit ??= window(city.Request)) with { Recipient = recipient(city.Request.Owner) },
-                    _ => throw new InvalidOperationException("Unknown founding decision")
-                };
+                var prompt = CityFoundingInteraction.Prompt(context, pending, recipient, window, ref visit, ref intelligenceWindow, intelligence);
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
@@ -63,4 +44,31 @@ public sealed class CityFoundingOperation(CityFounding.Operation operation, Func
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class CityFoundingInteraction
+{
+    internal static FoundingReply? Reply(FoundingDecision? pending, OperationInput input) => pending switch
+    {
+        FoundingDecision.Lifecycle life => LifecycleInteraction.Reply(life.Decision, input) is { } choice ? new(choice) : null,
+        FoundingDecision.Name => input.Kind switch
+        {
+            OperationInputKind.Choice => new(input.Choice ?? 1, input.Text),
+            OperationInputKind.Cancel => new(1),
+            OperationInputKind.Timeout => new(input.Choice ?? 1, input.Text),
+            _ => null
+        },
+        FoundingDecision.Window when input.Kind is OperationInputKind.Choice or OperationInputKind.Cancel or OperationInputKind.Timeout => new(0),
+        _ => null
+    };
+    internal static InteractionSpec Prompt(OperationContext context, FoundingDecision pending, Func<int, ParticipantId> recipient,
+        Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? visit, ref InteractionSpec? intelligenceWindow,
+        Func<EmissaryIntelligence, InteractionSpec>? intelligence) => pending switch
+        {
+            FoundingDecision.Name name => new InteractionSpec("Name the new city", recipient(name.Owner), new CommandValue.City(name.City), new([0]))
+            { Options = new([new(0, "Found city")]), TextInput = new("City name", name.InitialName, name.MaximumLength, 0) },
+            FoundingDecision.Lifecycle life => LifecycleInteraction.Prompt(context, life.Decision, recipient, ref intelligenceWindow, intelligence),
+            FoundingDecision.Window city => (visit ??= window(city.Request)) with { Recipient = recipient(city.Request.Owner) },
+            _ => throw new InvalidOperationException("Unknown founding decision")
+        };
 }

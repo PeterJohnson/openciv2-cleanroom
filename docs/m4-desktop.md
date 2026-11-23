@@ -4996,3 +4996,47 @@ eight identity tests and three coverage tests passed.
 Full A04/A01/F04 orchestration, generated desktop composition and complete
 human/AI-game acceptance remain open. This delivers the chooser and its actual
 children, not complete M4. Browser and cross-platform execution remain deferred.
+
+## A04 shared unit chooser — 2026-11-23
+
+`UnitTactics` composes the actual barbarian, ordinary entry/recovery, scenario,
+air/nuclear, special destination, settlement/paratrooper, fortress/city guard,
+transport/work and movement-planning operations. One captured context survives
+child decisions and transport retry. Direct returns preserve their distinct
+completion behavior; nuclear staging reloads position before direction
+application. Selected orders remain for actual U04 execution.
+
+`UnitTacticsOperation` routes actual private ransom, lifecycle, founding,
+paradrop/capture, mission and pillage decisions through shared interaction
+helpers. Bounded yields resume through the runtime. Founding diagnostics survive
+the settlement child's disposal. Required failures and disposal preserve already
+committed gameplay effects.
+
+A05 now documents the narrow X01 production initialization repair for otherwise
+unwritten defender quota, landing match, cargo demand and selected-port policy.
+The chooser initializes these once; reached producers replace the values and
+transport retry retains them. Explicit unresolved helper inputs remain diagnostic
+cases. No port/city identity or arbitrary original stack state is manufactured.
+
+Nineteen new groups exercise real founding, population absorption, paradrop
+capture, pillage, nuclear staging and U04 movement, plus retained orders, guards,
+work assignment, private ransom/bribery and failure prefixes. Naval cases cover
+exhausted Defend cargo, actual transport retry, quota replacement, fallback
+priority/demand and landing-match retention. Test corrections preserved the
+specified damage-dependent movement allowance, city-guard early completion and
+war admission; no gameplay policy was changed to fit an invalid expectation.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1425 of 1427**, with the two existing
+platform/audio skips. The shared probe passed **1392 groups** across 155 coverage
+families; source identity verified **735 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-unit-tactics-native.json` | `712c3599cf1b328e686cdcc42618e1b018ff59174986846b9d1489eb0d7e398c` |
+| `m4-unit-tactics-identity.json` | `184bcf1fe327a926d90459779689d09a2b58b6c87f8090ece219885f35ea26cb` |
+
+Full A01/F04 orchestration, generated desktop composition and complete human/AI
+end-condition acceptance remain open. Browser and cross-platform execution
+remain deferred.
