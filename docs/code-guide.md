@@ -518,3 +518,11 @@ the capped Palace step-distance query shared with future city incitement.
 `Session/UnitEspionageOperation` presents the mission menu, cached payment offer
 and any nested incident. U02/A07 movement admission, city missions and general
 desktop presentation remain open.
+
+`Core/CityEspionageDamage` implements the V06 city sabotage and poison helpers
+against their owning controller's captured `CityMissionContext`. It uses actual
+building storage, city memory and resumable capture/escape. `BeginCaught` retains
+the captured unit identity through nested destruction before reporting capture.
+`Session/CityEspionageDamageOperation` routes mission questions to the actor and
+any nested incident to its victim. The ordinary city menu/fallback controller,
+other city missions and movement/desktop callers remain open.

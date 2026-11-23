@@ -35,6 +35,12 @@ Sabotage uses the actual HP query and resumable escape, including nested
 last-settler elimination and victim decisions. Command-runtime cases verify
 private menus/offers and affordable payment choices. Movement and general
 desktop presentation callers remain open.
+City sabotage/poison groups exercise real building and city-memory changes,
+captured target names, cyclic selection, ordered capture chains, custom targets,
+AI-versus-AI damage suppression, direct poison size/food rules and retained
+failure effects. Session cases follow actor confirmation through committed
+poison/unit loss to the human victim's decision. These are mission-child tests;
+they do not claim full movement or desktop city-mission integration.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

@@ -46,6 +46,10 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
     public Operation BeginEscape(int unit, int mode, int victim, string call, EspionageIncidents incidents, int candidateBudget = 64)
         => Operation.ForEscape(this, unit, mode, victim, call, incidents, candidateBudget);
 
+    /// <summary>V06 capture check, including its captured-type notice after all nested loss checks.</summary>
+    public Operation BeginCaught(int unit, int victim, string call, EspionageIncidents incidents, int candidateBudget = 64)
+        => Operation.ForEscape(this, unit, -1, victim, call, incidents, candidateBudget, true);
+
     private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false);
     private void RequireLocal() => MapKnowledge.RequireLocal(world);
 
@@ -77,8 +81,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
                 complete => parent.Steps(civilization, killer, call, candidateBudget, complete));
 
         internal static Operation ForEscape(CivilizationElimination parent, int unit, int mode, int victim, string call,
-            EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
-                complete => parent.EscapeSteps(unit, mode, victim, call, complete));
+            EspionageIncidents incidents, int candidateBudget, bool caught = false) => new(parent, incidents, candidateBudget, false,
+                complete => parent.EscapeSteps(unit, mode, victim, call, complete, caught));
 
         /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
         /// Result remains null during search. A reply is consumed only by the currently pending incident.</summary>
@@ -133,9 +137,9 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         public void Dispose() { disposed = true; Release(); }
     }
 
-    private IEnumerable<Work> EscapeSteps(int unit, int mode, int victim, string call, Action<int> complete)
+    private IEnumerable<Work> EscapeSteps(int unit, int mode, int victim, string call, Action<int> complete, bool caught = false)
     {
-        var resolution = escape.BeginResolve(unit, mode, victim, call);
+        var resolution = caught ? escape.BeginCaught(unit, victim, call) : escape.BeginResolve(unit, mode, victim, call);
         foreach (var check in resolution.Steps())
         { yield return new(call + "/unit/" + check.Unit + "/check", check, EscapeLoss: true); }
         if (resolution.Result!.Incident is { } incident)

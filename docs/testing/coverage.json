@@ -3303,6 +3303,32 @@
         "V06.unit-sabotage-dispatch-escape",
         "V06.unit-sabotage-hp-nested-elimination"
       ]
+    },
+    {
+      "id": "city-espionage-damage",
+      "status": "partial",
+      "contract": "V06 sections2,6 local treaty confirmation, capture checks, city sabotage and poisoning",
+      "publicSurface": "CityEspionageDamage.Sabotage/Poison/Operation; CityMissionContext; CityEspionageDamageOperation; CivilizationElimination.BeginCaught",
+      "review": "Actual C08 building mutation, W03 city memory and resumable U01/V01/V06 capture/escape children. Human forward-treaty confirmation precedes mutation and random choices, independently of autoplay. Sabotage retains cyclic selection, captured production text, targeted Palace/Wall capture chain, stock/Spy/veteran draw, SDI immunity and AI-versus-AI no-damage behavior. Custom target identities35..38 retain rule-name backing and no-op building storage; larger unsupported reads stop explicitly. Poison applies direct size/food changes without a city turn and remembers the resulting size. Capture notices retain initial identity and wait for nested last-settler incidents. Tests cover ordered actual outcomes, retained state across decisions, failures/disposal and real session actor/victim routing. City-controller admission/fallbacks, other city missions, U02/A07 callers, complete desktop presentation and generated human/AI games remain open; browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CityEspionageDamage.cs",
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/Units/SpyEscape.cs",
+        "src/OpenCiv2.Session/CityEspionageDamageOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityEspionageDamageCases.cs"
+      ],
+      "sharedGroups": [
+        "V06.city-capture-nested-elimination",
+        "V06.city-damage-treaty-poison-size",
+        "V06.city-poison-session-routing",
+        "V06.city-sabotage-capture-chain",
+        "V06.city-sabotage-custom-cancel",
+        "V06.city-sabotage-human-failure",
+        "V06.city-sabotage-scan-odds"
+      ]
     }
   ]
 }

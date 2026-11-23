@@ -43,13 +43,15 @@ public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations
         return resolution.Result!;
     }
 
-    internal sealed class Resolution(SpyEscape parent, int slot, int mode, int victim, string call)
+    internal sealed class Resolution(SpyEscape parent, int slot, int mode, int victim, string call, bool caught = false)
     {
         public SpyEscapeResult? Result;
-        public IEnumerable<CivilizationCheck> Steps() => parent.ResolveSteps(slot, mode, victim, call, this);
+        public IEnumerable<CivilizationCheck> Steps() => caught
+            ? parent.CaughtSteps(slot, victim, call, this) : parent.ResolveSteps(slot, mode, victim, call, this);
     }
 
     internal Resolution BeginResolve(int slot, int mode, int victim, string call) => new(this, slot, mode, victim, call);
+    internal Resolution BeginCaught(int slot, int victim, string call) => new(this, slot, -1, victim, call, true);
     internal void CompleteCheck(CivilizationCheck check) => loss.CompleteCheck(check);
     internal void CompleteIncident(SpyIncidentRequest request) => incident(request.Actor, request.Victim);
 
@@ -118,15 +120,26 @@ public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations
 
     public bool Caught(int slot, int victim, string call)
     {
+        var resolution = BeginCaught(slot, victim, call);
+        foreach (var check in resolution.Steps())
+        { loss.CompleteCheck(check); }
+        return resolution.Result!.Lost;
+    }
+
+    private IEnumerable<CivilizationCheck> CaughtSteps(int slot, int victim, string call, Resolution resolution)
+    {
+        MapKnowledge.RequireLocal(world);
         ref var unit = ref world.Entities.Units.Storage[slot];
         var type = unit.Type;
         int owner = unchecked((sbyte)unit.Owner.Value);
         UnitTarget target = new(new((ushort)slot), unit.Token);
-        bool lost = Try(slot, -1, victim, call);
-        if (lost && Human(owner) && !world.Multiplayer.Saved.AutoplayActive)
+        var child = BeginResolve(slot, -1, victim, call);
+        foreach (var check in child.Steps())
+        { yield return check; }
+        if (child.Result!.Lost && Human(owner) && !world.Multiplayer.Saved.AutoplayActive)
         {
             effects.Notice(new(target, type, owner, SpyFate.Caught));
         }
-        return lost;
+        resolution.Result = child.Result;
     }
 }
