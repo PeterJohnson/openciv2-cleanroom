@@ -567,3 +567,11 @@ shared treasury share and central-city queries. `ScenarioPermissions.AllowSchism
 runs the S02 predicate with a required authored-action dispatcher; it does not
 implement those actions. `Session/CivilWarOperation` publishes bounded progress.
 C09 capture/incitement and full scenario/presentation callers remain open.
+
+`City/CapturePopulationLoss` owns C09's signed population/exceptional preservation
+helper and composes actual C01 deletion. `CityRemoval` shares supported-unit
+traversal with C09's old-owner-filtered path, while its existing synchronous entry
+retains its callback contract. `CivilizationElimination.BeginRemoveCity` and
+`BeginSupportedLoss` run the nested checks through real resumable V01/espionage
+operations. `Session/CapturePopulationOperation` routes those victims. Capture's
+mode/restoration gate, takeover and production/partisan continuation remain open.

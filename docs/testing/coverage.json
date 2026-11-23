@@ -3477,6 +3477,30 @@
         "V01.civil-war-session",
         "V01.civil-war-veto"
       ]
+    },
+    {
+      "id": "capture-loss",
+      "status": "partial",
+      "contract": "C09 population loss and old-owner supported-unit loss with actual C01/U01/V01 children",
+      "publicSurface": "CapturePopulationLoss.Begin/Operation; CapturePopulationOperation; CivilizationElimination.BeginRemoveCity/BeginSupportedLoss",
+      "review": "C09 exceptional size-one gates use live human/knowledge/rank inputs, captured-center region and the stored weakest-human selector as an index. Signed population decrement deletes only exact zero through actual C01 deletion. Shared supported-unit traversal preserves C01 all-owner behavior and C09 retained-old-owner filtering, fixed Partisans, AI lone-defender rehoming, cargo-aware deletion and descending restart after changed bounds. New lifecycle entries resume actual nested last-settler/foreign-mission incidents before city token/routes/wonders/spatial cleanup and final notices. Session routing and failure/disposal preserve committed prefixes. Full capture mode/restoration admission, plunder, takeover, production, partisans, movement/desktop and generated-game acceptance remain open. Browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CapturePopulationLoss.cs",
+        "src/OpenCiv2.Core/City/CityRemoval.cs",
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Session/CapturePopulationOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CaptureLossCases.cs"
+      ],
+      "sharedGroups": [
+        "C09.population-exception-gates",
+        "C09.population-failure-disposal",
+        "C09.population-nested-deletion",
+        "C09.population-session-privacy",
+        "C09.population-signed-deletion",
+        "C09.supported-owner-restart"
+      ]
     }
   ]
 }

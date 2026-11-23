@@ -11,9 +11,15 @@ public sealed class CityRemoval(GameState world, RuleTables rules, StackOperatio
 {
     public void Delete(int slot)
     {
+        foreach (var check in DeleteSteps(slot))
+        { loss.CompleteCheck(check); }
+    }
+
+    internal IEnumerable<CivilizationCheck> DeleteSteps(int slot)
+    {
         if (slot < 0 || !world.Entities.Cities.Storage[slot].Token.Occupied)
         {
-            return;
+            yield break;
         }
         MapKnowledge.RequireLocal(world);
         world.CityDeletionActive = true;
@@ -22,34 +28,9 @@ public sealed class CityRemoval(GameState world, RuleTables rules, StackOperatio
         var position = city.Position;
         int owner = unchecked((sbyte)city.Owner.Value);
         world.Civilizations[owner].CityCount = unchecked((short)(world.Civilizations[owner].CityCount - 1));
-        for (int i = world.Entities.Units.End - 1; i >= 0; --i)
-        {
-            ref var unit = ref world.Entities.Units.Storage[i];
-            if (!unit.Token.Occupied || (unit.Home?.Value ?? 255) != slot)
-            {
-                continue;
-            }
-            if (unit.Type.Value == UnitTypeIds.Partisans)
-            {
-                unit.Home = null;
-                continue;
-            }
-            if (!world.Globals.HumanPlayers.Contains(unchecked((sbyte)unit.Owner.Value) & 31)
-                && CityQueries.At(world, unit.Position) is { } other && other.Value != slot)
-            {
-                if (rules.Units[unit.Type.Value].Role == RuleRole.Defend
-                    && stacks.CountRole(i, (int)RuleRole.Defend, rules) == 1)
-                {
-                    byte home = unchecked((byte)other.Value);
-                    unit.Home = home == 255 ? null : new(home);
-                    continue;
-                }
-                world.Entities.Cities.At(other).Flags.DefenderLost = true;
-            }
-            loss.DestroyAndRedraw(i, true);
-            i = world.Entities.Units.End;
-        }
-        city.Token = default;
+        foreach (var check in SupportedUnitSteps(slot))
+        { yield return check; }
+        world.Entities.Cities.Storage[slot].Token = default;
         if (slot == world.Entities.Cities.End - 1)
         {
             world.Entities.Cities.SetEnd(world.Entities.Cities.End - 1);
@@ -117,5 +98,35 @@ public sealed class CityRemoval(GameState world, RuleTables rules, StackOperatio
         }
         removed(target);
         world.CityDeletionActive = false;
+    }
+
+    /// <summary>C01 deletion scans all supported units; C09 capture passes its retained old owner.</summary>
+    internal IEnumerable<CivilizationCheck> SupportedUnitSteps(int slot, int? oldOwner = null)
+    {
+        MapKnowledge.RequireLocal(world);
+        for (int i = world.Entities.Units.End - 1; i >= 0; --i)
+        {
+            ref var unit = ref world.Entities.Units.Storage[i];
+            if (!unit.Token.Occupied || oldOwner is { } owner && unchecked((sbyte)unit.Owner.Value) != owner
+                || (unit.Home?.Value ?? 255) != slot)
+            { continue; }
+            if (unit.Type.Value == UnitTypeIds.Partisans)
+            { unit.Home = null; continue; }
+            if (!world.Globals.HumanPlayers.Contains(unchecked((sbyte)unit.Owner.Value) & 31)
+                && CityQueries.At(world, unit.Position) is { } other && other.Value != slot)
+            {
+                if (rules.Units[unit.Type.Value].Role == RuleRole.Defend
+                    && stacks.CountRole(i, (int)RuleRole.Defend, rules) == 1)
+                {
+                    byte home = unchecked((byte)other.Value);
+                    unit.Home = home == 255 ? null : new(home);
+                    continue;
+                }
+                world.Entities.Cities.At(other).Flags.DefenderLost = true;
+            }
+            foreach (var check in loss.DestroyAndRedrawSteps(i, true))
+            { yield return check; }
+            i = world.Entities.Units.End;
+        }
     }
 }

@@ -66,6 +66,11 @@ retained population targets, candidate aliases, multiple Palaces, failure prefix
 and bounded session continuation. NoSchism cases verify predicate/action routing
 without claiming the still-required authored-action dispatcher. C09 query cases
 exercise treasury rounding/faults and central-city ties.
+C09 loss groups cover exceptional size-one admission, signed size/zero deletion,
+captured-center regional input, filtered supported-unit loss and cargo/restart
+behavior. Actual nested C01/U01/V01 incidents delay city route/wonder/spatial
+cleanup; session privacy and failure/disposal checks retain the accepted prefix.
+The existing C01 synchronous deletion groups remain regressions for the shared path.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

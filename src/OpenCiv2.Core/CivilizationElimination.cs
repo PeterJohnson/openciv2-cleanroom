@@ -1,4 +1,5 @@
 using OpenCiv2.Contracts;
+using OpenCiv2.Core.City;
 using OpenCiv2.Core.State;
 using OpenCiv2.Core.Units;
 
@@ -68,6 +69,14 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         return Operation.ForStack(this, loss, unit, call, incidents, candidateBudget);
     }
 
+    /// <summary>C01 city deletion, including supported-unit loss and its actual nested civilization checks.</summary>
+    public Operation BeginRemoveCity(CityRemoval removal, int city, string call, EspionageIncidents incidents, int candidateBudget = 64)
+        => Operation.ForCityLoss(this, removal, city, null, call, incidents, candidateBudget);
+
+    /// <summary>C09 old-owner supported-unit loss only. Production and city-window continuation belong to capture.</summary>
+    public Operation BeginSupportedLoss(CityRemoval removal, int city, int oldOwner, string call, EspionageIncidents incidents, int candidateBudget = 64)
+        => Operation.ForCityLoss(this, removal, city, oldOwner, call, incidents, candidateBudget);
+
     private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false);
     private void RequireLocal() => MapKnowledge.RequireLocal(world);
 
@@ -109,6 +118,10 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         internal static Operation ForStack(CivilizationElimination parent, UnitLoss loss, int unit, string call,
             EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
                 complete => parent.StackSteps(loss, unit, call, complete));
+
+        internal static Operation ForCityLoss(CivilizationElimination parent, CityRemoval removal, int city, int? oldOwner,
+            string call, EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
+                complete => CityLossSteps(removal, city, oldOwner, call, complete));
 
         /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
         /// Result remains null during search. A reply is consumed only by the currently pending incident.</summary>
@@ -176,6 +189,16 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
     {
         ArgumentException.ThrowIfNullOrEmpty(call);
         foreach (var check in loss.EraseStackSteps(unit, true))
+        { yield return new(call + "/unit/" + check.Unit + "/check", check); }
+        complete(1);
+    }
+
+    private static IEnumerable<Work> CityLossSteps(CityRemoval removal, int city, int? oldOwner, string call, Action<int> complete)
+    {
+        ArgumentNullException.ThrowIfNull(removal);
+        ArgumentException.ThrowIfNullOrEmpty(call);
+        var steps = oldOwner is { } owner ? removal.SupportedUnitSteps(city, owner) : removal.DeleteSteps(city);
+        foreach (var check in steps)
         { yield return new(call + "/unit/" + check.Unit + "/check", check); }
         complete(1);
     }
