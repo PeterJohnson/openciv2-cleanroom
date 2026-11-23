@@ -21,7 +21,7 @@ public sealed class NavalTransportContext
     public CitySlot? WorkingCity { get; set; }
     public int? CivilizationCursor { get; set; }
 
-    public NavalTransportContext(UnitTacticsContext tactics, NavalCargoResult cargo)
+    public NavalTransportContext(UnitTacticsContext tactics, NavalCargoResult cargo = default)
     { Tactics = tactics; ResetCargo(cargo); }
 
     public void ResetCargo(NavalCargoResult cargo)

@@ -4475,3 +4475,38 @@ Naval war/trade/exploration destinations and the complete sea prefix remain
 open, alongside other specialized/site/barbarian choices, full A04/A01 and turn
 scheduling, wider desktop composition and complete human/AI-game acceptance.
 Browser and cross-platform execution remain deferred.
+
+## A05 destinations and shared sea dispatch
+
+`NavalGoals` now selects reinforcement, undefended enemy cities, general overseas
+attacks, trade destinations, owned ports and exploration targets in the specified
+order. Strict score comparisons retain first ties; successive modifiers retain
+integer truncation. Trade uses the actual retained passenger home and reached
+civilization cursor, including the specified city-memory read. Exploration
+preserves y-before-x sampling, stored-target reuse and all 22 random rays, whose
+later successes can replace earlier destinations.
+
+`NavalSeaTactics` composes actual cargo scanning, standing-goal clearing,
+transport control and these destination policies. It preserves immediate
+transport direction/Finish, the distinct direct NoMoves return and continuation
+to A04 after Goto publication. Authored cases exercise those routes and execute
+a selected reinforcement order through actual U04/U03/U02. Two initial test
+inputs landed just below their intended secondary-sampling boundaries; moving
+the supplied codes inside those intervals corrected the fixtures without
+changing the F01 law or destination implementation.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1277 of 1279**, with the two existing
+platform/audio skips. The shared probe passed **1244 groups** across 143 coverage
+families; source identity verified **693 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-naval-goals-native.json` | `35a47dd980edb45217671d73f9ea15e3da63dcc9a0658e4ca3db860b8af3daf7` |
+| `m4-naval-goals-identity.json` | `56e28113bc6aace5f330c676c703c5bd8e3f8a929d8b3b9fea207fdd30cf536f` |
+
+A03 settlement/work, A06 air/nuclear, A07 special-unit and W06 barbarian policies,
+full A04/A01/turn orchestration, generated desktop composition and complete
+human/AI-game acceptance remain open. Browser and cross-platform execution
+remain deferred.

@@ -782,7 +782,7 @@ mission decisions; the chooser still owns applying the result through
 directed trespass response, adjacent empty-city forcing and real recovery with
 early Hold/Finish completion. It retains the adjacent foreign civilization in
 the context; civilization zero requires the separate W06 chooser.
-Specialized/site/transport dispatch remains open. `Ai/NavalTargets` supplies
+Specialized/site dispatch and the full parent remain open. `Ai/NavalTargets` supplies
 A05's landing direction and near-shore Goto helpers using actual W01 queries
 and U04 order writes. Landing scoring retains later ties and directed hostile
 city bonuses; coastal targeting retains first matches, raw regions and original
@@ -802,7 +802,12 @@ reinforcement gates. Unloading uses actual landing scores, goals, exhaustion
 and role wakeup; it selects orders without relocating passengers. The format
 adapter now carries TransportRequested and the upper relationship bits consumed
 by A05's absent-unit-owner hostility query. Hut settlement still tests only
-the regional low-seven components. Full sea-goal selection remains open.
+the regional low-seven components. `NavalGoals` supplies ordered war, trade,
+other-port and exploration destinations with actual connectivity, retained
+civilization state and F01 sampling. `NavalSeaTactics` composes cargo, standing
+goal cleanup, transport and destination policies; its distinct ReturnOne route
+bypasses common Finish for exhausted ships. Continue returns to A04 even after
+a Goto publication. Full A04/retry and desktop composition remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

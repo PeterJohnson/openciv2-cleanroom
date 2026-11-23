@@ -6,7 +6,7 @@ using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Core.Ai;
 
-public enum NavalRoute { Continue, Direction, Finish }
+public enum NavalRoute { Continue, Direction, Finish, ReturnOne }
 public readonly record struct NavalChoice(NavalRoute Route, int Direction = 8);
 
 /// <summary>A05 §5 adjacent land and unloading choices, with actual landing selection,

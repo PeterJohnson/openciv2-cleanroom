@@ -842,3 +842,14 @@ the consumed upper relationship bits and TransportRequested; W06 low-seven
 settlement checks remain unchanged. Missing relevant Goto-region state retains
 prior transport marking. Full naval destination policy and game acceptance remain
 open.
+
+A05 destination/sea-prefix cases cover reinforcement thresholds and ties,
+directed allied raids, stride scans, last-human ally selection and ordered
+score reductions. Trade cases retain the last present passenger home, reached
+civilization cursor and specified live city-memory read, with signed scoring
+and committed failure prefixes. Exploration verifies y/x draw order, reused
+targets, regional boundaries and all 22 rays with later destination replacement.
+The shared sea prefix uses actual cargo/transport/goal children, distinguishes
+NoMoves from immediate unloading, and executes a chosen order through actual
+U04/U03/U02. Full A04/retry orchestration and desktop full-game acceptance remain
+open; browser and cross-platform execution stay deferred.

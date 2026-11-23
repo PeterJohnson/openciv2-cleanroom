@@ -4516,6 +4516,37 @@
         "W06.hut-redirect-gates-capacity",
         "W06.hut-tribe-creation-failures"
       ]
+    },
+    {
+      "id": "ai-naval-destinations-sea-dispatch",
+      "status": "partial",
+      "contract": "A05 sections 2 and 6\u20138 complete sea prefix and ordered war/trade/exploration destinations",
+      "publicSurface": "NavalGoals.Choose/War/Trade/Other; NavalSeaTactics.Choose; NavalRoute.ReturnOne",
+      "review": "Actual cargo, transport, connectivity, stack traversal, treaty state, current/standing goals and Goto publication compose the shared sea prefix. War cases cover reinforcement thresholds, directed allied raids, first ties, counter stride, last human ally and sequential score reductions. Trade retains last present passenger home and the actual reached civilization cursor, including the specified city-memory read, signed trade arithmetic and failure prefixes. Other ports retain modulo-32 policy membership; exploration preserves y/x sampling, reused coordinates, region boundaries and all 22 ray draws with later replacement. Tests run an actual selected sea order through U04/U03/U02 and verify direct NoMoves versus immediate transport completion, enemy-zone gates and standing-goal cleanup. A04 parent/retry orchestration, desktop composition and full-game acceptance remain open; browser and cross-platform execution remain deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/NavalGoals.Explore.cs",
+        "src/OpenCiv2.Core/Ai/NavalGoals.Trade.cs",
+        "src/OpenCiv2.Core/Ai/NavalGoals.cs",
+        "src/OpenCiv2.Core/Ai/NavalSeaTactics.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NavalGoalCases.cs"
+      ],
+      "sharedGroups": [
+        "A05.goals-empty-city-directed-allies",
+        "A05.goals-explore-boundaries-rays",
+        "A05.goals-explore-draws-reuse",
+        "A05.goals-general-admission",
+        "A05.goals-general-stride-modifiers",
+        "A05.goals-other-owned-ports",
+        "A05.goals-reinforcement",
+        "A05.goals-trade-arithmetic-ownership",
+        "A05.goals-trade-directed-cursor",
+        "A05.goals-trade-home-memory-cursor",
+        "A05.goals-trade-missing-cursor-prefix",
+        "A05.sea-prefix-actual-movement",
+        "A05.sea-prefix-dispatch"
+      ]
     }
   ]
 }
