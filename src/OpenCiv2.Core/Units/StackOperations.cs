@@ -89,6 +89,16 @@ public sealed class StackOperations
         return changed;
     }
 
+    /// <summary>U01 §9 whole-stack clear affects unit seen-by sets only, using validated traversal.</summary>
+    public void ClearVisibility(int slot)
+    {
+        for (int current = First(slot); current >= 0; current = Next(current))
+        {
+            local.Step();
+            local.BackedUnit(current).Visibility = default;
+        }
+    }
+
     private ref bool Active(PlacementOperation operation)
     {
         switch (operation)

@@ -526,3 +526,13 @@ risk, actual single-unit placement, bounded interception rolls and nested
 last-Settler incidents. Direct transfer, live observer notices, cancel/timeout,
 disposal and failures retain the specified prefixes. Desktop airlift controls
 and generated complete-game acceptance remain pending.
+
+V04 attack-permission cases check retained senate thresholds, directed sneak
+attack, active UN ownership/obsolescence, protected treaty sets, warning priority,
+reply-one semantics, live state after the warning, recipient routing and failure.
+U05 paradrop cases join real confirmation, cargo lift/stack placement, capture
+and revelation. They cover direct versus command admission, topology/draw order,
+viewers and documented presentation repairs, mixed-domain cargo, human versus AI
+capture exhaustion, captured tile ownership, P06 suspension, replacement moving
+actors and committed failures. These are service/session integration cases;
+desktop controls and complete-game acceptance remain open.

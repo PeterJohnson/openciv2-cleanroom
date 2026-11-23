@@ -3184,15 +3184,19 @@
     {
       "id": "diplomatic-war-and-borders",
       "status": "partial",
-      "contract": "V04 sections6\u20139 local expulsion, alliance cancellation, declaration/reputation, forced war, obligations and border measurement",
-      "publicSurface": "DiplomaticWar; IDiplomaticWarEffects; BorderIntrusions; BorderIntrusionSummary; DiplomacyWorkspace.Intrusions",
-      "review": "Composes actual C01 weighted/coastal city queries and U01 cargo lift/whole-stack relocation. Retains land/ocean admission, distinct destination ties, cargo and retained staging semantics, directed treaty flags, unsigned reputation/signed credit wrap, double contradictory-treaty penalties, active Eiffel queries and ally activation without alive filtering. Alliance declaration cancels and expels without setting War; Force composes it before its contact gate. Joined war preserves lastContact-minus-turn and primary-modulo admission. Border measurement consumes the first qualifying tile only, uses the physical stack without per-member owner filtering, weights captured components, retains warned/intruder flags and resets only summaries. Tests cover actual composed effects, failures, observer/autoplay gates, topology, mixed stacks and save conversion. Network publication, full V04/V05/A08 and espionage callers, desktop diplomacy UI and generated human/AI games remain unfinished; browser/cross-platform work is deferred. Stock portrait selection is presentation-owned.",
+      "contract": "V04 sections4,6\u20139 local expulsion, alliance cancellation, declaration/reputation, forced war, obligations and border measurement",
+      "publicSurface": "DiplomaticWar; IDiplomaticWarEffects; BorderIntrusions; BorderIntrusionSummary; DiplomacyWorkspace.Intrusions; AttackConfirmation; DiplomaticRelations.Intersects; AttackConfirmationOperation",
+      "review": "Composes actual C01 weighted/coastal city queries and U01 cargo lift/whole-stack relocation. Retains land/ocean admission, distinct destination ties, cargo and retained staging semantics, directed treaty flags, unsigned reputation/signed credit wrap, double contradictory-treaty penalties, active Eiffel queries and ally activation without alive filtering. Alliance declaration cancels and expels without setting War; Force composes it before its contact gate. Joined war preserves lastContact-minus-turn and primary-modulo admission. Border measurement consumes the first qualifying tile only, uses the physical stack without per-member owner filtering, weights captured components, retains warned/intruder flags and resets only summaries. Tests cover actual composed effects, failures, observer/autoplay gates, topology, mixed stacks and save conversion. Network publication, full V04/V05/A08 and espionage callers, desktop diplomacy UI and generated human/AI games remain unfinished; browser/cross-platform work is deferred. Stock portrait selection is presentation-owned. Senate permission reads retained diplomacy random, directed sneak attack, unsigned reputation and actual active UN effects. Attack confirmation preserves caller-protected flags, warning priority, exact reply-one acceptance, live senate/allowance notices and nonzero-block semantics without treaty or unit mutations. Local paradrop composes this permission child; broader movement/combat callers remain pending.",
       "sources": [
+        "src/OpenCiv2.Core/AttackConfirmation.cs",
         "src/OpenCiv2.Core/BorderIntrusions.cs",
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
-        "src/OpenCiv2.Core/DiplomaticWar.cs"
+        "src/OpenCiv2.Core/DiplomaticRelations.cs",
+        "src/OpenCiv2.Core/DiplomaticWar.cs",
+        "src/OpenCiv2.Session/AttackConfirmationOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AttackConfirmationCases.cs",
         "tests/OpenCiv2.FoundationCases/BorderIntrusionCases.cs",
         "tests/OpenCiv2.FoundationCases/DiplomaticWarCases.cs"
       ],
@@ -3200,11 +3204,15 @@
         "V04.alliance-cancellation-declaration",
         "V04.alliance-land-expulsion",
         "V04.alliance-ocean-cargo-expulsion",
+        "V04.attack-replies-live-senate",
+        "V04.attack-session-failure",
+        "V04.attack-warning-priority",
         "V04.border-first-stack-retention",
         "V04.border-stack-ownership-crowding",
         "V04.border-topology-skips",
         "V04.declaration-reputation-direction",
         "V04.forced-joined-war",
+        "V04.senate-retained-thresholds",
         "V04.war-alliance-obligations",
         "V04.war-failure-prefixes"
       ]
@@ -3631,20 +3639,24 @@
     {
       "id": "transport-and-special-finish",
       "status": "partial",
-      "contract": "U05 local landfall, boarding, unloading, port/exploration wakeup, aircraft basing/fuel and Coast-bound loss with actual U01/V01 children; player airlift command and direct executor",
-      "publicSurface": "TransportMovement; MovementContinuation; SpecialMovementFinish; CivilizationElimination.BeginEraseCargo; LandfallOperation; SpecialMovementOperation; PlayerAirlift; PlayerAirliftOperation",
-      "review": "Landfall preserves captured-bound clearing, validated first eligible passenger selection, captured selection across reply, distinct no-passenger notice and prompt/autoplay answer semantics. Boarding uses actual set-sleep/exhaust/gather and accepts spent-equals-allowance ships, retaining other cargo changes. Unload wakes all sleeping land units then uses actual U04 selectability and last matching selection, applying the known-selectable U04 focus branch and MoveUnits state in the core; port and exploration wakeups preserve cargo links and their distinct gates. Aircraft basing uses city/airbase or physical carrier/submarine membership without ownership/capacity admission, the range-one postattack exception, signed byte fuel comparison and basic deletion. Coast-bound odds preserve Lighthouse/advance gates, draw-before-coast and retained work state, with actual cargo-aware deletion and nested last-Settler/foreign-spy incidents. Session continuations route landfall actors and nested victims; failures/disposal retain committed prefixes. U02 sequencing, full desktop command/UI/content binding, paradrop and generated complete-game acceptance remain open. Browser/cross-platform work is deferred. Player airlift retains actor/origin/owner across destination and warning choices, includes used airports in the selection, checks directed actor-to-fighter war with no domain or movement gate, and consumes one primary remainder test per risk point. Actual single-unit relocation, city-window notification and basic deletion preserve ordered effects, nested victim decisions, live observer notices and terminal failure prefixes. Direct transfer bypasses command eligibility; AI airlift remains separate.",
+      "contract": "U05 local landfall, boarding, unloading, port/exploration wakeup, aircraft basing/fuel and Coast-bound loss with actual U01/V01 children; player airlift command and direct executor; local paradrop admission, viewer publication, approach and capture/revelation",
+      "publicSurface": "TransportMovement; MovementContinuation; SpecialMovementFinish; CivilizationElimination.BeginEraseCargo; LandfallOperation; SpecialMovementOperation; PlayerAirlift; PlayerAirliftOperation; Paradrop; ParadropOperation; StackOperations.ClearVisibility",
+      "review": "Landfall preserves captured-bound clearing, validated first eligible passenger selection, captured selection across reply, distinct no-passenger notice and prompt/autoplay answer semantics. Boarding uses actual set-sleep/exhaust/gather and accepts spent-equals-allowance ships, retaining other cargo changes. Unload wakes all sleeping land units then uses actual U04 selectability and last matching selection, applying the known-selectable U04 focus branch and MoveUnits state in the core; port and exploration wakeups preserve cargo links and their distinct gates. Aircraft basing uses city/airbase or physical carrier/submarine membership without ownership/capacity admission, the range-one postattack exception, signed byte fuel comparison and basic deletion. Coast-bound odds preserve Lighthouse/advance gates, draw-before-coast and retained work state, with actual cargo-aware deletion and nested last-Settler/foreign-spy incidents. Session continuations route landfall actors and nested victims; failures/disposal retain committed prefixes. U02 sequencing, full desktop command/UI/content binding and generated complete-game acceptance remain open. Browser/cross-platform work is deferred. Player airlift retains actor/origin/owner across destination and warning choices, includes used airports in the selection, checks directed actor-to-fighter war with no domain or movement gate, and consumes one primary remainder test per risk point. Actual single-unit relocation, city-window notification and basic deletion preserve ordered effects, nested victim decisions, live observer notices and terminal failure prefixes. Direct transfer bypasses command eligibility; AI airlift remains separate. Paradrop composes actual V04 confirmation, U01 cargo lift/whole-stack visibility and relocation, C09 capture and W03 revelation. Retains captured owner/city/origin, approach tie/draw laws, human movement preservation, moving-actor reload and ordered finish effects. U05 documents X01 repairs for unwritten viewer locals, absent nearest-city names/approaches and absent actors; these change presentation or bound invalid access, not ordinary gameplay. Tests exercise command versus direct entry, peace/senate cancellation, viewers, approach ties, cargo, actual capture/P06 suspension, actor replacement and committed failure prefixes. P01/P05 desktop controls, outer AI/turn orchestration and complete-game acceptance remain open.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/Units/Paradrop.cs",
         "src/OpenCiv2.Core/Units/PlayerAirlift.cs",
         "src/OpenCiv2.Core/Units/SpecialMovementFinish.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs",
         "src/OpenCiv2.Core/Units/TransportMovement.cs",
         "src/OpenCiv2.Core/Units/UnitLoss.cs",
         "src/OpenCiv2.Session/LandfallOperation.cs",
+        "src/OpenCiv2.Session/ParadropOperation.cs",
         "src/OpenCiv2.Session/PlayerAirliftOperation.cs",
         "src/OpenCiv2.Session/SpecialMovementOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/ParadropCases.cs",
         "tests/OpenCiv2.FoundationCases/PlayerAirliftCases.cs",
         "tests/OpenCiv2.FoundationCases/SpecialMovementCases.cs",
         "tests/OpenCiv2.FoundationCases/TransportMovementCases.cs"
@@ -3659,6 +3671,12 @@
         "U05.landfall-refusal-failure",
         "U05.landfall-selection-reply",
         "U05.landfall-session",
+        "U05.paradrop-capture-session",
+        "U05.paradrop-cargo-revelation",
+        "U05.paradrop-command-target-admission",
+        "U05.paradrop-failure-prefixes",
+        "U05.paradrop-treaty-senate",
+        "U05.paradrop-visibility-approach-repairs",
         "U05.player-airlift-admission",
         "U05.player-airlift-execution",
         "U05.player-airlift-failure-prefixes",

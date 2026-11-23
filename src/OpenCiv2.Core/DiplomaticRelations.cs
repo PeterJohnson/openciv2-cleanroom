@@ -6,6 +6,18 @@ namespace OpenCiv2.Core;
 /// they do not declare a full war, establish contact, change attitude or send messages.</summary>
 public static class DiplomaticRelations
 {
+    /// <summary>V04 caller-supplied protected relation set, without file-bit representation.</summary>
+    public static bool Intersects(in Relationship relation, in Relationship flags) =>
+        relation.Contact && flags.Contact || relation.Ceasefire && flags.Ceasefire || relation.Peace && flags.Peace
+        || relation.Alliance && flags.Alliance || relation.Vendetta && flags.Vendetta || relation.HostileIntent && flags.HostileIntent
+        || relation.BrokenTreaty && flags.BrokenTreaty || relation.Embassy && flags.Embassy || relation.NuclearThreat && flags.NuclearThreat
+        || relation.Fighting && flags.Fighting || relation.RecentContact && flags.RecentContact || relation.Aggressor && flags.Aggressor
+        || relation.SneakAttack && flags.SneakAttack || relation.War && flags.War || relation.ChangedThisTurn && flags.ChangedThisTurn
+        || relation.Incident && flags.Incident || relation.Nuked && flags.Nuked || relation.Tribute && flags.Tribute
+        || relation.ExtendedAggressor && flags.ExtendedAggressor || relation.Mercenary && flags.Mercenary
+        || relation.WarThisTurn && flags.WarThisTurn || relation.CityCaptured && flags.CityCaptured
+        || relation.MetThisTurn && flags.MetThisTurn || relation.SpyChat && flags.SpyChat;
+
     public static void Clear(GameState world, int from, int to, Relationship flags)
     {
         if (flags.Peace)

@@ -441,6 +441,27 @@ with an assumed simultaneous global reset.
 
 ## Paradrop
 
+### Production safety repairs (X01)
+
+The local production operation does not accept original stack/backing values
+for presentation. Initialize its per-observer seen/animate entries to false,
+then run the specified producer for eligible viewers. Observer values outside
+1..7 have no local announcement/animation. A viewer that becomes eligible only
+after production retains false unless its entry was produced. These choices
+replace demonstrated unwritten presentation reads; they do not alter admission,
+approach samples, movement, capture or revelation.
+
+When the weighted nearest-city query has no result, carry an absent city name
+in the semantic announcement and use the supplied target location in its
+presentation. Do not dereference a nonexistent city or invent its name. If no
+approach wins, omit animation and continue the specified gameplay relocation.
+An absent active/continuing actor produces a bounded failure before its next
+unit access, preserving preceding effects. No original backing is required.
+Tests cover these repairs separately from ordinary owner/viewer, approach and
+capture cases; equality to arbitrary original stack or invalid-memory results
+is not claimed. This production policy overrides the reference backing/stop
+alternatives in the subsections below.
+
 ### Command entry
 
 Capture active actor without an intrinsic nonnegative/lifetime guard. If movement
