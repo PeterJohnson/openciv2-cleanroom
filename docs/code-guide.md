@@ -809,6 +809,13 @@ goal cleanup, transport and destination policies; its distinct ReturnOne route
 bypasses common Finish for exhausted ships. Continue returns to A04 even after
 a Goto publication. Full A04/retry and desktop composition remain open.
 
+`Ai/SpecialUnitDestinations` supplies A07 caravan and diplomat/spy destination
+policies. It keeps captured context, ordered scoring, retained orders and actual
+V07 race queries; no-target destruction uses real U01/V01/V06 children.
+`SpecialUnitDestinationOperation` routes their private lifecycle decisions and
+bounded continuation. A destination does not execute trade or espionage. The
+paratrooper policy and full A04 parent still await composition.
+
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
 and ends after the first eligible paratrooper even on refusal. Otherwise it

@@ -4510,3 +4510,43 @@ A03 settlement/work, A06 air/nuclear, A07 special-unit and W06 barbarian policie
 full A04/A01/turn orchestration, generated desktop composition and complete
 human/AI-game acceptance remain open. Browser and cross-platform execution
 remain deferred.
+
+## A07 caravan and diplomat destinations
+
+`SpecialUnitDestinations` now supplies caravan and diplomat/spy policies using
+captured A04 context, actual W01/C01 queries, V04 attitudes and V07 spaceship
+race state. Caravan choice retains existing Goto, uses the origin region's
+city-size total for landing, preserves ordered trade-score reductions and uses
+only actual home for its final fallback. Diplomat choice retains unprotected
+foreign orders, the absent-home partition, Road thresholds, fixed Spy identity,
+treaty/rank/government gates and existing orders when an owned city wins.
+
+No-home/no-target destruction composes actual cargo-aware U01 removal, V01
+elimination/recreation and V06 incidents. `SpecialUnitDestinationOperation`
+routes private lifecycle replies and cancellation without replaying removals.
+Tests verify first ties, signed route counts, retained inactive home, nearest
+human discounts, unclamped diplomat versus clamped caravan attitudes, spaceship
+race gates and committed deletion before a private incident. The initial
+trade fixture accidentally triggered the specified later nearest-city tie;
+strictly closer home geometry isolates the intended trade-score tie. The
+lifecycle fixture now supplies the actual creation child required after loss.
+
+Caravan route reads beyond the three supported partners stop explicitly at
+the reached unsupported read; they do not fabricate additional route slots.
+Selection assigns orders without delivering cargo or executing espionage.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1285 of 1287**, with the two existing
+platform/audio skips. The shared probe passed **1252 groups** across 144 coverage
+families; source identity verified **698 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-special-destinations-native.json` | `2264e865f7aaa9d67b78f817f589d0c75c155a36b1b879bddd8f9a08cb784430` |
+| `m4-special-destinations-identity.json` | `8e1826cd5d0f2df6e97c255be9bffb1cb8b67b0515d6f4644b8243fe5126f0a3` |
+
+A07 paratroopers, A03 settlement/work and full founding, A06 air/nuclear, W06
+barbarian policies, full A04/A01/turn orchestration, generated desktop composition
+and complete human/AI-game acceptance remain open. Browser and cross-platform
+execution remain deferred.

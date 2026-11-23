@@ -853,3 +853,13 @@ The shared sea prefix uses actual cargo/transport/goal children, distinguishes
 NoMoves from immediate unloading, and executes a chosen order through actual
 U04/U03/U02. Full A04/retry orchestration and desktop full-game acceptance remain
 open; browser and cross-platform execution stay deferred.
+
+A07 caravan/diplomat cases verify existing-order gates, captured-region landing
+scores, strict ties, signed route counts, ordered attitude/nearest-city discounts
+and actual-home fallback. Diplomat cases cover raw absent-home partition, Road
+thresholds, unprotected foreign orders, fixed Spy identity, treaty/rank/government
+gates, actual spaceship-race state and retained owned-target orders. Real
+no-target destruction reaches nested elimination, spy incidents and recreation;
+session replies and cancellation remain private and preserve prior removals.
+These cases do not claim the paratrooper policy, full tactical parent or later
+travel/trade/espionage joins. Desktop complete-game acceptance remains open.

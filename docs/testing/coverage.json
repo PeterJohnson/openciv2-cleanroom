@@ -4547,6 +4547,32 @@
         "A05.sea-prefix-actual-movement",
         "A05.sea-prefix-dispatch"
       ]
+    },
+    {
+      "id": "ai-special-unit-destinations",
+      "status": "partial",
+      "contract": "A07 sections 2 and 3 caravan and diplomat/spy destinations with actual U01/V01/V06 no-target destruction",
+      "publicSurface": "SpecialUnitDestinations.Caravan/Diplomat; SpecialUnitChoice; SpecialUnitDestinationOperation",
+      "review": "Caravan choice preserves existing Goto, raw-origin regional size for first positive landing ties, retained actual/fallback home, ordered route/attitude/nearest-city reductions and actual-home-only fallback. Diplomat choice retains unprotected foreign Goto, ocean planning intent, raw absent-home partition, Road distance threshold, fixed Spy identity, treaty/rank/government/regional strength gates, actual spaceship race queries and ordered contribution reductions. Owned winners retain existing orders. No-target paths use cargo-aware destruction and actual nested elimination/spy incidents/recreation, with private session reply/cancel and retained removal prefixes. Unsupported route reads beyond three partners stop explicitly; no synthetic query callbacks are introduced. Paratrooper policy, full A04 composition, subsequent movement/trade/espionage and desktop full-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/SpecialUnitDestinations.Caravan.cs",
+        "src/OpenCiv2.Core/Ai/SpecialUnitDestinations.Diplomat.cs",
+        "src/OpenCiv2.Core/Ai/SpecialUnitDestinations.cs",
+        "src/OpenCiv2.Session/SpecialUnitDestinationOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SpecialDestinationCases.cs"
+      ],
+      "sharedGroups": [
+        "A07.caravan-landing-orders",
+        "A07.caravan-nearest-fallback",
+        "A07.caravan-scores-routes",
+        "A07.destination-lifecycle-session",
+        "A07.diplomat-existing-ocean",
+        "A07.diplomat-partition-scores",
+        "A07.diplomat-retain-destroy",
+        "A07.diplomat-treaty-race-spy"
+      ]
     }
   ]
 }
