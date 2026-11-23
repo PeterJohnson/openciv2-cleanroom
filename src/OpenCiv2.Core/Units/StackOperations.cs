@@ -72,6 +72,22 @@ public sealed class StackOperations
         return count;
     }
 
+    /// <summary>U01 signed-range aggregate used by U02's foreign-aircraft admission.</summary>
+    public int CountLongRangeAircraft(int slot, RuleTables rules) => CountMatching(slot, rules,
+        rule => rule.Domain == RuleDomain.Air && unchecked((sbyte)rule.Range) > 1);
+    public int CountAircraftCarriers(int slot, RuleTables rules) => CountMatching(slot, rules, rule => rule.Abilities.CarryAircraft);
+    private int CountMatching(int slot, RuleTables rules, Func<UnitRule, bool> predicate)
+    {
+        int count = 0;
+        for (int current = First(slot); current >= 0 && count < EntityLimits.Units; current = Next(current))
+        {
+            local.Step();
+            if (predicate(rules.Units[local.BackedUnit(current).Type.Value]))
+            { ++count; }
+        }
+        return count;
+    }
+
     /// <summary>U01 stack publication excludes each member's own owner and preserves prior knowledge.</summary>
     public bool MarkSeen(int slot, int observer)
     {

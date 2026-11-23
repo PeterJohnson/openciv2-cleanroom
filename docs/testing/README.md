@@ -630,3 +630,15 @@ route real last-settler incidents and ally-help/payment/war decisions privately
 without repeating casualty history, movement charge or rewards. These tests use
 the explicit S02 dispatcher/presentation boundaries; they do not claim desktop
 combat input or complete-game acceptance.
+
+U02 foreign-unit groups cover ordered amphibious/submarine/diplomat/zero-attack
+and aircraft gates, signed-range aggregates, full civilization bits and private
+fatigue decisions. Expulsion cases use actual nearest-city/Palace selection,
+cargo lift/return, visibility clearing, attitude sampling and directed race treaty
+changes. They cover strict ties, negative sizes, suppressed autoplay input,
+retained city text, role changes across a decision, cosmetic failures and terminal
+semantic/random failures. Combat joins verify actual losses and promotion,
+charge-before-permission, no-execute result inversion and common-finish routing
+to the origin. Runtime cases retain private expulsion/fatigue/attack decisions.
+These tests cover the foreign-unit phase; full movement dispatch, common finish,
+cleanup and desktop input acceptance remain open.

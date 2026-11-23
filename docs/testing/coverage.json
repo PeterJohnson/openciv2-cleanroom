@@ -3860,6 +3860,33 @@
         "V05.emissary-retention-reset",
         "V05.emissary-wonder-gates"
       ]
+    },
+    {
+      "id": "foreign-unit-movement",
+      "status": "partial",
+      "contract": "U02 Foreign unit and Expulsion; U01 stack aggregates, cargo and placement; U06 execution; A08/V07 race-behind",
+      "publicSurface": "ForeignUnitMovement.Begin and retained foreign-unit decisions/result; UnitExpulsion.Begin; StackOperations.CountLongRangeAircraft/CountAircraftCarriers; ForeignUnitOperation",
+      "review": "Local foreign-unit phase joins actual expulsion and complete U06 combat. Preserves ordered amphibious/submarine/diplomat/zero-attack/aircraft gates, full human member bit, signed air range, explicit autoplay choice, weighted nearest city with later ties, strict Palace/size destination selection, retained incoming city name and explicit absent captured-city gap after a role change. Actual cargo lift/return, single-unit relocation and visibility, directed race treaty changes and primary-law attitude adjustment precede outer cleanup. Fatigue retains private prompts and AI threshold; no-execute movement still fights and inverts the result, while nonzero executed combat routes to common finish at the original position. Tests use actual combat casualties and private session decisions. Cosmetic failures are diagnostic; semantic failures retain accepted state. Full movement dispatch/common finish/cleanup, desktop adapters and generated-game acceptance remain open; browser and cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/ForeignUnitMovement.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs",
+        "src/OpenCiv2.Core/Units/UnitExpulsion.cs",
+        "src/OpenCiv2.Session/ForeignUnitOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ForeignUnitCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.expulsion-admission-choices",
+        "U02.expulsion-autoplay-notifications",
+        "U02.expulsion-cargo-cosmetic-failures",
+        "U02.expulsion-destination-live-role",
+        "U02.expulsion-race-failure-prefix",
+        "U02.foreign-unit-admission-order",
+        "U02.foreign-unit-aircraft-fatigue",
+        "U02.foreign-unit-combat-join",
+        "U02.foreign-unit-private-session"
+      ]
     }
   ]
 }

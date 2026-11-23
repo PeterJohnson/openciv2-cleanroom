@@ -761,3 +761,16 @@ runs normal loss/promotion/aftermath. `Session/CombatOperation` routes all neste
 choices privately through shared interaction helpers; repeated yields do not
 replay accepted effects. Required S02 and presentation adapters, scenario visibility,
 U02 movement dispatch and desktop command composition remain owning joins.
+
+`Units/ForeignUnitMovement` owns U02's foreign-unit phase after land/boarding
+admission. It evaluates the ordered gates, runs actual `UnitExpulsion`, retains
+fatigue decisions and invokes `CombatExecution`. Its result distinguishes stop
+from common finish and returns the captured destination required by that route.
+The outer dispatcher still owns finish and cleanup; this phase does not charge
+ordinary terrain movement. `UnitExpulsion` composes actual nearest-city/Palace,
+cargo lift/return, placement, visibility, attitude and spaceship-race queries.
+It requires explicit incoming scratch for suppressed autoplay choice and refuses
+an undefined absent-city read after a target role change. `ForeignUnitOperation`
+routes expulsion, fatigue and nested combat decisions through the private session
+interaction boundary. Presentation adapters report cosmetic failures separately
+from required semantic notice failures. Neither service admits remote authority.

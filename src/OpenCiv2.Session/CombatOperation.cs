@@ -23,27 +23,12 @@ public sealed class CombatOperation(CombatExecution.Operation operation, Func<in
         { return completed; }
         try
         {
-            ResearchReply? reply = null;
-            if (pending is CombatDecision.Continuation continuation)
-            { reply = CombatContinuationInteraction.Reply(continuation.Decision, input); }
-            else if (pending is CombatDecision.Help help)
-            { if (AllyHelpInteraction.Reply(help.Decision, input) is { } answer) { reply = new(answer); } }
-            else if (input.Kind == OperationInputKind.Choice && input.Choice is { } answer)
-            { reply = new(answer); }
-            else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout)
-            { reply = new(0); }
+            var reply = CombatInteraction.Reply(pending, input);
             pending = operation.Resume(pending is null ? null : reply);
             if (pending is not null)
             {
                 context.Publish();
-                var prompt = pending switch
-                {
-                    CombatDecision.Attack attack => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
-                    CombatDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
-                    CombatDecision.Help help => AllyHelpInteraction.Prompt(help.Decision, recipient, intelligence, ref intelligenceWindow),
-                    CombatDecision.Continuation child => CombatContinuationInteraction.Prompt(context, child.Decision, recipient, city, ref cityWindow),
-                    _ => throw new InvalidOperationException("Unknown combat decision")
-                };
+                var prompt = CombatInteraction.Prompt(context, pending, recipient, intelligence, city, ref intelligenceWindow, ref cityWindow);
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
@@ -55,4 +40,31 @@ public sealed class CombatOperation(CombatExecution.Operation operation, Func<in
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class CombatInteraction
+{
+    internal static ResearchReply? Reply(CombatDecision? pending, OperationInput input)
+    {
+        if (pending is CombatDecision.Continuation continuation)
+        { return CombatContinuationInteraction.Reply(continuation.Decision, input); }
+        if (pending is CombatDecision.Help help)
+        { return AllyHelpInteraction.Reply(help.Decision, input) is { } answer ? new(answer) : null; }
+        return input.Kind switch
+        {
+            OperationInputKind.Choice when input.Choice is { } answer => new(answer),
+            OperationInputKind.Cancel or OperationInputKind.Timeout => new(0),
+            _ => null
+        };
+    }
+    internal static InteractionSpec Prompt(OperationContext context, CombatDecision pending, Func<int, ParticipantId> recipient,
+        Func<EmissaryIntelligence, InteractionSpec> intelligence, Func<CaptureCityVisit, InteractionSpec> city,
+        ref InteractionSpec? intelligenceWindow, ref InteractionSpec? cityWindow) => pending switch
+        {
+            CombatDecision.Attack attack => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
+            CombatDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
+            CombatDecision.Help help => AllyHelpInteraction.Prompt(help.Decision, recipient, intelligence, ref intelligenceWindow),
+            CombatDecision.Continuation child => CombatContinuationInteraction.Prompt(context, child.Decision, recipient, city, ref cityWindow),
+            _ => throw new InvalidOperationException("Unknown combat decision")
+        };
 }
