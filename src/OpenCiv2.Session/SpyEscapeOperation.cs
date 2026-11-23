@@ -1,37 +1,38 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
-using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Session;
 
 /// <summary>V06 escape followed by the actual incident, suspended for the human victim's pretext.
-/// The owning mission supplies the appropriate participant context; no public player command bypasses admission.</summary>
-public sealed class SpyEscapeOperation(SpyEscape escape, EspionageIncidents incidents,
-    int slot, int mode, int victim, string call) : IContinuation
+/// The owning mission supplies victim routing; no public player command bypasses admission.</summary>
+public sealed class SpyEscapeOperation(CivilizationElimination lifecycle, EspionageIncidents incidents,
+    int slot, int mode, int victim, string call, Func<int, ParticipantId> recipient) : IContinuation
 {
-    private SpyEscapeResult? fate;
-    private EspionageIncidents.Operation? incident;
+    private readonly CivilizationElimination.Operation operation = lifecycle.BeginEscape(slot, mode, victim, call, incidents);
     private EspionagePretext? pending;
+    private OperationStep? completed;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
-        if (fate is null)
-        {
-            fate = escape.Resolve(slot, mode, victim, call);
-            if (fate.Incident is { } request)
-            { incident = incidents.Begin(request.Actor, request.Victim, call + "/incident"); }
-            context.Publish();
-        }
+        if (completed is not null)
+        { return completed; }
         int? reply = pending is null ? null : EspionageInteraction.Reply(input);
-        pending = incident?.Resume(reply);
+        try
+        { pending = operation.Resume(reply); }
+        catch { context.Publish(); throw; }
         if (pending is { } decision)
         {
-            return new(CommandStatus.AwaitingInteraction, Interaction: EspionageInteraction.Prompt(decision));
+            context.Publish();
+            return new(CommandStatus.AwaitingInteraction, Interaction: EspionageInteraction.Prompt(decision, recipient(decision.Victim.Civilization)));
         }
-        var result = new OwnedList<NamedValue>([new("lost", new CommandValue.Boolean(fate.Lost))]);
+        if (operation.Result is null)
+        { context.Publish(); return new(CommandStatus.Pending); }
+        var result = new OwnedList<NamedValue>([new("lost", new CommandValue.Boolean(operation.Result == 1))]);
         context.Effect("espionage.escape.completed", result);
-        return new(Result: result);
+        return completed = new(Result: result);
     }
+
+    public void Dispose() => operation.Dispose();
 }
 
 internal static class EspionageInteraction

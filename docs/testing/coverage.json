@@ -3236,9 +3236,10 @@
       "id": "espionage-incidents",
       "status": "partial",
       "contract": "V06 sections2,11 local failed-escape incident, human pretext and senate consequences",
-      "publicSurface": "EspionageIncidents.Begin/Operation.Resume; EspionageWorkspace.LastMission; CityMission; SpyEscape.Resolve; SpyEscapeOperation",
-      "review": "Uses actual V04 war/cancellation, A08 stance and V02 government changes. Retains reverse treaty admission, independent forward alliance response, captured human pretext without expulsion, live city-mission state, leniency attitude formatting before its primary draw/adjustment and early return, government/scenario/autoplay draw order and real Anarchy recalculation. Session escape runs actual unit loss before waiting, retains fate across replies and maps cancel/timeout to decline without repeated loss or draws. Tests cover directed/asymmetric relations, AI and human seats, government changes, alliance expulsion, fresh workspace, invalid victim after loss, presentation-failure prefixes and local authority. Full city/unit missions, mission admission and desktop command integration, saved pending incidents, general city/combat/mission caller composition and network response remain unfinished; civilization-elimination covers the resumable incident join. Browser and cross-platform work are deferred.",
+      "publicSurface": "EspionageIncidents.Begin/Operation.Resume; EspionageWorkspace.LastMission; CityMission; SpyEscape.Resolve; CivilizationElimination.BeginEscape; SpyEscapeOperation",
+      "review": "Uses actual V04 war/cancellation, A08 stance and V02 government changes. Retains reverse treaty admission, independent forward alliance response, captured human pretext without expulsion, live city-mission state, leniency attitude formatting before its primary draw/adjustment and early return, government/scenario/autoplay draw order and real Anarchy recalculation. Session escape now uses the shared resumable lifecycle, completing actual nested last-settler checks as well as unit loss before waiting, and retains fate across replies and maps cancel/timeout to decline without repeated loss or draws. Tests cover directed/asymmetric relations, AI and human seats, government changes, alliance expulsion, fresh workspace, invalid victim after loss, presentation-failure prefixes and local authority. City missions, movement admission and desktop command integration, saved pending incidents, general city/combat/mission caller composition and network response remain unfinished; civilization-elimination covers the resumable incident join. Browser and cross-platform work are deferred.",
       "sources": [
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
         "src/OpenCiv2.Core/EspionageIncidents.cs",
         "src/OpenCiv2.Core/State/GameState.cs",
         "src/OpenCiv2.Core/Units/SpyEscape.cs",
@@ -3276,6 +3277,31 @@
         "V01.elimination-restart-research",
         "V01.restart-research-government-failure",
         "V01.restart-research-library"
+      ]
+    },
+    {
+      "id": "unit-espionage",
+      "status": "partial",
+      "contract": "V06 section9 local unit bribery and sabotage dispatcher; shared capital distance; actual U01/U02/V01/V06 children",
+      "publicSurface": "EspionageCosts.DistanceToCapital; UnitEspionage.Bribe/Mission/Operation; UnitEspionageOperation; CivilizationElimination.BeginEscape",
+      "review": "Real Palace step-distance pricing, actor Communism cap, signed cost and arithmetic, AI Diplomat prerequisite/Trade refusal, Democracy and stack admission, human cached offers and AI/autoplay half-treasury threshold. Transfer uses live type counts, retained source owner and price, byte/short wrap, actual all-owner C01 home search, old-owner visibility and tile ownership without invented total-counter or actor consumption effects. Human fixed-Spy menu retains autoplay behavior; sabotage uses actual remaining HP, byte damage and resumable escape regardless of fate. Nested loss runs actual elimination and incident before returning the movement stop flag. Native cases cover mutation/notice order, near foreign city, custom replies, failure/disposal, captured price and live fields, nested elimination and real session menu/price privacy. Ordinary presentation exposes payment only when affordable while the helper retains supplied reply1 semantics. U02/A07 movement callers, city missions, full desktop presentation and generated human/AI games remain open; browser, network and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/UnitEspionage.cs",
+        "src/OpenCiv2.Session/SpyEscapeOperation.cs",
+        "src/OpenCiv2.Session/UnitEspionageOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitEspionageCases.cs"
+      ],
+      "sharedGroups": [
+        "V06.unit-bribe-admission-presentation",
+        "V06.unit-bribe-cached-transfer",
+        "V06.unit-bribe-capital-price",
+        "V06.unit-mission-failure-authority",
+        "V06.unit-mission-session-price-privacy",
+        "V06.unit-sabotage-dispatch-escape",
+        "V06.unit-sabotage-hp-nested-elimination"
       ]
     }
   ]

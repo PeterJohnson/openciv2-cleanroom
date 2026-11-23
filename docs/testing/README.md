@@ -29,6 +29,12 @@ leniency and senate draw order, scenario/autoplay gates and retained failures.
 The escape continuation destroys the unit before awaiting the victim and resumes
 without repeating loss; cancel and timeout decline the response. Full mission
 admission, desktop commands and saved pending incidents remain open.
+V06 unit-mission cases cover Palace/Communism/signed-cost pricing, cached offers,
+counter wrap, nearest-city home assignment, visibility and transfer effects.
+Sabotage uses the actual HP query and resumable escape, including nested
+last-settler elimination and victim decisions. Command-runtime cases verify
+private menus/offers and affordable payment choices. Movement and general
+desktop presentation callers remain open.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

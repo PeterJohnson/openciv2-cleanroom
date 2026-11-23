@@ -40,7 +40,11 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
     /// <summary>Resumable local lifecycle with actual nested destruction checks and espionage incidents.
     /// The session serializes mutations, routes pretext decisions and retains this operation until complete.</summary>
     public Operation Begin(int civilization, int killer, string call, EspionageIncidents incidents, int candidateBudget = 64)
-        => new(this, civilization, killer, call, incidents, candidateBudget);
+        => Operation.ForCheck(this, civilization, killer, call, incidents, candidateBudget);
+
+    /// <summary>V06 escape with actual nested V01 checks and incidents. Result is 1 on loss, 0 on survival.</summary>
+    public Operation BeginEscape(int unit, int mode, int victim, string call, EspionageIncidents incidents, int candidateBudget = 64)
+        => Operation.ForEscape(this, unit, mode, victim, call, incidents, candidateBudget);
 
     private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false);
     private void RequireLocal() => MapKnowledge.RequireLocal(world);
@@ -56,17 +60,25 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         private bool faulted, disposed;
         public int? Result { get; private set; }
 
-        internal Operation(CivilizationElimination parent, int civilization, int killer, string call,
-            EspionageIncidents incidents, int candidateBudget)
+        private Operation(CivilizationElimination parent, EspionageIncidents incidents, int candidateBudget,
+            bool barbarian, Func<Action<int>, IEnumerable<Work>> steps)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateBudget);
             ArgumentNullException.ThrowIfNull(incidents);
             this.parent = parent;
             this.incidents = incidents;
             this.candidateBudget = candidateBudget;
-            barbarian = civilization == 0;
-            frames.Push(parent.Steps(civilization, killer, call, candidateBudget, value => Result = value).GetEnumerator());
+            this.barbarian = barbarian;
+            frames.Push(steps(value => Result = value).GetEnumerator());
         }
+
+        internal static Operation ForCheck(CivilizationElimination parent, int civilization, int killer, string call,
+            EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, civilization == 0,
+                complete => parent.Steps(civilization, killer, call, candidateBudget, complete));
+
+        internal static Operation ForEscape(CivilizationElimination parent, int unit, int mode, int victim, string call,
+            EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
+                complete => parent.EscapeSteps(unit, mode, victim, call, complete));
 
         /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
         /// Result remains null during search. A reply is consumed only by the currently pending incident.</summary>
@@ -74,7 +86,7 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
-            { throw new InvalidOperationException("A failed elimination cannot resume"); }
+            { throw new InvalidOperationException("A failed lifecycle operation cannot resume"); }
             if (Result is not null)
             { return null; }
             try
@@ -119,6 +131,16 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
             { frame.Dispose(); }
         }
         public void Dispose() { disposed = true; Release(); }
+    }
+
+    private IEnumerable<Work> EscapeSteps(int unit, int mode, int victim, string call, Action<int> complete)
+    {
+        var resolution = escape.BeginResolve(unit, mode, victim, call);
+        foreach (var check in resolution.Steps())
+        { yield return new(call + "/unit/" + check.Unit + "/check", check, EscapeLoss: true); }
+        if (resolution.Result!.Incident is { } incident)
+        { yield return new(call + "/incident", Incident: incident); }
+        complete(resolution.Result.Lost ? 1 : 0);
     }
 
     private IEnumerable<Work> Steps(int civilization, int killer, string call, int candidateBudget, Action<int> complete)
@@ -169,11 +191,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
                 unit.Flags.SpyMission = false;
                 world.Civilizations[civilization].Treaties[unchecked((sbyte)unit.Counter)].SpyChat = false;
                 string escapeCall = call + "/spy/" + i;
-                var resolution = escape.BeginResolve(i, 0, unchecked((sbyte)unit.Counter), escapeCall);
-                foreach (var check in resolution.Steps())
-                { yield return new(escapeCall + "/unit/" + check.Unit + "/check", check, EscapeLoss: true); }
-                if (resolution.Result!.Incident is { } incident)
-                { yield return new(escapeCall + "/incident", Incident: incident); }
+                foreach (var work in EscapeSteps(i, 0, unchecked((sbyte)unit.Counter), escapeCall, _ => { }))
+                { yield return work; }
             }
         }
         if (world.Globals.HumanPlayers.Contains(civilization))

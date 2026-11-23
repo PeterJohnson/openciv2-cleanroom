@@ -185,14 +185,14 @@ public static partial class FoundationSuite
                 int publishes = 0; List<string> effects = [];
                 var context = new OperationContext(w, f.Data.Process, f.Random, new PresentationRandom(2, "incident"),
                     new(default, new(2)), default, (name, _) => effects.Add(name), () => ++publishes);
-                var op = new SpyEscapeOperation(loss.Escape, f.Incidents, 0, 0, 2, "escape");
+                var op = new SpyEscapeOperation(loss.Elimination, f.Incidents, 0, 0, 2, "escape", _ => new(2));
                 var step = op.Resume(context, new()); Equal(CommandStatus.AwaitingInteraction, step.Status);
                 Equal(false, loss.Data.Unit(0).Token.Occupied); Equal(0, loss.Incidents.Count); Equal(1, publishes);
                 int prefix = loss.Order.Count; byte moves = loss.Data.Unit(0).MovesUsed;
                 Equal(CommandStatus.AwaitingInteraction, op.Resume(context, new(OperationInputKind.Proceed)).Status);
                 Equal(CommandStatus.Completed, op.Resume(context, input).Status);
                 Equal(input.Kind == OperationInputKind.Choice, w.Civilizations[2].Treaties[1].War);
-                Equal(prefix, loss.Order.Count); Equal(moves, loss.Data.Unit(0).MovesUsed); Equal(1, publishes);
+                Equal(prefix, loss.Order.Count); Equal(moves, loss.Data.Unit(0).MovesUsed); Equal(2, publishes);
                 Equal("espionage.escape.completed", effects.Single()); Equal(CityMission.Incite, w.Espionage.LastMission);
                 f.Random.RequireChoicesConsumed();
             }

@@ -506,7 +506,15 @@ select its attitude pair, declare a war, sign a treaty or reset an entire audien
 with actual war, stance and government services. Its operation retains the human
 victim's pretext across a decision; `GameState.Espionage.LastMission` is the live
 city-mission domain. `SpyEscape.Resolve` returns the required incident after
-actual unit loss, and `Session/SpyEscapeOperation` completes it without repeating
-the escape prefix. The owning mission must admit the action and supply the
-victim's participant context. Full mission callers, pending-incident restoration
-and network responses remain open.
+actual unit loss. `CivilizationElimination.BeginEscape` adds the same resumable
+nested last-settler/incident execution used by elimination; `Session/SpyEscapeOperation`
+now uses that path. The owning mission must admit the action and supply victim
+participant routing. Pending-incident restoration and network responses remain open.
+
+`Core/UnitEspionage` owns V06 unit bribery and sabotage. It captures the price and
+old owner, applies the actual counter/owner/home/visibility transfer, and consumes
+the actual HP query and resumable escape for sabotage. `EspionageCosts` supplies
+the capped Palace step-distance query shared with future city incitement.
+`Session/UnitEspionageOperation` presents the mission menu, cached payment offer
+and any nested incident. U02/A07 movement admission, city missions and general
+desktop presentation remain open.
