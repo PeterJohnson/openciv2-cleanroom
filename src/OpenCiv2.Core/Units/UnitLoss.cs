@@ -59,7 +59,7 @@ public sealed class UnitLoss(GameState world, RuleTables rules, StackOperations 
         { CompleteCheck(check); }
     }
 
-    private IEnumerable<CivilizationCheck> EraseWithCargoSteps(int slot, bool sync)
+    internal IEnumerable<CivilizationCheck> EraseWithCargoSteps(int slot, bool sync)
     {
         Authority();
         world.UnitDeletion.CargoActive = true;

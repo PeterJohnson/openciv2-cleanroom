@@ -69,6 +69,13 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         return Operation.ForStack(this, loss, unit, call, incidents, candidateBudget);
     }
 
+    /// <summary>U01 cargo-aware deletion without the destroy/redraw wrapper, including real nested checks.</summary>
+    public Operation BeginEraseCargo(UnitLoss loss, int unit, string call, EspionageIncidents incidents, int candidateBudget = 64)
+    {
+        ArgumentNullException.ThrowIfNull(loss);
+        return Operation.ForStack(this, loss, unit, call, incidents, candidateBudget, true);
+    }
+
     /// <summary>C01 city deletion, including supported-unit loss and its actual nested civilization checks.</summary>
     public Operation BeginRemoveCity(CityRemoval removal, int city, string call, EspionageIncidents incidents, int candidateBudget = 64)
         => Operation.ForCityLoss(this, removal, city, null, call, incidents, candidateBudget);
@@ -116,8 +123,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
                 complete => parent.DeleteSteps(loss, unit, notify, call, complete));
 
         internal static Operation ForStack(CivilizationElimination parent, UnitLoss loss, int unit, string call,
-            EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
-                complete => parent.StackSteps(loss, unit, call, complete));
+            EspionageIncidents incidents, int candidateBudget, bool cargo = false) => new(parent, incidents, candidateBudget, false,
+                complete => parent.StackSteps(loss, unit, call, complete, cargo));
 
         internal static Operation ForCityLoss(CivilizationElimination parent, CityRemoval removal, int city, int? oldOwner,
             string call, EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
@@ -185,10 +192,10 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         complete(1);
     }
 
-    private IEnumerable<Work> StackSteps(UnitLoss loss, int unit, string call, Action<int> complete)
+    private IEnumerable<Work> StackSteps(UnitLoss loss, int unit, string call, Action<int> complete, bool cargo)
     {
         ArgumentException.ThrowIfNullOrEmpty(call);
-        foreach (var check in loss.EraseStackSteps(unit, true))
+        foreach (var check in cargo ? loss.EraseWithCargoSteps(unit, true) : loss.EraseStackSteps(unit, true))
         { yield return new(call + "/unit/" + check.Unit + "/check", check); }
         complete(1);
     }

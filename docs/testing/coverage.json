@@ -3627,6 +3627,39 @@
         "U02.civilization-control",
         "U02.step-cost-rules"
       ]
+    },
+    {
+      "id": "transport-and-special-finish",
+      "status": "partial",
+      "contract": "U05 local landfall, boarding, unloading, port/exploration wakeup, aircraft basing/fuel and Coast-bound loss with actual U01/V01 children",
+      "publicSurface": "TransportMovement; MovementContinuation; SpecialMovementFinish; CivilizationElimination.BeginEraseCargo; LandfallOperation; SpecialMovementOperation",
+      "review": "Landfall preserves captured-bound clearing, validated first eligible passenger selection, captured selection across reply, distinct no-passenger notice and prompt/autoplay answer semantics. Boarding uses actual set-sleep/exhaust/gather and accepts spent-equals-allowance ships, retaining other cargo changes. Unload wakes all sleeping land units then uses actual U04 selectability and last matching selection, applying the known-selectable U04 focus branch and MoveUnits state in the core; port and exploration wakeups preserve cargo links and their distinct gates. Aircraft basing uses city/airbase or physical carrier/submarine membership without ownership/capacity admission, the range-one postattack exception, signed byte fuel comparison and basic deletion. Coast-bound odds preserve Lighthouse/advance gates, draw-before-coast and retained work state, with actual cargo-aware deletion and nested last-Settler/foreign-spy incidents. Session continuations route landfall actors and nested victims; failures/disposal retain committed prefixes. U02 sequencing, full desktop command/UI/content binding, player airlift/paradrop and generated complete-game acceptance remain open. Browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/Units/SpecialMovementFinish.cs",
+        "src/OpenCiv2.Core/Units/TransportMovement.cs",
+        "src/OpenCiv2.Core/Units/UnitLoss.cs",
+        "src/OpenCiv2.Session/LandfallOperation.cs",
+        "src/OpenCiv2.Session/SpecialMovementOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SpecialMovementCases.cs",
+        "tests/OpenCiv2.FoundationCases/TransportMovementCases.cs"
+      ],
+      "sharedGroups": [
+        "U05.aircraft-basing-attack",
+        "U05.aircraft-fuel-basic-loss",
+        "U05.boarding-actual-cargo",
+        "U05.coast-cargo-topology",
+        "U05.coast-gates-odds",
+        "U05.exploration-wakeup",
+        "U05.landfall-refusal-failure",
+        "U05.landfall-selection-reply",
+        "U05.landfall-session",
+        "U05.special-failure-prefixes",
+        "U05.special-nested-session",
+        "U05.unload-port-wakeup"
+      ]
     }
   ]
 }

@@ -511,3 +511,11 @@ ordered AI approach/reversal/crowding stops using actual stacks. The desktop
 land-step caller uses the shared charge service; relocation, exhaustion and
 choice failures are checked together. Full directional movement and complete
 generated-game acceptance remain separate from this ordinary-step integration.
+
+U05 transport and special-finish groups run actual gather/selection/stack/loss
+services. They cover landfall bounds and answers, cargo retention and exhausted
+ship eligibility, unload/port/exploration distinctions, carrier/submarine basing,
+signed fuel rollover, Coast-bound odds and topology, and nested last-Settler
+incidents for both aircraft and cargo-aware sinking. Session decisions and
+failure/disposal prefixes are checked separately from the unfinished directional
+and desktop UI integration. No complete-game acceptance follows from these groups.

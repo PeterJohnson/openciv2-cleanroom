@@ -622,3 +622,15 @@ it scans cities. `LandMovement.Step` and the desktop player command now use this
 charge service, preserving partial-movement failures and actual relocation.
 The full directional dispatcher still owns admission, publication, arrival,
 common finish and cleanup; these are not supplied by the charge helper.
+
+`Units/TransportMovement` owns local U05 landfall selection, boarding, unload,
+port arrival and exploration wakeup, using actual cargo/stack and U04 selection
+children. Unload applies the known-selectable U04 initial-focus branch internally;
+its adapter supplies cursor/status/visibility presentation. `MovementContinuation`
+carries U02's unit/bound/answer/origin and shared finish values across those operations. `Units/SpecialMovementFinish` owns
+basing/fuel and Coast-bound loss, preserving basic versus cargo-aware deletion.
+`CivilizationElimination.BeginEraseCargo` exposes that latter U01 child with
+resumable nested checks, without adding the destroy/redraw wrapper.
+`Session/LandfallOperation` and `SpecialMovementOperation` route decisions;
+the owning directional dispatcher still consumes restart/stop and shared state.
+Player airlift/paradrop and full desktop movement binding remain open.
