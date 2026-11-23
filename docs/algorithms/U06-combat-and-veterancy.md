@@ -370,6 +370,14 @@ through later callbacks and city-destruction suppression.
 
 ## Viewer publication and start presentation
 
+**Specification gap — scenario visibility selector:** this section names a
+scenario option that shows combat, but its concrete selector and mode gate are
+not specified here or in S01's option definitions. Do not infer that it aliases
+WholeMapReveal. Viewer integration must obtain an explicit behavioral mapping
+or an independent original-game observation before enabling this scenario path.
+The charge/confirmation/treaty/difficulty stages do not depend on that selector.
+
+
 Scan v=1..7 and clear each seen entry, including ineligible entries. Entry zero
 is retained, but subsequent combat viewer loops iterate 1..7 rather than indexing
 by a possibly negative observer. Eligibility requires `(network OR observer==v)`

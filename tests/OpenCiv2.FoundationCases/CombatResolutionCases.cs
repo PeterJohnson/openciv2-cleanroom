@@ -41,7 +41,12 @@ public static partial class FoundationSuite
                 Life.Elimination, incidents.Incidents, production, new(World, Data.Rules, Data.Stacks)), this);
         }
         public PreparedCombat Prepare() => Combat.Prepare(true) with { Attack = 8, Defense = 4 };
-        public CombatResolution.Operation Begin(bool won = true) => Resolution.Begin(Prepare(), won, "resolution");
+        public CombatResolution.Operation Begin(bool won = true)
+        {
+            // These cases supply the already-selected pre-round presentation kind.
+            int explosion = State.ExplosionKind; var prepared = Prepare(); State.ExplosionKind = explosion;
+            return Resolution.Begin(prepared, won, "resolution");
+        }
         public void Complete(CombatResolution.Operation op)
         {
             int budget = 100;

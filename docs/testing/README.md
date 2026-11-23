@@ -568,3 +568,11 @@ retasking, suspended last-settler loss and presentation failure prefixes. A05
 retasking cases include signed capacity, directed Peace, strict weighted distance,
 damage-adjusted full movement, retained tasks/spent moves and flat/wrapped maps.
 These close the post-round stage, not the full player/AI attack command.
+
+U06 entry groups cover charge-before-confirmation, cancellation/alliance refusal
+without refund, primary sneak/government sampling, actual A08/V02 transitions,
+V04 directional war and ally effects, signed difficulty adjustment and retained
+failure prefixes. Integration proceeds from entry through actual rounds,
+promotion and casualty resolution. The viewer/start stage, nuclear delivery and
+final attack continuation are still separate pending joins; the scenario
+combat-visibility selector remains an explicit U06 specification gap.

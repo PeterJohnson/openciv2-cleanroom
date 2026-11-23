@@ -3691,13 +3691,14 @@
     {
       "id": "combat-preparation",
       "status": "partial",
-      "contract": "U06 strength primitives, defender selection, common preview/execution preparation and preview heuristic with actual U01/U02/C08/A01 children; bounded damage rounds, hit presentation and promotion bookkeeping; world-owned casualty history and real nested lifecycle deletion; post-round presentation, loser grouping, city consequences and A05 exposed-city transport retasking",
-      "publicSurface": "CombatWorkspace; CombatStrength.Attack/Defense/BestDefender; CombatPreparation.Prepare/Preview; PreparedCombat; CombatSampling.RollBelow; CombatRounds.Begin/Hit; CombatPromotion.Apply/Promote; ICombatRoundEffects; CombatPromotionNotice; GameState.Casualties; CombatHistory.Record; CombatCasualties.Begin/BeginStack; CombatCasualtyOperation; CombatResolution.Begin; CombatResolutionServices; ResolvedCombat; ICombatResolutionEffects; ExposedCityTransports.Retask",
-      "review": "Sequential signed attack bonuses, retained terrain/city cache and published defense factor, fighter/fortress/walls precedence, validated stack scan, health weighting, later ties and supplied-unit fallback. Preparation preserves unscaled preview versus movement-scaled execution inputs, city slot zero exclusion, coastal/SDI/SAM/scramble rules, signed firepower, anti-mounted/anti-air/partisan/submarine/shore modifiers, barbarian difficulty/city/wonder rules, standing-goal replacement and entry-zero notice retention. Preview uses signed integer heuristic normalization/capping and does not execute combat. Tests cover authored rule vectors, actual stack/building/goal services and division/authority failure prefixes. Round cases cover primary sampling including signed-decrement overflow, asymmetric ties and reroll draw order, captured strengths/firepowers, HP-query side effects, byte wrapping, finite batch yields/resumption/disposal, missile presentation and retained presentation failures. Promotion covers inclusive chance, live C08 wonder ownership/obsolescence, aggression wrapping, veteran/missile draw consumption, human/autoplay notices and failure prefixes. Casualties saturate loss totals, record field-ordered history with live owner/index reloads, increment wrapped kill count, dispatch UnitKilled before actual basic deletion and retain raw next links across event replacement. Tests join real nested last-settler/espionage continuations and private session routing, cover ring wrap/fresh isolation/managed text and committed callback/bounds/disposal failures. Loaded-event action execution remains an explicit required S02 dispatcher boundary. Resolution joins result sound/redraw/fallback presentation before actual promotion and casualties, U01 cargo grouping, protected-stack rules, city population/walls/wonder/difficulty gates, C01 removal and V01 elimination, W03 memory/revelation and actual C06/A02 production reset. A05 retasks live AI capacity units using directed Peace, validated stack count, ocean medium, weighted distance and full damage-adjusted allowance; tasks/spent/counters persist. Cases compose actual rounds through removal, real AI defense production, deleted-city retasking, nested decisions and prefix failures. Execution diplomacy, final effects and surviving-attacker handling, U02/A04 callers, desktop combat and complete-game acceptance remain open. Browser/cross-platform execution is deferred.",
+      "contract": "U06 strength primitives, defender selection, common preview/execution preparation and preview heuristic with actual U01/U02/C08/A01 children; bounded damage rounds, hit presentation and promotion bookkeeping; world-owned casualty history and real nested lifecycle deletion; post-round presentation, loser grouping, city consequences and A05 exposed-city transport retasking; movement charge, real attack confirmation and execution diplomacy/government/difficulty entry",
+      "publicSurface": "CombatWorkspace; CombatStrength.Attack/Defense/BestDefender; CombatPreparation.Prepare/Preview; PreparedCombat; CombatSampling.RollBelow; CombatRounds.Begin/Hit; CombatPromotion.Apply/Promote; ICombatRoundEffects; CombatPromotionNotice; GameState.Casualties; CombatHistory.Record; CombatCasualties.Begin/BeginStack; CombatCasualtyOperation; CombatResolution.Begin; CombatResolutionServices; ResolvedCombat; ICombatResolutionEffects; ExposedCityTransports.Retask; CombatEntry.Begin; CombatEntryResult; CombatTreatyNotice",
+      "review": "Sequential signed attack bonuses, retained terrain/city cache and published defense factor, fighter/fortress/walls precedence, validated stack scan, health weighting, later ties and supplied-unit fallback. Preparation preserves unscaled preview versus movement-scaled execution inputs, city slot zero exclusion, coastal/SDI/SAM/scramble rules, signed firepower, anti-mounted/anti-air/partisan/submarine/shore modifiers, barbarian difficulty/city/wonder rules, standing-goal replacement and entry-zero notice retention. Preview uses signed integer heuristic normalization/capping and does not execute combat. Tests cover authored rule vectors, actual stack/building/goal services and division/authority failure prefixes. Round cases cover primary sampling including signed-decrement overflow, asymmetric ties and reroll draw order, captured strengths/firepowers, HP-query side effects, byte wrapping, finite batch yields/resumption/disposal, missile presentation and retained presentation failures. Promotion covers inclusive chance, live C08 wonder ownership/obsolescence, aggression wrapping, veteran/missile draw consumption, human/autoplay notices and failure prefixes. Casualties saturate loss totals, record field-ordered history with live owner/index reloads, increment wrapped kill count, dispatch UnitKilled before actual basic deletion and retain raw next links across event replacement. Tests join real nested last-settler/espionage continuations and private session routing, cover ring wrap/fresh isolation/managed text and committed callback/bounds/disposal failures. Loaded-event action execution remains an explicit required S02 dispatcher boundary. Resolution joins result sound/redraw/fallback presentation before actual promotion and casualties, U01 cargo grouping, protected-stack rules, city population/walls/wonder/difficulty gates, C01 removal and V01 elimination, W03 memory/revelation and actual C06/A02 production reset. A05 retasks live AI capacity units using directed Peace, validated stack count, ocean medium, weighted distance and full damage-adjusted allowance; tasks/spent/counters persist. Cases compose actual rounds through removal, real AI defense production, deleted-city retasking, nested decisions and prefix failures. Entry composes the live road-multiplier charge before resumable V04 permission, captured-owner treaty handling, actual V04 Force and A08/V02 government changes, owner-addressed sneak notices and ordered signed difficulty modifiers. Tests cover cancellation with retained charge, live alliance refusal, byte wrapping, branch/reroll sampling, government locks/wonders, directional ally notices, invalid observers and committed failures, plus entry through real rounds/resolution. Preparation now initializes aggregate message/explosion inputs. Viewer/start presentation (including the recorded scenario-selector specification gap), nuclear delivery, final effects and surviving-attacker handling, U02/A04 callers, desktop combat and complete-game acceptance remain open. Browser/cross-platform execution is deferred.",
       "sources": [
         "src/OpenCiv2.Core/Ai/ExposedCityTransports.cs",
         "src/OpenCiv2.Core/State/CasualtyHistory.cs",
         "src/OpenCiv2.Core/Units/CombatCasualties.cs",
+        "src/OpenCiv2.Core/Units/CombatEntry.cs",
         "src/OpenCiv2.Core/Units/CombatPreparation.cs",
         "src/OpenCiv2.Core/Units/CombatResolution.cs",
         "src/OpenCiv2.Core/Units/CombatRounds.cs",
@@ -3705,6 +3706,7 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/CombatCasualtyCases.cs",
+        "tests/OpenCiv2.FoundationCases/CombatEntryCases.cs",
         "tests/OpenCiv2.FoundationCases/CombatPreparationCases.cs",
         "tests/OpenCiv2.FoundationCases/CombatResolutionCases.cs",
         "tests/OpenCiv2.FoundationCases/CombatRoundCases.cs"
@@ -3720,12 +3722,18 @@
         "U06.city-population-gates",
         "U06.city-special-modifiers",
         "U06.defender-selection",
+        "U06.entry-ally-treaty-notices",
+        "U06.entry-charge-confirmation",
+        "U06.entry-difficulty-war",
+        "U06.entry-failure-prefixes",
+        "U06.entry-rounds-resolution",
         "U06.fighter-domain-defense",
         "U06.history-live-queries",
         "U06.history-ring",
         "U06.hit-presentation",
         "U06.loser-grouping-protection",
         "U06.preparation-failures",
+        "U06.preparation-message-reset",
         "U06.preview-execution-preparation",
         "U06.promotion-eligibility-failures",
         "U06.promotion-selection",
@@ -3738,6 +3746,8 @@
         "U06.round-ties-rerolls",
         "U06.rounds-resolution-production",
         "U06.sampling-boundaries",
+        "U06.sneak-branches-notices",
+        "U06.sneak-government-policy",
         "U06.stack-captured-next",
         "U06.strength-cache"
       ]

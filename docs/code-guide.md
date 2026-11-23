@@ -685,3 +685,12 @@ including the retained city slot after deletion. Nested lifecycle decisions
 propagate through its continuation. This stage returns captured winner/loser,
 ransom eligibility and city information; final effects, surviving-attacker
 handling and the full movement/AI/desktop combat parent remain pending.
+
+`Units/CombatEntry` owns U06's charge/confirmation/treaty/government/difficulty
+prefix. It returns a cancelled early result or adjusted prepared operands plus
+the retained V04 force-war result; it does not run viewer/animation or damage
+rounds. It composes real `AttackConfirmation`, `DiplomaticWar` and A08
+`GovernmentPolicy`/V02 children. `CombatPreparation` initializes aggregate notice
+and explosion inputs along with the existing per-civilization arrays. U06 records
+the missing scenario combat-visibility selector; do not silently alias it to
+another scenario flag when wiring the viewer producer.

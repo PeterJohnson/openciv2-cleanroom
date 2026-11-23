@@ -21,6 +21,7 @@ public sealed class CombatWorkspace
     public int AnimationInterval, ExplosionKind, KillCount;
     public UnitSlot? AnimationDefender;
     public bool ActiveUnitLost, AggregateTreatyNotice;
+    public int AggregateAllyWarning;
     public CombatResultSound? LastSound;
     public int SoundArgument;
 }
@@ -154,6 +155,9 @@ public sealed class CombatPreparation
     public PreparedCombat? Prepare(UnitSlot attacker, int direction, bool execute)
     {
         MapKnowledge.RequireLocal(world);
+        state.AggregateTreatyNotice = false;
+        state.AggregateAllyWarning = 0;
+        state.ExplosionKind = 0;
         for (int c = 1; c < EntityLimits.Civilizations; ++c)
         { state.TreatyNotices[c] = false; state.AllyWarnings[c] = 0; }
         int owner = Unit(attacker).Owner.Value;
