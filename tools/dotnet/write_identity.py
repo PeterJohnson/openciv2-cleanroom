@@ -52,6 +52,7 @@ COMMON = (
     "docs/algorithms/V01-civilization-lifecycle-and-civil-war.md",
     "docs/algorithms/A02-ai-city-production.md",
     "docs/algorithms/A03-ai-settlement-and-terrain-work.md",
+    "docs/algorithms/A04-ai-ground-tactics.md",
     "docs/algorithms/A05-ai-naval-and-transport.md",
     "docs/algorithms/C06-city-production-and-purchasing.md",
     "docs/algorithms/C07-trade-and-commodities.md",

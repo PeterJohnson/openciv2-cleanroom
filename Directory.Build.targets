@@ -41,6 +41,7 @@
           $(Oc2RepositoryRoot)docs/algorithms/V01-civilization-lifecycle-and-civil-war.md;
           $(Oc2RepositoryRoot)docs/algorithms/A02-ai-city-production.md;
           $(Oc2RepositoryRoot)docs/algorithms/A03-ai-settlement-and-terrain-work.md;
+          $(Oc2RepositoryRoot)docs/algorithms/A04-ai-ground-tactics.md;
           $(Oc2RepositoryRoot)docs/algorithms/A05-ai-naval-and-transport.md;
           $(Oc2RepositoryRoot)docs/algorithms/C06-city-production-and-purchasing.md;
           $(Oc2RepositoryRoot)docs/algorithms/C07-trade-and-commodities.md;

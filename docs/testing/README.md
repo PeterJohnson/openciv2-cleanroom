@@ -585,3 +585,13 @@ resolution produce the same casualty outcome when opening rendering is skipped
 or fails. P10's semantic contract permits batched rendering and omitted cosmetic
 delays; no original view count or callback trace is asserted. These are service
 joins, not desktop UI or complete-game acceptance.
+
+U03 local-path cases now exercise ordinary reverse costs, terrain and feature
+precedence, actual stack/adjacency/treaty penalties, foreign occupancy, strict
+limits, retained cache reuse, directional ties, sea gates and seam-window order.
+Generation, acceleration and road queries regress through the same FIFO engine.
+A04 response cases use actual local paths and paradrop rather than supplied
+directions or success callbacks. They cover raw target ownership, allied AI
+admission, direction-zero rejection, inherited path modes, first-drop precedence,
+real pending decisions and failure/disposal. Coarse waypoints, general goto,
+combat-parent/desktop integration and complete-game acceptance remain open.

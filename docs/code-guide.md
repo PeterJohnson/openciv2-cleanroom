@@ -278,7 +278,8 @@ W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this
 workspace within a world. `TerritoryQueries.PeaceOwner` supplies the directed
 peace/alliance radius gate. `RoadConnections` checks the chosen uniform route
 for C03 road/rail links, including retained cache and owner/airport interactions.
-General movement and goto remain separate pathfinding work.
+The same engine now supports ordinary local queries through `LocalPathfinding`;
+coarse waypoint selection, general movement and unit goto remain separate work.
 
 `OpenCiv2.MapRendering` is an optional repository-local library over Base,
 Contracts, Formats and SkiaSharp. It has no Avalonia or Session dependency;
@@ -706,3 +707,19 @@ diagnostic, supply incoming argument-zero text, and resolve the scenario visibil
 selector explicitly when ordinary knowledge does not establish visibility.
 `CombatSound` covers opening and result resource IDs; nullable sound arguments
 represent absence without a sentinel. Full combat/desktop orchestration remains open.
+
+`LocalPathfinding` supplies U03's ordinary reverse flood, direction selection and
+bounded distance query. `GenerationConnectivity.UniformDirection` now uses that
+same engine with its declared uniform/absent-owner domain. `GameState.Paths`
+retains costs across generation, roads and ordinary queries; owner/rule/map/mode
+changes do not invalidate a matching goal's cache. Negative-owner nonuniform
+queries require an explicit incoming owner-scratch value if no occupancy query
+has assigned it; no original uninitialized value is invented. Coarse waypoint
+and unit-goto orchestration remain separate work.
+
+`Ai/AttackResponse` implements A04's immediate response using that local query
+and real `Paradrop`. Its operation exposes the child's actual pending decision
+and ends after the first eligible paratrooper even on refusal. Otherwise it
+retasks eligible owned/allied AI ground units, preserving U03 modes and A04's
+direction-zero exception. It assigns Goto but does not execute it. Full combat
+and tactical-planner callers remain pending.

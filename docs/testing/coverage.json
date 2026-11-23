@@ -444,6 +444,7 @@
       "status": "implemented",
       "sources": [
         "src/OpenCiv2.Core/GenerationPaths.cs",
+        "src/OpenCiv2.Core/LocalPathfinding.cs",
         "src/OpenCiv2.Core/MapGeneration.Finalization.cs",
         "src/OpenCiv2.Core/MapGeneration.Land.cs",
         "src/OpenCiv2.Core/MapGeneration.Rivers.cs",
@@ -2051,6 +2052,7 @@
       "sources": [
         "src/OpenCiv2.Core/AcceleratedStarts.cs",
         "src/OpenCiv2.Core/GenerationPaths.cs",
+        "src/OpenCiv2.Core/LocalPathfinding.cs",
         "src/OpenCiv2.Core/MapGeneration.cs",
         "src/OpenCiv2.Core/Research.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
@@ -2125,6 +2127,7 @@
         "src/OpenCiv2.Core/City/CitySupport.cs",
         "src/OpenCiv2.Core/City/LocalCityEconomy.cs",
         "src/OpenCiv2.Core/GenerationPaths.cs",
+        "src/OpenCiv2.Core/LocalPathfinding.cs",
         "src/OpenCiv2.Core/RoadConnections.cs"
       ],
       "status": "partial",
@@ -3760,6 +3763,48 @@
         "U06.sneak-government-policy",
         "U06.stack-captured-next",
         "U06.strength-cache"
+      ]
+    },
+    {
+      "id": "local-pathfinding",
+      "status": "partial",
+      "contract": "U03 local next-direction and bounded distance queries with ordinary movement, occupancy and diplomacy costs; shared uniform generation/road engine",
+      "publicSurface": "LocalPathfinding.NextDirection/PathLength; GenerationPathWorkspace Goal/SelectedUnitType/GridCenter; GenerationConnectivity.UniformDirection",
+      "review": "One bounded FIFO engine now serves ordinary and uniform local queries, sharing the world goal-only cache. Preserves reverse terrain costs, source/goal medium exceptions, naval region gates, rails/Alpine/roads/river precedence, actual W01 peace and U02 adjacency/U01 role-count penalties, different flood/selection multipliers, coast suppression, strict cutoff, descending costs, 19999 threshold and weighted-distance/first ties. Tests cover authored corridor values, actual stacks and treaties, stale cache reuse across owner/rule/map changes, inherited modes, source seam-window order and explicit incoming owner scratch for otherwise undefined negative-owner selection. Bounded distance retains fixed rule selection and restores owner only on normal return. Original debug callbacks are presentation-only and are not emulated. General coarse BFS/waypoints and unit goto remain pending; these local queries do not authorize movement.",
+      "sources": [
+        "src/OpenCiv2.Core/GenerationPaths.cs",
+        "src/OpenCiv2.Core/LocalPathfinding.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalPathCases.cs"
+      ],
+      "sharedGroups": [
+        "U03.local-base-costs",
+        "U03.local-cache-limits",
+        "U03.local-occupancy-treaties",
+        "U03.local-sea-seam",
+        "U03.local-selection-scratch"
+      ]
+    },
+    {
+      "id": "ai-attack-response",
+      "status": "partial",
+      "contract": "A04 section 9 immediate attack response with actual U03 local pathfinding and resumable U05 paradrop",
+      "publicSurface": "AttackResponse.Begin; AttackResponse.Operation.Resume/Pending; AiTaskIds.RespondToAttack",
+      "review": "Ascending first eligible owned paratrooper runs the actual paradrop child and ends the response regardless of refusal; departure city may be foreign and Garrison bypasses spent-movement admission. Otherwise captures raw target occupant/region, scans owned and directed allied AI candidates, retains domain/attack/moves/defender-city/distance/region filters, assigns live path owner/type/goal and twice remaining allowance, and writes ordinary GoTo only for positive non-Hold direction. Existing path modes and cache remain. Tests cover actual normal/uniform paths, nearby-enemy stack costs, ally privacy/target-owner exclusions, raw ownership without occupancy features, direction-zero rejection, retained orders/counters, successful/refused first drops, real pending attack decisions, authority/disposal and conditional-choice failures. Full A04 tactical planner, U02/U06 caller integration and generated desktop game acceptance remain pending.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/AttackResponse.cs",
+        "src/OpenCiv2.Core/LocalPathfinding.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AttackResponseCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.response-direction-modes",
+        "A04.response-ground-admission",
+        "A04.response-paradrop-precedence",
+        "A04.response-pending-failures"
       ]
     }
   ]
