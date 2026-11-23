@@ -4066,3 +4066,36 @@ eight identity tests and three coverage tests passed.
 U04 order execution, general AI orders, desktop service composition, complete
 turn scheduling and generated human/AI-game acceptance remain open. Browser
 execution and cross-platform qualification remain deferred.
+
+## U04 retained order execution
+
+`UnitOrderExecution` now runs the exact full-order switch through actual
+fortification, all seven W04 terrain jobs and U03 Goto/U02 movement. It returns
+handled after a child refuses or leaves work unfinished. The Goto parent retains
+owner and old order, preserves the zero-movement-return path-owner asymmetry,
+uses live arrival coordinates/target and human membership, and performs the
+specified GoalReached, AI exhaustion and transport-counter writes. Pending
+movement, cancellation, failure and disposal retain their committed prefixes.
+
+`UnitOrderOperation` uses the same extracted `MovementInteraction` routing as
+direct movement, including grant, capture, lifecycle and other nested decisions.
+The native runtime cases verify private LongMove handling and a passenger
+landfall restart through the automatically queued cooperative continuation.
+Cancellation still completes a handled order. Actual AI arrival cases distinguish
+timer 9/10, adjacent enemies and Sea transport; no generic AI chooser is supplied.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1183 of 1185**, with the two existing
+platform/audio skips. The shared probe passed **1150 groups** across 131 coverage
+families; source identity verified **654 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-orders-native.json` | `531c4d80ea3ff3aaa2f7762d2a359fb8be9ee7105db3374cd9f79df923700019` |
+| `m4-orders-identity.json` | `846979ecda32d6cf42a4cfd723443f272ce107ee1da3f490c56e62ceac2f4c79` |
+
+General A04/A01 order choice, the U04 active-unit input/scheduling cycle, desktop
+service composition, full turn scheduling and generated human/AI-game acceptance
+remain open. These service/session joins do not establish complete M4. Browser
+and cross-platform execution remain deferred.

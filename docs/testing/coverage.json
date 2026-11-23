@@ -4206,6 +4206,29 @@
         "W06.hut-grant-emissary-routing",
         "W06.hut-retained-grant-cancellation"
       ]
+    },
+    {
+      "id": "unit-order-execution",
+      "status": "partial",
+      "contract": "U04 Order execution and Execute one Goto step, composing actual U03, W04 and U02 children",
+      "publicSurface": "UnitOrderExecution.Begin/Operation.Resume; UnitOrderOperation; MovementInteraction",
+      "review": "Executes the exact full-order switch without player selectability gates. Fortification and terrain work are actual children; handled remains one after an unfinished work job or refused/canceled movement. Goto retains original owner/order, path-owner setup and asymmetric reset, actual movement decisions and cooperative yields, live arrival target and human membership, GoalReached and conditional AI exhaustion/transport counters. Cases cover all handled work kinds, ordinary and AI Goto, actual movement refusal, negative direction, AI arrival thresholds/enemies/sea, retained LongMove changes, disposal/failure prefixes and private reply/cancel/passenger restarts. Shared interaction routing retains existing movement grant/capture/lifecycle handling. Full active-order chooser, active-unit input cycle, desktop controls and complete-game acceptance remain pending.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/UnitOrderExecution.cs",
+        "src/OpenCiv2.Session/MovementInteraction.cs",
+        "src/OpenCiv2.Session/UnitOrderOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitOrderExecutionCases.cs"
+      ],
+      "sharedGroups": [
+        "U04.orders-ai-arrival",
+        "U04.orders-children",
+        "U04.orders-goto-arrival-refusal",
+        "U04.orders-movement-failure",
+        "U04.orders-private-session",
+        "U04.orders-retained-movement"
+      ]
     }
   ]
 }

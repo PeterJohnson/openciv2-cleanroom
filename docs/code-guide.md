@@ -740,7 +740,12 @@ documented U03 safe scratch initialization.
 byte distances, queue behavior and deterministic ties. `Units/UnitGoto` joins
 local/coarse queries to the actual greedy fallback, with adjacent/wrapped targets,
 live rule estimates and conditional order cancellation/exhaustion. These selectors
-do not execute movement; U04 order execution and desktop wiring remain open.
+do not execute movement themselves. `Units/UnitOrderExecution` composes them with
+actual fortification, terrain work and retained movement, including pending
+decisions and conditional arrival/exhaustion writes. `UnitOrderOperation` shares
+private `MovementInteraction` routing with direct movement and advances cooperative
+yields through the runtime queue. Full AI order selection, active-unit scheduling
+and desktop wiring remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

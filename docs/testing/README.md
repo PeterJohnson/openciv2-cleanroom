@@ -612,9 +612,10 @@ A04 response cases use actual local paths and paradrop rather than supplied
 directions or success callbacks. They cover raw target ownership, allied AI
 admission, direction-zero rejection, inherited path modes, first-drop precedence,
 real pending decisions and failure/disposal. Coarse snapping/waypoint and Goto
-cases cover actual local children, authored graphs, exact ties, failed snaps, bounded search failure, cylindrical adjacency,
-airbase refusal and conditional cancellation/exhaustion. U04 order execution,
-desktop integration and complete-game acceptance remain open.
+cases cover actual local children, authored graphs, exact ties, failed snaps,
+bounded search failure, cylindrical adjacency,
+airbase refusal and conditional cancellation/exhaustion. General active-order
+scheduling, desktop integration and complete-game acceptance remain open.
 
 
 U06 continuation groups join actual U01/V01 deletion, U07 SDI/blast action and
@@ -739,3 +740,12 @@ interaction pauses, cancellation ordering, duplicate suppression, external waits
 failure prefixes and disposal. The actual movement session test now advances its
 landfall restart through the automatically queued Proceed, using the same
 AdvanceOne path as the desktop timer; it does not manually wake the command.
+
+U04 order-execution cases compose actual fortification, all seven terrain jobs,
+Goto selection and movement. They check handled results despite incomplete work
+or refused movement, ordinary/AI arrival, path-owner reset asymmetry, live target
+changes, AI exhaustion gates and transport counters. Pending LongMove, disposal
+and required-publication failures retain prefixes. Private runtime cases cover
+reply/cancel and a passenger restart through automatic cooperative continuation.
+General AI orders, active-unit scheduling and desktop/full-game acceptance remain
+open; browser and cross-platform execution remain deferred.
