@@ -60,13 +60,14 @@ public sealed class BuildingMaintenance(GameState world, RuleTables rules, Actio
         return cost;
     }
 
-    public void Run(CitySlot slot)
+    public IReadOnlyList<Exception> Run(CitySlot slot)
     {
         MapKnowledge.RequireLocal(world);
+        List<Exception> failures = [];
         int owner = unchecked((sbyte)world.Entities.Cities.At(slot).Owner.Value);
         if (world.Civilizations[owner].Government == Government.Anarchy)
         {
-            return;
+            return failures.AsReadOnly();
         }
 
         for (int building = BuildingIds.Palace; building <= BuildingIds.Capitalization; ++building)
@@ -86,12 +87,17 @@ public sealed class BuildingMaintenance(GameState world, RuleTables rules, Actio
             BuildingQueries.SetBuilding(world, slot, building, false);
             if (!world.Multiplayer.Saved.AutoplayActive)
             {
-                inHock(new(slot, owner, building, rules.Improvements[building].Identity.Name,
-                    unchecked(rules.Improvements[building].CostRows * world.Calculation.ShieldRows)));
+                try
+                {
+                    inHock(new(slot, owner, building, rules.Improvements[building].Identity.Name,
+                        unchecked(rules.Improvements[building].CostRows * world.Calculation.ShieldRows)));
+                }
+                catch (Exception error) { failures.Add(error); }
             }
 
             world.Civilizations[owner].Gold = unchecked(world.Civilizations[owner].Gold
                 + rules.Improvements[building].CostRows * world.Calculation.ShieldRows);
         }
+        return failures.AsReadOnly();
     }
 }

@@ -115,7 +115,7 @@ public static partial class FoundationSuite
         Equal((short)7, f.City.ShieldBox); Equal((short)99, f.World.Civilizations[1].CapitalX);
     }
 
-    private static void BuildingMaintenanceLiveContinuation()
+    private static void BuildingMaintenanceCapturedPayment()
     {
         var f = new BuildingEffectsFixture(); f.Facilities(1, 4);
         f.Rules.Improvements[4] = f.Rules.Improvements[4] with { Upkeep = 30 };
@@ -123,24 +123,11 @@ public static partial class FoundationSuite
         f.OnLoss = n =>
         {
             Equal(1, n.Owner); Equal(0, f.World.Civilizations[1].Gold);
-            Equal(false, f.City.Improvements.Contains(n.Building));
-            if (n.Building == 1)
-            {
-                Equal(20, n.Credit); f.City.Owner = new(2);
-                f.World.Civilizations[1].Government = Government.Anarchy; f.World.Civilizations[1].Gold = 3;
-                f.Rules.Improvements[1] = f.Rules.Improvements[1] with { CostRows = 4 }; f.World.Calculation.ShieldRows = 5;
-                f.City.Improvements = f.City.Improvements.With(6);
-                f.Rules.Improvements[6] = f.Rules.Improvements[6] with { Upkeep = 2 };
-            }
-            else
-            {
-                Equal(4, n.Building); Equal(10, n.Credit); f.World.Civilizations[1].Gold = 7;
-                f.Rules.Improvements[4] = f.Rules.Improvements[4] with { CostRows = 1 }; f.World.Calculation.ShieldRows = 3;
-            }
+            Equal(false, f.City.Improvements.Contains(n.Building)); Equal(20, n.Credit);
         };
-        f.Maintenance.Run(new(0));
-        Equal(2, f.Losses.Count); Equal(8, f.World.Civilizations[1].Gold); Equal(99, f.World.Civilizations[2].Gold);
-        Equal(default(ImprovementSet).With(6), f.City.Improvements);
+        Equal(0, f.Maintenance.Run(new(0)).Count);
+        Equal(2, f.Losses.Count); Equal(20, f.World.Civilizations[1].Gold); Equal(99, f.World.Civilizations[2].Gold);
+        Equal(default(ImprovementSet), f.City.Improvements);
     }
 
     private static void BuildingMaintenanceWrapAndFailure()
@@ -158,8 +145,8 @@ public static partial class FoundationSuite
         f.World.Calculation.ShieldRows = int.MaxValue; f.Maintenance.Run(new(0));
         Equal(-2, f.Losses.Single().Credit); Equal(-2, f.World.Civilizations[1].Gold);
         f.Facilities(1); f.OnLoss = _ => throw new InvalidOperationException("notice stopped");
-        Throws<InvalidOperationException>(() => f.Maintenance.Run(new(0)));
-        Equal(0, f.World.Civilizations[1].Gold); Equal(default(ImprovementSet), f.City.Improvements);
+        Equal(1, f.Maintenance.Run(new(0)).Count);
+        Equal(-2, f.World.Civilizations[1].Gold); Equal(default(ImprovementSet), f.City.Improvements);
         f.Facilities(1); f.World.Globals.Multiplayer = GameMode.Tcp;
         Throws<InvalidOperationException>(() => f.Maintenance.Run(new(0)));
         Equal(true, f.City.Improvements.Contains(1));

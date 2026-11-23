@@ -217,7 +217,7 @@ Player presentation and A02 reselection remain boundary fixtures; complete C06
 nonunit turns and spaceship desktop reports/outcomes remain pending.
 
 C08 maintenance and wonder-effect groups cover unsigned upkeep, disabled
-first-prerequisite walks, ordered forced losses and notice-time mutations,
+first-prerequisite walks, ordered forced losses and captured-owner payments,
 signed scalar wrap, Eiffel's real V04 attitude path and Leonardo's live upgrade
 scan. V04 tests cover hotseat guards, independent attitude scratch, hostility,
 reputation intervals, active-wonder suppression and human-only credit changes.
@@ -1040,3 +1040,11 @@ clients. They pause in old-turn throne selection, preserve the award on cancel,
 continue to history after advancement, and retain warming/deadline/upgrade state
 through classic save/load. Simultaneously arrived ships verify that post-global
 outcome presentation cannot process a second arrival in the same turn.
+
+F04 human-city maintenance cases join W05 and C08 with the captured owner's
+current human admission. Actual pollution precedes payment, and a melted reactor
+is removed before upkeep can charge or sell it. Cosmetic failures preserve
+pollution, building credits and the remaining maintenance scan; required RNG
+and quote failures retain committed prefixes. The old synthetic InHock mutation
+case is replaced by ordinary payment/credit observations under C08/X01. Desktop
+direct/console cases run actual C03 population pollution and classic persistence.

@@ -5358,3 +5358,54 @@ checks; the native run covers the existing authored playthrough.
 Full F04 civilization/city sequencing, generated desktop play and complete
 human/AI end-condition acceptance remain open. Browser/cross-platform
 qualification and network execution remain deferred.
+
+## F04 human-city pollution and upkeep — 2026-11-23
+
+`CityHumanMaintenance` now owns stage 6's single current-human test for the
+captured city owner, followed by actual W05 pollution/meltdown and C08 upkeep.
+There is no alive filter or second human-control check between the children.
+The desktop turn captures the owner before food/production/research and invokes
+this shared stage after research finishes, before terrain-goal publication and
+city summary processing. Its nuclear dependency uses the same actual loss,
+lifecycle and incident services constructed for the turn.
+
+`BuildingMaintenance.Run` now returns cosmetic diagnostics while preserving
+forced-loss credits and subsequent payments. Required quote failures still stop
+with their committed prefix. The old test that changed government, ownership,
+rules and treasury inside an InHock callback has been replaced by ordinary
+payment observations: C08/X01 explicitly excludes those synthetic interleavings.
+The desktop retains presentation failures while finishing the admitted turn.
+
+Six new groups cover captured-owner admission with a different current city
+owner, extinct slots, pollution before payment, a reactor melting before it can
+be charged/sold, multiple cosmetic failures, and required sampling/quote failures.
+A direct/console desktop case imports industrial knowledge and a populated city,
+uses actual C03 economy to produce pollution, verifies that this new pollution
+has not been processed early by warming, and preserves it through classic
+save/load. Reactor behavior is covered by the composed core stage; the authored
+desktop profile still does not admit nuclear plants.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1506 of 1508**, with two existing
+platform/audio skips. The shared probe passed **1473 groups** across 162 coverage
+families; source identity verified **761 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+The first isolated native UI run timed out importing the malformed-save fixture;
+its snapshot showed the file library still waiting for a native file selection.
+The diagnostic was retained. An unchanged retry under isolated Xvfb/session bus
+and in-memory settings passed all **26 desktop checks**, including file dialogs,
+save/reload comparison, finance/government, score/Hall and retirement paths.
+No driver or application workaround was added for that timeout.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-city-maintenance-native.json` | `f684ecf5ba74727b08c9da608649ef063e25f4b5d264871f908d0d8353f247bd` |
+| `m4-city-maintenance-identity.json` | `db1c122c7b8482429cf7006e88e576a691e2b5de8ac6cda31d93880b9d77e0b2` |
+| `m4-city-maintenance-play.json` | `d98389b86883ff95cbd5003952258fe1193bfa344752769f4454d3dc0b121a41` |
+| `m4-city-maintenance-play.first-failure.json` | `635d29cfda24a48799d7813abe4d24903d604789cccd83185f7f1852491db15a` |
+
+F04's unresolved government-score and best-shield producer definitions, full
+city/civilization sequencing, generated desktop play and complete human/AI
+end-condition acceptance remain open. Browser/cross-platform qualification
+and network execution remain deferred.

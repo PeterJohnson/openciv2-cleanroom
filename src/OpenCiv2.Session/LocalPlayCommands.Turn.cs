@@ -108,6 +108,8 @@ public static partial class LocalPlayCommands
         private bool upkeepCommitted;
         private int nextCity;
         private CitySlot researchCity;
+        private int cityOwner;
+        private CityHumanMaintenance? cityMaintenance;
         private ResearchOperation? research;
         private CityProduction.Operation? production;
         private int foodSurplus;
@@ -272,7 +274,9 @@ public static partial class LocalPlayCommands
                     { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
                     research.Dispose();
                     research = null;
-                    MaintainBuildings(context, researchCity);
+                    if (cityMaintenance!.Run(researchCity, cityOwner, $"local-pollution/{world.Globals.Turn}/{researchCity.Value}").Count != 0
+                        && deferredFailure.Length == 0)
+                    { deferredFailure = "city_maintenance_presentation_failed"; }
                     FinishCity(context, researchCity);
                 }
                 if (nextCity < 0)
@@ -447,6 +451,8 @@ public static partial class LocalPlayCommands
                 governments, effects.Incident);
             var creation = new UnitCreation(world, context.Process, stacks, new LocalCreation(world, rules, stacks));
             var spawning = new BarbarianSpawning(world, rules, context.Gameplay, creation, stacks, loss, lifecycle, incidents, effects);
+            var nuclear = new NuclearEffects(world, context.Gameplay, stacks, loss, lifecycle, incidents, effects);
+            cityMaintenance = new(world, new(world, context.Gameplay, nuclear, effects), new(world, rules, effects.Lost));
             var turn = new GlobalTurn(world, rules, context.Gameplay, GameplayContent.Builtin.Values.Calendar, spawning,
                 new(world, effects.Warming, effects.Redraw), new(world, context.Gameplay),
                 new(world, CivilizationScoreOperation.CreateScore(context)), new(world, rules, lifecycle, incidents));
@@ -454,7 +460,8 @@ public static partial class LocalPlayCommands
                 c => c == owner ? context.Actor.Participant : throw new InvalidOperationException("The authored profile has no other decision recipient"));
         }
 
-        private sealed class GlobalEffects(Func<OperationContext> current) : IBarbarianSpawningEffects, IDiplomaticWarEffects
+        private sealed class GlobalEffects(Func<OperationContext> current) : IBarbarianSpawningEffects, IDiplomaticWarEffects,
+            INuclearEffects, ICityPollutionEffects
         {
             public void Notice(BarbarianUprisingNotice notice) => current().Effect("barbarians.uprising", new([
                 new("owner", new CommandValue.Integer(notice.Owner)), new("kind", new CommandValue.Text(notice.Kind.ToString())),
@@ -470,6 +477,21 @@ public static partial class LocalPlayCommands
             public void Incident(EspionageIncidentNotice notice) => current().Effect("diplomacy.incident", new([
                 new("kind", new CommandValue.Text(notice.Kind.ToString())), new("actor", new CommandValue.Integer(notice.Actor.Civilization)),
                 new("victim", new CommandValue.Integer(notice.Victim.Civilization))]));
+            public void CenterPrimary(MapPoint point) => MoveCursor(point);
+            public void EnsureVisible(MapPoint point, int owner) => CenterPrimary(point);
+            public void AnimateNuclear(MapPoint point) => Animate(point);
+            public void Animate(MapPoint point) => current().Effect("map.nuclear", new([
+                new("x", new CommandValue.Integer(point.X)), new("y", new CommandValue.Integer(point.Y))]));
+            public void Notice(NuclearNotice notice) => current().Effect("nuclear.notice", new([
+                new("kind", new CommandValue.Text(notice.Kind.ToString())), new("recipient", new CommandValue.Integer(notice.Recipient)),
+                new("name", new CommandValue.Text(notice.Name))]));
+            public void Notice(CityPollutionNotice notice) => current().Effect("city.pollution", new([
+                new("city", new CommandValue.City(new(notice.City, current().World.Entities.Cities.At(notice.City).Token))),
+                new("kind", new CommandValue.Text(notice.Kind.ToString()))]));
+            public void Lost(ImprovementLostNotice notice) => current().Effect("city.improvement_lost", new([
+                new("city", new CommandValue.City(new(notice.City, current().World.Entities.Cities.At(notice.City).Token))),
+                new("owner", new CommandValue.Integer(notice.Owner)), new("building", new CommandValue.Integer(notice.Building)),
+                new("name", new CommandValue.Text(notice.Name)), new("credit", new CommandValue.Integer(notice.Credit))]));
         }
 
         private static void AssessCivilization(OperationContext context)
@@ -534,6 +556,7 @@ public static partial class LocalPlayCommands
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
             ref var city = ref world.Entities.Cities.At(slot);
+            cityOwner = city.Owner.Value;
             ref var civ = ref world.Civilizations[city.Owner.Value];
             if ((city.TurnsCaptured - 1 & 63) == (world.Globals.Turn & 63))
             {
@@ -622,17 +645,6 @@ public static partial class LocalPlayCommands
             return new ResearchFlow(world, context.Process.Rules, context.Gameplay, grants, researchPrompts,
                 CreateProductionOrders(context),
                 new CityEconomy(world, context.Process.Rules, new(world, new(5_000_000, 64))), researchEffects, researchEffects);
-        }
-
-        private static void MaintainBuildings(OperationContext context, CitySlot slot)
-        {
-            var world = context.World;
-            // This profile has no pollution-producing population/industry or nuclear plant.
-            // C08 follows the completed research operation at the human-city upkeep boundary.
-            new BuildingMaintenance(world, context.Process.Rules.Definitions, notice => context.Effect("city.improvement_lost", new([
-                new("city", new CommandValue.City(new(notice.City, world.Entities.Cities.At(notice.City).Token))),
-                new("owner", new CommandValue.Integer(notice.Owner)), new("building", new CommandValue.Integer(notice.Building)),
-                new("name", new CommandValue.Text(notice.Name)), new("credit", new CommandValue.Integer(notice.Credit))]))).Run(slot);
         }
 
         private static void RetireUnsupportedUnits(OperationContext context, CitySlot city)

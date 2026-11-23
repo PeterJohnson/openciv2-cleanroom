@@ -161,8 +161,11 @@ C06 nonunit completion now composes these services; spaceship reports and F04
 arrival outcomes remain open.
 
 `BuildingMaintenance` owns C08's quote and ordered payment/forced-loss pass.
-The desktop city turn calls it after research; no facilities or pollution sources
-outside the authored profile are admitted. A forced Palace loss can be saved and
+The desktop city turn calls it through `CityHumanMaintenance` after research and
+actual pollution/meltdown. The wrapper tests the captured owner's current human
+control once for both children. Cosmetic upkeep failures retain diagnostics
+without losing credits or later payments. Authored-profile admission remains
+separate from the general mechanics. A forced Palace loss can be saved and
 resumed. `WonderEffects` supplies Eiffel's one-time acquisition and Leonardo's
 local upgrade pass, using `DiplomaticAttitudes` for V04's directed attitude guards
 and retained evaluation scratch. That class also supplies global reputation

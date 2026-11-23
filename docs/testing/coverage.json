@@ -2471,13 +2471,13 @@
       "id": "building-effects-reputation",
       "contract": "C08 maintenance/forced loss, Eiffel and Leonardo; V04 sections 2,11; W03 section 8; bounded F04 desktop integration",
       "publicSurface": "BuildingMaintenance quote/payment; WonderEffects Eiffel/Leonardo; DiplomaticAttitudes storage, categories, hostility and global maintenance; ApolloRevelation local publication",
-      "review": "Specification-derived groups cover full-width Barracks upkeep and disabled first-prerequisite walks, ordered multi-building loss, fresh notice inputs/captured owner, scalar wrap and failure prefixes. Actual V04 attitude guards/scratch serve Eiffel; global decay uses active wonder rules and normalizes only human reputation credits. Leonardo uses last-candidate selection, signed defense/capacity, live scan bounds, notice-per-old-type state, retained unit fields and callback failure boundaries. Apollo publishes all-seat exploration/city sizes and normal-seat feature memory without revealing units or setting a cheat. Direct/console desktop tests join unaffordable Temple loss/refund, save/resume and inactive-seat reputation decay. Local effects reject network execution before mutation; browser/cross-platform work, complete C06/V03/C09/N02 caller joins, general F04 scheduling and full desktop games remain pending.",
+      "review": "Specification-derived groups cover full-width Barracks upkeep and disabled first-prerequisite walks, ordered multi-building loss, captured owner, scalar wrap and required failure prefixes; cosmetic maintenance failures preserve credit and subsequent payments without synthetic notice mutations. Actual V04 attitude guards/scratch serve Eiffel; global decay uses active wonder rules and normalizes only human reputation credits. Leonardo uses last-candidate selection, signed defense/capacity, live scan bounds, notice-per-old-type state, retained unit fields and callback failure boundaries. Apollo publishes all-seat exploration/city sizes and normal-seat feature memory without revealing units or setting a cheat. Direct/console desktop tests join unaffordable Temple loss/refund, save/resume and inactive-seat reputation decay. Local effects reject network execution before mutation; browser/cross-platform work, complete C06/V03/C09/N02 caller joins, general F04 scheduling and full desktop games remain pending.",
       "sharedGroups": [
         "C08.eiffel-acquisition",
         "C08.leonardo-defensive-same-type",
         "C08.leonardo-live-continuation-failure",
         "C08.leonardo-selection-retention",
-        "C08.maintenance-live-continuation",
+        "C08.maintenance-captured-payment",
         "C08.maintenance-ordered-losses",
         "C08.maintenance-prerequisite-walk",
         "C08.maintenance-quotes",
@@ -5108,6 +5108,29 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/GlobalTurnCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalGlobalTurnCases.cs"
+      ]
+    },
+    {
+      "id": "city-human-maintenance",
+      "contract": "F04 city stage 6 captured-owner human admission; real W05 pollution/meltdown followed by C08 upkeep",
+      "publicSurface": "CityHumanMaintenance.Run; desktop city turn; BuildingMaintenance.Run presentation diagnostics",
+      "review": "One human-control admission for the captured owner, no alive filter, actual pollution before payment and reactor removal before upkeep. Cosmetic failures retain diagnostics while credit and subsequent losses finish; required sampling/quote failures preserve prefixes. Direct/console desktop turns consume actual C03 pollution and preserve placement through classic saves. Full city-analysis formulas, general generated-game composition and complete desktop acceptance remain open; browser/cross-platform execution deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/BuildingMaintenance.cs",
+        "src/OpenCiv2.Core/City/CityHumanMaintenance.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityHumanMaintenanceCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.city-human-maintenance-admission",
+        "F04.city-maintenance-cosmetic-failures",
+        "F04.city-maintenance-required-failures",
+        "F04.city-meltdown-before-payment",
+        "F04.city-pollution-before-payment",
+        "F04.desktop-city-pollution"
       ]
     }
   ]
