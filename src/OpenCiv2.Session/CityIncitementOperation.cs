@@ -25,9 +25,7 @@ public sealed class CityIncitementOperation(CityIncitement.Operation operation, 
     {
         if (completed is not null)
         { return completed; }
-        ResearchReply? reply = pending is RevoltDecision.Capture capture
-            ? CityCaptureInteraction.Reply(capture.Decision, input)
-            : AttackConfirmationInteraction.Reply(input) is { } answer ? new(answer) : null;
+        ResearchReply? reply = RevoltInteraction.Reply(pending, input);
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
@@ -46,6 +44,12 @@ public sealed class CityIncitementOperation(CityIncitement.Operation operation, 
 
 internal static class RevoltInteraction
 {
+    internal static ResearchReply? Reply(RevoltDecision? pending, OperationInput input) => pending switch
+    {
+        RevoltDecision.Capture capture => CityCaptureInteraction.Reply(capture.Decision, input),
+        RevoltDecision.Lifecycle lifecycle => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
+        _ => AttackConfirmationInteraction.Reply(input) is { } answer ? new(answer) : null
+    };
     internal static InteractionSpec Prompt(OperationContext context, RevoltDecision pending, Func<int, ParticipantId> recipient,
         Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt, ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {
@@ -63,8 +67,8 @@ internal static class RevoltInteraction
                 prompt = new(title, recipient(offer.Request.Actor), new CommandValue.City(offer.Request.City), new(options.Select(o => o.Value)))
                 { Options = new(options) };
                 break;
-            case RevoltDecision.Incident incident:
-                prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
+            case RevoltDecision.Lifecycle incident:
+                prompt = LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence);
                 break;
             case RevoltDecision.Capture capture:
                 prompt = CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence);

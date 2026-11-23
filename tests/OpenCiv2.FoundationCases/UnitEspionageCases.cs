@@ -187,8 +187,8 @@ public static partial class FoundationSuite
         nested.Data.Unit(1).Flags.SpyMission = true; nested.Data.Unit(1).Counter = 1;
         DiplomaticRelations.Set(w, 1, 2, new() { Peace = true });
         using var mission = nested.Mission(); mission.Resume();
-        var decision = (UnitMissionDecision.Incident)mission.Resume(1)!;
-        Equal(1, decision.Pretext.Victim.Civilization); Equal(2, decision.Pretext.Actor.Civilization);
+        var decision = (UnitMissionDecision.Lifecycle)mission.Resume(1)!;
+        Equal(1, ((EspionagePretext)decision.Decision).Victim.Civilization); Equal(2, ((EspionagePretext)decision.Decision).Actor.Civilization);
         Equal(null, mission.Result); Equal(false, nested.Data.Unit(0).Token.Occupied || nested.Data.Unit(1).Token.Occupied);
         Equal((byte)5, nested.Data.Unit(1).Damage); Equal(0, nested.Lifecycle.Checks);
         Equal(null, mission.Resume(1)); Equal(1, mission.Result); Equal(EndReason.Defeat, w.PendingEndReason);

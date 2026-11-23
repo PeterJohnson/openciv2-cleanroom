@@ -26,7 +26,7 @@ public sealed class LandEntryOperation(LandEntry.Operation operation, Func<int, 
             {
                 LandEntryDecision.City city => CityMissionInteraction.Reply(city.Decision, input),
                 LandEntryDecision.Unit unit => UnitMissionInteraction.Reply(unit.Decision, input) is { } value ? new(value) : null,
-                LandEntryDecision.Caravan => AttackConfirmationInteraction.Reply(input) is { } value ? new(value) : null,
+                LandEntryDecision.Caravan caravan => CaravanInteraction.Reply(caravan.Decision, input) is { } value ? new(value) : null,
                 _ => null
             };
             pending = operation.Resume(reply);
@@ -35,8 +35,8 @@ public sealed class LandEntryOperation(LandEntry.Operation operation, Func<int, 
                 context.Publish();
                 var prompt = pending switch
                 {
-                    LandEntryDecision.Caravan caravan => CaravanInteraction.Prompt(caravan.Decision, recipient),
-                    LandEntryDecision.Unit unit => UnitMissionInteraction.Prompt(unit.Decision, recipient),
+                    LandEntryDecision.Caravan caravan => CaravanInteraction.Prompt(context, caravan.Decision, recipient, ref intelligenceWindow, intelligence),
+                    LandEntryDecision.Unit unit => UnitMissionInteraction.Prompt(context, unit.Decision, recipient, ref intelligenceWindow, intelligence),
                     LandEntryDecision.City city => CityMissionInteraction.Prompt(context, city.Decision, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt, ref intelligenceWindow, intelligence),
                     _ => throw new InvalidOperationException("Unknown land-entry decision")
                 };

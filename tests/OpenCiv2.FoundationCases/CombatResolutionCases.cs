@@ -249,7 +249,7 @@ public static partial class FoundationSuite
         f.Data.AddUnit(4, 3, 4, new(24, 10)); f.Data.Unit(4).Flags.SpyMission = true; f.Data.Unit(4).Counter = 1;
         f.World.Civilizations[1].Treaties[3].Peace = true;
         using var op = f.Begin(false); var pending = op.Resume()!;
-        Equal(1, pending.Victim.Civilization); Equal(3, pending.Actor.Civilization); Equal(pending, op.Resume());
+        Equal(1, ((EspionagePretext)pending).Victim.Civilization); Equal(3, ((EspionagePretext)pending).Actor.Civilization); Equal(pending, op.Resume());
         Equal(false, op.Completed); Equal(true, f.State.ActiveUnitLost); Equal(1, f.State.KillCount);
         Equal(false, f.Data.Unit(3).Token.Occupied); Equal(1, f.World.Casualties[1].Count);
         Equal(true, f.Data.Unit(2).Flags.Veteran); int calls = f.Calls.Count;

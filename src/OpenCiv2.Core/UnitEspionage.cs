@@ -33,7 +33,7 @@ public abstract record UnitMissionDecision
 {
     public sealed record Menu(UnitMissionSubject Actor, UnitMissionSubject Target) : UnitMissionDecision;
     public sealed record Bribe(UnitBribeOffer Offer) : UnitMissionDecision;
-    public sealed record Incident(EspionagePretext Pretext) : UnitMissionDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : UnitMissionDecision;
 }
 
 /// <summary>Semantic V06 presentation/publication. These callbacks do not choose outcomes or implement transfer/damage.</summary>
@@ -180,9 +180,9 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
                         { Transfer(); }
                         return Finish(0);
                     case Phase.Escape:
-                        var pretext = escape!.Resume(pending is UnitMissionDecision.Incident ? reply : null);
+                        var pretext = escape!.Resume(pending is UnitMissionDecision.Lifecycle ? reply : null);
                         if (pretext is not null)
-                        { return pending = new UnitMissionDecision.Incident(pretext); }
+                        { return pending = new UnitMissionDecision.Lifecycle(pretext); }
                         pending = null;
                         if (escape.Result is null)
                         { return null; }

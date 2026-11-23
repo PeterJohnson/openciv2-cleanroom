@@ -72,8 +72,11 @@ public sealed class GeneratedGameInitialization : IDisposable
             }
             if (current.Advance(candidateBudget) is null)
             {
+                if (current.Pending is not null)
+                { throw new InvalidOperationException("Fresh turn-zero placement cannot request a catch-up decision"); }
                 return false;
             }
+            current.Dispose();
             current = null;
             if (++nextCivilization < EntityLimits.Civilizations)
             {
@@ -97,6 +100,8 @@ public sealed class GeneratedGameInitialization : IDisposable
 
     private void Release()
     {
+        current?.Dispose();
+        current = null;
         pin?.Dispose();
         pin = null;
     }

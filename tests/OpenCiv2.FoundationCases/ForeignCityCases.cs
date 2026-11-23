@@ -150,9 +150,9 @@ public static partial class FoundationSuite
     private static void ForeignCityFailuresAndNestedLoss()
     {
         var f = new ForeignCityFixture(); f.LastSettler();
-        using var op = f.Begin(); Equal(true, op.Resume() is ForeignCityDecision.Incident);
+        using var op = f.Begin(); Equal(true, op.Resume() is ForeignCityDecision.Lifecycle);
         Equal(false, f.Data.Unit(0).Token.Occupied || f.Data.Unit(2).Token.Occupied); Equal(0, f.Redraws.Count);
-        Equal(true, op.Resume() is ForeignCityDecision.Incident); op.Resume(0); f.Complete(op);
+        Equal(true, op.Resume() is ForeignCityDecision.Lifecycle); op.Resume(0); f.Complete(op);
         Equal(EndReason.Defeat, f.World.PendingEndReason); Equal(f.F.Step.From, f.Redraws.Single());
         var notice = new ForeignCityFixture { FailNotice = true }; notice.F.Step = notice.F.Step with { Domain = RuleDomain.Sea };
         using var failed = notice.Begin(); Throws<InvalidOperationException>(() => failed.Resume()); Throws<InvalidOperationException>(() => failed.Resume());

@@ -12,7 +12,7 @@ public sealed class EspionageWorkspace { public CityMission? LastMission; }
 public enum EspionageIncidentKind { Terror, War, Allied, Leniency, SenateScandal }
 public sealed record EspionageIncidentNotice(EspionageIncidentKind Kind, DiplomaticParty Actor,
     DiplomaticParty Victim, int? AttitudeCategory = null);
-public sealed record EspionagePretext(DiplomaticParty Actor, DiplomaticParty Victim, bool Allied);
+public sealed record EspionagePretext(DiplomaticParty Actor, DiplomaticParty Victim, bool Allied) : LifecycleDecision;
 
 /// <summary>V06 §11 local incident service. Real V04 war, A08 stance and V02 government children
 /// execute here; the human victim's pretext reply is an explicit continuation.</summary>

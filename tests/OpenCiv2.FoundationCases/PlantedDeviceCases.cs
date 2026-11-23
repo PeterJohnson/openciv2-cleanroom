@@ -162,8 +162,8 @@ public static partial class FoundationSuite
         foreach (bool capture in new[] { false, true })
         {
             var f = DeviceNestedFixture(capture); using var op = f.Begin(); f.Ask(op);
-            var decision = (CityEspionageDecision.Incident)op.Resume(1)!;
-            Equal(capture ? 1 : 3, decision.Pretext.Victim.Civilization); Equal(false, op.Completed);
+            var decision = (CityEspionageDecision.Lifecycle)op.Resume(1)!;
+            Equal(capture ? 1 : 3, ((EspionagePretext)decision.Decision).Victim.Civilization); Equal(false, op.Completed);
             Equal((sbyte)9, f.World.Entities.Cities.Storage[0].Size); Equal(0, f.Notices.Count);
             Equal(0, f.Nuclear.Lifecycle.Checks); Equal(decision, op.Resume());
             op.Resume(0); Equal(true, op.Completed); Equal(capture ? 0 : 1, f.Notices.Count);

@@ -91,7 +91,7 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
             steps = parent.Action(attacker, target, checkSdi, call, value => Result = value).GetEnumerator();
         }
         /// <summary>Returns a pending incident; null with no Result is a bounded lifecycle search slice.</summary>
-        public EspionagePretext? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)

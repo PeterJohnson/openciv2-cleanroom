@@ -16,7 +16,7 @@ public abstract record CityEspionageDecision
 {
     public sealed record Question(CityEspionageQuestion Kind, int Actor, CityTarget City, string Name,
         OwnedList<CitySabotageTarget>? Targets = null) : CityEspionageDecision;
-    public sealed record Incident(EspionagePretext Pretext) : CityEspionageDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : CityEspionageDecision;
     public sealed record Technology(CapturedTechnologyChoice Choice) : CityEspionageDecision;
     public sealed record Grant(ResearchGrantDecision Decision) : CityEspionageDecision;
     public sealed record Visit(CityEspionageVisit Request) : CityEspionageDecision;
@@ -85,7 +85,7 @@ public sealed class CityEspionageDamage(GameState world, RuleTables rules, Gamep
                 MapKnowledge.RequireLocal(parent.World);
                 if (pending is not null && reply is null)
                 { return pending; }
-                int? childReply = pending is CityEspionageDecision.Incident ? reply : null;
+                int? childReply = pending is CityEspionageDecision.Lifecycle ? reply : null;
                 if (pending is CityEspionageDecision.Question)
                 { answer = reply!.Value; }
                 pending = null;
@@ -96,7 +96,7 @@ public sealed class CityEspionageDamage(GameState world, RuleTables rules, Gamep
                         var incident = child.Resume(childReply);
                         childReply = null;
                         if (incident is not null)
-                        { return pending = new CityEspionageDecision.Incident(incident); }
+                        { return pending = new CityEspionageDecision.Lifecycle(incident); }
                         if (child.Result is null)
                         { return null; }
                         childLost = child.Result == 1;

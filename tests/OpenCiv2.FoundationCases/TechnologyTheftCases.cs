@@ -199,7 +199,7 @@ public static partial class FoundationSuite
         ordinary.Known(90); ordinary.World.Globals.HumanPlayers = CivilizationSet.Only(1).With(2); ordinary.World.Civilizations[2].Treaties[1].Peace = true;
         using (var op = ordinary.Begin())
         {
-            op.Resume(); Equal(true, op.Resume(new(0)) is CityEspionageDecision.Incident);
+            op.Resume(); Equal(true, op.Resume(new(0)) is CityEspionageDecision.Lifecycle);
             Equal(true, ordinary.City.Flags.TechnologyStolen); Equal(true, ordinary.World.Civilizations[1].Advances.Contains(90));
             Equal(false, op.Completed); op.Resume(new(0)); Equal(true, op.Completed); ordinary.Random.RequireChoicesConsumed();
         }
@@ -218,7 +218,7 @@ public static partial class FoundationSuite
                 Sequence(new[] { 90, 91 }, menu.Options.Select(o => o.Identity)); Equal(new MapPoint(4, 4), f.Data.Unit(0).Position);
                 next = op.Resume(new(91));
             }
-            Equal(true, next is CityEspionageDecision.Incident); Equal(!targeted, f.City.Flags.TechnologyStolen);
+            Equal(true, next is CityEspionageDecision.Lifecycle); Equal(!targeted, f.City.Flags.TechnologyStolen);
             Equal(false, f.Data.Unit(0).Token.Occupied); Equal(true, f.World.Civilizations[1].Advances.Contains(targeted ? 91 : 90));
             Equal(null, op.Resume(new(0))); Equal(true, op.Completed); Equal(true, f.City.Flags.TechnologyStolen); f.Random.RequireChoicesConsumed();
         }

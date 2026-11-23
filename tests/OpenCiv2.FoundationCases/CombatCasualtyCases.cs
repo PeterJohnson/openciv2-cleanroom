@@ -144,7 +144,7 @@ public static partial class FoundationSuite
     private static void CombatCasualtyNestedAndSession()
     {
         var f = NestedCasualty(); using var op = f.Single(); var pending = op.Resume()!;
-        Equal(1, pending.Victim.Civilization); Equal(3, pending.Actor.Civilization); Equal(pending, op.Resume());
+        Equal(1, ((EspionagePretext)pending).Victim.Civilization); Equal(3, ((EspionagePretext)pending).Actor.Civilization); Equal(pending, op.Resume());
         Equal(false, op.Completed); Equal(false, f.Data.Unit(0).Token.Occupied); Equal(1, f.State.KillCount);
         Equal(1, f.World.Casualties[1].Count); op.Resume(0); f.Complete(op); Equal(false, f.World.UnitDeletion.Active);
         f = NestedCasualty(); var context = new OperationContext(f.World, f.Data.Process, f.Life.Random, new PresentationRandom(1, "casualty"),

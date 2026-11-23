@@ -7,10 +7,11 @@ namespace OpenCiv2.Session;
 
 /// <summary>U05 loss continuation with private routing for actual nested lifecycle incidents.
 /// U02 consumes Stopped and the updated shared origin/work state.</summary>
-public sealed class SpecialMovementOperation(SpecialMovementFinish.Operation operation, Func<int, ParticipantId> recipient) : IContinuation
+public sealed class SpecialMovementOperation(SpecialMovementFinish.Operation operation, Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
-    private EspionagePretext? pending;
+    private LifecycleDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -20,11 +21,11 @@ public sealed class SpecialMovementOperation(SpecialMovementFinish.Operation ope
         { return completed; }
         try
         {
-            pending = operation.Resume(pending is null ? null : EspionageInteraction.Reply(input));
+            pending = operation.Resume(LifecycleInteraction.Reply(pending, input));
             if (pending is not null)
             {
                 context.Publish();
-                return new(CommandStatus.AwaitingInteraction, Interaction: EspionageInteraction.Prompt(pending, recipient(pending.Victim.Civilization)));
+                return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence));
             }
             if (!operation.Completed)
             { context.Publish(); return new(CommandStatus.Pending); }

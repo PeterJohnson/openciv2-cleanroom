@@ -10,7 +10,7 @@ public sealed record MovementFinishInputs(bool OrdinaryArrival, bool OriginOcean
 public abstract record MovementCompletionDecision
 {
     public sealed record Capture(CityCaptureDecision Decision) : MovementCompletionDecision;
-    public sealed record Incident(EspionagePretext Question) : MovementCompletionDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : MovementCompletionDecision;
     public sealed record Hut(HutCityVisit Visit) : MovementCompletionDecision;
     public sealed record Grant(ResearchGrantDecision Decision) : MovementCompletionDecision;
     public sealed record LongMove(LongMoveQuestion Question) : MovementCompletionDecision;
@@ -131,7 +131,7 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
             while (!aircraft.Completed)
             {
                 if (aircraft.Resume(operation.TakeReply()?.Selected) is { } question)
-                { yield return new MovementCompletionDecision.Incident(question); }
+                { yield return new MovementCompletionDecision.Lifecycle(question); }
                 else if (!aircraft.Completed)
                 { yield return null; }
             }
@@ -144,7 +144,7 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
             while (!coast.Completed)
             {
                 if (coast.Resume(operation.TakeReply()?.Selected) is { } question)
-                { yield return new MovementCompletionDecision.Incident(question); }
+                { yield return new MovementCompletionDecision.Lifecycle(question); }
                 else if (!coast.Completed)
                 { yield return null; }
             }

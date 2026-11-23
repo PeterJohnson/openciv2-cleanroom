@@ -124,8 +124,8 @@ public static partial class FoundationSuite
         f.Data.AddUnit(1, 4, 4, new(24, 10)); f.Data.Unit(1).Flags.SpyMission = true; f.Data.Unit(1).Counter = 3;
         w.Civilizations[3].Treaties[4].Peace = true;
         f.Loss.Lifecycle.Recreate = c => Creation(f.Data, c, f.Loss.Lifecycle.Random);
-        using var op = f.Production(3); var incident = (CaptureProductionDecision.Incident)op.Resume()!;
-        Equal(3, incident.Pretext.Victim.Civilization); Equal(false, w.Calculation.Processing); Equal(0, f.Neighbors.Count);
+        using var op = f.Production(3); var incident = (CaptureProductionDecision.Lifecycle)op.Resume()!;
+        Equal(3, ((EspionagePretext)incident.Decision).Victim.Civilization); Equal(false, w.Calculation.Processing); Equal(0, f.Neighbors.Count);
         Equal(incident, op.Resume()); var window = (CaptureProductionDecision.Window)op.Resume(0)!;
         Equal(false, op.Completed); Equal(true, w.Calculation.Processing); Equal(window, op.Resume());
         op.Resume(0); Equal(true, op.Completed); f.Loss.Lifecycle.Random.RequireChoicesConsumed();

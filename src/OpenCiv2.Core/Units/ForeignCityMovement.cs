@@ -8,7 +8,7 @@ public sealed record OccupationDenied(int Recipient, UnitTarget Unit, string Uni
 public abstract record ForeignCityDecision
 {
     public sealed record Attack(AttackWarning Warning) : ForeignCityDecision;
-    public sealed record Incident(EspionagePretext Question) : ForeignCityDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : ForeignCityDecision;
 }
 public sealed record ForeignCityResult(bool Proceed, int Value);
 public interface IForeignCityEffects
@@ -92,7 +92,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
                 while (delivery.Result is null)
                 {
                     if (delivery.Resume(operation.TakeReply()) is { } pending)
-                    { yield return new ForeignCityDecision.Incident(pending); }
+                    { yield return new ForeignCityDecision.Lifecycle(pending); }
                     else if (delivery.Result is null)
                     { yield return null; }
                 }
@@ -102,7 +102,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
                     while (removed.Result is null)
                     {
                         if (removed.Resume(operation.TakeReply()) is { } pending)
-                        { yield return new ForeignCityDecision.Incident(pending); }
+                        { yield return new ForeignCityDecision.Lifecycle(pending); }
                         else if (removed.Result is null)
                         { yield return null; }
                     }

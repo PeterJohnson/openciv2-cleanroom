@@ -16,8 +16,9 @@ public sealed record CivilizationCreationServices(
     Func<int, UnitType, bool> CanBuildUnit);
 
 /// <summary>V01 §§2–5 local civilization creation. Advance bounds only the candidate search;
-/// the owning session serializes gameplay and pins the world across pending calls.</summary>
-public sealed class CivilizationCreation
+/// Pending identifies a retained catch-up choice. The owning session serializes gameplay
+/// and pins the world across pending calls.</summary>
+public sealed class CivilizationCreation : IDisposable
 {
     private readonly GameState world;
     private readonly ProcessContext process;
@@ -29,7 +30,13 @@ public sealed class CivilizationCreation
     private StartingSiteSearch? search;
     private short oldTribe;
     private int blocked;
-    private bool started, faulted;
+    private bool started, faulted, disposed;
+    private IEnumerator<ResearchGrantDecision?>? initialization;
+    private int? reply;
+    private readonly List<Exception> presentationFailures = [];
+    public ResearchGrantDecision? Pending { get; private set; }
+    public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
+    private int? TakeReply() { var answer = reply; reply = null; return answer; }
 
     public int? Result { get; private set; }
     public StartingSite? Site { get; private set; }
@@ -53,8 +60,9 @@ public sealed class CivilizationCreation
         this.services = services;
     }
 
-    public int? Advance(int candidateBudget)
+    public int? Advance(int candidateBudget, int? answer = null)
     {
+        ObjectDisposedException.ThrowIf(disposed, this);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateBudget);
         if (faulted)
         {
@@ -69,7 +77,20 @@ public sealed class CivilizationCreation
             if (!started)
             {
                 started = true;
-                Begin();
+                initialization = Begin().GetEnumerator();
+            }
+            else
+            { MapKnowledge.RequireLocal(world); }
+            if (Pending is not null && answer is null)
+            { return null; }
+            reply = Pending is null ? null : answer;
+            Pending = null;
+            if (initialization is not null)
+            {
+                if (initialization.MoveNext())
+                { Pending = initialization.Current; return null; }
+                initialization.Dispose();
+                initialization = null;
             }
             if (Result is not null || search!.Advance(candidateBudget) is not { } site)
             {
@@ -113,30 +134,66 @@ public sealed class CivilizationCreation
         catch
         {
             faulted = true;
+            initialization?.Dispose();
             throw;
         }
     }
 
-    private void Begin()
+    public void Dispose() { disposed = true; initialization?.Dispose(); }
+
+    private IEnumerable<ResearchGrantDecision?> Begin()
     {
         if (world.Globals.HumanPlayers.Contains(civilization) && world.Globals.Turn != 0)
         {
             Result = 0;
-            return;
+            yield break;
         }
         MapKnowledge.RequireLocal(world);
         oldTribe = world.Civilizations[civilization].Tribe;
-        int[] regionalCounts = Reset();
+        int[] regionalCounts = ResetPrefix();
+        if (world.Globals.Turn != 0)
+        {
+            bool alive = world.Globals.CivsAlive.Contains(civilization);
+            world.Globals.CivsAlive = world.Globals.CivsAlive.With(civilization, false);
+            for (int advance = 0; advance < RuleLimits.Advances - 1; ++advance)
+            {
+                if ((!world.Globals.HumanPlayers.Contains(world.Globals.FirstDiscoverer[advance])
+                        || world.Globals.AdvanceKnownBy[advance].Count > 2)
+                    && world.Globals.AdvanceKnownBy[advance].Intersects(world.Globals.HumanPlayers))
+                {
+                    int difficulty = unchecked((byte)world.Globals.Difficulty);
+                    if (difficulty != 0 && random.PrimaryModulo(new ChoiceKey("V01.creation.catch-up", call, advance), difficulty + 1) != 0)
+                    {
+                        var research = services.CatchupResearch
+                            ?? throw new InvalidOperationException("Nonzero-turn catch-up requires the research grant service");
+                        using var grant = research.Begin(civilization, advance, civilization, false, call + "/catch-up/" + advance);
+                        while (!grant.Completed)
+                        {
+                            if (grant.Resume(TakeReply()) is { } decision)
+                            { yield return decision; }
+                            else if (!grant.Completed)
+                            { yield return null; }
+                        }
+                        presentationFailures.AddRange(grant.PresentationFailures);
+                    }
+                }
+            }
+            if (alive)
+            {
+                world.Globals.CivsAlive = world.Globals.CivsAlive.With(civilization);
+            }
+        }
+        world.Civilizations[civilization].UnitsActive = world.Civilizations[civilization].UnitsInProduction = world.Civilizations[civilization].UnitsLost = default;
         if (civilization == 0 || !world.Globals.HumanPlayers.Contains(civilization) && !SelectLeader()
             || !world.Globals.CivsAlive.Contains(civilization))
         {
             Result = 1;
-            return;
+            yield break;
         }
         search = new(world, civilization, regionalCounts, random, call + "/site");
     }
 
-    private int[] Reset()
+    private int[] ResetPrefix()
     {
         ref var civ = ref world.Civilizations[civilization];
         civ.Gold = 0;
@@ -202,31 +259,6 @@ public sealed class CivilizationCreation
             civ.Treaties[other] = world.Civilizations[other].Treaties[civilization] = default;
         }
         civ.Advances = default;
-        if (world.Globals.Turn != 0)
-        {
-            bool alive = world.Globals.CivsAlive.Contains(civilization);
-            world.Globals.CivsAlive = world.Globals.CivsAlive.With(civilization, false);
-            for (int advance = 0; advance < RuleLimits.Advances - 1; ++advance)
-            {
-                if ((!world.Globals.HumanPlayers.Contains(world.Globals.FirstDiscoverer[advance])
-                        || world.Globals.AdvanceKnownBy[advance].Count > 2)
-                    && world.Globals.AdvanceKnownBy[advance].Intersects(world.Globals.HumanPlayers))
-                {
-                    int difficulty = unchecked((byte)world.Globals.Difficulty);
-                    if (difficulty != 0 && random.PrimaryModulo(new ChoiceKey("V01.creation.catch-up", call, advance), difficulty + 1) != 0)
-                    {
-                        var research = services.CatchupResearch
-                            ?? throw new InvalidOperationException("Nonzero-turn catch-up requires the research grant service");
-                        research.Grant(civilization, advance, civilization, false, call + "/catch-up/" + advance);
-                    }
-                }
-            }
-            if (alive)
-            {
-                world.Globals.CivsAlive = world.Globals.CivsAlive.With(civilization);
-            }
-        }
-        civ.UnitsActive = civ.UnitsInProduction = civ.UnitsLost = default;
         return regionalCounts;
     }
 

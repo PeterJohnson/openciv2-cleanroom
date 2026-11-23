@@ -159,7 +159,7 @@ public static partial class FoundationSuite
     private static void SpecialMovementNestedLossAndSession()
     {
         var f = NestedFlight(); using var op = f.Aircraft(); var decision = op.Resume()!;
-        Equal(1, decision.Victim.Civilization); Equal(3, decision.Actor.Civilization); Equal(decision, op.Resume());
+        Equal(1, ((EspionagePretext)decision).Victim.Civilization); Equal(3, ((EspionagePretext)decision).Actor.Civilization); Equal(decision, op.Resume());
         Equal(false, op.Completed); Equal(false, f.Data.Unit(0).Token.Occupied); Equal(1, f.Effects.Count); Equal(CargoPoint, f.Movement.Origin);
         op.Resume(0); f.Complete(op, true); Equal(1, f.Notices.Count);
         f = NestedFlight(); var context = new OperationContext(f.World, f.Data.Process, f.Life.Random, new PresentationRandom(1, "flight"),
@@ -174,7 +174,7 @@ public static partial class FoundationSuite
         ship.Data.AddUnit(2, 3, 4, new(24, 10)); ship.Data.Unit(2).Flags.SpyMission = true; ship.Data.Unit(2).Counter = 1;
         ship.World.Civilizations[1].Treaties[3].Peace = true; ship.Life.Recreate = c => Creation(ship.Data, c, ship.Life.Random);
         using var sinking = ship.Coast(); var pretext = sinking.Resume()!;
-        Equal(1, pretext.Victim.Civilization); Equal(false, sinking.Completed);
+        Equal(1, ((EspionagePretext)pretext).Victim.Civilization); Equal(false, sinking.Completed);
         Equal(false, ship.Data.Unit(0).Token.Occupied || ship.Data.Unit(1).Token.Occupied); Equal(0, ship.Notices.Count);
         sinking.Resume(0); ship.Complete(sinking, true); Equal(false, ship.World.UnitDeletion.CargoActive); Equal(1, ship.Notices.Count);
     }

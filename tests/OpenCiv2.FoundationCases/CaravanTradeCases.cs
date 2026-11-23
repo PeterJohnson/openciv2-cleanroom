@@ -215,7 +215,7 @@ public static partial class FoundationSuite
     private static void CaravanNestedLossAndFailurePrefixes()
     {
         var f = new CaravanFixture(); f.NestedLoss(); using var op = f.Deliver(); var pending = op.Resume();
-        Equal(true, pending is CaravanDecision.Incident); Equal(pending, op.Resume()); Equal(36, f.World.Civilizations[1].Gold);
+        Equal(true, pending is CaravanDecision.Lifecycle); Equal(pending, op.Resume()); Equal(36, f.World.Civilizations[1].Gold);
         Equal(false, f.Data.Unit(0).Token.Occupied || f.Data.Unit(1).Token.Occupied); Equal((byte)0, f.World.Entities.Cities.Storage[0].RouteCount);
         op.Resume(0); f.Complete(op); Equal((byte)1, f.World.Entities.Cities.Storage[0].RouteCount); Equal(EndReason.Defeat, f.World.PendingEndReason);
         Equal(null, op.Resume()); Equal(36, f.World.Civilizations[1].Gold);

@@ -172,7 +172,7 @@ public static partial class FoundationSuite
     private static void NuclearNestedLifecycleAndFailures()
     {
         var nested = NuclearNestedFixture(); using var op = nested.Begin();
-        var pending = op.Resume()!; Equal(1, pending.Victim.Civilization); Equal(null, op.Result);
+        var pending = op.Resume()!; Equal(1, ((EspionagePretext)pending).Victim.Civilization); Equal(null, op.Result);
         Equal(false, nested.Data.Unit(0).Token.Occupied || nested.Data.Unit(1).Token.Occupied);
         Equal((sbyte)9, nested.World.Entities.Cities.Storage[0].Size); Equal(0, nested.Redraws.Count);
         Equal(pending, op.Resume()); op.Resume(0); Equal(1, op.Result); Equal((sbyte)5, nested.World.Entities.Cities.Storage[0].Size);

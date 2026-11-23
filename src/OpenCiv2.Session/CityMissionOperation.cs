@@ -46,8 +46,10 @@ internal static class CityMissionInteraction
 {
     internal static ResearchReply? Reply(CityMissionDecision? decision, OperationInput input)
     {
-        if (decision is CityMissionDecision.Revolt { Decision: RevoltDecision.Capture capture })
-        { return CityCaptureInteraction.Reply(capture.Decision, input); }
+        if (decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Lifecycle lifecycle })
+        { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
+        if (decision is CityMissionDecision.Revolt revolt)
+        { return RevoltInteraction.Reply(revolt.Decision, input); }
         if (decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Grant grant })
         { return ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
         bool technology = decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Technology };
@@ -93,8 +95,8 @@ internal static class CityMissionInteraction
                     intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);
             case CityEspionageDecision.Visit request:
                 return visitPrompt ??= visit(request.Request) with { Recipient = recipient(request.Request.Actor) };
-            case CityEspionageDecision.Incident incident:
-                return EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
+            case CityEspionageDecision.Lifecycle incident:
+                return LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence);
             case CityEspionageDecision.Technology technology:
                 return CityCaptureInteraction.Prompt(context, new CityCaptureDecision.Technology(technology.Choice), recipient, captureWindow, ref capturePrompt, ref intelligenceWindow, intelligence);
             case CityEspionageDecision.Question question:

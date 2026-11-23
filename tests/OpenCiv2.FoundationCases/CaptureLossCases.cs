@@ -106,7 +106,7 @@ public static partial class FoundationSuite
     private static void CapturePopulationNestedDeletion()
     {
         var f = CaptureNestedLoss(); using var op = f.Begin(1); var pending = op.Resume()!;
-        Equal(3, pending.Victim.Civilization); Equal(false, op.Completed); Equal(new CitySlot(0), op.RemainingCity);
+        Equal(3, ((EspionagePretext)pending).Victim.Civilization); Equal(false, op.Completed); Equal(new CitySlot(0), op.RemainingCity);
         Equal((sbyte)0, f.World.Entities.Cities.Storage[0].Size); Equal(true, f.World.Entities.Cities.Storage[0].Token.Occupied);
         Equal(true, f.World.CityDeletionActive && f.World.Map.TileAt(new(10, 10)).City);
         Equal((byte)1, f.World.Entities.Cities.Storage[1].RouteCount); Equal((short)0, f.World.Globals.WonderCity[0]); Equal(0, f.Removed.Count);

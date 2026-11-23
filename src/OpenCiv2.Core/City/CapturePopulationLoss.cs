@@ -62,7 +62,7 @@ public sealed class CapturePopulationLoss(GameState world, GameplayRandom random
             RemainingCity = city;
         }
         /// <summary>A pending incident or null; Completed=false with null means bounded lifecycle work remains.</summary>
-        public EspionagePretext? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)

@@ -7,7 +7,7 @@ namespace OpenCiv2.Core.Units;
 
 public abstract record CombatContinuationDecision
 {
-    public sealed record Incident(EspionagePretext Question) : CombatContinuationDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : CombatContinuationDecision;
     public sealed record Response(ParadropDecision Decision) : CombatContinuationDecision;
 }
 public interface ICombatContinuationEffects
@@ -85,7 +85,7 @@ public sealed class CombatContinuation(GameState world, RuleTables rules, Combat
         while (child.Result is null)
         {
             if (child.Resume(operation.TakeReply()?.Selected) is { } pending)
-            { yield return new CombatContinuationDecision.Incident(pending); }
+            { yield return new CombatContinuationDecision.Lifecycle(pending); }
             else if (child.Result is null)
             { yield return null; }
         }
@@ -142,7 +142,7 @@ public sealed class CombatContinuation(GameState world, RuleTables rules, Combat
         while (child.Result is null)
         {
             if (child.Resume(operation.TakeReply()?.Selected) is { } pending)
-            { yield return new CombatContinuationDecision.Incident(pending); }
+            { yield return new CombatContinuationDecision.Lifecycle(pending); }
             else if (child.Result is null)
             { yield return null; }
         }

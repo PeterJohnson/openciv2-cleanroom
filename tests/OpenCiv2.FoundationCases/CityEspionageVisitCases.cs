@@ -148,7 +148,7 @@ public static partial class FoundationSuite
             f.Units.AddUnit(1, 3, 4, new(14, 8)); f.Units.Unit(1).Flags.SpyMission = true; f.Units.Unit(1).Counter = 1;
             f.World.Civilizations[1].Treaties[3].Peace = true;
             using var op = embassy ? f.Embassy() : f.Investigate(); op.Resume();
-            var pending = (CityEspionageDecision.Incident)op.Resume(0)!; Equal(1, pending.Pretext.Victim.Civilization);
+            var pending = (CityEspionageDecision.Lifecycle)op.Resume(0)!; Equal(1, ((EspionagePretext)pending.Decision).Victim.Civilization);
             Equal(false, f.Units.Unit(0).Token.Occupied || f.Units.Unit(1).Token.Occupied);
             Equal(false, f.Data.City.Flags.Investigated); Equal(0, f.Notices.Count); Equal(false, op.Completed);
             Equal(0, f.Data.Lifecycle.Checks);
@@ -162,7 +162,7 @@ public static partial class FoundationSuite
         destroyed.Units.AddUnit(1, 3, 4, new(14, 8)); destroyed.Units.Unit(1).Flags.SpyMission = true; destroyed.Units.Unit(1).Counter = 1;
         destroyed.World.Civilizations[1].Treaties[3].Peace = true;
         using var destruction = destroyed.Data.Lifecycle.Elimination.BeginDestroy(destroyed.Data.Lifecycle.Loss, 0, "destroy", destroyed.Data.Incidents.Incidents);
-        Equal(1, destruction.Resume()!.Victim.Civilization); Equal(null, destruction.Result);
+        Equal(1, ((EspionagePretext)destruction.Resume()!).Victim.Civilization); Equal(null, destruction.Result);
         Equal(null, destruction.Resume(0)); Equal(1, destruction.Result); Equal(false, destroyed.World.UnitDeletion.DestroyActive);
         Equal(2, destroyed.Data.Lifecycle.Redraws.Count); destroyed.Data.Lifecycle.Random.RequireChoicesConsumed();
     }

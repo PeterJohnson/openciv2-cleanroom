@@ -32,7 +32,7 @@ public interface IResearchGrantEffects
     void RefreshStatus();
 }
 
-public abstract record ResearchGrantDecision
+public abstract record ResearchGrantDecision : LifecycleDecision
 {
     public sealed record Government(ResearchGovernmentChoice Choice) : ResearchGrantDecision;
     public sealed record Emissary(EmissaryDecision Decision) : ResearchGrantDecision;

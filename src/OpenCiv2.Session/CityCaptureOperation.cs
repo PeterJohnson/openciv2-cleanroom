@@ -45,6 +45,8 @@ internal static class CityCaptureInteraction
 {
     internal static ResearchReply? Reply(CityCaptureDecision? decision, OperationInput input)
     {
+        if (decision is CityCaptureDecision.Lifecycle lifecycle)
+        { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
         if (decision is CityCaptureDecision.Grant grant)
         { return ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
         ResearchReply? reply = null;
@@ -64,8 +66,8 @@ internal static class CityCaptureInteraction
             case CityCaptureDecision.Grant grant:
                 return ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
                     intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);
-            case CityCaptureDecision.Incident incident:
-                prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
+            case CityCaptureDecision.Lifecycle incident:
+                prompt = LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence);
                 break;
             case CityCaptureDecision.Window visit:
                 prompt = windowPrompt ??= window(visit.Request) with { Recipient = recipient(visit.Request.Owner) };

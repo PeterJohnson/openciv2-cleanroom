@@ -23,7 +23,7 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
     public int Check(int civilization, int killer, string call)
     {
         int result = 0;
-        foreach (var work in Steps(civilization, killer, call, 256, value => result = value))
+        foreach (var work in Steps(civilization, killer, call, value => result = value))
         {
             if (work.Check is { } check)
             {
@@ -34,6 +34,14 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
             }
             else if (work.Incident is { } incident)
             { escape.CompleteIncident(incident); }
+            else if (work.Creation is { } creation)
+            {
+                while (creation.Advance(256) is null)
+                {
+                    if (creation.Pending is not null)
+                    { throw new InvalidOperationException("A retained catch-up decision requires the lifecycle continuation"); }
+                }
+            }
         }
         return result;
     }
@@ -84,7 +92,7 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
     public Operation BeginSupportedLoss(CityRemoval removal, int city, int oldOwner, string call, EspionageIncidents incidents, int candidateBudget = 64)
         => Operation.ForCityLoss(this, removal, city, oldOwner, call, incidents, candidateBudget);
 
-    private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false);
+    private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false, CivilizationCreation? Creation = null);
     private void RequireLocal() => MapKnowledge.RequireLocal(world);
 
     public sealed class Operation : IDisposable
@@ -95,6 +103,7 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         private readonly bool barbarian;
         private readonly Stack<IEnumerator<Work>> frames = new();
         private EspionageIncidents.Operation? incident;
+        private CivilizationCreation? creation;
         private bool faulted, disposed;
         public int? Result { get; private set; }
 
@@ -112,7 +121,7 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
 
         internal static Operation ForCheck(CivilizationElimination parent, int civilization, int killer, string call,
             EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, civilization == 0,
-                complete => parent.Steps(civilization, killer, call, candidateBudget, complete));
+                complete => parent.Steps(civilization, killer, call, complete));
 
         internal static Operation ForEscape(CivilizationElimination parent, int unit, int mode, int victim, string call,
             EspionageIncidents incidents, int candidateBudget, bool caught = false) => new(parent, incidents, candidateBudget, false,
@@ -131,8 +140,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
                 complete => CityLossSteps(removal, city, oldOwner, call, complete));
 
         /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
-        /// Result remains null during search. A reply is consumed only by the currently pending incident.</summary>
-        public EspionagePretext? Resume(int? reply = null)
+        /// Result remains null during search. A reply is consumed only by the currently pending incident or catch-up grant.</summary>
+        public LifecycleDecision? Resume(int? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -145,6 +154,14 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
                 { parent.RequireLocal(); }
                 while (true)
                 {
+                    if (creation is not null)
+                    {
+                        var result = creation.Advance(candidateBudget, reply);
+                        reply = null;
+                        if (result is null)
+                        { return creation.Pending; }
+                        creation = null; // The suspended frame owns disposal.
+                    }
                     if (incident is not null)
                     {
                         var decision = incident.Resume(reply);
@@ -161,15 +178,17 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
                     var work = frame.Current;
                     if (work.Check is { } check)
                     {
-                        frames.Push(parent.Steps(check.Owner, check.Killer, work.Call, candidateBudget, _ => { }).GetEnumerator());
+                        frames.Push(parent.Steps(check.Owner, check.Killer, work.Call, _ => { }).GetEnumerator());
                     }
+                    else if (work.Creation is { } child)
+                    { creation = child; reply = null; }
                     else if (work.Incident is { } request)
                     {
                         incident = incidents.Begin(request.Actor, request.Victim, work.Call);
                         reply = null; // A reply to an earlier incident never accepts the next prompt.
                     }
                     else
-                    { return null; } // Continue an unfinished creation search on the next session slice.
+                    { throw new InvalidOperationException("Lifecycle work requires a child operation"); }
                 }
             }
             catch { faulted = true; Release(); throw; }
@@ -220,7 +239,7 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         complete(resolution.Result.Lost ? 1 : 0);
     }
 
-    private IEnumerable<Work> Steps(int civilization, int killer, string call, int candidateBudget, Action<int> complete)
+    private IEnumerable<Work> Steps(int civilization, int killer, string call, Action<int> complete)
     {
         if (civilization == 0)
         {
@@ -300,9 +319,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         {
             world.Globals.HumanPlayers = world.Globals.HumanPlayers.With(civilization, false);
         }
-        var creation = recreate(civilization);
-        while (creation.Advance(candidateBudget) is null)
-        { yield return new(call + "/creation"); }
+        using var creation = recreate(civilization);
+        yield return new(call + "/creation", Creation: creation);
         if (world.Globals.Multiplayer != GameMode.Hotseat || world.Globals.CivsAlive.Contains(world.Multiplayer.LocalHuman))
         {
             effects.RedrawMaps();

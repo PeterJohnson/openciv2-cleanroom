@@ -33,10 +33,10 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
     public sealed class Operation : IDisposable
     {
         private readonly CombatResolution parent;
-        private readonly IEnumerator<EspionagePretext?> steps;
+        private readonly IEnumerator<LifecycleDecision?> steps;
         private int? reply;
         private bool disposed, faulted;
-        public EspionagePretext? Pending { get; private set; }
+        public LifecycleDecision? Pending { get; private set; }
         public ResolvedCombat? Result { get; internal set; }
         public bool Completed => Result is not null;
         internal Operation(CombatResolution parent, PreparedCombat combat, bool won, string call)
@@ -46,7 +46,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
             steps = parent.Execute(this, combat, won, call).GetEnumerator();
         }
         internal int? TakeReply() { int? answer = reply; reply = null; return answer; }
-        public EspionagePretext? Resume(int? response = null)
+        public LifecycleDecision? Resume(int? response = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -103,7 +103,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
             }
         }
     }
-    private IEnumerable<EspionagePretext?> FinishChild(Operation operation, CivilizationElimination.Operation child)
+    private IEnumerable<LifecycleDecision?> FinishChild(Operation operation, CivilizationElimination.Operation child)
     {
         while (child.Result is null)
         {
@@ -113,7 +113,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
             { yield return null; }
         }
     }
-    private IEnumerable<EspionagePretext?> Execute(Operation operation, PreparedCombat combat, bool won, string call)
+    private IEnumerable<LifecycleDecision?> Execute(Operation operation, PreparedCombat combat, bool won, string call)
     {
         Present(combat, won);
         state.AnimationDefender = null;

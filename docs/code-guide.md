@@ -269,7 +269,13 @@ V02 government decisions, including recursive Great Library grants.
 timeout. The retained constructor requires both child services and rejects the
 synchronous `Grant` entry. `Begin` also accepts explicitly supplied synchronous
 adapters during migration. Captured technology, theft, huts and research completion
-use the continuation; civilization catch-up still needs migration.
+use the continuation. Civilization catch-up retains each grant before the next
+advance test, alive-bit restoration, counter reset or placement. Creation is
+disposable; elimination and civil war own and release their creation children.
+`LifecycleDecision` carries actual espionage pretexts or research decisions through
+loss, combat, city missions and movement; session adapters route the concrete
+recipient and cancellation semantics. `CivilizationCreationOperation` exposes the
+same private choices for an admitted standalone creation.
 `ResearchOperation` is disposable and returns selection or acquisition decisions.
 Completion retains its grant and final government prompt; accumulation waits for
 completion before its free-advance check. Darwin retains both sequential completions

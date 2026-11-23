@@ -2569,7 +2569,7 @@
       "id": "research-grants",
       "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
       "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller; retained ResearchGrants/ResearchGovernmentPrompts operations and private ResearchGrantOperation",
-      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Synchronous adapters remain for existing callers; remaining acquisition-parent migration and desktop composition remain pending; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred. Begin also permits explicitly supplied synchronous adapters during caller migration; the retained constructor still rejects synchronous Grant. Captured technology, ordinary/targeted theft and hut scrolls now use Begin; civilization catch-up and research completion remain to migrate. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation and civilization catch-up remain open.",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Explicit synchronous adapters remain available; the implemented acquisition parents use retained grants, while desktop composition remains pending; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred. Begin also permits explicitly supplied synchronous adapters during caller migration; the retained constructor still rejects synchronous Grant. Captured technology, ordinary/targeted theft and hut scrolls now use Begin; civilization catch-up and research completion also retain their grant decisions. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full desktop composition remains pending.",
       "status": "partial",
       "sharedGroups": [
         "C06.darwin-retained-government-order",
@@ -2587,6 +2587,12 @@
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
         "U02.movement-retained-hut-grant",
+        "U06.casualty-retained-restart-grant",
+        "V01.civil-war-retained-catchup-grant",
+        "V01.creation-retained-grant-failure",
+        "V01.creation-retained-library-grant",
+        "V01.elimination-retained-catchup-grant",
+        "V01.restart-grant-private-sessions",
         "V03.accumulation-retained-free-order",
         "V03.acquisition-grant-private-sessions",
         "V03.captured-technology-retained-grant",
@@ -2617,16 +2623,19 @@
         "W06.hut-retained-grant-cancellation"
       ],
       "sources": [
+        "src/OpenCiv2.Core/LifecycleDecision.cs",
         "src/OpenCiv2.Core/LocalResearch.cs",
         "src/OpenCiv2.Core/Research.cs",
         "src/OpenCiv2.Core/ResearchGovernmentPrompts.cs",
         "src/OpenCiv2.Core/ResearchGrants.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LifecycleInteraction.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
         "src/OpenCiv2.Session/ResearchGrantOperation.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
+        "tests/OpenCiv2.FoundationCases/LifecycleGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchFlowContinuationCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchGrantCases.cs",
@@ -2637,7 +2646,7 @@
       "id": "research-flow",
       "contract": "V03 sections 5\u20136,8\u20139; C06 production reset; C03 mood query; V02 research prompts; desktop city upkeep",
       "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation; disposable ResearchOperation with ResearchDecision; private ResearchFlowOperation",
-      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs and generated-game callers remain open; V01 catch-up joins ResearchGrants; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation and civilization catch-up remain open.",
+      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs and generated-game callers remain open; V01 catch-up joins ResearchGrants; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open.",
       "status": "partial",
       "sharedGroups": [
         "C06.darwin-retained-government-order",
@@ -2687,7 +2696,7 @@
       "id": "city-production",
       "contract": "C06 local production parent and nonunit completion; C08 buildings/wonders; V03 Darwin; V07 spaceship; W03 Apollo",
       "publicSurface": "CityProduction resumable local dispatch; retained CompletedImprovement; desktop production choices/turn/load for Temple and Library",
-      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation and civilization catch-up remain open.",
+      "review": "Real children implement unit dispatch, building storage, wonder effects, sequential research completion and spaceship assembly. Cases cover stock wrap and Capitalization, duplicate/lost builds, raw-row human wonder priority, AI Palace remainder/reselection, notice and terminal failure order, Manhattan, Eiffel, Apollo, Leonardo, Darwin replies and later competitor reset, part retarget/cost and automation. Direct/console desktop tests build and reload Temple/Library and retain manual orders; the native UI driver adds Temple build/reload/duplicate coverage. The desktop composes actual A02 decisions and shared eligibility. Isolated tests retain controlled chooser/presentation boundaries; general production interactions, generated games and network acquisition remain pending. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open.",
       "status": "partial",
       "sharedGroups": [
         "C06.city-production-ai-spaceship-retarget",
@@ -3311,18 +3320,30 @@
       "status": "partial",
       "contract": "V01 sections3,5,6 nonzero-turn catch-up and elimination restart; actual V03 section10 grants and C08/V02 children",
       "publicSurface": "CivilizationCreationServices.CatchupResearch; CivilizationCreation; ResearchGrants; CivilizationElimination",
-      "review": "Creation takes the real ResearchGrants service, passes self source and skipPedia=false, and completes each grant before continuing its ordered scan. Turn-zero-only generated setup may omit the service after its real reset. Actual restart integration covers temporarily inactive recipients, recursive Great Library grants, Leonardo upgrades, human government prompts and city recalculation, source/known-by retention, unchanged first discoverers, counter clearing after grants, placement overwriting advance count without losing knowledge and later NoRestart rejection. Nested notice and disabled-prerequisite failures retain actual grant prefixes and terminate creation. Resumable foreign-spy elimination is covered by civilization-elimination; complete generated desktop turns, full revival diplomacy and human/AI games remain open. Browser and cross-platform work remain deferred.",
+      "review": "Creation takes the real ResearchGrants service, passes self source and skipPedia=false, and completes each grant before continuing its ordered scan. Turn-zero-only generated setup may omit the service after its real reset. Actual restart integration covers temporarily inactive recipients, recursive Great Library grants, Leonardo upgrades, human government prompts and city recalculation, source/known-by retention, unchanged first discoverers, counter clearing after grants, placement overwriting advance count without losing knowledge and later NoRestart rejection. Nested notice and disabled-prerequisite failures retain actual grant prefixes and terminate creation. Resumable foreign-spy elimination is covered by civilization-elimination; complete generated desktop turns, full revival diplomacy and human/AI games remain open. Browser and cross-platform work remain deferred. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full desktop composition remains pending.",
       "sources": [
+        "src/OpenCiv2.Core/CivilWar.cs",
         "src/OpenCiv2.Core/CivilizationCreation.cs",
         "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/LifecycleDecision.cs",
         "src/OpenCiv2.Core/ResearchGrants.cs",
-        "src/OpenCiv2.Session/GeneratedGameInitialization.cs"
+        "src/OpenCiv2.Session/CivilizationCreationOperation.cs",
+        "src/OpenCiv2.Session/CivilizationEliminationOperation.cs",
+        "src/OpenCiv2.Session/GeneratedGameInitialization.cs",
+        "src/OpenCiv2.Session/LifecycleInteraction.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/LifecycleGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/RestartResearchCases.cs"
       ],
       "sharedGroups": [
+        "U06.casualty-retained-restart-grant",
+        "V01.civil-war-retained-catchup-grant",
+        "V01.creation-retained-grant-failure",
+        "V01.creation-retained-library-grant",
         "V01.elimination-restart-research",
+        "V01.elimination-retained-catchup-grant",
+        "V01.restart-grant-private-sessions",
         "V01.restart-research-government-failure",
         "V01.restart-research-library"
       ]
@@ -3520,24 +3541,33 @@
       "status": "partial",
       "contract": "V01 sections9-11 local civil war; S02 NoSchism predicate; C01 elementary transfer; C09 shared queries",
       "publicSurface": "CivilWar.Begin/Operation; CivilWarOperation; ScenarioPermissions.AllowSchism; CityTransfer.Transfer; CityCaptureQueries.TreasuryShare/CentralCity",
-      "review": "Actual civilization creation/reset and leader selection, highest eligible rebel slot, NoSchism matching without an events-loaded gate, region population partition and retained-target farthest-city fallback. Uses real C01 city/population transfer, W03 knowledge/exploration, U01 stack traversal and C09 central-city selection. Preserves partial reset/copy distinctions, mixed-stack ownership, unchanged unit counts, multiple Palaces and candidate-parent alias semantics. Fallback transfers and creation searches resume without restarting; failure/disposal retain prefixes. Required scenario action dispatch is an explicit integration boundary; predicate tests do not claim authored action execution. The C09 parent now composes civil war. Movement/mission capture callers, full scenario/desktop presentation and generated-game acceptance remain open. Browser/cross-platform and network orchestration are deferred.",
+      "review": "Actual civilization creation/reset and leader selection, highest eligible rebel slot, NoSchism matching without an events-loaded gate, region population partition and retained-target farthest-city fallback. Uses real C01 city/population transfer, W03 knowledge/exploration, U01 stack traversal and C09 central-city selection. Preserves partial reset/copy distinctions, mixed-stack ownership, unchanged unit counts, multiple Palaces and candidate-parent alias semantics. Fallback transfers and creation searches resume without restarting; failure/disposal retain prefixes. Required scenario action dispatch is an explicit integration boundary; predicate tests do not claim authored action execution. The C09 parent now composes civil war. Movement/mission capture callers, full scenario/desktop presentation and generated-game acceptance remain open. Browser/cross-platform and network orchestration are deferred. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full desktop composition remains pending.",
       "sources": [
         "src/OpenCiv2.Core/City/CityCaptureQueries.cs",
         "src/OpenCiv2.Core/City/CityTransfer.cs",
         "src/OpenCiv2.Core/CivilWar.cs",
+        "src/OpenCiv2.Core/LifecycleDecision.cs",
         "src/OpenCiv2.Core/ScenarioPermissions.cs",
-        "src/OpenCiv2.Session/CivilWarOperation.cs"
+        "src/OpenCiv2.Session/CivilWarOperation.cs",
+        "src/OpenCiv2.Session/LifecycleInteraction.cs"
       ],
       "tests": [
-        "tests/OpenCiv2.FoundationCases/CivilWarCases.cs"
+        "tests/OpenCiv2.FoundationCases/CivilWarCases.cs",
+        "tests/OpenCiv2.FoundationCases/LifecycleGrantCases.cs"
       ],
       "sharedGroups": [
         "C09.capture-queries-transfer",
+        "U06.casualty-retained-restart-grant",
         "V01.civil-war-failure-alias",
         "V01.civil-war-fallback",
         "V01.civil-war-regions-units",
+        "V01.civil-war-retained-catchup-grant",
         "V01.civil-war-session",
-        "V01.civil-war-veto"
+        "V01.civil-war-veto",
+        "V01.creation-retained-grant-failure",
+        "V01.creation-retained-library-grant",
+        "V01.elimination-retained-catchup-grant",
+        "V01.restart-grant-private-sessions"
       ]
     },
     {
@@ -3754,9 +3784,10 @@
       "status": "partial",
       "contract": "U06 strength primitives, defender selection, common preview/execution preparation and preview heuristic with actual U01/U02/C08/A01 children; bounded damage rounds, hit presentation and promotion bookkeeping; world-owned casualty history and real nested lifecycle deletion; post-round presentation, loser grouping, city consequences and A05 exposed-city transport retasking; movement charge, real attack confirmation and execution diplomacy/government/difficulty entry; local combat viewers and semantic opening with actual visibility/cargo restoration and classic notice/sound identities; surviving-attacker and nuclear delivery continuations using actual U01/V01/U07/A04 children; ordinary aftermath and complete local U06 execution parent with actual V04/V05 and retained movement result",
       "publicSurface": "CombatWorkspace; CombatStrength.Attack/Defense/BestDefender; CombatPreparation.Prepare/Preview; PreparedCombat; CombatSampling.RollBelow; CombatRounds.Begin/Hit; CombatPromotion.Apply/Promote; ICombatRoundEffects; CombatPromotionNotice; GameState.Casualties; CombatHistory.Record; CombatCasualties.Begin/BeginStack; CombatCasualtyOperation; CombatResolution.Begin; CombatResolutionServices; ResolvedCombat; ICombatResolutionEffects; ExposedCityTransports.Retask; CombatEntry.Begin; CombatEntryResult; CombatTreatyNotice; CombatOpening.PublishViewers/Present; CombatOpeningPresentation; CombatOpeningNotice; CombatOpeningResult; CombatSound/CombatSoundCue; CombatContinuation.Survive/Nuclear/IsNuclear; CombatContinuationDecision; ICombatContinuationEffects; CombatContinuationOperation; CombatAftermath.Begin; CombatFinalNotice; ICombatAftermathEffects; CombatExecution.Begin; CombatExecutionServices; CombatDecision; CombatOperation",
-      "review": "Sequential signed attack bonuses, retained terrain/city cache and published defense factor, fighter/fortress/walls precedence, validated stack scan, health weighting, later ties and supplied-unit fallback. Preparation preserves unscaled preview versus movement-scaled execution inputs, city slot zero exclusion, coastal/SDI/SAM/scramble rules, signed firepower, anti-mounted/anti-air/partisan/submarine/shore modifiers, barbarian difficulty/city/wonder rules, standing-goal replacement and entry-zero notice retention. Preview uses signed integer heuristic normalization/capping and does not execute combat. Tests cover authored rule vectors, actual stack/building/goal services and division/authority failure prefixes. Round cases cover primary sampling including signed-decrement overflow, asymmetric ties and reroll draw order, captured strengths/firepowers, HP-query side effects, byte wrapping, finite batch yields/resumption/disposal, missile presentation and retained presentation failures. Promotion covers inclusive chance, live C08 wonder ownership/obsolescence, aggression wrapping, veteran/missile draw consumption, human/autoplay notices and failure prefixes. Casualties saturate loss totals, record field-ordered history with live owner/index reloads, increment wrapped kill count, dispatch UnitKilled before actual basic deletion and retain raw next links across event replacement. Tests join real nested last-settler/espionage continuations and private session routing, cover ring wrap/fresh isolation/managed text and committed callback/bounds/disposal failures. Loaded-event action execution remains an explicit required S02 dispatcher boundary. Resolution joins result sound/redraw/fallback presentation before actual promotion and casualties, U01 cargo grouping, protected-stack rules, city population/walls/wonder/difficulty gates, C01 removal and V01 elimination, W03 memory/revelation and actual C06/A02 production reset. A05 retasks live AI capacity units using directed Peace, validated stack count, ocean medium, weighted distance and full damage-adjusted allowance; tasks/spent/counters persist. Cases compose actual rounds through removal, real AI defense production, deleted-city retasking, nested decisions and prefix failures. Entry composes the live road-multiplier charge before resumable V04 permission, captured-owner treaty handling, actual V04 Force and A08/V02 government changes, owner-addressed sneak notices and ordered signed difficulty modifiers. Tests cover cancellation with retained charge, live alliance refusal, byte wrapping, branch/reroll sampling, government locks/wonders, directional ally notices, invalid observers and committed failures, plus entry through real rounds/resolution. Preparation now initializes aggregate message/explosion inputs. Opening now filters alive human local observers from captured/live participant knowledge, publishes actual single-unit visibility, lifts cargo and restores the whole group to origin. Semantic notice arguments retain explicit incoming text and use actual nearest-city lookup, customized names, SDI and autoplay rules. Classic sound identities preserve fixed-slot precedence with deferred explosion selection. Rendering is batched under P10; cosmetic failure is reported without aborting combat or stranding cargo. Tests cover observer boundaries, explicit unresolved scenario-selector inputs, sound/notice vectors and actual rounds/resolution with both skipped and failed rendering. Continuation captures the current moving actor for air exhaustion and consumed-unit deletion, preserves signed wrapped fuel comparisons, and invokes actual A04 response for the specified AI-city branch. Nuclear delivery clears the animation defender, calls actual U07 with SDI enabled, deletes the original attacker only on interception, and resets aggression plus invokes AI response only after detonation. Real nested lifecycle and paradrop/capture decisions suspend with private session routing; cosmetic redraw failures are retained as diagnostics. Tests join entry, opening, rounds and resolution to survivor handling, verify original versus replacement actors, actual SDI/blast effects, delayed population damage, signed fuel boundaries, terminal authority/failure/disposal and a real palace-escape prompt. Aftermath now publishes completed loss, emits local multiple-loss/win and ransom notices, adds the unsigned barbarian leader reward with treasury wrapping, activates actual V04 allies and joins real V05 help before advisor refresh. The U06 execution parent composes preparation, charge/permission, opening, nuclear early return or bounded rounds, actual resolution, aftermath and surviving-attacker handling. It preserves no-target 999, cancelled 1, zero-firepower loss, original versus current moving actor and all child decisions. Session routing shares existing private help/capture/incident interaction adapters. End-to-end cases cover ordinary wins/losses, bounded round yields, zero firepower, intercepted/detonated nuclear delivery, real barbarian stack loss and ransom, nested last-settler incidents, ally-help payment/war, no replay across suspension and terminal failures. Cosmetic opening/aftermath diagnostics remain available to the owner. U02 movement admission, concrete S02 dispatch/presentation adapters, scenario visibility resolution, desktop command integration and complete-game acceptance remain open. Browser/cross-platform execution is deferred.",
+      "review": "Sequential signed attack bonuses, retained terrain/city cache and published defense factor, fighter/fortress/walls precedence, validated stack scan, health weighting, later ties and supplied-unit fallback. Preparation preserves unscaled preview versus movement-scaled execution inputs, city slot zero exclusion, coastal/SDI/SAM/scramble rules, signed firepower, anti-mounted/anti-air/partisan/submarine/shore modifiers, barbarian difficulty/city/wonder rules, standing-goal replacement and entry-zero notice retention. Preview uses signed integer heuristic normalization/capping and does not execute combat. Tests cover authored rule vectors, actual stack/building/goal services and division/authority failure prefixes. Round cases cover primary sampling including signed-decrement overflow, asymmetric ties and reroll draw order, captured strengths/firepowers, HP-query side effects, byte wrapping, finite batch yields/resumption/disposal, missile presentation and retained presentation failures. Promotion covers inclusive chance, live C08 wonder ownership/obsolescence, aggression wrapping, veteran/missile draw consumption, human/autoplay notices and failure prefixes. Casualties saturate loss totals, record field-ordered history with live owner/index reloads, increment wrapped kill count, dispatch UnitKilled before actual basic deletion and retain raw next links across event replacement. Tests join real nested last-settler/espionage continuations and private session routing, cover ring wrap/fresh isolation/managed text and committed callback/bounds/disposal failures. Loaded-event action execution remains an explicit required S02 dispatcher boundary. Resolution joins result sound/redraw/fallback presentation before actual promotion and casualties, U01 cargo grouping, protected-stack rules, city population/walls/wonder/difficulty gates, C01 removal and V01 elimination, W03 memory/revelation and actual C06/A02 production reset. A05 retasks live AI capacity units using directed Peace, validated stack count, ocean medium, weighted distance and full damage-adjusted allowance; tasks/spent/counters persist. Cases compose actual rounds through removal, real AI defense production, deleted-city retasking, nested decisions and prefix failures. Entry composes the live road-multiplier charge before resumable V04 permission, captured-owner treaty handling, actual V04 Force and A08/V02 government changes, owner-addressed sneak notices and ordered signed difficulty modifiers. Tests cover cancellation with retained charge, live alliance refusal, byte wrapping, branch/reroll sampling, government locks/wonders, directional ally notices, invalid observers and committed failures, plus entry through real rounds/resolution. Preparation now initializes aggregate message/explosion inputs. Opening now filters alive human local observers from captured/live participant knowledge, publishes actual single-unit visibility, lifts cargo and restores the whole group to origin. Semantic notice arguments retain explicit incoming text and use actual nearest-city lookup, customized names, SDI and autoplay rules. Classic sound identities preserve fixed-slot precedence with deferred explosion selection. Rendering is batched under P10; cosmetic failure is reported without aborting combat or stranding cargo. Tests cover observer boundaries, explicit unresolved scenario-selector inputs, sound/notice vectors and actual rounds/resolution with both skipped and failed rendering. Continuation captures the current moving actor for air exhaustion and consumed-unit deletion, preserves signed wrapped fuel comparisons, and invokes actual A04 response for the specified AI-city branch. Nuclear delivery clears the animation defender, calls actual U07 with SDI enabled, deletes the original attacker only on interception, and resets aggression plus invokes AI response only after detonation. Real nested lifecycle and paradrop/capture decisions suspend with private session routing; cosmetic redraw failures are retained as diagnostics. Tests join entry, opening, rounds and resolution to survivor handling, verify original versus replacement actors, actual SDI/blast effects, delayed population damage, signed fuel boundaries, terminal authority/failure/disposal and a real palace-escape prompt. Aftermath now publishes completed loss, emits local multiple-loss/win and ransom notices, adds the unsigned barbarian leader reward with treasury wrapping, activates actual V04 allies and joins real V05 help before advisor refresh. The U06 execution parent composes preparation, charge/permission, opening, nuclear early return or bounded rounds, actual resolution, aftermath and surviving-attacker handling. It preserves no-target 999, cancelled 1, zero-firepower loss, original versus current moving actor and all child decisions. Session routing shares existing private help/capture/incident interaction adapters. End-to-end cases cover ordinary wins/losses, bounded round yields, zero firepower, intercepted/detonated nuclear delivery, real barbarian stack loss and ransom, nested last-settler incidents, ally-help payment/war, no replay across suspension and terminal failures. Cosmetic opening/aftermath diagnostics remain available to the owner. U02 movement admission, concrete S02 dispatch/presentation adapters, scenario visibility resolution, desktop command integration and complete-game acceptance remain open. Browser/cross-platform execution is deferred. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full desktop composition remains pending.",
       "sources": [
         "src/OpenCiv2.Core/Ai/ExposedCityTransports.cs",
+        "src/OpenCiv2.Core/LifecycleDecision.cs",
         "src/OpenCiv2.Core/State/CasualtyHistory.cs",
         "src/OpenCiv2.Core/Units/CombatAftermath.cs",
         "src/OpenCiv2.Core/Units/CombatCasualties.cs",
@@ -3769,7 +3800,8 @@
         "src/OpenCiv2.Core/Units/CombatRounds.cs",
         "src/OpenCiv2.Session/CombatCasualtyOperation.cs",
         "src/OpenCiv2.Session/CombatContinuationOperation.cs",
-        "src/OpenCiv2.Session/CombatOperation.cs"
+        "src/OpenCiv2.Session/CombatOperation.cs",
+        "src/OpenCiv2.Session/LifecycleInteraction.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/CombatCasualtyCases.cs",
@@ -3779,7 +3811,8 @@
         "tests/OpenCiv2.FoundationCases/CombatOpeningCases.cs",
         "tests/OpenCiv2.FoundationCases/CombatPreparationCases.cs",
         "tests/OpenCiv2.FoundationCases/CombatResolutionCases.cs",
-        "tests/OpenCiv2.FoundationCases/CombatRoundCases.cs"
+        "tests/OpenCiv2.FoundationCases/CombatRoundCases.cs",
+        "tests/OpenCiv2.FoundationCases/LifecycleGrantCases.cs"
       ],
       "sharedGroups": [
         "A05.exposed-transport-allowance-topology",
@@ -3791,6 +3824,7 @@
         "U06.casualty-failures-disposal",
         "U06.casualty-nested-session",
         "U06.casualty-ordering",
+        "U06.casualty-retained-restart-grant",
         "U06.city-deletion-retasking",
         "U06.city-population-gates",
         "U06.city-special-modifiers",
@@ -3844,7 +3878,12 @@
         "U06.strength-cache",
         "U06.survivor-ai-fuel-response",
         "U06.survivor-current-actor",
-        "U06.survivor-nested-deletion"
+        "U06.survivor-nested-deletion",
+        "V01.civil-war-retained-catchup-grant",
+        "V01.creation-retained-grant-failure",
+        "V01.creation-retained-library-grant",
+        "V01.elimination-retained-catchup-grant",
+        "V01.restart-grant-private-sessions"
       ]
     },
     {

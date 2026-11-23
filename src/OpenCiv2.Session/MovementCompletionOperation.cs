@@ -26,7 +26,7 @@ public sealed class MovementCompletionOperation(MovementCompletion.Operation ope
             {
                 MovementCompletionDecision.Capture capture => CityCaptureInteraction.Reply(capture.Decision, input),
                 MovementCompletionDecision.Grant grant => ResearchGrantInteraction.ResearchReply(grant.Decision, input),
-                MovementCompletionDecision.Incident => EspionageInteraction.Reply(input) is { } choice ? new(choice) : null,
+                MovementCompletionDecision.Lifecycle lifecycle => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
                 null => null,
                 _ => AttackConfirmationInteraction.Reply(input) is { } choice ? new(choice) : null
             };
@@ -39,7 +39,7 @@ public sealed class MovementCompletionOperation(MovementCompletion.Operation ope
                     MovementCompletionDecision.Capture capture => CityCaptureInteraction.Prompt(context, capture.Decision, recipient, captureWindow, ref capturePrompt, ref intelligenceWindow, intelligence),
                     MovementCompletionDecision.Grant grant => ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
                         intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow),
-                    MovementCompletionDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
+                    MovementCompletionDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
                     MovementCompletionDecision.Hut hut => hutPrompt ??= hutWindow(hut.Visit) with { Recipient = recipient(hut.Visit.Actor) },
                     MovementCompletionDecision.LongMove move => LongMoveInteraction.Prompt(move.Question, recipient(move.Question.Actor)),
                     _ => throw new InvalidOperationException("Unknown movement completion decision")

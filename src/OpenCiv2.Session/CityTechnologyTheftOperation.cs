@@ -28,16 +28,18 @@ public sealed class CityTechnologyTheftOperation(CityTechnologyTheft.Operation o
         if (input.Kind == OperationInputKind.Choice && input.Choice is { } value)
         { reply = pending is CityEspionageDecision.Technology && value == 100 ? new(0, 1) : new(value); }
         else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && pending is not CityEspionageDecision.Technology)
-        { reply = new(pending is CityEspionageDecision.Incident ? 0 : -1); }
+        { reply = new(pending is CityEspionageDecision.Lifecycle ? 0 : -1); }
         if (pending is CityEspionageDecision.Grant grant)
         { reply = ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
+        if (pending is CityEspionageDecision.Lifecycle lifecycle)
+        { reply = LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
             InteractionSpec prompt;
-            if (pending is CityEspionageDecision.Incident incident)
-            { prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization)); }
+            if (pending is CityEspionageDecision.Lifecycle incident)
+            { prompt = LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence); }
             else if (pending is CityEspionageDecision.Grant granted)
             {
                 prompt = ResearchGrantInteraction.Prompt(context, granted.Decision, recipient,

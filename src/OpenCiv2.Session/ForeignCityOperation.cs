@@ -1,14 +1,16 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Session;
 
 /// <summary>U02 private occupation/attack permission and U07 nested casualty incidents.</summary>
-public sealed class ForeignCityOperation(ForeignCityMovement.Operation operation, Func<int, ParticipantId> recipient) : IContinuation
+public sealed class ForeignCityOperation(ForeignCityMovement.Operation operation, Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private ForeignCityDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -18,14 +20,14 @@ public sealed class ForeignCityOperation(ForeignCityMovement.Operation operation
         { return completed; }
         try
         {
-            pending = operation.Resume(pending is null ? null : AttackConfirmationInteraction.Reply(input));
+            pending = operation.Resume(pending is ForeignCityDecision.Lifecycle lifecycle ? LifecycleInteraction.Reply(lifecycle.Decision, input) : pending is null ? null : AttackConfirmationInteraction.Reply(input));
             if (pending is not null)
             {
                 context.Publish();
                 var prompt = pending switch
                 {
                     ForeignCityDecision.Attack attack => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
-                    ForeignCityDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
+                    ForeignCityDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
                     _ => throw new InvalidOperationException("Unknown foreign-city decision")
                 };
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);

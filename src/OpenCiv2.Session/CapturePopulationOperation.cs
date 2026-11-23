@@ -1,15 +1,18 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.Core.City;
 
 namespace OpenCiv2.Session;
 
 /// <summary>Trusted C09 child; the parent owns capture admission and subsequent city/tile takeover.</summary>
 public sealed class CapturePopulationOperation(CapturePopulationLoss.Operation operation,
-    Func<int, ParticipantId> recipient) : IContinuation
+    Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
-    private bool pending, faulted;
+    private LifecycleDecision? pending;
+    private bool faulted;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
         if (faulted)
@@ -28,13 +31,13 @@ public sealed class CapturePopulationOperation(CapturePopulationLoss.Operation o
             return completed;
         }
 
-        var decision = operation.Resume(pending ? EspionageInteraction.Reply(input) : null);
-        pending = decision is not null;
+        var decision = operation.Resume(LifecycleInteraction.Reply(pending, input));
+        pending = decision;
         if (decision is not null)
         {
             context.Publish();
             return new(CommandStatus.AwaitingInteraction,
-                Interaction: EspionageInteraction.Prompt(decision, recipient(decision.Victim.Civilization)));
+                Interaction: LifecycleInteraction.Prompt(context, decision, recipient, ref intelligenceWindow, intelligence));
         }
         if (!operation.Completed)
         { context.Publish(); return new(CommandStatus.Pending); }

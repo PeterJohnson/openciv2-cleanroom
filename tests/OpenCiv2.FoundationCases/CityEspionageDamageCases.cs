@@ -226,7 +226,7 @@ public static partial class FoundationSuite
         f.Data.AddUnit(1, 3, 4, new(14, 8)); f.Data.Unit(1).Flags.SpyMission = true; f.Data.Unit(1).Counter = 1;
         f.World.Civilizations[1].Treaties[3].Peace = true;
         using var op = f.Lifecycle.Elimination.BeginCaught(0, 2, "damage/capture/0", f.Incidents.Incidents);
-        var pretext = op.Resume()!; Equal(1, pretext.Victim.Civilization); Equal(3, pretext.Actor.Civilization);
+        var pretext = op.Resume()!; Equal(1, ((EspionagePretext)pretext).Victim.Civilization); Equal(3, ((EspionagePretext)pretext).Actor.Civilization);
         Equal(false, f.Data.Unit(0).Token.Occupied || f.Data.Unit(1).Token.Occupied);
         Equal(0, f.Lifecycle.SpyNotices.Count); Equal(null, op.Result); Equal(0, f.Lifecycle.Checks);
         Equal(null, op.Resume(1)); Equal(1, op.Result); Equal(EndReason.Defeat, f.World.PendingEndReason);

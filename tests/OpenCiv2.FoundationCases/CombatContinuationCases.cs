@@ -138,8 +138,8 @@ public static partial class FoundationSuite
     private static void CombatSurvivorNestedDeletion()
     {
         var f = NestedCombatContinuation(); using var op = f.Continuation.Survive(f.Prepared, "finish");
-        var pending = (CombatContinuationDecision.Incident)op.Resume()!;
-        Equal(1, pending.Question.Victim.Civilization); Equal(3, pending.Question.Actor.Civilization); Equal(pending, op.Resume());
+        var pending = (CombatContinuationDecision.Lifecycle)op.Resume()!;
+        Equal(1, ((EspionagePretext)pending.Decision).Victim.Civilization); Equal(3, ((EspionagePretext)pending.Decision).Actor.Civilization); Equal(pending, op.Resume());
         Equal(false, f.Data.Unit(0).Token.Occupied || f.Data.Unit(2).Token.Occupied); Equal(false, op.Completed);
         Equal(9, f.State.KillCount); Equal(0, f.World.Casualties[1].Count); Equal(0, f.Life.Checks);
         op.Resume(new(0)); f.Complete(op); Equal(0, op.Result); Equal(EndReason.Defeat, f.World.PendingEndReason);
@@ -180,7 +180,7 @@ public static partial class FoundationSuite
         }
         var nested = NestedCombatContinuation(); nested.Ocean(); nested.World.Civilizations[1].AggressionCounter[2] = 19;
         using var delayed = nested.Continuation.Nuclear(nested.Prepared, "delivery");
-        Equal(true, delayed.Resume() is CombatContinuationDecision.Incident); Equal(false, delayed.Completed);
+        Equal(true, delayed.Resume() is CombatContinuationDecision.Lifecycle); Equal(false, delayed.Completed);
         Equal((sbyte)5, nested.World.Entities.Cities.Storage[0].Size); Equal((byte)19, nested.World.Civilizations[1].AggressionCounter[2]);
         delayed.Resume(new(0)); nested.Complete(delayed); Equal(0, delayed.Result); Equal((sbyte)3, nested.World.Entities.Cities.Storage[0].Size);
         Equal((byte)0, nested.World.Civilizations[1].AggressionCounter[2]);

@@ -58,8 +58,12 @@ retain grant/emissary and final government choices, including the two independen
 ordered government proposals and the free-advance flag check. Darwin cases wait
 through the first government question before the second completion and later
 production reset. Private recipient, cancel/timeout and disposal/failure cases
-exercise actual children. Civilization catch-up still needs migration; complete
-desktop production composition is pending.
+exercise actual children. Civilization catch-up cases now pause inside recursive
+Library grants before subsequent advances, counter clearing, alive restoration
+and placement. Actual last-settler elimination, civil war and combat casualties
+retain that decision; tests cover private command routing, decline/cancel/timeout,
+terminal failures/disposal and synchronous-call rejection. Complete desktop
+production composition is pending.
 Embassy/investigation groups distinguish plain deletion, cargo destruction and
 escape, captured Spy/type state, live investigation flags and one-point movement.
 They exercise actual nested elimination before final notices. Session cases verify

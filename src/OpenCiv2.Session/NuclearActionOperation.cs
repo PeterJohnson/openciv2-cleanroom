@@ -5,10 +5,11 @@ using OpenCiv2.Core;
 namespace OpenCiv2.Session;
 
 /// <summary>Trusted U07 child continuation. Delivery admission remains with the owning gameplay command.</summary>
-public sealed class NuclearActionOperation(NuclearEffects.Operation operation, Func<int, ParticipantId> recipient) : IContinuation
+public sealed class NuclearActionOperation(NuclearEffects.Operation operation, Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
-    private EspionagePretext? pending;
+    private LifecycleDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -22,17 +23,12 @@ public sealed class NuclearActionOperation(NuclearEffects.Operation operation, F
     {
         if (completed is not null)
         { return completed; }
-        int? reply = input.Kind switch
-        {
-            OperationInputKind.Choice => input.Choice,
-            OperationInputKind.Cancel or OperationInputKind.Timeout => 0,
-            _ => null
-        };
+        int? reply = LifecycleInteraction.Reply(pending, input);
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
-            return new(CommandStatus.AwaitingInteraction, Interaction: EspionageInteraction.Prompt(pending, recipient(pending.Victim.Civilization)));
+            return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence));
         }
         if (operation.Result is null)
         { context.Publish(); return new(CommandStatus.Pending); }

@@ -54,7 +54,7 @@ public static partial class FoundationSuite
             Equal(true, pending is CityEspionageDecision.Grant { Decision: ResearchGrantDecision.Government });
             Equal(pending, op.Resume()); Equal(false, f.City.Flags.TechnologyStolen); Equal(true, f.Data.Unit(0).Token.Occupied);
             Equal((byte)1, f.World.Civilizations[1].NumAdvances); Equal(0, f.Damage.Lifecycle.SpyNotices.Count);
-            var incident = op.Resume(new(1)); Equal(true, incident is CityEspionageDecision.Incident);
+            var incident = op.Resume(new(1)); Equal(true, incident is CityEspionageDecision.Lifecycle);
             Equal(!targeted, f.City.Flags.TechnologyStolen); Equal(false, f.Data.Unit(0).Token.Occupied);
             Equal(Government.Anarchy, f.World.Civilizations[1].Government); Equal(false, op.Completed);
             op.Resume(new(0)); Equal(true, op.Completed); Equal(true, f.City.Flags.TechnologyStolen);

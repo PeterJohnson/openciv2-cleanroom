@@ -31,7 +31,7 @@ public static partial class FoundationSuite
             var f = new EliminationFixture([EscapeChoice("elim/spy/1", 2, 0)]); EliminationSpySetup(f);
             var incidents = new IncidentFixture(f.Random, f.Data); var w = f.World;
             using var op = f.Elimination.Begin(2, 3, "elim", incidents.Incidents);
-            var prompt = op.Resume()!; Equal(2, prompt.Victim.Civilization); Equal(1, prompt.Actor.Civilization);
+            var prompt = op.Resume()!; Equal(2, ((EspionagePretext)prompt).Victim.Civilization); Equal(1, ((EspionagePretext)prompt).Actor.Civilization);
             Equal(null, op.Result); Equal(1, f.Destructions.Count); Equal(1, (int)w.Eliminations.Count);
             Equal(false, w.Civilizations[2].SpaceshipFlags.Exists); Equal(false, f.Data.Unit(1).Token.Occupied);
             Equal(true, f.Data.Unit(0).Token.Occupied); Equal("secret", w.Multiplayer.Saved.Passwords[2]);
@@ -69,12 +69,12 @@ public static partial class FoundationSuite
             var incidents = new IncidentFixture(f.Random, f.Data);
             f.Recreate = owner => Creation(f.Data, owner, f.Random); // Nonzero-turn human creation exits without draws.
             using var op = f.Elimination.Begin(2, 3, "elim", incidents.Incidents);
-            var first = op.Resume()!; Equal(1, first.Victim.Civilization); Equal(3, first.Actor.Civilization);
+            var first = op.Resume()!; Equal(1, ((EspionagePretext)first).Victim.Civilization); Equal(3, ((EspionagePretext)first).Actor.Civilization);
             Equal(false, f.Data.Unit(0).Token.Occupied || f.Data.Unit(1).Token.Occupied);
             if (sea) { Equal(false, f.Data.Unit(2).Token.Occupied); }
             Equal(false, f.Order.Contains("units")); // The outer cargo-loss tail has not run yet.
             Equal(0, f.Restarts); Equal(0, f.Checks); // The operation runs the real nested child, not the synchronous adapter.
-            var second = op.Resume(1)!; Equal(2, second.Victim.Civilization); Equal(1, second.Actor.Civilization);
+            var second = op.Resume(1)!; Equal(2, ((EspionagePretext)second).Victim.Civilization); Equal(1, ((EspionagePretext)second).Actor.Civilization);
             Equal(true, w.Civilizations[3].Treaties[1].War); Equal(false, w.Civilizations[1].Treaties[2].War);
             Equal(1, f.Restarts); Equal(null, op.Result); Equal(1, f.Destructions.Count);
             Equal(sea, f.Order.Contains("units"));

@@ -1,14 +1,16 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.Core.City;
 
 namespace OpenCiv2.Session;
 
 /// <summary>C07 private city-entry choices and actual nested deletion incidents.</summary>
-public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int, ParticipantId> recipient) : IContinuation
+public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CaravanDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -18,11 +20,11 @@ public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int,
         { return completed; }
         try
         {
-            pending = operation.Resume(pending is null ? null : AttackConfirmationInteraction.Reply(input));
+            pending = operation.Resume(CaravanInteraction.Reply(pending, input));
             if (pending is not null)
             {
                 context.Publish();
-                var prompt = CaravanInteraction.Prompt(pending, recipient);
+                var prompt = CaravanInteraction.Prompt(context, pending, recipient, ref intelligenceWindow, intelligence);
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
@@ -38,7 +40,13 @@ public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int,
 
 internal static class CaravanInteraction
 {
-    internal static InteractionSpec Prompt(CaravanDecision decision, Func<int, ParticipantId> recipient)
+    internal static int? Reply(CaravanDecision? pending, OperationInput input) => pending switch
+    {
+        CaravanDecision.Lifecycle lifecycle => LifecycleInteraction.Reply(lifecycle.Decision, input),
+        CaravanDecision.Menu => AttackConfirmationInteraction.Reply(input),
+        _ => null
+    };
+    internal static InteractionSpec Prompt(OperationContext context, CaravanDecision decision, Func<int, ParticipantId> recipient, ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {
         InteractionSpec prompt;
         if (decision is CaravanDecision.Menu menu)
@@ -51,8 +59,8 @@ internal static class CaravanInteraction
                 new CommandValue.City(request.City), new(options.Select(o => o.Value)))
             { Options = options };
         }
-        else if (decision is CaravanDecision.Incident incident)
-        { prompt = EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)); }
+        else if (decision is CaravanDecision.Lifecycle incident)
+        { prompt = LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence); }
         else
         { throw new InvalidOperationException("Unknown caravan decision"); }
         return prompt;

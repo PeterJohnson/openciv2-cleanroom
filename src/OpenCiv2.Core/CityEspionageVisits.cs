@@ -109,10 +109,10 @@ public sealed class CityEspionageVisits(GameState world, UnitLoss loss, Civiliza
                         }
                         break;
                     case Phase.Loss:
-                        var decision = child!.Resume(pending is CityEspionageDecision.Incident ? reply : null);
+                        var decision = child!.Resume(pending is CityEspionageDecision.Lifecycle ? reply : null);
                         reply = null;
                         if (decision is not null)
-                        { return pending = new CityEspionageDecision.Incident(decision); }
+                        { return pending = new CityEspionageDecision.Lifecycle(decision); }
                         pending = null;
                         if (child.Result is null)
                         { return null; }

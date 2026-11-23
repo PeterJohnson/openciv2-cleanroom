@@ -15,7 +15,7 @@ public abstract record AirliftDecision
 {
     public sealed record Destination(int Actor, UnitTarget Unit, OwnedList<AirliftDestination> Cities) : AirliftDecision;
     public sealed record Fighters(int Actor, UnitTarget Unit, int Risk) : AirliftDecision;
-    public sealed record Incident(EspionagePretext Pretext) : AirliftDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : AirliftDecision;
 }
 public interface IPlayerAirliftEffects
 {
@@ -164,7 +164,7 @@ public sealed class PlayerAirlift(GameState world, RuleTables rules, StackOperat
                 while (child.Result is null)
                 {
                     if (child.Resume(operation.TakeReply()) is { } pending)
-                    { yield return new AirliftDecision.Incident(pending); }
+                    { yield return new AirliftDecision.Lifecycle(pending); }
                     else if (child.Result is null)
                     { yield return null; }
                 }

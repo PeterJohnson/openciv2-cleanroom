@@ -14,7 +14,7 @@ public sealed record CaravanMenu(int Actor, UnitTarget Unit, CityTarget City, st
 public abstract record CaravanDecision
 {
     public sealed record Menu(CaravanMenu Request) : CaravanDecision;
-    public sealed record Incident(EspionagePretext Question) : CaravanDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : CaravanDecision;
 }
 public sealed record CaravanPayment(CitySlot Home, int Actor, int Victim, int Cargo, bool Freight, int Payment);
 public sealed record CaravanDeliveryNotice(int Recipient, UnitTarget Unit, CaravanPayment Delivery,
@@ -107,7 +107,7 @@ public sealed class CaravanTrade(GameState world, RuleTables rules, GameplayRand
         while (child.Result is null)
         {
             if (child.Resume(operation.TakeReply()) is { } pending)
-            { yield return new CaravanDecision.Incident(pending); }
+            { yield return new CaravanDecision.Lifecycle(pending); }
             else if (child.Result is null)
             { yield return null; }
         }

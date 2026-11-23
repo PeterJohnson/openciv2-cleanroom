@@ -8,7 +8,7 @@ namespace OpenCiv2.Core.City;
 public sealed record CaptureCityVisit(CityTarget City, int Owner, string Name);
 public abstract record CaptureProductionDecision
 {
-    public sealed record Incident(EspionagePretext Pretext) : CaptureProductionDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : CaptureProductionDecision;
     public sealed record Window(CaptureCityVisit Request) : CaptureProductionDecision;
 }
 public interface ICaptureProductionEffects
@@ -127,9 +127,9 @@ public sealed class CaptureProduction(GameState world, RuleTables rules, StackOp
                 }
                 if (!started)
                 { started = true; child = parent.Support(city, oldOwner, call); }
-                var incident = child!.Resume(pending is CaptureProductionDecision.Incident ? reply : null);
+                var incident = child!.Resume(pending is CaptureProductionDecision.Lifecycle ? reply : null);
                 if (incident is not null)
-                { return pending = new CaptureProductionDecision.Incident(incident); }
+                { return pending = new CaptureProductionDecision.Lifecycle(incident); }
                 pending = null;
                 if (child.Result is null)
                 { return null; }

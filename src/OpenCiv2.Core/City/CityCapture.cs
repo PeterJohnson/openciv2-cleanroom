@@ -27,7 +27,7 @@ public interface ICityCaptureEffects
 public abstract record CityCaptureDecision
 {
     public sealed record Palace(PalaceEscapeChoice Choice) : CityCaptureDecision;
-    public sealed record Incident(EspionagePretext Pretext) : CityCaptureDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : CityCaptureDecision;
     public sealed record Technology(CapturedTechnologyChoice Choice) : CityCaptureDecision;
     public sealed record Grant(ResearchGrantDecision Decision) : CityCaptureDecision;
     public sealed record Window(CaptureCityVisit Request) : CityCaptureDecision;
@@ -189,8 +189,8 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
             && world.Globals.PowerRank[Human(n) ? n : world.Globals.WorstHumanRank] < world.Globals.PowerRank[o])
         {
             using var schism = services.CivilWar.Begin(o);
-            while (schism.Advance() is null)
-            { yield return null; }
+            while (schism.Advance(answer: op.TakeReply()?.Selected) is null)
+            { yield return schism.Pending is { } decision ? new CityCaptureDecision.Grant(decision) : null; }
             if (schism.Result == 0)
             {
                 City(originalCity).Owner = new(byte.MaxValue);
@@ -222,7 +222,7 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
             {
                 var incident = population.Resume(op.TakeReply()?.Selected);
                 if (incident is not null)
-                { yield return new CityCaptureDecision.Incident(incident); }
+                { yield return new CityCaptureDecision.Lifecycle(incident); }
                 else if (!population.Completed)
                 { yield return null; }
             }
@@ -256,8 +256,8 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
             while (!production.Completed)
             {
                 var pending = production.Resume(op.TakeReply()?.Selected);
-                if (pending is CaptureProductionDecision.Incident incident)
-                { yield return new CityCaptureDecision.Incident(incident.Pretext); }
+                if (pending is CaptureProductionDecision.Lifecycle incident)
+                { yield return new CityCaptureDecision.Lifecycle(incident.Decision); }
                 else if (pending is CaptureProductionDecision.Window window)
                 { yield return new CityCaptureDecision.Window(window.Request); }
                 else if (!production.Completed)
@@ -269,7 +269,7 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
             while (check.Result is null)
             {
                 if (check.Resume(op.TakeReply()?.Selected) is { } incident)
-                { yield return new CityCaptureDecision.Incident(incident); }
+                { yield return new CityCaptureDecision.Lifecycle(incident); }
                 else if (check.Result is null)
                 { yield return null; }
             }

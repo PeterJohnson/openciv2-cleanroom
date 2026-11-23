@@ -7,25 +7,33 @@ namespace OpenCiv2.Session;
 /// <summary>Trusted V01 destruction continuation. The owning city/combat operation admits the removal;
 /// the seat resolver routes each human victim's pretext, including nested last-settler checks.</summary>
 public sealed class CivilizationEliminationOperation(CivilizationElimination.Operation operation,
-    Func<int, ParticipantId> recipient) : IContinuation
+    Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
-    private bool pending;
+    private LifecycleDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
 
+    private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
+    {
+        if (faulted)
+        { throw new InvalidOperationException("A failed lifecycle presentation cannot resume"); }
+        try
+        { return Advance(context, input); }
+        catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
+    }
+    private OperationStep Advance(OperationContext context, OperationInput input)
     {
         if (completed is not null)
         { return completed; }
-        EspionagePretext? decision;
-        try
-        { decision = operation.Resume(pending ? EspionageInteraction.Reply(input) : null); }
-        catch { context.Publish(); throw; }
-        pending = decision is not null;
+        LifecycleDecision? decision;
+        decision = operation.Resume(LifecycleInteraction.Reply(pending, input));
+        pending = decision;
         if (decision is not null)
         {
             context.Publish();
             return new(CommandStatus.AwaitingInteraction,
-                Interaction: EspionageInteraction.Prompt(decision, recipient(decision.Victim.Civilization)));
+                Interaction: LifecycleInteraction.Prompt(context, decision, recipient, ref intelligenceWindow, intelligence));
         }
         if (operation.Result is null)
         {

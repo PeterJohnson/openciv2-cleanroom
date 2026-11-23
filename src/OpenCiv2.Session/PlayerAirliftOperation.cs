@@ -1,14 +1,16 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Session;
 
 /// <summary>U05 destination/warning choices and actual nested deletion decisions. P05 owns command availability.</summary>
-public sealed class PlayerAirliftOperation(PlayerAirlift.Operation operation, Func<int, ParticipantId> recipient) : IContinuation
+public sealed class PlayerAirliftOperation(PlayerAirlift.Operation operation, Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private AirliftDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -24,6 +26,8 @@ public sealed class PlayerAirliftOperation(PlayerAirlift.Operation operation, Fu
                 OperationInputKind.Cancel or OperationInputKind.Timeout => pending is AirliftDecision.Destination ? -1 : 0,
                 _ => null
             };
+            if (pending is AirliftDecision.Lifecycle lifecycle)
+            { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
             pending = operation.Resume(pending is null ? null : reply);
             if (pending is not null)
             {
@@ -34,7 +38,7 @@ public sealed class PlayerAirliftOperation(PlayerAirlift.Operation operation, Fu
                     AirliftDecision.Fighters f => new InteractionSpec("Enemy fighters threaten this airlift. Proceed?", recipient(f.Actor),
                         new CommandValue.Unit(f.Unit), new([0, 1]))
                     { Options = new([new(0, "Cancel"), new(1, "Airlift")]) },
-                    AirliftDecision.Incident i => EspionageInteraction.Prompt(i.Pretext, recipient(i.Pretext.Victim.Civilization)),
+                    AirliftDecision.Lifecycle i => LifecycleInteraction.Prompt(context, i.Decision, recipient, ref intelligenceWindow, intelligence),
                     _ => throw new InvalidOperationException("Unknown airlift decision")
                 };
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);

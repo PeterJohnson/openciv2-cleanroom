@@ -5,29 +5,39 @@ using OpenCiv2.Core;
 namespace OpenCiv2.Session;
 
 /// <summary>Admitted V06 city mission child, with actor questions and independently routed nested victims.</summary>
-public sealed class CityEspionageDamageOperation(CityEspionageDamage.Operation operation, Func<int, ParticipantId> recipient) : IContinuation
+public sealed class CityEspionageDamageOperation(CityEspionageDamage.Operation operation, Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CityEspionageDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
+    private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
+    {
+        if (faulted)
+        { throw new InvalidOperationException("A failed lifecycle presentation cannot resume"); }
+        try
+        { return Advance(context, input); }
+        catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
+    }
+    private OperationStep Advance(OperationContext context, OperationInput input)
     {
         if (completed is not null)
         { return completed; }
         int? reply = input.Kind switch
         {
             OperationInputKind.Choice => input.Choice,
-            OperationInputKind.Cancel or OperationInputKind.Timeout => pending is CityEspionageDecision.Incident ? 0 : -1,
+            OperationInputKind.Cancel or OperationInputKind.Timeout => pending is CityEspionageDecision.Lifecycle ? 0 : -1,
             _ => null
         };
-        try
-        { pending = operation.Resume(pending is null ? null : reply); }
-        catch { context.Publish(); throw; }
+        if (pending is CityEspionageDecision.Lifecycle lifecycle)
+        { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
+        pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
             InteractionSpec prompt;
-            if (pending is CityEspionageDecision.Incident incident)
-            { prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization)); }
+            if (pending is CityEspionageDecision.Lifecycle incident)
+            { prompt = LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence); }
             else
             {
                 var question = (CityEspionageDecision.Question)pending;

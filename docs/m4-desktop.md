@@ -3955,3 +3955,44 @@ eight identity tests and three coverage tests passed.
 | --- | --- |
 | `m4-research-flow-native.json` | `9f89a638910c366ed68afa9fe469d8d7281d82db7c58aad8bb4b660380ed570e` |
 | `m4-research-flow-identity.json` | `95b247cb567b2c3199a44025bd98acd0b7d870ef1a0954d15674ad135bb2f3be` |
+
+## Retained civilization catch-up checkpoint
+
+Civilization creation now retains each actual research grant, including recursive
+Great Library government decisions, before testing the next advance, restoring
+its captured alive state, clearing unit counters or selecting/placing a leader.
+Creation owns and disposes its retained grant. Failed or abandoned work preserves
+the committed reset/acquisition prefix and does not execute the remaining tail.
+Turn-zero generated setup disposes completed and abandoned creation operations.
+
+Civilization elimination and civil war retain their creation child. Civil war
+waits before its notice, treasury split and transfer work; actual last-settler
+loss waits before the deletion tail. LifecycleDecision carries the concrete
+espionage or research choice through city loss, capture, missions, nuclear loss,
+combat and movement. Session adapters route the actual recipient and cancellation
+semantics; CivilizationCreationOperation provides the admitted standalone path.
+The synchronous elimination adapter explicitly rejects a reached retained choice
+instead of choosing an answer or endlessly polling it.
+
+Six new shared groups cover the later-grant boundary, actual Anarchy city
+recalculation, placement/count overwrite, failure/disposal prefixes, last-settler
+restart, civil-war treasury ordering and combat casualty continuation. Private
+command-runtime cases reject answers from the command submitter and unrelated
+players, and cancel/timeout decline the government proposal. Existing incident
+cases still cover their original victim routing and independent replies.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1169 of 1171**, with the two existing
+platform/audio skips. The shared probe passed **1136 groups** across 130 coverage
+families; source identity verified **647 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-lifecycle-grants-native.json` | `ec5fa143fc22a9fbf3651180010969f475bb2332c9c4511b4fe20d0b81790797` |
+| `m4-lifecycle-grants-identity.json` | `e787db3541c490234001a976a389f5518ff042db0ddf6ac18a264435b72285e9` |
+
+Full desktop movement/service composition, general research presentation,
+complete turn/AI scheduling and human/AI-game acceptance remain open. This
+checkpoint does not add a generated desktop playthrough. Browser and
+cross-platform work remain deferred.

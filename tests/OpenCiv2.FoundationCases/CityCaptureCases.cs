@@ -303,8 +303,8 @@ public static partial class FoundationSuite
         f.Data.AddUnit(1, 3, 46, new(14, 10)); f.Data.Unit(1).Home = new(0); w.Civilizations[3].UnitsActive[46] = 1;
         f.Data.AddUnit(2, 4, 4, new(24, 10)); f.Data.Unit(2).Flags.SpyMission = true; f.Data.Unit(2).Counter = 3;
         w.Civilizations[3].Treaties[4].Peace = true; f.Life.Recreate = c => Creation(f.Data, c, f.Life.Random);
-        using var op = f.Begin(0); var pending = (CityCaptureDecision.Incident)op.Resume()!;
-        Equal(3, pending.Pretext.Victim.Civilization); Equal(true, f.City.Token.Occupied); Equal((sbyte)0, f.City.Size);
+        using var op = f.Begin(0); var pending = (CityCaptureDecision.Lifecycle)op.Resume()!;
+        Equal(3, ((EspionagePretext)pending.Decision).Victim.Civilization); Equal(true, f.City.Token.Occupied); Equal((sbyte)0, f.City.Size);
         Equal((byte?)2, w.Map.Owner(new(12, 8))); Equal(false, f.Order.Contains("Capture"));
         Equal(pending, op.Resume()); op.Resume(new(0)); f.Complete(op);
         Equal(null, op.RemainingCity); Equal(false, f.City.Token.Occupied); Equal((byte?)1, w.Map.Owner(new(12, 8)));

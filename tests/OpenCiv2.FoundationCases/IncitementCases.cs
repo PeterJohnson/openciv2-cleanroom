@@ -154,7 +154,7 @@ public static partial class FoundationSuite
             Equal((short)-32767, w.Civilizations[1].SubversionCount); Equal(false, f.Data.Unit(0).Token.Occupied);
             if (choice == 1)
             {
-                var incident = (RevoltDecision.Incident)pending!; Equal(2, incident.Pretext.Victim.Civilization);
+                var incident = (RevoltDecision.Lifecycle)pending!; Equal(2, ((EspionagePretext)incident.Decision).Victim.Civilization);
                 Equal(new CivilizationSlot(2), f.Capture.City.Owner); Equal(0, f.Sounds); Equal(incident, op.Resume());
                 pending = op.Resume(new(0));
             }
@@ -176,7 +176,7 @@ public static partial class FoundationSuite
         var senate = new IncitementFixture([RevoltEscape(1), RevoltSenate(1)]); var sw = senate.World;
         sw.Globals.HumanPlayers = CivilizationSet.Only(1).With(2); sw.Civilizations[1].Government = Government.Republic;
         sw.Civilizations[1].Treaties[2].Peace = sw.Civilizations[2].Treaties[1].Peace = true;
-        using var scandal = senate.Begin(); RevoltOffered(scandal); Equal(true, scandal.Resume(new(1)) is RevoltDecision.Incident);
+        using var scandal = senate.Begin(); RevoltOffered(scandal); Equal(true, scandal.Resume(new(1)) is RevoltDecision.Lifecycle);
         scandal.Resume(new(0)); Equal(Government.Anarchy, sw.Civilizations[1].Government);
         Equal(false, senate.Capture.City.Flags.Disorder); // C09 sees the government after the real incident child.
         Equal(true, senate.Capture.Theft.Damage.Incidents.Notices.Any(n => n.Kind == EspionageIncidentKind.SenateScandal));
@@ -228,9 +228,9 @@ public static partial class FoundationSuite
         w.Civilizations[1].Treaties[2].Peace = w.Civilizations[2].Treaties[1].Peace = true;
         nested.Capture.Life.Recreate = c => Creation(nested.Data, c, nested.Capture.Life.Random);
         using var loss = nested.Begin(); Equal(142, RevoltOffered(loss).Price);
-        var first = (RevoltDecision.Incident)loss.Resume(new(1))!; Equal(1, first.Pretext.Victim.Civilization);
+        var first = (RevoltDecision.Lifecycle)loss.Resume(new(1))!; Equal(1, ((EspionagePretext)first.Decision).Victim.Civilization);
         Equal(858, w.Civilizations[1].Gold); Equal(new CivilizationSlot(2), nested.Capture.City.Owner); Equal(0, nested.Sounds);
-        var second = (RevoltDecision.Incident)loss.Resume(new(0))!; Equal(2, second.Pretext.Victim.Civilization);
+        var second = (RevoltDecision.Lifecycle)loss.Resume(new(0))!; Equal(2, ((EspionagePretext)second.Decision).Victim.Civilization);
         Equal(new CivilizationSlot(2), nested.Capture.City.Owner);
         loss.Resume(new(0)); nested.Complete(loss); Equal(new CivilizationSlot(1), nested.Capture.City.Owner);
     }

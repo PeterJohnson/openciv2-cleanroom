@@ -7,10 +7,11 @@ namespace OpenCiv2.Session;
 /// <summary>Trusted V06 visit child. The required window adapter supplies the actual intelligence/city
 /// presentation; its close decision resumes the mission. Recipient routing is enforced here.</summary>
 public sealed class CityEspionageVisitOperation(CityEspionageVisits.Operation operation,
-    Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> window) : IContinuation
+    Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> window, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CityEspionageDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private InteractionSpec? visitPrompt;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
@@ -31,6 +32,8 @@ public sealed class CityEspionageVisitOperation(CityEspionageVisits.Operation op
             OperationInputKind.Cancel or OperationInputKind.Timeout => 0,
             _ => null
         };
+        if (pending is CityEspionageDecision.Lifecycle lifecycle)
+        { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
@@ -38,7 +41,7 @@ public sealed class CityEspionageVisitOperation(CityEspionageVisits.Operation op
             var prompt = pending switch
             {
                 CityEspionageDecision.Visit visit => visitPrompt ??= window(visit.Request) with { Recipient = recipient(visit.Request.Actor) },
-                CityEspionageDecision.Incident incident => EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization)),
+                CityEspionageDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
                 _ => throw new InvalidOperationException("Unknown city visit decision")
             };
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);

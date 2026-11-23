@@ -59,7 +59,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                     return pending;
                 }
 
-                int? childReply = pending is CityEspionageDecision.Incident ? reply : null;
+                int? childReply = pending is CityEspionageDecision.Lifecycle ? reply : null;
                 if (pending is CityEspionageDecision.Question)
                 {
                     answer = reply!.Value;
@@ -74,7 +74,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                         childReply = null;
                         if (incident is not null)
                         {
-                            return pending = new CityEspionageDecision.Incident(incident);
+                            return pending = new CityEspionageDecision.Lifecycle(incident);
                         }
 
                         if (capture.Result is null)
@@ -92,7 +92,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                         childReply = null;
                         if (incident is not null)
                         {
-                            return pending = new CityEspionageDecision.Incident(incident);
+                            return pending = new CityEspionageDecision.Lifecycle(incident);
                         }
 
                         if (explosion.Result is null)

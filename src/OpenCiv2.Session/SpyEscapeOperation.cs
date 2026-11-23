@@ -7,23 +7,31 @@ namespace OpenCiv2.Session;
 /// <summary>V06 escape followed by the actual incident, suspended for the human victim's pretext.
 /// The owning mission supplies victim routing; no public player command bypasses admission.</summary>
 public sealed class SpyEscapeOperation(CivilizationElimination lifecycle, EspionageIncidents incidents,
-    int slot, int mode, int victim, string call, Func<int, ParticipantId> recipient) : IContinuation
+    int slot, int mode, int victim, string call, Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private readonly CivilizationElimination.Operation operation = lifecycle.BeginEscape(slot, mode, victim, call, incidents);
-    private EspionagePretext? pending;
+    private LifecycleDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
+    private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
+    {
+        if (faulted)
+        { throw new InvalidOperationException("A failed lifecycle presentation cannot resume"); }
+        try
+        { return Advance(context, input); }
+        catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
+    }
+    private OperationStep Advance(OperationContext context, OperationInput input)
     {
         if (completed is not null)
         { return completed; }
-        int? reply = pending is null ? null : EspionageInteraction.Reply(input);
-        try
-        { pending = operation.Resume(reply); }
-        catch { context.Publish(); throw; }
+        int? reply = LifecycleInteraction.Reply(pending, input);
+        pending = operation.Resume(reply);
         if (pending is { } decision)
         {
             context.Publish();
-            return new(CommandStatus.AwaitingInteraction, Interaction: EspionageInteraction.Prompt(decision, recipient(decision.Victim.Civilization)));
+            return new(CommandStatus.AwaitingInteraction, Interaction: LifecycleInteraction.Prompt(context, decision, recipient, ref intelligenceWindow, intelligence));
         }
         if (operation.Result is null)
         { context.Publish(); return new(CommandStatus.Pending); }

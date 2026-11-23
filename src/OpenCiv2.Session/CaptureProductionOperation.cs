@@ -1,16 +1,18 @@
 using OpenCiv2.Base;
 using OpenCiv2.Contracts;
+using OpenCiv2.Core;
 using OpenCiv2.Core.City;
 
 namespace OpenCiv2.Session;
 
 /// <summary>Required P06 window closure and independent nested incident routing for C09.</summary>
 public sealed class CaptureProductionOperation(CaptureProduction.Operation operation,
-    Func<int, ParticipantId> recipient, Func<CaptureCityVisit, InteractionSpec> window) : IContinuation
+    Func<int, ParticipantId> recipient, Func<CaptureCityVisit, InteractionSpec> window, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CaptureProductionDecision? pending;
     private InteractionSpec? prompt;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -30,13 +32,15 @@ public sealed class CaptureProductionOperation(CaptureProduction.Operation opera
             OperationInputKind.Cancel or OperationInputKind.Timeout => 0,
             _ => null
         };
+        if (pending is CaptureProductionDecision.Lifecycle lifecycle)
+        { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
             var interaction = pending switch
             {
-                CaptureProductionDecision.Incident incident => EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization)),
+                CaptureProductionDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
                 CaptureProductionDecision.Window visit => prompt ??= window(visit.Request) with { Recipient = recipient(visit.Request.Owner) },
                 _ => throw new InvalidOperationException("Unknown capture production decision")
             };

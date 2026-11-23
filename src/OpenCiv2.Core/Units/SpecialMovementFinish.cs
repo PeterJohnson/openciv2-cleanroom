@@ -27,7 +27,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
     public sealed class Operation : IDisposable
     {
         private readonly SpecialMovementFinish parent;
-        private readonly IEnumerator<EspionagePretext?> steps;
+        private readonly IEnumerator<LifecycleDecision?> steps;
         private int? answer;
         private readonly List<Exception> presentationFailures = [];
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
@@ -35,7 +35,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
         private bool disposed, faulted;
         public bool Completed { get; private set; }
         public bool Stopped { get; internal set; }
-        public EspionagePretext? Pending { get; private set; }
+        public LifecycleDecision? Pending { get; private set; }
         internal Operation(SpecialMovementFinish parent, MovementContinuation movement, MapPoint destination, int owner, bool coast, string call)
         {
             ArgumentException.ThrowIfNullOrEmpty(call);
@@ -43,7 +43,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
             steps = parent.Execute(this, movement, destination, owner, coast, call).GetEnumerator();
         }
         internal int? TakeReply() { int? result = answer; answer = null; return result; }
-        public EspionagePretext? Resume(int? reply = null)
+        public LifecycleDecision? Resume(int? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -120,7 +120,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
         }
         return true;
     }
-    private IEnumerable<EspionagePretext?> Execute(Operation operation, MovementContinuation movement, MapPoint destination, int owner, bool coast, string call)
+    private IEnumerable<LifecycleDecision?> Execute(Operation operation, MovementContinuation movement, MapPoint destination, int owner, bool coast, string call)
     {
         bool lost = coast ? Coast(movement, owner, destination, call) : Aircraft(operation, movement, destination);
         if (!lost)

@@ -45,6 +45,8 @@ internal static class CombatContinuationInteraction
 {
     internal static ResearchReply? Reply(CombatContinuationDecision pending, OperationInput input)
     {
+        if (pending is CombatContinuationDecision.Lifecycle lifecycle)
+        { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
         if (pending is CombatContinuationDecision.Response { Decision: ParadropDecision.Capture capture })
         { return CityCaptureInteraction.Reply(capture.Decision, input); }
         return input.Kind switch
@@ -59,7 +61,7 @@ internal static class CombatContinuationInteraction
     {
         return pending switch
         {
-            CombatContinuationDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
+            CombatContinuationDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
             CombatContinuationDecision.Response { Decision: ParadropDecision.Attack attack } => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
             CombatContinuationDecision.Response { Decision: ParadropDecision.Capture capture } => CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence),
             _ => throw new InvalidOperationException("Unknown combat continuation decision")

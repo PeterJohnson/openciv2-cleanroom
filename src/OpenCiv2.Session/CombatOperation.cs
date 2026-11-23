@@ -46,6 +46,8 @@ internal static class CombatInteraction
 {
     internal static ResearchReply? Reply(CombatDecision? pending, OperationInput input)
     {
+        if (pending is CombatDecision.Lifecycle lifecycle)
+        { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
         if (pending is CombatDecision.Continuation continuation)
         { return CombatContinuationInteraction.Reply(continuation.Decision, input); }
         if (pending is CombatDecision.Help help)
@@ -62,7 +64,7 @@ internal static class CombatInteraction
         ref InteractionSpec? intelligenceWindow, ref InteractionSpec? cityWindow) => pending switch
         {
             CombatDecision.Attack attack => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
-            CombatDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
+            CombatDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
             CombatDecision.Help help => AllyHelpInteraction.Prompt(help.Decision, recipient, intelligence, ref intelligenceWindow),
             CombatDecision.Continuation child => CombatContinuationInteraction.Prompt(context, child.Decision, recipient, city, ref cityWindow, ref intelligenceWindow, intelligence),
             _ => throw new InvalidOperationException("Unknown combat decision")

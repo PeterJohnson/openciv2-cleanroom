@@ -13,7 +13,7 @@ public sealed record RevoltOffer(int Actor, int Victim, CityTarget City, string 
 public abstract record RevoltDecision
 {
     public sealed record Offer(RevoltOffer Request) : RevoltDecision;
-    public sealed record Incident(EspionagePretext Pretext) : RevoltDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : RevoltDecision;
     public sealed record Capture(CityCaptureDecision Decision) : RevoltDecision;
 }
 public interface ICityIncitementEffects
@@ -143,7 +143,7 @@ public sealed class CityIncitement(GameState world, CivilizationElimination life
             while (escape.Result is null)
             {
                 if (escape.Resume(op.TakeReply()?.Selected) is { } incident)
-                { yield return new RevoltDecision.Incident(incident); }
+                { yield return new RevoltDecision.Lifecycle(incident); }
                 else if (escape.Result is null)
                 { yield return null; }
             }
@@ -154,7 +154,7 @@ public sealed class CityIncitement(GameState world, CivilizationElimination life
             while (!incident.Completed)
             {
                 if (incident.Resume(op.TakeReply()?.Selected) is { } pretext)
-                { yield return new RevoltDecision.Incident(pretext); }
+                { yield return new RevoltDecision.Lifecycle(pretext); }
             }
         }
         else if (choice == 2)

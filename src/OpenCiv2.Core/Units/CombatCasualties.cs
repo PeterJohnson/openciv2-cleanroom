@@ -64,11 +64,11 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
     public sealed class Operation : IDisposable
     {
         private readonly CombatCasualties parent;
-        private readonly IEnumerator<EspionagePretext?> steps;
+        private readonly IEnumerator<LifecycleDecision?> steps;
         private int? reply;
         private bool faulted, disposed;
         public bool Completed { get; private set; }
-        public EspionagePretext? Pending { get; private set; }
+        public LifecycleDecision? Pending { get; private set; }
         internal Operation(CombatCasualties parent, UnitSlot loser, UnitSlot opponent, MapPoint battle, string call, bool stack)
         {
             ArgumentException.ThrowIfNullOrEmpty(call);
@@ -77,7 +77,7 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
         }
         internal int? TakeReply() { int? answer = reply; reply = null; return answer; }
         /// <summary>Null without completion yields between casualties or during bounded lifecycle work.</summary>
-        public EspionagePretext? Resume(int? response = null)
+        public LifecycleDecision? Resume(int? response = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -101,7 +101,7 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
         }
         public void Dispose() { disposed = true; steps.Dispose(); }
     }
-    private IEnumerable<EspionagePretext?> Execute(Operation operation, UnitSlot loser, UnitSlot opponent, MapPoint battle, string call, bool stack)
+    private IEnumerable<LifecycleDecision?> Execute(Operation operation, UnitSlot loser, UnitSlot opponent, MapPoint battle, string call, bool stack)
     {
         int current = loser.Value;
         if (stack)

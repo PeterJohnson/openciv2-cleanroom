@@ -6,7 +6,7 @@ namespace OpenCiv2.Core.Units;
 public abstract record CombatDecision
 {
     public sealed record Attack(AttackWarning Warning) : CombatDecision;
-    public sealed record Incident(EspionagePretext Question) : CombatDecision;
+    public sealed record Lifecycle(LifecycleDecision Decision) : CombatDecision;
     public sealed record Help(AllyHelpDecision Decision) : CombatDecision;
     public sealed record Continuation(CombatContinuationDecision Decision) : CombatDecision;
 }
@@ -110,7 +110,7 @@ public sealed class CombatExecution(GameState world, CombatWorkspace state, Comb
         while (!resolution.Completed)
         {
             if (resolution.Resume(operation.TakeReply()?.Selected) is { } pending)
-            { yield return new CombatDecision.Incident(pending); }
+            { yield return new CombatDecision.Lifecycle(pending); }
             else if (!resolution.Completed)
             { yield return null; }
         }

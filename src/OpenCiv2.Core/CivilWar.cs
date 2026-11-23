@@ -24,8 +24,11 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
     public sealed class Operation : IDisposable
     {
         private readonly CivilWar service;
-        private readonly IEnumerator<int> steps;
+        private readonly IEnumerator<ResearchGrantDecision?> steps;
         private int candidateBudget;
+        private int? reply;
+        public ResearchGrantDecision? Pending { get; private set; }
+        private int? TakeReply() { var answer = reply; reply = null; return answer; }
         private bool faulted, disposed;
         public int? Result { get; private set; }
         internal Operation(CivilWar service, int parent)
@@ -33,10 +36,10 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
             ArgumentOutOfRangeException.ThrowIfNegative(parent);
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(parent, EntityLimits.Civilizations);
             this.service = service;
-            steps = service.Execute(parent, () => candidateBudget, result => Result = result).GetEnumerator();
+            steps = service.Execute(parent, () => candidateBudget, TakeReply, result => Result = result).GetEnumerator();
         }
         /// <summary>Null is a bounded creation search or a completed fallback city transfer; resume without restarting.</summary>
-        public int? Advance(int candidateBudget = 64)
+        public int? Advance(int candidateBudget = 64, int? answer = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateBudget);
@@ -54,10 +57,16 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
             {
                 MapKnowledge.RequireLocal(service.World);
                 this.candidateBudget = candidateBudget;
+                if (Pending is not null && answer is null)
+                { return null; }
+                reply = Pending is null ? null : answer;
+                Pending = null;
                 if (!steps.MoveNext())
                 {
                     steps.Dispose();
                 }
+                else
+                { Pending = steps.Current; }
 
                 return Result;
             }
@@ -66,7 +75,7 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
         public void Dispose() { disposed = true; steps.Dispose(); }
     }
 
-    private IEnumerable<int> Execute(int parent, Func<int> budget, Action<int> complete)
+    private IEnumerable<ResearchGrantDecision?> Execute(int parent, Func<int> budget, Func<int?> takeReply, Action<int> complete)
     {
         if (!ScenarioPermissions.AllowSchism(world, parent, executeEvent))
         { complete(0); yield break; }
@@ -103,10 +112,10 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
         if (capital is null)
         { complete(0); yield break; }
         world.Globals.CivsAlive = world.Globals.CivsAlive.With(rebel, false);
-        var creation = create(rebel);
-        while (creation.Advance(budget()) is null)
+        using var creation = create(rebel);
+        while (creation.Advance(budget(), takeReply()) is null)
         {
-            yield return 0;
+            yield return creation.Pending;
         }
 
         if (creation.Result == 0)
@@ -183,7 +192,7 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
 
                 transferred = unchecked(transferred + world.Entities.Cities.At(chosen).Size);
                 CityTransfer.Transfer(world, chosen, parent, rebel);
-                yield return 0;
+                yield return null;
             }
         }
         TransferUnits(parent, rebel);

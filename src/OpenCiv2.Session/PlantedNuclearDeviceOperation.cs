@@ -6,10 +6,11 @@ namespace OpenCiv2.Session;
 
 /// <summary>V06 device confirmation and independently routed incidents from actual capture/nuclear children.</summary>
 public sealed class PlantedNuclearDeviceOperation(PlantedNuclearDevice.Operation operation,
-    Func<int, ParticipantId> recipient) : IContinuation
+    Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CityEspionageDecision? pending;
     private OperationStep? completed;
+    private InteractionSpec? intelligenceWindow;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -35,13 +36,15 @@ public sealed class PlantedNuclearDeviceOperation(PlantedNuclearDevice.Operation
             OperationInputKind.Cancel or OperationInputKind.Timeout => 0,
             _ => null
         };
+        if (pending is CityEspionageDecision.Lifecycle lifecycle)
+        { reply = LifecycleInteraction.Reply(lifecycle.Decision, input); }
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
             var prompt = pending switch
             {
-                CityEspionageDecision.Incident incident => EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization)),
+                CityEspionageDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
                 CityEspionageDecision.Question question => new InteractionSpec($"Risk a major incident by planting a nuclear device in {question.Name}?",
                     recipient(question.Actor), new CommandValue.City(question.City), new([0, 1]))
                 { Options = new([new(0, "Cancel"), new(1, "Plant device")]) },
