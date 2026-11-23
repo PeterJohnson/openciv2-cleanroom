@@ -658,3 +658,12 @@ strengths/firepowers and operands for the later execution stages. Submarine
 preview calls actual A01 standing-goal operations. Preparation with execute=true
 scales strengths and sets city notices; it does not charge movement, declare war
 or resolve combat. U06 execution and U02/A04/desktop callers remain pending.
+
+`Units/CombatRounds` owns U06 primary sampling, finite batches of damage rounds,
+byte-wrapped hits and promotion bookkeeping. The continuation retains exact
+choice ordinals and damage across yields; a null yield is not a combat result.
+`CombatWorkspace` also carries viewer/explosion state. Local presentation uses
+`ICombatRoundEffects`; promotion emits an owner-addressed notice. The future
+combat parent must retain its exclusive lane through yields, run result
+presentation before promotion, then call real casualty/event/lifecycle chains.
+These helpers do not delete a loser or provide a complete player attack command.

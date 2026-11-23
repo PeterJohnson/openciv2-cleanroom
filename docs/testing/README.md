@@ -543,3 +543,12 @@ ties, city-slot-zero defense exceptions, ordinary/special/barbarian preparation,
 preview normalization and actual submarine standing-goal replacement. Division
 and authority failures retain their preceding cache/notice effects. These cases
 do not execute damage rounds, casualties or desktop combat.
+
+U06 round/promotion cases exercise two separate primary rolls, asymmetric ties,
+protected-defender rerolls, captured values, bounded yields and choice continuity,
+byte wrapping, HP-query side effects, missile prelude and hit presentation order.
+They cover signed sampling boundaries, retained failure prefixes, aggression
+wrap, inclusive promotion chance, live Sun Tzu ownership/obsolescence and
+veteran/missile/autoplay behavior. Actual preparation is joined to ordinary
+rounds; casualty/event chains and the full combat/session/desktop caller remain
+open. No browser execution or full-game acceptance is claimed.

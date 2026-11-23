@@ -482,6 +482,16 @@ a health counter, and some configurations need not terminate. Do not silently
 clamp them into positive firepower; a restrictive implementation must state its
 input limit. The both-zero shortcut belongs to the parent, before this helper.
 
+The local production round operation advances in finite batches (64 rounds by
+default), retaining the exact damage and next semantic choice ordinal when it
+yields. A yield is not a victory, loss or a fresh fight. The caller must keep
+the combat lane active or cancel/dispose it; cancellation preserves completed
+hits and does not synthesize a combat result. This keeps custom non-progressing
+firepower cases responsive without changing their arithmetic or imposing a
+positive-firepower rule. Overflow of the nonnegative choice ordinal is a bounded
+failure, retaining prior effects. Ordinary positive firepower under positive
+signed maximum HP ends within the combined initial remaining-HP hit bound.
+
 ### Applying one hit
 
 Capture old unsigned damage; store `(old + signed firepower) mod 256`.

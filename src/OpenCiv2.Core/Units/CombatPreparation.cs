@@ -16,6 +16,9 @@ public sealed class CombatWorkspace
     public int DefenseFactor;
     public CivilizationArray<bool> TreatyNotices;
     public CivilizationArray<int> AllyWarnings;
+    public CivilizationArray<bool> Seen;
+    public bool AnyViewer, ExplosionShown;
+    public int AnimationInterval, ExplosionKind;
 }
 
 /// <summary>U06 strength primitives and validated defender selection, including their cache effects.</summary>

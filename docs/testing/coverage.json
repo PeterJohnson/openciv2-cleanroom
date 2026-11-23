@@ -3691,22 +3691,31 @@
     {
       "id": "combat-preparation",
       "status": "partial",
-      "contract": "U06 strength primitives, defender selection, common preview/execution preparation and preview heuristic with actual U01/U02/C08/A01 children",
-      "publicSurface": "CombatWorkspace; CombatStrength.Attack/Defense/BestDefender; CombatPreparation.Prepare/Preview; PreparedCombat",
-      "review": "Sequential signed attack bonuses, retained terrain/city cache and published defense factor, fighter/fortress/walls precedence, validated stack scan, health weighting, later ties and supplied-unit fallback. Preparation preserves unscaled preview versus movement-scaled execution inputs, city slot zero exclusion, coastal/SDI/SAM/scramble rules, signed firepower, anti-mounted/anti-air/partisan/submarine/shore modifiers, barbarian difficulty/city/wonder rules, standing-goal replacement and entry-zero notice retention. Preview uses signed integer heuristic normalization/capping and does not execute combat. Tests cover authored rule vectors, actual stack/building/goal services and division/authority failure prefixes. Execution diplomacy, rounds, promotion, casualties and aftermath, U02/A04 callers, desktop combat and complete-game acceptance remain open. Browser/cross-platform execution is deferred.",
+      "contract": "U06 strength primitives, defender selection, common preview/execution preparation and preview heuristic with actual U01/U02/C08/A01 children; bounded damage rounds, hit presentation and promotion bookkeeping",
+      "publicSurface": "CombatWorkspace; CombatStrength.Attack/Defense/BestDefender; CombatPreparation.Prepare/Preview; PreparedCombat; CombatSampling.RollBelow; CombatRounds.Begin/Hit; CombatPromotion.Apply/Promote; ICombatRoundEffects; CombatPromotionNotice",
+      "review": "Sequential signed attack bonuses, retained terrain/city cache and published defense factor, fighter/fortress/walls precedence, validated stack scan, health weighting, later ties and supplied-unit fallback. Preparation preserves unscaled preview versus movement-scaled execution inputs, city slot zero exclusion, coastal/SDI/SAM/scramble rules, signed firepower, anti-mounted/anti-air/partisan/submarine/shore modifiers, barbarian difficulty/city/wonder rules, standing-goal replacement and entry-zero notice retention. Preview uses signed integer heuristic normalization/capping and does not execute combat. Tests cover authored rule vectors, actual stack/building/goal services and division/authority failure prefixes. Round cases cover primary sampling including signed-decrement overflow, asymmetric ties and reroll draw order, captured strengths/firepowers, HP-query side effects, byte wrapping, finite batch yields/resumption/disposal, missile presentation and retained presentation failures. Promotion covers inclusive chance, live C08 wonder ownership/obsolescence, aggression wrapping, veteran/missile draw consumption, human/autoplay notices and failure prefixes. Execution diplomacy, result presentation, casualties and aftermath, U02/A04 callers, desktop combat and complete-game acceptance remain open. Browser/cross-platform execution is deferred.",
       "sources": [
-        "src/OpenCiv2.Core/Units/CombatPreparation.cs"
+        "src/OpenCiv2.Core/Units/CombatPreparation.cs",
+        "src/OpenCiv2.Core/Units/CombatRounds.cs"
       ],
       "tests": [
-        "tests/OpenCiv2.FoundationCases/CombatPreparationCases.cs"
+        "tests/OpenCiv2.FoundationCases/CombatPreparationCases.cs",
+        "tests/OpenCiv2.FoundationCases/CombatRoundCases.cs"
       ],
       "sharedGroups": [
         "U06.barbarians-preview-goals",
         "U06.city-special-modifiers",
         "U06.defender-selection",
         "U06.fighter-domain-defense",
+        "U06.hit-presentation",
         "U06.preparation-failures",
         "U06.preview-execution-preparation",
+        "U06.promotion-eligibility-failures",
+        "U06.promotion-selection",
+        "U06.round-continuation",
+        "U06.round-initialization-failures",
+        "U06.round-ties-rerolls",
+        "U06.sampling-boundaries",
         "U06.strength-cache"
       ]
     }
