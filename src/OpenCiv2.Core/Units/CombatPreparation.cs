@@ -22,8 +22,9 @@ public sealed class CombatWorkspace
     public UnitSlot? AnimationDefender;
     public bool ActiveUnitLost, AggregateTreatyNotice;
     public int AggregateAllyWarning;
-    public CombatResultSound? LastSound;
-    public int SoundArgument;
+    public CombatSound? LastSound;
+    public int? SoundArgument;
+    public MapPoint? AnimationTarget;
 }
 
 /// <summary>U06 strength primitives and validated defender selection, including their cache effects.</summary>

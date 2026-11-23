@@ -6,10 +6,9 @@ using OpenCiv2.Core.State;
 
 namespace OpenCiv2.Core.Units;
 
-public enum CombatResultSound { DiveCrash = 23, LargeExplosion = 35, JetCrash = 79 }
 public interface ICombatResolutionEffects
 {
-    void Sound(CombatResultSound sound, int argument);
+    void Sound(CombatSound sound, int argument);
     void Synchronize();
     void Redraw(MapPoint origin, MapPoint target);
     void Explosion(MapPoint point, int kind);
@@ -80,8 +79,8 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
             UnitSlot? crash = won && rules.Units[Unit(combat.Defender).Type.Value].Domain == RuleDomain.Air && state.City is null
                 ? combat.Defender : !won && rules.Units[Unit(combat.Attacker).Type.Value].Domain == RuleDomain.Air
                 && !rules.Units[Unit(combat.Attacker).Type.Value].Abilities.DestroyedAfterAttack ? combat.Attacker : null;
-            CombatResultSound? sound = crash is { } unit ? Unit(unit).Type.Value < 30 ? CombatResultSound.DiveCrash : CombatResultSound.JetCrash
-                : state.ExplosionKind != 0 ? CombatResultSound.LargeExplosion : null;
+            CombatSound? sound = crash is { } unit ? Unit(unit).Type.Value < 30 ? CombatSound.DiveCrash : CombatSound.JetCrash
+                : state.ExplosionKind != 0 ? CombatSound.LargeExplosion : null;
             if (sound is { } selected)
             {
                 state.LastSound = selected;

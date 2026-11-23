@@ -576,3 +576,12 @@ failure prefixes. Integration proceeds from entry through actual rounds,
 promotion and casualty resolution. The viewer/start stage, nuclear delivery and
 final attack continuation are still separate pending joins; the scenario
 combat-visibility selector remains an explicit U06 specification gap.
+
+U06 opening cases cover eligible local viewers, captured/live ownership and
+seen-by knowledge, the explicit unresolved scenario-selector boundary, actual
+single-unit disclosure and cargo restoration, nearest-city notices, customized
+substitutions, autoplay and fixed sound-slot/domain precedence. Real rounds and
+resolution produce the same casualty outcome when opening rendering is skipped
+or fails. P10's semantic contract permits batched rendering and omitted cosmetic
+delays; no original view count or callback trace is asserted. These are service
+joins, not desktop UI or complete-game acceptance.

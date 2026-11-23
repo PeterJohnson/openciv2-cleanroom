@@ -694,3 +694,15 @@ rounds. It composes real `AttackConfirmation`, `DiplomaticWar` and A08
 and explosion inputs along with the existing per-civilization arrays. U06 records
 the missing scenario combat-visibility selector; do not silently alias it to
 another scenario flag when wiring the viewer producer.
+
+`Units/CombatOpening` now owns local viewer filtering, actual single-unit
+visibility publication, cargo lift and whole-group restoration. It prepares
+immutable observer-addressed notices with classic substitutions and sound cues,
+using C01's nearest-city query and live installed names. P10 permits a single
+batched presentation: adapters own focus, repainting, delays and animation.
+Renderer exceptions become diagnostic results and do not abort combat; restoration
+also runs after content preparation failures. The caller must retain/report that
+diagnostic, supply incoming argument-zero text, and resolve the scenario visibility
+selector explicitly when ordinary knowledge does not establish visibility.
+`CombatSound` covers opening and result resource IDs; nullable sound arguments
+represent absence without a sentinel. Full combat/desktop orchestration remains open.

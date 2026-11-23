@@ -54,7 +54,7 @@ public static partial class FoundationSuite
             Equal(true, op.Completed); Life.Random.RequireChoicesConsumed();
         }
         private void Emit(string value) { Calls.Add(value); Observe?.Invoke(value); if (Fail == value) throw new InvalidOperationException("presentation failed"); }
-        public void Sound(CombatResultSound sound, int argument) => Emit("sound:" + sound + ":" + argument);
+        public void Sound(CombatSound sound, int argument) => Emit("sound:" + sound + ":" + argument);
         public void Synchronize() => Emit("sync");
         public void Redraw(MapPoint origin, MapPoint target) => Emit("redraw");
         public void Explosion(MapPoint point, int kind) => Emit($"explosion:{point.X},{point.Y}:{kind}");
@@ -81,9 +81,9 @@ public static partial class FoundationSuite
         Equal(true, f.State.ActiveUnitLost); Equal(0, f.State.ExplosionKind); Equal(3, f.State.KillCount);
         Equal(new ResolvedCombat(1, 2, false, null), op.Result); Equal(3, f.World.Casualties[2].Count);
         Equal(true, f.Data.Unit(3).Token.Occupied); int count = f.Calls.Count; op.Resume(); Equal(count, f.Calls.Count);
-        var noViewer = new ResolutionFixture(); noViewer.State.LastSound = CombatResultSound.JetCrash; noViewer.State.SoundArgument = 7;
+        var noViewer = new ResolutionFixture(); noViewer.State.LastSound = CombatSound.JetCrash; noViewer.State.SoundArgument = 7;
         using var loss = noViewer.Begin(false); noViewer.Complete(loss); Equal(true, noViewer.State.ActiveUnitLost);
-        Equal(CombatResultSound.JetCrash, noViewer.State.LastSound); Equal(7, noViewer.State.SoundArgument); Equal("sync", noViewer.Calls[0]);
+        Equal(CombatSound.JetCrash, noViewer.State.LastSound); Equal(7, noViewer.State.SoundArgument); Equal("sync", noViewer.Calls[0]);
     }
 
     private static void CombatResultSoundAndViewers()
@@ -102,7 +102,7 @@ public static partial class FoundationSuite
             else f.Data.Rules.Units[10] = f.Data.Rules.Units[10] with { Domain = RuleDomain.Air, Abilities = new() { DestroyedAfterAttack = variant == 4 } };
             if (variant == 5) { f.Data.Rules.Units[30] = f.Data.Rules.Units[10]; f.Data.Unit(3).Type = new(30); }
             using var op = f.Begin(won); f.Complete(op);
-            CombatResultSound? sound = variant is 0 or 3 ? CombatResultSound.DiveCrash : variant is 1 or 5 ? CombatResultSound.JetCrash : null;
+            CombatSound? sound = variant is 0 or 3 ? CombatSound.DiveCrash : variant is 1 or 5 ? CombatSound.JetCrash : null;
             Equal(sound, f.State.LastSound); Equal(sound is null ? 7 : 1, f.State.SoundArgument);
             Equal(false, f.Calls.Any(x => x.StartsWith("explosion:"))); Equal(true, f.Calls.Contains("redraw"));
         }
