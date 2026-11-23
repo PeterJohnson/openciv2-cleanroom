@@ -826,7 +826,15 @@ movement-allowance and diplomatic services. It stages the actor before returning
 an attack direction; A04 must reload working position before applying it.
 Staging itself does not consume movement or execute the blast. Tests join the
 result through actual A04/U04/U03/U02/U07, including nearby SDI interception.
-The A06 air chooser and full tactical/desktop composition remain open.
+The full tactical/desktop composition remains open.
+
+`Ai/AirTactics` supplies A06 fuel recovery, expended attacks, superiority,
+strike/basing and city raids. It uses actual GoHome, stack aggregates, staging
+relocation and Goto publication, returning a route to A04. Captured A04 context
+and live rules remain distinct; pure nearest-city query scratch stays local
+because no subsequent gameplay consumer uses its last candidate identity.
+Recovery-order tests execute the selected Goto through U04/U03/U02. Full A04
+and desktop turn composition remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

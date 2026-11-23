@@ -88,6 +88,8 @@ public sealed class StackOperations
         return sum;
     }
     public int CountAircraftCarriers(int slot, RuleTables rules) => CountMatching(slot, rules, rule => rule.Abilities.CarryAircraft);
+    public int CountShips(int slot, RuleTables rules) => CountMatching(slot, rules, rule => rule.Domain == RuleDomain.Sea);
+    public int CountExpendedAttackers(int slot, RuleTables rules) => CountMatching(slot, rules, rule => rule.Abilities.DestroyedAfterAttack);
 
     /// <summary>U01 signed rule aggregates stop on the accumulated sum, not the number of members.</summary>
     public int ProductionCost(int slot, RuleTables rules) => SumRules(slot, rules, rule => unchecked((sbyte)rule.CostRows));

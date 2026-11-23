@@ -4603,7 +4603,7 @@
       "status": "partial",
       "contract": "A06 section 7 nuclear city eligibility, scoring, reach, staging and diplomacy",
       "publicSurface": "NuclearTargets.Choose",
-      "review": "Actual C08 SDI queries, retained unsigned military strength, fixed enemy missile count, directed threat/Peace and signed city size govern admission. Scoring counts hostile stack members but applies friendly and protected penalties once per tile; barbarian units contribute nothing. Reach uses full damage-adjusted allowance from any owned city, preserves first reachable ties and does not discard a previous target for a higher unreachable score. Staging accepts ocean/airbase tiles, preserves orders/task/spent movement, clears actor visibility and performs directed Nuked/Vendetta plus bilateral Incident or signed contact-turn decrement. Cases cover signed counts/missing target, zero divisor, topology, large stacks, actual-type threshold and protected authority. A real A04 direction reload feeds U04/U03/U02/U07 for detonation and nearby SDI interception. Full A06 air chooser, A04 orchestration and desktop complete-game acceptance remain open; browser/cross-platform execution is deferred.",
+      "review": "Actual C08 SDI queries, retained unsigned military strength, fixed enemy missile count, directed threat/Peace and signed city size govern admission. Scoring counts hostile stack members but applies friendly and protected penalties once per tile; barbarian units contribute nothing. Reach uses full damage-adjusted allowance from any owned city, preserves first reachable ties and does not discard a previous target for a higher unreachable score. Staging accepts ocean/airbase tiles, preserves orders/task/spent movement, clears actor visibility and performs directed Nuked/Vendetta plus bilateral Incident or signed contact-turn decrement. Cases cover signed counts/missing target, zero divisor, topology, large stacks, actual-type threshold and protected authority. A real A04 direction reload feeds U04/U03/U02/U07 for detonation and nearby SDI interception. Full A04 orchestration and desktop complete-game acceptance remain open; browser/cross-platform execution is deferred.",
       "sources": [
         "src/OpenCiv2.Core/Ai/NuclearTargets.cs"
       ],
@@ -4618,6 +4618,37 @@
         "A06.nuclear-scoring-ties",
         "A06.nuclear-staging-diplomacy",
         "A06.nuclear-threshold-actual-type"
+      ]
+    },
+    {
+      "id": "ai-air-tactics",
+      "status": "partial",
+      "contract": "A06 sections 2\u20136 air fuel recovery, expended attacks, superiority, strike/basing and city raids",
+      "publicSurface": "AirTactics.Choose; StackOperations.CountShips/CountExpendedAttackers",
+      "review": "Uses actual U04 recovery/orders, U01 aggregates/relocation and U02 allowance. Cases cover signed fuel/cached-type distinctions, carrier recovery, expended cost thresholds and later ties, absent versus owner-zero airbases, ocean/fortress/hold scoring, redistribution and blocked-best-target refusal. Superiority cases exercise visibility/treaties, equality/veterancy/damage, aircraft bypass, transport passengers and adjusted human/range/stack ties. Strike and basing cover return occupancy, unreachable-home attacks beyond reach, first bases, sequential human-Airlifted objectives, Vendetta and missing-home zero/Hold. Raids cover raw ocean regions, all friendly neighbors, later ties, retained HasOrders, remaining movement and historical scenario bypass. An actual recovery order executes through A04/U04/U03/U02. Full A04/turn/desktop composition and complete-game acceptance remain open; browser/cross-platform execution stays deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AirTactics.cs",
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AirTacticsCases.cs"
+      ],
+      "sharedGroups": [
+        "A06.air-captured-type-failures",
+        "A06.air-city-raid-gates-scenario",
+        "A06.air-city-raid-scoring-orders",
+        "A06.air-expended-blocked-target",
+        "A06.air-expended-modifiers-redistribution",
+        "A06.air-expended-selection",
+        "A06.air-fuel-recovery",
+        "A06.air-missing-home-return-hold",
+        "A06.air-objective-chain-vendetta",
+        "A06.air-recovery-order-execution",
+        "A06.air-strike-return-basing",
+        "A06.air-superiority-adjusted-ties",
+        "A06.air-superiority-admission-strength",
+        "A06.air-superiority-stack-gates"
       ]
     }
   ]

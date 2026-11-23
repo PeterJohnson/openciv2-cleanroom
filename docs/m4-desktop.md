@@ -4620,3 +4620,44 @@ A06's general air chooser, A03 settlement/work and full founding, W06 barbarians
 full A04/A01/turn orchestration, generated desktop composition and complete
 human/AI-game acceptance remain open. Browser and cross-platform execution
 remain deferred.
+
+## A06 general air tactics
+
+`AirTactics` now composes fuel/range recovery, destroyed-after-attack selection
+and redistribution, AirSuperiority targeting, return feasibility and basing,
+and Attack-role city raids. It uses actual U04 GoHome and Goto setters, U01
+stack aggregates/relocation and U02 movement allowance. Working position is
+updated after staging; ordinary travel and attack execution remain with A04/U04.
+Shared query scratch without a subsequent gameplay consumer stays local rather
+than becoming original-frame state in the production model.
+
+Fourteen groups cover signed fuel/counter and cached/live type distinctions,
+actual carrier recovery, expended cost thresholds and later ties, absent versus
+owner-zero airbases, ocean/fortress/hold modifiers, first redistribution and
+blocked-best-target refusal. Superiority checks preserve visibility/treaties,
+equality/veterancy, damage-independent rule strength, aircraft bypass, transport
+passengers and adjusted human/range/stack ties. Strike tests cover occupied
+return candidates, unreachable-home attacks beyond reach, first reachable bases,
+sequential human Airlifted objectives, Vendetta and missing-home zero/Hold.
+Raids preserve raw ocean regions, all friendly-neighbor bonuses, later ties,
+HasOrders, remaining movement and the historical-scenario exception.
+
+The first adjusted-tie fixture blocked the chosen target's sole nearer return
+tile and correctly produced staging. Separate cases now isolate selection ties
+and that return-occupancy gate. Actual recovery orders execute through common
+A04 completion and U04/U03/U02, arriving at the owned city with movement charged.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1314 of 1316**, with the two existing
+platform/audio skips. The shared probe passed **1281 groups** across 147 coverage
+families; source identity verified **705 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-air-tactics-native.json` | `ca75f5ae9e01ce0d4b7345fbaebeae3fdaac2675d559f041bd5c1f000198b709` |
+| `m4-air-tactics-identity.json` | `95b4994928f9b3dd6d8ee93bca9b256a9a5da9e3d00bab0cd6dac0a69698dc9b` |
+
+A03 settlement/work and full C01 founding, W06 barbarians, full A04/A01/turn
+orchestration, generated desktop composition and complete human/AI-game
+acceptance remain open. Browser and cross-platform execution remain deferred.

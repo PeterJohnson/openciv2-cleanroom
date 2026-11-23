@@ -880,5 +880,15 @@ damage-adjusted allowance, preserving first ties and earlier reachable targets.
 Staging tests cover occupied neighbors, ocean/airbase admission, preserved orders
 and movement, directed and bilateral diplomatic effects and signed contact wrap.
 The selected direction runs through actual A04/U04/U03/U02/U07 for detonation and
-nearby-SDI interception. General air policy and desktop full-game acceptance
-remain open.
+nearby-SDI interception. Full tactical orchestration and desktop full-game
+acceptance remain open.
+
+A06 air groups cover signed fuel recovery, actual carrier return, expended
+attack thresholds/modifiers, first staging and redistribution, blocked best
+targets and live versus captured types. Superiority cases preserve visibility,
+treaties, equality/veterancy, damage-independent rule strength, transport/ship
+counts and adjusted ties. Strike/basing tests cover occupied return candidates,
+reach, first bases, sequential Airlifted objectives, Vendetta and absent-home
+zero/Hold. Raids retain raw regions, all friendly-neighbor bonuses, later ties,
+HasOrders and historical-scenario bypass. Actual recovery Goto executes through
+A04/U04/U03/U02. Full tactical/turn/desktop acceptance remains open.
