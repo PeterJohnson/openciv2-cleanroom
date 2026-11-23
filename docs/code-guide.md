@@ -667,3 +667,12 @@ choice ordinals and damage across yields; a null yield is not a combat result.
 combat parent must retain its exclusive lane through yields, run result
 presentation before promotion, then call real casualty/event/lifecycle chains.
 These helpers do not delete a loser or provide a complete player attack command.
+
+`State/CasualtyHistory` owns fresh-world casualty rings; `Units/CombatHistory`
+(in `CombatCasualties.cs`) writes fields in U06 order and reloads owner/index after
+content queries. Logical names follow F02/X01; classic byte widths belong to the
+format boundary. `CombatCasualties` composes history, required S02 UnitKilled
+dispatch and actual basic deletion through `CivilizationElimination`, preserving
+captured raw stack links and nested decisions. `Session/CombatCasualtyOperation`
+routes those decisions privately. Result presentation, loser-group selection,
+city consequences and the full combat command remain separate pending joins.

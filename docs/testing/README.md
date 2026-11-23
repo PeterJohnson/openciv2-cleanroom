@@ -552,3 +552,10 @@ wrap, inclusive promotion chance, live Sun Tzu ownership/obsolescence and
 veteran/missile/autoplay behavior. Actual preparation is joined to ordinary
 rounds; casualty/event chains and the full combat/session/desktop caller remain
 open. No browser execution or full-game acceptance is claimed.
+
+U06 casualty groups join loss counters, world-owned history and real U01/V01/V06
+deletion continuations. They cover saturation versus wrapping, the 300-slot ring's
+299-entry count, live field reloads, event replacement of retained slots, captured
+raw next links, nested last-settler decisions and session privacy. Required S02
+and presentation/content callbacks are boundary fixtures; these cases do not
+claim the complete event executor or full combat/city/desktop integration.

@@ -590,6 +590,16 @@ equals first, increment first and wrap it only on equality with 300; otherwise
 increment signed32 count. Thus ordinary initialized operation retains at most
 299 counted entries with first==next representing empty, and replaces oldest
 entries within its allocated ring. Repaint the casualty report if open.
+
+The production world owns this local history; replacing the world starts empty
+rings. F02/X01 logical text rules apply: retain the opponent name as managed
+text. The classic 24-byte termination/padding contract is an adapter boundary,
+not a reason to truncate Unicode names in Core.
+
+Whole-stack processing may yield between casualties while retaining the captured
+raw next slot. The owning lane remains active; cancellation preserves completed
+losses and does not manufacture a completed stack result.
+
 Malformed indices that address outside the logical ring are excluded-write bugs,
 not additional history slots. Original compact field/string encodings belong
 in Appendix A; P07 owns display and navigation of recorded entries.

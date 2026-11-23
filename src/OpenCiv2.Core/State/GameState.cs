@@ -68,6 +68,7 @@ public sealed class GameState
     public EventState Events { get; } = new();
     public PowerHistoryArray<CivilizationArray<byte>> PowerHistory;
     public EliminationHistory Eliminations = new();
+    public CasualtyHistory Casualties { get; } = new();
     public ScenarioParameters Scenario = new();
     public Layout Layout;
     public MapView[] Views { get; } = new MapView[EntityLimits.Civilizations];
