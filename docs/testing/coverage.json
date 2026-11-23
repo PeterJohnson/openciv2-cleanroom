@@ -4656,7 +4656,7 @@
       "status": "partial",
       "contract": "C01 Founding from a unit and Player Build City / Join City command",
       "publicSurface": "CityFounding.Begin/BeginPlayer; CityFounding.Operation.Resume",
-      "review": "Composes actual CityCreation, basic U01 deletion, C01 removal and nested V01/V06 lifecycle decisions. Cases cover creation-before-loss, surviving stack companions, captured-center feature clearing, memory without exploration, supplied foreign/inactive city slots and direct custom role/ocean inputs. Names accept fifteen Unicode scalars and reject oversized direct arguments after creation while retaining effects. Player cases cover exact adjacency, airbases, signed size/unsigned Aqueduct thresholds, owner-independent joining without recalculation, created-city naming, live year/tutorial/final processing mode, cancellation naming resets, token/capital prefixes, supported-unit destruction and a real nested spy incident. Cosmetic failures remain diagnostic; required notice/removal failure and disposal retain prefixes. General text-response session/desktop wiring, A03 caller composition and complete-game acceptance remain open; browser/cross-platform execution remains deferred.",
+      "review": "Composes actual CityCreation, basic U01 deletion, C01 removal and nested V01/V06 lifecycle decisions. Cases cover creation-before-loss, surviving stack companions, captured-center feature clearing, memory without exploration, supplied foreign/inactive city slots and direct custom role/ocean inputs. Names accept fifteen Unicode scalars and reject oversized direct arguments after creation while retaining effects. Player cases cover exact adjacency, airbases, signed size/unsigned Aqueduct thresholds, owner-independent joining without recalculation, created-city naming, live year/tutorial/final processing mode, cancellation naming resets, token/capital prefixes, supported-unit destruction and a real nested spy incident. Cosmetic failures remain diagnostic; required notice/removal failure and disposal retain prefixes. General desktop command registration, A03 caller composition and complete-game acceptance remain open; browser/cross-platform execution remains deferred.",
       "sources": [
         "src/OpenCiv2.Core/City/CityFounding.Player.cs",
         "src/OpenCiv2.Core/City/CityFounding.cs"
@@ -4677,6 +4677,42 @@
         "C01.founding-player-join",
         "C01.founding-supplied-city",
         "C01.founding-visibility-cosmetic-failure"
+      ]
+    },
+    {
+      "id": "private-text-interactions",
+      "status": "partial",
+      "contract": "P04/P05 semantic decisions and privacy; C01 player founding; F04 local input replay; architecture scoped clients",
+      "publicSurface": "InteractionTextInput; IPlayerClient.Reply text overload; CityFoundingOperation; desktop text editor; game.reply optional text; LocalReplayStep.TextReply",
+      "review": "Actual participant authority, revoked controllers, invalid choices and Unicode scalar bounds retain pending decisions; accepted replies latch once. Empty values, deadlines, stale identity and cancellation preserve committed prefixes. Actual founding and nested lifecycle decisions route privately. Replay v2 adds bounded text replies while v1 journals remain unchanged. Shared Lua tests cover metadata, rejected inputs and Unicode with colons. General desktop founding registration and generated-game acceptance remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.App/InteractionDialogView.cs",
+        "src/OpenCiv2.App/SeamView.Actions.cs",
+        "src/OpenCiv2.Automation/Prelude.lua",
+        "src/OpenCiv2.Automation/ScriptTask.cs",
+        "src/OpenCiv2.Contracts/Clients.cs",
+        "src/OpenCiv2.Contracts/Commands.cs",
+        "src/OpenCiv2.Contracts/LocalReplay.cs",
+        "src/OpenCiv2.Formats/LocalReplayCodec.cs",
+        "src/OpenCiv2.Session/CityFoundingOperation.cs",
+        "src/OpenCiv2.Session/CommandRuntime.cs",
+        "src/OpenCiv2.Session/LocalReplay.cs",
+        "src/OpenCiv2.Session/LocalReplayRecorder.cs",
+        "src/OpenCiv2.Session/Operations.cs",
+        "src/OpenCiv2.ViewModels/InteractionDialogModel.cs",
+        "src/OpenCiv2.ViewModels/SessionPanel.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.AutomationCases/AutomationSuite.cs",
+        "tests/OpenCiv2.FoundationCases/TextInteractionCases.cs"
+      ],
+      "sharedGroups": [
+        "C01.founding-private-lifecycle-session",
+        "C01.founding-private-text-session",
+        "F04.text-replay-encoding-limits",
+        "P04.text-dialog-identity-cancellation",
+        "P04.text-interaction-metadata-deadline",
+        "P04.text-reply-private-validation"
       ]
     }
   ]

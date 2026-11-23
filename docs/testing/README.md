@@ -900,5 +900,9 @@ Aqueduct thresholds and existing economy values. Naming acceptance, empty/Unicod
 names, cancellation resets, supported-unit destruction, final city visits and
 real nested lifecycle incidents preserve committed effects. Cosmetic failures
 remain diagnostic; required failures and disposal do not roll back creation.
-The public interaction API still needs text replies before general desktop
-naming can be wired; these groups do not claim desktop/full-game acceptance.
+Six additional groups cover private text replies, revoked controllers, invalid
+choices/lengths, Unicode/empty values, deadlines, stale dialog identities, replay
+versioning and bounded recording. Actual C01 session cases exercise accepted and
+cancelled names, final city visits and private nested lifecycle decisions. The
+shared Lua suite covers text metadata and replies with Unicode and colons. General
+desktop founding registration and full-game acceptance remain open.

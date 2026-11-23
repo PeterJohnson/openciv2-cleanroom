@@ -12,6 +12,8 @@ public abstract record LocalReplayStep
         CommandStatus Status, string Code) : LocalReplayStep;
     public sealed record Reply(ControllerKind Controller, InteractionId Interaction, int Choice,
         InputReceipt Receipt) : LocalReplayStep;
+    public sealed record TextReply(ControllerKind Controller, InteractionId Interaction, int Choice,
+        string Text, InputReceipt Receipt) : LocalReplayStep;
     public sealed record Cancel(ControllerKind Controller, CommandId Command, InputReceipt Receipt) : LocalReplayStep;
     public sealed record Advance(CommandId Command, CommandStatus Status, string Code,
         InteractionId? Interaction, int Effects) : LocalReplayStep;

@@ -17,7 +17,7 @@ public static class AutomationSuite
         ("cancel-before-and-after-effects", Cancellation), ("disposal-and-gc", DisposalAndGc),
         ("revoked-authority", RevokedAuthority), ("task-command-ownership", TaskCommandOwnership),
         ("stale-target", StaleTarget), ("sandbox-and-limits", SandboxAndLimits), ("error-preserves-effects", ErrorPreservesEffects),
-        ("city-production-policy-replay", CityProductionPolicyReplay)
+        ("city-production-policy-replay", CityProductionPolicyReplay), ("text-replies", TextReplies)
     ];
     public static IReadOnlyList<string> Names => cases.Select(c => c.Name).ToArray();
     public static void Run(string name) => cases.Single(c => c.Name == name).Run();
@@ -27,8 +27,9 @@ public static class AutomationSuite
         internal readonly SessionRuntime Runtime = new(new(), new(701));
         internal readonly IPlayerClient Client;
         internal readonly ParticipantId Participant;
-        internal Fixture()
+        internal Fixture(CommandDefinition? extra = null)
         {
+            if (extra is not null) Runtime.RegisterCommand(extra);
             Runtime.RegisterCommand(LocalUnitCommands.StackBottom()); Runtime.BeginClientSession(new(17, 23));
             Runtime.World.Map.Allocate(new(8, 6)); Runtime.World.Entities.Units.SetEnd(4); Runtime.World.Globals.UnitEnd = 4;
             for (int i = 0; i < 4; ++i) Runtime.World.Entities.Units.Storage[i] = new()
@@ -50,6 +51,33 @@ public static class AutomationSuite
         public void Dispose() => Runtime.Dispose();
     }
     private const string Command = "unit.stack-bottom unit=0:100";
+    private sealed class TextInputDecision : IContinuation
+    {
+        public OperationStep Resume(OperationContext context, OperationInput input) => input.Kind == OperationInputKind.Begin
+            ? new(CommandStatus.AwaitingInteraction, Interaction: new("Name", context.Actor.Participant, null, new([0, 1]))
+            { TextInput = new("City name", "Old", 3, 0) })
+            : new(Result: new([new("name", new CommandValue.Text(input.Text ?? ""))]));
+        public void Dispose() { }
+    }
+    private static void TextReplies()
+    {
+        var command = new CommandDefinition(new(1, "test.text", "Text decision", AccessClass.Player, new([]), new([new("name", ValueKind.Text)])),
+            (_, _, _) => new(), _ => new TextInputDecision());
+        using var f = new Fixture(command);
+        using var task = f.Task("""
+            local x=game.command('test.text')
+            while x.status=='Pending' do game.wait(); x=game.result(x.id) end
+            local q=x.interaction
+            assert(q.text_input.initial=='Old' and q.text_input.max_length==3 and q.text_input.submit_choice==0)
+            assert(game.reply(q.id,0).code=='text_required')
+            assert(game.reply(q.id,0,'four').code=='text_too_long')
+            assert(game.reply(q.id,1,'x').code=='text_not_allowed')
+            assert(game.reply(q.id,0,'🌲:a').accepted)
+            repeat game.wait(); x=game.result(x.id) until x.status=='Completed'
+            assert(x.result.name=='🌲:a')
+            """);
+        f.Pump(task); Check(task.Status == ScriptStatus.Completed, task.Error);
+    }
     private const string Complete = """
         local x=game.command('unit.stack-bottom unit=0:100')
         while x.status=='Pending' do game.wait(); x=game.result(x.id) end

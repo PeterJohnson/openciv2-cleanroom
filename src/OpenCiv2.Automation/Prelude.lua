@@ -8,7 +8,11 @@ function game.production_choices(city) return call('production_choices', tostrin
 function game.commands() return call('commands', '') end
 function game.command(text) return call('command', text) end
 function game.result(id) return call('result', id) end
-function game.reply(id, choice) return call('reply', id .. ':' .. tostring(choice)) end
+function game.reply(id, choice, text)
+    if text == nil then return call('reply', id .. ':' .. tostring(choice)) end
+    assert(type(text) == 'string', 'reply text must be a string')
+    return call('reply_text', id .. ':' .. tostring(choice) .. ':' .. text)
+end
 function game.cancel(id) return call('cancel', id) end
 function game.wait() return call('wait', '') end
 function game.log(text) return call('log', text) end

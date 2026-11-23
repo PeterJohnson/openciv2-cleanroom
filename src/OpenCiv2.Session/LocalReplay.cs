@@ -35,6 +35,9 @@ public static class LocalReplay
                 case LocalReplayStep.Reply v:
                     Client(v.Controller).Reply(v.Interaction, v.Choice);
                     break;
+                case LocalReplayStep.TextReply v:
+                    Client(v.Controller).Reply(v.Interaction, v.Choice, v.Text);
+                    break;
                 case LocalReplayStep.Cancel v:
                     Client(v.Controller).Cancel(v.Command);
                     break;

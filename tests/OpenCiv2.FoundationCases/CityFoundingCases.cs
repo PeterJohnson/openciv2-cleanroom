@@ -21,9 +21,9 @@ public static partial class FoundationSuite
         public List<CityTarget> Removed { get; } = [];
         public bool FailCosmetic, FailFounded, FailRemoval;
         public int CapacityNotices;
-        public FoundingFixture(NameCatalog? names = null, List<Choice>? choices = null)
+        public FoundingFixture(NameCatalog? names = null, List<Choice>? choices = null, RevelationFixture? data = null)
         {
-            Life = new(choices); World.Civilizations[1].Tribe = 0;
+            Life = new(choices, data); World.Civilizations[1].Tribe = 0;
             World.Globals.FirstLaunchTurn = -1; World.Globals.Turn = 1;
             Data.Rules.Cosmic = Data.Rules.Cosmic with { AqueductSize = 8 };
             Data.AddUnit(0, 1, 0, new(10, 10)); World.Civilizations[1].UnitsActive[0] = 1; World.UnitTotals[1] = 1;

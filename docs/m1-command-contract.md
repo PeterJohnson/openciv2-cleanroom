@@ -73,7 +73,11 @@ M6 must define its protocol acknowledgement/epoch retirement before pruning them
 
 An interaction has its own identity, explicit recipient/observer, optional typed
 target, ordered allowed choices, prompt, cancellation permission and optional
-deadline/default. The recipient defaults to the admitted actor. Replies capture
+deadline/default. Optional text input specifies a label, initial value, maximum
+Unicode scalar length and one allowed submit choice. That choice requires the
+text reply overload; other choices reject text. Empty text is valid. Rejection
+leaves the interaction available. A deadline selecting the text submit choice
+uses its initial value. The recipient defaults to the admitted actor. Replies capture
 the validated provider identity and are queued as inputs; duplicate or stale
 interaction IDs and disallowed choices are rejected. Timeout is a distinct input
 with the optional default choice, not a fabricated player response. The engine

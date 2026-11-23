@@ -123,6 +123,16 @@ public sealed class SessionPanel(bool observeMap = false)
         return Receive(() => client.Cancel(id));
     }
 
+    public bool Reply(int choice, string text)
+    {
+        if (client is null || View.Command?.Interaction is not { } interaction)
+        {
+            return false;
+        }
+
+        return Receive(() => client.Reply(interaction.Id, choice, text));
+    }
+
     private bool Receive(Func<InputReceipt> call)
     {
         try

@@ -15,7 +15,7 @@ HOSTS = {'OpenCiv2.AutomationProbe', 'OpenCiv2.AutomationBrowser'}
 CASES = ['command-equivalence', 'observer-and-descriptor', 'instruction-budget', 'lua-csharp-runtime',
          'host-output-command-budgets', 'script-errors', 'cancel-before-and-after-effects', 'disposal-and-gc',
          'revoked-authority', 'task-command-ownership', 'stale-target', 'sandbox-and-limits', 'error-preserves-effects',
-         'city-production-policy-replay']
+         'city-production-policy-replay', 'text-replies']
 OUTCOME = {'Stack': '2,-1,100,1;-1,2,101,1;1,0,102,1;-1,-1,103,2', 'Effects': 1, 'Changed': True, 'Output': 'completed\n'}
 
 

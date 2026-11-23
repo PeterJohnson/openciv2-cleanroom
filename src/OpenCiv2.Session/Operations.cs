@@ -24,7 +24,8 @@ public enum OperationInputKind { Begin, Proceed, Choice, Cancel, Timeout }
 public sealed record OperationInput(
     OperationInputKind Kind = OperationInputKind.Begin,
     int? Choice = null,
-    CommandActor? Source = null);
+    CommandActor? Source = null,
+    string? Text = null);
 /// <summary>
 /// A continuation's next lifecycle state, terminal result or request for participant interaction.
 /// </summary>

@@ -67,6 +67,8 @@ public interface IPlayerClient
     /// Queues an allowed choice for a currently visible interaction.
     /// </summary>
     InputReceipt Reply(InteractionId interaction, int choice);
+    /// <summary>Queues text with the interaction's submit choice, subject to the same private decision authority.</summary>
+    InputReceipt Reply(InteractionId interaction, int choice, string text) => new(false, "text_reply_unsupported");
 
     /// <summary>
     /// Requests cancellation of an accessible command subject to its interaction and authority policy.

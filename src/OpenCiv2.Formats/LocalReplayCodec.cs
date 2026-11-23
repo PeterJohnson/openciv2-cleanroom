@@ -11,6 +11,7 @@ namespace OpenCiv2.Formats;
 public static class LocalReplayCodec
 {
     public const string Format = "openciv2-local-replay/1";
+    public const string TextFormat = "openciv2-local-replay/2";
     public const int MaximumBytes = 2 * MaximumPayload + 1024;
     private const string Profile = "alder-valley/1";
 
@@ -24,7 +25,8 @@ public static class LocalReplayCodec
             ["scriptSha256"] = tape.ScriptSha256,
             ["steps"] = new JsonArray(tape.Steps.Select(step => (JsonNode)Write(step, budget)).ToArray())
         };
-        _ = Payload(new(root, "local-replay/payload"));
+        bool textReplies = tape.Steps.Any(step => step is LocalReplayStep.TextReply);
+        _ = Payload(new(root, "local-replay/payload"), textReplies);
         byte[] payload = ContentJson.CanonicalBytes(root);
         if (payload.Length > MaximumPayload)
         {
@@ -32,7 +34,7 @@ public static class LocalReplayCodec
         }
         return ContentJson.CanonicalBytes(new JsonObject
         {
-            ["format"] = Format,
+            ["format"] = textReplies ? TextFormat : Format,
             ["payload"] = Encoding.UTF8.GetString(payload),
             ["sha256"] = ContentIdentity.Sha256(payload)
         });
@@ -46,7 +48,12 @@ public static class LocalReplayCodec
         }
         var envelope = new ContentReader(ContentJson.Parse(encoded, "local-replay"), "local-replay");
         envelope.Fields(["format", "payload", "sha256"]);
-        envelope.At("format").Constant(Format);
+        string format = envelope.At("format").Text();
+        if (format != Format && format != TextFormat)
+        {
+            envelope.At("format").Error("unsupported replay format");
+        }
+
         string payload = envelope.At("payload").Text();
         if (Encoding.UTF8.GetByteCount(payload) > MaximumPayload)
         {
@@ -57,10 +64,10 @@ public static class LocalReplayCodec
         {
             throw new ArgumentException("Replay payload integrity failure");
         }
-        return Payload(new(ContentJson.Parse(bytes, "local-replay/payload"), "local-replay/payload"));
+        return Payload(new(ContentJson.Parse(bytes, "local-replay/payload"), "local-replay/payload"), format == TextFormat);
     }
 
-    private static LocalReplayTape Payload(ContentReader root)
+    private static LocalReplayTape Payload(ContentReader root, bool textReplies)
     {
         root.Fields(["profile", "scriptSha256", "steps"]);
         root.At("profile").Constant(Profile);
@@ -68,7 +75,7 @@ public static class LocalReplayCodec
         var values = new LocalReplayStep[Count(steps)];
         for (int i = 0; i < values.Length; ++i)
         {
-            values[i] = Read(steps.Element(i));
+            values[i] = Read(steps.Element(i), textReplies);
         }
         return new(root.At("scriptSha256").Sha256(), new(values));
     }
@@ -94,6 +101,16 @@ public static class LocalReplayCodec
                 ["controller"] = v.Controller.ToString(),
                 ["interaction"] = Number(v.Interaction.Value),
                 ["choice"] = Number(v.Choice),
+                ["accepted"] = v.Receipt.Accepted,
+                ["code"] = budget.Text(v.Receipt.Code)
+            },
+            LocalReplayStep.TextReply v => new()
+            {
+                ["kind"] = "text_reply",
+                ["controller"] = v.Controller.ToString(),
+                ["interaction"] = Number(v.Interaction.Value),
+                ["choice"] = Number(v.Choice),
+                ["text"] = budget.Text(v.Text),
                 ["accepted"] = v.Receipt.Accepted,
                 ["code"] = budget.Text(v.Receipt.Code)
             },
@@ -131,7 +148,7 @@ public static class LocalReplayCodec
         return value;
     }
 
-    private static LocalReplayStep Read(ContentReader row)
+    private static LocalReplayStep Read(ContentReader row, bool textReplies)
     {
         ControllerKind Controller() => Enumeration<ControllerKind>(row.At("controller"));
         CommandStatus Status() => Enumeration<CommandStatus>(row.At("status"));
@@ -147,6 +164,10 @@ public static class LocalReplayCodec
                 row.Fields(["kind", "controller", "interaction", "choice", "accepted", "code"]);
                 return new LocalReplayStep.Reply(Controller(), new(Number<ulong>(row.At("interaction"))),
                     Number<int>(row.At("choice")), Receipt());
+            case "text_reply" when textReplies:
+                row.Fields(["kind", "controller", "interaction", "choice", "text", "accepted", "code"]);
+                return new LocalReplayStep.TextReply(Controller(), new(Number<ulong>(row.At("interaction"))),
+                    Number<int>(row.At("choice")), Text(row.At("text")), Receipt());
             case "cancel":
                 row.Fields(["kind", "controller", "command", "accepted", "code"]);
                 return new LocalReplayStep.Cancel(Controller(), new(Number<ulong>(row.At("command"))), Receipt());

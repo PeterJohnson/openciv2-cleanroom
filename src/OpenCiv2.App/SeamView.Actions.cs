@@ -144,6 +144,7 @@ public sealed partial class SeamView
         ["target"] = dialog.Target,
         ["powerHistory"] = dialog.Model?.Spec.PowerHistory is { } history ? System.Text.Json.JsonSerializer.SerializeToNode(history) : null,
         ["console"] = bounds(dialog.ReplyInput),
+        ["textInput"] = dialog.Model?.Spec.TextInput is null ? null : bounds(dialog.TextEditor),
         ["regions"] = new JsonObject(dialog.Choices.Select(entry =>
             new KeyValuePair<string, JsonNode?>("choice." + entry.Key, bounds(entry.Value))))
         {

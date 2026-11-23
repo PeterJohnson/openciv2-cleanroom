@@ -123,11 +123,14 @@ public static class CommandStatuses
 }
 public sealed record Effect(ulong Index, string Name, OwnedList<NamedValue> Values);
 public sealed record InteractionOption(int Value, string Label, string Detail = "");
+/// <summary>One text field submitted with the indicated choice. Length is measured in Unicode scalars.</summary>
+public sealed record InteractionTextInput(string Label, string InitialText, int MaximumLength, int SubmitChoice);
 public sealed record InteractionSpec(string Prompt, ParticipantId? Recipient, CommandValue? Target,
     OwnedList<int> Choices, ulong? Deadline = null, int? DefaultChoice = null, bool Cancellable = true)
 {
     public OwnedList<InteractionOption> Options { get; init; } = OwnedList<InteractionOption>.Empty;
     public PowerHistoryReport? PowerHistory { get; init; }
+    public InteractionTextInput? TextInput { get; init; }
 }
 public sealed record Interaction(
     InteractionId Id,

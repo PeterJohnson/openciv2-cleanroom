@@ -67,6 +67,7 @@ public sealed class LocalReplayRecorder(string scriptSha256)
                     && (arg.Value is not CommandValue.Text text || Account(text.Value))),
             LocalReplayStep.Advance advance => Account(advance.Code),
             LocalReplayStep.Reply reply => Account(reply.Receipt.Code),
+            LocalReplayStep.TextReply reply => Account(reply.Text) && Account(reply.Receipt.Code),
             LocalReplayStep.Cancel cancel => Account(cancel.Receipt.Code),
             _ => true
         };

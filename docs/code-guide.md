@@ -76,8 +76,10 @@ actual basic unit deletion, city removal and nested lifecycle decisions. Naming
 pauses after creation; cancellation removes that city and then adjusts the live
 name cursor. Accepted founding clears center improvements and remembers features;
 joining only changes size and deletes the unit. Its final city visit retains the
-calculation processing mode until a reply. General session text replies, desktop
-registration and A03 composition remain open.
+calculation processing mode until a reply. `Session/CityFoundingOperation` routes
+private naming, lifecycle and final city-window decisions through scoped clients.
+The desktop dialog accepts text with the same identity/latch guards as numbered
+choices. General desktop registration and A03 composition remain open.
 `CityQueries` also supplies region/port and coastal predicates. Commodity
 refresh includes the specified zero road-accumulator repair. `TradeRoutes` supplies
 C07 directional removal, slot writing, append/replacement and refresh, using the
@@ -239,7 +241,8 @@ reference. The default `LuaMachine` remains portable and runs inline.
 
 The optional launcher can record local inputs as a separate replay journal.
 `LocalReplayRecorder` observes the existing command and file boundaries.
-`LocalReplayCodec` owns the bounded, versioned representation.
+`LocalReplayCodec` owns the bounded, versioned representation: text replies use
+version 2; journals containing only existing input types retain version 1.
 `LocalReplay.Run` drives a fresh authored game through the recorded inputs and
 checks receipts and save digests before returning the result.
 

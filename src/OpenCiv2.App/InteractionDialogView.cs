@@ -25,6 +25,8 @@ internal sealed class InteractionDialogView : UserControl
     private readonly StackPanel body;
     private readonly PowerHistoryView history = new();
     private readonly TextBox? replyInput;
+    private readonly TextBox textInput = new() { IsVisible = false };
+    private readonly TextBlock textLabel = new() { IsVisible = false };
     private Control? returnFocus;
     private DialogIdentity? displayed;
     public DialogView? Model => model.View;
@@ -32,6 +34,7 @@ internal sealed class InteractionDialogView : UserControl
     public string Target => target.Text ?? "";
     public IReadOnlyDictionary<int, DialogChoiceButton> Choices => buttons;
     public TextBox? ReplyInput => replyInput;
+    public TextBox TextEditor => textInput;
     public Button Cancel { get; private set; } = new() { Content = "Cancel command", IsEnabled = false };
     public event Action? Responded;
 
@@ -48,7 +51,14 @@ internal sealed class InteractionDialogView : UserControl
             title.FontFamily = GraphicsFonts.Serif;
         }
 
-        body = new StackPanel { Spacing = 14, Children = { title, prompt, history, target, choices, Cancel } };
+        AutomationProperties.SetAutomationId(textInput, "dialog.text");
+        textInput.KeyUp += (_, args) =>
+        {
+            if (args.Key == Key.Enter && args.KeyModifiers == KeyModifiers.None && displayed is { } identity
+                && model.View?.Spec.TextInput is { } field)
+            { Respond(identity, field.SubmitChoice); args.Handled = true; }
+        };
+        body = new StackPanel { Spacing = 14, Children = { title, prompt, history, target, textLabel, textInput, choices, Cancel } };
         if (consoleReplies)
         {
             var entry = replyInput = new() { PlaceholderText = "reply <choice> or cancel" };
@@ -102,7 +112,7 @@ internal sealed class InteractionDialogView : UserControl
     {
         if (IsVisible && !IsKeyboardFocusWithin && Model?.Submitted == false)
         {
-            (buttons.GetValueOrDefault(1) ?? buttons.Values.FirstOrDefault() as Control ?? Cancel).Focus();
+            (textInput.IsVisible ? textInput : buttons.GetValueOrDefault(1) ?? buttons.Values.FirstOrDefault() as Control ?? Cancel).Focus();
         }
     }
 
@@ -117,6 +127,8 @@ internal sealed class InteractionDialogView : UserControl
             displayed = null;
             prompt.Text = target.Text = "";
             history.Show(null);
+            textInput.Text = "";
+            textInput.IsVisible = textLabel.IsVisible = false;
             foreach (var button in buttons.Values)
             {
                 button.IsEnabled = false;
@@ -139,6 +151,10 @@ internal sealed class InteractionDialogView : UserControl
         {
             displayed = view.Identity;
             replyInput?.Clear();
+            textInput.IsVisible = textLabel.IsVisible = view.Spec.TextInput is not null;
+            textInput.Text = view.Spec.TextInput?.InitialText ?? "";
+            textLabel.Text = view.Spec.TextInput?.Label ?? "";
+            AutomationProperties.SetName(textInput, view.Spec.TextInput?.Label ?? "Text reply");
             choices.Children.Clear();
             buttons.Clear();
             // Capture this interaction's identity in every handler, including cancellation.
@@ -184,7 +200,9 @@ internal sealed class InteractionDialogView : UserControl
 
         prompt.Text = view.Spec.Prompt;
         history.Show(view.Spec.PowerHistory);
-        target.Text = view.Submitted ? "Waiting for the command to finish…" : DescribeTarget(view.Spec.Target);
+        target.Text = view.Submitted ? "Waiting for the command to finish…" : session.View.Message == "text_too_long"
+            && view.Spec.TextInput is { } field ? $"Use at most {field.MaximumLength} characters." : DescribeTarget(view.Spec.Target);
+        textInput.IsEnabled = !view.Submitted;
         foreach (var button in buttons.Values)
         {
             button.IsEnabled = !view.Submitted;
@@ -234,7 +252,9 @@ internal sealed class InteractionDialogView : UserControl
 
     private void Respond(DialogIdentity identity, int? choice)
     {
-        model.Respond(session, identity, choice);
+        string? text = model.View is { } view && view.Identity == identity && view.Spec.TextInput?.SubmitChoice == choice
+            ? textInput.Text ?? "" : null;
+        model.Respond(session, identity, choice, text);
         Responded?.Invoke();
     }
 

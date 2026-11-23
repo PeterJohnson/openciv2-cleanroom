@@ -4707,3 +4707,58 @@ eight identity tests and three coverage tests passed.
 A03 settlement/work and its founding join, W06 barbarians, full A04/A01/turn
 orchestration, generated desktop composition and complete human/AI-game
 acceptance remain open. Browser and cross-platform execution remain deferred.
+
+## Private text replies and C01 naming presentation
+
+`InteractionTextInput` adds a labelled initial value, Unicode scalar limit and
+one submit choice to the existing private interaction contract. Text replies use
+the same current participant/controller checks and queued-input boundary as
+numbered choices. Missing text, disallowed choices and excessive lengths do not
+consume the decision; empty values are accepted. Deadlines selecting the text
+choice use its initial value. Duplicate and stale replies remain rejected.
+
+`CityFoundingOperation` composes actual C01 naming, cancellation, nested lifecycle
+and final city-window decisions. The desktop dialog preserves drafts across
+refreshes, focuses the editor, supports Enter or the offered button and disables
+accepted input while awaiting completion. Escape follows existing cancellation
+semantics. Lua exposes the optional field metadata and a third `game.reply`
+argument, preserving colons and Unicode. Local replay version 2 records bounded
+text replies, including rejected attempts; journals without text replies retain
+version 1. The replay profile remains the restricted authored local game.
+
+Six shared foundation groups cover authority/revocation, invalid metadata,
+Unicode/empty values, deadlines, stale identities, cancellation, replay versioning
+and recording exhaustion. Actual founding cases preserve created-city and
+unit-loss prefixes and route real private lifecycle decisions. A fifteenth Lua
+group checks metadata and both rejected and accepted text replies; existing
+native task/resource tests also pass.
+
+A standalone independently authored native widget harness uses the actual
+Avalonia dialog, SessionPanel and SessionRuntime with a test-only operation.
+It checks editor bounds/focus, draft retention, visible length errors, Unicode
+Enter, empty button replies, stale handlers and Escape cancellation. Its source,
+project, log, screenshot and artifact hashes are retained under
+`build/test-results/m4-text-replies-widget.*`. The screenshot was visually checked
+with the application's light theme. Initial harness attempts lacked Xvfb on PATH
+and selected an older native graphics dependency; the passing run used the
+existing extracted Xvfb and explicitly matched the repository's Linux graphics
+package versions. This is widget evidence, not a complete desktop founding flow.
+
+Root/App/Automation formatting and verification passed. All three Release builds
+completed with zero warnings/errors. Native tests passed **1332 of 1334**, with
+the two existing platform/audio skips. The shared probe passed **1299 groups**
+across 149 coverage families; source identity verified **710 compiled inputs**.
+All 15 native Lua groups and six Lua receipt-validator tests passed. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-text-replies-native.json` | `885a0b3ecebfc3b77fa2ea945532ce15acd86baee3dd7b583357fb736b989f5c` |
+| `m4-text-replies-identity.json` | `c6a0f171474f1165ccedbb8dd3755c95dd6b8397d05896e7e3ba5e48878d3b73` |
+| `m4-text-replies-lua-native.json` | `5c8f749918b602b2fb3af58f1fa988e3b1d5c82166ae9745245276d143bc620e` |
+| `m4-text-replies-widget.json` | `3a08f9d0f2abac12814e6534d8efc4de2f11d3e43cd708b78a8e02b7423cbc3b` |
+
+General desktop founding command registration, A03 settlement/work and its
+founding join, W06 barbarians, full A04/A01/turn orchestration, generated desktop
+composition and complete human/AI-game acceptance remain open. Browser and
+cross-platform execution remain deferred.

@@ -39,8 +39,13 @@ The prelude exposes these explicit operations; dispatch never uses reflection:
 - `game.command(text)` uses the ordinary bounded console grammar and typed
   descriptor validation; it returns admission status, not synchronous completion.
 - `game.result(commandId)` returns current status, code, effect count, typed result
-  fields and any interaction (ID, prompt, allowed choices).
-- `game.reply(interactionId, choice)` and `game.cancel(commandId)` use ordinary
+  fields and any interaction (ID, prompt, allowed choices). Optional `text_input`
+  metadata supplies `label`, `initial`, `max_length` (Unicode scalar characters)
+  and `submit_choice`.
+- `game.reply(interactionId, choice, text)` accepts an optional string for the
+  designated text choice, including an empty string. Omit it for ordinary choices.
+  Invalid or oversized text leaves the interaction available. Replies and
+  `game.cancel(commandId)` use ordinary
   session receipts. A task can operate only on commands it submitted, even when
   another controller belongs to the same participant.
 - `game.wait()` yields until the next owner tick; `game.log(text)` appends bounded

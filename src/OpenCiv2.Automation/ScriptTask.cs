@@ -172,8 +172,10 @@ public sealed class ScriptTask : IDisposable
             case "result":
                 return WriteUpdate(w, Result(argument));
             case "reply":
-                string[] parts = argument.Split(':');
-                if (parts.Length != 2
+            case "reply_text":
+                bool withText = operation == "reply_text";
+                string[] parts = argument.Split(':', withText ? 3 : 2);
+                if (parts.Length != (withText ? 3 : 2)
                     || !int.TryParse(
                         parts[1],
                         NumberStyles.AllowLeadingSign,
@@ -191,7 +193,7 @@ public sealed class ScriptTask : IDisposable
                     throw new ArgumentException("interaction_not_owned");
                 }
 
-                return WriteReceipt(w, client.Reply(interaction, choice));
+                return WriteReceipt(w, withText ? client.Reply(interaction, choice, parts[2]) : client.Reply(interaction, choice));
             case "cancel":
                 return WriteReceipt(w, client.Cancel(Result(argument).Correlation.Command));
             case "wait":
@@ -254,7 +256,10 @@ public sealed class ScriptTask : IDisposable
         ("interaction", update.Interaction is { } interaction
             ? w.Object(("id", w.Text(Decimal(interaction.Id.Value))),
                 ("prompt", w.Text(interaction.Spec.Prompt)),
-                ("choices", w.Array(interaction.Spec.Choices.Select(w.Integer))))
+                ("choices", w.Array(interaction.Spec.Choices.Select(w.Integer))),
+                ("text_input", interaction.Spec.TextInput is { } field ? w.Object(
+                    ("label", w.Text(field.Label)), ("initial", w.Text(field.InitialText)),
+                    ("max_length", w.Integer(field.MaximumLength)), ("submit_choice", w.Integer(field.SubmitChoice))) : w.Nil()))
             : w.Nil()),
         ("result", w.Object(update.Result.Select(item => (item.Name, (JsonNode?)WriteValue(w, item.Value))).ToArray())));
 

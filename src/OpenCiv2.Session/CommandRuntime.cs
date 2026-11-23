@@ -300,6 +300,9 @@ public sealed partial class SessionRuntime
         spec.Choices.Distinct().Count() == spec.Choices.Count
             && spec.Options.All(option => spec.Choices.Contains(option.Value) && !string.IsNullOrEmpty(option.Label))
             && spec.Options.Select(option => option.Value).Distinct().Count() == spec.Options.Count
+            && (spec.TextInput is not { } text || !string.IsNullOrEmpty(text.Label) && text.InitialText is not null
+                && text.MaximumLength >= 0 && text.InitialText.EnumerateRunes().Count() <= text.MaximumLength
+                && spec.Choices.Contains(text.SubmitChoice))
             && (spec.DefaultChoice is null
                 || (spec.Deadline is not null && spec.Choices.Contains(spec.DefaultChoice.Value)));
 
@@ -545,7 +548,8 @@ public sealed partial class SessionRuntime
         {
             if (record.Update.Interaction is { Spec.Deadline: { } deadline } interaction && now >= deadline)
             {
-                QueueInput(state, record, new(OperationInputKind.Timeout, interaction.Spec.DefaultChoice));
+                QueueInput(state, record, new(OperationInputKind.Timeout, interaction.Spec.DefaultChoice,
+                    Text: interaction.Spec.TextInput is { } text && text.SubmitChoice == interaction.Spec.DefaultChoice ? text.InitialText : null));
                 ++count;
             }
         }
@@ -773,7 +777,16 @@ public sealed partial class SessionRuntime
             return result;
         }
 
-        private static InputReceipt ReplyCore(RuntimeState current, Lease grant, InteractionId interaction, int choice)
+        public InputReceipt Reply(InteractionId interaction, int choice, string text)
+        {
+            var (current, grant) = Checked();
+            ArgumentNullException.ThrowIfNull(text);
+            var result = ReplyCore(current, grant, interaction, choice, text);
+            current.Replay?.Record(new LocalReplayStep.TextReply(grant.Identity.Kind, interaction, choice, text, result));
+            return result;
+        }
+
+        private static InputReceipt ReplyCore(RuntimeState current, Lease grant, InteractionId interaction, int choice, string? text = null)
         {
             foreach (var record in current.Commands.Values)
             {
@@ -785,7 +798,24 @@ public sealed partial class SessionRuntime
                         return new(false, "choice_not_allowed");
                     }
 
-                    return QueueInput(current, record, new(OperationInputKind.Choice, choice, Actor(grant)));
+                    if (pending.Spec.TextInput is { } field && field.SubmitChoice == choice)
+                    {
+                        if (text is null)
+                        {
+                            return new(false, "text_required");
+                        }
+
+                        if (text.EnumerateRunes().Count() > field.MaximumLength)
+                        {
+                            return new(false, "text_too_long");
+                        }
+                    }
+                    else if (text is not null)
+                    {
+                        return new(false, "text_not_allowed");
+                    }
+
+                    return QueueInput(current, record, new(OperationInputKind.Choice, choice, Actor(grant), text));
                 }
             }
 

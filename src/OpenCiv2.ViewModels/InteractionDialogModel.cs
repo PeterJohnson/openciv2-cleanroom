@@ -35,7 +35,7 @@ public sealed class InteractionDialogModel
     }
 
     /// <summary>Submits one allowed reply or cancellation; only accepted input latches this dialog.</summary>
-    public bool Respond(SessionPanel panel, DialogIdentity identity, int? choice)
+    public bool Respond(SessionPanel panel, DialogIdentity identity, int? choice, string? text = null)
     {
         panel.Refresh();
         Refresh(panel.View);
@@ -45,7 +45,7 @@ public sealed class InteractionDialogModel
             return false;
         }
 
-        bool accepted = choice is int value ? panel.Reply(value) : panel.Cancel();
+        bool accepted = choice is int value ? text is null ? panel.Reply(value) : panel.Reply(value, text) : panel.Cancel();
         if (accepted)
         {
             View = current with { Submitted = true };
