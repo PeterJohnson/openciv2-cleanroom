@@ -355,3 +355,13 @@ direct-command save equivalence, reload/turn continuation and journal replay.
 The native driver repeats draft cancellation and acceptance through the Tax rates
 button and named choices. Checkpoint cases round-trip named interaction options
 and reject duplicate or unoffered option identities.
+
+Government/diplomacy maintenance cases cover the four-turn Anarchy calendar,
+Statue and live Revolution/Human gates, child acknowledgment, imported turn-bit
+clearing, mandatory human diplomacy draws, signed request wrap, hostile-intent
+draw domains, directed flags, aggression aging, stale contact and ordered policy
+children. The AI child cases are declared-boundary tests, not complete A08 games.
+Desktop/direct/console cases cover revolution refusal/cancellation, Anarchy
+reload, government and rate decisions during upkeep, output failure after an
+accepted change, continued play and journal replay. The native driver compares
+complete saved bytes before and after a further turn/reload.

@@ -6,6 +6,7 @@ using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
 using OpenCiv2.Core.Units;
+using OpenCiv2.Formats;
 using OpenCiv2.Formats.Content;
 
 namespace OpenCiv2.Session;
@@ -16,7 +17,7 @@ public static partial class LocalPlayCommands
     public const string Research = "research.choose";
     public const string EndTurn = "turn.end";
 
-    private static void RegisterTurnCommands(SessionRuntime runtime)
+    private static void RegisterTurnCommands(SessionRuntime runtime, IPreferenceWriter preferences, LocalRateChoices choices)
     {
         runtime.RegisterCommand(Define(Fortify, "Fortify an owned land unit and spend its remaining movement.",
             [new("unit", ValueKind.Unit)], [new("unit", ValueKind.Unit)], FortifyUnit, ValidateUnit));
@@ -26,7 +27,7 @@ public static partial class LocalPlayCommands
             new(1, EndTurn, "Finish the player phase and advance the local turn.",
                 AccessClass.Player, new([]), new([new("turn")])),
             (actor, _, world) => new(ValidatePhase(actor, world)),
-            _ => new EndPlayerPhase()));
+            _ => new EndPlayerPhase(preferences, choices)));
     }
 
     private static OperationStep FortifyUnit(OperationContext context, CommandRequest request)
@@ -98,7 +99,7 @@ public static partial class LocalPlayCommands
     }
 
     /// <summary>Local F04 mode adapter. The controller supplies the end-phase and research decisions.</summary>
-    private sealed class EndPlayerPhase : IContinuation
+    private sealed class EndPlayerPhase(IPreferenceWriter preferences, LocalRateChoices choices) : IContinuation
     {
         private bool upkeepCommitted;
         private int nextCity;
@@ -108,6 +109,10 @@ public static partial class LocalPlayCommands
         private int foodSurplus;
         private bool largeBalancedCity, cityDisorder;
         private ResearchChoiceNotice? pendingResearch;
+        private bool cityPassFinished, maintenanceFinished;
+        private GovernmentTurn? governmentTurn;
+        private GovernmentPicker? governmentSelection;
+        private string deferredFailure = "";
         private GameState? activeWorld;
         private OperationContext? currentContext;
         private OperationContext Current => currentContext ?? throw new InvalidOperationException("No active turn step");
@@ -131,6 +136,8 @@ public static partial class LocalPlayCommands
             research = null;
             production = null;
             pendingResearch = null;
+            governmentTurn = null;
+            governmentSelection = null;
         }
 
         private OperationStep ResumeStep(OperationContext context, OperationInput input)
@@ -219,7 +226,53 @@ public static partial class LocalPlayCommands
                     production = BeginCityProduction(context, slot);
                 }
             }
-            FinishCityPass(context);
+            if (!cityPassFinished)
+            {
+                FinishCityPass(context);
+                cityPassFinished = true;
+                governmentTurn = new(world, context.Process.Rules.Definitions, context.Actor.Civilization.Value, owner =>
+                {
+                    if (RecordCompatibility.Find(world.Lifetime) is { } opaque)
+                    {
+                        opaque.Civilizations[owner] = opaque.Civilizations[owner] with
+                        { Flags = (ushort)(opaque.Civilizations[owner].Flags & ~0x40) };
+                    }
+                });
+            }
+            if (!maintenanceFinished)
+            {
+                if (governmentSelection is not null)
+                {
+                    var result = governmentSelection.Resume(context, input);
+                    if (result.Status == CommandStatus.AwaitingInteraction)
+                    {
+                        return result;
+                    }
+                    if (result.Status == CommandStatus.Failed)
+                    {
+                        deferredFailure = result.Code;
+                    }
+                    governmentSelection = null;
+                    governmentTurn!.ChangeCompleted();
+                }
+                while (governmentTurn!.NextChange() is int requested)
+                {
+                    int owner = context.Actor.Civilization.Value;
+                    PlayerGovernments(context, _ => governmentSelection = new(preferences, choices, duringTurn: true),
+                        _ => throw new InvalidOperationException("Turn government selection owns the rate child"))
+                        .Change(owner, requested);
+                    context.Effect("civilization.government.selection", GovernmentValue(context));
+                    if (governmentSelection is not null)
+                    {
+                        return governmentSelection.Resume(context, new());
+                    }
+                    governmentTurn.ChangeCompleted();
+                }
+                new DiplomacyTurn(world, context.Process.Rules.Definitions, context.Gameplay, new AuthoredDiplomacyTurn())
+                    .Run(context.Actor.Civilization.Value, $"local-diplomacy/{world.Globals.Turn}");
+                context.Effect("civilization.diplomacy.maintained", GovernmentValue(context));
+                maintenanceFinished = true;
+            }
             AssessCivilization(context);
             world.Production.CivilizationTurnInProgress = false;
             activeWorld = null;
@@ -228,7 +281,19 @@ public static partial class LocalPlayCommands
             context.Effect("turn.advanced", TurnValue(world));
             world.PlayerPhaseActive = true;
             context.Publish();
-            return new(Result: TurnValue(world));
+            return new(deferredFailure.Length == 0 ? CommandStatus.Completed : CommandStatus.Failed,
+                TurnValue(world), deferredFailure);
+        }
+
+        private sealed class AuthoredDiplomacyTurn : IDiplomacyTurnEffects
+        {
+            private static InvalidOperationException Outside() => new("The authored profile has no AI diplomacy turn");
+            public void ExchangeAdvances(int from, int to) => throw Outside();
+            public void Meet(int from, int to) => throw Outside();
+            public void WarEnded(int from, int to) => throw Outside();
+            public void ReviewRelation(int from, int human) => throw Outside();
+            public void MilitaryAid(int owner) => throw Outside();
+            public void SeekWarAlly(int from, int human) => throw Outside();
         }
 
         private static OperationStep ResearchDecision(ResearchChoiceNotice pending) =>

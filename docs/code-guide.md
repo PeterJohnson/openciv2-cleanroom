@@ -424,3 +424,15 @@ labelled interaction options let the desktop present these choices without
 duplicating their gameplay arithmetic. Checkpoint encoding retains optional
 labels; the editor itself does not yet have a resumable checkpoint codec.
 `PlayRates` is a pure, owned observation and the sidebar only renders it.
+
+`GovernmentTurn` owns V02's resumable calendar/revolution prefix; its caller
+acknowledges each completed government child before continuing. Opaque Reserved40
+clearing stays in the F06 adapter. `DiplomacyTurn` then performs V04's entry draws,
+request aging, directed relation scan and ordered AI policy calls. It retains
+recent-peace values in `DiplomacyWorkspace`; `IDiplomacyTurnEffects` names the
+unfinished A08/V04 children rather than supplying default behavior.
+`LocalPlayCommands.Government` implements revolution and restricted selection,
+joining actual government/city recalculation and the existing rate editor.
+The local turn suspends for these decisions, then runs real human diplomacy
+maintenance before assessment. The authored game supports Anarchy/Despotism
+and preserves failed preference output without leaving the completed turn busy.

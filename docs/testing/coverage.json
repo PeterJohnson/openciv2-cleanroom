@@ -3014,6 +3014,35 @@
         "V02.rate-normalization-balancing",
         "V02.rate-preview-distribution"
       ]
+    },
+    {
+      "id": "government-diplomacy-turn",
+      "status": "partial",
+      "contract": "V02 sections5-6 local revolution/selection and government maintenance; V04 section11 local civilization diplomacy maintenance",
+      "publicSurface": "GovernmentTurn; DiplomacyTurn; IDiplomacyTurnEffects; civilization.revolution; desktop government/rate continuations",
+      "review": "Resumable calendar/Statue/revolution prefix acknowledges actual government children before diplomacy draws; adapter clears imported Reserved40 without inventing live semantic state. Human and AI relation scans retain signed request wrapping, directed flags, hostile draw gates, recent-peace publication, two-boundary aggression aging, stale contact and later policy order. AI negotiation/research/policy children remain required boundaries. Desktop joins real revolution, restricted selection, C03 government recalculation, rate decisions and human diplomacy maintenance; selection/output failures retain committed state. Direct/console replay and save/reload tests cover the authored Anarchy/Despotism domain. Full generated games, remaining V04/A08 children, broader government UI/domain and full F04 processing remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomacyTurn.cs",
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/GovernmentTurn.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Government.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.RateEditor.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/LocalPlayProjection.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CivilizationMaintenanceCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalGovernmentCases.cs"
+      ],
+      "sharedGroups": [
+        "M4.local-government-failure",
+        "M4.local-government-turns",
+        "V02.government-turn-calendar",
+        "V04.ai-diplomacy-aging",
+        "V04.human-diplomacy-turn",
+        "V04.stale-diplomacy-children"
+      ]
     }
   ]
 }

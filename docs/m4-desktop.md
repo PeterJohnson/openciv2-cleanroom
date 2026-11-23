@@ -13,7 +13,7 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate preparation/balancing/preview/acceptance, the desktop rate command and staged editor are now implemented. Remaining C01–C08 operations, government choices, general research presentation/capture/catch-up and full F04 integration are pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers, population/funds notices and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
@@ -21,8 +21,8 @@ in the [M2 closeout](m2-closeout.md).
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
-catch-up policies, A01 outer movement/U04 order execution, remaining V02 government
-choices and their rate-decision continuations, and full F04 turn processing
+catch-up policies, A01 outer movement/U04 order execution, V02 population/funds
+notices and general government/research callers, and full F04 turn processing
 needed by the generated desktop game. C04's shared
 disorder/tax/celebration handler now joins actual V02 local government transitions
 and runs in the authored desktop turn; this does not complete general turn processing.
@@ -1843,3 +1843,55 @@ eight identity and three coverage-inventory tests also passed.
 | `m4-rate-editor-play.json` | `cf56894aebd8b4d04b9a2d06a0287d8fe12ddab70bfa12d9c7b1d160b3d8f1a0` |
 | `m4-rate-editor-native.json` | `23250778a90e13fa924183361a9e212b8e5a4c0c873275d2aac32e62366506cd` |
 | `m4-rate-editor-identity.json` | `fff3bf5ddfabb7e642e023a29e3a0ae2a6d917d10f311c0e9185e4b84e451ec0` |
+
+
+## Revolution and civilization maintenance
+
+`GovernmentTurn` implements V02 §6 as a resumable prefix. It captures the entry
+government, clears GovernmentChanged and asks the F06 adapter to clear imported
+Reserved40, then applies the calendar/Statue/Revolution branches. A requested
+change must complete its actual government and rate children before acknowledgment;
+the subsequent live AI Revolution test remains separate. Opaque imported bits
+stay in `RecordCompatibility`.
+
+`DiplomacyTurn` implements the following local V04 §11 continuation: two entry
+draws for every nonzero civilization, senate toggling, signed request-count aging,
+seven directed snapshot/clear visits, AI hostility/aging/stale-contact branches
+and the ordered review/aid/ally scans. Recent peace is retained in the diplomacy
+workspace. Stale contact invokes actual bilateral Contact clearing, preserving
+Alliance where specified. AI Gang Up uses the existing AiCoordination game flag
+and its specified encoding. A08 exchange/review/aid/seeking and V04 meeting/notice
+services remain required children; their boundary tests do not claim complete AI
+turns or generated games. Network routing remains outside this local service.
+
+The desktop Revolution command confirms with the V02 result-zero convention,
+uses actual government/city recalculation and does not invent a Revolution flag.
+Restricted selection publishes named available governments; its setter completes
+the real rate editor before the established-government notice. The local turn
+suspends for these decisions after its city pass, then runs actual human
+diplomacy maintenance before civilization assessment. Rejected/closed government
+choices retain prior flags; closing the rate draft retains the selected government.
+A failed preference write reports the accepted change and lets a completed
+upkeep return to the player phase.
+
+Alder Valley now admits Anarchy and Despotism saves. It has no additional known
+government advances, Statue or AI civilization, so broader government choices,
+research-triggered government dialogs, complete A08 policy children, population/
+funds notices and general F04 scheduling remain unfinished. New native checks
+compare revolution, Anarchy reload, turn-four government/rate selection and another
+turn/reload against complete direct-client save bytes. Shared cases additionally
+cover cancellation before execution, cancel/decline, failed output and replay.
+Browser and cross-platform work remain deferred.
+
+Root/App formatting verification and root/desktop automation Release builds
+passed. The native suite passed **824 of 826 tests**, with the two existing
+platform/audio skips. The probe passed **792 shared groups** and verified
+**478 compiled inputs**. All **24 Linux desktop checks** passed. The Cancel
+button case now waits for measured layout before clicking. Project-boundary,
+coverage, eight identity and three coverage-inventory tests also passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-government-play.json` | `9c07695d9270a322582e0014c305fae5dc799e08d442c217c2c3d8c9b031c191` |
+| `m4-government-native.json` | `0854ae603315645ec08409bb6b873691b8c59de08567505e557dada0f0d5ae8c` |
+| `m4-government-identity.json` | `ffa9d6e2c9b94315e139cd1a3963559132c5e5259285ad29b19a20a84d801bbd` |

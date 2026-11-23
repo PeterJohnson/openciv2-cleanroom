@@ -100,6 +100,10 @@ internal static class LocalGameRules
         tables.Improvements[BuildingIds.Palace] = new() { Identity = new("palace", "Palace") };
         tables.Improvements[BuildingIds.Temple] = new() { Identity = new("temple", "Temple"), CostRows = 2, Upkeep = 1, Prerequisite = (AdvanceReference)0 };
         tables.Improvements[BuildingIds.Library] = new() { Identity = new("library", "Library"), CostRows = 3, Upkeep = 1, Prerequisite = (AdvanceReference)1 };
+        foreach (var government in Enum.GetValues<Government>())
+        {
+            tables.Governments[(int)government] = new() { Identity = new(government.ToString().ToLowerInvariant(), government.ToString()) };
+        }
         tables.Advances[0] = Advance("land-surveys", "Land Surveys");
         tables.Advances[1] = Advance("clay-casting", "Clay Casting");
         tables.Advances[2] = Advance("field-ledgers", "Field Ledgers", 0);

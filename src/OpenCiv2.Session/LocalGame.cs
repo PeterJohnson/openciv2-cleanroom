@@ -263,7 +263,7 @@ public sealed class LocalGame : IDisposable
             || !globals.Rules.NormalCombat || globals.Difficulty != Difficulty.Chieftain
             || globals.HumanPlayers != seat || globals.CivsAlive != seat || globals.Turn < 1
             || world.Multiplayer.LocalHuman != owner || world.Multiplayer.ResumeCiv != owner
-            || world.Events.Loaded || civ.Government != Government.Despotism || civ.Tribe != 0
+            || world.Events.Loaded || civ.Government is not (Government.Anarchy or Government.Despotism) || civ.Tribe != 0
             || civ.CityCount is < 0 or > 1 || !CivilizationRates.Allowed(world, owner, civ.TaxRate, civ.ScienceRate)
             || civ.Researching is < -1 or > 2 || globals.BestHumanRank >= EntityLimits.Civilizations
             || world.Entities.Cities.End != civ.CityCount)

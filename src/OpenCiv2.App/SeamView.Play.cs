@@ -49,6 +49,7 @@ public sealed partial class SeamView
         yield return new(PlayReload, "File", "Reload save", null, ready && SeamApp.Storage is not null);
         yield return new(PlayCity, "Orders", "Open city", null, ready && play?.City is not null);
         yield return new(LocalPlayCommands.EditRates, "Orders", "Tax rates", null, ready);
+        yield return new(LocalPlayCommands.Revolution, "Orders", "Revolution", null, ready && play?.CanRevolt == true);
         yield return new(LocalPlayCommands.Fortify, "Orders", "Fortify unit", null,
             ready && play?.Units.Any(u => u.Target == activeTarget && u.MovesLeft > 0) == true
             && model.View.Units?.Records.Any(u => new UnitTarget(u.Slot, u.Token) == activeTarget
@@ -79,6 +80,7 @@ public sealed partial class SeamView
         unitOrders.Children.Add(PlayButton("fortify", "Fortify", () => UnitCommand(LocalPlayCommands.Fortify)));
         unitOrders.Children.Add(PlayButton("end", "End turn", () => PlayCommand(LocalPlayCommands.EndTurn)));
         unitOrders.Children.Add(PlayButton("rates", "Tax rates", () => PlayCommand(LocalPlayCommands.EditRates)));
+        unitOrders.Children.Add(PlayButton("revolution", "Revolution", () => PlayCommand(LocalPlayCommands.Revolution)));
         playOrders.Children.Add(unitOrders);
         AutomationProperties.SetName(terrainJob, "Terrain work");
         playControls["work.job"] = terrainJob;
@@ -301,6 +303,10 @@ public sealed partial class SeamView
         {
             turnLabel.Text += $"\nTax {rates.Tax * 10}% · Science {rates.Science * 10}% · Luxury {rates.Luxury * 10}%";
         }
+        if (play.Government is { } government)
+        {
+            turnLabel.Text += $"\n{government.Name}";
+        }
         var unit = play.Units.FirstOrDefault(u => u.Target == activeTarget);
         var own = unit is null ? null : view.Units?.Records.FirstOrDefault(
             u => u.Slot == unit.Target.Slot && u.Token == unit.Target.Token);
@@ -324,6 +330,7 @@ public sealed partial class SeamView
         terrainWork.IsVisible = jobs.Length != 0;
         playControls["work"].IsEnabled = jobs.Length != 0;
         playControls["city"].IsEnabled = play.City is not null;
+        playControls["revolution"].IsEnabled = play.CanRevolt;
         playControls["save"].IsEnabled = playControls["load"].IsEnabled = SeamApp.Storage is not null;
 
         var researchPanel = (WrapPanel)playOrders.Children[^1];
@@ -552,6 +559,7 @@ public sealed partial class SeamView
             ["year"] = play.Year,
             ["phase"] = play.PlayerPhase,
             ["gold"] = play.Gold,
+            ["government"] = play.Government?.Id,
             ["rates"] = play.Rates is { } rates ? new JsonObject
             {
                 ["tax"] = rates.Tax,

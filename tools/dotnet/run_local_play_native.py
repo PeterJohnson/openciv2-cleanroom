@@ -561,7 +561,8 @@ def drive(args, app, observation, storage):
         choice(2)
         wait(lambda s: 'Choose Tax;' in s['prompt'])
         choice(6)
-        draft = wait(lambda s: s['prompt'].startswith('Tax 60%') and 'Choose Tax;' not in s['prompt'])
+        draft = wait(lambda s: s['prompt'].startswith('Tax 60%') and 'Choose Tax;' not in s['prompt']
+                     and s['dialog']['regions']['cancel']['width'] > 0)
         assert draft['play']['rates'] == {'tax': 4, 'science': 6, 'luxury': 0, 'maximum': 6}
         click_box(draft['dialog']['regions']['cancel'], draft)
         wait(lambda s: s['status'] == 'Cancelled' and not s['dialog']['visible'])
@@ -602,6 +603,70 @@ def drive(args, app, observation, storage):
         assert end_turn(3)['rates'] == failed_output['play']['rates']
         checks.append('native preference-output failure reports committed rates and the game continues')
 
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
+        observation = observation.with_name('government-observation.json')
+        storage = storage.with_name('government-storage')
+        launch[launch.index('--observe') + 1] = str(observation)
+        launch[launch.index('--storage-directory') + 1] = str(storage)
+        app = subprocess.Popen(launch)
+        wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        select(0)
+        click('name')
+        driver.chord('Control_L', 'a')
+        type_text('Council')
+        command(lambda: click('found'))
+        click('city.close')
+        wait(lambda s: not s['play']['cityOpen'])
+        click('revolution')
+        wait(lambda s: s['dialog']['visible'] and s['prompt'].startswith('Start a revolution'))
+        choice(1)
+        declined = wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        assert declined['play']['government'] == 1
+        click('revolution')
+        wait(lambda s: s['dialog']['visible'] and s['prompt'].startswith('Start a revolution'))
+        choice(0)
+        anarchy = wait(lambda s: s['status'] == 'Completed' and s['play']['government'] == 0)
+        assert not anarchy['play']['controls']['revolution']['enabled']
+
+        government_initial = observation.with_name('government-initial.sav')
+        government_selected = observation.with_name('government-selected.sav')
+        government_continued = observation.with_name('government-continued.sav')
+        subprocess.run(['dotnet', str(args.probe), '--local-government-reference', str(government_initial),
+                        str(government_selected), str(government_continued)], check=True)
+        state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['File']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['file.library']['bounds'])
+        import_save(government_initial)
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
+        assert end_turn(2)['government'] == 0
+        assert end_turn(3)['government'] == 0
+        click('end')
+        wait(lambda s: s['status'] == 'AwaitingInteraction')
+        choice(1)
+        selection = wait(lambda s: s['prompt'] == 'Choose a new government.')
+        assert selection['play']['turn'] == 4 and not selection['play']['phase']
+        assert sorted(k for k in selection['dialog']['regions'] if k.startswith('choice.')) == ['choice.1']
+        choice(1)
+        rates = wait(lambda s: s['prompt'].startswith('Tax ') and s['dialog']['visible'])
+        assert rates['play']['government'] == 1 and not rates['play']['phase']
+        choice(1)
+        wait(lambda s: s['status'] == 'Completed' and s['play']['phase'])
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(government_selected)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        assert end_turn(5)['government'] == 1
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(government_continued)
+        checks.append('native revolution, Anarchy reload, turn-four government/rate decisions and continuation match the direct client')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
     finally:

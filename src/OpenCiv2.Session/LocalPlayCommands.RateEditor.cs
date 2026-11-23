@@ -16,7 +16,7 @@ public static partial class LocalPlayCommands
 
     /// <summary>V02 decisions stay on the session lane. Presentation renders owned choices;
     /// preview and normalization effects survive cancellation of the draft.</summary>
-    private sealed class RateEditor(IPreferenceWriter preferences, LocalRateChoices choices) : IContinuation
+    private sealed class RateEditor(IPreferenceWriter preferences, LocalRateChoices choices, bool duringTurn = false) : IContinuation
     {
         private RateDraft? draft;
         private RateReport report;
@@ -25,7 +25,11 @@ public static partial class LocalPlayCommands
 
         public OperationStep Resume(OperationContext context, OperationInput input)
         {
-            if (ValidatePhase(context.Actor, context.World) is { } error)
+            if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout)
+            {
+                return new(CommandStatus.Cancelled, Code: "cancelled");
+            }
+            if (ValidatePhase(context.Actor, context.World, !duringTurn) is { } error)
             {
                 return new(CommandStatus.Failed, Code: error);
             }
@@ -48,10 +52,6 @@ public static partial class LocalPlayCommands
             }
             else
             {
-                if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout)
-                {
-                    return new(CommandStatus.Cancelled, Code: "cancelled");
-                }
                 if ((byte)civ.Government != government || civ.TaxRate != liveTax || civ.ScienceRate != liveScience)
                 {
                     return new(CommandStatus.Failed, Code: "rates_changed");

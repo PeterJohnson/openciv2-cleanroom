@@ -69,6 +69,11 @@ choices, hold one rate, and apply or cancel the draft. The same decision is
 available as `civilization.rates.edit` in the console. Holds persist across
 editor openings and reloads in the current game session.
 
+**Revolution** in the sidebar or Orders menu asks before entering Anarchy.
+In Alder Valley, the next turn divisible by four offers a new government and
+then the rate editor before play resumes. Anarchy games can be saved and
+reloaded. The console command is `civilization.revolution`.
+
 In the local game's console, `civilization.rates tax=6 science=4` sets rates
 in tenths. Tax, science and the remaining luxury rate must each respect the
 current government cap. Early-game changes write preferred rates to `CIV2.DAT`

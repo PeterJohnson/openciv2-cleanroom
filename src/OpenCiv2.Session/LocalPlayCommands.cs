@@ -18,9 +18,10 @@ public static partial class LocalPlayCommands
         runtime.RegisterCommand(Define(Move, "Move one step in direction 0–7, clockwise from northeast.",
             [new("unit", ValueKind.Unit), new("direction")], [new("unit", ValueKind.Unit)], MoveUnit, ValidateUnit));
         RegisterCityCommands(runtime);
-        RegisterTurnCommands(runtime);
+        RegisterTurnCommands(runtime, preferences, rateChoices);
         RegisterWorkCommands(runtime);
         RegisterRateCommands(runtime, preferences, rateChoices);
+        RegisterGovernmentCommands(runtime, preferences, rateChoices);
     }
 
     private static CommandDefinition Define(
@@ -31,12 +32,12 @@ public static partial class LocalPlayCommands
             (actor, request, world) => new(ValidatePhase(actor, world) ?? validate?.Invoke(actor, request, world)),
             request => new ImmediateOperation(request, execute, validate));
 
-    private static string? ValidatePhase(CommandActor actor, GameState world)
+    private static string? ValidatePhase(CommandActor actor, GameState world, bool playerPhase = true)
     {
         if (world.Globals.Multiplayer != GameMode.SinglePlayer || actor.Source is not null
             || actor.Civilization.Value != world.Globals.TurnCiv
             || !world.Globals.HumanPlayers.Contains(actor.Civilization.Value) || !world.TurnLoopActive
-            || !world.PlayerPhaseActive)
+            || world.PlayerPhaseActive != playerPhase)
         {
             return "player_phase_required";
         }

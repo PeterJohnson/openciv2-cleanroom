@@ -1,6 +1,18 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
+if (args is ["--local-government-reference", string anarchy, string government, string governmentContinued])
+{
+    var reference = FoundationSuite.LocalGovernmentReference();
+    foreach (var (path, bytes) in new[] { (anarchy, reference.Initial), (government, reference.Selected),
+        (governmentContinued, reference.Continued) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew);
+        output.Write(bytes);
+    }
+    return 0;
+}
+
 if (args is ["--local-rates-reference", string initialRates, string savedRates, string continuedRates, string preferences])
 {
     var reference = FoundationSuite.LocalRateReference();

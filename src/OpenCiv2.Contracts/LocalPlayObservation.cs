@@ -50,4 +50,6 @@ public sealed record LocalPlayObservation(
     PlayCity? City)
 {
     public PlayRates? Rates { get; init; }
+    public PlayOption? Government { get; init; }
+    public bool CanRevolt { get; init; }
 }
