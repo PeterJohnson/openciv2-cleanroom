@@ -18,6 +18,7 @@ public abstract record CityEspionageDecision
         OwnedList<CitySabotageTarget>? Targets = null) : CityEspionageDecision;
     public sealed record Incident(EspionagePretext Pretext) : CityEspionageDecision;
     public sealed record Technology(CapturedTechnologyChoice Choice) : CityEspionageDecision;
+    public sealed record Grant(ResearchGrantDecision Decision) : CityEspionageDecision;
     public sealed record Visit(CityEspionageVisit Request) : CityEspionageDecision;
 }
 public enum CityEspionageSound { Spy, MediumExplosion }

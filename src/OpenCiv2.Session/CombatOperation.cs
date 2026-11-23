@@ -64,7 +64,7 @@ internal static class CombatInteraction
             CombatDecision.Attack attack => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
             CombatDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
             CombatDecision.Help help => AllyHelpInteraction.Prompt(help.Decision, recipient, intelligence, ref intelligenceWindow),
-            CombatDecision.Continuation child => CombatContinuationInteraction.Prompt(context, child.Decision, recipient, city, ref cityWindow),
+            CombatDecision.Continuation child => CombatContinuationInteraction.Prompt(context, child.Decision, recipient, city, ref cityWindow, ref intelligenceWindow, intelligence),
             _ => throw new InvalidOperationException("Unknown combat decision")
         };
 }

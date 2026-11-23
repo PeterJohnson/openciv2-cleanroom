@@ -22,6 +22,8 @@ public static partial class FoundationSuite
         public ref OpenCiv2.Core.State.City City => ref Damage.City;
         public GameplayRandom Random => Damage.Lifecycle.Random;
         public GrantFixture Grant { get; }
+        public RetainedGrantFixture? Retained { get; }
+        public ResearchGrants Research => Retained?.Grants ?? Grant.Grants;
         public CapturedTechnology Captured { get; }
         public CityTechnologyTheft Theft { get; }
         public List<TechnologyTheftNotice> Notices { get; } = [];
@@ -32,7 +34,7 @@ public static partial class FoundationSuite
         public Queue<ResearchReply> GoalReplies { get; } = new();
         public bool FailNotice;
         public bool DiplomacyActive => false;
-        public TheftFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public TheftFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
         {
             Damage = new(choices, data);
             Rules.Cosmic = Rules.Cosmic with { FoodPerCitizen = 2, FoodBoxRows = 10, ShieldBoxRows = 10 };
@@ -41,12 +43,13 @@ public static partial class FoundationSuite
             for (int u = 0; u < RuleLimits.UnitTypes; ++u) Rules.Units[u] = Rules.Units[u] with { Prerequisite = AdvanceReference.Never, ObsoleteBy = AdvanceReference.Never };
             for (int i = 0; i < RuleLimits.Improvements; ++i) Rules.Improvements[i] = Rules.Improvements[i] with { Prerequisite = AdvanceReference.Never };
             Grant = new(Data, Random);
+            Retained = retainGrants ? new(Grant) : null;
             var production = new CityProductionChoice(World, Data.Process.Rules, new(), new(World, Data.Process.Rules, Data.Stacks), Data.Stacks,
                 new(World, Rules, ClassicShip, ClassicCalendar), new(World, Rules, Data.Stacks, Damage.Lifecycle.Deletion, Random, _ => throw new InvalidOperationException("Unexpected airlift")));
-            Captured = new(World, Data.Process.Rules, Grant.Grants,
+            Captured = new(World, Data.Process.Rules, Research,
                 new(World, Rules, city => production.Choose(city, "take-production"), _ => { }),
                 new(World, Rules, this), Taken.Add);
-            Theft = new(World, Rules, Random, Data.Stacks, Grant.Grants, Captured, Damage.Lifecycle.Elimination, Damage.Incidents.Incidents, this);
+            Theft = new(World, Rules, Random, Data.Stacks, Research, Captured, Damage.Lifecycle.Elimination, Damage.Incidents.Incidents, this);
         }
         public void Known(params int[] advances)
         {
@@ -71,11 +74,11 @@ public static partial class FoundationSuite
     private static void CapturedTechnologySelectionAndHelp()
     {
         var f = new TheftFixture(); f.Known(90, 91); // Disabled Enabled flag does not remove a capture option.
-        var op = f.Captured.Begin(1, 2, "take"); var first = op.Resume()!;
+        var op = f.Captured.Begin(1, 2, "take"); var first = (CapturedTechnologyChoice)op.Resume()!;
         Sequence(new[] { 90, 91 }, first.Options.Select(o => o.Identity)); Equal(91, first.Recommendation); Equal(true, first.Interactive);
         Equal(first, op.Resume()); f.Rules.Advances[91] = f.Rules.Advances[91] with { AiValue = 1 };
         f.Rules.Advances[90] = f.Rules.Advances[90] with { AiValue = 1, Enabled = true };
-        f.GoalReplies.Enqueue(new(90)); var rebuilt = op.Resume(new(0, 9))!;
+        f.GoalReplies.Enqueue(new(90)); var rebuilt = (CapturedTechnologyChoice)op.Resume(new(0, 9))!;
         Equal(91, rebuilt.Recommendation); Equal(1, f.GoalNotices.Count); Equal(true, f.Paths.Single().Stealing);
         Equal(0, f.Grant.Acquisitions.Count); Equal(false, f.World.Civilizations[1].Advances.Contains(91));
         // Accepted custom reply is not checked against victim knowledge or the options.
@@ -84,12 +87,12 @@ public static partial class FoundationSuite
         op.Resume(new(90)); Equal((byte)1, f.World.Civilizations[1].NumAdvances); f.Random.RequireChoicesConsumed();
         f = new(); f.Known(90, 91); f.Rules.Advances[90] = f.Rules.Advances[90] with { Prerequisites = new([AdvanceReference.Never, AdvanceReference.Never]) };
         f.Rules.Advances[91] = f.Rules.Advances[91] with { Prerequisites = new([AdvanceReference.Never, (AdvanceReference)80]) };
-        Sequence(new[] { 91 }, f.Captured.Begin(1, 2, "eligibility").Resume()!.Options.Select(o => o.Identity));
+        Sequence(new[] { 91 }, ((CapturedTechnologyChoice)f.Captured.Begin(1, 2, "eligibility").Resume()!).Options.Select(o => o.Identity));
         f.World.Globals.Status.Scenario = true; f.World.Scenario.Flags.GovernmentLock = true;
         f.Known(AdvanceIds.Monarchy, AdvanceIds.Communism, AdvanceIds.Fundamentalism, AdvanceIds.Republic, AdvanceIds.Democracy);
-        Sequence(new[] { 91 }, f.Captured.Begin(1, 2, "scenario").Resume()!.Options.Select(o => o.Identity));
+        Sequence(new[] { 91 }, ((CapturedTechnologyChoice)f.Captured.Begin(1, 2, "scenario").Resume()!).Options.Select(o => o.Identity));
         f.World.Globals.Status.Scenario = false;
-        Equal(6, f.Captured.Begin(1, 2, "no-scenario").Resume()!.Options.Count);
+        Equal(6, ((CapturedTechnologyChoice)f.Captured.Begin(1, 2, "no-scenario").Resume()!).Options.Count);
     }
 
     private static void CapturedTechnologyGatesAndActualProduction()
@@ -98,7 +101,7 @@ public static partial class FoundationSuite
         {
             var f = new TheftFixture(); f.Known(90); f.World.Multiplayer.LocalHuman = 2; f.World.Multiplayer.Saved.AutoplayActive = autoplay;
             f.World.Globals.HumanPlayers = CivilizationSet.Only(1).With(2);
-            var op = f.Captured.Begin(1, 2, "take"); var choice = op.Resume()!; Equal(false, choice.Interactive); Equal(0, choice.Options.Count);
+            var op = f.Captured.Begin(1, 2, "take"); var choice = (CapturedTechnologyChoice)op.Resume()!; Equal(false, choice.Interactive); Equal(0, choice.Options.Count);
             op.Resume(new(90)); Equal(autoplay ? 0 : 1, f.Taken.Count); Equal(true, f.World.Civilizations[1].Advances.Contains(90));
             f.Random.RequireChoicesConsumed();
         }

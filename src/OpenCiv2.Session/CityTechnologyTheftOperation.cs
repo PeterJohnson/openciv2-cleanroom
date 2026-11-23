@@ -5,11 +5,22 @@ using OpenCiv2.Core;
 namespace OpenCiv2.Session;
 
 /// <summary>Trusted V06 theft child; the owning city controller consumes any fallback before completing its command.</summary>
-public sealed class CityTechnologyTheftOperation(CityTechnologyTheft.Operation operation, Func<int, ParticipantId> recipient) : IContinuation
+public sealed class CityTechnologyTheftOperation(CityTechnologyTheft.Operation operation, Func<int, ParticipantId> recipient,
+    Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CityEspionageDecision? pending;
+    private InteractionSpec? intelligenceWindow;
     private OperationStep? completed;
+    private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
+    {
+        if (faulted)
+        { throw new InvalidOperationException("A failed theft presentation cannot resume"); }
+        try
+        { return Advance(context, input); }
+        catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
+    }
+    private OperationStep Advance(OperationContext context, OperationInput input)
     {
         if (completed is not null)
         { return completed; }
@@ -18,15 +29,20 @@ public sealed class CityTechnologyTheftOperation(CityTechnologyTheft.Operation o
         { reply = pending is CityEspionageDecision.Technology && value == 100 ? new(0, 1) : new(value); }
         else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && pending is not CityEspionageDecision.Technology)
         { reply = new(pending is CityEspionageDecision.Incident ? 0 : -1); }
-        try
-        { pending = operation.Resume(pending is null ? null : reply); }
-        catch { context.Publish(); throw; }
+        if (pending is CityEspionageDecision.Grant grant)
+        { reply = ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
+        pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
             InteractionSpec prompt;
             if (pending is CityEspionageDecision.Incident incident)
             { prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization)); }
+            else if (pending is CityEspionageDecision.Grant granted)
+            {
+                prompt = ResearchGrantInteraction.Prompt(context, granted.Decision, recipient,
+                intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);
+            }
             else if (pending is CityEspionageDecision.Technology technology)
             {
                 var choice = technology.Choice;

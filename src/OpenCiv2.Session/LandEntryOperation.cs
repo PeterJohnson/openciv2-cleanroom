@@ -8,10 +8,10 @@ namespace OpenCiv2.Session;
 
 /// <summary>Private U02 land-entry decisions using the actual C07/V06 interaction contracts.</summary>
 public sealed class LandEntryOperation(LandEntry.Operation operation, Func<int, ParticipantId> recipient,
-    Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow) : IContinuation
+    Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private LandEntryDecision? pending;
-    private InteractionSpec? visitPrompt, capturePrompt;
+    private InteractionSpec? visitPrompt, capturePrompt, intelligenceWindow;
     private OperationStep? completed;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
@@ -37,7 +37,7 @@ public sealed class LandEntryOperation(LandEntry.Operation operation, Func<int, 
                 {
                     LandEntryDecision.Caravan caravan => CaravanInteraction.Prompt(caravan.Decision, recipient),
                     LandEntryDecision.Unit unit => UnitMissionInteraction.Prompt(unit.Decision, recipient),
-                    LandEntryDecision.City city => CityMissionInteraction.Prompt(context, city.Decision, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt),
+                    LandEntryDecision.City city => CityMissionInteraction.Prompt(context, city.Decision, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt, ref intelligenceWindow, intelligence),
                     _ => throw new InvalidOperationException("Unknown land-entry decision")
                 };
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);

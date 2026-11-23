@@ -39,6 +39,10 @@ public sealed class ResearchGrantOperation(ResearchGrants.Operation operation, F
 }
 internal static class ResearchGrantInteraction
 {
+    internal static ResearchReply? ResearchReply(ResearchGrantDecision pending, OperationInput input) =>
+        Reply(pending, input) is { } answer ? new(answer) : null;
+    internal static InteractionSpec RequiredIntelligence(EmissaryIntelligence _) =>
+        throw new InvalidOperationException("A research emissary intelligence window requires a presentation adapter");
     internal static int? Reply(ResearchGrantDecision? pending, OperationInput input) => pending switch
     {
         ResearchGrantDecision.Emissary emissary => EmissaryInteraction.Reply(emissary.Decision, input),

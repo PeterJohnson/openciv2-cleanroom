@@ -7,10 +7,10 @@ namespace OpenCiv2.Session;
 
 /// <summary>V06 revolt offer, nested victims and actual C09 decisions. The city controller consumes a returned fallback.</summary>
 public sealed class CityIncitementOperation(CityIncitement.Operation operation, Func<int, ParticipantId> recipient,
-    Func<CaptureCityVisit, InteractionSpec> window) : IContinuation
+    Func<CaptureCityVisit, InteractionSpec> window, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private RevoltDecision? pending;
-    private InteractionSpec? windowPrompt;
+    private InteractionSpec? windowPrompt, intelligenceWindow;
     private OperationStep? completed;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
@@ -25,17 +25,14 @@ public sealed class CityIncitementOperation(CityIncitement.Operation operation, 
     {
         if (completed is not null)
         { return completed; }
-        bool technology = pending is RevoltDecision.Capture { Decision: CityCaptureDecision.Technology };
-        ResearchReply? reply = null;
-        if (input.Kind == OperationInputKind.Choice && input.Choice is { } selected)
-        { reply = technology && selected == 100 ? new(0, 1) : new(selected); }
-        else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && !technology)
-        { reply = new(0); }
+        ResearchReply? reply = pending is RevoltDecision.Capture capture
+            ? CityCaptureInteraction.Reply(capture.Decision, input)
+            : AttackConfirmationInteraction.Reply(input) is { } answer ? new(answer) : null;
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
-            var prompt = RevoltInteraction.Prompt(context, pending, recipient, window, ref windowPrompt);
+            var prompt = RevoltInteraction.Prompt(context, pending, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence);
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (!operation.Completed)
@@ -50,7 +47,7 @@ public sealed class CityIncitementOperation(CityIncitement.Operation operation, 
 internal static class RevoltInteraction
 {
     internal static InteractionSpec Prompt(OperationContext context, RevoltDecision pending, Func<int, ParticipantId> recipient,
-        Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt)
+        Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt, ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {
         InteractionSpec prompt;
         switch (pending)
@@ -70,7 +67,7 @@ internal static class RevoltInteraction
                 prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
                 break;
             case RevoltDecision.Capture capture:
-                prompt = CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt);
+                prompt = CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence);
                 break;
             default:
                 throw new InvalidOperationException("Unknown revolt decision");

@@ -3871,3 +3871,47 @@ eight identity tests and three coverage tests passed.
 | --- | --- |
 | `m4-grant-retained-native.json` | `fb9e2a1c672ef9cab9a8635ea5c3ccf255d8708ff0e5130b25697fffff8e9d03` |
 | `m4-grant-retained-identity.json` | `ac621ba654f2b4b2ba08383c53bd6f5913231ecc386ca426af628a77ebeea767` |
+
+## Acquisition callers and movement grants checkpoint
+
+CapturedTechnology now owns and disposes a retained ResearchGrants operation.
+Its selection/help choice stays distinct from the subsequent government or
+emissary decision; the result and live AI production reset occur only after the
+grant finishes. C09 capture forwards those decisions before its production/city
+visit. CityTechnologyTheft retains both direct and targeted grants, preserving
+the ordinary TechnologyStolen write before escape and the targeted write after
+escape/incident completion. Disposal and required failures leave committed
+knowledge intact and prevent continuation.
+
+Hut scrolls now retain their actual grant, including AI emissary reception and
+human government prompts. U02 finish forwards those choices before its direction
+and cleanup tail. The actual MovementDispatcher session test reaches a coordinate
+hut after charge and relocation, suspends privately with the movement guard held,
+accepts the government change and completes cleanup without repeating relocation,
+grant storage or the hut notice. A captured-city session also exercises the real
+Anarchy setter and owned-city recalculation before the city visit opens.
+
+Capture, revolt, paradrop, combat, city mission, land entry and movement adapters
+now forward nested grant prompts and the supplied intelligence-window adapter.
+Government and emissary cancel/timeout replies retain their distinct decline
+values. HutOperation also requests cooperative continuation for bounded redirects.
+ResearchGrants.Begin supports existing explicitly supplied synchronous adapters
+during migration; a graph built with retained children still rejects synchronous
+Grant calls. Civilization catch-up and research completion remain to migrate.
+Production desktop command/service composition, general research-goal presentation
+and full M4 human/AI-game acceptance remain open. Browser/cross-platform work stays
+deferred.
+
+Six new shared groups cover actual acquisition parents, private recipients,
+ordered escape/flags/city visits, cancellation, disposal/failure prefixes and
+the complete movement-to-scroll-to-government continuation. Root/App formatting
+and verification passed. Both Release builds completed with zero warnings/errors.
+Native tests passed **1158 of 1160**, with the two existing platform/audio skips.
+The shared probe passed **1125 groups** across 130 coverage families; source
+identity verified **641 compiled inputs**. The 43-project graph, eight identity
+tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-acquisition-native.json` | `f445d1283cfe5fa79f850153609e5e54e26dfc8cb65ad49c8af637281fc25c15` |
+| `m4-acquisition-identity.json` | `63119e9417a673d41f983feb7a399304640c43923c3df653d720a41a84577daa` |

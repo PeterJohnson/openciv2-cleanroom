@@ -2569,7 +2569,7 @@
       "id": "research-grants",
       "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
       "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller; retained ResearchGrants/ResearchGovernmentPrompts operations and private ResearchGrantOperation",
-      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Synchronous adapters remain for existing callers; migrating acquisition parents and desktop composition remains pending; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Synchronous adapters remain for existing callers; remaining acquisition-parent migration and desktop composition remain pending; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred. Begin also permits explicitly supplied synchronous adapters during caller migration; the retained constructor still rejects synchronous Grant. Captured technology, ordinary/targeted theft and hut scrolls now use Begin; civilization catch-up and research completion remain to migrate.",
       "status": "partial",
       "sharedGroups": [
         "M3.land-step-zones",
@@ -2585,6 +2585,9 @@
         "M4.local-maintenance-reputation-turn",
         "M4.local-nonunit-production",
         "M4.local-research-grant-turn",
+        "U02.movement-retained-hut-grant",
+        "V03.acquisition-grant-private-sessions",
+        "V03.captured-technology-retained-grant",
         "V03.full-research-cost-vectors",
         "V03.golden-age-weighted-selection",
         "V03.government-prompt-transitions",
@@ -2603,7 +2606,10 @@
         "V03.grant-retained-library",
         "V03.grant-turn-zero-scalar-prefixes",
         "V03.scenario-cost-bounds",
-        "V03.selection-option-rules"
+        "V03.selection-option-rules",
+        "V06.theft-retained-grant-ordering",
+        "W06.hut-grant-emissary-routing",
+        "W06.hut-retained-grant-cancellation"
       ],
       "sources": [
         "src/OpenCiv2.Core/LocalResearch.cs",
@@ -2615,6 +2621,7 @@
         "src/OpenCiv2.Session/ResearchGrantOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/ResearchGrantContinuationCases.cs"
@@ -3356,23 +3363,30 @@
       "id": "captured-technology",
       "status": "partial",
       "contract": "V03 section12 local captured technology with A08 valuation, research-goal help, actual grants and C06 production reset",
-      "publicSurface": "CapturedTechnology.Begin/Operation.Resume; CapturedTechnologyChoice; TakenTechnologyNotice",
-      "review": "Preserves independent unknown/known/prerequisite/scenario eligibility, last valuation ties and best-value retention across help, captured interactive presentation and live human/AI decisions. Actual ResearchGoals, AdvanceValuation, ResearchGrants and ProductionOrders children run here; human selections retain supplied backed identities without a second eligibility check. Local victim notices, zero-seat returns, explicit invalid-choice stops, actual AI production reset and terminal failures are covered. City theft consumes this service. General C09/V05 callers, complete desktop choice presentation and generated-game integration remain open; browser and cross-platform work are deferred.",
+      "publicSurface": "CapturedTechnology.Begin/Operation.Resume; CapturedTechnologyDecision/Choice; TakenTechnologyNotice",
+      "review": "Preserves independent unknown/known/prerequisite/scenario eligibility, last valuation ties and best-value retention across help, captured interactive presentation and live human/AI decisions. Actual ResearchGoals, AdvanceValuation, ResearchGrants and ProductionOrders children run here; human selections retain supplied backed identities without a second eligibility check. Local victim notices, zero-seat returns, explicit invalid-choice stops, actual AI production reset and terminal failures are covered. City theft consumes this service. General C09/V05 callers, complete desktop choice presentation and generated-game integration remain open; browser and cross-platform work are deferred. Captured selection now owns a disposable retained grant; government/emissary decisions finish before result publication and the live AI production reset. Help replies cannot leak into grant decisions, and disposal/failures preserve earlier knowledge.",
       "sources": [
         "src/OpenCiv2.Core/CapturedTechnology.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/TechnologyTheftCases.cs"
       ],
       "sharedGroups": [
+        "U02.movement-retained-hut-grant",
+        "V03.acquisition-grant-private-sessions",
         "V03.captured-gates-production",
         "V03.captured-selection-help",
+        "V03.captured-technology-retained-grant",
         "V06.theft-cyclic-race",
         "V06.theft-defender-detection",
         "V06.theft-empty-cancel",
         "V06.theft-grant-failures",
+        "V06.theft-retained-grant-ordering",
         "V06.theft-session-privacy",
-        "V06.theft-targeted-ordering"
+        "V06.theft-targeted-ordering",
+        "W06.hut-grant-emissary-routing",
+        "W06.hut-retained-grant-cancellation"
       ]
     },
     {
@@ -3380,7 +3394,7 @@
       "status": "partial",
       "contract": "V06 section5 local ordinary and targeted theft with actual V07/V03/U01/V01/V06 children",
       "publicSurface": "CityTechnologyTheft.Begin/Operation; CityTechnologyTheftOperation; CityEspionageDecision.Technology",
-      "review": "Cyclic candidate selection consumes actual spaceship-race state and fixed/custom part prerequisites; hard/targeted paths run real capture, retained city access and ordinary/captured research grants. Physical defender scans preserve role-only eligibility, stack order, independent detection thresholds and no owner filter. Detection exhausts without granting or invoking escape/incident. Ordinary grants set TechnologyStolen before escape; targeted selection sets it after all escape/incident children. Tests include no-candidate AI fallback requests, human movement cost, actual Barracks sale and AI production changes, grant/presentation failures, bounded-source guards and real actor/victim session decisions. The local city controller now executes returned fallbacks; U02/A07 movement admission, complete desktop presentation and generated games remain open. Browser and cross-platform work are deferred.",
+      "review": "Cyclic candidate selection consumes actual spaceship-race state and fixed/custom part prerequisites; hard/targeted paths run real capture, retained city access and ordinary/captured research grants. Physical defender scans preserve role-only eligibility, stack order, independent detection thresholds and no owner filter. Detection exhausts without granting or invoking escape/incident. Ordinary grants set TechnologyStolen before escape; targeted selection sets it after all escape/incident children. Tests include no-candidate AI fallback requests, human movement cost, actual Barracks sale and AI production changes, grant/presentation failures, bounded-source guards and real actor/victim session decisions. The local city controller now executes returned fallbacks; U02/A07 movement admission, complete desktop presentation and generated games remain open. Browser and cross-platform work are deferred. Both ordinary and targeted grants now suspend before escape and their distinct TechnologyStolen writes. Actual private government decisions resume without repeating selection, sound, notices or grant storage.",
       "sources": [
         "src/OpenCiv2.Core/CapturedTechnology.cs",
         "src/OpenCiv2.Core/CityEspionageDamage.cs",
@@ -3388,17 +3402,24 @@
         "src/OpenCiv2.Session/CityTechnologyTheftOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/TechnologyTheftCases.cs"
       ],
       "sharedGroups": [
+        "U02.movement-retained-hut-grant",
+        "V03.acquisition-grant-private-sessions",
         "V03.captured-gates-production",
         "V03.captured-selection-help",
+        "V03.captured-technology-retained-grant",
         "V06.theft-cyclic-race",
         "V06.theft-defender-detection",
         "V06.theft-empty-cancel",
         "V06.theft-grant-failures",
+        "V06.theft-retained-grant-ordering",
         "V06.theft-session-privacy",
-        "V06.theft-targeted-ordering"
+        "V06.theft-targeted-ordering",
+        "W06.hut-grant-emissary-routing",
+        "W06.hut-retained-grant-cancellation"
       ]
     },
     {
@@ -3554,7 +3575,7 @@
       "status": "partial",
       "contract": "C09 ordered local capture and incited-transfer wrapper with actual V04/V01/C08/V03/C01/C06/A02/U01/W03 children",
       "publicSurface": "CityCapture.Begin/BeginIncited/Operation; CityCaptureOperation; required CityTaken dispatcher and P06 presentation adapter",
-      "review": "Captures old owner/center, restoration and name at their specified boundaries. Preserves ordered treaty flags, actual civil-war attempt and zero-result replacement, Palace scoring/payment and ship loss, wonder gates/Eiffel, retained plunder with fresh-gold clamp, reset/parity/population deletion, radius/owner/old-owner knowledge and required CityTaken dispatch, captured-center writes, local announcement numbers, theft even after deletion, supported-unit/production window, actual elimination/partisans and founder/age/Leonardo tail. Incitement uses captured radius, exact adjacent-city gate, descending unit scan and direct byte-count/home/order changes before recapturing parent inputs. Integrated cases include real AI choice, nested foreign loss, signed payment behavior, callback changes, failure/disposal and private Palace/technology/window routing. CityTaken matching/actions remain a required dispatcher, not supplied by presentation. The V06 revolt body now composes incited transfer; movement admission, desktop adapters and generated complete games remain open. Network/browser/cross-platform work is deferred.",
+      "review": "Captures old owner/center, restoration and name at their specified boundaries. Preserves ordered treaty flags, actual civil-war attempt and zero-result replacement, Palace scoring/payment and ship loss, wonder gates/Eiffel, retained plunder with fresh-gold clamp, reset/parity/population deletion, radius/owner/old-owner knowledge and required CityTaken dispatch, captured-center writes, local announcement numbers, theft even after deletion, supported-unit/production window, actual elimination/partisans and founder/age/Leonardo tail. Incitement uses captured radius, exact adjacent-city gate, descending unit scan and direct byte-count/home/order changes before recapturing parent inputs. Integrated cases include real AI choice, nested foreign loss, signed payment behavior, callback changes, failure/disposal and private Palace/technology/window routing. CityTaken matching/actions remain a required dispatcher, not supplied by presentation. The V06 revolt body now composes incited transfer; movement admission, desktop adapters and generated complete games remain open. Network/browser/cross-platform work is deferred. Capture forwards retained technology-grant decisions before production/city presentation; the session test accepts the real Anarchy setter and city recalculation before opening the captured city.",
       "sources": [
         "src/OpenCiv2.Core/City/CityCapture.Notices.cs",
         "src/OpenCiv2.Core/City/CityCapture.cs",
@@ -3562,6 +3583,7 @@
         "src/OpenCiv2.Session/CityCaptureOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/CityCaptureCases.cs"
       ],
       "sharedGroups": [
@@ -3573,7 +3595,13 @@
         "C09.capture-palace-schism",
         "C09.capture-palace-scoring",
         "C09.capture-session-decisions",
-        "C09.capture-wonder-observers"
+        "C09.capture-wonder-observers",
+        "U02.movement-retained-hut-grant",
+        "V03.acquisition-grant-private-sessions",
+        "V03.captured-technology-retained-grant",
+        "V06.theft-retained-grant-ordering",
+        "W06.hut-grant-emissary-routing",
+        "W06.hut-retained-grant-cancellation"
       ]
     },
     {
@@ -3992,8 +4020,8 @@
       "id": "hut-entry",
       "status": "partial",
       "contract": "W06 Hut entry/consumption and outcomes 0..5; C01 city creation; U01 unit creation/W03 revelation; V03 eligibility/grants; F06 regional presence flags",
-      "publicSurface": "HutEntry.Begin retained city visit and bounded redirects; HutOperation; RegionalPresence.SettlementRestrictions with classic conversion",
-      "review": "Actual local hut outcomes compose city and unit creation and research grants. Preserves human override draw, recorded regional counts and low-seven presence flags, global versus owner-only unsupported settlers, fixed global-technology type choices, distinct year 1000 boundaries, signed/wrapped gold, ordered barbarian gates/stride/rank-index use and Armor signed-prerequisite backing. Scroll search uses 999 eligibility calls and bounded repeated redirects without invented fallback. Real creation failure retains prefixes and rejects the excluded late-city invalid write after the size draw. Private city visits retain choices and cosmetic failures are diagnostic. Two previously opaque regional flag bits now participate in settlement eligibility and round-trip through their defined F06 mapping; the high unrelated bit remains opaque. Tests cover real children, all outcome families, thresholds, failed creation, repeated direct entry, private visits, flags and malformed input stops. Outer movement finish/desktop callers, periodic spawning/barbarian orders/ransom and full-game acceptance remain pending; browser/cross-platform execution deferred.",
+      "publicSurface": "HutEntry.Begin retained city/grant decisions and bounded redirects; HutOperation; RegionalPresence.SettlementRestrictions with classic conversion",
+      "review": "Actual local hut outcomes compose city and unit creation and research grants. Preserves human override draw, recorded regional counts and low-seven presence flags, global versus owner-only unsupported settlers, fixed global-technology type choices, distinct year 1000 boundaries, signed/wrapped gold, ordered barbarian gates/stride/rank-index use and Armor signed-prerequisite backing. Scroll search uses 999 eligibility calls and bounded repeated redirects without invented fallback. Real creation failure retains prefixes and rejects the excluded late-city invalid write after the size draw. Private city visits retain choices and cosmetic failures are diagnostic. Two previously opaque regional flag bits now participate in settlement eligibility and round-trip through their defined F06 mapping; the high unrelated bit remains opaque. Tests cover real children, all outcome families, thresholds, failed creation, repeated direct entry, private visits, flags and malformed input stops. Outer movement finish/desktop callers, periodic spawning/barbarian orders/ransom and full-game acceptance remain pending; browser/cross-platform execution deferred. Scroll grants now retain government and actual AI emissary choices. Tests cover private recipients, cancel/timeout declines, disposal prefixes and actual U02 dispatcher continuation after relocation.",
       "sources": [
         "src/OpenCiv2.Core/HutEntry.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
@@ -4002,16 +4030,23 @@
         "src/OpenCiv2.Session/HutOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/HutCases.cs"
       ],
       "sharedGroups": [
+        "U02.movement-retained-hut-grant",
+        "V03.acquisition-grant-private-sessions",
+        "V03.captured-technology-retained-grant",
+        "V06.theft-retained-grant-ordering",
         "W06.hut-barbarian-placement-types",
+        "W06.hut-grant-emissary-routing",
         "W06.hut-mercenary-types-home",
         "W06.hut-metals-admission",
         "W06.hut-nomads-scrolls-redirects",
         "W06.hut-override-regional-flags",
         "W06.hut-private-city-failures",
         "W06.hut-redirect-gates-capacity",
+        "W06.hut-retained-grant-cancellation",
         "W06.hut-tribe-creation-failures"
       ]
     },
@@ -4020,12 +4055,13 @@
       "status": "partial",
       "contract": "U02 Ordinary arrival, Common finish and local Cleanup; C09 capture; W03 revelation; U05 special/transport continuations; W06 hut entry; U04 long move",
       "publicSurface": "MovementCompletion.Begin with retained inputs, private nested decisions and full cleanup result; MovementCompletionOperation",
-      "review": "Composes actual capture, revelation, aircraft/coast loss, huts, exploration, boarding, long move and local cleanup. Preserves captured-domain landing count, captured foreign-city admission, damage-before-capture and shared actor reload, unusual captured-barbarian stack visibility, port wakeup, zero-attack stack-bottom ordering and old-position publication. Losses retain prior result until bound-sensitive cleanup; successful tail writes direction and result one before cleanup can override it. Hut-created units and deletions can change the bound without rolling back earlier effects. Tests exercise real child mutations, private capture/long-move and last-Settler incident sequences, selected-actor reload, retained direction, boarding and diagnostic cosmetics versus terminal notices. Special-movement sound/redraw and boarding redraw now continue through gameplay while retaining diagnostics; required publication/notices remain terminal. Outer admission/viewer/authority/relocation dispatcher and desktop/full-game acceptance remain pending. Browser/cross-platform deferred.",
+      "review": "Composes actual capture, revelation, aircraft/coast loss, huts, exploration, boarding, long move and local cleanup. Preserves captured-domain landing count, captured foreign-city admission, damage-before-capture and shared actor reload, unusual captured-barbarian stack visibility, port wakeup, zero-attack stack-bottom ordering and old-position publication. Losses retain prior result until bound-sensitive cleanup; successful tail writes direction and result one before cleanup can override it. Hut-created units and deletions can change the bound without rolling back earlier effects. Tests exercise real child mutations, private capture/long-move and last-Settler incident sequences, selected-actor reload, retained direction, boarding and diagnostic cosmetics versus terminal notices. Special-movement sound/redraw and boarding redraw now continue through gameplay while retaining diagnostics; required publication/notices remain terminal. Outer admission/viewer/authority/relocation dispatcher and desktop/full-game acceptance remain pending. Browser/cross-platform deferred. Actual scroll-grant decisions now suspend the finish tail before LastDirection and cleanup, preserving earlier charge/relocation and the movement guard.",
       "sources": [
         "src/OpenCiv2.Core/Units/MovementCompletion.cs",
         "src/OpenCiv2.Session/MovementCompletionOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/MovementCompletionCases.cs"
       ],
       "sharedGroups": [
@@ -4035,7 +4071,13 @@
         "U02.finish-exploration-nested-failures",
         "U02.finish-huts-bound-result",
         "U02.finish-ordering-long-move",
-        "U02.finish-private-session"
+        "U02.finish-private-session",
+        "U02.movement-retained-hut-grant",
+        "V03.acquisition-grant-private-sessions",
+        "V03.captured-technology-retained-grant",
+        "V06.theft-retained-grant-ordering",
+        "W06.hut-grant-emissary-routing",
+        "W06.hut-retained-grant-cancellation"
       ]
     },
     {
@@ -4064,7 +4106,7 @@
       "status": "partial",
       "contract": "U02 Dispatcher state and phase order through local cleanup; U01 spare-holds aggregate; actual U05/U06/C07/V06/W06 children",
       "publicSurface": "MovementDispatcher.Begin and MovementOperation; StackOperations.SpareTransportCapacity",
-      "review": "Local resumable dispatcher owns the world movement guard, per-iteration captures and origin owner publication, actual ordered land/foreign/transport/charge/relocation/finish children, private nested replies and single cleanup. Landfall restarts retain direction/options/choice while resetting iteration captures. Actual cargo admission uses signed spare-holds contributions with the aggregate cutoff. Tests join ordinary and preview moves, source-owner publication, wrap, negative finish, AI cleanup, guard/disposal/failure prefixes, boarding, disembarkation, missions, capture and full combat. Session tests cover private capture-to-long-move, landfall and fatigue decisions. Missing optional entry selectors are rejected at the actual consuming branch; unpublished seen remains nullable until common finish consumes it. Production desktop command/service composition, resolution of the entry-selector gap, broader AI/orders callers and full-game acceptance remain open. Browser/cross-platform deferred.",
+      "review": "Local resumable dispatcher owns the world movement guard, per-iteration captures and origin owner publication, actual ordered land/foreign/transport/charge/relocation/finish children, private nested replies and single cleanup. Landfall restarts retain direction/options/choice while resetting iteration captures. Actual cargo admission uses signed spare-holds contributions with the aggregate cutoff. Tests join ordinary and preview moves, source-owner publication, wrap, negative finish, AI cleanup, guard/disposal/failure prefixes, boarding, disembarkation, missions, capture and full combat. Session tests cover private capture-to-long-move, landfall and fatigue decisions. Missing optional entry selectors are rejected at the actual consuming branch; unpublished seen remains nullable until common finish consumes it. Production desktop command/service composition, resolution of the entry-selector gap, broader AI/orders callers and full-game acceptance remain open. Browser/cross-platform deferred. The actual session dispatcher now carries a hut government choice through charge, relocation, grant and final cleanup without duplicate notices or mutations.",
       "sources": [
         "src/OpenCiv2.Core/State/GameState.cs",
         "src/OpenCiv2.Core/Units/LandEntry.cs",
@@ -4076,6 +4118,7 @@
         "src/OpenCiv2.Session/MovementOperation.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
         "tests/OpenCiv2.FoundationCases/MovementDispatcherCases.cs"
       ],
       "sharedGroups": [
@@ -4086,7 +4129,13 @@
         "U02.dispatch-missions-capture",
         "U02.dispatch-negative-cleanup",
         "U02.dispatch-ordinary-preview",
-        "U02.dispatch-private-session"
+        "U02.dispatch-private-session",
+        "U02.movement-retained-hut-grant",
+        "V03.acquisition-grant-private-sessions",
+        "V03.captured-technology-retained-grant",
+        "V06.theft-retained-grant-ordering",
+        "W06.hut-grant-emissary-routing",
+        "W06.hut-retained-grant-cancellation"
       ]
     }
   ]

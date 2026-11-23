@@ -8,10 +8,10 @@ namespace OpenCiv2.Session;
 /// <summary>Local V06 menu and complete ordinary mission/fallback continuation.
 /// Required P06/P07 adapters display visits; each nested decision is routed to its actual recipient.</summary>
 public sealed class CityMissionOperation(CityMissions.Operation operation, Func<int, ParticipantId> recipient,
-    Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow) : IContinuation
+    Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CityMissionDecision? pending;
-    private InteractionSpec? visitPrompt, capturePrompt;
+    private InteractionSpec? visitPrompt, capturePrompt, intelligenceWindow;
     private OperationStep? completed;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
@@ -31,7 +31,7 @@ public sealed class CityMissionOperation(CityMissions.Operation operation, Func<
         if (pending is not null)
         {
             context.Publish();
-            var prompt = CityMissionInteraction.Prompt(context, pending, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt);
+            var prompt = CityMissionInteraction.Prompt(context, pending, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt, ref intelligenceWindow, intelligence);
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (!operation.Completed)
@@ -46,8 +46,11 @@ internal static class CityMissionInteraction
 {
     internal static ResearchReply? Reply(CityMissionDecision? decision, OperationInput input)
     {
-        bool technology = decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Technology }
-            or CityMissionDecision.Revolt { Decision: RevoltDecision.Capture { Decision: CityCaptureDecision.Technology } };
+        if (decision is CityMissionDecision.Revolt { Decision: RevoltDecision.Capture capture })
+        { return CityCaptureInteraction.Reply(capture.Decision, input); }
+        if (decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Grant grant })
+        { return ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
+        bool technology = decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Technology };
         ResearchReply? reply = null;
         if (input.Kind == OperationInputKind.Choice && input.Choice is { } choice)
         { reply = technology && choice == 100 ? new(0, 1) : new(choice); }
@@ -58,7 +61,7 @@ internal static class CityMissionInteraction
         }
         return reply;
     }
-    internal static InteractionSpec Prompt(OperationContext context, CityMissionDecision decision, Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, ref InteractionSpec? visitPrompt, ref InteractionSpec? capturePrompt)
+    internal static InteractionSpec Prompt(OperationContext context, CityMissionDecision decision, Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, ref InteractionSpec? visitPrompt, ref InteractionSpec? capturePrompt, ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {
         InteractionSpec prompt;
         switch (decision)
@@ -71,26 +74,29 @@ internal static class CityMissionInteraction
                 { Options = options };
                 break;
             case CityMissionDecision.Revolt revolt:
-                prompt = RevoltInteraction.Prompt(context, revolt.Decision, recipient, captureWindow, ref capturePrompt);
+                prompt = RevoltInteraction.Prompt(context, revolt.Decision, recipient, captureWindow, ref capturePrompt, ref intelligenceWindow, intelligence);
                 break;
             case CityMissionDecision.Mission mission:
-                prompt = MissionPrompt(context, mission.Decision, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt);
+                prompt = MissionPrompt(context, mission.Decision, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt, ref intelligenceWindow, intelligence);
                 break;
             default:
                 throw new InvalidOperationException("Unknown city mission decision");
         }
         return prompt;
     }
-    private static InteractionSpec MissionPrompt(OperationContext context, CityEspionageDecision decision, Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, ref InteractionSpec? visitPrompt, ref InteractionSpec? capturePrompt)
+    private static InteractionSpec MissionPrompt(OperationContext context, CityEspionageDecision decision, Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, ref InteractionSpec? visitPrompt, ref InteractionSpec? capturePrompt, ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {
         switch (decision)
         {
+            case CityEspionageDecision.Grant grant:
+                return ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
+                    intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);
             case CityEspionageDecision.Visit request:
                 return visitPrompt ??= visit(request.Request) with { Recipient = recipient(request.Request.Actor) };
             case CityEspionageDecision.Incident incident:
                 return EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
             case CityEspionageDecision.Technology technology:
-                return CityCaptureInteraction.Prompt(context, new CityCaptureDecision.Technology(technology.Choice), recipient, captureWindow, ref capturePrompt);
+                return CityCaptureInteraction.Prompt(context, new CityCaptureDecision.Technology(technology.Choice), recipient, captureWindow, ref capturePrompt, ref intelligenceWindow, intelligence);
             case CityEspionageDecision.Question question:
                 var options = question.Targets is { } targets
                     ? new OwnedList<InteractionOption>(targets.Select(t => new InteractionOption(t.Building, t.Name)))

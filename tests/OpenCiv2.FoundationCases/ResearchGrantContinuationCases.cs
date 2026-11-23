@@ -22,8 +22,10 @@ public static partial class FoundationSuite
         public int Closed;
         public bool FailClose, FailRevolution;
         public RetainedGrantFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+            : this(new GrantFixture(data, (choices ?? []).ToArray())) { }
+        public RetainedGrantFixture(GrantFixture grant)
         {
-            G = new(data, (choices ?? []).ToArray());
+            G = grant;
             World.Civilizations[1].Government = Government.Despotism;
             World.Civilizations[1].MilitaryStrength = World.Civilizations[2].MilitaryStrength = 20;
             World.Globals.CivsAlive = CivilizationSet.Only(1).With(2);
@@ -118,7 +120,9 @@ public static partial class FoundationSuite
         f = new(); f.G.OnAcquired = _ => throw new InvalidOperationException("Required acquisition notice unavailable"); using var notice = f.Begin();
         Throws<InvalidOperationException>(() => notice.Resume()); Equal((byte)1, f.World.Civilizations[1].NumAdvances); Equal((byte)0, f.World.Globals.FirstDiscoverer[AdvanceIds.Monarchy]);
         f = new(); Throws<InvalidOperationException>(() => f.Grants.Grant(1, 54, 1, false, "sync")); Equal((byte)0, f.World.Civilizations[1].NumAdvances);
-        Throws<InvalidOperationException>(() => f.G.Grants.Begin(1, 54, 1, false, "missing-services"));
+        var legacy = new GrantFixture(); legacy.World.Civilizations[1].Government = Government.Despotism;
+        using var compatible = legacy.Grants.Begin(1, 54, 1, false, "legacy");
+        Equal(null, compatible.Resume()); Equal(true, compatible.Completed); Equal(1, legacy.GovernmentChoices.Count);
         f.World.Globals.Multiplayer = GameMode.Tcp; using var remote = f.Begin(); Throws<InvalidOperationException>(() => remote.Resume()); Equal((byte)0, f.World.Civilizations[1].NumAdvances);
     }
     private static void ResearchGrantPrivateSession()

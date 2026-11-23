@@ -267,7 +267,9 @@ completion and accumulation, including free advances.
 V02 government decisions, including recursive Great Library grants.
 `ResearchGrantOperation` routes those choices privately and declines on cancel or
 timeout. The retained constructor requires both child services and rejects the
-synchronous `Grant` entry; existing acquisition parents still need migration.
+synchronous `Grant` entry. `Begin` also accepts explicitly supplied synchronous
+adapters during migration. Captured technology, theft and huts use the continuation;
+civilization catch-up and research completion still need migration.
 `ResearchSelection` suspends for an accepted choice and retains its recommendation;
 `ResearchGoals` owns informational goal/advice data. The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile
@@ -538,6 +540,10 @@ best valuation across actual research-goal help and composing A08 valuation,
 ordinary grants and C06 production reset. `Core/CityTechnologyTheft` uses it for
 targeted theft and the actual grant service for ordinary theft. It composes V07
 race queries, U01 defender traversal, real capture/escape and victim incidents.
+Both paths retain nested government/emissary choices before completing the grant,
+resetting AI production or applying their ordered escape/theft-flag consequences.
+Capture, revolt, paradrop, combat and movement adapters forward these decisions
+and their intelligence-window adapter to the actual recipient.
 `Session/CityTechnologyTheftOperation` routes actor choices and victim responses;
 the owning city controller must execute any returned Embassy/Sabotage fallback.
 General controller, movement and desktop joins remain open.
@@ -819,7 +825,9 @@ lifetime and the deferred network authority path remain outside this helper.
 `UnitCreation` and `ResearchGrants`. U02 supplies its already retained hut result
 and mutable local-human context; the helper does not retest or consume the hut.
 Redirects yield bounded work, including the permitted repeating scroll/nomad
-cycle. `Session/HutOperation` routes the actual created-city visit privately.
+cycle. `Session/HutOperation` routes created-city visits and scroll-grant choices
+privately. U02 finish forwards the grant decision before its direction/cleanup tail;
+the complete local dispatcher is tested through relocation, grant and cleanup.
 The low-seven regional presence check includes `SettlementRestrictions`, whose
 two independent values are translated by F06; the unrelated high bit remains
 opaque. Out-of-catalog Armor prerequisites require explicit discovery backing.

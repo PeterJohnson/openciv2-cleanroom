@@ -28,9 +28,9 @@ public static partial class FoundationSuite
         public List<(MapPoint From, MapPoint To, int Direction)> Animations { get; } = [];
         public Action? OnChanged;
         public string? Failure;
-        public ParadropFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public ParadropFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
         {
-            Capture = new(choices ?? [], data); Data.Unit(0).Type = new(0);
+            Capture = new(choices ?? [], data, retainGrants); Data.Unit(0).Type = new(0);
             Data.Rules.Units[0] = Data.Rules.Units[0] with { Role = RuleRole.Attack, Identity = new("jumper", "Jumper") };
             Data.Rules.Cosmic = Data.Rules.Cosmic with { ParadropRange = 6 };
             World.Globals.ActiveUnit = new(0);

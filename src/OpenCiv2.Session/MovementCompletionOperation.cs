@@ -8,10 +8,10 @@ namespace OpenCiv2.Session;
 
 /// <summary>Private decisions across the actual U02 arrival/finish children.</summary>
 public sealed class MovementCompletionOperation(MovementCompletion.Operation operation, Func<int, ParticipantId> recipient,
-    Func<CaptureCityVisit, InteractionSpec> captureWindow, Func<HutCityVisit, InteractionSpec> hutWindow) : IContinuation
+    Func<CaptureCityVisit, InteractionSpec> captureWindow, Func<HutCityVisit, InteractionSpec> hutWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private MovementCompletionDecision? pending;
-    private InteractionSpec? capturePrompt, hutPrompt;
+    private InteractionSpec? capturePrompt, hutPrompt, intelligenceWindow;
     private OperationStep? completed;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
@@ -25,6 +25,7 @@ public sealed class MovementCompletionOperation(MovementCompletion.Operation ope
             ResearchReply? reply = pending switch
             {
                 MovementCompletionDecision.Capture capture => CityCaptureInteraction.Reply(capture.Decision, input),
+                MovementCompletionDecision.Grant grant => ResearchGrantInteraction.ResearchReply(grant.Decision, input),
                 MovementCompletionDecision.Incident => EspionageInteraction.Reply(input) is { } choice ? new(choice) : null,
                 null => null,
                 _ => AttackConfirmationInteraction.Reply(input) is { } choice ? new(choice) : null
@@ -35,7 +36,9 @@ public sealed class MovementCompletionOperation(MovementCompletion.Operation ope
                 context.Publish();
                 var prompt = pending switch
                 {
-                    MovementCompletionDecision.Capture capture => CityCaptureInteraction.Prompt(context, capture.Decision, recipient, captureWindow, ref capturePrompt),
+                    MovementCompletionDecision.Capture capture => CityCaptureInteraction.Prompt(context, capture.Decision, recipient, captureWindow, ref capturePrompt, ref intelligenceWindow, intelligence),
+                    MovementCompletionDecision.Grant grant => ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
+                        intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow),
                     MovementCompletionDecision.Incident incident => EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)),
                     MovementCompletionDecision.Hut hut => hutPrompt ??= hutWindow(hut.Visit) with { Recipient = recipient(hut.Visit.Actor) },
                     MovementCompletionDecision.LongMove move => LongMoveInteraction.Prompt(move.Question, recipient(move.Question.Actor)),

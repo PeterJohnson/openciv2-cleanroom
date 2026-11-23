@@ -8,10 +8,10 @@ namespace OpenCiv2.Session;
 
 /// <summary>U05 target continuation with actual V04 attack permission and C09 capture decisions.</summary>
 public sealed class ParadropOperation(Paradrop.Operation operation, Func<int, ParticipantId> recipient,
-    Func<CaptureCityVisit, InteractionSpec> window) : IContinuation
+    Func<CaptureCityVisit, InteractionSpec> window, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private ParadropDecision? pending;
-    private InteractionSpec? windowPrompt;
+    private InteractionSpec? windowPrompt, intelligenceWindow;
     private OperationStep? completed;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
@@ -22,13 +22,9 @@ public sealed class ParadropOperation(Paradrop.Operation operation, Func<int, Pa
         { return completed; }
         try
         {
-            bool technology = pending is ParadropDecision.Capture { Decision: CityCaptureDecision.Technology };
-            ResearchReply? reply = input.Kind switch
-            {
-                OperationInputKind.Choice when input.Choice is { } choice => technology && choice == 100 ? new(0, 1) : new(choice),
-                OperationInputKind.Cancel or OperationInputKind.Timeout when !technology => new(0),
-                _ => null
-            };
+            ResearchReply? reply = pending is ParadropDecision.Capture capture
+                ? CityCaptureInteraction.Reply(capture.Decision, input)
+                : AttackConfirmationInteraction.Reply(input) is { } answer ? new(answer) : null;
             pending = operation.Resume(pending is null ? null : reply);
             if (pending is not null)
             {
@@ -36,7 +32,7 @@ public sealed class ParadropOperation(Paradrop.Operation operation, Func<int, Pa
                 var prompt = pending switch
                 {
                     ParadropDecision.Attack attack => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
-                    ParadropDecision.Capture capture => CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt),
+                    ParadropDecision.Capture captured => CityCaptureInteraction.Prompt(context, captured.Decision, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence),
                     _ => throw new InvalidOperationException("Unknown paradrop decision")
                 };
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);

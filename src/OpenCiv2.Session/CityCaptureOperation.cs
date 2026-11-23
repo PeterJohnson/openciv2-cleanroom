@@ -7,10 +7,10 @@ namespace OpenCiv2.Session;
 
 /// <summary>Trusted C09 capture/incitement continuation, with independent victim/actor routing and a required P06 window.</summary>
 public sealed class CityCaptureOperation(CityCapture.Operation operation, Func<int, ParticipantId> recipient,
-    Func<CaptureCityVisit, InteractionSpec> window) : IContinuation
+    Func<CaptureCityVisit, InteractionSpec> window, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) : IContinuation
 {
     private CityCaptureDecision? pending;
-    private InteractionSpec? windowPrompt;
+    private InteractionSpec? windowPrompt, intelligenceWindow;
     private OperationStep? completed;
     private bool faulted;
     public OperationStep Resume(OperationContext context, OperationInput input)
@@ -30,7 +30,7 @@ public sealed class CityCaptureOperation(CityCapture.Operation operation, Func<i
         if (pending is not null)
         {
             context.Publish();
-            return new(CommandStatus.AwaitingInteraction, Interaction: CityCaptureInteraction.Prompt(context, pending, recipient, window, ref windowPrompt));
+            return new(CommandStatus.AwaitingInteraction, Interaction: CityCaptureInteraction.Prompt(context, pending, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence));
         }
         if (!operation.Completed)
         { context.Publish(); return new(CommandStatus.Pending); }
@@ -45,6 +45,8 @@ internal static class CityCaptureInteraction
 {
     internal static ResearchReply? Reply(CityCaptureDecision? decision, OperationInput input)
     {
+        if (decision is CityCaptureDecision.Grant grant)
+        { return ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
         ResearchReply? reply = null;
         if (input.Kind == OperationInputKind.Choice && input.Choice is { } selected)
         { reply = decision is CityCaptureDecision.Technology && selected == 100 ? new(0, 1) : new(selected); }
@@ -53,11 +55,15 @@ internal static class CityCaptureInteraction
         return reply;
     }
     internal static InteractionSpec Prompt(OperationContext context, CityCaptureDecision pending, Func<int, ParticipantId> recipient,
-        Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt)
+        Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt,
+        ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {
         InteractionSpec prompt;
         switch (pending)
         {
+            case CityCaptureDecision.Grant grant:
+                return ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
+                    intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);
             case CityCaptureDecision.Incident incident:
                 prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
                 break;

@@ -27,9 +27,9 @@ public static partial class FoundationSuite
         public List<MapPoint> Redraws { get; } = [];
         public List<MapPoint> Lifted { get; } = [];
         public bool FailEntry, FailNotice, FailRedraw;
-        public ForeignFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public ForeignFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
         {
-            E = new(choices, data);
+            E = new(choices, data, retainGrants);
             Movement = new(new(0), World.Entities.Units.End, Data.Unit(0).Position) { Options = new(true, true), LocalHuman = true };
             Step = new(1, RuleDomain.Land, Data.Unit(0).Position, Data.Unit(1).Position, Terrain.Grassland, 1, new(1), 2, new(0));
             Expulsion = new(World, Data.Rules, Data.Stacks, new(World, Data.Rules, Data.Stacks), E.F.Life.Random, this);

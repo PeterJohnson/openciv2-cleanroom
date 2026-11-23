@@ -10,7 +10,11 @@ namespace OpenCiv2.Core;
 
 public enum HutNoticeKind { Tribe, Mercenaries, Metals, Nothing, Barbarians, Scrolls, Nomads }
 public sealed record HutNotice(HutNoticeKind Kind, int Actor, MapPoint Position, int? Amount = null, int? Advance = null);
-public sealed record HutCityVisit(int Actor, CityTarget City, string Name);
+public abstract record HutDecision
+{
+    public sealed record Grant(ResearchGrantDecision Decision) : HutDecision;
+}
+public sealed record HutCityVisit(int Actor, CityTarget City, string Name) : HutDecision;
 public interface IHutEffects
 {
     void Notice(HutNotice notice);
@@ -39,11 +43,12 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
     public sealed class Operation : IDisposable
     {
         private readonly HutEntry parent;
-        private readonly IEnumerator<HutCityVisit?> steps;
+        private readonly IEnumerator<HutDecision?> steps;
         private readonly List<Exception> presentationFailures = [];
         private bool disposed, faulted;
         public bool Completed { get; private set; }
-        public HutCityVisit? Pending { get; private set; }
+        private int? answer;
+        public HutDecision? Pending { get; private set; }
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         internal Operation(HutEntry parent, UnitSlot unit, MovementContinuation movement, string call)
         {
@@ -52,7 +57,9 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
             steps = parent.Execute(this, unit, movement, call).GetEnumerator();
         }
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
-        public HutCityVisit? Resume(int? reply = null)
+        internal int? TakeReply() { var reply = answer; answer = null; return reply; }
+        internal void Report(IEnumerable<Exception> failures) => presentationFailures.AddRange(failures);
+        public HutDecision? Resume(int? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -64,6 +71,7 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                 MapKnowledge.RequireLocal(parent.World);
                 if (Pending is not null && reply is null)
                 { return Pending; }
+                answer = Pending is null ? null : reply;
                 Pending = null;
                 if (steps.MoveNext())
                 { return Pending = steps.Current; }
@@ -87,7 +95,7 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
         }
         return count;
     }
-    private IEnumerable<HutCityVisit?> Execute(Operation operation, UnitSlot slot, MovementContinuation movement, string call)
+    private IEnumerable<HutDecision?> Execute(Operation operation, UnitSlot slot, MovementContinuation movement, string call)
     {
         int actor = unchecked((sbyte)world.Entities.Units.At(slot).Owner.Value);
         MapPoint point = world.Entities.Units.At(slot).Position;
@@ -135,7 +143,7 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                     {
                         operation.Present(() => effects.RedrawNeighbors(point));
                         if (city is { } visit)
-                        { yield return new(actor, new(visit, world.Entities.Cities.At(visit).Token), world.Entities.Cities.At(visit).Name); }
+                        { yield return new HutCityVisit(actor, new(visit, world.Entities.Cities.At(visit).Token), world.Entities.Cities.At(visit).Name); }
                     }
                     yield break;
                 case 1:
@@ -262,7 +270,17 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                     if (attempts == 999)
                     { outcome = 0; break; }
                     Notice(HutNoticeKind.Scrolls, advance: advance);
-                    grants.Grant(actor, advance, actor, false, call + "/scroll");
+                    using (var grant = grants.Begin(actor, advance, actor, false, call + "/scroll"))
+                    {
+                        while (!grant.Completed)
+                        {
+                            if (grant.Resume(operation.TakeReply()) is { } decision)
+                            { yield return new HutDecision.Grant(decision); }
+                            else if (!grant.Completed)
+                            { yield return null; }
+                        }
+                        operation.Report(grant.PresentationFailures);
+                    }
                     yield break;
                 case 5:
                     if (Known(AdvanceIds.Explosives))

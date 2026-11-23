@@ -29,6 +29,7 @@ public abstract record CityCaptureDecision
     public sealed record Palace(PalaceEscapeChoice Choice) : CityCaptureDecision;
     public sealed record Incident(EspionagePretext Pretext) : CityCaptureDecision;
     public sealed record Technology(CapturedTechnologyChoice Choice) : CityCaptureDecision;
+    public sealed record Grant(ResearchGrantDecision Decision) : CityCaptureDecision;
     public sealed record Window(CaptureCityVisit Request) : CityCaptureDecision;
 }
 public sealed record CityCaptureServices(DiplomaticWar War, CivilWar CivilWar, CapturePopulationLoss Population,
@@ -237,11 +238,16 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
         Announce(op, n, o, center, plunder);
         if (!(world.Globals.Status.HasScenario && world.Scenario.Flags.NoConquestTechnology))
         {
-            var technology = services.Technology.Begin(n, o, call + "/technology");
+            using var technology = services.Technology.Begin(n, o, call + "/technology");
             while (!technology.Finished)
             {
-                if (technology.Resume(op.TakeReply()) is { } choice)
+                var pending = technology.Resume(op.TakeReply());
+                if (pending is CapturedTechnologyChoice choice)
                 { yield return new CityCaptureDecision.Technology(choice); }
+                else if (pending is CapturedTechnologyDecision.Grant grant)
+                { yield return new CityCaptureDecision.Grant(grant.Decision); }
+                else if (!technology.Finished)
+                { yield return null; }
             }
         }
         if (op.RemainingCity is { } surviving)

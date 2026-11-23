@@ -22,6 +22,7 @@ public static partial class FoundationSuite
         public GameState World => Data.World;
         public GameplayRandom Random { get; }
         public GrantFixture Grant { get; }
+        public RetainedGrantFixture? Retained { get; }
         public HutEntry Huts { get; }
         public MovementContinuation Movement { get; }
         public MapPoint Point { get; } = new(16, 12);
@@ -29,7 +30,7 @@ public static partial class FoundationSuite
         public List<MapPoint> Draws { get; } = [];
         public int NeighborDraws, Status, CityLimits;
         public bool FailNotice, FailDraw;
-        public HutFixture(List<Choice> choices, RevelationFixture? data = null, IReadOnlyDictionary<int, CivilizationSet>? backing = null)
+        public HutFixture(List<Choice> choices, RevelationFixture? data = null, IReadOnlyDictionary<int, CivilizationSet>? backing = null, bool retainGrants = false)
         {
             Data = data ?? new(); Random = new(new ControlledChoices(new(choices)), "hut");
             World.Globals.Turn = 80; World.Globals.Year = 999; World.Globals.BarbarianActivity = 3;
@@ -43,7 +44,8 @@ public static partial class FoundationSuite
             for (int a = 0; a < RuleLimits.Advances; ++a) Data.Rules.Advances[a] = new() { Enabled = false, Identity = new("advance" + a, "Advance " + a), Prerequisites = new([AdvanceReference.None, AdvanceReference.None]) };
             Data.AddCity(0, 1, new(4, 4)); Data.AddUnit(0, 1, 9, Point);
             Grant = new(Data, Random);
-            Huts = new(World, Data.Rules, Random, new(World, Data.Process, Data.Stacks, Data), CityCreator(Data, () => ++CityLimits), Grant.Grants, this, backing);
+            Retained = retainGrants ? new(Grant) : null;
+            Huts = new(World, Data.Rules, Random, new(World, Data.Process, Data.Stacks, Data), CityCreator(Data, () => ++CityLimits), Retained?.Grants ?? Grant.Grants, this, backing);
             Movement = new(new(0), World.Entities.Units.End, Point) { LocalHuman = true };
         }
         public HutEntry.Operation Begin(string call = "hut") => Huts.Begin(new(0), Movement, call);
@@ -107,7 +109,7 @@ public static partial class FoundationSuite
         {
             var choices = HutStart(0); if (year >= 1000) choices.AddRange([HutDraw("city-size", 4, 3), HutDraw("city-marketplace", 2, 0), HutDraw("city-granary", 3, 0), HutDraw("city-library", 4, 0)]);
             var f = new HutFixture(choices) { FailDraw = true }; f.World.Globals.Year = (short)year;
-            using var op = f.Begin(); var visit = op.Resume()!; Equal(new CitySlot(1), visit.City.Slot); Equal(visit, op.Resume());
+            using var op = f.Begin(); var visit = (HutCityVisit)op.Resume()!; Equal(new CitySlot(1), visit.City.Slot); Equal(visit, op.Resume());
             ref var city = ref f.World.Entities.Cities.At(new(1)); Equal(f.Point, city.Position); Equal(new CivilizationSlot(1), city.Owner);
             Equal(year < 1000 ? (sbyte)1 : (sbyte)4, city.Size); Equal((short)2, f.World.Civilizations[1].CityCount);
             foreach (int building in new[] { BuildingIds.Temple, BuildingIds.Marketplace, BuildingIds.Granary, BuildingIds.Library }) Equal(year >= 1000, BuildingQueries.HasBuilding(f.World, new(1), building));

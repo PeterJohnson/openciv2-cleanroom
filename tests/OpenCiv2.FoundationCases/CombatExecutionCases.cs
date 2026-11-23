@@ -29,9 +29,9 @@ public static partial class FoundationSuite
         public List<EmissaryNotice> Emissaries { get; } = [];
         public WarNotices WarEffects { get; } = new();
         public string? Failure;
-        public ExecutionFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public ExecutionFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
         {
-            F = new(choices, data); World.Globals.HumanPlayers = CivilizationSet.Only(1).With(2);
+            F = new(choices, data, retainGrants); World.Globals.HumanPlayers = CivilizationSet.Only(1).With(2);
             World.Names[1].Tribe = "Attackers"; World.Names[2].Tribe = "Defenders";
             var government = new GovernmentChanges(World, F.Data.Process.Rules, F.Data.Stacks,
                 _ => throw new InvalidOperationException("Unexpected government choice"), _ => throw new InvalidOperationException("Unexpected rate choice"), _ => { });

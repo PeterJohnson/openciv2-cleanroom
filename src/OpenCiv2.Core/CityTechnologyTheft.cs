@@ -46,13 +46,17 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
 
     public sealed class Operation : IDisposable
     {
-        private sealed record Step(CityEspionageDecision? Decision = null, CivilizationElimination.Operation? Loss = null, CapturedTechnology.Operation? Selection = null);
+        private sealed record Step(CityEspionageDecision? Decision = null, CivilizationElimination.Operation? Loss = null,
+            CapturedTechnology.Operation? Selection = null, ResearchGrants.Operation? Grant = null);
         private readonly CityTechnologyTheft parent;
         private readonly CityMissionContext mission;
         private readonly string call;
         private readonly IEnumerator<Step> steps;
         private CivilizationElimination.Operation? loss;
         private CapturedTechnology.Operation? selection;
+        private ResearchGrants.Operation? grant;
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         private CityEspionageDecision? pending;
         private int answer;
         private bool lost, disposed, faulted;
@@ -74,7 +78,8 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
                 if (pending is not null && reply is null)
                 { return pending; }
                 int? incidentReply = pending is CityEspionageDecision.Incident ? reply?.Selected : null;
-                ResearchReply? selectionReply = pending is CityEspionageDecision.Technology ? reply : null;
+                ResearchReply? selectionReply = selection is not null && pending is CityEspionageDecision.Technology or CityEspionageDecision.Grant ? reply : null;
+                int? grantReply = grant is not null && pending is CityEspionageDecision.Grant ? reply?.Selected : null;
                 if (pending is CityEspionageDecision.Question)
                 { answer = reply!.Value.Selected; }
                 pending = null;
@@ -96,9 +101,27 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
                     {
                         var choice = selection.Resume(selectionReply);
                         selectionReply = null;
-                        if (choice is not null)
-                        { return pending = new CityEspionageDecision.Technology(choice); }
+                        if (choice is CapturedTechnologyChoice technology)
+                        { return pending = new CityEspionageDecision.Technology(technology); }
+                        if (choice is CapturedTechnologyDecision.Grant granted)
+                        { return pending = new CityEspionageDecision.Grant(granted.Decision); }
+                        if (!selection.Finished)
+                        { return null; }
+                        presentationFailures.AddRange(selection.PresentationFailures);
+                        selection.Dispose();
                         selection = null;
+                    }
+                    if (grant is not null)
+                    {
+                        var question = grant.Resume(grantReply);
+                        grantReply = null;
+                        if (question is not null)
+                        { return pending = new CityEspionageDecision.Grant(question); }
+                        if (!grant.Completed)
+                        { return null; }
+                        presentationFailures.AddRange(grant.PresentationFailures);
+                        grant.Dispose();
+                        grant = null;
                     }
                     if (!steps.MoveNext())
                     { Completed = true; steps.Dispose(); return null; }
@@ -107,6 +130,7 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
                     { return pending = step.Decision; }
                     loss = step.Loss;
                     selection = step.Selection;
+                    grant = step.Grant;
                 }
             }
             catch { faulted = true; Release(); throw; }
@@ -207,11 +231,11 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
             }
             if (parent.HumanNotice(m.Actor))
             { parent.Effects.Sound(); parent.Notice(m, TechnologyTheftNoticeKind.Stolen, candidate); }
-            parent.Grants.Grant(m.Actor, candidate, m.Victim, false, call + "/grant");
+            yield return new(Grant: parent.Grants.Begin(m.Actor, candidate, m.Victim, false, call + "/grant"));
             w.Entities.Cities.At(m.City).Flags.TechnologyStolen = true;
             yield return Escape(escapeMode);
         }
-        private void Release() { loss?.Dispose(); steps.Dispose(); }
+        private void Release() { loss?.Dispose(); selection?.Dispose(); grant?.Dispose(); steps.Dispose(); }
         public void Dispose() { disposed = true; Release(); }
     }
 }

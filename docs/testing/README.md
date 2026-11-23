@@ -48,8 +48,13 @@ pending incidents, preserve failure prefixes and exercise real session privacy.
 Returned AI fallbacks remain requests for the unfinished city controller.
 Retained grant groups exercise government acceptance after stored knowledge,
 actual emissary reception/reset, recursive Great Library acquisition, private
-recipient routing, cancel/timeout and terminal failure/disposal prefixes. Existing
-synchronous acquisition callers have not yet migrated to these continuations.
+recipient routing, cancel/timeout and terminal failure/disposal prefixes. Captured
+technology, both theft paths and hut scrolls now suspend inside actual grants.
+Integration cases preserve the distinct theft-flag/escape order, captured-city
+presentation after grant completion, and U02 movement charge/relocation before a
+private hut government choice, with final direction/cleanup afterward. The real
+Anarchy setter recalculates owned cities. Civilization catch-up and research
+completion remain to migrate; desktop production composition is still pending.
 Embassy/investigation groups distinguish plain deletion, cargo destruction and
 escape, captured Spy/type state, live investigation flags and one-point movement.
 They exercise actual nested elimination before final notices. Session cases verify

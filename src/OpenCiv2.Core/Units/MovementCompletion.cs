@@ -12,6 +12,7 @@ public abstract record MovementCompletionDecision
     public sealed record Capture(CityCaptureDecision Decision) : MovementCompletionDecision;
     public sealed record Incident(EspionagePretext Question) : MovementCompletionDecision;
     public sealed record Hut(HutCityVisit Visit) : MovementCompletionDecision;
+    public sealed record Grant(ResearchGrantDecision Decision) : MovementCompletionDecision;
     public sealed record LongMove(LongMoveQuestion Question) : MovementCompletionDecision;
 }
 public sealed record MovementCompletionServices(CityCapture Capture, UnitRevelation Revelation,
@@ -156,8 +157,11 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
             using var hut = services.Huts.Begin(finishing, movement, call + "/hut");
             while (!hut.Completed)
             {
-                if (hut.Resume(operation.TakeReply()?.Selected) is { } visit)
+                var pending = hut.Resume(operation.TakeReply()?.Selected);
+                if (pending is HutCityVisit visit)
                 { yield return new MovementCompletionDecision.Hut(visit); }
+                else if (pending is HutDecision.Grant grant)
+                { yield return new MovementCompletionDecision.Grant(grant.Decision); }
                 else if (!hut.Completed)
                 { yield return null; }
             }

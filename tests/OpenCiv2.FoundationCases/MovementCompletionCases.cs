@@ -37,7 +37,7 @@ public static partial class FoundationSuite
             var incidents = Capture.Theft.Damage.Incidents.Incidents;
             var transport = new TransportMovement(World, Data.Rules, Data.Stacks, new(World, Data.Rules, Data.Stacks), this);
             var special = new SpecialMovementFinish(World, Data.Rules, Data.Stacks, Life.Random, Life.Elimination, Life.Loss, incidents, this);
-            var huts = new HutEntry(World, Data.Rules, Life.Random, new(World, Data.Process, Data.Stacks, Data), CityCreator(Data), Capture.Theft.Grant.Grants, this);
+            var huts = new HutEntry(World, Data.Rules, Life.Random, new(World, Data.Process, Data.Stacks, Data), CityCreator(Data), Capture.Theft.Research, this);
             Completion = new(World, Data.Rules, Data.Stacks, new(Capture.Capture, new(World, Data.Rules, Data.Stacks, Data), special, huts, transport, new(World)), this);
         }
         public MovementCompletion.Operation Begin() => Completion.Begin(Movement, Step, Inputs, "finish");

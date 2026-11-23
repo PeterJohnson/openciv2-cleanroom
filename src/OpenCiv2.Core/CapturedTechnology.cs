@@ -8,7 +8,11 @@ using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Core;
 
-public sealed record CapturedTechnologyChoice(int Civilization, int Victim, bool Interactive, int Recommendation, OwnedList<ResearchOption> Options);
+public abstract record CapturedTechnologyDecision
+{
+    public sealed record Grant(ResearchGrantDecision Decision) : CapturedTechnologyDecision;
+}
+public sealed record CapturedTechnologyChoice(int Civilization, int Victim, bool Interactive, int Recommendation, OwnedList<ResearchOption> Options) : CapturedTechnologyDecision;
 public sealed record TakenTechnologyNotice(int Civilization, int Victim, int Advance, string CivilizationName, string AdvanceName);
 
 /// <summary>V03 §12 captured technology with actual A08 valuation, V03 grant/goal and C06 reset.
@@ -25,27 +29,34 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
     private void Taken(int c, int victim, int advance) => notice(new(c, victim, advance, world.Names[c].Tribe, rules.Definitions.Advances[advance].Identity.Name));
     public Operation Begin(int civilization, int victim, string call) => new(this, civilization, victim, call);
 
-    public sealed class Operation(CapturedTechnology parent, int civilization, int victim, string call)
+    public sealed class Operation(CapturedTechnology parent, int civilization, int victim, string call) : IDisposable
     {
-        private bool started, interactive, faulted;
+        private bool started, interactive, faulted, disposed;
         private int best = -1, bestValue = -999;
+        private int selected;
+        private ResearchGrants.Operation? grant;
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         public bool Finished { get; private set; }
         public int? Result { get; private set; }
-        public CapturedTechnologyChoice? Pending { get; private set; }
-        public CapturedTechnologyChoice? Resume(ResearchReply? reply = null)
+        public CapturedTechnologyDecision? Pending { get; private set; }
+        public CapturedTechnologyDecision? Resume(ResearchReply? reply = null)
         {
+            ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
             { throw new InvalidOperationException("A failed captured-technology operation cannot resume"); }
             if (Finished)
             { return null; }
             try
             { return Advance(reply); }
-            catch { faulted = true; throw; }
+            catch { faulted = true; grant?.Dispose(); throw; }
         }
-        private CapturedTechnologyChoice? Advance(ResearchReply? reply)
+        private CapturedTechnologyDecision? Advance(ResearchReply? reply)
         {
             var w = parent.World;
             MapKnowledge.RequireLocal(w);
+            if (grant is not null)
+            { return AdvanceGrant(reply?.Selected); }
             if (!started)
             {
                 ArgumentException.ThrowIfNullOrEmpty(call);
@@ -85,9 +96,9 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
             { Finished = true; return null; }
             if (!parent.Human(civilization))
             { return Finish(best); }
-            return Pending = new(civilization, victim, interactive, best, new(options));
+            return Pending = new CapturedTechnologyChoice(civilization, victim, interactive, best, new(options));
         }
-        private CapturedTechnologyChoice? Finish(int advance)
+        private CapturedTechnologyDecision? Finish(int advance)
         {
             // Unsupported negative/out-of-backing replies stop before name reads or grant writes.
             ArgumentOutOfRangeException.ThrowIfNegative(advance);
@@ -95,12 +106,24 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
             var w = parent.World;
             if (!w.Multiplayer.Saved.AutoplayActive && parent.Human(victim) && w.Multiplayer.LocalHuman == victim)
             { parent.Taken(civilization, victim, advance); }
-            parent.Grants.Grant(civilization, advance, victim, false, call + "/grant");
+            selected = advance;
+            grant = parent.Grants.Begin(civilization, advance, victim, false, call + "/grant");
+            return AdvanceGrant(null);
+        }
+        private CapturedTechnologyDecision? AdvanceGrant(int? reply)
+        {
+            Pending = grant!.Resume(reply) is { } decision ? new CapturedTechnologyDecision.Grant(decision) : null;
+            if (!grant.Completed)
+            { return Pending; }
+            presentationFailures.AddRange(grant.PresentationFailures);
+            grant.Dispose();
+            grant = null;
             if (!parent.Human(civilization))
             { parent.Production.ResetCivilization(civilization); }
-            Result = advance;
+            Result = selected;
             Finished = true;
             return null;
         }
+        public void Dispose() { disposed = true; grant?.Dispose(); }
     }
 }

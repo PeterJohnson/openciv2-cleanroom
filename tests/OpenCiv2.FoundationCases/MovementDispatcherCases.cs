@@ -26,9 +26,9 @@ public static partial class FoundationSuite
         public MovementDispatchInputs Inputs = new(new(false), new(false, false), false, 77, 77, "retained city", "Diplomat", "");
         public int Blinks, OffMap;
         public bool FailBlink, FailOffMap;
-        public DispatcherFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public DispatcherFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
         {
-            Foreign = new(choices, data); Land = new(city: new(capture: Capture)); Finish = new(capture: Capture);
+            Foreign = new(choices, data, retainGrants); Land = new(city: new(capture: Capture)); Finish = new(capture: Capture);
             Relocation = new(Data); City = new(foreign: Foreign);
             var transport = new TransportMovement(World, Data.Rules, Data.Stacks, new(World, Data.Rules, Data.Stacks), Finish);
             Dispatcher = new(World, Data.Rules, Data.Stacks, new(Land.Entry, Foreign.Foreign, transport, City.City,

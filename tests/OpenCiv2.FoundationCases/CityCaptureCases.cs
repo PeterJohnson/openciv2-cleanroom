@@ -29,9 +29,9 @@ public static partial class FoundationSuite
         public List<LeonardoUpgradeNotice> Upgrades { get; } = [];
         public Action<CitySlot, int, int>? OnTaken;
         public Action<CaptureNotice>? OnNotice;
-        public CityCaptureFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public CityCaptureFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
         {
-            Theft = new(choices, data); Data.AddCity(1, 2, new(26, 16), 4);
+            Theft = new(choices, data, retainGrants); Data.AddCity(1, 2, new(26, 16), 4);
             World.Civilizations[2].CityCount = 2; World.Civilizations[2].TotalCitySize = 9;
             City.Size = 5; City.Founder = new(2); World.Civilizations[2].Gold = 100; World.Civilizations[1].Gold = 10;
             World.Globals.CivsAlive = CivilizationSet.Only(1).With(2); World.Globals.Difficulty = Difficulty.Prince;

@@ -57,9 +57,9 @@ public sealed class ResearchGrants(GameState world, RuleTables rules, GameplayRa
 
     public Operation Begin(int civilization, int advance, int source, bool skipPedia, string call)
     {
-        if (retainedGovernments is null || retainedEmissary is null)
-        { throw new InvalidOperationException("Retained research grants require government and emissary services"); }
-        return new(this, civilization, advance, source, skipPedia, call, true);
+        // Existing callers explicitly supplying synchronous adapters can use the same parent
+        // continuation. Production composition supplies the retained children instead.
+        return new(this, civilization, advance, source, skipPedia, call, retainedGovernments is not null);
     }
     public sealed class Operation : IDisposable
     {
