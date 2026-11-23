@@ -8,6 +8,8 @@ namespace OpenCiv2.Core.Units;
 
 public enum SpyFate { Survived, VeteranSurvived, Died, Caught }
 public readonly record struct SpyNotice(UnitTarget Unit, UnitType Type, int Owner, SpyFate Fate, string? Destination = null);
+public sealed record SpyIncidentRequest(int Actor, int Victim);
+public sealed record SpyEscapeResult(bool Lost, SpyIncidentRequest? Incident = null);
 
 public interface ISpyEscapeEffects
 {
@@ -24,6 +26,16 @@ public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations
 
     /// <returns>True when the unit was lost, false when it escaped.</returns>
     public bool Try(int slot, int mode, int victim, string call)
+    {
+        var result = Resolve(slot, mode, victim, call);
+        if (result.Incident is { } request)
+        { incident(request.Actor, request.Victim); }
+        return result.Lost;
+    }
+
+    /// <summary>V06 escape/loss prefix for a resumable caller. Complete any returned incident before
+    /// reporting mission completion; this method does not replace its human decision with a default.</summary>
+    public SpyEscapeResult Resolve(int slot, int mode, int victim, string call)
     {
         MapKnowledge.RequireLocal(world);
         ArgumentException.ThrowIfNullOrEmpty(call);
@@ -73,7 +85,7 @@ public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations
                     }
                     unit.Flags.Veteran = true;
                 }
-                return false;
+                return new(false);
             }
             if (mode >= 0 && Human(owner) && !world.Multiplayer.Saved.AutoplayActive && owner == world.Multiplayer.LocalHuman)
             {
@@ -81,11 +93,7 @@ public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations
             }
         }
         loss.DestroyAndRedraw(slot, true);
-        if (victim > 0 && mode >= 0)
-        {
-            incident(owner, victim);
-        }
-        return true;
+        return new(true, victim > 0 && mode >= 0 ? new(owner, victim) : null);
     }
 
     public bool Caught(int slot, int victim, string call)

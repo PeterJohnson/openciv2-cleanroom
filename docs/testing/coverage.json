@@ -2281,7 +2281,7 @@
       "status": "partial",
       "contract": "V01 section6 local last-city check; V06 section2 escape/capture; V07 section8 reset/loss; actual C05 starvation integration",
       "publicSurface": "CivilizationElimination.Check; SpyEscape.Try/Caught; SpaceshipLifecycle.Reset/Lost; desktop food/retirement deletion adapter",
-      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. Espionage incidents and nonzero-turn catch-up grants remain required owning services; those policies are not supplied by these boundary fixtures. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
+      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. The real espionage incident service is covered separately; general elimination still needs its resumable incident join. Nonzero-turn catch-up grants remain a required owning service; these boundary fixtures do not supply those policies. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationElimination.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
@@ -3221,6 +3221,31 @@
         "A08.stance-race-scenario",
         "A08.stance-regions-retention",
         "A08.stance-third-parties-direction"
+      ]
+    },
+    {
+      "id": "espionage-incidents",
+      "status": "partial",
+      "contract": "V06 sections2,11 local failed-escape incident, human pretext and senate consequences",
+      "publicSurface": "EspionageIncidents.Begin/Operation.Resume; EspionageWorkspace.LastMission; CityMission; SpyEscape.Resolve; SpyEscapeOperation",
+      "review": "Uses actual V04 war/cancellation, A08 stance and V02 government changes. Retains reverse treaty admission, independent forward alliance response, captured human pretext without expulsion, live city-mission state, leniency attitude formatting before its primary draw/adjustment and early return, government/scenario/autoplay draw order and real Anarchy recalculation. Session escape runs actual unit loss before waiting, retains fate across replies and maps cancel/timeout to decline without repeated loss or draws. Tests cover directed/asymmetric relations, AI and human seats, government changes, alliance expulsion, fresh workspace, invalid victim after loss, presentation-failure prefixes and local authority. Full city/unit missions, mission admission and desktop command integration, saved pending incidents, general elimination caller composition and network response remain unfinished. Browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/EspionageIncidents.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Core/Units/SpyEscape.cs",
+        "src/OpenCiv2.Session/SpyEscapeOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/EspionageIncidentCases.cs"
+      ],
+      "sharedGroups": [
+        "V06.escape-incident-continuation",
+        "V06.incident-directed-guards",
+        "V06.incident-failure-prefix",
+        "V06.incident-human-pretext",
+        "V06.incident-leniency-alliance",
+        "V06.incident-scenario-autoplay",
+        "V06.incident-war-senate"
       ]
     }
   ]

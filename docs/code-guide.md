@@ -87,8 +87,9 @@ recalculation and food accumulation after it, using actual removal/loss and
 routes. `CivilizationElimination` supplies V01's local last-city check with actual
 U01 deletion, `SpyEscape`, `SpaceshipLifecycle` reset/loss and civilization
 recreation. Famine-to-defeat, recursive last-settler checks, history, AI restart
-and exploration clearing are tested together. V06 incident decisions and V03
-restart catch-up grants remain required owning policies; forced retirement,
+and exploration clearing are tested together. The V06 incident service exists,
+but general elimination still needs its resumable caller join. V03 restart
+catch-up grants remain a required owning policy; forced retirement,
 civil war and full outcome handling are separate work. Alder Valley's deletion
 adapter now uses the real last-city check, although its admitted city-center
 yields and absence of food routes/homed settlers cannot cause last-city famine.
@@ -483,10 +484,19 @@ and cancellation with real C01 destinations and U01 cargo/stack expulsion.
 `BorderIntrusions` owns the mutating first-tile measurement and retained warning
 flags; its current summaries live in `DiplomacyWorkspace`. Presentation effects
 receive identities and names, not treaty-policy callbacks. V04 contact/audience,
-A08 relation review, V06 incident callers and network publication remain open.
+A08 relation review, full V06 mission callers and network publication remain open.
 
 `Core/Ai/DiplomaticStance` implements A08's ordered evaluation and alliance
 willingness, plus V05's shared-attitude patience query. It composes V07 race, C08
 wonders, U01 nearest units, V04 treaty primitives and actual A08/V02 government
 choice. Evaluation fields belong to `DiplomacyWorkspace`; evaluating does not
 select its attitude pair, declare a war, sign a treaty or reset an entire audience.
+
+`Core/EspionageIncidents` owns V06's local treaty response and senate consequences,
+with actual war, stance and government services. Its operation retains the human
+victim's pretext across a decision; `GameState.Espionage.LastMission` is the live
+city-mission domain. `SpyEscape.Resolve` returns the required incident after
+actual unit loss, and `Session/SpyEscapeOperation` completes it without repeating
+the escape prefix. The owning mission must admit the action and supply the
+victim's participant context. Full mission callers, pending-incident restoration
+and network responses remain open.

@@ -14,13 +14,13 @@ in the [M2 closeout](m2-closeout.md).
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; last-city famine now joins actual V01 elimination, ordered end reports and game closure. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. Full diplomacy/incident callers, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. Full diplomacy/mission callers, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government, diplomatic stance and alliance-willingness policies are implemented, with actual restricted government changes and V05 patience. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. F04 ship arrival, V08 scheduled retirement and pending outcome dispatch now join real reports and continuation. Semantic ending pages use actual ship/history data; authored ending/fame-title resources, remaining history and generated-game callers remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
-The next mechanics integrations are the V06 diplomacy-incident and V03 restart
+The next mechanics integrations are the V06 mission callers and V03 restart
 catch-up policies, A01 outer movement/U04 order execution, general
 government/research callers, and full F04 turn processing
 needed by the generated desktop game. C04's shared
@@ -2276,3 +2276,51 @@ code changed, and no new UI/browser/cross-platform acceptance is claimed.
 | --- | --- |
 | `m4-stance-native.json` | `1eeabff06a04002b29b5f720ed1bf4f7515a6b3da2f5d2fa1b65fc3c9b6ded77` |
 | `m4-stance-identity.json` | `cb2ab4c6dcb7343a09df80ca972bc03e8589015cfcbd96c581c0e84910aac95d` |
+
+## Espionage incidents and resumable escape
+
+V06's local incident service now composes actual V04 war/alliance transitions,
+A08 stance and V02 government changes. Reverse treaties admit the incident;
+the human actor's response independently reads the forward alliance. A human
+victim can declare war or cancel an alliance through a retained pretext decision.
+That alliance reply only clears flags and updates contact; it does not expel
+units. The human-to-AI alliance response invokes actual cancellation and expulsion
+without inventing a simultaneous war.
+
+The retained city-mission value belongs to the current game and is read live.
+Theft leniency runs stance, captures the attitude category before the random
+adjustment, then returns before the senate. Democracy reaches the senate without
+a draw; other governments consume their specified primary draw before the live
+Republic and scenario gates. Autoplay suppresses notices without suppressing an
+admitted Anarchy transition. Actual government changes recalculate cities and
+clear vendettas; earlier war effects survive a later presentation failure.
+
+`SpyEscape.Resolve` exposes the completed escape/loss prefix and its required
+incident. `SpyEscapeOperation` performs actual loss before yielding the victim's
+pretext, retaining the fate and incident through choice, cancel and timeout.
+Resuming neither repeats removal nor consumes another escape draw. The existing
+synchronous `Try` caller still invokes its required incident child. Full city/unit
+missions, desktop mission commands, general elimination incident composition and
+saved pending incidents remain open; this checkpoint adds no mission-admission
+bypass or new desktop control. Network response, browser execution and
+cross-platform qualification remain deferred.
+
+Shared cases cover asymmetric treaty directions, AI/human combinations, no-treaty
+and already-war returns, human alliance response versus real AI expulsion, live
+mission/fresh state, exact leniency category and draw, senate/scenario/autoplay
+ordering and actual city production changes. Failed spies and non-spies exercise
+loss before pending reply; invalid victims and later output failures preserve
+committed prefixes. M4 remains active until full generated human/AI desktop games
+and the remaining mechanics/callers pass their acceptance gates.
+
+Root/App formatting and verification, root/App Release builds and the 43-project
+boundary check passed. The native suite passed **874 of 876 tests**, with the two
+existing platform/audio skips. The probe passed **841 shared groups** and verified
+**507 compiled inputs**. Coverage maps all groups across 101 families; eight
+identity and three coverage validator tests passed. No UI controls or Lua task
+code changed, and no new UI/browser/cross-platform acceptance is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-incident-native.json` | `74f830df18bfa0daeaca7ef846fcb4a65cddf0258074ef714ed4b7909df813be` |
+| `m4-incident-identity.json` | `3b6438d38e7b4418b69122c9cd05bed71e42a35e1dd7325537aa9d3be245e616` |

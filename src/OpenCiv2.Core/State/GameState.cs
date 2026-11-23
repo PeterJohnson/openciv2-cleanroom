@@ -77,6 +77,7 @@ public sealed class GameState
     public SpaceshipWorkspace Spaceship { get; } = new();
     public ScoreWorkspace Score { get; } = new();
     public DiplomacyWorkspace Diplomacy { get; } = new();
+    public EspionageWorkspace Espionage { get; } = new();
     public ProductionWorkspace Production { get; } = new();
     public GenerationPathWorkspace Paths { get; } = new();
     public MapStorage Map { get; }
