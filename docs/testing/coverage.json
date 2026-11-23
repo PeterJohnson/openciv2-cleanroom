@@ -4280,6 +4280,31 @@
         "A04.guard-temporary-reserve",
         "A04.guard-walls-live-strength"
       ]
+    },
+    {
+      "id": "ai-ground-orders",
+      "status": "partial",
+      "contract": "A04 retained Goto, DefenderFortify, PartisanFortress and direction/common finish",
+      "publicSurface": "GroundOrders.RetainedGoto/DefenderFortify/Direction/Finish; PartisanFortress.Apply",
+      "review": "Actual stack, spatial, treaty and shared-goal operations retain military Goto versus naval exclusions, transport retry before treaties, empty-city Trade exception, four defender reasons and peaceful foreign-radius suppression. Direction applies to retained working position and installs AI Goto without moving; Hold and common finish retain captured versus live domain/role, byte air movement, ordinary-arrival and accompanied-warship exhaustion rules. Partisan counters wrap and only change the local Fortress flag; actual second-city scans preserve raw region, nearest exclusion and owned ties. Tests join real guard-to-fortification and AI-Goto-to-movement through U04 execution. Early work/Sleep/AI-Goto need no captured domain; an unproduced domain on the reached non-Air finish branch stops after exhaustion. Pillage/partisan targets, specialized/site/transport/movement planning, full chooser and desktop acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/GroundOrders.cs",
+        "src/OpenCiv2.Core/Ai/PartisanFortress.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GroundOrderCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.defender-fortify",
+        "A04.direction-finish",
+        "A04.goto-finish-naval",
+        "A04.orders-actual-execution",
+        "A04.partisan-fortress-cities",
+        "A04.partisan-fortress-counters",
+        "A04.retained-goto"
+      ]
     }
   ]
 }

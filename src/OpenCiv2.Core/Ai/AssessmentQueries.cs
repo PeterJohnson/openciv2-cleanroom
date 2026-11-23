@@ -13,6 +13,7 @@ public static class AiTaskIds
     public const int Nuclear = 0x21, Goal = 0x31, Preserved = 0x37, Unassigned = 0x3f;
     public const byte RespondToAttack = 75;
     public const byte Recover = 100, SevereRecovery = 68, Fortify = 70;
+    public const byte Idle = 48;
 }
 
 /// <summary>A01 §2 role, defense quota and sparse city/land-region contact queries.</summary>

@@ -765,3 +765,12 @@ fortification, stack-order ties and reserve counts, periodic order release,
 retained settler state and live walls/garrison strength. Recovery into CityGuard
 with absent captured home retains its prefix and stops at the required read.
 Specialized/partisan dispatch, the full chooser and desktop acceptance remain open.
+
+A04 retained-order groups cover military versus naval Goto, the one transport
+retry, empty foreign-city Trade exception, defender reasons and standing-goal
+clears. Direction/finish cases verify actual order production, captured/live
+profile distinctions, air byte wrapping, early work without domain capture and
+naval arrival with/without transport. Partisan fortress cases preserve counter
+wrap, map features, raw-region filtering and owned city ties. Guard-to-Fortifying
+and AI-Goto results execute through actual U04 children. Full planner/chooser and
+desktop complete-game acceptance remain open.

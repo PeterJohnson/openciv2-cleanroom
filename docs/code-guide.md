@@ -762,6 +762,13 @@ temporary Fortified orders visible to those queries. Its route results preserve
 the parent's specialized/partisan boundaries. Missing captured home backing stops
 at the specified read; no fallback city is supplied.
 
+`Ai/GroundOrders` handles retained Goto, defender-fortification reasons and the
+shared direction/finish path. It produces real orders for U04 execution, preserving
+transport retries, goal clearing, air movement wrapping and naval arrival rules.
+`PartisanFortress` changes only the retained fortress decision after actual
+counter and second-city tests. Pillage/target selection, specialized/transport
+phases and the ordinary movement planner are still separate pending joins.
+
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
 and ends after the first eligible paratrooper even on refusal. Otherwise it

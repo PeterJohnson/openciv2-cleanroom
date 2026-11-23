@@ -4167,3 +4167,29 @@ A04 entry/trespass/forced-city logic, specialized/site/partisan phases, transpor
 and movement planning, full AI/turn scheduling, desktop composition and complete
 human/AI-game acceptance remain open. Browser and cross-platform execution remain
 deferred.
+
+## A04 retained orders and partisan fortress decisions
+
+`GroundOrders` now implements retained Goto, defender-fortification reasons and
+the direction/common finish path. Transport retries precede treaty filtering;
+standing goals clear through A01, and naval arrival consumes movement only under
+the specified transport condition. Hold and direction results produce real
+Fortifying/AI-Goto orders. Integration cases execute them through U04, including
+actual U03/U02 movement. `PartisanFortress` retains signed counter wrapping and
+the distinct second-nearest-city test without removing map improvements.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1205 of 1207**, with the two existing
+platform/audio skips. The shared probe passed **1172 groups** across 134 coverage
+families; source identity verified **663 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-ground-orders-native.json` | `7d564afaf2646e4173e5f94d9a300ded7fa8e702a70e7aafc9cfe3763a22364a` |
+| `m4-ground-orders-identity.json` | `889d1776f5211ecde1161e708d174ead279dc4398ff7d34f4d1e947f7c909f40` |
+
+Pillage/partisan targeting, entry/trespass/forced-city logic, specialized/site/
+transport/movement planning, full AI/turn scheduling, desktop composition and
+complete human/AI-game acceptance remain open. Browser and cross-platform
+execution remain deferred.
