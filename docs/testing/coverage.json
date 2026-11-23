@@ -4026,6 +4026,27 @@
         "U02.finish-ordering-long-move",
         "U02.finish-private-session"
       ]
+    },
+    {
+      "id": "movement-relocation",
+      "status": "partial",
+      "contract": "U02 Movement publication and viewers, Landing alert and early count, local Authority and relocation; U01 cargo and placement",
+      "publicSurface": "MovementRelocation.Apply with explicit viewer inputs and retained hut/view result",
+      "review": "Actual single-unit knowledge publication, local alive/human/autoplay viewer selection, destination-neighbor visibility, captured-domain animation suppression, early regional count and required landing notice, cargo lift, whole-group visibility reset and relocation. Tests cover directed embassies, slot-zero landing suppression, absent-owner backing and failure prefixes, cargo isolation, hut capture before placement, Shift/Goto combinations and actual arrival double count. Cosmetic failures continue; required publication and notices retain committed prefixes. Observer zero requires explicit incoming values; observer minus one uses the documented hut/seen-seven aliases. Remote authority and outer dispatcher/session/desktop integration remain pending. Browser/cross-platform deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/MovementRelocation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MovementRelocationCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.move-knowledge-publication",
+        "U02.move-landing-prefixes",
+        "U02.move-relocation-cargo-failures",
+        "U02.move-viewer-animation",
+        "U02.move-viewer-selection",
+        "U02.move-viewer-temporary-inputs"
+      ]
     }
   ]
 }

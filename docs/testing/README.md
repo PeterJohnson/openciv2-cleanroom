@@ -693,3 +693,12 @@ stack visibility, direction-write timing, bound changes after creation/deletion,
 private capture-to-long-move and nested last-Settler incidents, and cosmetic versus
 required-notice failure behavior. These establish the local finish composition,
 not the outer movement dispatcher or desktop/full-game acceptance.
+
+U02 relocation groups cover single-unit barbarian/city knowledge, directed
+embassies, alive/human/autoplay viewer selection, destination-neighbor disclosure,
+Shift/Goto/captured-Air animation decisions and explicit exceptional inputs.
+Actual U01 cargo grouping, whole-stack visibility changes, hut capture before
+placement and an actual completion join verify relocation effects. Landing tests
+cover slot-zero suppression, treaty gates, retained failures and the early plus
+ordinary-arrival double count. These remain local service tests; dispatcher and
+desktop integration are pending.

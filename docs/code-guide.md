@@ -828,4 +828,14 @@ retained through later children. `Session/MovementCompletionOperation` shares
 capture/long-move prompt logic and privately routes nested loss incidents and hut
 city visits. Cosmetic pause/refresh failures are diagnostics. U05 special finish
 also collects cosmetic failures; boarding returns redraw diagnostics after required
-state publication. Outer movement admission, viewing and relocation remain separate.
+state publication. Outer movement admission remains separate.
+
+`Units/MovementRelocation` performs U02 local viewer/knowledge publication,
+landing alert and early regional count, then actual U01 cargo lift, whole-group
+visibility reset and relocation. Its result retains the hut presence from before
+placement and the local viewer state for completion. Shift is a cosmetic input;
+saved autoplay membership and unwritten observer-zero values require explicit
+inputs when consumed. The absent destination treaty path stops after its early
+count unless supplied backing is available. Required notices/publications retain
+failure prefixes; cosmetic failures do not strand the lifted group. The outer
+dispatcher and network authority paths remain separate.
