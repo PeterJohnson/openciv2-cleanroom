@@ -4597,6 +4597,28 @@
         "A07.paratrooper-retained-target-score",
         "A07.paratrooper-wrapped-range"
       ]
+    },
+    {
+      "id": "ai-nuclear-target-policy",
+      "status": "partial",
+      "contract": "A06 section 7 nuclear city eligibility, scoring, reach, staging and diplomacy",
+      "publicSurface": "NuclearTargets.Choose",
+      "review": "Actual C08 SDI queries, retained unsigned military strength, fixed enemy missile count, directed threat/Peace and signed city size govern admission. Scoring counts hostile stack members but applies friendly and protected penalties once per tile; barbarian units contribute nothing. Reach uses full damage-adjusted allowance from any owned city, preserves first reachable ties and does not discard a previous target for a higher unreachable score. Staging accepts ocean/airbase tiles, preserves orders/task/spent movement, clears actor visibility and performs directed Nuked/Vendetta plus bilateral Incident or signed contact-turn decrement. Cases cover signed counts/missing target, zero divisor, topology, large stacks, actual-type threshold and protected authority. A real A04 direction reload feeds U04/U03/U02/U07 for detonation and nearby SDI interception. Full A06 air chooser, A04 orchestration and desktop complete-game acceptance remain open; browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/NuclearTargets.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NuclearTargetCases.cs"
+      ],
+      "sharedGroups": [
+        "A06.nuclear-actual-order-delivery",
+        "A06.nuclear-admission",
+        "A06.nuclear-failures-direction",
+        "A06.nuclear-reach-topology",
+        "A06.nuclear-scoring-ties",
+        "A06.nuclear-staging-diplomacy",
+        "A06.nuclear-threshold-actual-type"
+      ]
     }
   ]
 }

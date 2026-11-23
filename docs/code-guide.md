@@ -821,6 +821,13 @@ selected drop returns zero directly even on refusal. Its session adapter routes
 actual capture decisions. A03 selector production and full parent wiring remain
 open.
 
+`Ai/NuclearTargets` implements A06 nuclear selection with actual SDI, stack,
+movement-allowance and diplomatic services. It stages the actor before returning
+an attack direction; A04 must reload working position before applying it.
+Staging itself does not consume movement or execute the blast. Tests join the
+result through actual A04/U04/U03/U02/U07, including nearby SDI interception.
+The A06 air chooser and full tactical/desktop composition remain open.
+
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
 and ends after the first eligible paratrooper even on refusal. Otherwise it

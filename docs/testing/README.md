@@ -872,3 +872,13 @@ healed AI movement left after capture. Private capture replies/cancellation,
 disposal, missing draws and late failures preserve earlier relocation and city
 ownership. A03 city-selector production is an explicit phase input pending the
 full tactical join; these groups do not claim complete-game desktop acceptance.
+
+A06 nuclear-target cases cover strict unsigned military-pressure gates, fixed
+enemy versus live actor type counts, signed city size/counts, per-tile penalties
+and full hostile stack traversal. Reach comes from actual owned cities and full
+damage-adjusted allowance, preserving first ties and earlier reachable targets.
+Staging tests cover occupied neighbors, ocean/airbase admission, preserved orders
+and movement, directed and bilateral diplomatic effects and signed contact wrap.
+The selected direction runs through actual A04/U04/U03/U02/U07 for detonation and
+nearby-SDI interception. General air policy and desktop full-game acceptance
+remain open.

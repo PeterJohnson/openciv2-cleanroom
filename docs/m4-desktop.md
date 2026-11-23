@@ -4588,3 +4588,35 @@ A03 settlement/work and full founding, A06 air/nuclear, W06 barbarian policies,
 full A04/A01/turn orchestration, generated desktop composition and complete
 human/AI-game acceptance remain open. Browser and cross-platform execution
 remain deferred.
+## A06 nuclear targeting and delivery join
+
+`NuclearTargets` now implements city admission, per-tile scoring, reach from
+owned cities, staging relocation and directed diplomatic consequences. It uses
+actual SDI queries, validated stack traversal, damage-adjusted movement allowance
+and bilateral Incident publication. First reachable ties remain stable; a higher
+unreachable score preserves the previous target. Fixed enemy missile counts and
+the actor's live actual-type count retain their separate admission roles.
+
+Tests cover strict unsigned strength thresholds, signed size/count boundaries,
+large hostile stacks, friendly/protected penalties, wrapped reach and staging on
+ocean/airbase tiles. Staging preserves existing orders, task and spent movement,
+clears only actor visibility and retains contact-turn wrapping. Missing selected
+targets and zero road divisors stop at their reached boundaries. Integration
+reloads A04's working position after staging and executes the produced order
+through actual U04/U03/U02/U07, exercising detonation and nearby SDI interception.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1300 of 1302**, with the two existing
+platform/audio skips. The shared probe passed **1267 groups** across 146 coverage
+families; source identity verified **703 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-nuclear-targets-native.json` | `192e72c75ba2136eba40c60b105f0642a2f0c2e6ddc405faa1249823620ca1c9` |
+| `m4-nuclear-targets-identity.json` | `2129c17a8f17430348983e7f6d8040cca374c87af61e7d26c6f670e46fb900e9` |
+
+A06's general air chooser, A03 settlement/work and full founding, W06 barbarians,
+full A04/A01/turn orchestration, generated desktop composition and complete
+human/AI-game acceptance remain open. Browser and cross-platform execution
+remain deferred.
