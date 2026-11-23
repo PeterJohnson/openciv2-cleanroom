@@ -2754,7 +2754,7 @@
       "id": "ai-city-production",
       "contract": "A02 \u00a7\u00a71\u20139 and X01 repairs; A03 \u00a72; U02 spatial control; U05 AI city-production airlift",
       "publicSurface": "CityProductionChoice with independent optional recommendations; TerrainImprovementChoice; SpatialControl; AiProductionAirlift; desktop automatic production, research-reset and mood callers",
-      "review": "Ordered surveys and retained A01 inputs, free irrigation, cached C03 calculation, actual eligibility, redundant sales, donor transfer/interception, facility/wonder/special/ordinary scores, raw-versus-weighted wonder choice, preferences and final automation policy. Contract cases cover negative and wrapped values, excluded table writes, repaired exhausted reads, backed inactive city sizes, failure prefixes, direction/medium gates, semantic secondary draws and actual U01 relocation/deletion. Direct/console desktop cases load automatic flags, complete production, save/resume and compare bytes. Full A01 census/strategy, general desktop advice/auto controls, player U05 movement, generated-game F04 integration and original-game comparison remain open; browser/cross-platform execution is deferred.",
+      "review": "Ordered surveys and retained A01 inputs, free irrigation, cached C03 calculation, actual eligibility, redundant sales, donor transfer/interception, facility/wonder/special/ordinary scores, raw-versus-weighted wonder choice, preferences and final automation policy. Contract cases cover negative and wrapped values, excluded table writes, repaired exhausted reads, backed inactive city sizes, failure prefixes, direction/medium gates, semantic secondary draws and actual U01 relocation/deletion. Direct/console desktop cases load automatic flags, complete production, save/resume and compare bytes. A01 outer movement, general desktop advice/auto controls, player U05 movement, generated-game F04 integration and original-game comparison remain open; browser/cross-platform execution is deferred.",
       "sharedGroups": [
         "A02.defense-override-and-sam",
         "A02.diplomat-targets-and-repair",
@@ -2805,6 +2805,47 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/AiProductionCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
+      ]
+    },
+    {
+      "id": "ai-civilization-assessment",
+      "contract": "A01 \u00a7\u00a72\u20136 and \u00a77 assessment tail; A08 \u00a73; V08 \u00a72 objective value; X01 invalid-write repairs",
+      "publicSurface": "CivilizationAssessment, AssessmentQueries, PowerRanking, GovernmentPolicy and CityObjectives; desktop pre-advance power and post-city human assessment",
+      "status": "partial",
+      "review": "Ordered staging/census/regions/reverse assignment and goal aging, with actual A02/C06 production reset, A08/V02 government change, C05 support and U01/V01 loss/elimination/recreation. Cases distinguish stale upgrade counts from actual deletion effects, retained rival summaries, allied double counting, negative history/ranks, one-sided coordination and conditional draws, air range/division failure, anti-submarine role retention, historical routes and fortress versus airbase behavior. Native desktop direct/console turns publish old power before refreshed census and continue identically after save/reload. A01 outer movement, U04 order execution, remaining A03\u2013A08 tactics/diplomacy and full F04 generated-game integration remain pending. Browser/cross-platform execution is deferred; these are authored specification tests, not original-game comparison.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/CivilizationAssessment.Assignment.cs",
+        "src/OpenCiv2.Core/Ai/CivilizationAssessment.Regions.cs",
+        "src/OpenCiv2.Core/Ai/CivilizationAssessment.cs",
+        "src/OpenCiv2.Core/Ai/GovernmentPolicy.cs",
+        "src/OpenCiv2.Core/Ai/PowerRanking.cs",
+        "src/OpenCiv2.Core/City/CityObjectives.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AssessmentCases.cs"
+      ],
+      "sharedGroups": [
+        "A01.assessment-air-goals-failure-prefix",
+        "A01.assessment-antisubmarine-fortress",
+        "A01.assessment-elimination-government",
+        "A01.assessment-goals-allocation",
+        "A01.assessment-historical-route",
+        "A01.assessment-invalid-region-writes-reads",
+        "A01.assessment-ordered-census-aging",
+        "A01.assessment-paratrooper-staging",
+        "A01.assessment-queries",
+        "A01.assessment-regional-production",
+        "A01.assessment-retirement-upgrade",
+        "A01.assessment-settlers-sleeping",
+        "A01.assessment-threat-late-region",
+        "A01.power-negative-ranks-coordination",
+        "A01.power-ranks-history-objectives",
+        "A08.government-choice-transitions-draws",
+        "A08.government-rates-score-inputs",
+        "M4.local-assessment-power"
       ]
     }
   ]

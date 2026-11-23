@@ -125,6 +125,9 @@ narrower input domain. Invalid table writes and adjacent-field corruption are
 excluded under [X01](X01-classic-compatibility-contract.md#out-of-bounds-writes-are-excluded-bugs).
 Reads outside recovered inputs remain backing/stop boundaries; do not invent
 zero values or infer that a mapped destination makes an invalid write legitimate.
+The desktop implementation omits out-of-range unit/region census writes and
+invalid production-counter writes, while still stopping at any subsequently
+reached unbacked rule, region or home-city read.
 
 Goal retention, expiry and immediate redirection apply within a game. F05 starts
 both goal lists empty without invoking these helpers. Awake-with-moves and
@@ -234,6 +237,10 @@ specific sparse coastal test, not an exhaustive adjacency/path query.
    excluded bug. A safe implementation can omit that history write or reject the
    invalid turn, while retaining declared preceding effects.
 
+The desktop implementation omits a negative history destination and an
+out-of-range inverse-rank destination below, retaining all preceding valid effects.
+These are narrow X01 invalid-write repairs; backed stale ranks remain inputs.
+
 Repeat seven selections. Initialize best=-1 and selected=0; scan candidate slots
 1…7 and choose the first power strictly above best. Publish rank 7 down through 1
 to selected, then replace its local power with -1. Equal powers prefer lower
@@ -299,10 +306,11 @@ regardless of movement or type identity. Otherwise scan owned origin cities
 ascending, polling network at each origin iteration. Require origin farther than
 paradropRange from target but within that range of destination. Scan its stack;
 the first Paradrop-capable unit with nonzero moves left is relocated to destination
-through U01 with reveal argument 1, then its visibility is cleared and movement
+through U01 with synchronization requested, then its visibility is cleared and movement
 exhausted. End origin and destination searches for this target, then continue to
-the next target. No airport, transport, normal airlift or owner check is added to
-the candidate stack entries. [A07](A07-ai-special-unit-missions.md#4-paratrooper-objectives)
+the next target. U01 relocation adds no implicit terrain revelation; the historical
+argument label does not override that child's contract. No airport, transport,
+normal airlift or owner check is added to the candidate stack entries. [A07](A07-ai-special-unit-missions.md#4-paratrooper-objectives)
 owns later paratrooper objective selection; this
 staging is the assessment prepass, not the actual drop attack.
 

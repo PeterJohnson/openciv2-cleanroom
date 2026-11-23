@@ -215,6 +215,7 @@ public static partial class LocalPlayCommands
                     production = BeginCityProduction(context, slot);
                 }
             }
+            AssessCivilization(context);
             world.Production.CivilizationTurnInProgress = false;
             activeWorld = null;
             world.Globals.ActiveUnit = null;
@@ -249,6 +250,7 @@ public static partial class LocalPlayCommands
 
             // Global advance and all-unit reset precede civilization recovery and its city pass.
             world.HumanWonders.Update(world);
+            new PowerRanking(world, context.Gameplay).Publish($"local-power/{world.Globals.Turn}");
             ref var globals = ref world.Globals;
             ++globals.Turn;
             if (globals.Turn > 199)
@@ -264,6 +266,21 @@ public static partial class LocalPlayCommands
             ref var treasury = ref world.Civilizations[owner].Gold;
             treasury = Math.Max(treasury, 0);
 
+        }
+
+        private static void AssessCivilization(OperationContext context)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            var budget = new StackBudget(5_000_000, 64);
+            var stacks = new StackOperations(world, budget);
+            var effects = new CityTurnEffects(context);
+            var deletion = new UnitDeletion(world, rules, budget, effects);
+            var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
+            var governments = new GovernmentPolicy(world, context.Process.Rules, CreateGovernments(context), context.Gameplay);
+            new CivilizationAssessment(world, context.Process.Rules, stacks, CreateProductionOrders(context),
+                governments, loss, effects.Elimination(), context.Gameplay)
+                .Assess(context.Actor.Civilization.Value, $"local-assessment/{world.Globals.Turn}");
         }
 
         private static void ResetUnits(GameState world)
@@ -576,7 +593,8 @@ public static partial class LocalPlayCommands
                 new([new("city", new CommandValue.City(new(new((ushort)city), context.World.Entities.Cities.Storage[city].Token)))]));
             public void CheckCivilization(int owner, int killer) => Eliminate(owner, killer);
             int ICityUnitProductionContinuations.CheckCivilization(int owner, int killer) => Eliminate(owner, killer);
-            private int Eliminate(int owner, int killer)
+            private int Eliminate(int owner, int killer) => Elimination().Check(owner, killer, "local-elimination/" + eliminationCall++);
+            public CivilizationElimination Elimination()
             {
                 if (elimination is null)
                 {
@@ -591,7 +609,7 @@ public static partial class LocalPlayCommands
                     elimination = new(world, deletion, escape,
                         _ => throw new InvalidOperationException("The authored profile has no AI restart path"), this);
                 }
-                return elimination.Check(owner, killer, "local-elimination/" + eliminationCall++);
+                return elimination;
             }
             public void Notice(SpyNotice notice) => context.Effect("unit.spy_fate", new([
                 new("unit", new CommandValue.Unit(notice.Unit)), new("fate", new CommandValue.Text(notice.Fate.ToString()))]));

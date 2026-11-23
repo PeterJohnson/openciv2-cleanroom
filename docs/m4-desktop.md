@@ -15,13 +15,13 @@ in the [M2 closeout](m2-closeout.md).
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. Remaining C01–C08 operations, V02 choices/rates, general research presentation/capture/catch-up and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
-| Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 orchestration, the remaining A03–A08 policies and full turn scheduling remain pending. |
+| Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
-catch-up policies, A01 assessment/orchestration, remaining V02 government/rate choices
+catch-up policies, A01 outer movement/U04 order execution, remaining V02 government/rate choices
 and full F04 turn processing needed by the generated desktop game. C04's shared
 disorder/tax/celebration handler now joins actual V02 local government transitions
 and runs in the authored desktop turn; this does not complete general turn processing.
@@ -1431,3 +1431,56 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-policy-headless.xml` | `afeae214b443765b77340c977ed1106b8c2785aead51979fc5d4f9caad1c8081` |
 | `m4-desktop-policy-native.json` | `c68369210952e767be103523b1628da0642c7719aec38bb05e62c99675f28aad` |
 | `m4-desktop-policy-identity.json` | `98aea84c9c95617643bfd25211904c4234af39230d6a4fb284f00d68eebb31ae` |
+
+## Civilization assessment, power and government policy
+
+`CivilizationAssessment` now runs A01's ordered staging, census, regional policy,
+reverse unit assignment and goal aging. It retains old regional city counts until
+the city pass, uses retained rival summaries, double-counts allied presence as
+specified, and invokes actual C06/A02 production reset when an AI region changes.
+Assignment composes actual A08/V02 government change, C05 support and U01/V01
+loss/elimination/recreation. In-place upgrades leave the prior census intact;
+unit deletion retains its own count updates. Historical routes, air goal ranges,
+anti-submarine role changes, fortress rules and ferry flags keep their specified
+ordering. The two outer AI movement passes and U04 execution remain pending.
+
+`PowerRanking` publishes old census power/history, inverse ranks and directed
+coordination. `CityObjectives` supplies V08's raw objective/wonder value.
+`GovernmentPolicy` implements A08 post-city rates/strategic scores and government
+selection, including rank-as-civilization input, unsigned rate narrowing, later
+ties and conditional draws. Complete F04 city-score accumulation, government and
+diplomacy maintenance still need their general turn caller.
+
+The desktop turn now publishes power before advancing the global turn and runs
+human assessment after city processing. A direct/console case imports retained
+census values, verifies old power then refreshed counts, saves/reloads and compares
+continued bytes. The 18 new shared groups also cover actual policy reselection,
+elimination followed by government change, paratrooper relocation without terrain
+reveal, regional threat, failed quota/range reads and retained mutation prefixes.
+These are specification-derived cases, not original-game comparison evidence.
+
+A01 now resolves the staging argument against U01's synchronization contract and
+records narrow X01 repairs: omit negative history, invalid inverse-rank and census
+writes, while stopping at subsequently required unbacked reads. Laser41 and Armor22
+use the same user-authorized original rules-data mapping recorded above.
+
+The complete generated human/AI game, remaining A03–A08 tactical/diplomacy policies,
+full turn scheduling and M4 exit gate remain open. Browser and cross-platform
+execution remain deferred; no Lua automation changed.
+
+Validation: root/App formatting and verification passed; both Release builds
+completed with zero warnings/errors. Native tests passed **790 of 792**, with two
+existing opt-in/platform skips. The probe passed **758 shared groups**, and source
+identity verified **456 compiled inputs**. Graph, conformance, **86-family** coverage,
+identity/coverage tool tests, gameplay and content-schema checks all passed.
+All **12 isolated Xvfb CPU desktop checks** passed, including real controls,
+research continuations, production/purchases/sales and save/reload comparisons.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-assessment-play.json` | `4def926274cfa29023197b156299e57de1503956fa5500e1e5086bea6e8f4b7e` |
+| `m4-desktop-assessment-headless.xml` | `a91f00c39c9982d24b3d7f32ecb0eb9ffc6c0a5db75b1eae7f8064c17dcac6c0` |
+| `m4-desktop-assessment-native.json` | `fc99e26d95bf9269637d9cdbd030d516f8d61c9552bdf484a07612820bc82ea8` |
+| `m4-desktop-assessment-identity.json` | `8e5c7c12773d7695aabc3469899b7f54b16a1f6142415411daa77c6877663159` |

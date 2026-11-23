@@ -28,8 +28,16 @@ recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial
 control, facility/wonder/unit selection, human preferences, cutoff and repaired
 invalid reads. A direct/console desktop case imports automatic production flags,
-completes real unit production and compares continued saves after reload. Full
-A01 strategy, general advice/auto UI and generated-game turns remain open.
+completes real unit production and compares continued saves after reload. A01 outer movement, general advice/auto UI and generated-game turns remain open.
+A01 assessment groups now run actual production reset, government transition,
+unit support/loss and elimination/recreation children. They cover old census use,
+ordered region policies, assignment/goal aging, paratrooper staging, power/history
+and directed coordination, custom signed inputs and retained failure effects.
+A08 government tests cover rate narrowing, strategic score inputs, availability,
+lock/draw order and actual changes. Native direct/console turns verify old power
+publication before refreshed human census and identical save/resume continuation.
+The outer AI movement passes, complete U04 executor, remaining tactical policies
+and full generated-game turn acceptance remain open.
 Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
 costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
 terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct

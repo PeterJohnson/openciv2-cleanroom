@@ -173,7 +173,18 @@ city sizes. `TerrainImprovementChoice` supplies A03 §2; `SpatialControl` suppli
 U02 adjacent nonallied and same-medium queries, shared with land movement.
 `AiProductionAirlift` preserves orders, performs actual relocation/deletion and
 uses semantic secondary draws for reachable human fighters. These do not implement
-full A01 strategy, A03 worker tasks, player airlift or generated-game turns.
+A03 worker tasks, player airlift or generated-game turns.
+
+`CivilizationAssessment` owns A01 staging, ordered census, regional policy,
+reverse goal assignment and goal aging. Its required children are the actual
+production orders/policy, government transition, support, loss and elimination
+services. `AssessmentQueries` owns the small role/quota/coastal queries;
+`PowerRanking` publishes retained power/history and directed coordination using
+`CityObjectives` for V08 objective values. `GovernmentPolicy` owns A08 post-city
+rates/strategic scoring and government selection; F04 still supplies preceding
+score accumulation and its complete maintenance caller. The desktop turn publishes
+power before advancing and assesses its human civilization after city processing.
+The A01 outer unit passes, U04 executor and remaining tactical policies stay open.
 
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
@@ -206,7 +217,7 @@ completion and accumulation, including free advances.
 `ResearchGoals` owns informational goal/advice data. The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile
 eligibility/cost queries. Darwin now invokes two sequential completions from
-`CityProduction`; V01 catch-up, full A01 strategy and generated-game callers remain
+`CityProduction`; V01 catch-up, A01 outer movement and generated-game callers remain
 open.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
