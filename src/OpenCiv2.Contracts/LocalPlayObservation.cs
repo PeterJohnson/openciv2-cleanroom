@@ -49,6 +49,7 @@ public sealed record LocalPlayObservation(
     OwnedList<PlayUnit> Units,
     PlayCity? City)
 {
+    public bool GameActive { get; init; }
     public PlayRates? Rates { get; init; }
     public PlayOption? Government { get; init; }
     public bool CanRevolt { get; init; }

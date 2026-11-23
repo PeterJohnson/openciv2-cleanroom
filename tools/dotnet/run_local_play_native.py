@@ -804,6 +804,64 @@ def drive(args, app, observation, storage):
         wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
         assert hall_file.read_bytes() == hall_bytes[:30]
         checks.append('native short Hall of Fame input shows an empty ranking and preserves the partial file')
+        retirement_initial = observation.with_name('retirement-initial.sav')
+        retirement_hall = observation.with_name('retirement-hall.dat')
+        subprocess.run(['dotnet', str(args.probe), '--local-retirement-reference', str(retirement_initial), str(retirement_hall)], check=True)
+
+        def action(group, name):
+            state = wait(lambda s: s['menu']['groups'][group]['bounds'] is not None)
+            menu_click(state, state['menu']['groups'][group]['bounds'])
+            state = wait(lambda s: s['menu']['actions'][name]['bounds'] is not None)
+            menu_click(state, state['menu']['actions'][name]['bounds'])
+
+        action('File', 'file.library')
+        import_save(retirement_initial)
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.' and s['play']['turn'] == 80)
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        action('File', 'game.retire')
+        wait(lambda s: s['prompt'] == 'Retire from this game?')
+        choice(0)
+        wait(lambda s: s['status'] == 'Cancelled' and not s['dialog']['visible'])
+        assert hall_file.read_bytes() == hall_bytes[:30]
+        action('File', 'game.retire')
+        wait(lambda s: s['prompt'] == 'Retire from this game?')
+        choice(1)
+        history = wait(lambda s: s['prompt'].startswith('Power history') and s['dialog']['powerHistory'] is not None)
+        chart = history['dialog']['powerHistory']
+        assert len(chart['Dates']) == 20 and chart['Interval'] == 4 and chart['Maximum'] == 108
+        assert chart['Series'][0]['Values'][9] == 108
+        from PIL import ImageGrab
+        ticks = history['serviceTicks']
+        wait(lambda s: s['serviceTicks'] >= ticks + 6)
+        args.report.parent.mkdir(parents=True, exist_ok=True)
+        ImageGrab.grab(xdisplay=os.environ['DISPLAY']).save(args.report.with_suffix('.history.png'))
+        choice(0)
+        wait(lambda s: s['prompt'].startswith('Civilization score'))
+        choice(0)
+        wait(lambda s: s['prompt'].startswith('Civilization rating'))
+        choice(0)
+        wait(lambda s: s['prompt'].startswith('Hall of Fame') and 'Current game' in s['prompt'])
+        actual_hall, expected_hall = hall_file.read_bytes(), retirement_hall.read_bytes()
+        if actual_hall != expected_hall:
+            args.report.with_suffix('.hall-actual.dat').write_bytes(actual_hall)
+            args.report.with_suffix('.hall-expected.dat').write_bytes(expected_hall)
+            raise AssertionError('Retired Hall bytes differ from direct reference; byte images saved beside the report')
+        choice(0)
+        ended = wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'] and not s['play']['active'])
+        assert not ended['play']['phase']
+        assert ended['play']['effects'] == ['civilization.score.prepared', 'civilization.rating.prepared', 'hall.saved', 'game.closed']
+        checks.append('native retirement cancels without effects, then shows actual history, score, rating and Hall in order and closes gameplay')
+        action('File', 'file.reload-game')
+        wait(lambda s: s['message'] == 'Classic save loaded.' and s['play']['active'])
+        action('File', 'game.quit')
+        wait(lambda s: s['prompt'] == 'Quit this game?')
+        choice(1)
+        ended = wait(lambda s: s['status'] == 'Completed' and not s['play']['active'])
+        assert ended['play']['effects'] == ['game.closed']
+        assert hall_file.read_bytes() == retirement_hall.read_bytes()
+        checks.append('native reload reopens gameplay after retirement and explicit Quit skips reports and preserves Hall bytes')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
     finally:

@@ -23,6 +23,7 @@ internal sealed class InteractionDialogView : UserControl
     private readonly TextBlock target = new() { TextWrapping = TextWrapping.Wrap, FontSize = 13 };
     private readonly Dictionary<int, DialogChoiceButton> buttons = [];
     private readonly StackPanel body;
+    private readonly PowerHistoryView history = new();
     private readonly TextBox? replyInput;
     private Control? returnFocus;
     private DialogIdentity? displayed;
@@ -47,7 +48,7 @@ internal sealed class InteractionDialogView : UserControl
             title.FontFamily = GraphicsFonts.Serif;
         }
 
-        body = new StackPanel { Spacing = 14, Children = { title, prompt, target, choices, Cancel } };
+        body = new StackPanel { Spacing = 14, Children = { title, prompt, history, target, choices, Cancel } };
         if (consoleReplies)
         {
             var entry = replyInput = new() { PlaceholderText = "reply <choice> or cancel" };
@@ -115,6 +116,7 @@ internal sealed class InteractionDialogView : UserControl
         {
             displayed = null;
             prompt.Text = target.Text = "";
+            history.Show(null);
             foreach (var button in buttons.Values)
             {
                 button.IsEnabled = false;
@@ -181,6 +183,7 @@ internal sealed class InteractionDialogView : UserControl
         }
 
         prompt.Text = view.Spec.Prompt;
+        history.Show(view.Spec.PowerHistory);
         target.Text = view.Submitted ? "Waiting for the command to finish…" : DescribeTarget(view.Spec.Target);
         foreach (var button in buttons.Values)
         {

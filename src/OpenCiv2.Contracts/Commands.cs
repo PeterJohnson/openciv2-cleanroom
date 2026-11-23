@@ -127,6 +127,7 @@ public sealed record InteractionSpec(string Prompt, ParticipantId? Recipient, Co
     OwnedList<int> Choices, ulong? Deadline = null, int? DefaultChoice = null, bool Cancellable = true)
 {
     public OwnedList<InteractionOption> Options { get; init; } = OwnedList<InteractionOption>.Empty;
+    public PowerHistoryReport? PowerHistory { get; init; }
 }
 public sealed record Interaction(
     InteractionId Id,

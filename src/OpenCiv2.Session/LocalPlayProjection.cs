@@ -48,6 +48,7 @@ public sealed partial class SessionRuntime
                 civ.ResearchProgress, LocalResearch.Cost(world, rules, observer.Value), new(research), new(known),
                 new(units), ObserveCity(current, observer, rules))
             {
+                GameActive = world.TurnLoopActive,
                 Government = new((byte)civ.Government, RuleText.Display(rules.Governments[(byte)civ.Government].Identity.Name)),
                 CanRevolt = civ.Government != Government.Anarchy
                     && (!world.Globals.Status.Scenario || !world.Scenario.Flags.GovernmentLock),

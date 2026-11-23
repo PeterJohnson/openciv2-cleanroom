@@ -61,6 +61,15 @@ public static partial class FoundationSuite
             }
         };
         Equal(labelled, LocalCheckpointCodec.Decode(LocalCheckpointCodec.Encode(labelled)));
+        var history = original with
+        {
+            Command = command with
+            {
+                Update = command.Update with
+                { Interaction = interaction with { Spec = interaction.Spec with { PowerHistory = new(4, 50, new([]), new([])) } } }
+            }
+        };
+        Throws<ArgumentException>(() => LocalCheckpointCodec.Encode(history)); // Never silently drop an unrestorable report.
         var labelledPayload = LocalCodecPayload(LocalCheckpointCodec.Encode(labelled));
         labelledPayload["command"]!["interaction"]!["options"]![0]!["value"] = "42";
         LocalCodecReject(LocalCodecEnvelope(labelledPayload));

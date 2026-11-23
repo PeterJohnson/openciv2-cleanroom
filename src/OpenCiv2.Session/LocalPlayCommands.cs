@@ -19,6 +19,7 @@ public static partial class LocalPlayCommands
             [new("unit", ValueKind.Unit), new("direction")], [new("unit", ValueKind.Unit)], MoveUnit, ValidateUnit));
         RegisterScoreCommand(runtime);
         RegisterHallCommand(runtime, hall);
+        RegisterEndGameCommands(runtime, hall);
         RegisterCityCommands(runtime);
         RegisterTurnCommands(runtime, preferences, rateChoices);
         RegisterWorkCommands(runtime);

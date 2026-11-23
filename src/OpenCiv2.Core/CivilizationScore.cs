@@ -202,7 +202,7 @@ public sealed class CivilizationScore(GameState world, ScoringValues values, Spa
         Work.Rating = rating;
     }
 
-    public ScoreReport? Prepare(int owner)
+    public ScoreReport? Prepare(int owner, bool includeRating = true)
     {
         MapKnowledge.RequireLocal(world);
         if (world.Globals.Status.Scored)
@@ -223,7 +223,10 @@ public sealed class CivilizationScore(GameState world, ScoringValues values, Spa
         }
 
         Calculate(owner);
-        PrepareRating();
+        if (includeRating)
+        {
+            PrepareRating();
+        }
         var visible = new List<int>();
         for (int w = 0; w < RuleLimits.Wonders; ++w)
         {

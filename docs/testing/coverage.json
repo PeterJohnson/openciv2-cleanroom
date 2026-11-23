@@ -3121,6 +3121,31 @@
         "V08.hall-insertion-continuation",
         "V08.hall-ranking-display"
       ]
+    },
+    {
+      "id": "desktop-end-game-reports",
+      "status": "partial",
+      "contract": "P07 section14 retained power history; V08 sections3 and7 ordered reports and explicit single-player Quit/Retire",
+      "publicSurface": "PowerHistory.Prepare; PowerHistoryReport; PowerHistoryOperation; CivilizationRatingOperation; EndGameReports; RetireGameOperation; civilization.history; game.retire; game.quit",
+      "review": "History preserves sample bounds, calendar dates, extinct/start membership and maximum from all normal civilizations. Reports prepare once and use owned chart data; the desktop includes a plot and exact values. Retirement confirms, runs history, reads live Scored, then score/rating/Hall with local-human reads between children; rating preparation stays separate from score in this path. Confirmed completion disables game/map interaction without awarding Won, setting Scored or clearing a pending outcome; Hall write failure is deferred until after closing the game. Quit skips reports. Direct/console and native desktop coverage includes cancellation and reload. Scheduled retirement, pending outcome dispatch, ending media and authored fame-title resources remain open. Current desktop has no CD playback. Pending history checkpoints are explicitly rejected rather than losing chart content; live task restoration remains M5.",
+      "sources": [
+        "src/OpenCiv2.App/PowerHistoryView.cs",
+        "src/OpenCiv2.Contracts/PowerHistoryReport.cs",
+        "src/OpenCiv2.Core/PowerHistory.cs",
+        "src/OpenCiv2.Session/EndGameReports.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.EndGame.cs",
+        "src/OpenCiv2.Session/RetireGameOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/EndGameCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "M4.local-retirement-quit",
+        "P07.power-history-report",
+        "V08.end-game-report-order",
+        "V08.explicit-retirement"
+      ]
     }
   ]
 }

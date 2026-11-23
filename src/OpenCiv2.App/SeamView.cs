@@ -531,7 +531,10 @@ public sealed partial class SeamView : UserControl
 
         RefreshPlay(view, previous, newBinding);
         shell.IsEnabled = !Busy && !transferring && !cityOverlay.IsVisible && files?.IsVisible != true;
-        map.IsEnabled = overview.IsEnabled = units.IsEnabled = input.IsEnabled = !Busy;
+        bool gameActive = game is null || view.Play?.GameActive == true;
+        map.IsVisible = overview.IsVisible = units.IsVisible = gameActive;
+        map.IsEnabled = overview.IsEnabled = units.IsEnabled = !Busy && gameActive;
+        input.IsEnabled = !Busy;
         dialog.Refresh(map);
 
         run.IsEnabled = view.Identity is not null && !Busy;

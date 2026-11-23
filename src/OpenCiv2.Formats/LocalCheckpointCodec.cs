@@ -241,6 +241,7 @@ public static class LocalCheckpointCodec
     private static JsonObject Interaction(Interaction interaction, Budget budget)
     {
         var spec = interaction.Spec;
+        Require(spec.PowerHistory is null, "Power-history interactions do not yet support checkpoint restoration");
         budget.Add(1024);
         budget.Items(spec.Choices.Count);
         var result = new JsonObject

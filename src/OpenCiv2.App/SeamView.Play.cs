@@ -46,9 +46,12 @@ public sealed partial class SeamView
         var play = model.View.Play;
         bool ready = !Busy && play?.PlayerPhase == true;
         yield return new(PlaySave, "File", "Save game", "Primary+S", ready && SeamApp.Storage is not null);
-        yield return new(PlayReload, "File", "Reload save", null, ready && SeamApp.Storage is not null);
+        yield return new(PlayReload, "File", "Reload save", null, !Busy && SeamApp.Storage is not null);
+        yield return new(LocalPlayCommands.Retire, "File", "Retire", null, ready);
+        yield return new(LocalPlayCommands.Quit, "File", "Quit game", null, ready);
         yield return new(PlayCity, "Orders", "Open city", null, ready && play?.City is not null);
         yield return new(LocalPlayCommands.Hall, "Advisors", "Hall of Fame", null, ready);
+        yield return new(LocalPlayCommands.Power, "Advisors", "Power history", null, ready);
         yield return new(LocalPlayCommands.Score, "Advisors", "Civilization score", null, ready);
         yield return new(LocalPlayCommands.EditRates, "Orders", "Tax rates", null, ready);
         yield return new(LocalPlayCommands.Revolution, "Orders", "Revolution", null, ready && play?.CanRevolt == true);
@@ -301,6 +304,15 @@ public sealed partial class SeamView
         string research = play.Research.FirstOrDefault(a => a.Id == play.Researching)?.Name ?? "No advance selected";
         turnLabel.Text = $"Turn {play.Turn} · {Math.Abs(play.Year)} {(play.Year < 0 ? "BC" : "AD")}\n"
             + $"{play.Gold} gold · {research} {play.ResearchProgress}/{play.ResearchCost}";
+        if (!play.GameActive)
+        { turnLabel.Text = "Game ended. Use File to open or reload a saved game."; }
+        if (previous?.Play?.GameActive != play.GameActive)
+        {
+            foreach (var child in playOrders.Children)
+            { child.IsVisible = play.GameActive || child == turnLabel; }
+        }
+        if (!play.GameActive)
+        { openCity = null; }
         if (play.Rates is { } rates)
         {
             turnLabel.Text += $"\nTax {rates.Tax * 10}% · Science {rates.Science * 10}% · Luxury {rates.Luxury * 10}%";
@@ -351,6 +363,11 @@ public sealed partial class SeamView
             }
         }
 
+        if (!play.GameActive)
+        {
+            foreach (var child in playOrders.Children)
+            { child.IsVisible = child == turnLabel; }
+        }
         RefreshCity(view);
     }
 
@@ -560,6 +577,7 @@ public sealed partial class SeamView
             ["turn"] = play.Turn,
             ["year"] = play.Year,
             ["phase"] = play.PlayerPhase,
+            ["active"] = play.GameActive,
             ["gold"] = play.Gold,
             ["government"] = play.Government?.Id,
             ["rates"] = play.Rates is { } rates ? new JsonObject

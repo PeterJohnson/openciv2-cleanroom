@@ -1,6 +1,17 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
+if (args is ["--local-retirement-reference", string retirementInitial, string retirementHall])
+{
+    var reference = FoundationSuite.LocalRetirementReference();
+    foreach (var (path, bytes) in new[] { (retirementInitial, reference.Initial), (retirementHall, reference.Hall) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew);
+        output.Write(bytes);
+    }
+    return 0;
+}
+
 if (args is ["--hall-reference", string hallFile])
 {
     using var output = new FileStream(hallFile, FileMode.CreateNew);

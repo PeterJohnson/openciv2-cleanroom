@@ -74,7 +74,10 @@ public sealed partial class SeamView
                 PlayCommand(LocalPlayCommands.Hall);
                 break;
             case LocalPlayCommands.Score:
-                PlayCommand(LocalPlayCommands.Score);
+            case LocalPlayCommands.Power:
+            case LocalPlayCommands.Retire:
+            case LocalPlayCommands.Quit:
+                PlayCommand(id);
                 break;
             case LocalPlayCommands.EndTurn:
                 PlayCommand(LocalPlayCommands.EndTurn);
@@ -139,6 +142,7 @@ public sealed partial class SeamView
         ["interaction"] = dialog.Model?.Identity.Interaction.ToString(),
         ["submitted"] = dialog.Model?.Submitted,
         ["target"] = dialog.Target,
+        ["powerHistory"] = dialog.Model?.Spec.PowerHistory is { } history ? System.Text.Json.JsonSerializer.SerializeToNode(history) : null,
         ["console"] = bounds(dialog.ReplyInput),
         ["regions"] = new JsonObject(dialog.Choices.Select(entry =>
             new KeyValuePair<string, JsonNode?>("choice." + entry.Key, bounds(entry.Value))))

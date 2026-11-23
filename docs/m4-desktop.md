@@ -16,7 +16,7 @@ in the [M2 closeout](m2-closeout.md).
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
-| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Spaceship reports/arrival outcomes, fame-title resources, victory/retirement and remaining history remain pending; the end-game caller has not yet joined Hall of Fame insertion. |
+| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. Spaceship reports/arrival outcomes, fame-title resources, scheduled retirement, pending outcome dispatch and remaining history remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
@@ -2054,3 +2054,63 @@ passed with that stabilization; it does not automatically repeat a submitted com
 | `m4-hall-play.json` | `1add1b700b6ca9cd534298570d3906e47102abbb45a8c439f13fd5429295e01f` |
 | `m4-hall-native.json` | `5dd54ea899b14d69ef5ef0a47bf90bc7b0207638c2ee4e9f1dc5e925e4e75e17` |
 | `m4-hall-identity.json` | `579e71e3b1cfe48bda84bc14e176c0ba833b6ddf633045419e4fa137e909bdbd` |
+
+
+## Explicit retirement and power-history reports
+
+P07 history preparation now captures retained A01 samples, F04 calendar dates and
+currently alive or starting civilizations. It bounds sample count to 150, keeps
+objective cadence separate from ordinary cadence, and includes undisplayed
+civilizations when finding the vertical reference. It never rebuilds history
+from current strength. The desktop plot and expandable exact-value table consume
+one owned report; resizing and repainting do not run gameplay.
+
+The File menu and player command registry now expose explicit Retire and Quit.
+Retire first confirms, then opens history, checks live Scored, and runs score,
+rating and Hall insertion in order. Each child reads the current local human.
+The end-game score report does not prepare rating early; the separate rating
+child consumes the then-current shared score. Ordinary Advisors score still
+prepares its combined score/rating report. Already-scored retirement skips the
+score/rating/Hall tail. Quit confirms and skips all reports.
+
+Confirmed completion disables the game/map and exposes reload through the File
+menu. It does not set Won or Scored, post Retirement, or clear an existing pending
+reason. Hall output failure preserves file effects and is reported after the
+confirmed game closure. This profile has no active CD playback to stop. Numeric
+rating is presented; authored fame-title resources and ending media remain open.
+Scheduled retirement and pending outcome handling are subsequent integrations,
+and full generated human/AI games remain an unclosed M4 acceptance gate.
+
+Shared tests cover sample boundaries, hidden maxima, extinct identities, stable
+report values, report order, live Scored/local-human reads, failure continuation,
+state flags and direct/console cancellation, retirement, quit and reload. Pending
+history checkpoint encoding explicitly rejects unsupported restoration instead
+of dropping the chart; saved live task restoration remains M5. Native acceptance
+uses an authored imported history, compares retired Hall bytes with the direct
+reference, checks report order and reopens the saved game before Quit.
+
+An initial native run exposed a reference-lifecycle mismatch in the byte comparison:
+the desktop had read a complete Hall before reading a short file, while the direct
+reference started with only the short file. V08 sparse reset retains metadata from
+the earlier read. The reference now executes the same complete/short viewer sequence
+through the real service before retirement, preserving that retained metadata.
+Byte comparison failures now save both images for inspection.
+
+Root/App formatting verification, root/desktop automation Release builds and
+43-project boundary checks passed. The native suite passed **844 of 846 tests**
+with the two existing platform/audio skips. The probe passed **811 shared groups**
+and verified **495 compiled inputs**. All **30 Linux desktop checks** passed.
+Coverage maps all groups across 97 families; eight identity and three coverage
+validator tests passed. Browser and cross-platform execution remain deferred.
+
+The history layout was inspected in the initial desktop capture and a separate
+focused capture from the owned application window. Both showed the plotted series,
+date labels, legend and controls. The final full-run root-screen capture was black,
+so it is not used as visual evidence; the focused capture below is retained.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-retire-play.json` | `53af59c7dc980ab514704dd8693a92cc065cfb977f6075a2e69260c69b4c0f51` |
+| `m4-retire-native.json` | `59e0ae6f7e7435aa8a037a3bc76d961c6c2b6ce5bde4eb13b2e75b62c66e4c03` |
+| `m4-retire-identity.json` | `4311bafb1287d2b16a310238e0f5e8afe8afb9c55a36a11e64e917a3ab588815` |
+| `m4-retire-history-focused.png` | `a63d8bc73700893a9a34898676ced40eccc6c2c67e40dd98fad33b08dc60c42e` |

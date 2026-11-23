@@ -460,3 +460,13 @@ loop and its captured current entry. Ordinary desktop viewing passes no entry.
 Desktop uses `ClassicStorage` beside CIV2.DAT; headless sessions use
 `BufferedHallStorage` with the same record-transfer behavior. Outcome dispatch
 must explicitly invoke insertion after real score/rating reports.
+
+P07 power-history preparation lives in `PowerHistory`, with owned contract values
+in `PowerHistoryReport`. `PowerHistoryView` renders those values and their exact
+table. `EndGameReports` owns history/Scored/score/rating/Hall sequencing; the
+end-game score child explicitly leaves rating to `CivilizationRatingOperation`.
+`RetireGameOperation` implements the single-player explicit command, closes the
+game even after a retained Hall output failure, and leaves outcome flags alone.
+`LocalPlayObservation.GameActive` controls the stopped desktop view; loading a
+valid saved game starts a fresh active session. Scheduled retirement and the
+pending-outcome caller remain separate work.

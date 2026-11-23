@@ -378,7 +378,7 @@ actual spaceship preview/arrival points, conquest map scaling, objective thresho
 precedence and perspective, wrapped ratings and one-time semantic report
 preparation. The desktop Advisors score report joins the session command; native
 checks compare complete saved and resumed state against the direct client.
-Localized fame titles, Hall of Fame and end-game dispatch remain open.
+Localized fame titles and pending end-game dispatch remain open.
 
 Hall of Fame tests exercise all failed-read record/prefix positions, exact padding
 retention, stopped writes, stable tied ratings, hidden wrapped scores, retained
@@ -386,3 +386,10 @@ clear/retry records and display reload after failed save. Native storage checks
 actual replacement/case aliases and short files. Desktop viewing compares Hall
 and game bytes before/after viewing and after reload; end-game dispatch and
 localized fame-title resources remain open.
+
+Explicit retirement cases join actual history, city score preparation, separate
+rating and Hall persistence. They verify confirmation, live report gates, flags,
+failure continuation, direct/console closure and reload. Native acceptance plots
+a retained history, compares complete Hall bytes with a direct reference and
+checks that Quit skips reports. Scheduled retirement and victory/defeat handling
+remain open; numeric reports do not yet consume authored fame-title resources.
