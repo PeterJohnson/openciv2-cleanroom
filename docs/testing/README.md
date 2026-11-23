@@ -994,3 +994,12 @@ airbase owners, wake-up, observer visibility and failure prefixes. Direct and
 console desktop turns use the shared normal reset/recovery path and reject
 mission flags outside the authored profile. Full generated-game F04 composition
 and acceptance remain open; browser/cross-platform execution remains deferred.
+
+W05 warming groups cover signed AI-tally/human-count arithmetic, Solar Plant
+admission, repeated warning equality, counter wrap and retained event severity.
+Terrain cases cover repeated coastal visits, narrow-map aliases, flat borders,
+all terrain identities, dry coordinate selection, feature/owner preservation,
+selective whole-feature memory refresh and distinct redraw gates. Autoplay
+suppresses notices without suppressing warming; cosmetic failures preserve
+updates and required map failures retain committed prefixes. Full F04/desktop
+composition and ordinary city pollution/meltdown remain open.

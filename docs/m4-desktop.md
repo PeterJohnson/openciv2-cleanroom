@@ -5141,3 +5141,42 @@ harness failures. This remains authored-profile acceptance, not full M4.
 Full F04 orchestration, generated desktop composition and complete human/AI
 end-condition acceptance remain open. Browser/cross-platform and network
 execution remain deferred.
+
+## W05 global warming pressure and terrain — 2026-11-23
+
+`GlobalWarming` implements local pressure updates and deterministic terrain
+transformation using actual C08 Solar Plant queries, W01 tile setters and W03
+remembered features. It retains signed AI-tally arithmetic, human-count rounding
+(including barbarian membership), one-step pressure narrowing/clamping, warning
+equality and old event severity. Event-count wrap is preserved; a successful
+update clears the AI tally without recounting polluted tiles.
+
+The terrain scan uses the specified twenty ocean visits, including repeated
+neighbors and wrapped aliases, followed by coastal conversion or the dry
+coordinate pattern. Coastal conversion removes irrigation/mine and selectively
+refreshes whole remembered features. Dry conversion preserves those features
+and memory. Both retain unrelated terrain flags and map state. Notices/redraw
+are cosmetic diagnostics; a required map failure retains preceding counter
+effects. Autoplay suppresses notices without suppressing transformation.
+
+Twelve new groups cover arithmetic, solar admission, warning repetition,
+counter wrap, severity, all terrain identities, repeated visits, borders and
+narrow-map aliases, ownership/feature retention, observer gates, autoplay and
+failure prefixes. They invoke actual shared children; synthetic presentation
+callbacks do not supply gameplay or mutate query state.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1464 of 1466**, with two existing
+platform/audio skips. The shared probe passed **1431 groups** across 158 coverage
+families; source identity verified **746 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-warming-native.json` | `1cd43ab1a2ab6129ec1230731799689520c5688d05dafa3b3594f79c85dbe50f` |
+| `m4-warming-identity.json` | `39cc3f24439a43040dbafd2bb9b34ad6e381014643ea96cb7ca5fdb17794baa8` |
+
+F04's nonzero incoming-turn admission and general desktop composition remain
+open, along with ordinary city pollution/meltdown and full human/AI acceptance.
+This checkpoint does not claim a new desktop playthrough. Browser/cross-platform
+qualification and network execution remain deferred.

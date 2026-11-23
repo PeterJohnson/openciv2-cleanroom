@@ -595,6 +595,13 @@ V01/espionage decisions finish before population/terrain damage. W05's shared
 consumption remain with movement/combat/device callers. P10 semantic presentation
 is a required adapter, and network batching remains outside this local service.
 
+`Core/GlobalWarming` owns W05 local pressure updates and deterministic terrain
+transformation. It counts actual Solar Plants, retains signed counters and old
+event severity, and uses the twenty specified ocean visits rather than a city
+radius. Coastal memory refresh and dry redraw have distinct observer gates.
+Notices/redraw failures are diagnostics. F04 still owns its nonzero incoming-turn
+admission and general desktop integration; network execution is not admitted.
+
 `Core/PlantedNuclearDevice` owns V06's local device body after city admission.
 It composes actual capture and U07 operations, preserving nested incidents before
 post-blast identification and V04 bilateral War setters. The session

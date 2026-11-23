@@ -4991,6 +4991,33 @@
         "U04.reset-spy-home-recovery-visibility",
         "U04.reset-spy-timers-survival"
       ]
+    },
+    {
+      "id": "global-warming",
+      "contract": "W05 global warming pressure and terrain transformation; W01 setters and W03 memory",
+      "publicSurface": "GlobalWarming.Update/Transform; WarmingNotice",
+      "review": "Actual Solar Plant queries, signed tally/human scaling, pressure narrowing, old severity and event-count wrap. Deterministic twenty-visit coastal selection and dry pattern use actual W01 setters and W03 memory. Observer and autoplay gates retain cosmetic diagnostics. Local only; full F04/desktop composition and city pollution/meltdown remain open. Browser/cross-platform execution deferred.",
+      "sharedGroups": [
+        "W05.warming-autoplay-observers",
+        "W05.warming-coastal-memory",
+        "W05.warming-dry-knowledge",
+        "W05.warming-event-severity",
+        "W05.warming-failures-local",
+        "W05.warming-pressure-arithmetic",
+        "W05.warming-pressure-narrowing",
+        "W05.warming-repeated-visits",
+        "W05.warming-solar-admission",
+        "W05.warming-terrain-pattern",
+        "W05.warming-warning-equality",
+        "W05.warming-wrap-borders"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/GlobalWarming.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/WarmingCases.cs"
+      ]
     }
   ]
 }
