@@ -6,7 +6,7 @@ using OpenCiv2.Core.State;
 namespace OpenCiv2.Core.Units;
 
 public sealed record MovementFinishInputs(bool OrdinaryArrival, bool OriginOcean, bool HasHut, bool Boarding,
-    int PriorResult, bool? LocalSeen, bool Unanimated, int CaptureNumber);
+    int PriorResult, bool LocalSeen, bool Unanimated, int CaptureNumber);
 public abstract record MovementCompletionDecision
 {
     public sealed record Capture(CityCaptureDecision Decision) : MovementCompletionDecision;
@@ -122,7 +122,7 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
         services.Revelation.Reveal(finishing.Value, true);
         operation.Present(() => effects.CityUnitsChanged(new(finishing, Unit(finishing).Token), step.From));
         if (world.Multiplayer.LocalHuman != step.Owner
-            && (inputs.LocalSeen ?? throw new InvalidOperationException("U02 common finish requires the unpublished local seen input"))
+            && inputs.LocalSeen
             && !world.Globals.GameOptions.SkipEnemyPauses)
         { operation.Present(() => effects.PauseEnemyMovement(!world.Globals.GameOptions.EnemyMoves || inputs.Unanimated ? 10 : 15)); }
         if (Rule(finishing).Domain == RuleDomain.Air)

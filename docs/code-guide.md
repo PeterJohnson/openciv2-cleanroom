@@ -858,9 +858,10 @@ state publication. Outer movement admission remains separate.
 landing alert and early regional count, then actual U01 cargo lift, whole-group
 visibility reset and relocation. Its result retains the hut presence from before
 placement and the local viewer state for completion. Shift is a cosmetic input;
-saved autoplay membership and unwritten observer-zero values require explicit
-inputs when consumed. The absent destination treaty path stops after its early
-count unless supplied backing is available. Required notices/publications retain
+saved autoplay membership remains an explicit real input when consumed. U02's
+supported repair gives absent/zero observers no viewer or animation state and
+keeps hut presence independent. An unowned landing has no treaty partner; it
+retains the early count and continues the ordinary notice/arrival gates. Required notices/publications retain
 failure prefixes; cosmetic failures do not strand the lifted group. The outer
 dispatcher and network authority paths remain separate.
 
@@ -871,7 +872,7 @@ finish. Restarts retain the selected reply/options and reset only iteration stat
 completion, failures and disposal release the guard without undoing prior effects.
 `Session/MovementOperation` routes actual nested choices using shared interaction
 helpers. Missing optional entry selectors fail at their consuming land branch;
-unpublished viewer input is consumed only at the common-finish seen read.
+a finish without relocation publication skips the optional enemy pause.
 Desktop player-command composition and the entry-selector specification gap remain
 open; this service does not silently broaden the existing `LandMovement` command.
 

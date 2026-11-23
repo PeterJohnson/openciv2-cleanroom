@@ -510,9 +510,9 @@ If this is the local observer and seen:
 
 For a seen nonlocal civilization, set animate=1, then clear it when
 `(cost==0 OR (c==k AND live domain Air)) AND (c!=k OR live orders Goto)`.
-No Shift query occurs for this remote decision. Index zero is not initialized
-by this pass; neither is any array entry if movement jumped to common finish
-before publication.
+No Shift query occurs for this remote decision. Production uses the safe viewer
+initialization below for observer zero or a path that reaches common finish
+before publication; original uninitialized viewer entries are not inputs.
 
 ### Landing alert and early count
 
@@ -526,8 +526,9 @@ and autoplay is disabled, show LANDING with mover civilization and city name.
 
 The count increment is not conditional on showing LANDING. Ordinary arrival
 increments it again, so a first such landing can add two. A city in slot zero
-suppresses the dialog but not the count. An absent destination owner on the
-treaty-read path requires explicit backing as described below.
+suppresses the dialog but not the count. An absent destination owner has no
+treaty partner: do not suppress the alert for a treaty or access a civilization
+record for an absent owner. The early count and ordinary arrival still apply.
 
 ## Authority and relocation
 
@@ -726,10 +727,10 @@ orders None and no special flags. Neighbor directions are W01's directions.
 | Allied city, mover damage 5, Barracks | Heal 2, damage 3; allowance rounds back to 6, spent becomes 6, Moved cleared, no relocation, result 0. |
 | Diplomat expulsion with two equal-score victim cities | Lower city slot wins. A Palace adds 50; Courthouse alone does not. Third notification branch, race predicate false, state 1: one draw 41 adjusts attitude by 1. |
 | AI charged move rejected for immediate reverse, old spent 1, own stack count 1 | Charge occurs, then exhaustion; no displacement, result 0; ordinary AI failure timer increments afterward. |
-| First visible foreign landing with region military count 0 and valid treaty backing | Count becomes 1 during alert even if no dialog, then 2 during ordinary arrival. Nearest city slot 0 suppresses LANDING only. |
+| First visible foreign landing with region military count 0 and a real or absent destination owner | Count becomes 1 during alert even if no dialog, then 2 during ordinary arrival. Nearest city slot 0 suppresses LANDING only. |
 | Client with acknowledgement timeout then drained queues | Timeout dialog precedes turn-loop-active clear; unlockPending cleared after drain; arrival still runs; no rollback. |
 | Any child changes upper unit bound before cleanup | Return 0 after network cleanup, regardless of earlier result; no failure-order/timer cleanup or final second sync. |
-| Negative direction, supplied incoming seen values all zero | Exhaust, common revelation/city-window continuation and finish effects; no ordinary charge, Moved write or hut entry. Last direction retains the negative selector modulo 256. |
+| Negative direction, without relocation publication | Exhaust, common revelation/city-window continuation and finish effects; no ordinary charge, Moved write or hut entry. Last direction retains the negative selector modulo 256. |
 
 These are local contract fixtures. Rows using child adapters require the named
 response/state trace as an explicit fixture input. Joined cases must exercise
@@ -759,40 +760,46 @@ Deterministic retained-value cases must be distinguished from missing backing:
   faults and signed32 overflow follow F01. No generic random-range helper may
   add or remove a draw.
 
-### Temporary input boundaries
+### Supported viewer and landing repairs
 
-The original does not initialize all per-call viewer and choice values:
+The original viewer pass leaves index zero undefined, and paths that skip
+publication can reach common finish without initializing viewer values. An absent
+observer can also select adjacent frame state instead of a viewer. These are
+confirmed undefined reads described by this specification, not additional logical
+inputs. Under X01's bug-repair policy, production uses these narrow continuations:
 
-1. Viewer publication writes only seen/animate entries 1..7. Entry 0 is never
-   initialized locally, yet a local observer of 0 can select it. A path reaching
-   common finish before publication can also consume incoming seen entries 1..7.
-   Supply those exact values when used; nonzero magnitude need not be 1.
-2. For observer −1, local seen selects the live `hasHut` scalar, initially zero
-   each iteration; local animate selects seen[7]. Preserve these logical aliases
-   and read timing without requiring a contiguous machine stack in a new design.
-   Other out-of-range observers require separate supplied backing or a stop.
-3. When a human's nonallied expulsion prompt is suppressed by autoplay, choice
-   is not assigned. It may retain a prior landfall choice on a restarted call,
-   or otherwise require incoming state. Choice 0 expels, 2 cancels, other values
-   continue to combat. Assigning zero is a deliberate deviation.
-4. Landing-alert treaty lookup uses captured destination owner even when absent.
-   If that path is reached, the nominal civilization table does not define the
-   read. Supply its backing or stop after the regional-count increment and prior
-   visibility/UI effects. Similarly the non-Diplomacy expulsion fallback can
-   index an absent captured destination city after callbacks change the role.
+1. Only normal civilization observers 1..7 can have local seen/animation state.
+   Absent observer −1 and slot zero have both false. Skip observer-specific unit
+   disclosure for those two values. Hut presence remains an independent gameplay
+   result and never supplies a viewer flag. Other unsupported observer indices
+   are rejected before this relocation service changes state.
+2. When a move reaches common finish without relocation publication, no optional
+   enemy pause is scheduled. Continue the actual revelation, arrival/loss/order
+   work specified for that path; do not invent an incoming seen value. This
+   changes only cosmetic delay for otherwise valid normal-observer finish paths.
+3. A visible foreign landing on an unowned destination has no treaty partner.
+   Perform the specified early regional military-count update; test Ceasefire and
+   Peace only when a captured destination owner exists. With no owner, continue
+   the remaining nearest-city and autoplay notice gates. Retain the subsequent
+   relocation and ordinary arrival, including its independent count increment.
+   This replaces an out-of-bounds treaty lookup; no synthetic relationship or
+   original backing bytes are accepted.
 
-OpenCiv2 B14's classic preset for skipped-publication seen entries is one sampled
-stack configuration, not a universal original default. B22's entry-zero clearing,
-B25's autoplay choice fix and independent reconstruction BF-004/BF-105/BF-238
-are also not normative definitions of missing original state. The selected
-reference can contain such fixes even when classic mode is enabled. Tests using
-those values must say that the inputs were supplied or the behavior was changed.
+Tests cover absent/zero observers with and without huts, normal observer and
+saved-autoplay visibility, negative-direction common finish, unowned landing
+notice success/failure and the joined relocation/arrival counts. These are
+specification-derived repair expectations; they do not establish equality with
+arbitrary original stack/table memory. Normal observer publication, valid treaty
+suppression, defined arithmetic and required notification failure prefixes remain
+unchanged. Saved-human membership for autoplay is real caller-owned state and
+remains required when that branch consumes it.
 
-A stricter implementation may reject malformed rules, unsupported indices and
-states needing unrecovered temporary values. Declare those input limits under
-[X01](X01-classic-compatibility-contract.md). Rejection at an earlier validation
-boundary is not the original algorithm's partial-effect/fault sequence, and zero
-initialization is not recovery of a value the original never wrote.
+The human nonallied-expulsion branch under autoplay still has a distinct gameplay
+choice gap: a suppressed prompt may retain a prior landfall answer or consume an
+uninitialized choice. That affects expulsion, cancellation or combat. It is not
+resolved by the cosmetic viewer repairs. The caller must retain an actual prior
+choice or reject the unresolved entry; do not silently choose expulsion. The
+separate optional caravan/city-entry selector gap also remains explicit above.
 
 ## Appendix A. Reference encodings and operation mapping
 

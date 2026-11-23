@@ -3996,3 +3996,39 @@ Full desktop movement/service composition, general research presentation,
 complete turn/AI scheduling and human/AI-game acceptance remain open. This
 checkpoint does not add a generated desktop playthrough. Browser and
 cross-platform work remain deferred.
+
+## Movement viewer and unowned-landing repair checkpoint
+
+Reviewing production movement composition found historical undefined-memory
+requirements in U02's inputs. The owning specification now records narrow X01
+repairs: absent/zero observers have no local viewer or animation flags, hut
+presence is independent, and a common finish without relocation publication
+skips its optional enemy pause. No original viewer-array or adjacent-frame value
+is accepted as a production input. Real saved-human membership for autoplay
+remains explicit.
+
+A visible foreign landing on an unowned tile now has no treaty partner. It keeps
+the early regional count, applies the remaining notice gates and continues actual
+relocation and ordinary arrival. Existing-owner Peace/Ceasefire suppression and
+required-notice failure prefixes remain intact. The dispatcher regression reaches
+this path through actual admission, charge, relocation and completion and verifies
+the two independent count updates, notice and movement cleanup. Viewer cases
+cover absent/zero observers with and without huts; unpublished negative-direction
+finish completes without requiring arbitrary seen data.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1170 of 1172**, with the two existing
+platform/audio skips. The shared probe passed **1137 groups** across 130 coverage
+families; source identity verified **647 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-movement-repairs-native.json` | `d4c210fa49c895742f426b4ffc52fc577bbdbc1e0f323eaaff58090623b16f2e` |
+| `m4-movement-repairs-identity.json` | `c8973d7edae05d6734f21e1c731a80bf95515ba505bb60f1928424c3b018c36c` |
+
+These are specification-derived supported repairs, not claims of equality to
+undefined original memory. Optional caravan/city-entry and autoplay expulsion
+choices retain their separate semantic gaps. Full desktop movement/service
+composition, U04/A01 execution, complete turn/AI scheduling and human/AI-game
+acceptance remain open. Browser and cross-platform work remain deferred.

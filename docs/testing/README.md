@@ -714,12 +714,15 @@ not the outer movement dispatcher or desktop/full-game acceptance.
 
 U02 relocation groups cover single-unit barbarian/city knowledge, directed
 embassies, alive/human/autoplay viewer selection, destination-neighbor disclosure,
-Shift/Goto/captured-Air animation decisions and explicit exceptional inputs.
+Shift/Goto/captured-Air animation decisions and saved autoplay membership.
+Supported-repair cases give absent/zero observers no viewer flags, keep huts
+independent and complete unpublished finish paths without a cosmetic pause.
 Actual U01 cargo grouping, whole-stack visibility changes, hut capture before
 placement and an actual completion join verify relocation effects. Landing tests
-cover slot-zero suppression, treaty gates, retained failures and the early plus
-ordinary-arrival double count. These remain local service tests; dispatcher and
-desktop integration are pending.
+cover slot-zero suppression, real/absent-owner treaty gates, retained failures
+and the early plus ordinary-arrival double count. An actual dispatcher landing
+joins these effects without supplying original backing values. Desktop integration
+remains pending.
 
 U02 dispatcher groups join actual child services across ordinary/preview moves,
 negative finish, signed capacity/boarding, passenger restarts, city missions,

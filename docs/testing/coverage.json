@@ -4143,7 +4143,7 @@
       "status": "partial",
       "contract": "U02 Movement publication and viewers, Landing alert and early count, local Authority and relocation; U01 cargo and placement",
       "publicSurface": "MovementRelocation.Apply with explicit viewer inputs and retained hut/view result",
-      "review": "Actual single-unit knowledge publication, local alive/human/autoplay viewer selection, destination-neighbor visibility, captured-domain animation suppression, early regional count and required landing notice, cargo lift, whole-group visibility reset and relocation. Tests cover directed embassies, slot-zero landing suppression, absent-owner backing and failure prefixes, cargo isolation, hut capture before placement, Shift/Goto combinations and actual arrival double count. Cosmetic failures continue; required publication and notices retain committed prefixes. Observer zero requires explicit incoming values; observer minus one uses the documented hut/seen-seven aliases. Remote authority and outer dispatcher/session/desktop integration remain pending. Browser/cross-platform deferred.",
+      "review": "Actual single-unit knowledge publication, local alive/human/autoplay viewer selection, destination-neighbor visibility, captured-domain animation suppression, early regional count and required landing notice, cargo lift, whole-group visibility reset and relocation. Tests cover directed embassies, slot-zero landing suppression, unowned landing and failure prefixes, cargo isolation, hut capture before placement, Shift/Goto combinations and actual arrival double count. Cosmetic failures continue; required publication and notices retain committed prefixes. U02 supported repairs give absent/zero observers false viewer flags, keep huts independent and skip a treaty lookup for an unowned landing. Tests cover success and required-notice failure after the early count. Actual dispatcher landing verifies both count updates; remote authority and desktop integration remain pending. Browser/cross-platform deferred.",
       "sources": [
         "src/OpenCiv2.Core/Units/MovementRelocation.cs"
       ],
@@ -4155,8 +4155,8 @@
         "U02.move-landing-prefixes",
         "U02.move-relocation-cargo-failures",
         "U02.move-viewer-animation",
-        "U02.move-viewer-selection",
-        "U02.move-viewer-temporary-inputs"
+        "U02.move-viewer-safe-defaults",
+        "U02.move-viewer-selection"
       ]
     },
     {
@@ -4164,7 +4164,7 @@
       "status": "partial",
       "contract": "U02 Dispatcher state and phase order through local cleanup; U01 spare-holds aggregate; actual U05/U06/C07/V06/W06 children",
       "publicSurface": "MovementDispatcher.Begin and MovementOperation; StackOperations.SpareTransportCapacity",
-      "review": "Local resumable dispatcher owns the world movement guard, per-iteration captures and origin owner publication, actual ordered land/foreign/transport/charge/relocation/finish children, private nested replies and single cleanup. Landfall restarts retain direction/options/choice while resetting iteration captures. Actual cargo admission uses signed spare-holds contributions with the aggregate cutoff. Tests join ordinary and preview moves, source-owner publication, wrap, negative finish, AI cleanup, guard/disposal/failure prefixes, boarding, disembarkation, missions, capture and full combat. Session tests cover private capture-to-long-move, landfall and fatigue decisions. Missing optional entry selectors are rejected at the actual consuming branch; unpublished seen remains nullable until common finish consumes it. Production desktop command/service composition, resolution of the entry-selector gap, broader AI/orders callers and full-game acceptance remain open. Browser/cross-platform deferred. The actual session dispatcher now carries a hut government choice through charge, relocation, grant and final cleanup without duplicate notices or mutations.",
+      "review": "Local resumable dispatcher owns the world movement guard, per-iteration captures and origin owner publication, actual ordered land/foreign/transport/charge/relocation/finish children, private nested replies and single cleanup. Landfall restarts retain direction/options/choice while resetting iteration captures. Actual cargo admission uses signed spare-holds contributions with the aggregate cutoff. Tests join ordinary and preview moves, source-owner publication, wrap, negative finish, AI cleanup, guard/disposal/failure prefixes, boarding, disembarkation, missions, capture and full combat. Session tests cover private capture-to-long-move, landfall and fatigue decisions. Missing optional entry selectors are rejected at the actual consuming branch; U02 supported repair omits the optional enemy pause on a finish without relocation publication. Actual visible foreign landing on an unowned tile completes charge, relocation, early and ordinary count updates, notification and cleanup without synthetic treaty backing. Production desktop command/service composition, resolution of the entry-selector gap, broader AI/orders callers and full-game acceptance remain open. Browser/cross-platform deferred. The actual session dispatcher now carries a hut government choice through charge, relocation, grant and final cleanup without duplicate notices or mutations.",
       "sources": [
         "src/OpenCiv2.Core/State/GameState.cs",
         "src/OpenCiv2.Core/Units/LandEntry.cs",
@@ -4188,6 +4188,7 @@
         "U02.dispatch-negative-cleanup",
         "U02.dispatch-ordinary-preview",
         "U02.dispatch-private-session",
+        "U02.dispatcher-unowned-landing",
         "U02.movement-retained-hut-grant",
         "V03.acquisition-grant-private-sessions",
         "V03.captured-technology-retained-grant",

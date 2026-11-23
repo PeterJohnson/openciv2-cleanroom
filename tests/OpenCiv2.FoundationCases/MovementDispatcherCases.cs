@@ -23,7 +23,7 @@ public static partial class FoundationSuite
         public RelocationFixture Relocation { get; }
         public ForeignCityFixture City { get; }
         public MovementDispatcher Dispatcher { get; }
-        public MovementDispatchInputs Inputs = new(new(false), new(false, false), false, 77, 77, "retained city", "Diplomat", "");
+        public MovementDispatchInputs Inputs = new(new(false), new(false, false), 77, 77, "retained city", "Diplomat", "");
         public int Blinks, OffMap;
         public bool FailBlink, FailOffMap;
         public DispatcherFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
@@ -101,18 +101,37 @@ public static partial class FoundationSuite
     { Equal(null, op.Resume()); Equal(0, op.Result); Equal(true, op.Completed); }
     private static void MovementDispatcherNegativeAndCleanup()
     {
-        var f = new DispatcherFixture(); f.Inputs = f.Inputs with { UnpublishedSeen = null };
+        var f = new DispatcherFixture();
         using var negative = f.Begin(-1); f.Complete(negative); Equal(1, negative.Result);
         Equal((byte)6, f.Data.Unit(0).MovesUsed); Equal((byte)255, f.Data.Unit(0).LastDirection);
         Equal(false, f.Data.Unit(0).Flags.Moved); Equal(0, f.Relocation.Publications.Count); Equal(1, f.Finish.OldPositions.Count);
-        f = new(); f.Inputs = f.Inputs with { UnpublishedSeen = null }; f.World.Multiplayer.LocalHuman = 2;
-        using var missing = f.Begin(-1); Throws<InvalidOperationException>(() => missing.Resume());
+        f = new(); f.World.Multiplayer.LocalHuman = 2;
+        using var unpublished = f.Begin(-1); f.Complete(unpublished); Equal(1, unpublished.Result); Equal(0, f.Finish.Pauses.Count);
         Equal((byte)6, f.Data.Unit(0).MovesUsed); Equal(1, f.Finish.OldPositions.Count); Equal(false, f.World.UnitMovementActive);
         f = new(); f.Data.Stacks.Relocate(0, new(38, 12), false); f.Data.Unit(0).Flags.Automated = true;
         using var off = f.Begin(); f.Complete(off); Equal(0, off.Result); Equal(1, f.OffMap); Equal((byte)6, f.Data.Unit(0).MovesUsed);
         f = new(); f.World.Globals.HumanPlayers = default; f.Data.Unit(0).Flags.Garrison = true; f.Data.Unit(0).MovesUsed = 6;
         using var exhausted = f.Begin(); f.Complete(exhausted); Equal(0, exhausted.Result);
         Equal(UnitOrder.Fortified, f.Data.Unit(0).Orders); Equal((byte)1, f.Data.Unit(0).AuxiliaryTimer);
+    }
+    // U02 supported absent-owner repair, joined to actual charge, relocation and ordinary arrival.
+    private static void MovementDispatcherUnownedLanding()
+    {
+        var f = new DispatcherFixture(); var w = f.World;
+        w.Multiplayer.LocalHuman = 2; w.Globals.HumanPlayers = CivilizationSet.Only(2);
+        w.Map.TileAt(new(18, 12)).Terrain = Terrain.Ocean;
+        w.Map.TileAt(new(20, 12)).Owner = null;
+        int nearby = w.Entities.Cities.End;
+        f.Data.AddCity(nearby, 2, new(18, 10));
+        f.Data.Unit(0).Visibility = CivilizationSet.Only(2);
+        int region = w.Map.TileAt(new(20, 12)).Region;
+        w.Civilizations[1].ContinentMilitary[region] = 0;
+        using var operation = f.Begin(); f.Complete(operation);
+        Equal(1, operation.Result); Equal(new MapPoint(20, 12), f.Data.Unit(0).Position);
+        Equal((byte)3, f.Data.Unit(0).MovesUsed); Equal((ushort)2, w.Civilizations[1].ContinentMilitary[region]);
+        Equal(1, f.Relocation.Notices.Count); Equal(2, f.Relocation.Notices[0].Recipient);
+        Equal((ushort)nearby, f.Relocation.Notices[0].City.Slot.Value); Equal(2, f.Relocation.Publications.Count);
+        Equal(false, w.UnitMovementActive);
     }
     private static void MovementDispatcherLandfallAndBoarding()
     {

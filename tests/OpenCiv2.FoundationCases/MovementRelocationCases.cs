@@ -130,9 +130,12 @@ public static partial class FoundationSuite
         {
             var f = new RelocationFixture(); f.Observer(2); f.Data.Unit(0).Visibility = CivilizationSet.Only(2);
             f.Data.AddCity(1, 2, new(8, 8)); f.FailNotice = failNotice;
-            if (failNotice) f.Inputs = f.Inputs with { AbsentDestinationTreaty = new Relationship() };
-            Throws<InvalidOperationException>(() => f.Move(true)); Equal((ushort)1, f.World.Civilizations[1].ContinentMilitary[0]);
-            Equal(f.Step.From, f.Data.Unit(0).Position); Equal(0, f.Publications.Count); Equal("visible", f.Effects[0]);
+            if (failNotice) Throws<InvalidOperationException>(() => f.Move(true));
+            else f.Move(true);
+            Equal((ushort)1, f.World.Civilizations[1].ContinentMilitary[0]);
+            Equal(failNotice ? f.Step.From : f.Step.To, f.Data.Unit(0).Position);
+            Equal(failNotice ? 0 : 2, f.Publications.Count); Equal("visible", f.Effects[0]);
+            Equal(1, f.Notices.Count);
         }
         var completion = new CompletionFixture(); completion.World.Multiplayer.LocalHuman = 2;
         completion.World.Globals.HumanPlayers = CivilizationSet.Only(2); completion.Movement.LocalHuman = false;
@@ -166,12 +169,24 @@ public static partial class FoundationSuite
         }
         f = new(); f.World.Globals.Multiplayer = GameMode.Tcp; Throws<InvalidOperationException>(() => f.Move()); Equal(0, f.Effects.Count);
     }
-    private static void MovementViewerTemporaryInputs()
+    private static void MovementViewerSafeDefaults()
     {
-        var f = new RelocationFixture(); f.Observer(0); Throws<InvalidOperationException>(() => f.Move());
-        Equal(f.Step.From, f.Data.Unit(0).Position); f.Inputs = new(false, SeenZero: -4, AnimateZero: 8);
-        var result = f.Move(); Equal(true, result.LocalSeen); Equal(true, result.LocalAnimated);
-        f = new(); f.Observer(-1); result = f.Move(); Equal(result.HasHut, result.LocalSeen); Equal(false, result.LocalAnimated);
+        foreach (int observer in new[] { -1, 0 })
+            foreach (bool hut in new[] { false, true })
+            {
+                var absent = new RelocationFixture(); absent.Observer(observer);
+                if (hut)
+                {
+                    absent.World.Map.PatternSeed = 24; absent.Step = absent.Step with { To = new(0, 0) };
+                    absent.World.Map.TileAt(absent.Step.To).Owner = null;
+                }
+                else absent.World.Map.TileAt(absent.Step.To).Owner = 1;
+                var moved = absent.Move(); Equal(hut, moved.HasHut);
+                Equal(false, moved.LocalSeen); Equal(false, moved.LocalAnimated); Equal(0, absent.Notices.Count);
+                Equal(absent.Step.To, absent.Data.Unit(0).Position); Equal(2, absent.Publications.Count);
+                Equal(false, absent.Effects.Contains("slide") || absent.Effects.Contains("visible"));
+            }
+        var f = new RelocationFixture();
         f = new(); f.World.Globals.HumanPlayers = default; f.World.Multiplayer.Saved.AutoplayActive = true;
         Throws<InvalidOperationException>(() => f.Move()); Equal(f.Step.From, f.Data.Unit(0).Position);
     }

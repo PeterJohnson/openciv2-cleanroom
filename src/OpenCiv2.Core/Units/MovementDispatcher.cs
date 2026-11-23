@@ -6,7 +6,7 @@ using OpenCiv2.Core.State;
 namespace OpenCiv2.Core.Units;
 
 public sealed record MovementDispatchInputs(MovementViewerInputs Viewers, LandEntrySelection? EntrySelection,
-    bool? UnpublishedSeen, int CityArgument, int CaptureNumber, string CityName, string DiplomatName,
+    int CityArgument, int CaptureNumber, string CityName, string DiplomatName,
     string CombatArgument, int? ExpulsionChoice = null, bool? ScenarioShowsCombat = null, int RoundBudget = 64);
 public sealed record MovementDispatchServices(LandEntry Land, ForeignUnitMovement ForeignUnit,
     TransportMovement Transport, ForeignCityMovement ForeignCity, MovementCharge Charge,
@@ -207,8 +207,8 @@ public sealed class MovementDispatcher(GameState world, RuleTables rules, StackO
                     }
                 }
                 bool hut = false;
-                bool? seen = world.Multiplayer.LocalHuman == -1 ? false : world.Multiplayer.LocalHuman == 0
-                    ? inputs.Viewers.SeenZero is { } zero ? zero != 0 : null : inputs.UnpublishedSeen;
+                // Without relocation publication there is no optional enemy pause to schedule.
+                bool seen = false;
                 int unanimated = 0;
                 if (ordinary)
                 {
