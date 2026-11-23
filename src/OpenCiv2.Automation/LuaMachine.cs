@@ -1,4 +1,6 @@
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Lua;
 using Lua.Platforms;
 using Lua.Runtime;
@@ -8,10 +10,10 @@ namespace OpenCiv2.Automation;
 
 // Lua-CSharp coroutines run inline until the game binding yields to the owner.
 // Only the owner tick resumes execution; session dispatch happens outside Lua.
-internal sealed class LuaMachine : IDisposable
+public sealed class LuaMachine : IScriptMachine
 {
     internal static readonly UTF8Encoding Utf8 = new(false, true);
-    private LuaState? state = LuaState.Create(LuaPlatform.DefaultByteStrings);
+    private LuaState? state;
     private readonly ScriptLimits limits;
     private readonly LuaFunction hook;
     private readonly string source;
@@ -20,14 +22,20 @@ internal sealed class LuaMachine : IDisposable
     private readonly CancellationTokenSource cancellation = new();
     private string operation = "", argument = "";
     private uint ticks, remaining;
-    internal string Error { get; private set; } = "";
+    private string Error { get; set; } = "";
 
-    internal LuaMachine(string script, ScriptLimits limits)
+    public LuaMachine(string script, ScriptLimits limits)
     {
+        limits.Validate();
+        if (Utf8.GetByteCount(script) > 65536)
+        {
+            throw new ArgumentException("script_budget", nameof(script));
+        }
         this.limits = limits;
         using var stream = typeof(LuaMachine).Assembly.GetManifestResourceStream("OpenCiv2.Automation.Prelude")!;
         using var reader = new StreamReader(stream);
         source = reader.ReadToEnd() + "\n" + script;
+        state = LuaState.Create(LuaPlatform.DefaultByteStrings);
         state.OpenBasicLibrary();
         state.OpenTableLibrary();
         state.OpenStringLibrary();
@@ -92,13 +100,13 @@ internal sealed class LuaMachine : IDisposable
         return context.State.YieldAsync(context, cancellationToken);
     }
 
-    internal int Resume(LuaValue reply)
+    public ScriptMachineResult Resume(JsonNode? reply)
     {
         var current = state ?? throw new ObjectDisposedException(nameof(LuaMachine));
         if (++ticks > limits.Ticks)
         {
             Error = "host_call_budget";
-            return -1;
+            return new(ScriptMachineState.Failed, Error: Error);
         }
         remaining = limits.InstructionsPerTick;
         // Restart the hook's counter for this tick, including ticks inside pcall.
@@ -110,7 +118,7 @@ internal sealed class LuaMachine : IDisposable
             }
             else
             {
-                exchange.Push(reply);
+                exchange.Push(ToLua(reply));
             }
             coroutine.SetHook(hook, "", 1000);
             var resume = coroutine.ResumeAsync(exchange, cancellation.Token);
@@ -123,11 +131,16 @@ internal sealed class LuaMachine : IDisposable
 
             resume.GetAwaiter().GetResult();
             exchange.Clear();
-            return coroutine.GetStatus() == LuaThreadStatus.Dead ? 0 : 1;
+            return coroutine.GetStatus() == LuaThreadStatus.Dead ? new(ScriptMachineState.Completed)
+                : new(ScriptMachineState.Request, operation, argument);
         }
         catch (Exception exception) when (exception is LuaParseException or LuaCompileException)
         {
             Error = "syntax: " + LuaByteString.DecodeUtf8(exception.Message);
+        }
+        catch (LuaRuntimeException exception) when (exception.GetBaseException() is OutOfMemoryException)
+        {
+            Error = "memory_budget";
         }
         catch (LuaRuntimeException exception)
         {
@@ -141,11 +154,40 @@ internal sealed class LuaMachine : IDisposable
                 Error = "cancelled";
             }
         }
-        return -1;
+        return new(ScriptMachineState.Failed, Error: Error);
     }
 
-    internal string Operation => operation;
-    internal string Argument => argument;
+    private static LuaValue ToLua(JsonNode? value)
+    {
+        switch (value)
+        {
+            case null:
+                return LuaValue.Nil;
+            case JsonArray values:
+                var array = new LuaTable();
+                for (int i = 0; i < values.Count; ++i)
+                {
+                    array[i + 1] = ToLua(values[i]);
+                }
+                return array;
+            case JsonObject fields:
+                var table = new LuaTable();
+                foreach (var (name, entry) in fields)
+                {
+                    table[LuaByteString.EncodeUtf8(name)] = ToLua(entry);
+                }
+                return table;
+            default:
+                return value.GetValueKind() switch
+                {
+                    JsonValueKind.True => true,
+                    JsonValueKind.False => false,
+                    JsonValueKind.Number => value.GetValue<int>(),
+                    JsonValueKind.String => LuaByteString.EncodeUtf8(value.GetValue<string>()),
+                    _ => throw new InvalidOperationException("invalid_script_reply")
+                };
+        }
+    }
 
     public void Dispose()
     {

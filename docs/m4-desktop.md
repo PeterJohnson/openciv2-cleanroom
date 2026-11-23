@@ -17,7 +17,7 @@ in the [M2 closeout](m2-closeout.md).
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
-| Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Per-task memory accounting and live task restoration remain open. |
+| Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
@@ -1705,3 +1705,47 @@ and rejection of a malformed journal before writing a save.
 | `m4-desktop-replay-lua.xml` | `7424af0b84df9ccaf8325bbf2af1c4ab5e27a85324bfed4b99110a61236f63b1` |
 | `m4-desktop-replay-lua-native.json` | `c1fdb7ed8cf88c649a3bf5a407891b6b4c5bacca041eab87401d7582d78f9675` |
 | `m4-desktop-replay-lua-browser.json` | `553e6398f64ecc961ff519d484cbb9579871e299aca9470b32a1354bdee0a5ae` |
+
+
+## Desktop Lua resource isolation
+
+Desktop tasks now execute Lua in separate interpreter processes. Each worker
+verifies a 128 MiB managed heap cap before loading source. Private, bounded
+pipe exchanges carry only source and scoped reply values; all game requests
+still dispatch on the owning session lane. A five-second exchange deadline
+ends a stalled worker without blocking presentation or command continuations.
+The cap covers the managed interpreter heap, not total process RSS or OS access.
+The portable inline adapter remains available without a per-task heap cap.
+
+The Linux checks exhaust a worker's heap after a completed end-turn command,
+then complete another turn. A second run suspends the worker at an interaction,
+accepts the player's reply, observes watchdog failure and continues play.
+Existing pause/cancel/reload and journal replay checks also pass with the
+process boundary. Shared task tests cover delayed replies, paused polling and
+authority revocation before dispatch. The independent worker driver covers
+UTF-8/exact integer replies, malformed frames, instruction and allocation limits,
+and refusal to execute without an admitted heap cap.
+
+Root, desktop/automation and optional automation formatting verification and
+Release builds passed. The native suite passed **812 of 814 tests**, with the
+two existing platform/audio skips; the probe passed **780 shared groups** and
+verified **468 compiled inputs**. All **14 Lua groups** passed natively and in
+Chromium with matching results, as required for shared adapter changes. All
+**20 Linux desktop checks** passed. Coverage/project-boundary checks, eight
+identity tests, three coverage-inventory tests and six Lua receipt tests passed.
+The native driver used the documented isolated X11/GTK environment. The test-only
+WASM publish used the repository's complete pinned toolchain because the system
+installation lacked its runtime archive for notice verification.
+
+Browser resource isolation and Windows/macOS execution remain deferred.
+Explicit task checkpoint restoration remains M5 work. This closes the desktop
+allocation/stall containment gap, not the remaining M4 mechanics/AI or complete
+generated human/AI game gate.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-lua-isolation-play.json` | `984a0646f84ab701ca7bd28b0838b4b0fb3d6ce5350a27aab396953b52b2d933` |
+| `m4-lua-isolation-native.json` | `37648a9c053b946f074ed9d6603d5f038fdec58f8701362afba2583af4285695` |
+| `m4-lua-isolation-identity.json` | `2ec78e12b2a6487bed91ab702ce2d2496c9514fb68ca995676aa025462064c35` |
+| `m4-lua-isolation-lua-native.json` | `3d7cb68cb8c9f0d9c6d50082e78dfaf0fedd67099f15db55911b64967d929a01` |
+| `m4-lua-isolation-lua-browser.json` | `956be5f66f63e0ce57009eda200918c6e8bc0ed7b2a55b0c69bce2a868105243` |

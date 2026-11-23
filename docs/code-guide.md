@@ -216,7 +216,11 @@ task and binding lifetime. The regular desktop host drives the optional task
 on its existing game tick, and the view model follows the task's visible
 commands so ordinary dialogs and replies still apply. The launcher retains
 script results until the task finishes and revokes its auxiliary lease when
-the task ends or the game reloads.
+the task ends or the game reloads. `IScriptMachine` separates interpreter resumes
+from owner-lane game dispatch. The desktop `IsolatedLuaMachine` owns one
+heap-limited worker process and asynchronous, deadline-bounded pipe exchanges;
+`LuaWorker` implements the private protocol. The worker receives no session
+reference. The default `LuaMachine` remains portable and runs inline.
 
 The optional launcher can record local inputs as a separate replay journal.
 `LocalReplayRecorder` observes the existing command and file boundaries.

@@ -1,9 +1,8 @@
-using Lua;
+using System.Text.Json.Nodes;
 
 namespace OpenCiv2.Automation;
 
-// Owned Lua values; payload accounting retains the API's 64 KiB response budget.
-// There is no serialization, source evaluation, reflection or native ABI.
+// Owned reply values. Account for payload independently of the chosen interpreter transport.
 internal sealed class ReplyBuilder
 {
     private int remaining = 65536;
@@ -18,33 +17,32 @@ internal sealed class ReplyBuilder
         remaining -= count;
     }
 
-    internal LuaValue Nil() { Take(1); return LuaValue.Nil; }
-    internal LuaValue Boolean(bool value) { Take(1); return value; }
-    internal LuaValue Integer(int value) { Take(5); return value; }
-    internal LuaValue Text(string value)
+    internal JsonNode? Nil() { Take(1); return null; }
+    internal JsonNode Boolean(bool value) { Take(1); return JsonValue.Create(value)!; }
+    internal JsonNode Integer(int value) { Take(5); return JsonValue.Create(value)!; }
+    internal JsonNode Text(string value)
     {
         Take(5 + LuaMachine.Utf8.GetByteCount(value));
-        return LuaByteString.EncodeUtf8(value);
+        return JsonValue.Create(value)!;
     }
 
-    internal LuaValue Array(IEnumerable<LuaValue> values)
+    internal JsonNode Array(IEnumerable<JsonNode?> values)
     {
         Take(5);
-        var table = new LuaTable();
-        int count = 0;
+        var table = new JsonArray();
         foreach (var value in values)
         {
-            if (++count > 4096)
+            if (table.Count == 4096)
             {
                 throw new InvalidOperationException("host_reply_budget");
             }
 
-            table[count] = value;
+            table.Add(value);
         }
         return table;
     }
 
-    internal LuaValue Object(params (string Key, LuaValue Value)[] fields)
+    internal JsonNode Object(params (string Key, JsonNode? Value)[] fields)
     {
         if (fields.Length > 4096)
         {
@@ -52,10 +50,11 @@ internal sealed class ReplyBuilder
         }
 
         Take(5);
-        var table = new LuaTable();
+        var table = new JsonObject();
         foreach (var (key, value) in fields)
         {
-            table[Text(key)] = value;
+            Take(5 + LuaMachine.Utf8.GetByteCount(key));
+            table.Add(key, value);
         }
 
         return table;

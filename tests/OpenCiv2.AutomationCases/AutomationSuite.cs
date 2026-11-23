@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OpenCiv2.Automation;
 using OpenCiv2.Base;
 using OpenCiv2.Console;
@@ -217,6 +218,54 @@ public static class AutomationSuite
         finally { SynchronizationContext.SetSynchronizationContext(previousContext); }
         Check(task.Status == ScriptStatus.Completed, task.Error);
         Check(task.Output == string.Concat(Enumerable.Repeat("é\n", 5)));
+
+        // A machine may finish a resume between owner ticks. Polling must not
+        // duplicate a request or consume another instruction/host-call allowance.
+        using var delayed = new Fixture();
+        PollingMachine? machine = null;
+        using var polled = new ScriptTask(delayed.Client, Complete, new(Ticks: 20),
+            (script, limits) => machine = new(script, limits));
+        polled.Tick();
+        Check(polled.SubmittedCommands.Count == 0);
+        polled.Pause();
+        for (int i = 0; i < 25; ++i) polled.Tick();
+        Check(machine!.Polls == 1 && polled.Status == ScriptStatus.Paused);
+        polled.Resume();
+        delayed.Pump(polled);
+        Check(polled.Status == ScriptStatus.Completed, polled.Error);
+        Check(polled.SubmittedCommands.Count == 1 && polled.Output == "completed\n" && machine.Disposed);
+
+        using var revoked = new Fixture();
+        using var pending = new ScriptTask(revoked.Client, Complete,
+            machineFactory: (script, limits) => new PollingMachine(script, limits));
+        pending.Tick(); // The yielded command has not yet reached the session.
+        revoked.Runtime.Revoke(revoked.Client.Identity.Controller);
+        pending.Tick();
+        Check(pending.Status == ScriptStatus.Failed && pending.SubmittedCommands.Count == 0);
+    }
+
+    private sealed class PollingMachine(string script, ScriptLimits limits) : IScriptMachine
+    {
+        private readonly LuaMachine inner = new(script, limits);
+        private ScriptMachineResult? pending;
+        private JsonNode? consumed;
+        internal int Polls { get; private set; }
+        internal bool Disposed { get; private set; }
+        public ScriptMachineResult Resume(JsonNode? reply)
+        {
+            ++Polls;
+            if (pending is null)
+            {
+                consumed = reply;
+                pending = inner.Resume(reply);
+                return new(ScriptMachineState.Waiting);
+            }
+            Check(ReferenceEquals(consumed, reply), "Pending reply changed while polling");
+            var result = pending.Value;
+            pending = null;
+            return result;
+        }
+        public void Dispose() { Disposed = true; inner.Dispose(); }
     }
     private sealed class RejectPostingContext : SynchronizationContext
     {

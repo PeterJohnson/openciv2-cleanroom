@@ -3,15 +3,16 @@
 The optional runtime is [Lua-CSharp](https://github.com/nuskey8/Lua-CSharp)
 (`LuaCSharp` **0.5.8**), pinned in `Directory.Packages.props` and NuGet lock files.
 It runs as managed code on native .NET and WebAssembly; no Lua C library, P/Invoke
-wrapper, binary reply protocol or native build preparation is required.
+wrapper or native build preparation is required. The optional desktop launcher
+uses a private framed pipe between the task owner and its interpreter process.
 Historical stock Lua 5.5.1 / ABI 1 receipts in [validation](validation/README.md)
 apply only to their recorded revisions, not to this runtime migration.
 
 `OpenCiv2.Automation` depends on the portable descriptor parser and Contracts.
 It never references Core, Query, Session, Avalonia or native I/O. A trusted owner
 constructs a `ScriptTask` with an exclusive `ControllerKind.Automation` binding,
-then calls `Tick()` on the session mutation lane. Each tick resumes Lua once and
-processes at most one yielded request. The owner advances session operations
+then calls `Tick()` on the session mutation lane. Each tick starts or polls one
+Lua resume and processes at most one yielded request. The owner advances session operations
 separately, reads task `Results`/`SubmittedCommands`, drains relevant presentation
 updates, and retires commands only after their consumers finish. `Results` uses
 the same client lease; revocation still prevents queries. Tasks do not own worlds.
@@ -72,25 +73,33 @@ Instruction counts round down to 1,000-instruction hook quanta; the hook counter
 resets each tick. Prelude instructions count toward the budget. Exhaustion uses
 Lua-CSharp cancellation, which propagates through `pcall` and stops the task.
 
-There is **no per-task memory limit or VM memory accounting**. Lua values use the
-.NET garbage collector. Instruction limits do not bound time or allocation inside
-a library function; this runtime is for explicitly selected user scripts, not
-hostile-code isolation. String repetition remains capped at 65,536 repetitions
+Lua values use the .NET garbage collector. The default in-process machine has
+**no per-task memory cap**. The desktop launcher instead runs each task in its
+own interpreter process with a **128 MiB managed heap limit**, including the
+interpreter and reply data. It verifies that limit before executing Lua. This
+is not a total process/RSS limit or an OS security sandbox. Instruction limits
+do not bound time or allocation inside a library function. String repetition remains capped at 65,536 repetitions
 (including empty strings) to bound library loop work.
 
 Host request and reply payloads are capped at 64 KiB. Replies contain owned
-`LuaValue`/`LuaTable` values (nil, boolean, exact signed i32, UTF-8 text, arrays and
+JSON nodes converted to Lua values (nil, boolean, exact signed i32, UTF-8 text, arrays and
 string-keyed objects), with at most 4,096 entries per container. The fixed API
 shapes bound nesting. Reply accounting charges one byte per scalar tag, four bytes
 per integer/string length/container count, and UTF-8 text bytes, retaining the
-previous API's payload budget without a wire encoding. Oversize query responses
+previous API's payload budget independently of the interpreter transport. Oversize query responses
 fail explicitly; pagination remains a later API addition.
 
 The managed host binding yields its Lua-CSharp coroutine before session dispatch.
-The next owner tick resumes it inline with the pending reply; no worker thread,
-external asynchronous operation or session callback runs the script. Disposal
-cancels the suspended yield, unwinds its call stack and disposes the states.
-Task completion, cancellation and failure release the interpreter immediately.
+The default machine resumes inline with the pending reply on the next owner
+tick. The desktop machine exchanges bounded frames asynchronously over private
+redirected pipes; it receives only the script and observer-filtered replies,
+never a session or client reference. Game dispatch remains on the owner lane.
+A five-second deadline per exchange terminates a stalled worker without blocking
+the UI. An allocation failure ends the task with `memory_budget`; timeout and
+unexpected process exits have distinct diagnostics. Disposal cancels an inline
+suspended yield or terminates the desktop worker. Completion, cancellation and
+failure stop further requests while preserving completed game effects. Pausing
+stops polling/dispatch; a resume already executing may finish in the worker.
 
 Lua-CSharp implements the Lua 5.2 language/library surface, rather than the old
 Lua 5.5 runtime. Byte-string mode preserves UTF-8 byte lengths and slicing;
@@ -136,7 +145,8 @@ command. Replay needs the journal and the matching game profile. It never
 loads the script. Journal export stops at its size or step limit and reports
 the error without interrupting the game. Both outputs require a new path.
 
-Live task checkpoint restoration and per-task memory accounting remain open.
+Live task checkpoint restoration remains M5 work. Browser resource isolation and
+Windows/macOS qualification of the desktop worker are deferred.
 
 ## Build and evidence
 
@@ -153,7 +163,10 @@ errors, cancellation before and after effects, GC/disposal, revoked authority,
 task command ownership, stale targets, restricted capabilities/limit admission,
 error after effects, and the city production policy with replay and pause/resume.
 Both runners use the production session and Lua-CSharp.
-The runtime group also exercises allocations beyond the retired 2 MiB cap.
+The runtime group also exercises allocations beyond the retired 2 MiB cap,
+delayed resumes, pause and authority revocation before dispatch. The Linux native
+play driver additionally exhausts a real worker heap after a committed turn and
+stalls a worker during a visible interaction, then continues playing.
 
 `run_automation.py` records 12 assembly manifests, exact compiled inputs and
 locked dependency graphs, runner inputs and invoked artifacts before/after

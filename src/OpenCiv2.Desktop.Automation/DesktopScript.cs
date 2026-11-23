@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OpenCiv2.App;
 using OpenCiv2.Automation;
 using OpenCiv2.Base;
@@ -33,11 +34,11 @@ internal sealed class DesktopScript(LocalGame game, SessionPanel panel, string s
         binding = client.Identity;
         try
         {
-            task = new(client, source, new(Ticks: 10000));
+            task = new(client, source, new(Ticks: 10000), (script, limits) => new IsolatedLuaMachine(script, limits));
             status = "Running";
             detail = name;
         }
-        catch (ArgumentException error)
+        catch (Exception error) when (error is ArgumentException or IOException or InvalidOperationException or Win32Exception)
         {
             Release();
             status = "Failed";

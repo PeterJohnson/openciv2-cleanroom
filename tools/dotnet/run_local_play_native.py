@@ -3,7 +3,9 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
+import signal
 import sqlite3
 import subprocess
 import tempfile
@@ -634,6 +636,66 @@ game.log('Turn cancelled')
         interaction_script.unlink()
         replay_save(interaction_trace, interaction_expected)
         checks.append('desktop journal replays cancellation of a Lua command through the normal player dialog')
+
+        memory_script = observation.with_name('automation-memory.lua')
+        memory_script.write_text("""
+local command = game.command('turn.end')
+while command.status == 'Pending' or command.status == 'AwaitingInteraction' do
+    game.wait()
+    command = game.result(command.id)
+end
+assert(command.status == 'Completed', command.status)
+
+local value = 'allocation'
+while true do value = value .. value end
+""")
+        launch[launch.index('--script') + 1] = str(memory_script)
+        record_option = launch.index('--record')
+        del launch[record_option:record_option + 2]
+        observation = observation.with_name('automation-memory.json')
+        launch[launch.index('--observe') + 1] = str(observation)
+        app = subprocess.Popen(launch)
+        try:
+            wait(lambda s: s['play']['automation']['status'] == 'Ready')
+            window = driver.window_for(app.pid, visible=True)
+            assert window
+            driver.wait_placement(window)
+            click('automation.start')
+            wait(lambda s: s['status'] == 'AwaitingInteraction' and s['dialog']['visible'])
+            choice(1)
+            failed = wait(lambda s: s['play']['automation']['status'] == 'Failed')['play']
+            assert failed['automation']['detail'] == 'memory_budget', failed['automation']
+            assert failed['turn'] == 2 and failed['phase']
+            assert end_turn(3)['turn'] == 3
+            checks.append('desktop Lua heap exhaustion preserves the committed turn and the game keeps accepting commands')
+
+            click('automation.start')
+            wait(lambda s: s['status'] == 'AwaitingInteraction' and s['dialog']['visible'])
+            children = Path(f'/proc/{app.pid}/task/{app.pid}/children')
+            worker = next(int(pid) for pid in children.read_text().split()
+                          if Path(f'/proc/{pid}/cmdline').read_bytes().endswith(b'--lua-worker\x00'))
+            os.kill(worker, signal.SIGSTOP)
+            try:
+                choice(1)
+                settled = wait(lambda s: s['play']['turn'] == 4 and s['play']['phase'])
+                assert settled['play']['automation']['status'] == 'Running'
+                timed_out = wait(lambda s: s['play']['automation']['status'] == 'Failed')['play']
+                assert timed_out['automation']['detail'] == 'script_worker_timeout'
+                assert timed_out['turn'] == 4 and timed_out['phase']
+                assert end_turn(5)['turn'] == 5
+                checks.append('stalled Lua worker leaves the turn dialog responsive and the watchdog ends the task')
+            finally:
+                try:
+                    if Path(f'/proc/{worker}/cmdline').read_bytes().endswith(b'--lua-worker\x00'):
+                        os.kill(worker, signal.SIGKILL)
+                except (FileNotFoundError, ProcessLookupError):
+                    pass
+            driver.close_window(window)
+            assert app.wait(timeout=10) == 0
+        finally:
+            if app.poll() is None:
+                app.terminate()
+                app.wait(timeout=10)
     hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in artifacts if path}
     driver.close()
     return {'format': 'openciv2-linux-local-play/1', 'input': 'XTest pointer and keyboard', 'composition': 'cpu',

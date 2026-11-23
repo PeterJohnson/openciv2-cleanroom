@@ -1,6 +1,6 @@
 using System.Globalization;
 using System.Text;
-using Lua;
+using System.Text.Json.Nodes;
 using OpenCiv2.Base;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
@@ -32,12 +32,12 @@ public sealed class ScriptTask : IDisposable
 {
     private readonly IPlayerClient client;
     private readonly ScriptLimits limits;
-    private readonly LuaMachine machine;
+    private readonly IScriptMachine machine;
     private readonly List<CommandId> commands = [];
     private readonly List<ScriptCommandAttempt> commandAttempts = [];
     private readonly StringBuilder output = new();
     private int outputBytes, attempts;
-    private LuaValue reply;
+    private JsonNode? reply;
     private bool disposed;
     public ScriptStatus Status { get; private set; }
     public string Error { get; private set; } = "";
@@ -50,7 +50,8 @@ public sealed class ScriptTask : IDisposable
     public OwnedList<CommandUpdate> Results => new(commands.Select(id => client.Result(id) ??
         throw new InvalidOperationException("command_unavailable")));
 
-    public ScriptTask(IPlayerClient client, string script, ScriptLimits? limits = null)
+    public ScriptTask(IPlayerClient client, string script, ScriptLimits? limits = null,
+        Func<string, ScriptLimits, IScriptMachine>? machineFactory = null)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(script);
@@ -67,7 +68,7 @@ public sealed class ScriptTask : IDisposable
         }
 
         this.client = client;
-        machine = new LuaMachine(script, this.limits);
+        machine = machineFactory is null ? new LuaMachine(script, this.limits) : machineFactory(script, this.limits);
     }
 
     public void Tick()
@@ -82,18 +83,23 @@ public sealed class ScriptTask : IDisposable
         {
             _ = client.Identity; // Even pure waits must stop on revoked/session-ended authority.
             client.Updates(); // Dedicated binding; authoritative results remain in the session.
-            int state = machine.Resume(reply);
-            if (state < 0)
+            var result = machine.Resume(reply);
+            switch (result.State)
             {
-                Stop(ScriptStatus.Failed, machine.Error);
-                return;
+                case ScriptMachineState.Waiting:
+                    return;
+                case ScriptMachineState.Failed:
+                    Stop(ScriptStatus.Failed, result.Error);
+                    return;
+                case ScriptMachineState.Completed:
+                    Stop(ScriptStatus.Completed, "");
+                    return;
+                case ScriptMachineState.Request:
+                    reply = Dispatch(result.Operation, result.Argument);
+                    return;
+                default:
+                    throw new InvalidOperationException("Unknown script machine state");
             }
-            if (state == 0)
-            {
-                Stop(ScriptStatus.Completed, "");
-                return;
-            }
-            reply = Dispatch(machine.Operation, machine.Argument);
         }
         catch (Exception exception) when (exception is DecoderFallbackException or EncoderFallbackException)
         {
@@ -106,7 +112,7 @@ public sealed class ScriptTask : IDisposable
         }
     }
 
-    private LuaValue Dispatch(string operation, string argument)
+    private JsonNode? Dispatch(string operation, string argument)
     {
         var w = new ReplyBuilder();
         switch (operation)
@@ -238,10 +244,10 @@ public sealed class ScriptTask : IDisposable
         return client.Result(id) ?? throw new InvalidOperationException("command_unavailable");
     }
 
-    private static LuaValue WriteReceipt(ReplyBuilder w, InputReceipt receipt) => w.Object(
+    private static JsonNode WriteReceipt(ReplyBuilder w, InputReceipt receipt) => w.Object(
         ("accepted", w.Boolean(receipt.Accepted)), ("code", w.Text(receipt.Code)));
 
-    private static LuaValue WriteUpdate(ReplyBuilder w, CommandUpdate update) => w.Object(
+    private static JsonNode WriteUpdate(ReplyBuilder w, CommandUpdate update) => w.Object(
         ("id", w.Text(Decimal(update.Correlation.Command.Value))),
         ("status", w.Text(update.Status.ToString())), ("code", w.Text(update.Code)),
         ("effects", w.Integer(update.Committed.Count)),
@@ -250,9 +256,9 @@ public sealed class ScriptTask : IDisposable
                 ("prompt", w.Text(interaction.Spec.Prompt)),
                 ("choices", w.Array(interaction.Spec.Choices.Select(w.Integer))))
             : w.Nil()),
-        ("result", w.Object(update.Result.Select(item => (item.Name, WriteValue(w, item.Value))).ToArray())));
+        ("result", w.Object(update.Result.Select(item => (item.Name, (JsonNode?)WriteValue(w, item.Value))).ToArray())));
 
-    private static LuaValue WriteValue(ReplyBuilder w, CommandValue value) => value switch
+    private static JsonNode WriteValue(ReplyBuilder w, CommandValue value) => value switch
     {
         CommandValue.Integer number => w.Integer(number.Value),
         CommandValue.Boolean boolean => w.Boolean(boolean.Value),
@@ -270,7 +276,7 @@ public sealed class ScriptTask : IDisposable
         Status = status;
         Error = error;
         machine.Dispose();
-        reply = LuaValue.Nil;
+        reply = null;
         // Cancellation uses the ordinary command protocol. The owner must continue
         // pumping accepted cancellations/required replies; already committed effects survive.
         foreach (var id in commands)

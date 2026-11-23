@@ -10,6 +10,10 @@ internal static class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        if (args is ["--lua-worker"])
+        {
+            return LuaWorker.Run(System.Console.OpenStandardInput(), System.Console.OpenStandardOutput());
+        }
         try
         {
             if (args is ["--replay", var trace, "--output", var output])

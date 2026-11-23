@@ -516,7 +516,16 @@ Pass the usual graphics and storage options after the script path. The launcher
 opens Alder Valley. Use **Start script** in the sidebar after opening any save
 you want the script to run on. The regular desktop build retains its existing
 dependency graph. Linux verification uses the native play runner with
-`--automation-desktop` pointing at the optional launcher assembly.
+`--automation-desktop` pointing at the optional launcher assembly. Each desktop
+task starts a separate interpreter process with a 128 MiB managed heap cap and
+a five-second exchange deadline. The native runner also tests heap exhaustion
+and a stalled worker while continuing to use the game.
+
+Run the private worker protocol/resource checks without a display:
+
+```sh
+python3 tests/desktop_automation_worker.py src/OpenCiv2.Desktop.Automation/bin/Release/net11.0/OpenCiv2.Desktop.Automation.dll
+```
 
 Add `--record TRACE` immediately after the script path to record the local
 session. Replay the journal with the same optional launcher and

@@ -875,7 +875,10 @@ protocol dispatch or deadlines. Preserve existing compatibility boundaries even
 when the runtime needs to yield for responsiveness.
 
 Bound instruction work, host-call payloads/work, command queues and output.
-Lua-CSharp uses managed GC without a per-task memory cap. Expose
+Lua-CSharp uses managed GC. The optional desktop launcher contains each task
+in a separate interpreter process with a verified managed heap cap and an
+asynchronous exchange deadline; session dispatch stays on its mutation lane.
+The portable in-process adapter has no per-task heap cap. Expose
 cancel/pause controls and useful script/line diagnostics. Lua instruction hooks
 alone cannot bound time spent inside a host function: keep host calls bounded
 or asynchronous. Contain Lua errors within the managed task adapter and propagate
