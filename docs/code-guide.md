@@ -79,7 +79,8 @@ joining only changes size and deletes the unit. Its final city visit retains the
 calculation processing mode until a reply. `Session/CityFoundingOperation` routes
 private naming, lifecycle and final city-window decisions through scoped clients.
 The desktop dialog accepts text with the same identity/latch guards as numbered
-choices. General desktop registration and A03 composition remain open.
+choices. `SettlementTactics.Site` now invokes direct founding for A03 decisions.
+General desktop registration and the full tactical parent remain open.
 `CityQueries` also supplies region/port and coastal predicates. Commodity
 refresh includes the specified zero road-accumulator repair. `TradeRoutes` supplies
 C07 directional removal, slot writing, append/replacement and refresh, using the
@@ -828,8 +829,9 @@ full A04 parent still awaits composition. `ParatrooperTactics` implements the
 proactive A07 drop policy using that parent's retained city selector, actual
 U05 execution and C09 capture. Landing scores survive cancelled searches; a
 selected drop returns zero directly even on refusal. Its session adapter routes
-actual capture decisions. A03 selector production and full parent wiring remain
-open.
+actual capture decisions. `SettlementTactics.Site` now produces the A03 selector;
+its actual A07 consumer is tested across a later nearest-city change. Full parent
+wiring remains open.
 
 `Ai/NuclearTargets` implements A06 nuclear selection with actual SDI, stack,
 movement-allowance and diplomatic services. It stages the actor before returning
@@ -988,3 +990,11 @@ yields without a decision. `CommandRuntime` queues exactly one subsequent Procee
 behind admitted inputs, so the desktop's existing AdvanceOne timer can resume it.
 Plain Pending remains an external wait. Interaction pauses, explicit input ordering,
 effect publication and single disposal keep their existing command contracts.
+
+`Ai/SettlementTactics` owns A03 §4 city-site selection and §5 fortress
+classification. It retains effective/actual settler flags, nearest-city region,
+strict radius ties, signed timer arithmetic and the independent advanced-human
+founding tail. Actual C01 founding supplies the child result while A03 retains
+its direct return-one contract. The four-line fortress scan includes both
+coordinate parities and publishes actual A01 standing goals. Worker orders,
+population return and full tactical/turn composition remain open.

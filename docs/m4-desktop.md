@@ -4762,3 +4762,50 @@ General desktop founding command registration, A03 settlement/work and its
 founding join, W06 barbarians, full A04/A01/turn orchestration, generated desktop
 composition and complete human/AI-game acceptance remain open. Browser and
 cross-platform execution remain deferred.
+
+## A03 city-site selection and fortress classification
+
+`SettlementTactics.Site` implements A03 §4 using actual W01 fertility/hut queries,
+A01 goals and C01 founding. It distinguishes retained effective Settle from the
+live actual rule role, caps the current fertility using the nearest city's region,
+preserves strict radius ties and chooses the first admitted hut. Founding can be
+triggered by first-city placement, local scores, the signed wrapping auxiliary
+timer or the independent advanced-human neighbor rule. An outer-radius FoundSite
+Goto continues into that last rule. Actual C01 success or capacity refusal both
+produce A03's direct return-one route without shared order completion.
+
+The continuing phase produces the retained city selector consumed by A07. A real
+site/paratrooper test adds a closer city after selection and verifies that the
+paratrooper returns to the selected city. Direction choices also pass through
+actual A04 order application. These are concrete child joins, not a full tactical
+parent or generated-game loop.
+
+`ClassifyFortress` implements A03 §5's four-line test. It uses ordinary distance
+to the live captured home, preserves adjacent fortress/city/goal/four-ocean exits,
+does not upgrade adjacent marker 1 to outer marker 2, and includes both coordinate
+parities and wrapped samples. Need 1 and need 2 publish actual standing Defend or
+TerrainWork goals while retaining the actor's task and orders.
+
+Eleven groups cover first-city goal removal, refused founding, nearest versus
+owned-nearest regions, role distinctions, signed role gates, radius ties, real
+huts, timer wrap, regional counts, independent founding after Goto, unsupported
+mode/failure/disposal, live-home distance, negative goal priorities, four-line
+barriers, parity, wrapping and the A07 consumer. The first failure fixture tried
+to capture context after entering an unsupported network mode; it now captures
+before testing the operation's own guard. The first wrap fixture used adjacent
+water, which correctly set marker 1; the final fixture isolates an outer sample.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1343 of 1345**, with the two existing
+platform/audio skips. The shared probe passed **1310 groups** across 150 coverage
+families; source identity verified **713 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-settlement-sites-native.json` | `4628817a722642d15e4c92031048ce75b28f57128ea5cb72c438f718c3e43233` |
+| `m4-settlement-sites-identity.json` | `d88d06ad1e80ea737a0ec50bb27d5ae37498e8f7ad7da0d74696e07993bbcdd9` |
+
+A03 settler/role-21 work and population return, W06 barbarians, full A04/A01/turn
+orchestration, generated desktop composition and complete human/AI-game
+acceptance remain open. Browser and cross-platform execution remain deferred.

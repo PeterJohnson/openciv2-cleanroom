@@ -17,7 +17,7 @@ public static partial class FoundationSuite
     private static UnitTacticsContext ParaContext(ParadropFixture f)
     {
         var c = new UnitTacticsContext(f.World, f.Data.Rules, new(0));
-        c.CitySelector = c.NearestCity; // A03's specified producer; its full site phase is a separate pending join.
+        c.CitySelector = c.NearestCity; // Retained A03 selector supplied for these isolated A07 cases.
         return c;
     }
     private static List<Choice> ParaRolls(bool capture = false)

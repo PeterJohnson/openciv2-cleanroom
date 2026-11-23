@@ -906,3 +906,12 @@ versioning and bounded recording. Actual C01 session cases exercise accepted and
 cancelled names, final city visits and private nested lifecycle decisions. The
 shared Lua suite covers text metadata and replies with Unicode and colons. General
 desktop founding registration and full-game acceptance remain open.
+
+A03 site/fortress groups cover first-city and refused founding, nearest versus
+owned-nearest regions, effective versus live actual roles, strict radius ties,
+real W01 huts, signed timers, regional counts and the independent advanced-human
+tail. Real C01 creation/deletion, A01 goals and A04 direction application are
+composed. Fortress cases distinguish ordinary live-home distance, negative goal
+priorities, adjacent exclusions, four-line markers, coordinate parity and wrap.
+A real A03/A07 join preserves the selected city after a newer nearest city is
+added. Worker/population phases and complete-game acceptance remain open.

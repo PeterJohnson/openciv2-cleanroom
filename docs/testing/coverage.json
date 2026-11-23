@@ -4714,6 +4714,35 @@
         "P04.text-interaction-metadata-deadline",
         "P04.text-reply-private-validation"
       ]
+    },
+    {
+      "id": "ai-settlement-sites-fortress",
+      "status": "partial",
+      "contract": "A03 \u00a7\u00a71,4\u20135,8; C01 founding; A01 goals; A04/A07 retained context",
+      "publicSurface": "SettlementTactics.Site/SiteOperation.Resume/ClassifyFortress; UnitTacticsContext.SettlerKind/SettlerType/CitySelector/FortressNeed",
+      "review": "Actual C01 founding preserves direct return-one even at capacity. Cases cover first-city prefixes, nearest versus owned-nearest regions, actual/effective roles, signed role gates, strict radius ties, real huts, region/ocean exclusions, timer wrapping, regional counts, outer Goto and independent advanced-human founding. Actual goals and A04 direction application preserve task/order boundaries. Fortress classification uses ordinary live-home distance, negative priorities, adjacent exclusions, four-line markers, noncanonical coordinates and wrapping. The actual A07 consumer retains the A03-produced selector after a new nearest city appears. Worker orders, population return, full tactical/turn and generated desktop acceptance remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/SettlementTactics.Fortress.cs",
+        "src/OpenCiv2.Core/Ai/SettlementTactics.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SettlementSiteCases.cs"
+      ],
+      "sharedGroups": [
+        "A03.fortress-early-exits",
+        "A03.fortress-lines-parity-wrap",
+        "A03.fortress-road-live-home",
+        "A03.site-advanced-human-tail",
+        "A03.site-eligibility-captured-region",
+        "A03.site-failure-disposal",
+        "A03.site-first-city-capacity",
+        "A03.site-huts-standing-goals",
+        "A03.site-paratrooper-selector-join",
+        "A03.site-ties-radius-orders",
+        "A03.site-timer-regional-count"
+      ]
     }
   ]
 }

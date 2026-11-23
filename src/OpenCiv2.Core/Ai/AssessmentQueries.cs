@@ -22,6 +22,7 @@ public static class AiTaskIds
     public const byte TradeLanding = 0x74, CityTarget = 0x63, DiplomatTarget = 0x53;
     public const byte FortressGuard = 0x46;
     public const byte AirReturn = 0x48, Strike = 0x41, StageAirStrike = 0x61, AirHold = 0x68, CityRaid = 0x42;
+    public const byte Hut = 85, FoundSite = 50;
 }
 
 /// <summary>A01 §2 role, defense quota and sparse city/land-region contact queries.</summary>
