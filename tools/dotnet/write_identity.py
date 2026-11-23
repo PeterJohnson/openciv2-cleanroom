@@ -23,6 +23,7 @@ COMMON = (
     "docs/algorithms/F02-game-state-and-invariants.md", "docs/algorithms/F03-rules-and-configuration.md", "docs/algorithms/F06-save-load-and-file-formats.md",
     "docs/algorithms/W01-map-geometry-and-spatial-state.md", "docs/algorithms/C01-city-lifecycle-and-ownership.md",
     "docs/algorithms/C08-buildings-and-wonders.md",
+    "docs/algorithms/C09-city-capture-and-revolt.md",
     "docs/algorithms/C02-city-tiles-and-worker-assignment.md",
     "docs/algorithms/C03-city-economy-and-corruption.md",
     "docs/algorithms/C04-city-happiness-and-disorder.md",

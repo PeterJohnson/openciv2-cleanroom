@@ -559,3 +559,11 @@ post-blast identification and V04 bilateral War setters. The session
 `PlantedNuclearDeviceOperation` routes the initial actor confirmation and each
 nested victim separately. City-controller prerequisite/menu gates and full
 desktop presentation remain with those owners.
+
+`Core/CivilWar` owns V01's local schism selection, actual creation, region/fallback
+partition, unit reassignment and capitals. `City/CityTransfer` supplies C01's
+elementary transfer without capture policy; `City/CityCaptureQueries` owns C09's
+shared treasury share and central-city queries. `ScenarioPermissions.AllowSchism`
+runs the S02 predicate with a required authored-action dispatcher; it does not
+implement those actions. `Session/CivilWarOperation` publishes bounded progress.
+C09 capture/incitement and full scenario/presentation callers remain open.

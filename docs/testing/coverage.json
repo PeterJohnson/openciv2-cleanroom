@@ -3452,6 +3452,31 @@
         "V06.device-nested-failures",
         "V06.device-session-privacy"
       ]
+    },
+    {
+      "id": "civil-war",
+      "status": "partial",
+      "contract": "V01 sections9-11 local civil war; S02 NoSchism predicate; C01 elementary transfer; C09 shared queries",
+      "publicSurface": "CivilWar.Begin/Operation; CivilWarOperation; ScenarioPermissions.AllowSchism; CityTransfer.Transfer; CityCaptureQueries.TreasuryShare/CentralCity",
+      "review": "Actual civilization creation/reset and leader selection, highest eligible rebel slot, NoSchism matching without an events-loaded gate, region population partition and retained-target farthest-city fallback. Uses real C01 city/population transfer, W03 knowledge/exploration, U01 stack traversal and C09 central-city selection. Preserves partial reset/copy distinctions, mixed-stack ownership, unchanged unit counts, multiple Palaces and candidate-parent alias semantics. Fallback transfers and creation searches resume without restarting; failure/disposal retain prefixes. Required scenario action dispatch is an explicit integration boundary; predicate tests do not claim authored action execution. C09 capture/incitement callers, full scenario/desktop presentation and generated-game acceptance remain open. Browser/cross-platform and network orchestration are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityCaptureQueries.cs",
+        "src/OpenCiv2.Core/City/CityTransfer.cs",
+        "src/OpenCiv2.Core/CivilWar.cs",
+        "src/OpenCiv2.Core/ScenarioPermissions.cs",
+        "src/OpenCiv2.Session/CivilWarOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CivilWarCases.cs"
+      ],
+      "sharedGroups": [
+        "C09.capture-queries-transfer",
+        "V01.civil-war-failure-alias",
+        "V01.civil-war-fallback",
+        "V01.civil-war-regions-units",
+        "V01.civil-war-session",
+        "V01.civil-war-veto"
+      ]
     }
   ]
 }

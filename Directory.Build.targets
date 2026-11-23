@@ -28,6 +28,7 @@
           $(Oc2RepositoryRoot)docs/algorithms/W04-terrain-work-and-improvements.md;
           $(Oc2RepositoryRoot)docs/algorithms/W05-pollution-and-global-warming.md;
           $(Oc2RepositoryRoot)docs/algorithms/C08-buildings-and-wonders.md;
+          $(Oc2RepositoryRoot)docs/algorithms/C09-city-capture-and-revolt.md;
           $(Oc2RepositoryRoot)docs/algorithms/F06-save-load-and-file-formats.md;
           $(Oc2RepositoryRoot)docs/algorithms/F05-game-setup-and-starting-positions.md;
           $(Oc2RepositoryRoot)docs/algorithms/S01-scenario-loading-and-parameters.md;

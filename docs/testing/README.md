@@ -60,6 +60,12 @@ V06 device groups join real capture checks to U07 and V04 identification. They
 verify all capture-loss positions, relocation without a final escape, post-blast
 government/veteran reads (including a destroyed actor), nested elimination from
 either child, actor/victim privacy and terminal failure prefixes.
+V01 civil-war groups use actual civilization creation, elementary city transfer,
+map knowledge and stack reassignment. They cover region and farthest-city splits,
+retained population targets, candidate aliases, multiple Palaces, failure prefixes
+and bounded session continuation. NoSchism cases verify predicate/action routing
+without claiming the still-required authored-action dispatcher. C09 query cases
+exercise treasury rounding/faults and central-city ties.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

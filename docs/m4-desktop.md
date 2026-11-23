@@ -14,7 +14,7 @@ in the [M2 closeout](m2-closeout.md).
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; last-city famine now joins actual V01 elimination, ordered end reports and game closure. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. V01 catch-up now invokes full V03 grants with actual Library, Leonardo and government children; elimination/restart joins are tested. V01 elimination now has a resumable operation with actual nested last-settler and foreign-spy incidents, bounded restart search and victim routing. V06 unit bribery and sabotage now compose real transfer, HP and resumable escape/lifecycle effects. City sabotage and poison now use actual building, city-memory and resumable capture/escape children, with actor/victim decision routing. Technology theft now joins actual race selection, physical defender detection, captured-technology selection and research grants; fallback requests still need the city controller. Embassy/investigation now retain their distinct human/AI unit effects through actual nested deletion/destruction, with required intelligence/city presentation adapters. U07 now provides local SDI, actual nested stack loss, independent blast damage and W05 pollution placement. The V06 planted-device body calls that real action after capture checks and applies live identification consequences. Full diplomacy/movement/mission callers, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear delivery, remaining pollution/warming, huts and barbarians remain pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. V01 catch-up now invokes full V03 grants with actual Library, Leonardo and government children; elimination/restart joins are tested. V01 elimination now has a resumable operation with actual nested last-settler and foreign-spy incidents, bounded restart search and victim routing. V06 unit bribery and sabotage now compose real transfer, HP and resumable escape/lifecycle effects. City sabotage and poison now use actual building, city-memory and resumable capture/escape children, with actor/victim decision routing. Technology theft now joins actual race selection, physical defender detection, captured-technology selection and research grants; fallback requests still need the city controller. Embassy/investigation now retain their distinct human/AI unit effects through actual nested deletion/destruction, with required intelligence/city presentation adapters. U07 now provides local SDI, actual nested stack loss, independent blast damage and W05 pollution placement. The V06 planted-device body calls that real action after capture checks and applies live identification consequences. V01 civil war now joins actual creation, C01 city transfer, knowledge and unit reassignment, with the NoSchism action boundary explicit. Full diplomacy/movement/mission callers, map sharing and remaining acquisition callers, complete movement/orders, combat, capture/civil-war callers, forced elimination, remaining espionage, transport/air/nuclear delivery, remaining pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government, diplomatic stance and alliance-willingness policies are implemented, with actual restricted government changes and V05 patience. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. F04 ship arrival, V08 scheduled retirement and pending outcome dispatch now join real reports and continuation. Semantic ending pages use actual ship/history data; authored ending/fame-title resources, remaining history and generated-game callers remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
@@ -2678,3 +2678,45 @@ is claimed.
 | --- | --- |
 | `m4-device-native.json` | `348f9c07ce4b640b19f8d391f6534ae5bf8ebb8761b19a509a0ccfa46d2e91a6` |
 | `m4-device-identity.json` | `ed57f2ef24cf2fa1f0f682ce3fecd850589ea2a90f9826a5ed10699a016d4b31` |
+
+## Civil war and elementary city transfer
+
+V01's local civil war now uses the actual civilization-creation service after
+selecting the highest zero-city/zero-military slot and clearing its alive bit.
+NoSchism is checked even when events are not marked loaded; every matching
+record reaches the required action dispatcher and vetoes regardless of its
+consumed state. The predicate preserves wildcard operands. Full authored action
+execution remains a required scenario integration, not a supplied success value.
+
+Civil war copies only the specified treasury, military-strength and research
+fields, preserves global knowledge-summary distinctions, and copies exploration
+without remembered features. Region partition uses captured signed population
+sums; fallback selection retains the capital position and original population
+target, reveals both viewers each scan and transfers the first farthest city.
+Each fallback transfer yields bounded progress without restarting the split.
+
+C01's elementary transfer updates explicit old/new city and population summaries,
+city owner and occupant owner. It leaves capture policy, flags, units and knowledge
+to the parent. The civil-war unit pass uses actual physical stacks, can transfer
+mixed-owner members, repairs homes only as specified and does not invent active
+count repairs. C09's shared central-city query installs replacement Palaces while
+retaining the original Palace; its treasury query preserves both rounding orders
+and division boundaries for the later capture and barbarian callers.
+
+Six groups exercise the actual joins, region/fallback partitions, multi-Palace
+selection, candidate-parent aliasing, human creation refusal, signed16 transfer
+wrap, explicit mismatched old owners, failure/disposal and session continuation.
+C09 capture/incitement, full scenario actions and desktop presentation/generated
+games remain open. Browser and cross-platform work remain deferred.
+
+Root/App formatting and verification, both Release builds and the 43-project
+boundary check passed. Native tests passed **930 of 932**, with the two existing
+platform/audio skips. The probe passed **897 shared groups** across 110 coverage
+families; source identity verified **538 compiled inputs**, including C09's
+owning specification. Eight identity and three coverage validator tests passed.
+These are service-integration results, not desktop UI or complete-game acceptance.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-civil-war-native.json` | `dd65eae1f1d593167d49d1182172102e01171653cdb37d1c67fd3c8d85883180` |
+| `m4-civil-war-identity.json` | `d0453df61c52372025ca063652cb19a40398537f29eba6655f582878979222c7` |
