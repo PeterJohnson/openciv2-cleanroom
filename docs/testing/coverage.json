@@ -3976,6 +3976,33 @@
         "U04.long-move-retained-failures",
         "U04.long-move-timer-reversal"
       ]
+    },
+    {
+      "id": "hut-entry",
+      "status": "partial",
+      "contract": "W06 Hut entry/consumption and outcomes 0..5; C01 city creation; U01 unit creation/W03 revelation; V03 eligibility/grants; F06 regional presence flags",
+      "publicSurface": "HutEntry.Begin retained city visit and bounded redirects; HutOperation; RegionalPresence.SettlementRestrictions with classic conversion",
+      "review": "Actual local hut outcomes compose city and unit creation and research grants. Preserves human override draw, recorded regional counts and low-seven presence flags, global versus owner-only unsupported settlers, fixed global-technology type choices, distinct year 1000 boundaries, signed/wrapped gold, ordered barbarian gates/stride/rank-index use and Armor signed-prerequisite backing. Scroll search uses 999 eligibility calls and bounded repeated redirects without invented fallback. Real creation failure retains prefixes and rejects the excluded late-city invalid write after the size draw. Private city visits retain choices and cosmetic failures are diagnostic. Two previously opaque regional flag bits now participate in settlement eligibility and round-trip through their defined F06 mapping; the high unrelated bit remains opaque. Tests cover real children, all outcome families, thresholds, failed creation, repeated direct entry, private visits, flags and malformed input stops. Outer movement finish/desktop callers, periodic spawning/barbarian orders/ransom and full-game acceptance remain pending; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/HutEntry.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/State/SemanticFlags.cs",
+        "src/OpenCiv2.Formats/FlagConversion.cs",
+        "src/OpenCiv2.Session/HutOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/HutCases.cs"
+      ],
+      "sharedGroups": [
+        "W06.hut-barbarian-placement-types",
+        "W06.hut-mercenary-types-home",
+        "W06.hut-metals-admission",
+        "W06.hut-nomads-scrolls-redirects",
+        "W06.hut-override-regional-flags",
+        "W06.hut-private-city-failures",
+        "W06.hut-redirect-gates-capacity",
+        "W06.hut-tribe-creation-failures"
+      ]
     }
   ]
 }

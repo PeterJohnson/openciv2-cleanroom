@@ -677,3 +677,11 @@ negative direction, full-order versus Automated admission, private stop/cancel,
 retained replies, changed unit bound versus dead occupied slots, captured AI owner,
 live transport counter and conditional exhaustion. These do not claim the full
 movement-finish caller or network synchronization.
+
+W06 hut-entry groups exercise actual city/unit creation and advance grants, all
+six outcomes, override and redirect gates, global technology versus owned knowledge,
+signed gold/turns and year boundaries, barbarian direction/stride/type selection,
+rank-index use and capacity failure. Cases include regional restriction-bit
+round trips, explicit prerequisite backing, late-city failure before invalid
+writes, a bounded repeating redirect cycle, and private city visits. Full movement
+and desktop joins and periodic barbarian behavior remain pending.

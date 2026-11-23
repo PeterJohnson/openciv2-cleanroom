@@ -15,7 +15,7 @@ public static class AdvanceIds
     public const int University = 85, WarriorCode = 86;
     public const int BridgeBuilding = 7, Construction = 18, Currency = 20, Monarchy = 54, TheWheel = 87;
     public const int Flight = 30, Radio = 66, Railroad = 67;
-    public const int MobileWarfare = 53;
+    public const int Chivalry = 11, Metallurgy = 51, MobileWarfare = 53;
     public const int Seafaring = 75, Trade = 84, Writing = 88;
     public const int Electronics = 24, Environmentalism = 26, Plastics = 62, Sanitation = 74;
 }
@@ -56,7 +56,7 @@ public enum Commodity
 /// <summary>A08 fixed unit identities used to read customizable rule prerequisites.</summary>
 public static class UnitTypeIds
 {
-    public const int AlpineTroops = 10, Marines = 12, Crusaders = 18, Dragoons = 20, Armor = 22;
+    public const int AlpineTroops = 10, Marines = 12, Crusaders = 18, Dragoons = 20, Cavalry = 21, Armor = 22;
     public const int Fighter = 27, Helicopter = 29, StealthFighter = 30, StealthBomber = 31;
     public const int Ironclad = 36, Destroyer = 37, Cruiser = 38, AegisCruiser = 39, Battleship = 40, Submarine = 41, Carrier = 42, CruiseMissile = 44;
     public const int Settlers = 0, Warriors = 2, Phalanx = 3, Archers = 4, Legion = 5, Pikemen = 6, Musketeers = 7, Fanatics = 8, Partisans = 9;

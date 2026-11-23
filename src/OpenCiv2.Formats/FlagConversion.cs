@@ -207,7 +207,7 @@ public static partial class StateConversion
         (value.FusionAtLaunch ? 0x8U : 0U) |
         (value.FirstArrivalVictory ? 0x10U : 0U));
 
-    public const byte RegionalPresenceMask = 0x1f;
+    public const byte RegionalPresenceMask = 0x7f;
 
     public static RegionalPresence DecodeRegionalPresence(byte bits) => new()
     {
@@ -215,7 +215,8 @@ public static partial class StateConversion
         CitiesWithPeace = (bits & 0x2) != 0,
         MilitaryWithoutPeace = (bits & 0x4) != 0,
         MilitaryWithPeace = (bits & 0x8) != 0,
-        StrongerEnemy = (bits & 0x10) != 0
+        StrongerEnemy = (bits & 0x10) != 0,
+        SettlementRestrictions = (byte)((bits >> 5) & 3)
     };
 
     public static byte EncodeRegionalPresence(RegionalPresence value) => (byte)(
@@ -223,7 +224,8 @@ public static partial class StateConversion
         (value.CitiesWithPeace ? 0x2U : 0U) |
         (value.MilitaryWithoutPeace ? 0x4U : 0U) |
         (value.MilitaryWithPeace ? 0x8U : 0U) |
-        (value.StrongerEnemy ? 0x10U : 0U));
+        (value.StrongerEnemy ? 0x10U : 0U) |
+        ((uint)(value.SettlementRestrictions & 3) << 5));
 
     public const ushort ScenarioOptionsMask = 0x807f;
 

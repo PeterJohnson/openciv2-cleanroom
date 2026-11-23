@@ -114,6 +114,9 @@ public record struct RegionalPresence
     public bool MilitaryWithoutPeace;
     public bool MilitaryWithPeace;
     public bool StrongerEnemy;
+    // W06 settlement override consumes these two additional retained regional restrictions.
+    // F06 maps their independent values to the remaining low-seven flag components.
+    public byte SettlementRestrictions;
 }
 
 /// <summary>S01 Appendix A: logical settings; unassigned stored bits belong to adapters.</summary>

@@ -809,3 +809,13 @@ cancellation to continue. U02 must call it before storing last direction.
 `Units/MovementCleanup` applies local bound-sensitive cleanup, captured-owner AI
 orders/timer and live transport state, returning the full result. Dispatcher
 lifetime and the deferred network authority path remain outside this helper.
+
+`HutEntry` implements W06's local entry and six outcomes with real `CityCreation`,
+`UnitCreation` and `ResearchGrants`. U02 supplies its already retained hut result
+and mutable local-human context; the helper does not retest or consume the hut.
+Redirects yield bounded work, including the permitted repeating scroll/nomad
+cycle. `Session/HutOperation` routes the actual created-city visit privately.
+The low-seven regional presence check includes `SettlementRestrictions`, whose
+two independent values are translated by F06; the unrelated high bit remains
+opaque. Out-of-catalog Armor prerequisites require explicit discovery backing.
+Periodic barbarian spawning, orders and ransom remain separate W06 work.

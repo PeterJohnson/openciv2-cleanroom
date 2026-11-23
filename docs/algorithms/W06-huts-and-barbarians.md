@@ -121,7 +121,7 @@ Then evaluate this override in short-circuit order:
    its later city-count check fails; an AI consumes none here.
 2. Its current city count is nonzero.
 3. Read the hut region; that owner's recorded regional city count is zero.
-4. Its regional policy/flags low seven components are zero, or `near>12`.
+4. Its regional presence flags low seven components are zero, or `near>12`.
 5. Recheck that recorded regional city count is zero.
 
 If all pass, force outcome 0. There is no new outcome draw. Dispatch through
@@ -692,7 +692,7 @@ These mappings assist validation; the cleanroom need not use these layouts.
 | Facilities | Granary 3, Temple 4, Marketplace 5, Library 6. |
 | Orders/tasks | None `ff`, Fortifying 1, Fortified 2, Sleep 3, Goto 11, AiGoto 27; UnloadRaid task `55`, LeaderFollow `58`, RaidTransport `70` hex. |
 | Flags/features | Veteran `2000`, AI-garrison `0100`; City `02`, Irrigation `04`, Mine `08`, Road `10`, Fortress `40` hex. Fortress-without-City tests `(features & 42)==40`; scoring's `0c` test accepts either Irrigation or Mine. |
-| Region summaries | Civilization-relative city-count bytes `292+region`, policy bytes `352+region`; world water-body signed word at region-record offset 4. Ordinary region bounds/backing remain W01/F02's contract. |
+| Region summaries | Civilization-relative city-count bytes `292+region`, presence-flag bytes `352+region`; world water-body signed word at region-record offset 4. Ordinary region bounds/backing remain W01/F02's contract. |
 | Read alias inputs | A signed Armor prerequisite outside 0..99 addresses the corresponding byte relative to game offset `09a`. Independent fixtures include negative indices still within the saved record. Supply the actual logical backing value; do not perform an unsafe host-language array read. |
 | Notices | DrawSquare message `72`, DrawArea `75` hex; uprising text kind 2 with two strings; landing text kind `4e` with one string; no numbers in these two network text messages. Local information notices use the information sprite and mode 0. Labels 98..103 select uprising descriptions. |
 
