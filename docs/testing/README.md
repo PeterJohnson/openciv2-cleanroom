@@ -915,3 +915,14 @@ composed. Fortress cases distinguish ordinary live-home distance, negative goal
 priorities, adjacent exclusions, four-line markers, coordinate parity and wrap.
 A real A03/A07 join preserves the selected city after a newer nearest city is
 added. Worker/population phases and complete-game acceptance remain open.
+
+A03 worker/population groups cover retained GotoCity and admission, actual stack
+and adjacent-owner goals, pollution and human destinations, fortress ordering,
+signed irrigation times, resources, road/rail authorization, capacity retention
+and rotated movement. Role-21 cases retain home identities above 127, compare
+signed thresholds independently of government/result/source, preserve tasks and
+allow the specified ocean/occupied radius destinations. Actual selected cleanup
+runs through A04/U04/W04. Population cases use real cargo-aware destruction,
+retain the supported-home distinction, signed counts/size, cosmetic diagnostics
+and failure prefixes. Missing custom work definitions retain earlier goals. Full
+tactical/turn/desktop-game acceptance remains open.

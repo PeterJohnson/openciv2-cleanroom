@@ -4809,3 +4809,55 @@ eight identity tests and three coverage tests passed.
 A03 settler/role-21 work and population return, W06 barbarians, full A04/A01/turn
 orchestration, generated desktop composition and complete human/AI-game
 acceptance remain open. Browser and cross-platform execution remain deferred.
+
+## A03 settler work, role-21 work and population return
+
+`TerrainWorkerTactics` implements A03 §§6–7 in the specified order, including
+retained GotoCity, company/neighbor-owner goals, standing TerrainWork removal,
+current pollution, human polluted destinations and both fortress opportunities.
+Local improvement choice uses signed irrigation time and actual resource/source
+queries; road and railroad priorities retain their distinct goal and terrain
+conditions. Capacity comparison preserves equality and signed fertile counts.
+The rotated scan chooses the first admitted neighbor using actual first-unit and
+Settle-stack queries, without adding a raw-region restriction.
+
+Role-21 work retains unsigned home identities, raw-region fallback and travel
+before local work. It keeps road-before-retreat ordering and the separate signed
+threshold comparison, without adding ordinary government, result-permission or
+irrigation-source checks. Threshold work and cleanup retain the task; radius
+choices keep their distinct task identities and do not add ownership, occupant
+or Ocean exclusions. Work selection preserves progress, home and spent movement;
+actual A04/U04/W04 executes a selected cleanup order in the integration suite.
+
+`SettlerPopulationReturn` implements the crowded-region return/absorption tail.
+The retained supported home need not equal the captured nearest owned city.
+Absorption increments signed city size before actual U01 cargo-aware destruction
+and nested lifecycle checks, then requests cosmetic city/map refresh. It does not
+recalculate city output or apply human join-city admission. Cosmetic failures are
+diagnostic; required failures retain the size/deletion prefix and cannot resume
+as a fresh operation. Returning elsewhere retains movement while assigning the
+specified Goto task.
+
+Nineteen groups cover phase admission, retained flags, goal prefixes, priorities,
+custom signed work values, resources, stack exclusions, rotated movement, old
+home identities above 127, permissive radius choices, actual work execution,
+signed population/counts, destination selection, cosmetic failures and disposal.
+Missing custom work definitions stop at their reached read after earlier goal
+changes; an earlier travel decision does not read unused definitions. The first
+compile corrected the unit's semantic home member name; the initial executable
+probe passed all new behavior cases.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1362 of 1364**, with the two existing
+platform/audio skips. The shared probe passed **1329 groups** across 151 coverage
+families; source identity verified **718 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-terrain-workers-native.json` | `a081fe5699ba50c04607cd449ced0b3a2aef10686355977192eb456db0a3ce83` |
+| `m4-terrain-workers-identity.json` | `ca1c661e5f8216644a04fbe187518666ba33121041a15e9acc9fc15e041c496a` |
+
+W06 barbarian spawning/orders/ransom, full A04/A01/turn orchestration, generated
+desktop composition and complete human/AI-game acceptance remain open. Browser
+and cross-platform execution remain deferred.

@@ -4720,7 +4720,7 @@
       "status": "partial",
       "contract": "A03 \u00a7\u00a71,4\u20135,8; C01 founding; A01 goals; A04/A07 retained context",
       "publicSurface": "SettlementTactics.Site/SiteOperation.Resume/ClassifyFortress; UnitTacticsContext.SettlerKind/SettlerType/CitySelector/FortressNeed",
-      "review": "Actual C01 founding preserves direct return-one even at capacity. Cases cover first-city prefixes, nearest versus owned-nearest regions, actual/effective roles, signed role gates, strict radius ties, real huts, region/ocean exclusions, timer wrapping, regional counts, outer Goto and independent advanced-human founding. Actual goals and A04 direction application preserve task/order boundaries. Fortress classification uses ordinary live-home distance, negative priorities, adjacent exclusions, four-line markers, noncanonical coordinates and wrapping. The actual A07 consumer retains the A03-produced selector after a new nearest city appears. Worker orders, population return, full tactical/turn and generated desktop acceptance remain open; browser/cross-platform execution deferred.",
+      "review": "Actual C01 founding preserves direct return-one even at capacity. Cases cover first-city prefixes, nearest versus owned-nearest regions, actual/effective roles, signed role gates, strict radius ties, real huts, region/ocean exclusions, timer wrapping, regional counts, outer Goto and independent advanced-human founding. Actual goals and A04 direction application preserve task/order boundaries. Fortress classification uses ordinary live-home distance, negative priorities, adjacent exclusions, four-line markers, noncanonical coordinates and wrapping. The actual A07 consumer retains the A03-produced selector after a new nearest city appears. Worker orders and population return have separate owning coverage; full tactical/turn and generated desktop acceptance remain open; browser/cross-platform execution deferred.",
       "sources": [
         "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
         "src/OpenCiv2.Core/Ai/SettlementTactics.Fortress.cs",
@@ -4742,6 +4742,45 @@
         "A03.site-paratrooper-selector-join",
         "A03.site-ties-radius-orders",
         "A03.site-timer-regional-count"
+      ]
+    },
+    {
+      "id": "ai-terrain-workers-population",
+      "status": "partial",
+      "contract": "A03 \u00a7\u00a76\u20138; A01 goals; U01 destruction; A04 finish; U04/W04 work execution",
+      "publicSurface": "TerrainWorkerTactics.Choose; SettlerPopulationReturn.Begin/Operation.Resume; UnitTacticsContext.GotoCity",
+      "review": "Actual goals, stacks, terrain recommendations and U01 cargo-aware destruction preserve phase ordering and prefixes. Cases cover admission and retained GotoCity, company/neighbor-owner scans, pollution/human destinations, fortress priority and safety, signed irrigation times, resources, goal/road/rail authorization, capacity equality, rotated first candidates and Settle stack exclusions. Role-21 cases use unsigned retained home identities, raw-region fallback, road-before-retreat, signed threshold-only choices, task preservation, ocean/occupied radius destinations and Railroad without a Road gate. Actual selected cleanup executes through A04/U04/W04. Population cases cover signed fertile/size values, home versus nearest owned city, real deletion, return Goto, cosmetic failure and late required-read failure. Missing terrain definitions preserve earlier goals without fallback work. Full tactical/turn/generated desktop acceptance remains open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/SettlerPopulationReturn.cs",
+        "src/OpenCiv2.Core/Ai/TerrainWorkerTactics.Colonist.cs",
+        "src/OpenCiv2.Core/Ai/TerrainWorkerTactics.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SettlerPopulationCases.cs",
+        "tests/OpenCiv2.FoundationCases/TerrainWorkerTacticCases.cs"
+      ],
+      "sharedGroups": [
+        "A03.colonist-home-road-retreat",
+        "A03.colonist-radius-admission",
+        "A03.colonist-railroad-far-home",
+        "A03.colonist-threshold-task-retention",
+        "A03.population-actual-absorption",
+        "A03.population-cosmetic-failures",
+        "A03.population-failure-disposal",
+        "A03.population-gates-signed-counts",
+        "A03.population-return-destination",
+        "A03.worker-actual-order-execution",
+        "A03.worker-admission-goto-city",
+        "A03.worker-fortress-priority-safety",
+        "A03.worker-goto-capacity-fallback",
+        "A03.worker-human-goto-nearby",
+        "A03.worker-missing-rules-goal-prefix",
+        "A03.worker-pollution-goals-company",
+        "A03.worker-road-rail-priority",
+        "A03.worker-rotated-movement-stacks",
+        "A03.worker-signed-time-recommendations"
       ]
     }
   ]

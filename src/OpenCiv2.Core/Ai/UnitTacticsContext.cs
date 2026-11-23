@@ -31,7 +31,7 @@ public sealed class UnitTacticsContext
     public bool EnemyZone { get; set; }
     public int? AdjacentForeignCivilization { get; set; }
     public bool Fortress { get; set; }
-    public bool ForceAttack, Hold, Guard, HasOrders, NoMoves, StayHome, SettlerKind, SettlerType, RetryTransport;
+    public bool ForceAttack, Hold, Guard, HasOrders, NoMoves, StayHome, SettlerKind, SettlerType, RetryTransport, GotoCity;
     public int FortressNeed;
 
     public UnitTacticsContext(GameState world, RuleTables rules, UnitSlot unit)

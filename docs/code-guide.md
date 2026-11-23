@@ -190,8 +190,8 @@ X01 repairs for invalid exhausted rule/treaty reads and rejects unbacked retaine
 city sizes. `TerrainImprovementChoice` supplies A03 §2; `SpatialControl` supplies
 U02 adjacent nonallied and same-medium queries, shared with land movement.
 `AiProductionAirlift` preserves orders, performs actual relocation/deletion and
-uses semantic secondary draws for reachable human fighters. These do not implement
-A03 worker tasks, player airlift or generated-game turns.
+uses semantic secondary draws for reachable human fighters. Worker priorities
+are owned by `TerrainWorkerTactics`; generated-game orchestration remains open.
 
 `CivilizationAssessment` owns A01 staging, ordered census, regional policy,
 reverse goal assignment and goal aging. Its required children are the actual
@@ -202,7 +202,8 @@ services. `AssessmentQueries` owns the small role/quota/coastal queries;
 rates/strategic scoring and government selection; F04 still supplies preceding
 score accumulation and its complete maintenance caller. The desktop turn publishes
 power before advancing and assesses its human civilization after city processing.
-The A01 outer unit passes, U04 executor and remaining tactical policies stay open.
+The A01 outer unit passes and full tactical composition stay open; U04 execution
+is owned by `UnitOrderExecution`.
 
 `TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
 It uses actual stacks, movement exhaustion, map mutations, remembered features
@@ -211,7 +212,8 @@ progress and first-donor transfer; it does not rebuild regions or fertility.
 `UnitFortification` owns U04 fortification and U01's signed home-slot gate.
 The desktop publishes scoped work options and resumes queued jobs while selecting
 a manual unit. Its current authored Pioneer domain is before the first city;
-A03 workers, general U04 execution, pillaging and generated-game callers remain open.
+A03 workers and U04 execution now have owning services; full tactical and
+generated-game callers remain open.
 
 `CityTerrainGoals` owns the A03 §3 pollution scan, retained job priority and road
 link planning. It uses A01 goal insertion and the U03 uniform path workspace.
@@ -996,5 +998,9 @@ classification. It retains effective/actual settler flags, nearest-city region,
 strict radius ties, signed timer arithmetic and the independent advanced-human
 founding tail. Actual C01 founding supplies the child result while A03 retains
 its direct return-one contract. The four-line fortress scan includes both
-coordinate parities and publishes actual A01 standing goals. Worker orders,
-population return and full tactical/turn composition remain open.
+coordinate parities and publishes actual A01 standing goals.
+`TerrainWorkerTactics` supplies the following settler and role-21 work choices,
+including retained GotoCity, separate recommendation/threshold policies, rotated
+movement and actual standing/current goals. `SettlerPopulationReturn` composes
+crowded-region return or city growth with actual cargo-aware destruction and
+nested lifecycle checks. Full tactical/turn composition remains open.

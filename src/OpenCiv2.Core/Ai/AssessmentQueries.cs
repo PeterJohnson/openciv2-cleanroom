@@ -23,6 +23,10 @@ public static class AiTaskIds
     public const byte FortressGuard = 0x46;
     public const byte AirReturn = 0x48, Strike = 0x41, StageAirStrike = 0x61, AirHold = 0x68, CityRaid = 0x42;
     public const byte Hut = 85, FoundSite = 50;
+    public const byte LocalCleanup = 112, FortressWork = 88, LocalIrrigation = 73, LocalMine = 77;
+    public const byte RoadWork = 114, RailroadWork = 82, MoveToWork = 115;
+    public const byte MineDestination = 109, IrrigationDestination = 105, RoadDestination = 114;
+    public const byte ReturnHome = 99, ReturnForPopulation = 66;
 }
 
 /// <summary>A01 §2 role, defense quota and sparse city/land-region contact queries.</summary>
