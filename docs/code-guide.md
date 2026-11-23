@@ -633,4 +633,11 @@ basing/fuel and Coast-bound loss, preserving basic versus cargo-aware deletion.
 resumable nested checks, without adding the destroy/redraw wrapper.
 `Session/LandfallOperation` and `SpecialMovementOperation` route decisions;
 the owning directional dispatcher still consumes restart/stop and shared state.
-Player airlift/paradrop and full desktop movement binding remain open.
+Paradrop and full desktop movement binding remain open.
+
+`Units/PlayerAirlift` owns U05 local player destination selection, retained threat
+count and direct transfer/interception, composing actual single-unit placement
+and resumable basic deletion. `Session/PlayerAirliftOperation` routes destination,
+fighter warning and nested victim choices. Player and AI production airlifts
+retain their distinct treaty directions, order handling and sampling laws. P05
+desktop command binding and general generated-game movement remain pending.

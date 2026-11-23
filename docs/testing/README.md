@@ -519,3 +519,10 @@ signed fuel rollover, Coast-bound odds and topology, and nested last-Settler
 incidents for both aircraft and cargo-aware sinking. Session decisions and
 failure/disposal prefixes are checked separately from the unfinished directional
 and desktop UI integration. No complete-game acceptance follows from these groups.
+
+Player airlift cases cover ordered domain/airport admission, used destinations,
+captured actor/origin/owner across selection, directed fighter reach and veteran
+risk, actual single-unit placement, bounded interception rolls and nested
+last-Settler incidents. Direct transfer, live observer notices, cancel/timeout,
+disposal and failures retain the specified prefixes. Desktop airlift controls
+and generated complete-game acceptance remain pending.
