@@ -839,3 +839,14 @@ inputs when consumed. The absent destination treaty path stops after its early
 count unless supplied backing is available. Required notices/publications retain
 failure prefixes; cosmetic failures do not strand the lifted group. The outer
 dispatcher and network authority paths remain separate.
+
+`Units/MovementDispatcher` owns the local U02 movement guard and per-iteration
+captures. It composes land checks, signed spare-holds admission, foreign-unit
+combat, landfall restarts, foreign-city admission, charge, relocation and common
+finish. Restarts retain the selected reply/options and reset only iteration state;
+completion, failures and disposal release the guard without undoing prior effects.
+`Session/MovementOperation` routes actual nested choices using shared interaction
+helpers. Missing optional entry selectors fail at their consuming land branch;
+unpublished viewer input is consumed only at the common-finish seen read.
+Desktop player-command composition and the entry-selector specification gap remain
+open; this service does not silently broaden the existing `LandMovement` command.

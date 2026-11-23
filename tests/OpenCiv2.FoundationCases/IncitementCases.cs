@@ -22,9 +22,9 @@ public static partial class FoundationSuite
         public int Reads, Denials, Sounds;
         public List<int> PaidBalances { get; } = [];
         public bool FailStatus;
-        public IncitementFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public IncitementFixture(List<Choice>? choices = null, RevelationFixture? data = null, CityCaptureFixture? capture = null)
         {
-            Capture = new(choices, data); World.Civilizations[1].Gold = 1000;
+            Capture = capture ?? new(choices, data); World.Civilizations[1].Gold = 1000;
             Text.Files["scenario/REVOLT.TXT"] = "@DISSIDENTOPTIONS\nCancel authored\nOrdinary authored\nIncident authored\nDouble authored\nUnused fifth line\n";
             Mission = new(World, Capture.Life.Elimination, Capture.Theft.Damage.Incidents.Incidents, Capture.Capture, () =>
             { ++Reads; using var reader = Text.Reader(); return ClassicRevoltOptions.Read(reader, "revolt"); }, this);

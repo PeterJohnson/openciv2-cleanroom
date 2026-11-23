@@ -56,6 +56,7 @@ public sealed class GameState
     public CivilizationArray<int> UnitTotals;
     public bool TurnLoopActive;
     public bool PlayerPhaseActive;
+    public bool UnitMovementActive;
     public EndReason PendingEndReason;
     public int SpaceshipWinner;
     public MovementMode MovementMode;

@@ -75,6 +75,18 @@ public sealed class StackOperations
     /// <summary>U01 signed-range aggregate used by U02's foreign-aircraft admission.</summary>
     public int CountLongRangeAircraft(int slot, RuleTables rules) => CountMatching(slot, rules,
         rule => rule.Domain == RuleDomain.Air && unchecked((sbyte)rule.Range) > 1);
+    /// <summary>U01 spare-holds aggregate: signed capacities minus every Land member, with sum cutoff.</summary>
+    public int SpareTransportCapacity(int slot, RuleTables rules)
+    {
+        int sum = 0;
+        for (int current = First(slot); current >= 0 && sum < EntityLimits.Units; current = Next(current))
+        {
+            local.Step();
+            var rule = rules.Units[local.BackedUnit(current).Type.Value];
+            sum = unchecked(sum + (rule.Domain == RuleDomain.Sea ? unchecked((sbyte)rule.Capacity) : rule.Domain == RuleDomain.Land ? -1 : 0));
+        }
+        return sum;
+    }
     public int CountAircraftCarriers(int slot, RuleTables rules) => CountMatching(slot, rules, rule => rule.Abilities.CarryAircraft);
     private int CountMatching(int slot, RuleTables rules, Func<UnitRule, bool> predicate)
     {

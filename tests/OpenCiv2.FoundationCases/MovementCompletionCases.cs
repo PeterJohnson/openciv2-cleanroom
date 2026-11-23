@@ -28,10 +28,10 @@ public static partial class FoundationSuite
         public List<int> Pauses { get; } = [];
         public List<MapPoint> OldPositions { get; } = [];
         public bool FailDisplay, FailLoss;
-        public CompletionFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public CompletionFixture(List<Choice>? choices = null, RevelationFixture? data = null, CityCaptureFixture? capture = null)
         {
-            Capture = new(choices, data); World.Globals.Rules.NoRestart = true;
-            Data.Unit(0).Type = new(4); Data.Stacks.Relocate(0, new(18, 12), false);
+            Capture = capture ?? new(choices, data); World.Globals.Rules.NoRestart = true;
+            if (capture is null) { Data.Unit(0).Type = new(4); Data.Stacks.Relocate(0, new(18, 12), false); }
             Movement = new(new(0), World.Entities.Units.End, new(10, 8)) { LocalHuman = true, Options = new(true, true) };
             Step = new(1, RuleDomain.Land, Movement.Origin, Data.Unit(0).Position, Terrain.Grassland, 1);
             var incidents = Capture.Theft.Damage.Incidents.Incidents;

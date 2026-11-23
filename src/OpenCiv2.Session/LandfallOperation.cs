@@ -28,9 +28,7 @@ public sealed class LandfallOperation(TransportMovement.LandfallOperation operat
             if (pending is not null)
             {
                 context.Publish();
-                return new(CommandStatus.AwaitingInteraction, Interaction: new($"Disembark from {pending.ShipName}?", recipient(pending.Actor),
-                    new CommandValue.Unit(pending.Ship), new([0, 1]))
-                { Options = new([new(0, "Stay aboard"), new(1, "Disembark")]) });
+                return new(CommandStatus.AwaitingInteraction, Interaction: LandfallInteraction.Prompt(pending, recipient(pending.Actor)));
             }
             var result = new OwnedList<NamedValue>([new("restart", new CommandValue.Boolean(operation.Restart))]);
             context.Effect("movement.landfall.completed", result);
@@ -39,4 +37,11 @@ public sealed class LandfallOperation(TransportMovement.LandfallOperation operat
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class LandfallInteraction
+{
+    internal static InteractionSpec Prompt(LandfallChoice pending, ParticipantId recipient) =>
+        new($"Disembark from {pending.ShipName}?", recipient, new CommandValue.Unit(pending.Ship), new([0, 1]))
+        { Options = new([new(0, "Stay aboard"), new(1, "Disembark")]) };
 }

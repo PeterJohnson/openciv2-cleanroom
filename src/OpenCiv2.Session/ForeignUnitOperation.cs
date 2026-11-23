@@ -23,27 +23,12 @@ public sealed class ForeignUnitOperation(ForeignUnitMovement.Operation operation
         { return completed; }
         try
         {
-            ResearchReply? reply = pending is ForeignUnitDecision.Combat combat ? CombatInteraction.Reply(combat.Decision, input) : input.Kind switch
-            {
-                OperationInputKind.Choice when input.Choice is { } answer => new(answer),
-                OperationInputKind.Cancel or OperationInputKind.Timeout => new(pending is ForeignUnitDecision.Expel ? 2 : 1),
-                _ => null
-            };
+            var reply = ForeignUnitInteraction.Reply(pending, input);
             pending = operation.Resume(pending is null ? null : reply);
             if (pending is not null)
             {
                 context.Publish();
-                var prompt = pending switch
-                {
-                    ForeignUnitDecision.Expel expel => new InteractionSpec($"Expel the {expel.Offer.VictimAdjective} {expel.Offer.TargetName}?",
-                        recipient(expel.Offer.Actor), null, new([0, 1, 2]))
-                    { Options = new([new(0, "Expel"), new(1, "Attack"), new(2, "Cancel")]) },
-                    ForeignUnitDecision.Fatigue fatigue => new InteractionSpec($"Attack with {fatigue.Choice.MovementLeft} of {fatigue.Choice.RoadMultiplier} movement remaining?",
-                        recipient(fatigue.Choice.Actor), null, new([0, 1]))
-                    { Options = new([new(0, "Attack"), new(1, "Cancel")]) },
-                    ForeignUnitDecision.Combat child => CombatInteraction.Prompt(context, child.Decision, recipient, intelligence, city, ref intelligenceWindow, ref cityWindow),
-                    _ => throw new InvalidOperationException("Unknown foreign-unit decision")
-                };
+                var prompt = ForeignUnitInteraction.Prompt(context, pending, recipient, intelligence, city, ref intelligenceWindow, ref cityWindow);
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
@@ -57,4 +42,27 @@ public sealed class ForeignUnitOperation(ForeignUnitMovement.Operation operation
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class ForeignUnitInteraction
+{
+    internal static ResearchReply? Reply(ForeignUnitDecision? pending, OperationInput input) => pending is ForeignUnitDecision.Combat combat ? CombatInteraction.Reply(combat.Decision, input) : input.Kind switch
+    {
+        OperationInputKind.Choice when input.Choice is { } answer => new(answer),
+        OperationInputKind.Cancel or OperationInputKind.Timeout => new(pending is ForeignUnitDecision.Expel ? 2 : 1),
+        _ => null
+    };
+    internal static InteractionSpec Prompt(OperationContext context, ForeignUnitDecision pending, Func<int, ParticipantId> recipient,
+        Func<EmissaryIntelligence, InteractionSpec> intelligence, Func<CaptureCityVisit, InteractionSpec> city,
+        ref InteractionSpec? intelligenceWindow, ref InteractionSpec? cityWindow) => pending switch
+        {
+            ForeignUnitDecision.Expel expel => new InteractionSpec($"Expel the {expel.Offer.VictimAdjective} {expel.Offer.TargetName}?",
+                recipient(expel.Offer.Actor), null, new([0, 1, 2]))
+            { Options = new([new(0, "Expel"), new(1, "Attack"), new(2, "Cancel")]) },
+            ForeignUnitDecision.Fatigue fatigue => new InteractionSpec($"Attack with {fatigue.Choice.MovementLeft} of {fatigue.Choice.RoadMultiplier} movement remaining?",
+                recipient(fatigue.Choice.Actor), null, new([0, 1]))
+            { Options = new([new(0, "Attack"), new(1, "Cancel")]) },
+            ForeignUnitDecision.Combat child => CombatInteraction.Prompt(context, child.Decision, recipient, intelligence, city, ref intelligenceWindow, ref cityWindow),
+            _ => throw new InvalidOperationException("Unknown foreign-unit decision")
+        };
 }

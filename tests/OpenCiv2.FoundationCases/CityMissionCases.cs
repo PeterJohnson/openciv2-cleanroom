@@ -23,9 +23,9 @@ public static partial class FoundationSuite
         public List<CityEspionageVisitNotice> Visits { get; } = [];
         public int Reads, Stops, Animations;
         public bool FailRead;
-        public CityMissionFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public CityMissionFixture(List<Choice>? choices = null, RevelationFixture? data = null, CityCaptureFixture? capture = null)
         {
-            Revolt = new(choices, data);
+            Revolt = new(choices, data, capture);
             var life = Capture.Life; var incidents = Capture.Theft.Damage.Incidents.Incidents;
             var nuclear = new NuclearEffects(World, life.Random, Data.Stacks, life.Loss, life.Elimination, incidents, this);
             var device = new PlantedNuclearDevice(World, life.Random, life.Elimination, incidents, nuclear, _ => { });

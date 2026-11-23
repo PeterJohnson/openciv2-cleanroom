@@ -39,7 +39,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
     private UnitRule Rule(UnitSlot slot) => rules.Units[Unit(slot).Type.Value];
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
     public Operation Begin(UnitSlot original, MovementContinuation movement, MovementStep step, bool sourceOcean,
-        LandEntrySelection selection, int incomingCityArgument, string call) => new(this, original, movement, step, sourceOcean, selection, incomingCityArgument, call);
+        LandEntrySelection? selection, int incomingCityArgument, string call) => new(this, original, movement, step, sourceOcean, selection, incomingCityArgument, call);
 
     public sealed class Operation : IDisposable
     {
@@ -53,7 +53,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
         public LandEntryDecision? Pending { get; private set; }
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         internal Operation(LandEntry parent, UnitSlot original, MovementContinuation movement, MovementStep step,
-            bool sourceOcean, LandEntrySelection selection, int argument, string call)
+            bool sourceOcean, LandEntrySelection? selection, int argument, string call)
         {
             ArgumentException.ThrowIfNullOrEmpty(call);
             this.parent = parent;
@@ -102,7 +102,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
         operation.Present(() => effects.Redraw(step.To));
     }
     private IEnumerable<LandEntryDecision?> Execute(Operation operation, UnitSlot original, MovementContinuation movement,
-        MovementStep step, bool sourceOcean, LandEntrySelection selection, int argument, string call)
+        MovementStep step, bool sourceOcean, LandEntrySelection? selection, int argument, string call)
     {
         int owner = step.Owner;
         int? destinationOwner = step.DestinationOwner;
@@ -122,7 +122,8 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
         }
         if (Rule(movement.Unit).Role == RuleRole.Trade && step.City is { } tradeCity)
         {
-            if (selection.CaravanEntry && destinationOwner is { } traderHost && traderHost != owner && Human(traderHost))
+            if (destinationOwner is { } traderHost && traderHost != owner && Human(traderHost)
+                && (selection ?? throw new InvalidOperationException("U02 caravan entry requires a resolved entry selector")).CaravanEntry)
             { Enter(operation, movement.Unit, step, 10); }
             using var trade = services.Caravans.BeginEntry(movement.Unit, tradeCity, call + "/caravan");
             while (!trade.Completed)
@@ -141,7 +142,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
         {
             if (step.City is { } city)
             {
-                if (selection.CityMissionEntry && Human(victim))
+                if (Human(victim) && (selection ?? throw new InvalidOperationException("U02 city mission entry requires a resolved entry selector")).CityMissionEntry)
                 { Enter(operation, movement.Unit, step, 20); }
                 using var mission = services.Cities.Begin(movement.Unit.Value, city, argument, call + "/city");
                 while (!mission.Completed)

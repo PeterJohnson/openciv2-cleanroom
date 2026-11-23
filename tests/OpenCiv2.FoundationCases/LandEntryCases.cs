@@ -27,9 +27,9 @@ public static partial class FoundationSuite
         public List<MapPoint> Lifted { get; } = [];
         public int Tutorials, Donations;
         public bool FailAnimation, FailSound, FailNotice;
-        public LandFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public LandFixture(List<Choice>? choices = null, RevelationFixture? data = null, CityMissionFixture? city = null)
         {
-            City = new(choices, data);
+            City = city ?? new(choices, data);
             var life = City.Capture.Life; var incidents = City.Capture.Theft.Damage.Incidents.Incidents;
             var units = new UnitEspionage(World, Data.Rules, Data.Stacks, life.Elimination, incidents, this);
             var caravans = new CaravanTrade(World, Data.Rules, life.Random, new(World, Data.Process.Rules, Data.Stacks), life.Elimination, incidents, this, "Food");

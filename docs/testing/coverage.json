@@ -4047,6 +4047,36 @@
         "U02.move-viewer-selection",
         "U02.move-viewer-temporary-inputs"
       ]
+    },
+    {
+      "id": "movement-dispatcher",
+      "status": "partial",
+      "contract": "U02 Dispatcher state and phase order through local cleanup; U01 spare-holds aggregate; actual U05/U06/C07/V06/W06 children",
+      "publicSurface": "MovementDispatcher.Begin and MovementOperation; StackOperations.SpareTransportCapacity",
+      "review": "Local resumable dispatcher owns the world movement guard, per-iteration captures and origin owner publication, actual ordered land/foreign/transport/charge/relocation/finish children, private nested replies and single cleanup. Landfall restarts retain direction/options/choice while resetting iteration captures. Actual cargo admission uses signed spare-holds contributions with the aggregate cutoff. Tests join ordinary and preview moves, source-owner publication, wrap, negative finish, AI cleanup, guard/disposal/failure prefixes, boarding, disembarkation, missions, capture and full combat. Session tests cover private capture-to-long-move, landfall and fatigue decisions. Missing optional entry selectors are rejected at the actual consuming branch; unpublished seen remains nullable until common finish consumes it. Production desktop command/service composition, resolution of the entry-selector gap, broader AI/orders callers and full-game acceptance remain open. Browser/cross-platform deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Core/Units/LandEntry.cs",
+        "src/OpenCiv2.Core/Units/MovementCompletion.cs",
+        "src/OpenCiv2.Core/Units/MovementDispatcher.cs",
+        "src/OpenCiv2.Core/Units/StackOperations.cs",
+        "src/OpenCiv2.Session/ForeignUnitOperation.cs",
+        "src/OpenCiv2.Session/LandfallOperation.cs",
+        "src/OpenCiv2.Session/MovementOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MovementDispatcherCases.cs"
+      ],
+      "sharedGroups": [
+        "U01.spare-holds-aggregate",
+        "U02.dispatch-combat-foreign-city",
+        "U02.dispatch-guard-failure",
+        "U02.dispatch-landfall-boarding",
+        "U02.dispatch-missions-capture",
+        "U02.dispatch-negative-cleanup",
+        "U02.dispatch-ordinary-preview",
+        "U02.dispatch-private-session"
+      ]
     }
   ]
 }

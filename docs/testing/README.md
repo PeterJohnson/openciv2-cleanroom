@@ -702,3 +702,11 @@ placement and an actual completion join verify relocation effects. Landing tests
 cover slot-zero suppression, treaty gates, retained failures and the early plus
 ordinary-arrival double count. These remain local service tests; dispatcher and
 desktop integration are pending.
+
+U02 dispatcher groups join actual child services across ordinary/preview moves,
+negative finish, signed capacity/boarding, passenger restarts, city missions,
+conquest and full combat. They cover source-owner publication, movement guard
+lifetime, AI cleanup and committed failure prefixes. Session cases verify private
+capture-to-long-move, passenger and fatigue decisions. Existing fixtures can share
+one already-built dependency graph without recreating its unit records. Desktop
+command wiring and resolution of the optional entry-selector gap remain pending.

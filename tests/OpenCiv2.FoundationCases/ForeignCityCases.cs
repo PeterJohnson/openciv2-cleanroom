@@ -22,9 +22,9 @@ public static partial class FoundationSuite
         public List<AttackNotice> AttackNotices { get; } = [];
         public List<MapPoint> Redraws { get; } = [];
         public bool FailNotice, FailRedraw;
-        public ForeignCityFixture(RevelationFixture? data = null)
+        public ForeignCityFixture(RevelationFixture? data = null, ForeignFixture? foreign = null)
         {
-            F = new(data: data);
+            F = foreign ?? new(data: data);
             var life = F.E.F.Life;
             City = new(World, Data.Rules, new(World, Data.Rules, AttackNotices.Add),
                 new(World, life.Random, Data.Stacks, life.Loss, life.Elimination, F.E.F.Incidents.Incidents, F.E.F),
