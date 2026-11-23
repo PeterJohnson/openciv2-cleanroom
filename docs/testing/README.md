@@ -393,3 +393,11 @@ failure continuation, direct/console closure and reload. Native acceptance plots
 a retained history, compares complete Hall bytes with a direct reference and
 checks that Quit skips reports. Scheduled retirement and victory/defeat handling
 remain open; numeric reports do not yet consume authored fame-title resources.
+
+F04 arrival and V08 pending-outcome cases join real history/score/rating/Hall
+children, live continuation gates, partial output failure and actual last-city
+famine defeat. The authored desktop turn checks scheduled retirement before
+treasury normalization and city upkeep. Its Linux acceptance driver imports
+independent authored dates, compares warning/continued saves and Hall bytes with
+the direct reference, then checks both Keep playing and End game. These are
+implementation integration checks, not original-game compatibility evidence.

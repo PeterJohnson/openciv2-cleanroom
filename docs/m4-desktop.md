@@ -13,10 +13,10 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; last-city famine now joins actual V01 elimination, ordered end reports and game closure. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
-| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. Spaceship reports/arrival outcomes, fame-title resources, scheduled retirement, pending outcome dispatch and remaining history remain pending. |
+| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. F04 ship arrival, V08 scheduled retirement and pending outcome dispatch now join real reports and continuation. Semantic ending pages use actual ship/history data; authored ending/fame-title resources, remaining history and generated-game callers remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
@@ -2114,3 +2114,60 @@ so it is not used as visual evidence; the focused capture below is retained.
 | `m4-retire-native.json` | `59e0ae6f7e7435aa8a037a3bc76d961c6c2b6ce5bde4eb13b2e75b62c66e4c03` |
 | `m4-retire-identity.json` | `4311bafb1287d2b16a310238e0f5e8afe8afb9c55a36a11e64e917a3ab588815` |
 | `m4-retire-history-focused.png` | `a63d8bc73700893a9a34898676ced40eccc6c2c67e40dd98fad33b08dc60c42e` |
+
+## Scheduled retirement and pending turn outcomes
+
+F04's arrival boundary now processes one launched, newly arrived spaceship in
+ascending normal-civilization order, including inactive slots. It retains the
+first winner and pending reason after Won, uses the real V07 arrival predicate
+without a chance draw, and sets Won after any landing notice. V08 retirement
+checks exact classic years 2000/2020 or a scenario's limit minus five/limit;
+Won and pending outcomes suppress it, autoplay does not. The end notice completes
+before Won and pending Retirement are posted.
+
+Pending outcomes present actual spaceship, conquest-history or defeat information,
+then run retained history, score, rating and Hall through the existing children.
+The final continuation reads the current mode, reason and year. Defeat closes
+without asking; other eligible outcomes offer End game/Keep playing and then set
+Scored. Scenario retirement outside 2020 continues without setting Scored. The
+handler clears the pending reason on normal return and preserves Won. Child
+failures remain visible after the required continuation and closure effects.
+The current Hall service remains single-player only; a mode change during its
+report is reported as unsupported while the outcome's final mode gate still runs.
+
+The authored desktop turn now checks opening outcomes before treasury normalization
+and city upkeep. Closing at retirement therefore leaves those phases unprocessed;
+continuing executes them once. Pending movement outcomes run before the next global
+advance. Last-city famine with no surviving units completes movement immediately
+and now reaches the real defeat page, reports, Hall and game closure. No generic
+victory scan or supplied gameplay child was added.
+
+Ending pages show real launch/arrival dates, population, local/rival identity,
+recorded conquests or an actually owned advance. Missing artwork and narrative
+text are diagnosed explicitly under P10's no-video presentation contract. Authored
+ending sections and fame-title resources remain unfinished, as do the generated
+human/AI game and remaining F04 orchestration. Browser and cross-platform work
+remain deferred.
+
+Shared cases cover simultaneous/inactive arrivals, first/local winner gates,
+notice-before-Won ordering, equality misses and repeated warnings, scenario/export
+flags, live continuation reads, report failure and nonboolean trusted replies.
+Direct/console retirement cases compare phase/flags, preserve pre-upkeep state,
+save/reload and continue without repeating retirement. The Linux driver uses a
+fresh Hall service for scheduled retirement, compares complete saves and Hall bytes
+with a direct reference, and exercises both final choices. These comparisons are
+implementation integration evidence, not independent original-game observations.
+
+Root/App formatting and verification, root/desktop automation Release builds and
+43-project boundary checks passed. The native suite passed **850 of 852 tests**
+with the two existing platform/audio skips. The probe passed **817 shared groups**
+and verified **498 compiled inputs**. All **32 Linux desktop checks** passed,
+including the existing optional Lua/replay/resource-failure checks. Coverage maps
+all groups across 98 families; eight identity and three coverage validator tests
+passed. No browser or cross-platform acceptance was run.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-outcome-play.json` | `54a3bc4fc658449a14843eec72b7497a57371791b93a0ac8847ec638d5be3ea6` |
+| `m4-outcome-native.json` | `0c4b0d34447728b48f2ce5ff7696547ad3747b68e0c954278995d0a7a93950c8` |
+| `m4-outcome-identity.json` | `3d18db80a190a1edf78ccd15d25a665bf7064b0df12eb6dc8329a100a240ae34` |

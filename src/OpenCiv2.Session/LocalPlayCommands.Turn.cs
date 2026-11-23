@@ -17,7 +17,7 @@ public static partial class LocalPlayCommands
     public const string Research = "research.choose";
     public const string EndTurn = "turn.end";
 
-    private static void RegisterTurnCommands(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences choices)
+    private static void RegisterTurnCommands(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall)
     {
         runtime.RegisterCommand(Define(Fortify, "Fortify an owned land unit and spend its remaining movement.",
             [new("unit", ValueKind.Unit)], [new("unit", ValueKind.Unit)], FortifyUnit, ValidateUnit));
@@ -27,7 +27,7 @@ public static partial class LocalPlayCommands
             new(1, EndTurn, "Finish the player phase and advance the local turn.",
                 AccessClass.Player, new([]), new([new("turn")])),
             (actor, _, world) => new(ValidatePhase(actor, world)),
-            _ => new EndPlayerPhase(preferences, choices)));
+            _ => new EndPlayerPhase(preferences, choices, hall)));
     }
 
     private static OperationStep FortifyUnit(OperationContext context, CommandRequest request)
@@ -99,8 +99,11 @@ public static partial class LocalPlayCommands
     }
 
     /// <summary>Local F04 mode adapter. The controller supplies the end-phase and research decisions.</summary>
-    private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices) : IContinuation
+    private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall) : IContinuation
     {
+        private bool confirmed, movementChecked, globalAdvanced, openingFinished, financeFinished, activated;
+        private PendingOutcomeOperation? movementOutcome, finalOutcome;
+        private TurnOpeningOperation? opening;
         private bool upkeepCommitted;
         private int nextCity;
         private CitySlot researchCity;
@@ -140,12 +143,15 @@ public static partial class LocalPlayCommands
             pendingResearch = null;
             governmentTurn = null;
             governmentSelection = null;
+            movementOutcome?.Dispose();
+            opening?.Dispose();
+            finalOutcome?.Dispose();
         }
 
         private OperationStep ResumeStep(OperationContext context, OperationInput input)
         {
             var world = context.World;
-            if (input.Kind == OperationInputKind.Begin)
+            if (!confirmed && input.Kind == OperationInputKind.Begin)
             {
                 if (ValidatePhase(context.Actor, world) is { } error)
                 {
@@ -161,10 +167,54 @@ public static partial class LocalPlayCommands
                     Interaction: new("End the current player turn?", null, null, new([0, 1])));
             }
 
-            if (!upkeepCommitted && (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout
+            if (!confirmed && (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout
                 || input.Choice == 0))
             {
                 return new(CommandStatus.Cancelled, Code: "cancelled");
+            }
+
+            if (!confirmed)
+            {
+                confirmed = true;
+                world.PlayerPhaseActive = false;
+            }
+            // F04 checks outcomes from the completed movement phase before advancing another turn.
+            if (!movementChecked)
+            {
+                if (movementOutcome is null && world.PendingEndReason != EndReason.None)
+                { movementOutcome = new(hall); input = new(); }
+                if (movementOutcome is not null)
+                {
+                    var result = movementOutcome.Resume(context, input);
+                    if (!result.Status.Terminal())
+                    { return result; }
+                    RememberFailure(result);
+                    if (movementOutcome.Quit)
+                    { return CloseGame(context); }
+                    movementOutcome.Dispose();
+                    movementOutcome = null;
+                }
+                movementChecked = true;
+            }
+            if (!globalAdvanced)
+            {
+                AdvanceStart(context);
+                globalAdvanced = true;
+                opening = new(hall);
+                input = new();
+            }
+            if (!openingFinished)
+            {
+                var result = opening!.Resume(context, input);
+                if (!result.Status.Terminal())
+                { return result; }
+                RememberFailure(result);
+                if (opening.Quit)
+                { return CloseGame(context); }
+                opening.Dispose();
+                opening = null;
+                openingFinished = true;
+                input = new();
             }
 
             ResearchReply? reply = null;
@@ -180,7 +230,7 @@ public static partial class LocalPlayCommands
             }
             if (!upkeepCommitted)
             {
-                startGold = AdvanceStart(context);
+                startGold = CivilizationFinances.NormalizeTreasury(world, context.Actor.Civilization.Value);
                 upkeepCommitted = true;
                 activeWorld = world;
                 world.Production.CivilizationTurnInProgress = true;
@@ -282,26 +332,57 @@ public static partial class LocalPlayCommands
                 finance = new(preferences, choices, startGold);
                 input = new();
             }
-            var financialResult = finance!.Resume(context, input);
-            if (financialResult.Status == CommandStatus.AwaitingInteraction)
+            if (!financeFinished)
             {
-                return financialResult;
+                var financialResult = finance!.Resume(context, input);
+                if (financialResult.Status == CommandStatus.AwaitingInteraction)
+                { return financialResult; }
+                RememberFailure(financialResult);
+                financeFinished = true;
             }
-
-            if (financialResult.Status == CommandStatus.Failed && deferredFailure.Length == 0)
+            if (!activated)
             {
-                deferredFailure = financialResult.Code;
+                world.Production.CivilizationTurnInProgress = false;
+                activeWorld = null;
+                world.Globals.ActiveUnit = null;
+                SelectReadyUnit(context);
+                activated = true;
+                // With no surviving owned units, this profile's movement phase completes immediately.
+                // Otherwise its outcome gate is the next accepted End Turn, above.
+                if (world.PendingEndReason != EndReason.None && !world.Entities.Units.Scanned.ToArray()
+                    .Any(unit => unit.Token.Occupied && unit.Owner == context.Actor.Civilization))
+                { finalOutcome = new(hall); input = new(); }
             }
-
-            world.Production.CivilizationTurnInProgress = false;
-            activeWorld = null;
-            world.Globals.ActiveUnit = null;
-            SelectReadyUnit(context);
+            if (finalOutcome is not null)
+            {
+                var result = finalOutcome.Resume(context, input);
+                if (!result.Status.Terminal())
+                { return result; }
+                RememberFailure(result);
+                if (finalOutcome.Quit)
+                { return CloseGame(context); }
+                finalOutcome.Dispose();
+                finalOutcome = null;
+            }
             context.Effect("turn.advanced", TurnValue(world));
             world.PlayerPhaseActive = true;
             context.Publish();
             return new(deferredFailure.Length == 0 ? CommandStatus.Completed : CommandStatus.Failed,
                 TurnValue(world), deferredFailure);
+        }
+
+        private void RememberFailure(OperationStep step)
+        {
+            if (step.Status == CommandStatus.Failed && deferredFailure.Length == 0)
+            { deferredFailure = step.Code; }
+        }
+        private OperationStep CloseGame(OperationContext context)
+        {
+            context.World.Production.CivilizationTurnInProgress = false;
+            activeWorld = null;
+            context.World.PlayerPhaseActive = context.World.TurnLoopActive = false;
+            context.Effect("game.closed", OwnedList<NamedValue>.Empty);
+            return new(deferredFailure.Length == 0 ? CommandStatus.Completed : CommandStatus.Failed, TurnValue(context.World), deferredFailure);
         }
 
         private sealed class AuthoredDiplomacyTurn : IDiplomacyTurnEffects
@@ -322,7 +403,7 @@ public static partial class LocalPlayCommands
         private static OwnedList<NamedValue> TurnValue(GameState world) =>
             new([new("turn", new CommandValue.Integer(world.Globals.Turn))]);
 
-        private static int AdvanceStart(OperationContext context)
+        private static void AdvanceStart(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -352,7 +433,6 @@ public static partial class LocalPlayCommands
             ResetUnits(world);
             DiplomaticAttitudes.MaintainReputation(world, rules);
             globals.TurnCiv = (sbyte)owner;
-            return CivilizationFinances.NormalizeTreasury(world, owner);
 
         }
 

@@ -57,6 +57,7 @@ public sealed class GameState
     public bool TurnLoopActive;
     public bool PlayerPhaseActive;
     public EndReason PendingEndReason;
+    public int SpaceshipWinner;
     public MovementMode MovementMode;
     public GlobalValues Globals = new();
     public WorldSetup WorldSetup;

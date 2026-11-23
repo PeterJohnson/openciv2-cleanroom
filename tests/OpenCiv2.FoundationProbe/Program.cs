@@ -1,6 +1,17 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
+if (args is ["--local-scheduled-reference", string warningInitial, string warned, string endInitial, string scheduledContinued, string scheduledHall])
+{
+    var reference = FoundationSuite.LocalScheduledReference();
+    foreach (var (path, bytes) in new[] { (warningInitial, reference.Warning), (warned, reference.Warned),
+        (endInitial, reference.End), (scheduledContinued, reference.Continued), (scheduledHall, reference.Hall) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew); output.Write(bytes);
+    }
+    return 0;
+}
+
 if (args is ["--local-retirement-reference", string retirementInitial, string retirementHall])
 {
     var reference = FoundationSuite.LocalRetirementReference();

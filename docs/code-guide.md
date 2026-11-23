@@ -470,3 +470,10 @@ game even after a retained Hall output failure, and leaves outcome flags alone.
 `LocalPlayObservation.GameActive` controls the stopped desktop view; loading a
 valid saved game starts a fresh active session. Scheduled retirement and the
 pending-outcome caller remain separate work.
+
+`Core/SpaceshipArrival` owns F04's one-ship arrival publication.
+`Session/OutcomeOperations` joins arrival notices, V08 scheduled retirement,
+semantic ending pages and pending outcomes to the actual `EndGameReports`.
+The local turn calls this boundary before upkeep and processes a pending defeat
+after completed movement; the outcome child returns Quit and the caller closes
+play. Generated-game orchestration and authored ending resources remain open.

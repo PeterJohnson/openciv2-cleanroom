@@ -3127,7 +3127,7 @@
       "status": "partial",
       "contract": "P07 section14 retained power history; V08 sections3 and7 ordered reports and explicit single-player Quit/Retire",
       "publicSurface": "PowerHistory.Prepare; PowerHistoryReport; PowerHistoryOperation; CivilizationRatingOperation; EndGameReports; RetireGameOperation; civilization.history; game.retire; game.quit",
-      "review": "History preserves sample bounds, calendar dates, extinct/start membership and maximum from all normal civilizations. Reports prepare once and use owned chart data; the desktop includes a plot and exact values. Retirement confirms, runs history, reads live Scored, then score/rating/Hall with local-human reads between children; rating preparation stays separate from score in this path. Confirmed completion disables game/map interaction without awarding Won, setting Scored or clearing a pending outcome; Hall write failure is deferred until after closing the game. Quit skips reports. Direct/console and native desktop coverage includes cancellation and reload. Scheduled retirement, pending outcome dispatch, ending media and authored fame-title resources remain open. Current desktop has no CD playback. Pending history checkpoints are explicitly rejected rather than losing chart content; live task restoration remains M5.",
+      "review": "History preserves sample bounds, calendar dates, extinct/start membership and maximum from all normal civilizations. Reports prepare once and use owned chart data; the desktop includes a plot and exact values. Retirement confirms, runs history, reads live Scored, then score/rating/Hall with local-human reads between children; rating preparation stays separate from score in this path. Confirmed completion disables game/map interaction without awarding Won, setting Scored or clearing a pending outcome; Hall write failure is deferred until after closing the game. Quit skips reports. Direct/console and native desktop coverage includes cancellation and reload. Scheduled retirement and pending outcomes are covered by desktop-turn-outcomes; authored ending and fame-title resources remain open. Current desktop has no CD playback. Pending history checkpoints are explicitly rejected rather than losing chart content; live task restoration remains M5.",
       "sources": [
         "src/OpenCiv2.App/PowerHistoryView.cs",
         "src/OpenCiv2.Contracts/PowerHistoryReport.cs",
@@ -3145,6 +3145,31 @@
         "P07.power-history-report",
         "V08.end-game-report-order",
         "V08.explicit-retirement"
+      ]
+    },
+    {
+      "id": "desktop-turn-outcomes",
+      "status": "partial",
+      "contract": "F04 arrival and turn outcome boundaries; V08 sections5\u20136 retirement equality and pending outcomes; P10 meaningful ending information",
+      "publicSurface": "SpaceshipArrival; SpaceshipArrivalOperation; ScheduledRetirementOperation; PendingOutcomeOperation; TurnOpeningOperation; OutcomePresentationOperation; LocalPlayCommands turn integration",
+      "review": "Processes one launched arriving ship in ascending normal slots without an alive filter or chance draw; preserves the first winner and posts Won after the optional landing notice. Retirement uses exact classic year or scenario-limit equality, guards Won/pending and posts only after acknowledgement. Outcomes join actual history, score, rating and Hall, then read live mode/reason/year for continuation, set Scored only in the specified branch and clear pending on normal return. Desktop turn integration pauses before treasury normalization/upkeep and handles actual last-city famine defeat after an empty movement phase. Direct/console continuation and native warning/retirement saves match; Hall failures preserve committed effects. Semantic ending pages use actual ship/history/known-advance data and diagnose unavailable artwork/narrative. Authored ending resources, generated human/AI games and remaining F04 orchestration are unfinished; browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/SpaceshipArrival.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/OutcomeOperations.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/OutcomeCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "F04.spaceship-arrival-boundary",
+        "M4.local-famine-defeat",
+        "M4.local-scheduled-retirement",
+        "V08.pending-outcome-continuation",
+        "V08.pending-outcome-presentation",
+        "V08.scheduled-retirement"
       ]
     }
   ]

@@ -864,6 +864,66 @@ def drive(args, app, observation, storage):
         checks.append('native reload reopens gameplay after retirement and explicit Quit skips reports and preserves Hall bytes')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
+        observation = observation.with_name('scheduled-observation.json')
+        storage = storage.with_name('scheduled-storage')
+        launch[launch.index('--observe') + 1] = str(observation)
+        launch[launch.index('--storage-directory') + 1] = str(storage)
+        app = subprocess.Popen(launch)
+        wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        scheduled = [observation.with_name('scheduled-' + name) for name in
+                     ('warning.sav', 'warned.sav', 'end.sav', 'continued.sav', 'hall.dat')]
+        subprocess.run(['dotnet', str(args.probe), '--local-scheduled-reference', *map(str, scheduled)], check=True)
+        action('File', 'file.library')
+        import_save(scheduled[0])
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
+        click('end')
+        wait(lambda s: s['prompt'] == 'End the current player turn?')
+        choice(1)
+        warning = wait(lambda s: s['prompt'].startswith('Retirement warning'))
+        assert warning['play']['year'] == 2000 and warning['play']['gold'] == 70000
+        assert not warning['play']['phase'] and 'turn.advanced' not in warning['play']['effects']
+        choice(0)
+        wait(lambda s: s['status'] == 'Completed' and s['play']['phase'])
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(scheduled[1])
+        checks.append('native year-2000 warning precedes upkeep and continued save matches the direct client')
+        for keep in (1, 0):
+            action('File', 'file.library')
+            import_save(scheduled[2])
+            stored_control('open')
+            wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
+            click('end')
+            wait(lambda s: s['prompt'] == 'End the current player turn?')
+            choice(1)
+            retirement = wait(lambda s: s['prompt'].startswith('Scheduled retirement'))
+            assert retirement['play']['year'] == 2020 and retirement['play']['gold'] == 70000
+            for title in ('Power history', 'Civilization score', 'Civilization rating', 'Hall of Fame', 'Keep playing?'):
+                choice(0)
+                wait(lambda s: s['prompt'].startswith(title))
+            assert wait(lambda s: s['prompt'] == 'Keep playing?')['play']['gold'] == 70000
+            if keep:
+                assert (storage / 'HALLFAME.DAT').read_bytes() == scheduled[4].read_bytes()
+            choice(keep)
+            result = wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+            assert result['play']['active'] == bool(keep) and result['play']['phase'] == bool(keep)
+            assert ('turn.advanced' in result['play']['effects']) == bool(keep)
+            if keep:
+                click('save')
+                wait(lambda s: s['message'] == 'Classic save written.')
+                compare_work_save(scheduled[3])
+                click('load')
+                wait(lambda s: s['message'] == 'Classic save loaded.')
+                end_turn(result['play']['turn'] + 1)
+            else:
+                assert result['play']['gold'] == 70000
+        checks.append('native year-2020 retirement runs ordered reports, persists Hall, continues across reload or closes before upkeep')
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
     finally:
         if app.poll() is None:
             app.terminate()
