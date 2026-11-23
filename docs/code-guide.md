@@ -566,20 +566,30 @@ elementary transfer without capture policy; `City/CityCaptureQueries` owns C09's
 shared treasury share and central-city queries. `ScenarioPermissions.AllowSchism`
 runs the S02 predicate with a required authored-action dispatcher; it does not
 implement those actions. `Session/CivilWarOperation` publishes bounded progress.
-C09 capture/incitement and full scenario/presentation callers remain open.
+Movement/mission capture dispatch and full scenario/presentation callers remain open.
 
 `City/CapturePopulationLoss` owns C09's signed population/exceptional preservation
 helper and composes actual C01 deletion. `CityRemoval` shares supported-unit
 traversal with C09's old-owner-filtered path, while its existing synchronous entry
 retains its callback contract. `CivilizationElimination.BeginRemoveCity` and
 `BeginSupportedLoss` run the nested checks through real resumable V01/espionage
-operations. `Session/CapturePopulationOperation` routes those victims. Capture's
-mode/restoration gate and takeover remain open.
+operations. `Session/CapturePopulationOperation` routes those victims; the C09
+parent now supplies its mode/restoration gate and takeover.
 
 `City/CaptureProduction` continues actual supported-unit loss through disorder,
 C06 eligibility/production and a required P06 city-window decision. Its session
 adapter routes nested incidents independently and closes the window on reply,
 cancel or timeout. `City/CapturePartisans` composes actual U01 creation/W03
 revelation with C09 count, placement and veteran rules. `MapKnowledge.MarkUnitSeen`
-changes only the returned unit's seen set. The capture parent still owns admission,
-ordering and the desktop presentation adapter; these helpers do not dispatch it.
+changes only the returned unit's seen set. The ordered capture parent composes
+these helpers; movement/mission admission and the desktop adapter remain separate.
+
+`City/CityCapture` owns C09's local ordered parent and incited-transfer wrapper.
+Its resumable sequence composes actual war, civil war, population/deletion,
+research theft, supported-unit/production and elimination/partisan children.
+The notice partial owns Palace selection/payment and semantic wonder/capture
+announcements with retained numeric input. CityTaken matching/actions are a
+required dispatcher when events are loaded; no presentation callback substitutes
+for it. `Session/CityCaptureOperation` routes each Palace, technology, nested
+incident and required P06 window to its own participant. Movement and V06 city
+admission/payment/escape callers still need to dispatch this operation.

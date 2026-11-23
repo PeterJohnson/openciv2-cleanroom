@@ -79,6 +79,13 @@ meeting that changes the inputs after count/threshold capture. They verify
 ordered terrain/feature scoring, exact owner queries, topology, military-limit
 failure, last-result sentinels, veteran draws/flag preservation and single-unit
 visibility. Required window-adapter fixtures do not claim P06 desktop rendering.
+C09 parent groups compose the real war, civil-war, research, population,
+production, elimination, partisan and wonder children. They cover ordering around
+CityTaken, retained name/center/plunder, restoration/parity, Palace scoring and
+fresh-gold payment, slot-zero/replacement quirks, observer-number retention,
+incited units, theft after deletion, actual foreign last-settler incidents and
+separate private Palace/technology/window decisions. CityTaken fixtures exercise
+the required dispatcher boundary; they do not supply S02 matching/actions.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

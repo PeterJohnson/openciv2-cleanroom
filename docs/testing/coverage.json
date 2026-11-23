@@ -3458,7 +3458,7 @@
       "status": "partial",
       "contract": "V01 sections9-11 local civil war; S02 NoSchism predicate; C01 elementary transfer; C09 shared queries",
       "publicSurface": "CivilWar.Begin/Operation; CivilWarOperation; ScenarioPermissions.AllowSchism; CityTransfer.Transfer; CityCaptureQueries.TreasuryShare/CentralCity",
-      "review": "Actual civilization creation/reset and leader selection, highest eligible rebel slot, NoSchism matching without an events-loaded gate, region population partition and retained-target farthest-city fallback. Uses real C01 city/population transfer, W03 knowledge/exploration, U01 stack traversal and C09 central-city selection. Preserves partial reset/copy distinctions, mixed-stack ownership, unchanged unit counts, multiple Palaces and candidate-parent alias semantics. Fallback transfers and creation searches resume without restarting; failure/disposal retain prefixes. Required scenario action dispatch is an explicit integration boundary; predicate tests do not claim authored action execution. C09 capture/incitement callers, full scenario/desktop presentation and generated-game acceptance remain open. Browser/cross-platform and network orchestration are deferred.",
+      "review": "Actual civilization creation/reset and leader selection, highest eligible rebel slot, NoSchism matching without an events-loaded gate, region population partition and retained-target farthest-city fallback. Uses real C01 city/population transfer, W03 knowledge/exploration, U01 stack traversal and C09 central-city selection. Preserves partial reset/copy distinctions, mixed-stack ownership, unchanged unit counts, multiple Palaces and candidate-parent alias semantics. Fallback transfers and creation searches resume without restarting; failure/disposal retain prefixes. Required scenario action dispatch is an explicit integration boundary; predicate tests do not claim authored action execution. The C09 parent now composes civil war. Movement/mission capture callers, full scenario/desktop presentation and generated-game acceptance remain open. Browser/cross-platform and network orchestration are deferred.",
       "sources": [
         "src/OpenCiv2.Core/City/CityCaptureQueries.cs",
         "src/OpenCiv2.Core/City/CityTransfer.cs",
@@ -3483,7 +3483,7 @@
       "status": "partial",
       "contract": "C09 population loss and old-owner supported-unit loss with actual C01/U01/V01 children",
       "publicSurface": "CapturePopulationLoss.Begin/Operation; CapturePopulationOperation; CivilizationElimination.BeginRemoveCity/BeginSupportedLoss",
-      "review": "C09 exceptional size-one gates use live human/knowledge/rank inputs, captured-center region and the stored weakest-human selector as an index. Signed population decrement deletes only exact zero through actual C01 deletion. Shared supported-unit traversal preserves C01 all-owner behavior and C09 retained-old-owner filtering, fixed Partisans, AI lone-defender rehoming, cargo-aware deletion and descending restart after changed bounds. New lifecycle entries resume actual nested last-settler/foreign-mission incidents before city token/routes/wonders/spatial cleanup and final notices. Session routing and failure/disposal preserve committed prefixes. Full capture mode/restoration admission, plunder, takeover, production, partisans, movement/desktop and generated-game acceptance remain open. Browser/cross-platform work is deferred.",
+      "review": "C09 exceptional size-one gates use live human/knowledge/rank inputs, captured-center region and the stored weakest-human selector as an index. Signed population decrement deletes only exact zero through actual C01 deletion. Shared supported-unit traversal preserves C01 all-owner behavior and C09 retained-old-owner filtering, fixed Partisans, AI lone-defender rehoming, cargo-aware deletion and descending restart after changed bounds. New lifecycle entries resume actual nested last-settler/foreign-mission incidents before city token/routes/wonders/spatial cleanup and final notices. Session routing and failure/disposal preserve committed prefixes. The ordered capture parent now composes this helper; movement/mission admission, desktop dispatch and generated-game acceptance remain open. Browser/cross-platform work is deferred.",
       "sources": [
         "src/OpenCiv2.Core/City/CapturePopulationLoss.cs",
         "src/OpenCiv2.Core/City/CityRemoval.cs",
@@ -3507,7 +3507,7 @@
       "status": "partial",
       "contract": "C09 surviving-city production continuation and partisan creation with actual C06/A02 and U01/W03 children",
       "publicSurface": "CaptureProduction.Begin/Operation; CaptureProductionOperation; CapturePartisans.Create; MapKnowledge.MarkUnitSeen",
-      "review": "Supported-unit loss resumes real V01 incidents before disorder and production. Human repair uses actual C06 eligibility, the nominal extra candidate role, first-eligible defender termination and direct assignments without shield/counter adjustment. AI resets/counts and calls actual C06/A02. Captured-center exploration does not update memory; a required P06 window retains CityProcessing until closure, including failure/disposal and session routing. Partisans retain count/veteran threshold, score ordered terrain/features and use the exact owner query, actual U01 allocation/W03 revelation, fixed identity/orders, single-unit seen publication and nullable last-result notice. Tests cover real creation reentry, capacity failures, signed scores, wrap/ties, gates and conditional draws. Full capture/incitement parent, P06 desktop dispatch and generated-game acceptance remain open. Browser/cross-platform work is deferred.",
+      "review": "Supported-unit loss resumes real V01 incidents before disorder and production. Human repair uses actual C06 eligibility, the nominal extra candidate role, first-eligible defender termination and direct assignments without shield/counter adjustment. AI resets/counts and calls actual C06/A02. Captured-center exploration does not update memory; a required P06 window retains CityProcessing until closure, including failure/disposal and session routing. Partisans retain count/veteran threshold, score ordered terrain/features and use the exact owner query, actual U01 allocation/W03 revelation, fixed identity/orders, single-unit seen publication and nullable last-result notice. Tests cover real creation reentry, capacity failures, signed scores, wrap/ties, gates and conditional draws. The ordered capture/incitement parent now composes these helpers; movement/mission admission, P06 desktop dispatch and generated-game acceptance remain open. Browser/cross-platform work is deferred.",
       "sources": [
         "src/OpenCiv2.Core/City/CapturePartisans.cs",
         "src/OpenCiv2.Core/City/CaptureProduction.cs",
@@ -3525,6 +3525,33 @@
         "C09.production-human-window",
         "C09.production-nested-failure",
         "C09.production-session-window"
+      ]
+    },
+    {
+      "id": "city-capture",
+      "status": "partial",
+      "contract": "C09 ordered local capture and incited-transfer wrapper with actual V04/V01/C08/V03/C01/C06/A02/U01/W03 children",
+      "publicSurface": "CityCapture.Begin/BeginIncited/Operation; CityCaptureOperation; required CityTaken dispatcher and P06 presentation adapter",
+      "review": "Captures old owner/center, restoration and name at their specified boundaries. Preserves ordered treaty flags, actual civil-war attempt and zero-result replacement, Palace scoring/payment and ship loss, wonder gates/Eiffel, retained plunder with fresh-gold clamp, reset/parity/population deletion, radius/owner/old-owner knowledge and required CityTaken dispatch, captured-center writes, local announcement numbers, theft even after deletion, supported-unit/production window, actual elimination/partisans and founder/age/Leonardo tail. Incitement uses captured radius, exact adjacent-city gate, descending unit scan and direct byte-count/home/order changes before recapturing parent inputs. Integrated cases include real AI choice, nested foreign loss, signed payment behavior, callback changes, failure/disposal and private Palace/technology/window routing. CityTaken matching/actions remain a required dispatcher, not supplied by presentation; movement/V06 admission, desktop adapters and generated complete games remain open. Network/browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityCapture.Notices.cs",
+        "src/OpenCiv2.Core/City/CityCapture.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/CityCaptureOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityCaptureCases.cs"
+      ],
+      "sharedGroups": [
+        "C09.capture-conquest-order",
+        "C09.capture-deletion-technology-partisans",
+        "C09.capture-incited-failure",
+        "C09.capture-modes-restoration",
+        "C09.capture-nested-foreign-loss",
+        "C09.capture-palace-schism",
+        "C09.capture-palace-scoring",
+        "C09.capture-session-decisions",
+        "C09.capture-wonder-observers"
       ]
     }
   ]

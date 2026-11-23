@@ -30,7 +30,7 @@ public static class BuildingIds
     public const int Structural = 35, Component = 36, Module = 37;
     public const int Granary = 3, Colosseum = 14;
     public const int Supermarket = 24, Harbor = 30, OffshorePlatform = 31, Airport = 32;
-    public const int CityWalls = 8, CoastalFortress = 28;
+    public const int CityWalls = 8, SamBattery = 27, CoastalFortress = 28;
     public const int Courthouse = 7, University = 12, ManufacturingPlant = 16, StockExchange = 22, ResearchLab = 26, PoliceStation = 33, Capitalization = 38;
 }
 
