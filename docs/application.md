@@ -53,6 +53,12 @@ controls with confirmation, limited to one sale per city turn. Palace cannot be
 sold in this profile. These actions also use `city.buy` and `city.sell` in the
 console, with the same pending decision and cancellation behavior.
 
+Before founding, the Pioneer can build roads, irrigate or mine using the terrain
+work selector or `unit.work` in the console. Offered jobs reflect its current
+tile and advances. Unfinished jobs retain progress through save/reload and resume
+when the unit next activates. Select the unit to interrupt an order. Fortification
+also completes on activation, after any nearer unit that needs manual input.
+
 Choose research in the sidebar or in the required turn decision. End-turn
 confirmation can be cancelled before upkeep. A research choice during upkeep
 must be settled before the player can issue another order or save. The console

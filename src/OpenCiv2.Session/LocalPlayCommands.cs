@@ -19,6 +19,7 @@ public static partial class LocalPlayCommands
             [new("unit", ValueKind.Unit), new("direction")], [new("unit", ValueKind.Unit)], MoveUnit, ValidateUnit));
         RegisterCityCommands(runtime);
         RegisterTurnCommands(runtime);
+        RegisterWorkCommands(runtime);
     }
 
     private static CommandDefinition Define(
@@ -83,7 +84,7 @@ public static partial class LocalPlayCommands
         if (code == "moved")
         {
             world.Globals.ActiveUnit = target.Slot;
-            SelectReadyUnit(world, rules);
+            SelectReadyUnit(context);
             return Commit(context, "unit.moved", unit);
         }
 
@@ -91,7 +92,7 @@ public static partial class LocalPlayCommands
         {
             if (code == "movement_spent" && world.Globals.ActiveUnit == target.Slot)
             {
-                SelectReadyUnit(world, rules);
+                SelectReadyUnit(context);
             }
 
             context.Effect("unit." + code, new([unit]));

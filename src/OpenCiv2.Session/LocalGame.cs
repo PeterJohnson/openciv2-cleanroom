@@ -4,6 +4,7 @@ using OpenCiv2.Core;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
+using OpenCiv2.Core.Units;
 using OpenCiv2.Formats.Content;
 using OpenCiv2.IO;
 
@@ -257,6 +258,7 @@ public sealed class LocalGame : IDisposable
                 || map.TileAt(unit.Position).Ocean || unit.Flags.Automated || unit.Flags.Aboard
                 || unit.Type.Value is not (LocalGameRules.Settler or LocalGameRules.Guard or LocalGameRules.Rider)
                 || unit.Orders is not (UnitOrder.None or UnitOrder.Fortifying or UnitOrder.Fortified)
+                    && !(unit.Type.Value == LocalGameRules.Settler && TerrainWorkOrders.IsWork(unit.Orders) && unit.Orders != UnitOrder.Transform)
                 || unit.Home is { } home && (home.Value != 0 || civ.CityCount == 0)
                 || unit.Type.Value == LocalGameRules.Settler && (unit.Home is not null || civ.CityCount != 0))
             {
@@ -271,11 +273,14 @@ public sealed class LocalGame : IDisposable
             var point = geometry.Coordinates(i);
             var tile = map.Tiles[i];
             bool center = civ.CityCount == 1 && city.Position == point;
-            var features = (center ? MapFeatures.CitySite : LocalGameRules.Features(point))
+            var features = (center || tile.Airbase ? MapFeatures.CitySite : LocalGameRules.Features(point))
                 | (counts[i] != 0 ? MapFeatures.Unit : MapFeatures.None);
             bool occupied = center || counts[i] != 0;
+            const MapFeatures workFeatures = MapFeatures.Irrigation | MapFeatures.Mine | MapFeatures.Road
+                | MapFeatures.Railroad | MapFeatures.Fortification | MapFeatures.Pollution;
             if (tile.Terrain != LocalGameRules.Landform(point) || tile.River != LocalGameRules.River(point)
-                || !tile.ResourceSuppressed || tile.Features != features
+                || !tile.ResourceSuppressed || center && tile.Airbase
+                || (tile.Features & ~workFeatures) != (features & ~workFeatures)
                 || (occupied ? tile.Owner != owner : tile.Owner is not (owner or null)))
             {
                 return false;

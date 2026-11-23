@@ -4,7 +4,7 @@ namespace OpenCiv2.Contracts;
 
 public sealed record PlayOption(int Id, string Name);
 
-public sealed record PlayUnit(UnitTarget Target, string Name, int MovesLeft, bool CanFound);
+public sealed record PlayUnit(UnitTarget Target, string Name, int MovesLeft, bool CanFound, OwnedList<PlayOption> Work);
 
 public sealed record WorkerTile(int Index, MapPoint Position, bool Worked, int Food, int Shields, int Trade);
 

@@ -34,7 +34,9 @@ public sealed partial class SessionRuntime
 
                 units.Add(new(new(new(i), unit.Token), rules.Units[unit.Type.Value].Identity.Name,
                     LandMovement.Left(world, rules, unit), unit.Type.Value == LocalGameRules.Settler && civ.CityCount == 0
-                    && unit.Orders == UnitOrder.None));
+                    && unit.Orders == UnitOrder.None,
+                    new(LocalPlayCommands.WorkJobs.Where(job => UnitActivation.Selectable(world, rules, i)
+                        && TerrainWorkOrders.Check(world, rules, new(i), (UnitOrder)job.Id) is null))));
             }
 
             var research = LocalPlayCommands.ResearchChoices(world, rules, observer.Value)

@@ -96,7 +96,7 @@ public static partial class LocalPlayCommands
 
         LocalCityEconomy.RememberCity(world, ref city);
         LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
-        SelectReadyUnit(world, rules);
+        SelectReadyUnit(context);
         return Commit(context, "city.founded", new NamedValue("city", new CommandValue.City(new(slot, token))));
     }
 

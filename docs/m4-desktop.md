@@ -14,7 +14,7 @@ in the [M2 closeout](m2-closeout.md).
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. Remaining C01–C08 operations, V02 choices/rates, general research presentation/capture/catch-up and full F04 integration are pending. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
@@ -1484,3 +1484,67 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-assessment-headless.xml` | `a91f00c39c9982d24b3d7f32ecb0eb9ffc6c0a5db75b1eae7f8064c17dcac6c0` |
 | `m4-desktop-assessment-native.json` | `fc99e26d95bf9269637d9cdbd030d516f8d61c9552bdf484a07612820bc82ea8` |
 | `m4-desktop-assessment-identity.json` | `8e5c7c12773d7695aabc3469899b7f54b16a1f6142415411daa77c6877663159` |
+
+
+## Terrain work execution and desktop queued orders
+
+`TerrainWorkOrders` implements all seven W04 commands and executions. Command
+checks remain distinct from direct work: conversion bypasses city/water checks,
+queued work does not repeat player admission, and changing orders retains progress.
+The executor exhausts the actor, takes only the first matching donor (including
+zero progress and retained mixed ownership), wraps counters and compares signed
+progress, then clears matching workers on completion. Actual W01/W03 mutations
+and memory precede the display tail; an eligible near-city selection runs actual
+C03 calculation. It performs no invented region, fertility or global-memory repair.
+
+Fortress/airbase conversion, road-to-rail choice, irrigation/farmland/mining,
+destination cleanup and pollution counts retain their declared order and widths.
+A negative Transform result preserves W01's terrain-kind/preserved-flag effects,
+then fails at the unsupported destination-rule read. Fixed-cost cleanup does not
+read an unrelated terrain rule. Radio uses fixed advance66 from W04's required
+identity mapping and the authorized original rules data.
+
+`UnitFortification` now implements U04's real operation and U01's AI home update,
+including home slots0–127, foreign on-tile cities, fortress-only nearest-city
+fallback, size threshold and old/new refresh order. The desktop's former global
+reset shortcut has been removed: fortification executes when activation reaches
+the unit, so a nearer manual unit may be active first.
+
+The desktop publishes player-scoped work options, accepts `unit.work`, displays
+a terrain-work selector/menu actions, and resumes jobs through activation. Its
+Pioneer remains in the authored pre-founding domain. Work features/progress survive
+classic load; unsupported queued Transform remains rejected by this profile.
+The direct/console scenario saves unfinished irrigation, reloads, finishes over
+successive turns and compares full bytes. The native driver exercises the selector,
+file import, queued progress and completed bytes against the same direct reference.
+It starts a fresh desktop process with the reference's load history, making the
+regenerated entity tokens and normalized load fields comparable without masking
+any save bytes. Work menu actions have stable identities from startup, with
+availability controlling visibility as the selected unit changes.
+
+Eleven new shared groups cover work gates, thresholds, signed/wrapped/custom rules,
+donor order, non-Settle direct execution, conversion failures, actual C03 refresh,
+fortification home gates and desktop continuation. These are specification-derived
+checks, not original-game comparison evidence. A03 worker policy, W04 pillaging,
+remaining U04 movement/recovery/AI execution and generated-game turns remain open.
+Browser and cross-platform work stay deferred; no Lua automation changed. M4 is
+still in progress.
+
+Validation: root/App formatting and verification passed; both Release builds
+completed with zero warnings/errors. Native tests passed **801 of 803**, with two
+existing opt-in/platform skips. The probe passed **769 shared groups**, and source
+identity verified **460 compiled inputs**. Graph, conformance, **87-family** coverage,
+identity/coverage tool tests, gameplay and content-schema checks all passed.
+All **13 isolated Xvfb CPU desktop checks** passed, including queued irrigation,
+unfinished/completed save bytes and normal shutdown of both desktop processes.
+After final formatting, foundation and desktop receipts still matched the current
+compiled sources. These authored-profile checks do not close the full M4 gate.
+
+Receipts under `build/test-results/` (generated evidence, not committed):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-work-play.json` | `2ca929150325a1d45d10c2092c4eb49a8563fc818be9ae2166c9d6fb97ac5156` |
+| `m4-desktop-work-headless.xml` | `d7d3019c84191aaeac2ee1154c6227ac54b551dd265a59df0c66c1ab9832b017` |
+| `m4-desktop-work-native.json` | `97b258c31c5d62e430ea0645207c5662d9119c66b5cbbf3038fef6506df72fe9` |
+| `m4-desktop-work-identity.json` | `ac988d70a355b34289998ee7d46e17418e6daa0f5a9a70c42ec3c696fa289f2b` |

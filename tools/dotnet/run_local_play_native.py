@@ -275,7 +275,8 @@ def drive(args, app, observation, storage):
     rejected = command(lambda: type_line(f"city.worker city={stale['slot']}:{stale['token']} tile=20"), 'Rejected')
     assert 'city_not_available' in rejected['message'] and semantic(rejected['play']) == semantic(restored)
     resumed = end_turn(8)
-    assert next(u for u in resumed['units'] if u['slot'] == 1)['orders'] == 2
+    # Fortification executes on activation; the nearer manual unit is selected first.
+    assert next(u for u in resumed['units'] if u['slot'] == 1)['orders'] == 1
     checks.append('stale city rejected after session replacement and resumed turn completed')
 
     reference_save = observation.with_name('direct-save.sav')
@@ -395,8 +396,72 @@ def drive(args, app, observation, storage):
     assert 'unit.produced' in finished_purchase['effects'] and len(finished_purchase['units']) == len(bought['units']) + 1
     checks.append('native sale and purchase confirmations, cancellation, prices, save/reload and next-turn completion')
 
+    # A fresh process matches the reference's identity-counter and load history.
     driver.close_window(window)
     assert app.wait(timeout=10) == 0
+    launch = list(app.args)
+    observation = observation.with_name('work-observation.json')
+    storage = storage.with_name('work-storage')
+    launch[launch.index('--observe') + 1] = str(observation)
+    launch[launch.index('--storage-directory') + 1] = str(storage)
+    app = subprocess.Popen(launch)
+    try:
+        wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        work_initial = observation.with_name('terrain-initial.sav')
+        work_started = observation.with_name('terrain-working.sav')
+        work_done = observation.with_name('terrain-completed.sav')
+        subprocess.run(['dotnet', str(args.probe), '--local-work-reference', str(work_initial),
+                        str(work_started), str(work_done)], check=True)
+        state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['File']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['file.library']['bounds'])
+        import_save(work_initial)
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.' and s['play']['turn'] == 1)
+        select(0)
+        started_work = command(lambda: click('work'))['play']
+        assert next(u for u in started_work['units'] if u['slot'] == 0)['orders'] == 6
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+
+        def saved_classic():
+            document = (storage / 'file-alder-valley.oc2data').read_bytes()
+            return document[12 + int.from_bytes(document[8:12], 'little'):]
+
+        def compare_work_save(expected):
+            actual, reference = saved_classic(), expected.read_bytes()
+            if actual != reference:
+                args.report.parent.mkdir(parents=True, exist_ok=True)
+                prefix = args.report.with_name(args.report.stem + '-' + expected.stem)
+                prefix.with_suffix('.actual.sav').write_bytes(actual)
+                prefix.with_suffix('.expected.sav').write_bytes(reference)
+                differences = [i for i, (a, b) in enumerate(zip(actual, reference)) if a != b]
+                raise AssertionError(f'{expected.name}: save lengths {len(actual)}/{len(reference)}, '
+                                     f'{len(differences)} differing bytes; first offsets {differences[:16]}')
+
+        compare_work_save(work_started)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        queued = end_turn(2)
+        assert next(u for u in queued['units'] if u['slot'] == 0)['orders'] == 6
+        completed_work = end_turn(3)
+        assert next(u for u in completed_work['units'] if u['slot'] == 0)['orders'] == -1
+        assert 'unit.work_completed' in completed_work['effects']
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(work_done)
+        checks.append('native terrain work selector, queued progress, save/reload and exact completion match the direct client')
+
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
+    finally:
+        if app.poll() is None:
+            app.terminate()
+            app.wait(timeout=10)
     checks.append('normal desktop shutdown')
 
     identity = json.loads(Path(str(observation) + '.identity.json').read_text())

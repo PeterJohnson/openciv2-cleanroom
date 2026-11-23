@@ -59,7 +59,7 @@ internal static class LocalGameRules
                 Food = 2,
                 Shields = 1,
                 Trade = 1,
-                Work = new(new(TerrainResult.ImproveInPlace, 1), new(TerrainResult.ImproveInPlace, 1))
+                Work = new(new(TerrainResult.ImproveInPlace, 1, WorkTurns: 3), new(TerrainResult.ImproveInPlace, 1, WorkTurns: 4))
             };
         }
 

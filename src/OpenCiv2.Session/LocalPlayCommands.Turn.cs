@@ -41,7 +41,7 @@ public static partial class LocalPlayCommands
 
         unit.Orders = UnitOrder.Fortifying;
         Exhaust(context.World, context.Process.Rules.Definitions, ref unit);
-        SelectReadyUnit(context.World, context.Process.Rules.Definitions);
+        SelectReadyUnit(context);
         return Commit(context, "unit.fortifying", new NamedValue("unit", new CommandValue.Unit(target)));
     }
 
@@ -219,7 +219,7 @@ public static partial class LocalPlayCommands
             world.Production.CivilizationTurnInProgress = false;
             activeWorld = null;
             world.Globals.ActiveUnit = null;
-            SelectReadyUnit(world, context.Process.Rules.Definitions);
+            SelectReadyUnit(context);
             context.Effect("turn.advanced", TurnValue(world));
             world.PlayerPhaseActive = true;
             context.Publish();
@@ -308,10 +308,6 @@ public static partial class LocalPlayCommands
                 }
 
                 unit.Flags.BorderIntruder = unit.Flags.Moved = unit.Flags.Paradropped = false;
-                if (unit.Orders == UnitOrder.Fortifying)
-                {
-                    unit.Orders = UnitOrder.Fortified;
-                }
             }
         }
 

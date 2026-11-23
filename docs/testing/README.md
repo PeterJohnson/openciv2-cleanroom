@@ -38,6 +38,14 @@ lock/draw order and actual changes. Native direct/console turns verify old power
 publication before refreshed human census and identical save/resume continuation.
 The outer AI movement passes, complete U04 executor, remaining tactical policies
 and full generated-game turn acceptance remain open.
+
+W04 groups execute all seven jobs with actual stack progress, exhaustion, map
+mutations, memory and near-city C03 calculation. U01/U04 fortification cases cover
+signed home gates, on-tile foreign cities, fortress/airbase distinctions and refresh
+order. Direct/console and native desktop cases start irrigation, save unfinished
+progress, reload, finish through activation and compare complete classic saves.
+Pillage diplomacy, general AI worker choice and full U04 execution remain open.
+
 Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
 costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
 terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct

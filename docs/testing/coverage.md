@@ -93,4 +93,6 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 
 | ai-civilization-assessment | A01 census/strategy, power and goals with real A02/A08/V01 children; desktop power/assessment; outer movement, full F04 and remaining tactics pending | partial | [CivilizationAssessment.cs](../../src/OpenCiv2.Core/Ai/CivilizationAssessment.cs), [AssessmentCases.cs](../../tests/OpenCiv2.FoundationCases/AssessmentCases.cs) |
 
+| terrain-work-orders | W04 work commands/execution, U01/U04 fortification, desktop queued jobs and save/resume; pillage, general workers and remaining order execution pending | partial | [TerrainWorkOrders.cs](../../src/OpenCiv2.Core/Units/TerrainWorkOrders.cs), [TerrainWorkCases.cs](../../tests/OpenCiv2.FoundationCases/TerrainWorkCases.cs) |
+
 The [JSON inventory](coverage.json) contains the complete file lists, review notes and shared test IDs. Keep admitted domains and failure/resume paths explicit when extending it. A partial host row does not claim complete map rendering, menus or gameplay. See the [M4 desktop work record](../m4-desktop.md) for the remaining parent integrations and platform deferrals.

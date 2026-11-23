@@ -186,6 +186,15 @@ score accumulation and its complete maintenance caller. The desktop turn publish
 power before advancing and assesses its human civilization after city processing.
 The A01 outer unit passes, U04 executor and remaining tactical policies stay open.
 
+`TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
+It uses actual stacks, movement exhaustion, map mutations, remembered features
+and C03 refresh for an eligible nearby city selection. It preserves per-unit
+progress and first-donor transfer; it does not rebuild regions or fertility.
+`UnitFortification` owns U04 fortification and U01's signed home-slot gate.
+The desktop publishes scoped work options and resumes queued jobs while selecting
+a manual unit. Its current authored Pioneer domain is before the first city;
+A03 workers, general U04 execution, pillaging and generated-game callers remain open.
+
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
 are explicit semantic inputs while their original-file binding remains a gap;

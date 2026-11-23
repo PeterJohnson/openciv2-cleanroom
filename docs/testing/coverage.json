@@ -2847,6 +2847,46 @@
         "A08.government-rates-score-inputs",
         "M4.local-assessment-power"
       ]
+    },
+    {
+      "id": "terrain-work-orders",
+      "contract": "W04 player commands and work execution/completion; U01 AI fortification home adjustment; U04 fortification and activation subset",
+      "publicSurface": "TerrainWorkOrders.Check/Request/Execute, UnitFortification.Apply; unit.work command, scoped Work options and desktop selector; queued work activation and classic save/reload",
+      "status": "partial",
+      "review": "All seven work jobs use actual stack traversal, exhaustion, feature mutations, memory and near-city C03 calculation. Cases cover command gates, conversions bypassing city/water checks, first donor including zero/foreign progress, signed thresholds/counter wrap, fixed Engineers bonus, non-Settle direct execution, farmland cleanup, invalid terrain-result mutation before failed destination read, pollution wrap, partial effects and fortification home 0..127 versus 128..254. Direct/console and native scenarios resume unfinished irrigation and compare completed classic bytes. Desktop workers remain in the authored pre-founding domain; generated-game work, A03 choices, full U04 goto/AI execution, pillage diplomacy and network synchronization remain open. Browser/cross-platform execution is deferred. Expectations derive from repository contracts, not original-game captures.",
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Actions.cs",
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Contracts/LocalPlayObservation.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/Units/TerrainWorkOrders.cs",
+        "src/OpenCiv2.Core/Units/UnitFortification.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalGameRules.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.City.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Work.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.cs",
+        "src/OpenCiv2.Session/LocalPlayProjection.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/TerrainWorkCases.cs",
+        "tests/OpenCiv2.FoundationProbe/Program.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "M4.local-terrain-work-continuation",
+        "U04.fortification-home-refresh",
+        "W04.work-command-admission",
+        "W04.work-conversion-cleanup-failure",
+        "W04.work-donor-stack-completion",
+        "W04.work-features-knowledge",
+        "W04.work-fortress-airbase-city",
+        "W04.work-refresh-retained-command",
+        "W04.work-signed-nonsettler",
+        "W04.work-thresholds-progress",
+        "W04.work-water-conversion-admission"
+      ]
     }
   ]
 }

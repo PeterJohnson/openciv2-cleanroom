@@ -23,6 +23,8 @@ public sealed partial class SeamView
     private readonly Dictionary<string, Control> playControls = [];
     private readonly TextBlock turnLabel = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBox cityName = new() { Text = "Alder Crossing", MaxLength = 15 };
+    private readonly ComboBox terrainJob = new() { MinWidth = 135, MaxWidth = 175 };
+    private readonly WrapPanel terrainWork = new();
     private readonly StackPanel playOrders = new() { Spacing = 5 };
     private readonly StackPanel cityBody = new() { Spacing = 9, Margin = new Thickness(20) };
     private readonly Grid cityOverlay = new() { IsVisible = false, Background = Brush.Parse("#b0172b33") };
@@ -49,6 +51,13 @@ public sealed partial class SeamView
             && model.View.Units?.Records.Any(u => new UnitTarget(u.Slot, u.Token) == activeTarget
                 && u.Orders == UnitOrder.None) == true);
         yield return new(LocalPlayCommands.EndTurn, "Orders", "End turn", null, ready);
+        var availableWork = play?.Units.FirstOrDefault(u => u.Target == activeTarget)?.Work;
+        foreach (var job in LocalPlayCommands.WorkJobs)
+        {
+            bool available = availableWork?.Any(option => option.Id == job.Id) == true;
+            yield return new(LocalPlayCommands.Work + "." + job.Id, "Orders", job.Name, null,
+                ready && available, Hidden: !available);
+        }
     }
 
     private Control BuildPlayOrders()
@@ -67,6 +76,17 @@ public sealed partial class SeamView
         unitOrders.Children.Add(PlayButton("fortify", "Fortify", () => UnitCommand(LocalPlayCommands.Fortify)));
         unitOrders.Children.Add(PlayButton("end", "End turn", () => PlayCommand(LocalPlayCommands.EndTurn)));
         playOrders.Children.Add(unitOrders);
+        AutomationProperties.SetName(terrainJob, "Terrain work");
+        playControls["work.job"] = terrainJob;
+        terrainWork.Children.Add(terrainJob);
+        terrainWork.Children.Add(PlayButton("work", "Work", () =>
+        {
+            if (terrainJob.SelectedItem is ComboBoxItem { Tag: int job })
+            {
+                UnitCommand(LocalPlayCommands.Work, new("job", new CommandValue.Integer(job)));
+            }
+        }));
+        playOrders.Children.Add(terrainWork);
         AutomationProperties.SetName(cityName, "New city name");
         playControls["name"] = cityName;
         playOrders.Children.Add(cityName);
@@ -260,6 +280,17 @@ public sealed partial class SeamView
         playControls["found"].IsEnabled = unit?.CanFound == true;
         cityName.IsVisible = playControls["found"].IsVisible = unit?.CanFound == true;
         playControls["fortify"].IsEnabled = unit is { MovesLeft: > 0 } && own?.Orders == UnitOrder.None;
+        var jobs = unit?.Work.ToArray() ?? [];
+        var oldJobs = terrainJob.Items.Cast<ComboBoxItem>().ToArray();
+        if (!oldJobs.Select(item => (int)item.Tag!).SequenceEqual(jobs.Select(job => job.Id)))
+        {
+            int? selected = (terrainJob.SelectedItem as ComboBoxItem)?.Tag as int?;
+            var choices = jobs.Select(job => new ComboBoxItem { Content = job.Name, Tag = job.Id }).ToArray();
+            terrainJob.ItemsSource = choices;
+            terrainJob.SelectedItem = choices.FirstOrDefault(item => (int)item.Tag! == selected) ?? choices.FirstOrDefault();
+        }
+        terrainWork.IsVisible = jobs.Length != 0;
+        playControls["work"].IsEnabled = jobs.Length != 0;
         playControls["city"].IsEnabled = play.City is not null;
         playControls["save"].IsEnabled = playControls["load"].IsEnabled = SeamApp.Storage is not null;
 

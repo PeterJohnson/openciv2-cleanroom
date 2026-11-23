@@ -50,6 +50,12 @@ public sealed partial class SeamView
 
         lastAction = id;
         actionDispatches++;
+        if (id.StartsWith(LocalPlayCommands.Work + ".", StringComparison.Ordinal)
+            && int.TryParse(id.AsSpan(LocalPlayCommands.Work.Length + 1), out int job))
+        {
+            UnitCommand(LocalPlayCommands.Work, new("job", new OpenCiv2.Contracts.CommandValue.Integer(job)));
+            return;
+        }
         switch (id)
         {
             case PlaySave:

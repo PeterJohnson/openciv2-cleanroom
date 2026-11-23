@@ -665,7 +665,8 @@ public static partial class FoundationSuite
         Equal(true, CommandText.Complete("city.worker city=", player.Commands(), player.OwnUnits(), player.OwnCities())
             .Single().EndsWith($"{city.Slot.Value}:{city.Token.Value}", StringComparison.Ordinal));
         EndLocalTurn(game, console, 8);
-        Equal(UnitOrder.Fortified, player.OwnUnits().Records.Single(u => u.Slot.Value == 1).Orders);
+        Equal(UnitOrder.Fortifying, player.OwnUnits().Records.Single(u => u.Slot.Value == 1).Orders);
+        // U04 executes this order when selection reaches the unit; a nearer manual unit is active first.
     }
 
     private static CommandUpdate EndLocalTurn(LocalGame game, bool console, int turn)
