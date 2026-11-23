@@ -50,6 +50,17 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
     public Operation BeginCaught(int unit, int victim, string call, EspionageIncidents incidents, int candidateBudget = 64)
         => Operation.ForEscape(this, unit, -1, victim, call, incidents, candidateBudget, true);
 
+    /// <summary>U01 basic deletion with actual nested civilization checks. Result is 1 when finished.</summary>
+    public Operation BeginDelete(int unit, bool notify, string call, EspionageIncidents incidents, int candidateBudget = 64)
+        => Operation.ForDeletion(this, null, unit, notify, call, incidents, candidateBudget);
+
+    /// <summary>U01 cargo-aware destruction/redraw with actual nested civilization checks.</summary>
+    public Operation BeginDestroy(UnitLoss loss, int unit, string call, EspionageIncidents incidents, int candidateBudget = 64)
+    {
+        ArgumentNullException.ThrowIfNull(loss);
+        return Operation.ForDeletion(this, loss, unit, true, call, incidents, candidateBudget);
+    }
+
     private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false);
     private void RequireLocal() => MapKnowledge.RequireLocal(world);
 
@@ -83,6 +94,10 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         internal static Operation ForEscape(CivilizationElimination parent, int unit, int mode, int victim, string call,
             EspionageIncidents incidents, int candidateBudget, bool caught = false) => new(parent, incidents, candidateBudget, false,
                 complete => parent.EscapeSteps(unit, mode, victim, call, complete, caught));
+
+        internal static Operation ForDeletion(CivilizationElimination parent, UnitLoss? loss, int unit, bool notify, string call,
+            EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
+                complete => parent.DeleteSteps(loss, unit, notify, call, complete));
 
         /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
         /// Result remains null during search. A reply is consumed only by the currently pending incident.</summary>
@@ -135,6 +150,15 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
             { frame.Dispose(); }
         }
         public void Dispose() { disposed = true; Release(); }
+    }
+
+    private IEnumerable<Work> DeleteSteps(UnitLoss? loss, int unit, bool notify, string call, Action<int> complete)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(call);
+        var checks = loss is null ? deletion.EraseSteps(unit, notify) : loss.DestroyAndRedrawSteps(unit, true);
+        foreach (var check in checks)
+        { yield return new(call + "/unit/" + check.Unit + "/check", check); }
+        complete(1);
     }
 
     private IEnumerable<Work> EscapeSteps(int unit, int mode, int victim, string call, Action<int> complete, bool caught = false)

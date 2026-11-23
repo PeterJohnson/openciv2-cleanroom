@@ -46,6 +46,11 @@ actual goal help, V03 grants and C06 AI production reset, V07 race selection and
 U01 defender scans. They distinguish targeted versus ordinary flag timing through
 pending incidents, preserve failure prefixes and exercise real session privacy.
 Returned AI fallbacks remain requests for the unfinished city controller.
+Embassy/investigation groups distinguish plain deletion, cargo destruction and
+escape, captured Spy/type state, live investigation flags and one-point movement.
+They exercise actual nested elimination before final notices. Session cases verify
+private window routing, single adapter invocation, closure and failure handling;
+the supplied window fixture is a P07/P06 boundary, not desktop report acceptance.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

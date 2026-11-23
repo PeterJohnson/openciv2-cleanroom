@@ -3378,6 +3378,31 @@
         "V06.theft-session-privacy",
         "V06.theft-targeted-ordering"
       ]
+    },
+    {
+      "id": "city-espionage-visits",
+      "status": "partial",
+      "contract": "V06 section4 local embassy and investigation with U01/V01 loss and required P07/P06 visits",
+      "publicSurface": "CityEspionageVisits.Embassy/Investigate/Operation; CityEspionageVisitOperation; CivilizationElimination.BeginDelete/BeginDestroy",
+      "review": "Directed embassy acquisition and existing-embassy fallback; distinct human Spy movement, plain diplomat deletion and AI cargo-aware destruction. Investigation uses actual escape for captured non-Spies and live Investigated checks for Spies, then remembers the visit flag only for the human branch. Actual nested last-settler checks and foreign-spy incidents finish before victim notices and parent completion. Session routing keeps the required window private to the actor, invokes its adapter once, maps close/cancel/timeout to continuation and makes adapter failures terminal. Tests cover actual unit/cargo/counter changes, byte movement, retained type classification, live city flags, local/nonlocal/autoplay gates, failure prefixes and no invented map revelation. P07/P06 presentation remains a required adapter boundary, not an implemented report renderer; general city controller/fallback dispatch, movement and generated desktop games remain open. Browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CityEspionageDamage.cs",
+        "src/OpenCiv2.Core/CityEspionageVisits.cs",
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Session/CityEspionageVisitOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityEspionageVisitCases.cs"
+      ],
+      "sharedGroups": [
+        "V06.city-visits-ai-cargo",
+        "V06.city-visits-failure-authority",
+        "V06.city-visits-fallback-nested",
+        "V06.city-visits-session-window",
+        "V06.embassy-plain-delete",
+        "V06.embassy-spy-gates",
+        "V06.investigation-live-escape"
+      ]
     }
   ]
 }

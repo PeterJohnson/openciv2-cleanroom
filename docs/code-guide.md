@@ -535,3 +535,12 @@ race queries, U01 defender traversal, real capture/escape and victim incidents.
 `Session/CityTechnologyTheftOperation` routes actor choices and victim responses;
 the owning city controller must execute any returned Embassy/Sabotage fallback.
 General controller, movement and desktop joins remain open.
+
+`Core/CityEspionageVisits` implements V06 embassy and investigation costs and
+notices, retaining the controller's Spy/type captures. Its required visit request
+belongs to the P07 intelligence or P06 city presentation adapter. The session
+`CityEspionageVisitOperation` routes that window to the actor once and resumes
+after closure; it does not provide a substitute report renderer. `BeginDelete`
+and `BeginDestroy` run actual U01 plain or cargo-aware loss through the resumable
+V01 lifecycle. The owning city controller still dispatches an existing embassy's
+Investigate fallback and supplies full presentation/movement integration.
