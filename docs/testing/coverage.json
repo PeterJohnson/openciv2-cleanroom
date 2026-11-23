@@ -3687,6 +3687,28 @@
         "U05.special-nested-session",
         "U05.unload-port-wakeup"
       ]
+    },
+    {
+      "id": "combat-preparation",
+      "status": "partial",
+      "contract": "U06 strength primitives, defender selection, common preview/execution preparation and preview heuristic with actual U01/U02/C08/A01 children",
+      "publicSurface": "CombatWorkspace; CombatStrength.Attack/Defense/BestDefender; CombatPreparation.Prepare/Preview; PreparedCombat",
+      "review": "Sequential signed attack bonuses, retained terrain/city cache and published defense factor, fighter/fortress/walls precedence, validated stack scan, health weighting, later ties and supplied-unit fallback. Preparation preserves unscaled preview versus movement-scaled execution inputs, city slot zero exclusion, coastal/SDI/SAM/scramble rules, signed firepower, anti-mounted/anti-air/partisan/submarine/shore modifiers, barbarian difficulty/city/wonder rules, standing-goal replacement and entry-zero notice retention. Preview uses signed integer heuristic normalization/capping and does not execute combat. Tests cover authored rule vectors, actual stack/building/goal services and division/authority failure prefixes. Execution diplomacy, rounds, promotion, casualties and aftermath, U02/A04 callers, desktop combat and complete-game acceptance remain open. Browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/CombatPreparation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CombatPreparationCases.cs"
+      ],
+      "sharedGroups": [
+        "U06.barbarians-preview-goals",
+        "U06.city-special-modifiers",
+        "U06.defender-selection",
+        "U06.fighter-domain-defense",
+        "U06.preparation-failures",
+        "U06.preview-execution-preparation",
+        "U06.strength-cache"
+      ]
     }
   ]
 }

@@ -650,3 +650,11 @@ capture; `Session/ParadropOperation` routes attack and capture decisions, requir
 the real city-window adapter. U05 documents safe presentation handling for
 unwritten observer values and missing city/approach data. P01/P05 map-click and
 desktop command binding and full AI/turn orchestration remain pending.
+
+`Units/CombatPreparation` owns U06 attack/defense primitives, validated defender
+selection and common preparation/preview. `CombatWorkspace` carries terrain/city
+cache, defense factor and notice arrays; `PreparedCombat` retains captured
+strengths/firepowers and operands for the later execution stages. Submarine
+preview calls actual A01 standing-goal operations. Preparation with execute=true
+scales strengths and sets city notices; it does not charge movement, declare war
+or resolve combat. U06 execution and U02/A04/desktop callers remain pending.

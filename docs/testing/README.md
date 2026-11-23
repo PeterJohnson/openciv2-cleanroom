@@ -536,3 +536,10 @@ viewers and documented presentation repairs, mixed-domain cargo, human versus AI
 capture exhaustion, captured tile ownership, P06 suspension, replacement moving
 actors and committed failures. These are service/session integration cases;
 desktop controls and complete-game acceptance remain open.
+
+U06 preparation cases cover signed strength bonuses, retained defense cache,
+fortress/walls/fighter precedence, health-weighted defender selection and later
+ties, city-slot-zero defense exceptions, ordinary/special/barbarian preparation,
+preview normalization and actual submarine standing-goal replacement. Division
+and authority failures retain their preceding cache/notice effects. These cases
+do not execute damage rounds, casualties or desktop combat.

@@ -58,6 +58,7 @@
           $(Oc2RepositoryRoot)docs/algorithms/U03-pathfinding-and-goto.md;
           $(Oc2RepositoryRoot)docs/algorithms/U04-unit-orders-and-activation.md;
           $(Oc2RepositoryRoot)docs/algorithms/U05-transport-and-special-movement.md;
+          $(Oc2RepositoryRoot)docs/algorithms/U06-combat-and-veterancy.md;
           $(Oc2RepositoryRoot)docs/algorithms/P01-map-projection-and-interaction.md;
           $(Oc2RepositoryRoot)docs/algorithms/P02-map-rendering-and-minimap.md;
           $(Oc2RepositoryRoot)docs/algorithms/P03-graphics-and-asset-processing.md;
