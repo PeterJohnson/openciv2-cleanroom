@@ -289,10 +289,11 @@ public static partial class StateConversion
         (value.Damage ? 0x40U : 0U) |
         (value.SecondaryDamage ? 0x80U : 0U));
 
-    public const ushort GameRulesMask = 0x8190;
+    public const ushort GameRulesMask = 0x8191;
 
     public static GameRules DecodeGameRules(ushort bits) => new()
     {
+        ExpandedBarbarianTypes = (bits & 0x1) != 0,
         NormalCombat = (bits & 0x10) != 0,
         Bloodlust = (bits & 0x80) != 0,
         NoRestart = (bits & 0x100) != 0,
@@ -300,7 +301,8 @@ public static partial class StateConversion
     };
 
     public static ushort EncodeGameRules(GameRules value) => (ushort)(
-        0x002fU |
+        0x002eU |
+        (value.ExpandedBarbarianTypes ? 0x1U : 0U) |
         (value.NormalCombat ? 0x10U : 0U) |
         (value.Bloodlust ? 0x80U : 0U) |
         (value.NoRestart ? 0x100U : 0U) |

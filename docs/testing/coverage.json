@@ -4782,6 +4782,44 @@
         "A03.worker-rotated-movement-stacks",
         "A03.worker-signed-time-recommendations"
       ]
+    },
+    {
+      "id": "barbarian-periodic-spawning",
+      "status": "partial",
+      "contract": "W06 periodic barbarian spawning; F03/F06 rules flag; F05 setup; U01 creation/deletion; U04 sleep; U02 control; C01/C09 queries",
+      "publicSurface": "BarbarianSpawning.Begin/Operation.Resume; IBarbarianSpawningEffects; GameRules.ExpandedBarbarianTypes",
+      "review": "Actual creation, sleep, relocation and stack deletion preserve sea-raid and uprising ordering. Cases cover entry/cadence, global versus human discovery, signed water/counts/treasury, exhausted and last-candidate searches, short maps, moving nearest-city centers, control/region/occupancy/bounds gates, surge, groups of four, rank-index government, visibility, final creation failure, cosmetic diagnostics and required failure prefixes. Rules bit round-trips and fresh setup retain classic defaults. Local desktop modes only. W06 orders/ransom and full turn/generated desktop acceptance remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/BarbarianSpawning.Uprising.cs",
+        "src/OpenCiv2.Core/BarbarianSpawning.cs",
+        "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Core/State/SemanticFlags.cs",
+        "src/OpenCiv2.Formats/FlagConversion.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/PlayerSetup.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/BarbarianSpawningCases.cs"
+      ],
+      "sharedGroups": [
+        "W06.spawn-entry-city-gates",
+        "W06.spawn-raid-then-uprising",
+        "W06.spawn-required-failures",
+        "W06.spawn-sea-cadence-counts",
+        "W06.spawn-sea-failure-deletion",
+        "W06.spawn-sea-last-short-map",
+        "W06.spawn-sea-search-exhaustion",
+        "W06.spawn-sea-types-sleep",
+        "W06.spawn-type-flag-conversion",
+        "W06.spawn-uprising-counts-grouping",
+        "W06.spawn-uprising-moving-center",
+        "W06.spawn-uprising-notice-capacity",
+        "W06.spawn-uprising-search-control",
+        "W06.spawn-uprising-spatial-rejections",
+        "W06.spawn-uprising-surge",
+        "W06.spawn-uprising-treasury-boundary",
+        "W06.spawn-uprising-types-rank"
+      ]
     }
   ]
 }

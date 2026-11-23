@@ -229,7 +229,7 @@ public static class PlayerSetup
                                 remembered.NoRestart);
                             var checks = Invoke(() => services.ChooseAdvanced(defaults)).Checks;
                             ClassicConfigurationMetadata.ResetRules(runtime.Process, runtime.World, preferences: true);
-                            globals.Rules = default;
+                            globals.Rules = new() { ExpandedBarbarianTypes = true };
                             if (!checks.SimplifiedCombat)
                             {
                                 globals.Rules.NormalCombat = true;

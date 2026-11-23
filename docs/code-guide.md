@@ -953,7 +953,13 @@ the complete local dispatcher is tested through relocation, grant and cleanup.
 The low-seven regional presence check includes `SettlementRestrictions`, whose
 two independent values are translated by F06; the unrelated high bit remains
 opaque. Out-of-catalog Armor prerequisites require explicit discovery backing.
-Periodic barbarian spawning, orders and ransom remain separate W06 work.
+`BarbarianSpawning` implements local periodic raids/uprisings using actual unit
+creation, sleep, stack relocation/deletion, treasury and same-medium control
+queries. Search retries retain the nearest-city replacement; final creation
+failure suppresses the notice without suppressing human-city redraw. Its
+operation routes real nested lifecycle decisions and records cosmetic failures.
+`GameRules.ExpandedBarbarianTypes` carries the specified base-rules bit through
+F06 and setup. F04 invocation, barbarian orders and ransom remain separate work.
 
 `Units/MovementCompletion` composes U02 ordinary arrival, common finish and local
 cleanup. It calls actual C09 capture, W03 revelation, U05 special/transport finish,

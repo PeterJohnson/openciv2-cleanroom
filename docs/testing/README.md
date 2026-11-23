@@ -926,3 +926,13 @@ runs through A04/U04/W04. Population cases use real cargo-aware destruction,
 retain the supported-home distinction, signed counts/size, cosmetic diagnostics
 and failure prefixes. Missing custom work definitions retain earlier goals. Full
 tactical/turn/desktop-game acceptance remains open.
+
+W06 periodic spawning groups cover turn/activity/cadence and city admission,
+actual raid creation/sleep/relocation and ship-failure stack deletion. Sea search
+tests include exhaustion, the last permitted candidate and short maps. Uprisings
+use real treasury and control queries, moving nearest-city centers, signed sizes,
+surges, fixed type identities, direct rank-index government and groups of four.
+Capacity cases distinguish final failure from last success; visibility, local
+notice/autoplay and cosmetic failures preserve committed creation. The rules bit
+round-trips through save/preferences and retains setup defaults. Full F04 and
+generated desktop-game acceptance remain open; browser execution is deferred.

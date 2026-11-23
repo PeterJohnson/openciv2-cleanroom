@@ -160,12 +160,13 @@ public record struct TutorialProgress
 /// <summary>F03 §8 / configuration encodings: logical settings; unassigned stored bits belong to adapters.</summary>
 public record struct GameRules
 {
+    public bool ExpandedBarbarianTypes;
     public bool NormalCombat;
     public bool Bloodlust;
     public bool NoRestart;
     public bool FlatWorld;
 
-    public static GameRules Normal => new() { NormalCombat = true };
+    public static GameRules Normal => new() { ExpandedBarbarianTypes = true, NormalCombat = true };
 }
 
 /// <summary>F03 §8 / F06 §2: logical settings; unassigned stored bits belong to adapters.</summary>

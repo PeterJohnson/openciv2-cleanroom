@@ -4861,3 +4861,45 @@ eight identity tests and three coverage tests passed.
 W06 barbarian spawning/orders/ransom, full A04/A01/turn orchestration, generated
 desktop composition and complete human/AI-game acceptance remain open. Browser
 and cross-platform execution remain deferred.
+
+## W06 periodic sea raids and uprisings
+
+`BarbarianSpawning` supplies the periodic producer with actual U01 creation,
+U04 sleep, synchronized in-place relocation and whole-stack deletion. Entry
+preserves activity/difficulty thresholds, cadence and signed Armor-prerequisite
+queries. Sea search admits at most 1,000 candidates; exhaustion returns from the
+whole operation. Ship/escort types retain global versus human discovery and the
+base-rules setting. Failed ship creation deletes the actual remaining stack and
+still permits the subsequent city attempt.
+
+Uprisings call the shared C09 treasury query and replace their search center with
+each unrestricted nearest-city result. Bounds, same-medium control, region and
+occupancy gates retain their ordering and final-attempt exclusion. Size/surge
+arithmetic, direct strongest-rank indexing, fixed unit identities, groups of four,
+Fanatics veterancy and exploration visibility are preserved. The final creation
+result controls notification; a human city's redraw still occurs after capacity
+failure or autoplay. Local presentation failures are diagnostic and required
+failures retain earlier creation. The operation routes actual nested lifecycle
+decisions without introducing cosmetic reentry points.
+
+`GameRules.ExpandedBarbarianTypes` exposes the specified base-rules bit, including
+save/preference conversion and fresh setup defaults. The first probe found that
+advanced setup also needed to initialize this newly semantic bit. Test assertions
+were corrected for actual U01 visibility, silent stack deletion/pool shrinking
+and the controlled-choice exception type. Seventeen groups cover the producer,
+its real children, bounds, failure prefixes and the format setting.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1379 of 1381**, with the two existing
+platform/audio skips. The shared probe passed **1346 groups** across 152 coverage
+families; source identity verified **721 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-barbarian-spawning-native.json` | `64b5f4ceaf43d4133a0c5ebce03e78e2687cb881d78e054496e55893404245ba` |
+| `m4-barbarian-spawning-identity.json` | `a68e6f5b9117edad258f4beb4d12b78ed160b850e5e740bcf1999a1fd7ca154b` |
+
+W06 barbarian orders/ransom, full A04/A01/F04 orchestration, generated desktop
+composition and complete human/AI-game acceptance remain open. Browser and
+cross-platform execution remain deferred.

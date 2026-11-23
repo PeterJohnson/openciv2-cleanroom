@@ -120,7 +120,7 @@ public sealed class LocalGame : IDisposable
         MapRegions.Rebuild(map, true);
         const int owner = LocalGameRules.Owner;
         ref var globals = ref world.Globals;
-        globals.Rules = new() { NormalCombat = true, FlatWorld = true };
+        globals.Rules = GameRules.Normal with { FlatWorld = true };
         globals.Turn = 1;
         globals.FirstLaunchTurn = -1;
         globals.Year = (short)Calendar.Year(globals.Turn, globals, world.Scenario, GameplayContent.Builtin.Values.Calendar);
