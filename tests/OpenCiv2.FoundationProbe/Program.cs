@@ -1,6 +1,13 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
+if (args is ["--hall-reference", string hallFile])
+{
+    using var output = new FileStream(hallFile, FileMode.CreateNew);
+    output.Write(FoundationSuite.HallReference());
+    return 0;
+}
+
 if (args is ["--local-score-reference", string scoreSaved, string scoreContinued])
 {
     var reference = FoundationSuite.LocalScoreReference();

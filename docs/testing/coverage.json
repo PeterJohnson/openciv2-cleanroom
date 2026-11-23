@@ -3093,6 +3093,34 @@
         "V08.score-components",
         "V08.spaceship-conquest-score"
       ]
+    },
+    {
+      "id": "hall-of-fame",
+      "status": "partial",
+      "contract": "F06 HALLFAME.DAT record definition and V08 section4 preparation, classic persistence, insertion/retry and numeric display",
+      "publicSurface": "ClassicHallOfFame; StoredHallRecord; HallOfFame; HallOfFameOperation; civilization.hall; native and buffered file storage",
+      "review": "Preserves six 72-byte records, signed score/rating narrowing, opaque name padding, sparse score/rating reset, sequential partial reads/writes and no rollback/removal. Ranking is strict by stored rating with stable ties and whole-record shifts; clear retries the same prepared record and retained rank, and display reloads after save. Native storage verifies truncation, case alias, short input and failed open; desktop viewer loads the same classic file without changing it or game saves. Safe new names reject more than 23 CP1252 bytes or embedded NUL; new name padding starts zero, imported bytes remain exact. Malformed stored names/difficulty get display diagnostics; unavailable fame titles remain omitted. Full end-game caller integration and localized fame-title resources remain unfinished; browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.App/SeamApp.cs",
+        "src/OpenCiv2.Desktop/Program.cs",
+        "src/OpenCiv2.Formats/ClassicHallOfFame.cs",
+        "src/OpenCiv2.Session/HallOfFame.cs",
+        "src/OpenCiv2.Session/HallOfFameOperation.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Score.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.Base.Tests/NativeClassicTests.cs",
+        "tests/OpenCiv2.FoundationCases/HallOfFameCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "F06.hall-records",
+        "M4.local-hall-viewer",
+        "V08.hall-file-transfers",
+        "V08.hall-insertion-continuation",
+        "V08.hall-ranking-display"
+      ]
     }
   ]
 }

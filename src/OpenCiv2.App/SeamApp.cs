@@ -41,16 +41,18 @@ public sealed class SeamApp : Application
     private static LocalReplayRecorder? localReplay;
     private static IPreferenceWriter? localPreferences;
     private static PreferenceSnapshot? initialLocalPreferences;
+    private static IFileStorage? localHallStorage;
     private IDesktopAutomation? automation;
     public static void ConfigureLocalGame(Func<LocalGame, SessionPanel, IDesktopAutomation>? automationFactory = null,
         LocalReplayRecorder? replay = null, IPreferenceWriter? preferences = null,
-        PreferenceSnapshot? initialPreferences = null)
+        PreferenceSnapshot? initialPreferences = null, IFileStorage? hallStorage = null)
     {
         startLocalGame = true;
         startAutomation = automationFactory;
         localReplay = replay;
         localPreferences = preferences;
         initialLocalPreferences = initialPreferences;
+        localHallStorage = hallStorage;
     }
     private MapPainter? painter;
     private DispatcherTimer? timer;
@@ -194,7 +196,8 @@ public sealed class SeamApp : Application
         if (startLocalGame && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
         {
             startLocalGame = false;
-            play = new(localReplay, localPreferences, initialLocalPreferences);
+            play = new(localReplay, localPreferences, initialLocalPreferences, localHallStorage);
+            localHallStorage = null;
             localReplay = null;
             localPreferences = null;
             initialLocalPreferences = null;

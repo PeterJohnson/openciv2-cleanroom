@@ -17,6 +17,28 @@ public sealed class NativeClassicTests : IDisposable
     public void Dispose() => Directory.Delete(directory, true);
     private void Text(string name, string text) => File.WriteAllBytes(Path.Combine(directory, name), Encoding.Latin1.GetBytes(text));
     [Fact]
+    public void Hall_records_use_native_replacement_and_preserve_short_input()
+    {
+        // V08 §4 / F06 HALLFAME.DAT: actual native bytes, case alias and failed output.
+        byte[] initial = OpenCiv2.FoundationCases.FoundationSuite.HallReference();
+        string path = Path.Combine(directory, "HallFame.dat");
+        File.WriteAllBytes(path, [.. initial, 1, 2, 3]);
+        var hall = new HallOfFame(new ClassicStorage(directory));
+        Assert.Equal(HallLoadStatus.Loaded, hall.Load());
+        var entry = hall.Record(0) with { Rating = 90, Score = 777 };
+        Assert.Equal(0, hall.Insert(entry)); Assert.True(hall.Save());
+        byte[] saved = File.ReadAllBytes(path); Assert.Equal(432, saved.Length);
+        Assert.Equal((short)777, ClassicHallOfFame.Decode(saved.AsSpan(0, 72)).Score);
+        Assert.Equal(3, new HallOfFame(new ClassicStorage(directory)).Show(-1).Count);
+        File.WriteAllBytes(path, saved[..100]);
+        Assert.Equal(HallLoadStatus.ShortRead, hall.Load());
+        Assert.All(Enumerable.Range(0, 6), i => Assert.Equal((short)-1, hall.Record(i).Score));
+        Assert.Equal(saved[..100], File.ReadAllBytes(path));
+        File.Delete(path); Directory.CreateDirectory(path);
+        Assert.False(hall.Save()); Assert.True(Directory.Exists(path));
+    }
+
+    [Fact]
     public void Binary_controls_short_prefixes_and_independent_cursors()
     {
         byte[] bytes = [0, 26, 255, 13, 10]; File.WriteAllBytes(Path.Combine(directory, "MiXeD.sAv"), bytes); var files = new ClassicStorage(directory);

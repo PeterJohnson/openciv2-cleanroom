@@ -24,6 +24,7 @@ public sealed class LocalGame : IDisposable
     private ParticipantId participant;
     private readonly LocalReplayRecorder? replay;
     private readonly IPreferenceWriter preferences;
+    private readonly HallOfFame hall;
     private readonly RateDecisionPreferences rateChoices = new();
     private readonly PreferenceSnapshot? initialPreferences;
 
@@ -33,9 +34,10 @@ public sealed class LocalGame : IDisposable
     public LocalGame() : this(null) { }
 
     public LocalGame(LocalReplayRecorder? replay, IPreferenceWriter? preferences = null,
-        PreferenceSnapshot? initialPreferences = null)
+        PreferenceSnapshot? initialPreferences = null, IFileStorage? hallStorage = null)
     {
         this.replay = replay;
+        hall = new(hallStorage ?? new BufferedHallStorage());
         this.preferences = preferences ?? new BufferedPreferenceWriter();
         this.initialPreferences = initialPreferences;
         runtime = NewRuntime();
@@ -85,7 +87,7 @@ public sealed class LocalGame : IDisposable
 
         var candidate = new SessionRuntime(process, new(nextRuntime++));
         candidate.EnableLocalPlay(replay);
-        LocalPlayCommands.Register(candidate, preferences, rateChoices);
+        LocalPlayCommands.Register(candidate, preferences, rateChoices, hall);
         candidate.BeginClientSession(SessionSeeds);
         return candidate;
     }

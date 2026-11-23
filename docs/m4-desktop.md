@@ -16,7 +16,7 @@ in the [M2 closeout](m2-closeout.md).
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
-| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Spaceship reports/arrival outcomes, fame-title resources, victory/retirement, remaining history and Hall of Fame remain pending. |
+| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Spaceship reports/arrival outcomes, fame-title resources, victory/retirement and remaining history remain pending; the end-game caller has not yet joined Hall of Fame insertion. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
@@ -1993,3 +1993,64 @@ validator tests passed. No browser or cross-platform execution was added.
 | `m4-score-play.json` | `214e57bba09bf3a7d046fefc7761c7dab204acf640f50d913c26fd8610c94fcc` |
 | `m4-score-native.json` | `f52877a5645c60efdb3fc3c19225b250bbb19fea844e192308fc569fee18949c` |
 | `m4-score-identity.json` | `a2628ff67b75a8484bc8f9045e54a96b99cbe2642b6261056df13f23338d9d33` |
+
+
+## Hall of Fame records and desktop viewing
+
+`ClassicHallOfFame` implements the F06 headerless six-record format with exact
+numeric widths and retained 24-byte name fields. `HallOfFame` implements V08 §4
+record preparation from the existing shared score/rating and V02 population
+query, without recalculating either score or rating. It resolves default/custom
+leader and plural names from installed rule/name state. Scores and ratings narrow
+to signed 16-bit values, scenario/objective/calendar fields remain distinct, and cheated
+status adds its stored marker. V08 uses the actual Scenario bit (`0x80`), not
+the separate saved-as-scenario/export bit; score queries/reports and Hall records
+now explicitly preserve that distinction, with a regression for export-only state.
+
+Loading sparsely resets only score/rating, reads records in order, copies accepted
+partial prefixes and sparsely resets all rows after the first failed record.
+Writing uses the actual classic truncate/write/close service and stops on the first
+failed item. It does not delete or roll back partial output. Display reloads the
+file, so failed output or external changes can affect the visible ranking.
+Insertion compares retained ratings strictly, shifts whole records and preserves
+previous rank when nothing qualifies. `HallOfFameOperation` retains one prepared
+entry across the Clear/insert/save/show loop; any nonzero modal result retries
+that loop, including nonboolean values from a trusted caller. Output failure is reported after
+closing while preserving file effects; no automatic retry is added.
+
+Safe new-name policy rejects embedded NUL, unrepresentable CP1252 text and names
+longer than 23 bytes before touching the file. Fresh name padding starts at zero;
+loaded padding stays byte-exact through storage, shifting and sparse resets.
+Unterminated/unrepresentable stored names and invalid difficulty values receive
+safe display diagnostics. Numeric rows preserve signed score hiding, ordinary or
+saved scenario-month dates, objective/population selection and scenario/cheat
+markers. Localized fame titles remain omitted pending the owning resource join.
+
+The desktop Advisors Hall of Fame action uses `HALLFAME.DAT` in the same native
+storage directory as gameplay preferences. The ordinary viewer offers Close only;
+it cannot insert a current game or clear rankings. End-game insertion is a trusted
+session continuation with real file services, exercised through shared tests, but
+the full V08 outcome caller remains unfinished. Native UI acceptance reads ranked
+records across game reload, verifies unchanged Hall/game bytes, then verifies a
+short Hall file displays an empty ranking without rewriting the partial input.
+No browser or cross-platform acceptance is claimed.
+
+Root/App formatting verification, root/desktop automation Release builds and
+project-boundary checks passed. The native suite passed **840 of 842 tests**
+with the two existing platform/audio skips. The probe passed **807 shared groups**
+and verified **489 compiled inputs**. All **28 Linux desktop checks** passed.
+Coverage maps all groups across 96 families; eight identity and three coverage
+validator tests passed. The final suite includes trusted nonboolean Hall replies
+both with and without an insertion rank.
+
+An earlier desktop attempt missed the End Turn button after imported text changed
+its layout. Its failure snapshot showed no command submission. The input driver
+now waits for measured button bounds to stay fixed across service frames and
+records the last click bounds in failure diagnostics. The final acceptance run
+passed with that stabilization; it does not automatically repeat a submitted command.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-hall-play.json` | `1add1b700b6ca9cd534298570d3906e47102abbb45a8c439f13fd5429295e01f` |
+| `m4-hall-native.json` | `5dd54ea899b14d69ef5ef0a47bf90bc7b0207638c2ee4e9f1dc5e925e4e75e17` |
+| `m4-hall-identity.json` | `579e71e3b1cfe48bda84bc14e176c0ba833b6ddf633045419e4fa137e909bdbd` |

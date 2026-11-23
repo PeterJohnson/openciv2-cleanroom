@@ -48,6 +48,7 @@ public sealed partial class SeamView
         yield return new(PlaySave, "File", "Save game", "Primary+S", ready && SeamApp.Storage is not null);
         yield return new(PlayReload, "File", "Reload save", null, ready && SeamApp.Storage is not null);
         yield return new(PlayCity, "Orders", "Open city", null, ready && play?.City is not null);
+        yield return new(LocalPlayCommands.Hall, "Advisors", "Hall of Fame", null, ready);
         yield return new(LocalPlayCommands.Score, "Advisors", "Civilization score", null, ready);
         yield return new(LocalPlayCommands.EditRates, "Orders", "Tax rates", null, ready);
         yield return new(LocalPlayCommands.Revolution, "Orders", "Revolution", null, ready && play?.CanRevolt == true);

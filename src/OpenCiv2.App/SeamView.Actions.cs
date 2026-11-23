@@ -70,6 +70,9 @@ public sealed partial class SeamView
             case LocalPlayCommands.Fortify:
                 UnitCommand(LocalPlayCommands.Fortify);
                 break;
+            case LocalPlayCommands.Hall:
+                PlayCommand(LocalPlayCommands.Hall);
+                break;
             case LocalPlayCommands.Score:
                 PlayCommand(LocalPlayCommands.Score);
                 break;

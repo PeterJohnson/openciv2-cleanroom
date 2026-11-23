@@ -57,6 +57,7 @@ def main():
 def drive(args, app, observation, storage):
     driver = X11()
     checks = []
+    last_click = None
 
     def wait(predicate):
         deadline = time.monotonic() + 10
@@ -79,10 +80,12 @@ def drive(args, app, observation, storage):
                                  f"controls {controls}; message {state['message']!r}")
         failure = args.report.with_suffix('.failure.json')
         failure.parent.mkdir(parents=True, exist_ok=True)
-        failure.write_text(json.dumps(state, indent=2) + '\n')
+        failure.write_text(json.dumps({**(state or {}), 'lastClick': last_click}, indent=2) + '\n')
         raise AssertionError(f'Timed out waiting for the expected application state; current window saved to {failure}')
 
     def click_box(box, state):
+        nonlocal last_click
+        last_click = {'bounds': dict(box), 'serviceTicks': state['serviceTicks']}
         scale = state['scaling']
         assert box['enabled'] and box['width'] > 0 and box['height'] > 0, box
         assert 0 <= box['y'] + box['height'] / 2 <= state['height'], box
@@ -116,6 +119,23 @@ def drive(args, app, observation, storage):
         ticks = state['serviceTicks']
         state = wait(lambda s: s['serviceTicks'] >= ticks + 2 and ready(s))
         state = sidebar_visible(lambda s: s['play']['controls'][name])
+        # Imported text can change wrapping after a control first becomes enabled.
+        # Require its measured bounds to stay fixed across several service frames.
+        stable_box, stable_tick = None, 0
+
+        def settled(s):
+            nonlocal stable_box, stable_tick
+            if not ready(s):
+                stable_box = None
+                return False
+            box = s['play']['controls'][name]
+            signature = tuple(box[key] for key in ('x', 'y', 'width', 'height'))
+            if signature != stable_box:
+                stable_box, stable_tick = signature, s['serviceTicks']
+                return False
+            return s['serviceTicks'] >= stable_tick + 6
+
+        state = wait(settled)
         click_box(state['play']['controls'][name], state)
 
     def command(action, expected='Completed'):
@@ -750,6 +770,40 @@ def drive(args, app, observation, storage):
         wait(lambda s: s['message'] == 'Classic save written.')
         compare_work_save(score_continued)
         checks.append('native score report prepares once, displays rating and pending ship points, and matches direct saved/resumed state')
+        hall_file = storage / 'HALLFAME.DAT'
+        subprocess.run(['dotnet', str(args.probe), '--hall-reference', str(hall_file)], check=True)
+        hall_bytes = hall_file.read_bytes()
+
+        def open_hall():
+            state = wait(lambda s: s['menu']['groups']['Advisors']['bounds'] is not None)
+            menu_click(state, state['menu']['groups']['Advisors']['bounds'])
+            state = wait(lambda s: s['menu']['actions']['civilization.hall']['bounds'] is not None)
+            menu_click(state, state['menu']['actions']['civilization.hall']['bounds'])
+            return wait(lambda s: s['dialog']['visible'] and s['prompt'].startswith('Hall of Fame'))
+
+        hall = open_hall()
+        assert '1. Rowan' in hall['prompt'] and '2. Cedar' in hall['prompt']
+        assert 'Score 900' in hall['prompt'] and 'Rating 80%' in hall['prompt']
+        assert sorted(k for k in hall['dialog']['regions'] if k.startswith('choice.')) == ['choice.0']
+        choice(0)
+        wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        assert hall_file.read_bytes() == hall_bytes
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(score_continued)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        assert '1. Rowan' in open_hall()['prompt']
+        choice(0)
+        wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        assert hall_file.read_bytes() == hall_bytes
+        checks.append('native Hall of Fame viewer reads classic ranking across reload without changing the file or game')
+        hall_file.write_bytes(hall_bytes[:30])
+        assert 'No recorded games.' in open_hall()['prompt']
+        choice(0)
+        wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        assert hall_file.read_bytes() == hall_bytes[:30]
+        checks.append('native short Hall of Fame input shows an empty ranking and preserves the partial file')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
     finally:

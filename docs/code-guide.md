@@ -450,5 +450,13 @@ is world-owned scratch; `ScoreReport` is an owned presentation snapshot. Direct
 score queries use stored moods, while explicit ordinary report preparation calls
 actual C03 for every owned city before actual V07 calculation and rating.
 `CivilizationScoreOperation` owns the desktop report lifetime and prevents repaint
-from triggering calculation. Outcome dispatch and fame-title/Hall of Fame
-consumers remain separate work.
+from triggering calculation. Outcome dispatch and fame-title resources remain
+separate work.
+
+F06 Hall of Fame bytes are owned by `ClassicHallOfFame`; numeric rows retain their
+full name-field bytes. `HallOfFame` in Session owns V08 preparation, sparse I/O,
+ranking and display decoding. `HallOfFameOperation` owns the insertion/clear modal
+loop and its captured current entry. Ordinary desktop viewing passes no entry.
+Desktop uses `ClassicStorage` beside CIV2.DAT; headless sessions use
+`BufferedHallStorage` with the same record-transfer behavior. Outcome dispatch
+must explicitly invoke insertion after real score/rating reports.

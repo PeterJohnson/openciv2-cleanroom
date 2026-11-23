@@ -11,13 +11,14 @@ public static partial class LocalPlayCommands
     public const string Select = "unit.select";
     public const string Move = "unit.move";
 
-    internal static void Register(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences rateChoices)
+    internal static void Register(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences rateChoices, HallOfFame hall)
     {
         runtime.RegisterCommand(Define(Select, "Activate an owned unit.", [new("unit", ValueKind.Unit)],
             [new("unit", ValueKind.Unit)], SelectUnit, ValidateUnit));
         runtime.RegisterCommand(Define(Move, "Move one step in direction 0–7, clockwise from northeast.",
             [new("unit", ValueKind.Unit), new("direction")], [new("unit", ValueKind.Unit)], MoveUnit, ValidateUnit));
         RegisterScoreCommand(runtime);
+        RegisterHallCommand(runtime, hall);
         RegisterCityCommands(runtime);
         RegisterTurnCommands(runtime, preferences, rateChoices);
         RegisterWorkCommands(runtime);

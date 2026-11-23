@@ -73,7 +73,7 @@ public static partial class FoundationSuite
         Equal(2060, score.Calculate(1)); Equal(ObjectiveOutcome.DecisiveVictory, w.Score.ObjectiveOutcome); // No sorting.
         var negative = ScoreFor(f, GameplayContent.Builtin.Values.Scoring with { PointsPerObjective = -1000 });
         Equal(-4000, negative.Calculate(1)); Equal(-4000, negative.Prepare(1)!.Score); // No ordinary floor.
-        w.Globals.Status.Scenario = false;
+        w.Globals.Status.Scenario = false; w.Globals.Status.ScenarioExport = true;
         negative.Calculate(1); Equal(0, w.Score.ScenarioPoints); Equal(3, w.Score.CivObjectives);
     }
 

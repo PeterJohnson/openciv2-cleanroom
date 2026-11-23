@@ -32,7 +32,7 @@ public sealed record ScoreReport(int Civilization, bool Objective, int Citizens,
 public sealed class CivilizationScore(GameState world, ScoringValues values, SpaceshipPerformance spaceship, CityEconomy economy)
 {
     private ScoreWorkspace Work => world.Score;
-    private bool Objective => world.Globals.Status.HasScenario && world.Scenario.Flags.ObjectiveVictory;
+    private bool Objective => world.Globals.Status.Scenario && world.Scenario.Flags.ObjectiveVictory;
 
     public int ObjectiveValue(CitySlot slot)
     {
@@ -239,6 +239,6 @@ public sealed class CivilizationScore(GameState world, ScoringValues values, Spa
             Work.Pollution, Work.Peace, Work.FutureTechs, Work.BarbarianBonus, Work.Total, Work.ConquestBonus,
             Work.TotalObjectives, Work.ObjectiveCivValue, Work.CivObjectives, Work.ObjectiveOutcome,
             new(Enumerable.Range(0, 4).Select(i => world.Scenario.VictoryThresholds[i])), new(visible),
-            Work.Rating, Work.TitleIndex, world.Globals.Turn >= values.Peace.FirstEligibleTurn, world.Globals.Status.HasScenario, world.Globals.Status.Cheated);
+            Work.Rating, Work.TitleIndex, world.Globals.Turn >= values.Peace.FirstEligibleTurn, world.Globals.Status.Scenario, world.Globals.Status.Cheated);
     }
 }
