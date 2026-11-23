@@ -2887,6 +2887,32 @@
         "W04.work-thresholds-progress",
         "W04.work-water-conversion-admission"
       ]
+    },
+    {
+      "id": "city-terrain-goals",
+      "contract": "A03 \u00a73 city work goals and road-link planning, F04 city processing and post-city analysis subset",
+      "publicSurface": "CityTerrainGoals.Publish/FindRoad and desktop turn job and government score publication",
+      "status": "partial",
+      "review": "Uses C02 suggestions, U03 uniform routes and A01 goals. Tests cover pollution priority and capacity, road candidate order and directed treaties, first-job rejection, bridge and railroad gates, existing-job retention and signed priority narrowing. Desktop city turns publish and age pollution goals, reset government scores and continue through save and reload. Full city analysis formulas, worker movement and generated-game calls remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/CityTerrainGoals.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityTerrainGoalCases.cs",
+        "tests/OpenCiv2.FoundationProbe/Program.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "A03.city-calculation-goals-boundary",
+        "A03.city-job-priority-narrowing",
+        "A03.city-pollution-goals",
+        "A03.city-railroad-job-retention",
+        "A03.road-city-order-treaties",
+        "A03.road-first-job-retained-state",
+        "A03.road-water-rail-endpoint",
+        "M4.local-city-terrain-goals-scores"
+      ]
     }
   ]
 }

@@ -195,6 +195,13 @@ The desktop publishes scoped work options and resumes queued jobs while selectin
 a manual unit. Its current authored Pioneer domain is before the first city;
 A03 workers, general U04 execution, pillaging and generated-game callers remain open.
 
+`CityTerrainGoals` owns the A03 §3 pollution scan, retained job priority and road
+link planning. It uses A01 goal insertion and the U03 uniform path workspace.
+The desktop city turn enables C02 job collection during its second C03
+calculation, publishes goals after research and upkeep, and runs A08 score
+adjustments before assessment. The F04 specification records the remaining
+city-analysis arithmetic.
+
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
 are explicit semantic inputs while their original-file binding remains a gap;

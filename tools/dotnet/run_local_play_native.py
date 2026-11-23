@@ -456,6 +456,39 @@ def drive(args, app, observation, storage):
         compare_work_save(work_done)
         checks.append('native terrain work selector, queued progress, save/reload and exact completion match the direct client')
 
+        jobs_initial = observation.with_name('city-jobs-initial.sav')
+        jobs_completed = observation.with_name('city-jobs-completed.sav')
+        jobs_continued = observation.with_name('city-jobs-continued.sav')
+        subprocess.run(['dotnet', str(args.probe), '--local-city-jobs-reference', str(jobs_initial),
+                        str(jobs_completed), str(jobs_continued)], check=True)
+        state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['File']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['file.library']['bounds'])
+        import_save(jobs_initial)
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.' and s['play']['turn'] == 1)
+
+        def civilization_records(path):
+            stored = json.loads(subprocess.check_output([
+                'dotnet', str(args.cli), 'inspect', str(path), '--civilizations', '--json']))
+            return [(record['slot'], record['bytes']) for record in stored['records']]
+
+        def compare_city_jobs(expected):
+            click('save')
+            wait(lambda s: s['message'] == 'Classic save written.')
+            actual = observation.with_name('native-' + expected.name)
+            actual.write_bytes(saved_classic())
+            assert civilization_records(actual) == civilization_records(expected), expected.name
+
+        end_turn(2)
+        compare_city_jobs(jobs_completed)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        end_turn(3)
+        compare_city_jobs(jobs_continued)
+        checks.append('pollution goals and government scores match all direct-client civilization records after desktop turns and reload')
+
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
     finally:

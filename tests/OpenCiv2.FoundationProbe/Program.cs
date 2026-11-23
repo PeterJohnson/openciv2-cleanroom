@@ -17,10 +17,11 @@ if (args is ["--local-play-reference", string saved, string continued])
     return 0;
 }
 
-if (args is ["--local-work-reference", string initial, string working, string completed])
+if (args is ["--local-work-reference" or "--local-city-jobs-reference", string initial, string working, string completed])
 {
-    var reference = FoundationSuite.LocalTerrainWorkReference();
-    foreach (var (path, bytes) in new[] { (initial, reference.Initial), (working, reference.Working), (completed, reference.Completed) })
+    var reference = args[0] == "--local-work-reference" ? FoundationSuite.LocalTerrainWorkReference()
+        : FoundationSuite.LocalCityTerrainGoalReference();
+    foreach (var (path, bytes) in new[] { (initial, reference.Item1), (working, reference.Item2), (completed, reference.Item3) })
     {
         using var output = new FileStream(path, FileMode.CreateNew);
         output.Write(bytes);

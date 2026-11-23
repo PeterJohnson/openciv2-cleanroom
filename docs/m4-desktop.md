@@ -1548,3 +1548,39 @@ Receipts under `build/test-results/` (generated evidence, not committed):
 | `m4-desktop-work-headless.xml` | `d7d3019c84191aaeac2ee1154c6227ac54b551dd265a59df0c66c1ab9832b017` |
 | `m4-desktop-work-native.json` | `97b258c31c5d62e430ea0645207c5662d9119c66b5cbbf3038fef6506df72fe9` |
 | `m4-desktop-work-identity.json` | `ac988d70a355b34289998ee7d46e17418e6daa0f5a9a70c42ec3c696fa289f2b` |
+
+## City terrain goals and analysis during upkeep
+
+`CityTerrainGoals` publishes pollution jobs and retained C02 suggestions using
+A01 goal insertion. Its road planner follows the U03 uniform route, checks
+bridge and railroad knowledge, and tries owned cities before cities admitted by
+directed peace or alliance. A rejected first job ends that route. The retained
+suggestion and path workspace follow the individual search outcomes.
+
+Alder Valley now enables job collection during the second city calculation and
+publishes terrain goals after research and upkeep. The city pass clears the
+defined government scores, applies the anarchy contribution and A08 strategic
+adjustments, then runs A01 assessment. A03 tests cover the calculation join,
+directed treaty and job gates, priority retention, and polluted city
+continuation through direct and console commands.
+
+The F04 specification records two open arithmetic questions for the support
+and unhappiness score contributions and the best-shield summary. General
+worker movement, complete city and civilization upkeep, and generated human/AI
+play remain open. Browser and cross-platform work remain deferred.
+
+Root and App formatting verification and Release builds passed. The native
+suite passed **809 of 811 tests**, with two existing skips. The probe passed
+**777 shared cases** and verified **462 compiled inputs**. Repository graph,
+conformance, coverage, identity, gameplay data and schema checks passed.
+All **14 Linux desktop checks** passed, including civilization record equality
+with the direct client after the polluted city turn and its save/reload continuation.
+
+Receipts under `build/test-results/` (generated evidence):
+
+| Receipt | SHA-256 |
+| --- | --- |
+| `m4-desktop-cityjobs-play.json` | `2b8273595e9e6f44ba5ead69b15a8ef33fc937a8a584b4c4bd6b04983e23c143` |
+| `m4-desktop-cityjobs-headless.xml` | `38ced4c391776d1c5030654638004038c4b261b6bee0bef8f66c2d41c9843a58` |
+| `m4-desktop-cityjobs-native.json` | `beacac2381e8641e59cc5e35808e48dc78b29655d0922e00d429341c13f18c78` |
+| `m4-desktop-cityjobs-identity.json` | `b48daa693963e2827a9cdd848bc30a3d25737169a5c92d8ae5646cb6889ac2c9` |

@@ -46,6 +46,13 @@ order. Direct/console and native desktop cases start irrigation, save unfinished
 progress, reload, finish through activation and compare complete classic saves.
 Pillage diplomacy, general AI worker choice and full U04 execution remain open.
 
+A03 city terrain goal cases join C02 suggestions, uniform road paths and A01
+goal insertion. They cover pollution, directed treaties, bridge and rail
+requirements, rejection of a route's first job, and retained job priority.
+The desktop fixture imports a polluted city, advances through two city turns
+with a reload between them, and compares civilization records with the direct
+client, including terrain goals and government scores.
+
 Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
 costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
 terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct

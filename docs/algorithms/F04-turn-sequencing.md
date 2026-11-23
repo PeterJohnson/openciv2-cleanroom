@@ -496,6 +496,20 @@ The founder update in stage 1 occurs when
 as founder. The city-removed path does not execute stage 8. Do not add a
 universal cleanup block and assume its workspace effects match the original.
 
+### Open city-analysis arithmetic
+
+The stage-5 reference to additional support/unhappiness government-score terms
+does not yet define those terms. C02/C03's explicit yield, corruption and
+distribution contributions and C05's retirement sentinel are specified; they
+do not establish the missing parent expressions. Stage 7 likewise names the
+best-shield summary without defining its producer's scale, comparison and
+publication arithmetic. A02 consumes that retained value alongside doubled
+shield surplus and also shifts it; those consumers do not uniquely determine
+the producer. Keep these two parent operations open pending a precise behavioral
+contract or independent original-game observations. Do not infer missing formulas
+from historical source records or claim a complete F04 city analysis from the
+already specified contributions.
+
 ## 7. Unit reset, recovery and movement boundaries
 
 Global reset and per-civilization recovery are separate passes:

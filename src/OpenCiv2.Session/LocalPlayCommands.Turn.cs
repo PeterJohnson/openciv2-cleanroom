@@ -106,6 +106,7 @@ public static partial class LocalPlayCommands
         private ResearchOperation? research;
         private CityProduction.Operation? production;
         private int foodSurplus;
+        private bool largeBalancedCity, cityDisorder;
         private ResearchChoiceNotice? pendingResearch;
         private GameState? activeWorld;
         private OperationContext? currentContext;
@@ -174,6 +175,7 @@ public static partial class LocalPlayCommands
                 upkeepCommitted = true;
                 activeWorld = world;
                 world.Production.CivilizationTurnInProgress = true;
+                BeginCityPass(context);
                 nextCity = world.Entities.Cities.End - 1;
             }
             while (true)
@@ -202,6 +204,7 @@ public static partial class LocalPlayCommands
 
                     research = null;
                     MaintainBuildings(context, researchCity);
+                    FinishCity(context, researchCity);
                 }
                 if (nextCity < 0)
                 {
@@ -211,10 +214,12 @@ public static partial class LocalPlayCommands
                 var slot = new CitySlot((ushort)nextCity--);
                 if (world.Entities.Cities.At(slot).Token.Occupied && world.Entities.Cities.At(slot).Owner == context.Actor.Civilization)
                 {
+                    world.Entities.Cities.At(slot).Flags.Airlifted = false;
                     researchCity = slot;
                     production = BeginCityProduction(context, slot);
                 }
             }
+            FinishCityPass(context);
             AssessCivilization(context);
             world.Production.CivilizationTurnInProgress = false;
             activeWorld = null;
@@ -283,6 +288,48 @@ public static partial class LocalPlayCommands
                 .Assess(context.Actor.Civilization.Value, $"local-assessment/{world.Globals.Turn}");
         }
 
+        private static void BeginCityPass(OperationContext context)
+        {
+            var world = context.World;
+            int owner = context.Actor.Civilization.Value;
+            world.Civilizations[owner].GovernmentScore = default;
+            world.Production.WonderNotices[owner] = default;
+            world.Globals.TransientFlags.AttitudeDirty = false;
+            // F04's best-shield publication and additional support/mood score terms
+            // remain an explicit owner-specification gap; do not invent their scale.
+        }
+
+        private void FinishCity(OperationContext context, CitySlot slot)
+        {
+            var world = context.World;
+            new CityTerrainGoals(world, context.Process.Rules.Definitions).Publish(slot);
+            int balance = unchecked(world.Mood.Happy - world.Mood.Unhappy);
+            world.Mood.City = null;
+            world.Calculation.Processing = false;
+            ref var city = ref world.Entities.Cities.At(slot);
+            largeBalancedCity |= balance == 0 && city.Size > 5;
+            cityDisorder |= city.Flags.Disorder;
+            for (int observer = 1; observer < EntityLimits.Civilizations; ++observer)
+            {
+                if (world.Civilizations[city.Owner.Value].Treaties[observer].Alliance
+                    || world.Globals.WonderCity[WonderIds.Apollo] != -1)
+                {
+                    city.RememberedSize[observer] = unchecked((byte)city.Size);
+                }
+            }
+        }
+
+        private void FinishCityPass(OperationContext context)
+        {
+            var world = context.World;
+            int owner = context.Actor.Civilization.Value;
+            ref var scores = ref world.Civilizations[owner].GovernmentScore;
+            scores[(int)Government.Anarchy] = unchecked((short)(scores[(int)Government.Anarchy]
+                + 2 * scores[(int)Government.Despotism]));
+            new GovernmentPolicy(world, context.Process.Rules, CreateGovernments(context), context.Gameplay)
+                .AfterCities(owner, largeBalancedCity, cityDisorder);
+        }
+
         private static void ResetUnits(GameState world)
         {
             foreach (ref var tile in world.Map.Tiles)
@@ -317,7 +364,12 @@ public static partial class LocalPlayCommands
             var rules = context.Process.Rules.Definitions;
             ref var city = ref world.Entities.Cities.At(slot);
             ref var civ = ref world.Civilizations[city.Owner.Value];
+            if ((city.TurnsCaptured - 1 & 63) == (world.Globals.Turn & 63))
+            {
+                city.Founder = city.Owner;
+            }
             city.Flags.ImprovementSold = false;
+            city.Flags.SettlerNearby = city.Flags.Investigated = false;
             CityTarget target = new(slot, city.Token);
             int before = city.Size;
             int previousFood = city.FoodBox;
@@ -357,7 +409,11 @@ public static partial class LocalPlayCommands
 
             RetireUnsupportedUnits(context, slot);
 
+            world.Calculation.Reallocating = world.Calculation.Processing = true;
+            world.Calculation.JobFound = false;
+            world.Calculation.JobPriority = 0;
             LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
+            world.Calculation.Reallocating = false;
             var moodEffects = new CityTurnEffects(context);
             var governments = CreateGovernments(context);
             new CityMoodTurn(world, rules, governments, moodEffects.ReconsiderProduction, moodEffects).Run(slot, foodSurplus);
