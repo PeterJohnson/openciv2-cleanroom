@@ -4099,3 +4099,36 @@ General A04/A01 order choice, the U04 active-unit input/scheduling cycle, deskto
 service composition, full turn scheduling and generated human/AI-game acceptance
 remain open. These service/session joins do not establish complete M4. Browser
 and cross-platform execution remain deferred.
+
+## U04 return-home search and A04 damage recovery
+
+`UnitRecovery.GoHome` now selects actual owned cities and eligible aircraft
+carriers/submarines using U04's ordinary distance, first ties and raw Land-region
+filter. It retains the city/carrier tie, foreign-airbase behavior, human signed
+fuel-reach gate and zero-multiplier failure. It changes recovery orders or spent
+movement without changing home affiliation, task or executing a step itself.
+
+`UnitTacticsContext` captures A04's on-map city/terrain/domain/effective-role state,
+including the AI colonist clear before role selection. `GroundRecovery` evaluates
+actual damage classes and stack/spatial conditions, preserves the no-moves cargo
+bypass, nearby-city and peaceful-territory priorities, forced-attack damage reset,
+remote-air recovery, sea human-visibility gate and severe-recovery routes. Its
+GoHome calls are real; an integration case follows the resulting Sea Goto through
+U04 order execution, U03 selection and U02 displacement. It returns explicit next
+phases for the unfinished parent rather than claiming a complete AI chooser.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1191 of 1193**, with the two existing
+platform/audio skips. The shared probe passed **1158 groups** across 132 coverage
+families; source identity verified **658 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-recovery-native.json` | `744298409d2de753ae35cd5e3d5e462fe03577ccf8058274d9d559cba6410928` |
+| `m4-recovery-identity.json` | `cefa1ff6672863f3220223abe96ea8e50f8c3b118f108590719d4d777a461081` |
+
+A04 barbarian/work/off-map entry, trespass/forced-city admission, specialized
+routing, guards and movement planning remain open, as do the complete AI caller,
+desktop service composition, full turns and generated human/AI-game acceptance.
+Browser and cross-platform execution remain deferred.

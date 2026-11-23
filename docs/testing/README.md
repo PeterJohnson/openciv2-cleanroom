@@ -749,3 +749,12 @@ and required-publication failures retain prefixes. Private runtime cases cover
 reply/cancel and a passenger restart through automatic cooperative continuation.
 General AI orders, active-unit scheduling and desktop/full-game acceptance remain
 open; browser and cross-platform execution remain deferred.
+
+U04 recovery-search cases distinguish ordinary from weighted city selection,
+first ties, raw Land regions on Ocean, unrestricted carrier candidates, submarine
+missiles, foreign airbases, signed fuel/range and zero-multiplier failure. A04
+cases cover context/colonist retention, signed HP damage classes, no-moves cargo,
+city and peace priorities, remote air versus sea visibility, severe recovery and
+transport companions. An actual Sea recovery Goto executes through U04/U03/U02.
+These phases return their specified parent routes; the full A04 chooser and
+desktop game loop remain incomplete.

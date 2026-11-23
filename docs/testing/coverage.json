@@ -4229,6 +4229,32 @@
         "U04.orders-private-session",
         "U04.orders-retained-movement"
       ]
+    },
+    {
+      "id": "unit-ai-recovery",
+      "status": "partial",
+      "contract": "U04 return-to-recovery search; A04 on-map context capture and section 2 damage/recovery dispatch",
+      "publicSurface": "UnitRecovery.GoHome; UnitTacticsContext; GroundRecovery.Evaluate",
+      "review": "Actual city/carrier scans preserve ordinary distance, first ties, raw Land region, unrestricted carrier capacity/domain/moves, missile submarine admission, foreign-airbase behavior and signed reach with division failure. A04 captures nearest city/owned city, original terrain/region/type/domain and effective role after the AI colonist clear. Recovery preserves signed HP damage classes, cargo/no-moves bypass, nearby city priority, peace/reputation gates, forced-attack reset, remote-air versus sea human-visibility differences, stack/adjacency rest gates, live GoHome calls and severe-recovery routing. Authored integration follows actual medium-damage Sea GoHome into U04 execution, U03 selection and U02 movement. Returned routes expose the next parent phase, not a stubbed full chooser. Barbarian/work/off-map entry, trespass, forced-city admission, specialized/guard/planner phases, the full AI caller and desktop generated-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/GroundRecovery.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs",
+        "src/OpenCiv2.Core/Units/UnitRecovery.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RecoveryCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.recovery-actual-order-movement",
+        "A04.recovery-air-sea-rest",
+        "A04.recovery-city-peace",
+        "A04.recovery-context-damage",
+        "A04.recovery-severe-routes",
+        "U04.home-carriers-airbases",
+        "U04.home-cities-regions",
+        "U04.home-fuel-arrival"
+      ]
     }
   ]
 }

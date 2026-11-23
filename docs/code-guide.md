@@ -747,6 +747,14 @@ private `MovementInteraction` routing with direct movement and advances cooperat
 yields through the runtime queue. Full AI order selection, active-unit scheduling
 and desktop wiring remain open.
 
+`Units/UnitRecovery` implements U04 GoHome with actual city/carrier selection,
+raw-region and fuel-reach rules, without changing home affiliation or moving.
+`Ai/UnitTacticsContext` captures the on-map A04 state after parent admission,
+including the AI colonist clear before effective-role selection. `GroundRecovery`
+runs the damage, rest and return-home branches with actual stack/spatial queries
+and returns the required next phase. It can install orders consumed by the real
+U04 executor; it does not substitute for the unfinished complete AI chooser.
+
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
 and ends after the first eligible paratrooper even on refusal. Otherwise it
