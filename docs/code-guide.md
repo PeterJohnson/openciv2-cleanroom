@@ -793,3 +793,12 @@ mode and consumes the existing shared food-row factor. Missing reciprocal names
 require explicit backing after the earlier changes. `Session/CaravanOperation`
 routes entry menus and deletion incidents privately. Cargo selection/report
 search, C06 production and U02 land-admission callers remain owning work.
+
+`Units/LandEntry` composes the captured-Land U02 checks with actual W03 adjacent
+revelation, C07 caravan entry, V06 city/unit missions and C08 allied repair.
+It returns the stop decision and retained destination owner; only a zero unit
+mission reloads that owner. Entry selectors are explicit because their optional
+gate is unresolved in U02, while selected lift/return can change stack order.
+`Session/LandEntryOperation` shares private prompts and reply decoding with the
+existing caravan and mission adapters, including cached visit/capture windows.
+The outer movement dispatcher still owns boarding, ordinary arrival and cleanup.

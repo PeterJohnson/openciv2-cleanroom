@@ -26,39 +26,12 @@ public sealed class CityMissionOperation(CityMissions.Operation operation, Func<
     {
         if (completed is not null)
         { return completed; }
-        bool technology = pending is CityMissionDecision.Mission { Decision: CityEspionageDecision.Technology }
-            or CityMissionDecision.Revolt { Decision: RevoltDecision.Capture { Decision: CityCaptureDecision.Technology } };
-        ResearchReply? reply = null;
-        if (input.Kind == OperationInputKind.Choice && input.Choice is { } choice)
-        { reply = technology && choice == 100 ? new(0, 1) : new(choice); }
-        else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && !technology)
-        {
-            reply = new(pending is CityMissionDecision.Menu
-                or CityMissionDecision.Mission { Decision: CityEspionageDecision.Question } ? -1 : 0);
-        }
+        var reply = CityMissionInteraction.Reply(pending, input);
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
             context.Publish();
-            InteractionSpec prompt;
-            switch (pending)
-            {
-                case CityMissionDecision.Menu menu:
-                    var request = menu.Request;
-                    var options = new OwnedList<InteractionOption>(request.Options.Select(o => new InteractionOption((int)o.Mission, o.Text)));
-                    prompt = new($"{request.ActorAdjective} {request.UnitName} at {request.CityName}", recipient(request.Actor),
-                        new CommandValue.City(request.City), new(options.Select(o => o.Value)))
-                    { Options = options };
-                    break;
-                case CityMissionDecision.Revolt revolt:
-                    prompt = RevoltInteraction.Prompt(context, revolt.Decision, recipient, captureWindow, ref capturePrompt);
-                    break;
-                case CityMissionDecision.Mission mission:
-                    prompt = MissionPrompt(context, mission.Decision);
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown city mission decision");
-            }
+            var prompt = CityMissionInteraction.Prompt(context, pending, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt);
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (!operation.Completed)
@@ -66,7 +39,49 @@ public sealed class CityMissionOperation(CityMissions.Operation operation, Func<
         context.Effect("espionage.city-mission.completed", new([]));
         return completed = new();
     }
-    private InteractionSpec MissionPrompt(OperationContext context, CityEspionageDecision decision)
+    public void Dispose() => operation.Dispose();
+}
+
+internal static class CityMissionInteraction
+{
+    internal static ResearchReply? Reply(CityMissionDecision? decision, OperationInput input)
+    {
+        bool technology = decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Technology }
+            or CityMissionDecision.Revolt { Decision: RevoltDecision.Capture { Decision: CityCaptureDecision.Technology } };
+        ResearchReply? reply = null;
+        if (input.Kind == OperationInputKind.Choice && input.Choice is { } choice)
+        { reply = technology && choice == 100 ? new(0, 1) : new(choice); }
+        else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && !technology)
+        {
+            reply = new(decision is CityMissionDecision.Menu
+                or CityMissionDecision.Mission { Decision: CityEspionageDecision.Question } ? -1 : 0);
+        }
+        return reply;
+    }
+    internal static InteractionSpec Prompt(OperationContext context, CityMissionDecision decision, Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, ref InteractionSpec? visitPrompt, ref InteractionSpec? capturePrompt)
+    {
+        InteractionSpec prompt;
+        switch (decision)
+        {
+            case CityMissionDecision.Menu menu:
+                var request = menu.Request;
+                var options = new OwnedList<InteractionOption>(request.Options.Select(o => new InteractionOption((int)o.Mission, o.Text)));
+                prompt = new($"{request.ActorAdjective} {request.UnitName} at {request.CityName}", recipient(request.Actor),
+                    new CommandValue.City(request.City), new(options.Select(o => o.Value)))
+                { Options = options };
+                break;
+            case CityMissionDecision.Revolt revolt:
+                prompt = RevoltInteraction.Prompt(context, revolt.Decision, recipient, captureWindow, ref capturePrompt);
+                break;
+            case CityMissionDecision.Mission mission:
+                prompt = MissionPrompt(context, mission.Decision, recipient, visit, captureWindow, ref visitPrompt, ref capturePrompt);
+                break;
+            default:
+                throw new InvalidOperationException("Unknown city mission decision");
+        }
+        return prompt;
+    }
+    private static InteractionSpec MissionPrompt(OperationContext context, CityEspionageDecision decision, Func<int, ParticipantId> recipient, Func<CityEspionageVisit, InteractionSpec> visit, Func<CaptureCityVisit, InteractionSpec> captureWindow, ref InteractionSpec? visitPrompt, ref InteractionSpec? capturePrompt)
     {
         switch (decision)
         {
@@ -107,5 +122,4 @@ public sealed class CityMissionOperation(CityMissions.Operation operation, Func<
                 throw new InvalidOperationException("Unknown mission body decision");
         }
     }
-    public void Dispose() => operation.Dispose();
 }

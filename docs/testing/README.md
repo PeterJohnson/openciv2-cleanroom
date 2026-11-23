@@ -663,3 +663,11 @@ ties, suppressed supplies, exact demand bonuses and missing-name failure after
 payment, deletion and route effects. Runtime cases route entry menus and actual
 last-settler incidents privately. These cases do not claim cargo selection,
 general U02/C06 integration or desktop trade acceptance.
+
+U02 land-entry groups compose actual ZOC/revelation, caravan donation/delivery,
+embassy/investigation, unit bribery/sabotage and allied repair. They cover captured
+domain and ZOC exceptions, selected lift/return topology despite animation failure,
+owner-only reload after bribery, signed HP/Barracks repair before exhaustion,
+original-unit restoration, private session cancellation and terminal failure prefixes.
+The entry selector is an explicit input pending U02 specification resolution;
+these cases do not claim complete movement or desktop/full-game acceptance.

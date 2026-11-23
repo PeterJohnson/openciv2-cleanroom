@@ -308,6 +308,16 @@ although the unit returns to its original coordinates. It precedes the mission.
 The original's other-domain allied-repair branches are unreachable through this
 captured-Land gate and are not extra Sea/Air permissions.
 
+**Unresolved entry selector:** the two “optionally show entry” branches above
+name the foreign-human condition but do not fully define the optional selector.
+Lift and single-unit relocation can change stack order, so this is not safely
+resolved by choosing a rendering preference or assuming a prompt/autoplay gate.
+Until the selector is established through the behavioral contract or independent
+original-game observations, a supported isolated land-check call supplies the
+caravan-entry and city-mission-entry selectors explicitly. A production dispatcher
+must resolve them before claiming this phase complete. Cosmetic display failure
+or skipped frames do not cancel a selected entry's required lift/return effects.
+
 ### Foreign unit
 
 Reset `d` to `v`'s live owner, then take the first stopping branch:

@@ -3931,6 +3931,29 @@
         "C07.caravan-private-session",
         "C07.caravan-reciprocal-missing-names"
       ]
+    },
+    {
+      "id": "land-entry",
+      "status": "partial",
+      "contract": "U02 Land checks; W03 adjacent revelation; C07 entry/delivery; V06 city/unit missions; C08 buildings and U02 allowance",
+      "publicSurface": "LandEntry.Begin with explicit entry selectors and retained child decisions/result; LandEntryOperation",
+      "review": "Composes actual ordered ZOC/revelation, caravan entry, city and unit missions, and allied repair. Captured Land/destination facts gate admission; zero-result unit mission reloads only tile owner. Selected entry executes actual lift/single-unit return even when rendering fails. Real caravan delivery/donation and embassy/investigation/bribe/sabotage children are exercised, including private session routing and cancellation. Repair uses signed HP, Barracks, unsigned damage clamp, healed allowance, global Communism portrait and original-unit restoration. Required notice failures retain prefix; cosmetics are diagnostic. The optional entry selector remains a recorded U02 specification gap and must be explicitly supplied. Full dispatcher, finish/cleanup, desktop effects and generated full-game acceptance remain pending; browser/cross-platform deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/LandEntry.cs",
+        "src/OpenCiv2.Session/LandEntryOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LandEntryCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.land-entry-allied-repair",
+        "U02.land-entry-caravan-children",
+        "U02.land-entry-city-selected-animation",
+        "U02.land-entry-private-session",
+        "U02.land-entry-restoration-failures",
+        "U02.land-entry-unit-owner-reload",
+        "U02.land-entry-zone-ordering"
+      ]
     }
   ]
 }

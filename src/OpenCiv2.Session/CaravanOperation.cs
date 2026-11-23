@@ -22,21 +22,7 @@ public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int,
             if (pending is not null)
             {
                 context.Publish();
-                InteractionSpec prompt;
-                if (pending is CaravanDecision.Menu menu)
-                {
-                    var request = menu.Request;
-                    var options = new OwnedList<InteractionOption>(request.Actions.Select(action => new InteractionOption((int)action,
-                        action switch { CaravanAction.Deliver => "Deliver", CaravanAction.HelpBuildWonder => "Help build wonder", _ => "Continue" })));
-                    string demand = request.Demanded is null ? "" : request.Demanded.Value ? " This cargo is demanded." : " This cargo is not demanded.";
-                    prompt = new($"{request.CargoName} caravan at {request.CityName}.{demand}", recipient(request.Actor),
-                        new CommandValue.City(request.City), new(options.Select(o => o.Value)))
-                    { Options = options };
-                }
-                else if (pending is CaravanDecision.Incident incident)
-                { prompt = EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)); }
-                else
-                { throw new InvalidOperationException("Unknown caravan decision"); }
+                var prompt = CaravanInteraction.Prompt(pending, recipient);
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
@@ -48,4 +34,27 @@ public sealed class CaravanOperation(CaravanTrade.Operation operation, Func<int,
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class CaravanInteraction
+{
+    internal static InteractionSpec Prompt(CaravanDecision decision, Func<int, ParticipantId> recipient)
+    {
+        InteractionSpec prompt;
+        if (decision is CaravanDecision.Menu menu)
+        {
+            var request = menu.Request;
+            var options = new OwnedList<InteractionOption>(request.Actions.Select(action => new InteractionOption((int)action,
+                action switch { CaravanAction.Deliver => "Deliver", CaravanAction.HelpBuildWonder => "Help build wonder", _ => "Continue" })));
+            string demand = request.Demanded is null ? "" : request.Demanded.Value ? " This cargo is demanded." : " This cargo is not demanded.";
+            prompt = new($"{request.CargoName} caravan at {request.CityName}.{demand}", recipient(request.Actor),
+                new CommandValue.City(request.City), new(options.Select(o => o.Value)))
+            { Options = options };
+        }
+        else if (decision is CaravanDecision.Incident incident)
+        { prompt = EspionageInteraction.Prompt(incident.Question, recipient(incident.Question.Victim.Civilization)); }
+        else
+        { throw new InvalidOperationException("Unknown caravan decision"); }
+        return prompt;
+    }
 }
