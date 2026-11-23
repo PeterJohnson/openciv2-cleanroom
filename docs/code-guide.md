@@ -766,8 +766,12 @@ at the specified read; no fallback city is supplied.
 shared direction/finish path. It produces real orders for U04 execution, preserving
 transport retries, goal clearing, air movement wrapping and naval arrival rules.
 `PartisanFortress` changes only the retained fortress decision after actual
-counter and second-city tests. Pillage/target selection, specialized/transport
-phases and the ordinary movement planner are still separate pending joins.
+counter and second-city tests. `GroundPartisans` selects actual `Units/Pillage`
+children and nonmilitary/road targets, retaining the city selector, first unit
+and last direction rules. `Pillage` performs confirmation, synchronized feature
+removal, memory, diplomatic flags, shared goals and movement exhaustion. The
+session `PillageOperation` retains private attack warnings. The player menu/war
+wrapper, specialized/transport phases and ordinary movement planner remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

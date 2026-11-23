@@ -774,3 +774,11 @@ naval arrival with/without transport. Partisan fortress cases preserve counter
 wrap, map features, raw-region filtering and owned city ties. Guard-to-Fortifying
 and AI-Goto results execute through actual U04 children. Full planner/chooser and
 desktop complete-game acceptance remain open.
+
+W04 core pillage groups cover automatic/explicit removal, partisan priorities,
+distant city slot-zero confirmation, live unit/city changes across a prompt,
+absent-city memory behavior, self-war flags, actual goals, cosmetic versus
+mechanical failures and private session cancellation. A04 cases join real pillage
+to common Finish and partisan target choices to AI-Goto orders, preserving first
+unit, visibility/region/treaty gates and last direction/city-break semantics.
+The player command wrapper and complete AI chooser remain separate open joins.

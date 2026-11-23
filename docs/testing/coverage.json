@@ -2911,7 +2911,7 @@
       "contract": "W04 player commands and work execution/completion; U01 AI fortification home adjustment; U04 fortification and activation subset",
       "publicSurface": "TerrainWorkOrders.Check/Request/Execute, UnitFortification.Apply; unit.work command, scoped Work options and desktop selector; queued work activation and classic save/reload",
       "status": "partial",
-      "review": "All seven work jobs use actual stack traversal, exhaustion, feature mutations, memory and near-city C03 calculation. Cases cover command gates, conversions bypassing city/water checks, first donor including zero/foreign progress, signed thresholds/counter wrap, fixed Engineers bonus, non-Settle direct execution, farmland cleanup, invalid terrain-result mutation before failed destination read, pollution wrap, partial effects and fortification home 0..127 versus 128..254. Direct/console and native scenarios resume unfinished irrigation and compare completed classic bytes. Desktop workers remain in the authored pre-founding domain; generated-game work, A03 choices, full U04 goto/AI execution, pillage diplomacy and network synchronization remain open. Browser/cross-platform execution is deferred. Expectations derive from repository contracts, not original-game captures.",
+      "review": "All seven work jobs use actual stack traversal, exhaustion, feature mutations, memory and near-city C03 calculation. Cases cover command gates, conversions bypassing city/water checks, first donor including zero/foreign progress, signed thresholds/counter wrap, fixed Engineers bonus, non-Settle direct execution, farmland cleanup, invalid terrain-result mutation before failed destination read, pollution wrap, partial effects and fortification home 0..127 versus 128..254. Direct/console and native scenarios resume unfinished irrigation and compare completed classic bytes. Desktop workers remain in the authored pre-founding domain; generated-game work, A03 choices, full U04 AI scheduling, player pillage command integration and network synchronization remain open. Browser/cross-platform execution is deferred. Expectations derive from repository contracts, not original-game captures.",
       "sources": [
         "src/OpenCiv2.App/SeamView.Actions.cs",
         "src/OpenCiv2.App/SeamView.Play.cs",
@@ -4286,7 +4286,7 @@
       "status": "partial",
       "contract": "A04 retained Goto, DefenderFortify, PartisanFortress and direction/common finish",
       "publicSurface": "GroundOrders.RetainedGoto/DefenderFortify/Direction/Finish; PartisanFortress.Apply",
-      "review": "Actual stack, spatial, treaty and shared-goal operations retain military Goto versus naval exclusions, transport retry before treaties, empty-city Trade exception, four defender reasons and peaceful foreign-radius suppression. Direction applies to retained working position and installs AI Goto without moving; Hold and common finish retain captured versus live domain/role, byte air movement, ordinary-arrival and accompanied-warship exhaustion rules. Partisan counters wrap and only change the local Fortress flag; actual second-city scans preserve raw region, nearest exclusion and owned ties. Tests join real guard-to-fortification and AI-Goto-to-movement through U04 execution. Early work/Sleep/AI-Goto need no captured domain; an unproduced domain on the reached non-Air finish branch stops after exhaustion. Pillage/partisan targets, specialized/site/transport/movement planning, full chooser and desktop acceptance remain open.",
+      "review": "Actual stack, spatial, treaty and shared-goal operations retain military Goto versus naval exclusions, transport retry before treaties, empty-city Trade exception, four defender reasons and peaceful foreign-radius suppression. Direction applies to retained working position and installs AI Goto without moving; Hold and common finish retain captured versus live domain/role, byte air movement, ordinary-arrival and accompanied-warship exhaustion rules. Partisan counters wrap and only change the local Fortress flag; actual second-city scans preserve raw region, nearest exclusion and owned ties. Tests join real guard-to-fortification and AI-Goto-to-movement through U04 execution. Early work/Sleep/AI-Goto need no captured domain; an unproduced domain on the reached non-Air finish branch stops after exhaustion. Specialized/site/transport/movement planning, full chooser and desktop acceptance remain open.",
       "sources": [
         "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
         "src/OpenCiv2.Core/Ai/GroundOrders.cs",
@@ -4304,6 +4304,32 @@
         "A04.partisan-fortress-cities",
         "A04.partisan-fortress-counters",
         "A04.retained-goto"
+      ]
+    },
+    {
+      "id": "pillage-and-partisan-targets",
+      "status": "partial",
+      "contract": "W04 core pillage and A04 section 5 pillage/partisan target decisions",
+      "publicSurface": "Pillage.Begin; PillageOperation; GroundPartisans.BeginPillage/Targets",
+      "review": "Actual W04 core retains attack confirmation, captured origin and live type/owner, one feature removal, fresh nearest-city memory/diplomacy/goal tail and movement exhaustion. Redraw failures are reported without skipping mechanics. Session presents private actual attack warnings. A04 selects the actual child with captured city selector and live rule gates, preserves first eligible nonmilitary target and last eligible road direction with immediate city break. Integration exercises actual common Finish and AI-Goto production. Player command eligibility/menu/declaration, full AI chooser, desktop production composition and complete-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
+        "src/OpenCiv2.Core/Ai/GroundPartisans.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs",
+        "src/OpenCiv2.Core/Units/Pillage.cs",
+        "src/OpenCiv2.Session/PillageOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PillageCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.partisan-nonmilitary-targets",
+        "A04.partisan-road-selection",
+        "A04.pillage-admission",
+        "W04.pillage-confirmation-capture",
+        "W04.pillage-failure-session",
+        "W04.pillage-feature-priority",
+        "W04.pillage-knowledge-diplomacy"
       ]
     }
   ]

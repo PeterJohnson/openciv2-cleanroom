@@ -4193,3 +4193,36 @@ Pillage/partisan targeting, entry/trespass/forced-city logic, specialized/site/
 transport/movement planning, full AI/turn scheduling, desktop composition and
 complete human/AI-game acceptance remain open. Browser and cross-platform
 execution remain deferred.
+
+## W04 core pillage and A04 partisan choices
+
+`Pillage` executes actual confirmation, W01 feature removal, fresh nearest-city
+selection, W03 remembered features, V04 war flags, A01 goals and U02 exhaustion.
+It retains the original tile across an attack warning while consuming live type
+and owner afterward. Automatic and explicit feature selection remain distinct;
+no-city pillage has no invented memory update, and same-owner city selection
+still invokes the treaty operation. Cosmetic redraw failure is reported while
+movement completes; a mechanical failure retains prior valid effects. The
+session adapter presents the actual private attack warning and cancellation.
+
+`GroundPartisans` now selects that actual W04 child, retains the shared city
+selector, and implements first eligible nonmilitary targeting and last eligible
+road-direction selection. Cases join pillage to common Finish and partisan
+directions to real AI-Goto production, including raw airbase components,
+visibility/region/treaty gates, city interruption and existing HasOrders.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1212 of 1214**, with the two existing
+platform/audio skips. The shared probe passed **1179 groups** across 135 coverage
+families; source identity verified **667 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-pillage-native.json` | `1d5555b0d3c871ccf8aec4f90962d1ad73871f832d066b0b95ff014ea9876573` |
+| `m4-pillage-identity.json` | `0696f307c9fb601659bea481616c2218b065693bc0492e54e894ada08874948e` |
+
+The W04 player command menu/declaration wrapper, A04 entry/trespass/forced-city
+logic, specialized/site/transport/movement planning, full AI/turn scheduling,
+desktop composition and complete human/AI-game acceptance remain open. Browser
+and cross-platform execution remain deferred.
