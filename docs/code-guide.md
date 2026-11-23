@@ -88,8 +88,8 @@ routes. `CivilizationElimination` supplies V01's local last-city check with actu
 U01 deletion, `SpyEscape`, `SpaceshipLifecycle` reset/loss and civilization
 recreation. Famine-to-defeat, recursive last-settler checks, history, AI restart
 and exploration clearing are tested together. The V06 incident service exists,
-but general elimination still needs its resumable caller join. V03 restart
-catch-up grants remain a required owning policy; forced retirement,
+but general elimination still needs its resumable caller join. V01 restart
+catch-up now calls actual V03 grants; forced retirement,
 civil war and full outcome handling are separate work. Alder Valley's deletion
 adapter now uses the real last-city check, although its admitted city-center
 yields and absence of food routes/homed settlers cannot cause last-city famine.
@@ -260,8 +260,11 @@ completion and accumulation, including free advances.
 `ResearchGoals` owns informational goal/advice data. The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile
 eligibility/cost queries. Darwin now invokes two sequential completions from
-`CityProduction`; V01 catch-up, A01 outer movement and generated-game callers remain
-open.
+`CityProduction`. `CivilizationCreationServices.CatchupResearch` supplies the
+actual grant service for V01's nonzero-turn reset, using self source and completing
+nested effects before the next advance. Turn-zero-only generated setup may omit
+it after the real new-game reset. A01 outer movement and generated-game callers
+remain open.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
 W02 connectivity and F05 accelerated roads. `GameState.Paths` retains this

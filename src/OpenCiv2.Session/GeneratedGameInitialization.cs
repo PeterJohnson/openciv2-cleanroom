@@ -43,7 +43,7 @@ public sealed class GeneratedGameInitialization : IDisposable
         effects.Revelation = new(runtime.World, runtime.Process.Rules.Definitions, stacks, effects);
         services = new(new(runtime.World, runtime.Process, stacks, effects),
             new(runtime.World, runtime.Process.Rules.Definitions, new(50_000_000, 64), effects),
-            (_, _) => throw new InvalidOperationException("Nonzero-turn catch-up requires the general research service"),
+            null, // NewGameInitialization.Reset establishes turn zero before any creation.
             (c, type) => UnitAvailability.CanBuild(runtime.World, runtime.Process.Rules.Definitions, c, null, type));
         pin = runtime.PinWorld();
     }

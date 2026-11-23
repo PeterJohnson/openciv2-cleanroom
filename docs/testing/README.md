@@ -102,8 +102,8 @@ case joins actual city/unit removal and V01 elimination to the pending defeat
 reason. Local lifecycle cases exercise recursive settler checks, actual AI
 restarts, interrupted spy escape, spaceship reset/loss, history and retained
 human/alive/knowledge state. Controlled V06 choices verify escape odds, promotion,
-nearest-city ties and actual relocation/exhaustion. Diplomacy incidents, restart
-catch-up grants, C06 AI production and full defeat handling remain open.
+nearest-city ties and actual relocation/exhaustion. General diplomacy/mission
+callers, resumable elimination and full generated-game outcomes remain open.
 V02/C04 groups cover local government queries/transitions, actual all-city C03
 recalculation, fixed production substitution, observer-dependent AI tax/notices,
 disorder duration/restoration and real Democracy collapse, tax wrap and celebration
@@ -149,6 +149,13 @@ reply. Desktop direct/console cases repeatedly change production while preservin
 stock and per-type counts, then complete/save/resume. Chooser fixtures are not
 complete A02 policy or V03 research-reset integration.
 
+V01 restart cases now execute the real V03 grant service, including nested Great
+Library acquisition, Leonardo upgrades and government/city changes. They check
+the temporary inactive seat, post-grant counter resets, retained knowledge after
+placement or restart denial and terminal failures after committed grant effects.
+The actual elimination-to-recreation chain uses the same service. Full generated
+desktop turns and resumable foreign-spy elimination remain open.
+
 V03 cost/options/grant cases cover retained counters, human/AI/scenario scaling,
 selection exemptions, duplicate and future grants, first-discoverer OR, source
 narrowing, emissary draws and resets, Barracks credit/failure order, Philosophy,
@@ -161,7 +168,7 @@ completion mode2, future labels, ability order, Philosophy/free-advance chaining
 progress overflow, actual production/government children and terminal failures.
 The desktop regression suspends before forced building liquidation and verifies
 that accepting research resumes maintenance before `turn.advanced`. General
-presentation, catch-up and generated-game caller integration remain open.
+presentation and generated-game caller integration remain open.
 
 C06 production-parent cases join nonunit completion to real building storage,
 research grants/selection, spaceship group choice/assembly and Eiffel/Leonardo/

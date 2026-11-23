@@ -1963,7 +1963,7 @@
       "id": "civilization-starting-setup",
       "contract": "V01 \u00a7\u00a72\u20135 local creation; C06 unit eligibility; F05 \u00a75/\u00a78 generated initialization and compensation",
       "publicSurface": "CivilizationCreation resumable operation; UnitAvailability; StartingSites.Compensate; GeneratedGameInitialization polling; actual WorldEntry default starting children",
-      "review": "Partial reset retains selected research/future-techs/regions; ordered goal refresh and catch-up; inactive/no-leader returns, leader override/reuse, late hints, admission deadlines and pending conquest. Real U01/W03 placement and C06 eligibility; real V03/A08 starting compensation. Actual W02-to-V01/F05 joins cover preset/custom maps, both topologies, fresh replacement, poll-budget invariance, cancellation and child failure. Nonzero-turn research grants remain required children; full revival diplomacy/elimination, acceleration, desktop generated-game play and end sequences are pending.",
+      "review": "Partial reset retains selected research/future-techs/regions; ordered goal refresh and catch-up; inactive/no-leader returns, leader override/reuse, late hints, admission deadlines and pending conquest. Real U01/W03 placement and C06 eligibility; real V03/A08 starting compensation. Actual W02-to-V01/F05 joins cover preset/custom maps, both topologies, fresh replacement, poll-budget invariance, cancellation and child failure. Catch-up now requires the actual ResearchGrants service; restart consequences are covered by civilization-restart-research; full revival diplomacy/elimination, acceleration, desktop generated-game play and end sequences are pending.",
       "sharedGroups": [
         "C06.unit-build-eligibility",
         "F05.generated-civilization-integration",
@@ -2281,7 +2281,7 @@
       "status": "partial",
       "contract": "V01 section6 local last-city check; V06 section2 escape/capture; V07 section8 reset/loss; actual C05 starvation integration",
       "publicSurface": "CivilizationElimination.Check; SpyEscape.Try/Caught; SpaceshipLifecycle.Reset/Lost; desktop food/retirement deletion adapter",
-      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. The real espionage incident service is covered separately; general elimination still needs its resumable incident join. Nonzero-turn catch-up grants remain a required owning service; these boundary fixtures do not supply those policies. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
+      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. The real espionage incident service is covered separately; general elimination still needs its resumable incident join. Actual nonzero-turn catch-up, nested Library effects and restart denial are covered by civilization-restart-research. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationElimination.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
@@ -2553,7 +2553,7 @@
       "id": "research-grants",
       "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
       "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller",
-      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Presentation and emissary decisions remain interfaces; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; general desktop presentation, V01 catch-up integration and general F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Presentation and emissary decisions remain interfaces; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred.",
       "status": "partial",
       "sharedGroups": [
         "M3.land-step-zones",
@@ -2601,7 +2601,7 @@
       "id": "research-flow",
       "contract": "V03 sections 5\u20136,8\u20139; C06 production reset; C03 mood query; V02 research prompts; desktop city upkeep",
       "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation",
-      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs, V01 catch-up and generated-game callers remain open; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred.",
+      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs and generated-game callers remain open; V01 catch-up joins ResearchGrants; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred.",
       "status": "partial",
       "sharedGroups": [
         "M3.land-step-zones",
@@ -3246,6 +3246,27 @@
         "V06.incident-leniency-alliance",
         "V06.incident-scenario-autoplay",
         "V06.incident-war-senate"
+      ]
+    },
+    {
+      "id": "civilization-restart-research",
+      "status": "partial",
+      "contract": "V01 sections3,5,6 nonzero-turn catch-up and elimination restart; actual V03 section10 grants and C08/V02 children",
+      "publicSurface": "CivilizationCreationServices.CatchupResearch; CivilizationCreation; ResearchGrants; CivilizationElimination",
+      "review": "Creation takes the real ResearchGrants service, passes self source and skipPedia=false, and completes each grant before continuing its ordered scan. Turn-zero-only generated setup may omit the service after its real reset. Actual restart integration covers temporarily inactive recipients, recursive Great Library grants, Leonardo upgrades, human government prompts and city recalculation, source/known-by retention, unchanged first discoverers, counter clearing after grants, placement overwriting advance count without losing knowledge and later NoRestart rejection. Nested notice and disabled-prerequisite failures retain actual grant prefixes and terminate creation. General elimination still needs resumable foreign spy incidents; complete generated desktop turns, full revival diplomacy and human/AI games remain open. Browser and cross-platform work remain deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CivilizationCreation.cs",
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/ResearchGrants.cs",
+        "src/OpenCiv2.Session/GeneratedGameInitialization.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RestartResearchCases.cs"
+      ],
+      "sharedGroups": [
+        "V01.elimination-restart-research",
+        "V01.restart-research-government-failure",
+        "V01.restart-research-library"
       ]
     }
   ]

@@ -37,20 +37,26 @@ public static partial class FoundationSuite
 
         public GrantFixture(params Choice[] choices) : this(null, choices) { }
         public GrantFixture(RevelationFixture? data, params Choice[] choices)
+            : this(data, new(new ControlledChoices(new(choices)), "research-grants"), true) { }
+        public GrantFixture(RevelationFixture data, GameplayRandom random) : this(data, random, false) { }
+        private GrantFixture(RevelationFixture? data, GameplayRandom random, bool configure)
         {
             Data = data ?? new();
-            Random = new(new ControlledChoices(new(choices)), "research-grants");
-            World.Globals.Turn = 10; World.Globals.CivsAlive = CivilizationSet.Only(1);
-            World.Globals.BestHumanRank = 1;
-            Rules.Cosmic = Rules.Cosmic with { TechnologyCostParadigm = 10, ShieldBoxRows = 10 };
-            Rules.EnabledAdvanceCount = 67;
-            for (int c = 0; c < 8; ++c)
+            Random = random;
+            if (configure)
             {
-                World.Civilizations[c].Researching = -1;
-                World.Names[c] = new() { Tribe = $"People {c}", Adjective = $"Nation {c}" };
+                World.Globals.Turn = 10; World.Globals.CivsAlive = CivilizationSet.Only(1);
+                World.Globals.BestHumanRank = 1;
+                Rules.Cosmic = Rules.Cosmic with { TechnologyCostParadigm = 10, ShieldBoxRows = 10 };
+                Rules.EnabledAdvanceCount = 67;
+                for (int c = 0; c < 8; ++c)
+                {
+                    World.Civilizations[c].Researching = -1;
+                    World.Names[c] = new() { Tribe = $"People {c}", Adjective = $"Nation {c}" };
+                }
+                for (int a = 0; a < 100; ++a) Rules.Advances[a] = new() { Identity = new($"advance-{a}", $"Advance {a}"), Enabled = a == 53 };
+                for (int i = 0; i < 67; ++i) Rules.Improvements[i] = new() { Identity = new($"building-{i}", $"Building {i}"), CostRows = 3 };
             }
-            for (int a = 0; a < 100; ++a) Rules.Advances[a] = new() { Identity = new($"advance-{a}", $"Advance {a}"), Enabled = a == 53 };
-            for (int i = 0; i < 67; ++i) Rules.Improvements[i] = new() { Identity = new($"building-{i}", $"Building {i}"), CostRows = 3 };
             var governments = new GovernmentChanges(World, Data.Process.Rules, Data.Stacks,
                 _ => throw new InvalidOperationException("No government selector in this grant"),
                 _ => throw new InvalidOperationException("No rates dialog in direct Anarchy setter"),

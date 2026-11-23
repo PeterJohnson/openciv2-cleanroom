@@ -14,14 +14,14 @@ in the [M2 closeout](m2-closeout.md).
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; last-city famine now joins actual V01 elimination, ordered end reports and game closure. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. Full diplomacy/mission callers, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. V01 catch-up now invokes full V03 grants with actual Library, Leonardo and government children; elimination/restart joins are tested. Full diplomacy/mission callers, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government, diplomatic stance and alliance-willingness policies are implemented, with actual restricted government changes and V05 patience. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. F04 ship arrival, V08 scheduled retirement and pending outcome dispatch now join real reports and continuation. Semantic ending pages use actual ship/history data; authored ending/fame-title resources, remaining history and generated-game callers remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
-The next mechanics integrations are the V06 mission callers and V03 restart
-catch-up policies, A01 outer movement/U04 order execution, general
+The next mechanics integrations are the V06 mission and resumable elimination
+callers, A01 outer movement/U04 order execution, general
 government/research callers, and full F04 turn processing
 needed by the generated desktop game. C04's shared
 disorder/tax/celebration handler now joins actual V02 local government transitions
@@ -2324,3 +2324,47 @@ code changed, and no new UI/browser/cross-platform acceptance is claimed.
 | --- | --- |
 | `m4-incident-native.json` | `74f830df18bfa0daeaca7ef846fcb4a65cddf0258074ef714ed4b7909df813be` |
 | `m4-incident-identity.json` | `3b6438d38e7b4418b69122c9cd05bed71e42a35e1dd7325537aa9d3be245e616` |
+
+## Civilization restart research integration
+
+V01 creation now takes the actual V03 research-grant service instead of an
+arbitrary catch-up callback. Every selected catch-up advance uses the restarting
+seat as source, permits the specified encyclopedia path and completes the entire
+grant before the next candidate. The generated initializer explicitly omits this
+service only in its turn-zero domain, established by the real new-game reset.
+A reached nonzero-turn grant without the service fails after its valid prefix.
+
+The temporary inactive seat suppresses ordinary observed acquisition notices,
+but its new knowledge can trigger a recursive Great Library grant for another
+civilization. Integration cases run those actual grants, Leonardo upgrades and
+V03/V02 government prompts, including the resulting city recalculation and
+Fanatics production substitution. They verify source bytes, global known-by
+sets, unchanged first discoverers, research-target clearing and the retained
+state visible during nested notices. The parent's later type-counter clear and
+placement-time advance-count assignment do not undo granted knowledge or effects
+on other civilizations.
+
+The actual last-city elimination/recreation chain now runs catch-up grants in its
+regression cases. Both accepted restarts and later NoRestart rejection retain
+knowledge; only successful placement overwrites advance count with one. Nested
+Library notice failures and invalid disabled-prerequisite walks terminate the
+creation after committed research effects, leaving the inactive seat and the
+not-yet-cleared type counters intact. Existing catch-up tests now exercise real
+grants instead of test-supplied gameplay effects.
+
+General elimination still needs its resumable foreign-spy incident join, and the
+generated desktop game's full turns and human/AI acceptance remain open. No new
+desktop controls or Lua task code are introduced. Browser and cross-platform
+qualification remain deferred.
+
+Root/App formatting and verification, root/App Release builds and the 43-project
+boundary check passed. The native suite passed **877 of 879 tests**, with the two
+existing platform/audio skips. The probe passed **844 shared groups** and verified
+**508 compiled inputs**. Coverage maps all groups across 102 families; eight
+identity and three coverage validator tests passed. No new UI/browser/cross-platform
+acceptance is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-catchup-native.json` | `0d870d6d1ca5261d87742a9f266e966e24bd3e40037c65ff1aaa303a2ca87bc6` |
+| `m4-catchup-identity.json` | `2eefb6e5d792f2e89c96114ea9baef721272fa55517802fa3e9ed839d484ccf5` |

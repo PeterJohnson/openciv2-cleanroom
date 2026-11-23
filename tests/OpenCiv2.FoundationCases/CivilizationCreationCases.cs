@@ -41,10 +41,10 @@ public static partial class FoundationSuite
     }
 
     private static CivilizationCreation Creation(RevelationFixture f, int c, GameplayRandom random,
-        StartingPositions? hints = null, Action<int, int>? grant = null) =>
+        StartingPositions? hints = null, ResearchGrants? grants = null) =>
         new(f.World, f.Process, c, hints ?? new(), random, "create",
             new(new(f.World, f.Process, f.Stacks, f), new(f.World, f.Rules, new(5_000_000, 64), f),
-                grant ?? ((_, _) => throw new InvalidOperationException("Unexpected catch-up grant")),
+                grants ?? new GrantFixture(f, random).Grants,
                 (owner, type) => UnitAvailability.CanBuild(f.World, f.Rules, owner, null, type)));
 
     private static GameplayRandom CreationRandom(List<Choice> choices) => new(new ControlledChoices(new(choices)), "civilization-create");
@@ -189,22 +189,19 @@ public static partial class FoundationSuite
                 CreationChoice(choices, "catch-up", 3, 1, 11);
                 CreationChoice(choices, "catch-up", 3, 2, 13);
             }
-            var grants = new List<int>();
             var random = CreationRandom(choices);
-            var creation = Creation(f, 2, random, grant: (c, advance) =>
-            {
-                Equal(false, f.World.Globals.CivsAlive.Contains(c));
-                Equal((byte)5, f.World.Civilizations[c].UnitsActive[4]);
-                f.World.Civilizations[c].UnitsLost[4] = 9;
-                grants.Add(advance);
-            });
+            var creation = Creation(f, 2, random);
             Equal(1, creation.Advance(1)!.Value); // No matching AI leader after the reset.
             random.RequireChoicesConsumed();
-            Equal(difficulty == Difficulty.Chieftain ? 0 : 2, grants.Count);
-            if (grants.Count != 0)
+            Equal((byte)(difficulty == Difficulty.Chieftain ? 0 : 2), f.World.Civilizations[2].NumAdvances);
+            if (difficulty != Difficulty.Chieftain)
             {
-                Equal(11, grants[0]);
-                Equal(13, grants[1]);
+                Equal(true, f.World.Civilizations[2].Advances.Contains(11));
+                Equal(true, f.World.Civilizations[2].Advances.Contains(13));
+                Equal((byte)2, f.World.Civilizations[2].AdvanceSource[11]);
+                Equal((byte)2, f.World.Civilizations[2].AdvanceSource[13]);
+                Equal(true, f.World.Globals.AdvanceKnownBy[11].Contains(2));
+                Equal((byte)7, f.World.Globals.FirstDiscoverer[11]);
             }
             Equal((byte)0, f.World.Civilizations[2].UnitsActive[4]);
             Equal((byte)0, f.World.Civilizations[2].UnitsLost[4]);
@@ -356,11 +353,18 @@ public static partial class FoundationSuite
         selected = CreationAttitudes();
         CreationChoice(selected, "catch-up", 3, 1, 11);
         var choicesForFailure = CreationRandom(selected);
-        var operation = Creation(failure, 2, choicesForFailure, grant: (_, _) => throw new InvalidOperationException("Grant failed"));
-        Throws<InvalidOperationException>(() => operation.Advance(1));
+        failure.Rules.Advances[AdvanceIds.MobileWarfare] = new()
+        {
+            Enabled = false,
+            Prerequisites = new([(AdvanceReference)AdvanceIds.MobileWarfare, AdvanceReference.None])
+        };
+        var operation = Creation(failure, 2, choicesForFailure);
+        Throws<ArgumentException>(() => operation.Advance(1));
         Equal(0, failure.World.Civilizations[2].Gold);
         Equal((byte)7, failure.World.Civilizations[2].UnitsActive[4]);
         Equal(false, failure.World.Globals.CivsAlive.Contains(2));
+        Equal(true, failure.World.Civilizations[2].Advances.Contains(11));
+        Equal((byte)1, failure.World.Civilizations[2].NumAdvances);
         choicesForFailure.RequireChoicesConsumed();
         Throws<InvalidOperationException>(() => operation.Advance(1));
     }

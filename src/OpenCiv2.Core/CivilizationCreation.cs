@@ -7,11 +7,12 @@ using OpenCiv2.Core.Units;
 namespace OpenCiv2.Core;
 
 /// <summary>Required lifecycle children. Catch-up is V03 giveAdvance(c,a,c,0,0);
-/// eligibility is C06 canBuildUnit(c,NoCity,type). Creation/deletion are actual U01 operations.</summary>
+/// eligibility is C06 canBuildUnit(c,NoCity,type). Creation/deletion are actual U01 operations.
+/// Turn-zero-only setup may omit CatchupResearch; a reached catch-up grant requires the actual V03 service.</summary>
 public sealed record CivilizationCreationServices(
     UnitCreation Units,
     UnitDeletion Deletion,
-    Action<int, int> GrantCatchup,
+    ResearchGrants? CatchupResearch,
     Func<int, UnitType, bool> CanBuildUnit);
 
 /// <summary>V01 §§2–5 local civilization creation. Advance bounds only the candidate search;
@@ -42,7 +43,6 @@ public sealed class CivilizationCreation
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(services.Units);
         ArgumentNullException.ThrowIfNull(services.Deletion);
-        ArgumentNullException.ThrowIfNull(services.GrantCatchup);
         ArgumentNullException.ThrowIfNull(services.CanBuildUnit);
         this.world = world ?? throw new ArgumentNullException(nameof(world));
         this.process = process ?? throw new ArgumentNullException(nameof(process));
@@ -215,7 +215,9 @@ public sealed class CivilizationCreation
                     int difficulty = unchecked((byte)world.Globals.Difficulty);
                     if (difficulty != 0 && random.PrimaryModulo(new ChoiceKey("V01.creation.catch-up", call, advance), difficulty + 1) != 0)
                     {
-                        services.GrantCatchup(civilization, advance);
+                        var research = services.CatchupResearch
+                            ?? throw new InvalidOperationException("Nonzero-turn catch-up requires the research grant service");
+                        research.Grant(civilization, advance, civilization, false, call + "/catch-up/" + advance);
                     }
                 }
             }
