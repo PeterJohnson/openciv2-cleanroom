@@ -863,3 +863,12 @@ no-target destruction reaches nested elimination, spy incidents and recreation;
 session replies and cancellation remain private and preserve prior removals.
 These cases do not claim the paratrooper policy, full tactical parent or later
 travel/trade/espionage joins. Desktop complete-game acceptance remains open.
+
+A07 paratrooper groups cover captured return-home state, solitary fortresses,
+movement/Goto/War/range gates, late owned-unit cancellation, retained scores
+versus signed city sizes, descending landing ties, fortress bonuses and wrapped
+range. Actual U05 refusal and capture preserve the direct-zero return, including
+healed AI movement left after capture. Private capture replies/cancellation,
+disposal, missing draws and late failures preserve earlier relocation and city
+ownership. A03 city-selector production is an explicit phase input pending the
+full tactical join; these groups do not claim complete-game desktop acceptance.

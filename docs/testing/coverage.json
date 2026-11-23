@@ -4573,6 +4573,30 @@
         "A07.diplomat-retain-destroy",
         "A07.diplomat-treaty-race-spy"
       ]
+    },
+    {
+      "id": "ai-paratrooper-policy",
+      "status": "partial",
+      "contract": "A07 section 4 proactive paratrooper choices with actual U05/C09 execution",
+      "publicSurface": "ParatrooperTactics.Begin; SpecialUnitRoute.ReturnZero; ParatrooperTacticsOperation",
+      "review": "Captured home/nearest/region and retained A03 city selector govern return-home and solitary-fortress routes. City scans preserve signed size, directed War, ordinary range and the first locally successful target. Ten-candidate landing order retains center bonus, signed terrain defense, fortress-without-city bonus, strict descending ties and cancellation by owned units. Cancelled scores and targets persist into later city iterations. Actual U05 may reject an ocean/protected destination or perform relocation/capture; direct zero bypasses A04 Finish even when healed AI retains moves. Cases cover wrapped/flat range, boundary gates, retained score versus negative city size, actual child refusal, capture windows, private session reply/cancel, disposal and failures after committed relocation. A03 selector production remains an explicit phase input; full tactical dispatch and desktop complete-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/ParatrooperTactics.cs",
+        "src/OpenCiv2.Session/ParatrooperTacticsOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ParatrooperTacticCases.cs"
+      ],
+      "sharedGroups": [
+        "A07.paratrooper-away-home-fortress",
+        "A07.paratrooper-capture-pending-failure",
+        "A07.paratrooper-first-target-child-refusal",
+        "A07.paratrooper-home-gates-cancellation",
+        "A07.paratrooper-landing-scores-ties",
+        "A07.paratrooper-private-capture-session",
+        "A07.paratrooper-retained-target-score",
+        "A07.paratrooper-wrapped-range"
+      ]
     }
   ]
 }

@@ -4550,3 +4550,41 @@ A07 paratroopers, A03 settlement/work and full founding, A06 air/nuclear, W06
 barbarian policies, full A04/A01/turn orchestration, generated desktop composition
 and complete human/AI-game acceptance remain open. Browser and cross-platform
 execution remain deferred.
+
+## A07 proactive paratrooper policy
+
+`ParatrooperTactics` now implements captured return-home and solitary-fortress
+routes, directed-war city admission, retained landing scores/targets and the
+ten-candidate landing search. It preserves the extra center, ordinary center,
+descending directions, strict ties, signed terrain/size values, fortress bonus
+and complete search cancellation by an owned unit. A cancelled high score can
+keep an earlier target when a later city's signed-size seed is lower.
+
+Selected landings invoke actual U05 and C09, returning zero directly whether
+the child lands or refuses. Tests cover ocean/protected-city refusal, human
+capture windows, AI city removal and movement left after damage is cleared.
+The parent does not run a second common Finish or exhaust the healed actor.
+`ParatrooperTacticsOperation` routes private capture replies/cancellation; late
+child failures retain the actual landed status and committed position. The
+session result schema explicitly declares the Boolean landed result.
+
+The away branch consumes A03's specified city selector. Tests supply that phase
+input explicitly; this does not close A03's city-site implementation or the full
+A04 join. No synthetic query callbacks or original private-memory inputs were
+introduced to exercise retained-score behavior.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1293 of 1295**, with the two existing
+platform/audio skips. The shared probe passed **1260 groups** across 145 coverage
+families; source identity verified **701 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-paratrooper-policy-native.json` | `10a478bb5cbe6d3a8ae03fc3daa797ce7c03f4fb5a2123401e7f9cd7de90e25f` |
+| `m4-paratrooper-policy-identity.json` | `38f3917ae158b25291bcd55d3702b497a3d03749b67d893b50b195105f943796` |
+
+A03 settlement/work and full founding, A06 air/nuclear, W06 barbarian policies,
+full A04/A01/turn orchestration, generated desktop composition and complete
+human/AI-game acceptance remain open. Browser and cross-platform execution
+remain deferred.

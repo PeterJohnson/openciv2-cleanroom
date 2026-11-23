@@ -5,7 +5,7 @@ using OpenCiv2.Core.Units;
 
 namespace OpenCiv2.Core.Ai;
 
-public enum SpecialUnitRoute { Continue, Direction, Finish, PlanMove, ReturnOne }
+public enum SpecialUnitRoute { Continue, Direction, Finish, PlanMove, ReturnOne, ReturnZero }
 public readonly record struct SpecialUnitChoice(SpecialUnitRoute Route, int Direction = 8);
 
 /// <summary>A07 §§2–3 destination policies with actual cargo-aware destruction on the no-home/no-target paths.

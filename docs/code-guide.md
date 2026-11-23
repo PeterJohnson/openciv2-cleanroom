@@ -814,7 +814,12 @@ policies. It keeps captured context, ordered scoring, retained orders and actual
 V07 race queries; no-target destruction uses real U01/V01/V06 children.
 `SpecialUnitDestinationOperation` routes their private lifecycle decisions and
 bounded continuation. A destination does not execute trade or espionage. The
-paratrooper policy and full A04 parent still await composition.
+full A04 parent still awaits composition. `ParatrooperTactics` implements the
+proactive A07 drop policy using that parent's retained city selector, actual
+U05 execution and C09 capture. Landing scores survive cancelled searches; a
+selected drop returns zero directly even on refusal. Its session adapter routes
+actual capture decisions. A03 selector production and full parent wiring remain
+open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

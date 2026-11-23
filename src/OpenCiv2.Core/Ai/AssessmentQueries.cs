@@ -20,6 +20,7 @@ public static class AiTaskIds
     public const byte ReinforcePort = 0x41, RaidEmptyCity = 0x49, OverseasTrade = 0x54;
     public const byte UnloadCargo = 0x55, ExploreRegion = 0x56, RepositionLanding = 0x62, UnloadTrade = 0x75;
     public const byte TradeLanding = 0x74, CityTarget = 0x63, DiplomatTarget = 0x53;
+    public const byte FortressGuard = 0x46;
 }
 
 /// <summary>A01 §2 role, defense quota and sparse city/land-region contact queries.</summary>
