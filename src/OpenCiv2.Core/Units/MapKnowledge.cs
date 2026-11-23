@@ -7,6 +7,19 @@ namespace OpenCiv2.Core.Units;
 /// <summary>W03 knowledge channels for local play. The session publishes changed state to its observers.</summary>
 public static class MapKnowledge
 {
+    /// <summary>U01 single-unit seen set; does not explore, traverse the stack or add the owner's bit.</summary>
+    public static bool MarkUnitSeen(GameState world, UnitSlot slot, int observer)
+    {
+        if (observer < 0)
+        { return false; }
+        ref var unit = ref world.Entities.Units.At(slot);
+        if (unchecked((sbyte)unit.Owner.Value) == observer)
+        { return false; }
+        bool changed = !unit.Visibility.Contains(observer);
+        unit.Visibility = unit.Visibility.With(observer);
+        return changed;
+    }
+
     internal static void RequireLocal(GameState world)
     {
         if (world.Globals.Multiplayer >= GameMode.Tcp)

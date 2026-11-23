@@ -3501,6 +3501,31 @@
         "C09.population-signed-deletion",
         "C09.supported-owner-restart"
       ]
+    },
+    {
+      "id": "capture-continuation",
+      "status": "partial",
+      "contract": "C09 surviving-city production continuation and partisan creation with actual C06/A02 and U01/W03 children",
+      "publicSurface": "CaptureProduction.Begin/Operation; CaptureProductionOperation; CapturePartisans.Create; MapKnowledge.MarkUnitSeen",
+      "review": "Supported-unit loss resumes real V01 incidents before disorder and production. Human repair uses actual C06 eligibility, the nominal extra candidate role, first-eligible defender termination and direct assignments without shield/counter adjustment. AI resets/counts and calls actual C06/A02. Captured-center exploration does not update memory; a required P06 window retains CityProcessing until closure, including failure/disposal and session routing. Partisans retain count/veteran threshold, score ordered terrain/features and use the exact owner query, actual U01 allocation/W03 revelation, fixed identity/orders, single-unit seen publication and nullable last-result notice. Tests cover real creation reentry, capacity failures, signed scores, wrap/ties, gates and conditional draws. Full capture/incitement parent, P06 desktop dispatch and generated-game acceptance remain open. Browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CapturePartisans.cs",
+        "src/OpenCiv2.Core/City/CaptureProduction.cs",
+        "src/OpenCiv2.Core/Units/MapKnowledge.cs",
+        "src/OpenCiv2.Session/CaptureProductionOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CaptureContinuationCases.cs"
+      ],
+      "sharedGroups": [
+        "C09.partisans-count-gates",
+        "C09.partisans-creation-placement",
+        "C09.partisans-failure-knowledge",
+        "C09.production-actual-ai",
+        "C09.production-human-window",
+        "C09.production-nested-failure",
+        "C09.production-session-window"
+      ]
     }
   ]
 }

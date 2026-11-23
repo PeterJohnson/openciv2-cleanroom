@@ -71,6 +71,14 @@ captured-center regional input, filtered supported-unit loss and cargo/restart
 behavior. Actual nested C01/U01/V01 incidents delay city route/wonder/spatial
 cleanup; session privacy and failure/disposal checks retain the accepted prefix.
 The existing C01 synchronous deletion groups remain regressions for the shared path.
+C09 continuation groups join actual supported loss, C06 eligibility and A02
+production. They cover first-defender termination, signed ratios, count wrap,
+separate captured/live centers and required city-window closure/failure/privacy.
+Partisan cases run actual U01 allocation and W03 revelation, including a real
+meeting that changes the inputs after count/threshold capture. They verify
+ordered terrain/feature scoring, exact owner queries, topology, military-limit
+failure, last-result sentinels, veteran draws/flag preservation and single-unit
+visibility. Required window-adapter fixtures do not claim P06 desktop rendering.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

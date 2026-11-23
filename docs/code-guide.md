@@ -574,4 +574,12 @@ traversal with C09's old-owner-filtered path, while its existing synchronous ent
 retains its callback contract. `CivilizationElimination.BeginRemoveCity` and
 `BeginSupportedLoss` run the nested checks through real resumable V01/espionage
 operations. `Session/CapturePopulationOperation` routes those victims. Capture's
-mode/restoration gate, takeover and production/partisan continuation remain open.
+mode/restoration gate and takeover remain open.
+
+`City/CaptureProduction` continues actual supported-unit loss through disorder,
+C06 eligibility/production and a required P06 city-window decision. Its session
+adapter routes nested incidents independently and closes the window on reply,
+cancel or timeout. `City/CapturePartisans` composes actual U01 creation/W03
+revelation with C09 count, placement and veteran rules. `MapKnowledge.MarkUnitSeen`
+changes only the returned unit's seen set. The capture parent still owns admission,
+ordering and the desktop presentation adapter; these helpers do not dispatch it.
