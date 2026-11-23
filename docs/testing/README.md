@@ -806,3 +806,11 @@ roles and treaty protections. They join real recovery to shared Hold/Finish,
 including air movement, exhausted transports and a return-home Goto completed
 through actual U04/U03/U02 execution. Civilization zero is explicitly excluded
 from this entry API until W06 dispatch is composed.
+
+A05 naval-target groups cover zero-score ocean candidates, occupied center versus
+noncenter admission, later ties, exact claimant/fertility mapping, human treaty
+gates, hostile city bonuses and occupied land rejection. Coastal Goto cases
+distinguish raw regions and first matches, admit occupied/protected targets,
+exclude city neighbors, retain unreachable fallback and wrap only on cylindrical
+maps. One case executes the selected sea order through actual U04/U03/U02 and
+checks arrival/exhaustion; the full naval/transport policy remains open.

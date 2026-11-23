@@ -4332,3 +4332,34 @@ eight identity tests and three coverage tests passed.
 Specialized/site/transport dispatch, W06 barbarian choice, the full AI chooser
 and turn schedule, wider desktop composition and complete human/AI-game
 acceptance remain open. Browser and cross-platform execution remain deferred.
+
+## A05 landing direction and coastal targets
+
+`NavalTargets` implements A05 section 9 with actual W01 spatial/ownership
+queries, directed hostility and U04 SetGoto. Landing selection keeps zero-score
+ocean candidates, the occupied-center exception, exact claimant-or-fertility
+admission, hostile-city bonuses and later ties. Near-shore targeting retains
+raw-region comparisons, first matching city-radius candidate, no unit/treaty
+filter and the original target when no candidate qualifies.
+
+Authored cases cover human treaty gates, fertility mapping, city/land occupancy,
+flat and cylindrical topology, preserved movement/counter state and task byte
+retention. An integration case runs the selected coastal order through real
+U04/U03/U02 sea movement, reaching the target and applying arrival exhaustion.
+The helpers themselves do not execute movement or unload cargo.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1244 of 1246**, with the two existing
+platform/audio skips. The shared probe passed **1211 groups** across 139 coverage
+families; source identity verified **679 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-naval-targets-native.json` | `8120c8887a72d6552923bc9a0f61a5c8d2035657991efbd1d22262bcfc8bbfe9` |
+| `m4-naval-targets-identity.json` | `f4dc07e5fcdb7c6d4a728e62ee54fc3eddd82e1a5246495f535c19022aa2e0cd` |
+
+The full naval/transport controller and barbarian callers, specialized/site
+dispatch, full AI/turn scheduling, wider desktop composition and complete
+human/AI-game acceptance remain open. Browser and cross-platform execution
+remain deferred.

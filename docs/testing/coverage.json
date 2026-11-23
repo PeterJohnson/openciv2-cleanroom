@@ -4410,6 +4410,27 @@
         "A04.entry-trespass-gates",
         "A04.entry-work-bypass"
       ]
+    },
+    {
+      "id": "ai-naval-targets",
+      "status": "partial",
+      "contract": "A05 section 9 landing and coastal-target helpers",
+      "publicSurface": "NavalTargets.BestLandingDirection/NearShoreGoto",
+      "review": "Landing scans actual W01 neighbors and claimant-or-fertility values, preserves human ceasefire/peace gates, occupied-center exception, directed hostility bonus and later ties including zero scores. Near-shore Goto uses raw regions, first matching city-radius candidate, no unit/treaty filter and original-target fallback through actual SetGoto. Cases cover occupancy, city exclusion, topology and real U04/U03/U02 sea movement with arrival exhaustion. Full naval/transport and barbarian callers, desktop composition and complete-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/NavalTargets.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NavalTargetCases.cs"
+      ],
+      "sharedGroups": [
+        "A05.landing-candidates-ties",
+        "A05.landing-claimant-treaties",
+        "A05.landing-hostile-city",
+        "A05.near-shore-actual-movement",
+        "A05.near-shore-first-region-occupancy",
+        "A05.near-shore-topology-fallback"
+      ]
     }
   ]
 }
