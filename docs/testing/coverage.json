@@ -3171,6 +3171,34 @@
         "V08.pending-outcome-presentation",
         "V08.scheduled-retirement"
       ]
+    },
+    {
+      "id": "diplomatic-war-and-borders",
+      "status": "partial",
+      "contract": "V04 sections6\u20139 local expulsion, alliance cancellation, declaration/reputation, forced war, obligations and border measurement",
+      "publicSurface": "DiplomaticWar; IDiplomaticWarEffects; BorderIntrusions; BorderIntrusionSummary; DiplomacyWorkspace.Intrusions",
+      "review": "Composes actual C01 weighted/coastal city queries and U01 cargo lift/whole-stack relocation. Retains land/ocean admission, distinct destination ties, cargo and retained staging semantics, directed treaty flags, unsigned reputation/signed credit wrap, double contradictory-treaty penalties, active Eiffel queries and ally activation without alive filtering. Alliance declaration cancels and expels without setting War; Force composes it before its contact gate. Joined war preserves lastContact-minus-turn and primary-modulo admission. Border measurement consumes the first qualifying tile only, uses the physical stack without per-member owner filtering, weights captured components, retains warned/intruder flags and resets only summaries. Tests cover actual composed effects, failures, observer/autoplay gates, topology, mixed stacks and save conversion. Network publication, full V04/V05/A08 and espionage callers, desktop diplomacy UI and generated human/AI games remain unfinished; browser/cross-platform work is deferred. Stock portrait selection is presentation-owned.",
+      "sources": [
+        "src/OpenCiv2.Core/BorderIntrusions.cs",
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/DiplomaticWar.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/BorderIntrusionCases.cs",
+        "tests/OpenCiv2.FoundationCases/DiplomaticWarCases.cs"
+      ],
+      "sharedGroups": [
+        "V04.alliance-cancellation-declaration",
+        "V04.alliance-land-expulsion",
+        "V04.alliance-ocean-cargo-expulsion",
+        "V04.border-first-stack-retention",
+        "V04.border-stack-ownership-crowding",
+        "V04.border-topology-skips",
+        "V04.declaration-reputation-direction",
+        "V04.forced-joined-war",
+        "V04.war-alliance-obligations",
+        "V04.war-failure-prefixes"
+      ]
     }
   ]
 }

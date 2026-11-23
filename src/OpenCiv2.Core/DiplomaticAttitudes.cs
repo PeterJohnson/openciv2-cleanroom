@@ -12,6 +12,7 @@ public sealed class DiplomacyWorkspace
     public (int From, int To)? SelectedPair;
     public int Attitude;
     public CivilizationArray<bool> RecentPeace;
+    public BorderIntrusionSummary Intrusions;
 }
 
 /// <summary>V04 §2 attitude/hostility primitives and §11 global reputation maintenance.

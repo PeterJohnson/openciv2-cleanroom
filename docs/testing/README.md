@@ -401,3 +401,12 @@ treasury normalization and city upkeep. Its Linux acceptance driver imports
 independent authored dates, compares warning/continued saves and Hall bytes with
 the direct reference, then checks both Keep playing and End game. These are
 implementation integration checks, not original-game compatibility evidence.
+
+V04 war/alliance groups compose real city destinations, cargo lift and whole-stack
+relocation, treaty cascades and active wonder queries. They distinguish alliance
+cancellation from war, exercise asymmetric obligations, signed credits and repeated
+penalties, and verify forced/joined-war gates and retained failure effects.
+Border cases retain the first-occupied-tile exit, mixed-stack membership, warning
+flags, topology and current summaries. These local-engine groups supply pending
+V06/A08 dependencies; desktop diplomacy controls and complete generated games
+remain open.

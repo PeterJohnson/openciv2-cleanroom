@@ -477,3 +477,10 @@ semantic ending pages and pending outcomes to the actual `EndGameReports`.
 The local turn calls this boundary before upkeep and processes a pending defeat
 after completed movement; the outcome child returns Quit and the caller closes
 play. Generated-game orchestration and authored ending resources remain open.
+
+`Core/DiplomaticWar` owns local V04 declaration, forced war, alliance obligations
+and cancellation with real C01 destinations and U01 cargo/stack expulsion.
+`BorderIntrusions` owns the mutating first-tile measurement and retained warning
+flags; its current summaries live in `DiplomacyWorkspace`. Presentation effects
+receive identities and names, not treaty-policy callbacks. V04 contact/audience,
+A08 relation review, V06 incident callers and network publication remain open.

@@ -103,4 +103,6 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 
 | desktop-turn-outcomes | F04 arrival and desktop turn gates; V08 scheduled retirement, pending outcomes and continuation; semantic ending pages | partial | [OutcomeOperations.cs](../../src/OpenCiv2.Session/OutcomeOperations.cs), [OutcomeCases.cs](../../tests/OpenCiv2.FoundationCases/OutcomeCases.cs) |
 
+| diplomatic-war-and-borders | V04 expulsion, declarations, alliance obligations and mutating border counts with actual C01/U01 children | partial | [DiplomaticWar.cs](../../src/OpenCiv2.Core/DiplomaticWar.cs), [BorderIntrusions.cs](../../src/OpenCiv2.Core/BorderIntrusions.cs), [DiplomaticWarCases.cs](../../tests/OpenCiv2.FoundationCases/DiplomaticWarCases.cs) |
+
 The [JSON inventory](coverage.json) contains the complete file lists, review notes and shared test IDs. Keep admitted domains and failure/resume paths explicit when extending it. A partial host row does not claim complete map rendering, menus or gameplay. See the [M4 desktop work record](../m4-desktop.md) for the remaining parent integrations and platform deferrals.
