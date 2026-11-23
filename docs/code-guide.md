@@ -526,3 +526,12 @@ the captured unit identity through nested destruction before reporting capture.
 `Session/CityEspionageDamageOperation` routes mission questions to the actor and
 any nested incident to its victim. The ordinary city menu/fallback controller,
 other city missions and movement/desktop callers remain open.
+
+`Core/CapturedTechnology` owns V03's resumable captured-advance choice, retaining
+best valuation across actual research-goal help and composing A08 valuation,
+ordinary grants and C06 production reset. `Core/CityTechnologyTheft` uses it for
+targeted theft and the actual grant service for ordinary theft. It composes V07
+race queries, U01 defender traversal, real capture/escape and victim incidents.
+`Session/CityTechnologyTheftOperation` routes actor choices and victim responses;
+the owning city controller must execute any returned Embassy/Sabotage fallback.
+General controller, movement and desktop joins remain open.

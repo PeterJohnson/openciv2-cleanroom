@@ -14,7 +14,7 @@ in the [M2 closeout](m2-closeout.md).
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; last-city famine now joins actual V01 elimination, ordered end reports and game closure. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. V01 catch-up now invokes full V03 grants with actual Library, Leonardo and government children; elimination/restart joins are tested. V01 elimination now has a resumable operation with actual nested last-settler and foreign-spy incidents, bounded restart search and victim routing. V06 unit bribery and sabotage now compose real transfer, HP and resumable escape/lifecycle effects. City sabotage and poison now use actual building, city-memory and resumable capture/escape children, with actor/victim decision routing. Full diplomacy/movement/mission callers, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. V01 catch-up now invokes full V03 grants with actual Library, Leonardo and government children; elimination/restart joins are tested. V01 elimination now has a resumable operation with actual nested last-settler and foreign-spy incidents, bounded restart search and victim routing. V06 unit bribery and sabotage now compose real transfer, HP and resumable escape/lifecycle effects. City sabotage and poison now use actual building, city-memory and resumable capture/escape children, with actor/victim decision routing. Technology theft now joins actual race selection, physical defender detection, captured-technology selection and research grants; fallback requests still need the city controller. Full diplomacy/movement/mission callers, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government, diplomatic stance and alliance-willingness policies are implemented, with actual restricted government changes and V05 patience. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. F04 ship arrival, V08 scheduled retirement and pending outcome dispatch now join real reports and continuation. Semantic ending pages use actual ship/history data; authored ending/fame-title resources, remaining history and generated-game callers remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
@@ -2501,3 +2501,51 @@ cross-platform acceptance is claimed.
 | --- | --- |
 | `m4-city-damage-native.json` | `551acf14f240d65b24ea6614216ecdfdc7655ee5d2de9c738beaef57d9de1200` |
 | `m4-city-damage-identity.json` | `620cd5db2b4b6af54aa25c2cb0fc933d5c85dab7a715bceb296f04ad29ac9bdb` |
+
+## Captured technology and city theft
+
+`CapturedTechnology` implements V03 §12 with actual A08 valuation, research-goal
+help, ordinary research grants and C06 production reset. It retains the best
+identity/value across help rebuilds and uses later equal valuations. Eligibility
+is independent of ordinary enabled/research prerequisites; the scenario government
+lock excludes its five specified identities. Accepted backed human replies are
+not checked again against the option list. Unsupported indices stop before name
+reads and grant writes. Local victim notices and the final live AI production
+reset retain their own gates.
+
+`CityTechnologyTheft` implements V06 §5 with real V07 spaceship-race selection,
+U01 physical defender traversal and resumable capture/escape. An active race can
+retain the last ordinary cyclic qualifier or select the first qualifying part
+prerequisite/Fusion Power. Detection scans diplomatic-role units without an owner
+filter, applies the three thresholds in stack order and exhausts the actor without
+granting knowledge or invoking escape. No-candidate AI outcomes request Embassy
+or Sabotage from the owning controller; human failure charges the specified moves.
+
+Targeted theft completes actual capture and V03 selection before escape, then sets
+the city's stolen flag after the incident finishes. Ordinary theft grants the
+retained candidate and sets that flag before escape. Both paths retain the target
+city after a capture check relocates the Spy. `CityTechnologyTheftOperation`
+routes actor choices and mandatory captured selection separately from the victim's
+incident. Its completion can carry a fallback; the parent must dispatch it.
+
+Eight shared groups cover chooser eligibility/ties/help, actual AI production
+reset, cyclic race selection, human/AI cancellation and empty paths, defender
+thresholds/order, targeted/hard capture, private session choices and failure
+prefixes. Composed tests exercise actual Barracks sale after Gunpowder and a failed
+government choice after a committed research grant. Session help rebuilds neither
+repeat capture nor grant early. Complete city-menu/fallback dispatch, other city
+missions, C09/V05 callers, U02/A07 movement admission, general desktop presentation
+and generated human/AI-game acceptance remain open. Browser and cross-platform
+work remain deferred; no desktop UI or Lua task code changed.
+
+Root/App formatting and verification, root/App Release builds and the 43-project
+boundary check passed. The native suite passed **904 of 906 tests**, with the two
+existing platform/audio skips. The probe passed **871 shared groups** and verified
+**520 compiled inputs**. Coverage maps all groups across 106 families; eight
+identity and three coverage validator tests passed. No new native UI, browser or
+cross-platform acceptance is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-theft-native.json` | `fe34c7e42506516e5cb1c76f225871b257fbbf2841c1fcfc45b6562eec05e71b` |
+| `m4-theft-identity.json` | `2736e5db4c041223716eca84b9a6f766a8dd17a623bdfe790cd4becd20c83a26` |

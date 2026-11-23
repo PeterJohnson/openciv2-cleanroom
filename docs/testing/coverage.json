@@ -3329,6 +3329,55 @@
         "V06.city-sabotage-human-failure",
         "V06.city-sabotage-scan-odds"
       ]
+    },
+    {
+      "id": "captured-technology",
+      "status": "partial",
+      "contract": "V03 section12 local captured technology with A08 valuation, research-goal help, actual grants and C06 production reset",
+      "publicSurface": "CapturedTechnology.Begin/Operation.Resume; CapturedTechnologyChoice; TakenTechnologyNotice",
+      "review": "Preserves independent unknown/known/prerequisite/scenario eligibility, last valuation ties and best-value retention across help, captured interactive presentation and live human/AI decisions. Actual ResearchGoals, AdvanceValuation, ResearchGrants and ProductionOrders children run here; human selections retain supplied backed identities without a second eligibility check. Local victim notices, zero-seat returns, explicit invalid-choice stops, actual AI production reset and terminal failures are covered. City theft consumes this service. General C09/V05 callers, complete desktop choice presentation and generated-game integration remain open; browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CapturedTechnology.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/TechnologyTheftCases.cs"
+      ],
+      "sharedGroups": [
+        "V03.captured-gates-production",
+        "V03.captured-selection-help",
+        "V06.theft-cyclic-race",
+        "V06.theft-defender-detection",
+        "V06.theft-empty-cancel",
+        "V06.theft-grant-failures",
+        "V06.theft-session-privacy",
+        "V06.theft-targeted-ordering"
+      ]
+    },
+    {
+      "id": "city-technology-theft",
+      "status": "partial",
+      "contract": "V06 section5 local ordinary and targeted theft with actual V07/V03/U01/V01/V06 children",
+      "publicSurface": "CityTechnologyTheft.Begin/Operation; CityTechnologyTheftOperation; CityEspionageDecision.Technology",
+      "review": "Cyclic candidate selection consumes actual spaceship-race state and fixed/custom part prerequisites; hard/targeted paths run real capture, retained city access and ordinary/captured research grants. Physical defender scans preserve role-only eligibility, stack order, independent detection thresholds and no owner filter. Detection exhausts without granting or invoking escape/incident. Ordinary grants set TechnologyStolen before escape; targeted selection sets it after all escape/incident children. Tests include no-candidate AI fallback requests, human movement cost, actual Barracks sale and AI production changes, grant/presentation failures, bounded-source guards and real actor/victim session decisions. The owning city controller must execute returned fallbacks; city-menu/fallback dispatch, U02/A07 movement admission, complete desktop presentation and generated games remain open. Browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CapturedTechnology.cs",
+        "src/OpenCiv2.Core/CityEspionageDamage.cs",
+        "src/OpenCiv2.Core/CityTechnologyTheft.cs",
+        "src/OpenCiv2.Session/CityTechnologyTheftOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/TechnologyTheftCases.cs"
+      ],
+      "sharedGroups": [
+        "V03.captured-gates-production",
+        "V03.captured-selection-help",
+        "V06.theft-cyclic-race",
+        "V06.theft-defender-detection",
+        "V06.theft-empty-cancel",
+        "V06.theft-grant-failures",
+        "V06.theft-session-privacy",
+        "V06.theft-targeted-ordering"
+      ]
     }
   ]
 }

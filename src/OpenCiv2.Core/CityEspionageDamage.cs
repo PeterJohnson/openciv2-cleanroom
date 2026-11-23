@@ -10,13 +10,14 @@ namespace OpenCiv2.Core;
 
 /// <summary>V06 city-controller captures, retained by fallback dispatch and its mission children.</summary>
 public sealed record CityMissionContext(int Unit, CitySlot City, int Actor, int Victim, UnitType InitialType, bool IsSpy);
-public enum CityEspionageQuestion { TreatyBreach, SpecificSabotage, SabotageTarget, HardSabotage }
+public enum CityEspionageQuestion { TreatyBreach, SpecificSabotage, SabotageTarget, HardSabotage, SpecificTheft, HardTheft }
 public sealed record CitySabotageTarget(int Building, string Name);
 public abstract record CityEspionageDecision
 {
     public sealed record Question(CityEspionageQuestion Kind, int Actor, CityTarget City, string Name,
         OwnedList<CitySabotageTarget>? Targets = null) : CityEspionageDecision;
     public sealed record Incident(EspionagePretext Pretext) : CityEspionageDecision;
+    public sealed record Technology(CapturedTechnologyChoice Choice) : CityEspionageDecision;
 }
 public enum CityEspionageSound { Spy, MediumExplosion }
 public enum CityEspionageNoticeKind { Immune, ProductionSabotaged, BuildingSabotaged, WaterPoisoned }

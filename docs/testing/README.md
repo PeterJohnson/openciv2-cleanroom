@@ -41,6 +41,11 @@ AI-versus-AI damage suppression, direct poison size/food rules and retained
 failure effects. Session cases follow actor confirmation through committed
 poison/unit loss to the human victim's decision. These are mission-child tests;
 they do not claim full movement or desktop city-mission integration.
+Captured-technology and theft groups cover live A08 valuation, retained best ties,
+actual goal help, V03 grants and C06 AI production reset, V07 race selection and
+U01 defender scans. They distinguish targeted versus ordinary flag timing through
+pending incidents, preserve failure prefixes and exercise real session privacy.
+Returned AI fallbacks remain requests for the unfinished city controller.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial
