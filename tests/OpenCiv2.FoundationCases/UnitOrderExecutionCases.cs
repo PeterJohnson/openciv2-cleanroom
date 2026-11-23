@@ -16,9 +16,9 @@ public static partial class FoundationSuite
         public UnitOrderExecution Orders { get; }
         public List<string> Effects = [];
         public CitySlot? CityToRefresh => null;
-        public OrderFixture(RevelationFixture? data = null)
+        public OrderFixture(RevelationFixture? data = null, List<OpenCiv2.Base.Randomness.Choice>? choices = null)
         {
-            Move = new(data: data);
+            Move = new(choices, data);
             Data.Rules.Cosmic = Data.Rules.Cosmic with { TransformationWork = 4 };
             Data.Rules.Terrain[(int)Terrain.Grassland] = Data.Rules.Terrain[(int)Terrain.Grassland] with
             { Work = new(new(TerrainResult.ImproveInPlace, 1, 4), new(TerrainResult.ImproveInPlace, 1, 4), (TerrainResult)Terrain.Plains) };

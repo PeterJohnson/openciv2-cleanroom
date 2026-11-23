@@ -5040,3 +5040,57 @@ eight identity tests and three coverage tests passed.
 Full A01/F04 orchestration, generated desktop composition and complete human/AI
 end-condition acceptance remain open. Browser and cross-platform execution
 remain deferred.
+
+## A01 local unit passes and U04 automated continuation — 2026-11-23
+
+`AutomatedOrders` composes actual shared tactical selection and order execution.
+The spent/full-Goto bypass retains its naval-superiority adjacency gate and has
+no added movement-left check. The alternate path honors the chooser's direct
+return before reading the captured actor's remaining movement. Execution keeps
+that captured actor and exhausts it only on an unhandled order.
+
+`AiUnitPasses` captures owner and historical first-pass restriction, then performs
+two descending scans with separately captured bounds. It preserves live
+order/domain action increments, the 11/21 continuation limits, bound-change
+breaks and the conditional extra transport continuation using shared active
+state. Admitted exhausted/sleeping units still receive cursor redraw; skipped
+slots do not. Cooperative yields keep the local session responsive without
+turning presentation callbacks into gameplay interleavings.
+
+`AiUnitPassOperation` forwards actual private tactical/movement decisions through
+shared helpers. Windows are retained only for the same pending decision, so a
+later unit cannot inherit an earlier unit's city window. Required failures and
+disposal preserve committed effects; cosmetic cursor/child failures remain
+diagnostics.
+
+Fourteen groups cover real movement, work and founding, Goto bypass/hold/naval
+gates, reverse admission and historical Air priority, no-moves/sleep, action
+limits through the actual U02 busy guard, founding removal and real hut-created
+units admitted on pass two. Transport cases cover adjacent enemies, visibility
+retained after a custom sea worker completes cleanup, and barbarian exclusion.
+Private ransom refusal resumes actual conquest and treasury plunder; payment,
+LongMove, cancellation and stale replies follow the real children. Initial
+fixtures incorrectly supplied a human-only hut draw to an AI, assumed sea
+relocation retained visibility, and assumed ransom refusal prevented later
+conquest; expectations were corrected without changing gameplay policy.
+
+U04's `hold` producer/lifetime is not defined in the current specifications.
+The helper requires an explicit input and the owner records the gap. Full
+F04/desktop composition must resolve it; it is not silently mapped to a unit
+flag or keyboard modifier. Existing open F04 city-analysis arithmetic also
+remains outside this milestone.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1439 of 1441**, with the two existing
+platform/audio skips. The shared probe passed **1406 groups** across 156 coverage
+families; source identity verified **740 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-ai-passes-native.json` | `615aa1114ae1b4bba295535ed0138e87b5c665501160c38b20df27d3eee520f1` |
+| `m4-ai-passes-identity.json` | `db447d7c31641a0744a7c7219dea66616a7921625a8079ea930b06a5ded47f0e` |
+
+Full F04 orchestration, generated desktop composition and complete human/AI
+end-condition acceptance remain open. Browser/cross-platform qualification and
+network execution remain deferred.

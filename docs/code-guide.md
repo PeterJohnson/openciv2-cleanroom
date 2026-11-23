@@ -202,8 +202,14 @@ services. `AssessmentQueries` owns the small role/quota/coastal queries;
 rates/strategic scoring and government selection; F04 still supplies preceding
 score accumulation and its complete maintenance caller. The desktop turn publishes
 power before advancing and assesses its human civilization after city processing.
-The A01 outer unit passes remain open. `UnitTactics` composes shared tactical
-selection, and `UnitOrderExecution` owns U04 execution.
+`AiUnitPasses` now owns the local two-pass reverse unit scan, captured scenario
+restriction, action limits and conditional extra transport activation.
+`Units/AutomatedOrders` composes the real `UnitTactics` and `UnitOrderExecution`
+children, retaining the captured actor and full-Goto bypass. Session
+`AiUnitPassOperation` routes private child decisions and cooperative yields;
+interaction windows are retained per pending decision. The unspecified U04 hold
+producer remains an explicit input/gap. F04 and generated desktop composition
+remain open.
 
 `TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
 It uses actual stacks, movement exhaustion, map mutations, remembered features
@@ -301,7 +307,7 @@ eligibility/cost queries. Darwin now invokes two sequential completions from
 `CityProduction`. `CivilizationCreationServices.CatchupResearch` supplies the
 actual grant service for V01's nonzero-turn reset, using self source and completing
 nested effects before the next advance. Turn-zero-only generated setup may omit
-it after the real new-game reset. A01 outer movement and generated-game callers
+it after the real new-game reset. Full F04 and generated-game callers
 remain open.
 
 `GenerationConnectivity.UniformDirection` shares the U03 reverse flood used by
@@ -757,7 +763,8 @@ do not execute movement themselves. `Units/UnitOrderExecution` composes them wit
 actual fortification, terrain work and retained movement, including pending
 decisions and conditional arrival/exhaustion writes. `UnitOrderOperation` shares
 private `MovementInteraction` routing with direct movement and advances cooperative
-yields through the runtime queue. Outer AI scheduling and desktop wiring remain open.
+yields through the runtime queue. Local A01 scheduling uses the same executor; full
+F04 and desktop wiring remain open.
 
 `Units/UnitRecovery` implements U04 GoHome with actual city/carrier selection,
 raw-region and fuel-reach rules, without changing home affiliation or moving.

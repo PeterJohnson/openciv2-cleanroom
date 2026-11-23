@@ -2870,7 +2870,7 @@
       "contract": "A01 \u00a7\u00a72\u20136 and \u00a77 assessment tail; A08 \u00a73; V08 \u00a72 objective value; X01 invalid-write repairs",
       "publicSurface": "CivilizationAssessment, AssessmentQueries, PowerRanking, GovernmentPolicy and CityObjectives; desktop pre-advance power and post-city human assessment",
       "status": "partial",
-      "review": "Ordered staging/census/regions/reverse assignment and goal aging, with actual A02/C06 production reset, A08/V02 government change, C05 support and U01/V01 loss/elimination/recreation. Cases distinguish stale upgrade counts from actual deletion effects, retained rival summaries, allied double counting, negative history/ranks, one-sided coordination and conditional draws, air range/division failure, anti-submarine role retention, historical routes and fortress versus airbase behavior. Native desktop direct/console turns publish old power before refreshed census and continue identically after save/reload. A01 outer movement, U04 order execution, remaining A03\u2013A08 tactics/diplomacy and full F04 generated-game integration remain pending. Browser/cross-platform execution is deferred; these are authored specification tests, not original-game comparison.",
+      "review": "Ordered staging/census/regions/reverse assignment and goal aging, with actual A02/C06 production reset, A08/V02 government change, C05 support and U01/V01 loss/elimination/recreation. Cases distinguish stale upgrade counts from actual deletion effects, retained rival summaries, allied double counting, negative history/ranks, one-sided coordination and conditional draws, air range/division failure, anti-submarine role retention, historical routes and fortress versus airbase behavior. Native desktop direct/console turns publish old power before refreshed census and continue identically after save/reload. Local A01 unit passes and U04 execution now have separate owning families; full F04 generated-game integration remains pending. Browser/cross-platform execution is deferred; these are authored specification tests, not original-game comparison.",
       "sources": [
         "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
         "src/OpenCiv2.Core/Ai/CivilizationAssessment.Assignment.cs",
@@ -4891,7 +4891,7 @@
       "status": "partial",
       "contract": "A04 complete shared chooser; actual W06/A03/A05/A06/A07/U04/W04/V06 children; A05/X01 production initialization; private Session routing",
       "publicSurface": "UnitTactics.Begin/Operation.Resume; UnitTacticsServices; UnitTacticsOperation; NavalTransportContext.ForChooser",
-      "review": "Concrete owning services compose priority dispatch, recovery/scenario/ferry gates, specialized orders, site founding, guards, transport/work retry, retained Goto, population return and movement planning. One captured context survives children and decisions; nuclear staging reloads position and direct returns bypass common Finish. Actual U04 executes a selected move, real C01 founds and absorbs, U05 captures by paradrop, W04 pillages and V06 handles private planner bribery. Ransom and bribery session cases preserve recipients, cancellation, payment, stale-reply rejection and resumed finish. Required failure/disposal prefixes and cosmetic diagnostics remain observable. The documented production repair initializes unwritten quota/match/demand/policy once, preserves actual producers and retains retry state; real fallback/landing helpers and exhausted Defend cargo cover downstream behavior. Full A01/F04 scheduling, generated desktop composition and complete human/AI-game acceptance remain open; browser/cross-platform execution is deferred.",
+      "review": "Concrete owning services compose priority dispatch, recovery/scenario/ferry gates, specialized orders, site founding, guards, transport/work retry, retained Goto, population return and movement planning. One captured context survives children and decisions; nuclear staging reloads position and direct returns bypass common Finish. Actual U04 executes a selected move, real C01 founds and absorbs, U05 captures by paradrop, W04 pillages and V06 handles private planner bribery. Ransom and bribery session cases preserve recipients, cancellation, payment, stale-reply rejection and resumed finish. Required failure/disposal prefixes and cosmetic diagnostics remain observable. The documented production repair initializes unwritten quota/match/demand/policy once, preserves actual producers and retains retry state; real fallback/landing helpers and exhausted Defend cargo cover downstream behavior. The ai-unit-passes family now covers local A01/U04 orchestration; full F04 scheduling, generated desktop composition and complete human/AI-game acceptance remain open; browser/cross-platform execution is deferred.",
       "sources": [
         "src/OpenCiv2.Core/Ai/NavalTransportContext.cs",
         "src/OpenCiv2.Core/Ai/SettlementTactics.cs",
@@ -4925,6 +4925,39 @@
         "A04.chooser-sea-no-moves",
         "A04.chooser-special-destinations",
         "A04.chooser-transport-retry"
+      ]
+    },
+    {
+      "id": "ai-unit-passes",
+      "status": "partial",
+      "contract": "A01 section 7 local outer unit passes; U04 automated active-order continuation; real A04/U04/U02 children and private Session decisions",
+      "publicSurface": "AiUnitPasses.Begin/Operation.Resume; AutomatedOrders.Begin/Operation.Resume; AiUnitPassOperation",
+      "review": "Actual chooser and order execution preserve captured actor, Goto bypass, naval-superiority adjacency gate, direct returns and unhandled exhaustion. Two reverse scans retain owner/scenario restriction, captured bounds, live order/domain counter increments and extra transport activation. Tests cover ordinary movement/work/founding, historical Air-only first pass, sleep/no-moves admission, 11/21 continuation limits through the actual U02 busy guard, removal and real hut appending before the next scan. Extra activation covers live adjacent enemy, visibility retained by a custom sea worker and barbarian exclusion. Private ransom refusal proceeds into actual city conquest/plunder; payment, LongMove, cancellation, stale replies, required failures, disposal and cosmetic diagnostics preserve actual child effects. Interaction windows are retained only for the same pending decision across a multi-unit pass. U04 explicitly requires an input for the unresolved hold producer; full F04/generated desktop integration must resolve it. Complete-game acceptance remains open; browser, cross-platform and network execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/AiUnitPasses.cs",
+        "src/OpenCiv2.Core/Units/AutomatedOrders.cs",
+        "src/OpenCiv2.Session/AiUnitPassOperation.cs",
+        "src/OpenCiv2.Session/AutomatedOrderInteraction.cs",
+        "src/OpenCiv2.Session/UnitTacticsOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/AiUnitPassCases.cs"
+      ],
+      "sharedGroups": [
+        "A01.passes-action-limits",
+        "A01.passes-extra-transport",
+        "A01.passes-failures",
+        "A01.passes-founding-bound",
+        "A01.passes-historical-air-first",
+        "A01.passes-hut-append",
+        "A01.passes-no-moves-sleep",
+        "A01.passes-private-movement",
+        "A01.passes-private-ransom",
+        "A01.passes-reverse-admission",
+        "U04.automated-choice-work",
+        "U04.automated-direct-founding",
+        "U04.automated-goto-bypass",
+        "U04.automated-naval-gate"
       ]
     }
   ]

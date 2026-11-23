@@ -971,3 +971,16 @@ recipient privacy and stale replies. Required failures and disposal retain
 committed prefixes; cosmetic founding/population failures remain diagnostics.
 Full A01/F04 scheduling, generated desktop composition and complete-game
 acceptance remain open; browser/cross-platform execution is deferred.
+
+A01 local unit-pass cases compose actual A04 and U04 operations. They cover
+captured actor/Goto bypass, the naval-superiority gate, real work/movement and
+direct founding, reverse admission, historical Air-only first pass, exhausted
+and sleeping units, 11/21 action limits through actual U02 busy rejection,
+founding removal and a real hut-created unit visited on pass two. Extra transport
+activation covers adjacency, visibility retained after custom sea-worker cleanup
+and barbarian exclusion. Private ransom refusal continues into actual conquest
+and plunder; payment and LongMove replies retain recipients and stale-reply
+protection. Required failures/disposal retain prefixes and cursor failures are
+diagnostic. U04's unresolved hold producer is explicit; complete F04/generated
+desktop and end-condition acceptance remain open. Browser/cross-platform and
+network execution remain deferred.

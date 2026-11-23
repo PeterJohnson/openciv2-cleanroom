@@ -299,6 +299,14 @@ returns zero, exhaust that captured unit. Do not re-query the live active slot
 for this execution. A nonzero AI-choice return bypasses it, and the first branch
 bypasses the AI chooser entirely, including its callbacks/random consumption.
 
+The automated continuation exposes `hold` as an explicit logical input. Its
+producer and lifetime are not identified by this specification: it must not be
+silently equated with Waiting, Garrison, a tactical context's Hold, a keyboard
+modifier or an original address. Standalone callers must supply it explicitly;
+full F04/desktop composition must resolve this producer gap before claiming
+complete activation coverage. Tests cover both values without callback-driven
+mutation of this input.
+
 ### Long-move handling
 
 U02 calls `longMove(u,direction)` near the end of successful common finish,
