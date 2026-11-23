@@ -984,3 +984,13 @@ protection. Required failures/disposal retain prefixes and cursor failures are
 diagnostic. U04's unresolved hold producer is explicit; complete F04/generated
 desktop and end-condition acceptance remain open. Browser/cross-platform and
 network execution remain deferred.
+
+U04 reset/recovery groups cover all/exhaust/owner selectors, presence/fallback
+setters, old-movement retention, border cadence, zero-timer wrapping, safe mission
+bookkeeping, actual spy survival/return/loss and private victim decisions. They
+join reset to moved-air attrition and cover C01 origin-region semantics, ordinary
+distance healing, facilities, retained unsupported-domain selectors, signed HP,
+airbase owners, wake-up, observer visibility and failure prefixes. Direct and
+console desktop turns use the shared normal reset/recovery path and reject
+mission flags outside the authored profile. Full generated-game F04 composition
+and acceptance remain open; browser/cross-platform execution remains deferred.

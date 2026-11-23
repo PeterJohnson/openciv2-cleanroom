@@ -5094,3 +5094,50 @@ eight identity tests and three coverage tests passed.
 Full F04 orchestration, generated desktop composition and complete human/AI
 end-condition acceptance remain open. Browser/cross-platform qualification and
 network execution remain deferred.
+
+## U04 global reset and civilization recovery — 2026-11-23
+
+`UnitTurnReset` rebuilds presence through W01 setters and performs the live
+ascending reset scan. Ordinary reset preserves Moved/Paradropped for recovery.
+Mission expiry uses actual V06 escape and lifecycle/incident children, including
+private human decisions through `UnitTurnResetOperation`. Invalid relationship
+indices omit only the excluded write; committed timer, mission and child effects
+remain. Exhaust/all/owner selectors retain their distinct behavior.
+
+`CivilizationRecovery` uses actual C01 nearest-city and C08 facility queries for
+healing, wake-up and moved-air attrition. It preserves signed HP arithmetic,
+airbase owner eligibility, observer filtering and the per-invocation retained
+facility selector. An unsupported domain with no prior selector requires an
+explicit input. Presentation failures are diagnostics, not gameplay rollback.
+
+The authored desktop now uses shared ordinary reset and recovery. Its restricted
+save profile rejects mission flags instead of silently erasing mission state;
+general F04 composition must use the retained full reset operation. Thirteen
+new groups cover the shared operations, actual spy survival/return/loss, private
+incident decisions, failure/disposal prefixes, and direct/console desktop turns.
+An initial Ocean-origin test expectation was corrected against C01's explicit
+disabled region gate; gameplay policy was not changed to fit the fixture.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1452 of 1454**, with the two existing
+platform/audio skips. The shared probe passed **1419 groups** across 157 coverage
+families; source identity verified **744 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+The unchanged native desktop driver passed **26 checks** through production
+controls, including save/reload, worker/rate/government/population continuation,
+retirement reports, Hall persistence and shutdown. Earlier attempts encountered
+an Xwayland image-capture error and native picker failures. The successful run
+used Xvfb with an isolated session bus/XDG directories and
+`GSETTINGS_BACKEND=memory`; no product or acceptance-check changes masked those
+harness failures. This remains authored-profile acceptance, not full M4.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-unit-turn-native.json` | `8682039cf4141ad12ccca839f9d545320bb70d7e6db605149a4831b3d62b5e63` |
+| `m4-unit-turn-identity.json` | `ea713728542d43afcdf21466d6fbd21badccf233a7cc9bddaaa83c5eb8eb58f3` |
+| `m4-unit-turn-play.json` | `8420a6bc7ddf0d7dfff2f6bd67612014a8abbd86c5ccfb0b8b95ab561e202fd0` |
+
+Full F04 orchestration, generated desktop composition and complete human/AI
+end-condition acceptance remain open. Browser/cross-platform and network
+execution remain deferred.

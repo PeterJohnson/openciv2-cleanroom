@@ -295,7 +295,7 @@ public sealed class LocalGame : IDisposable
             }
 
             if (unit.Owner.Value != owner || !geometry.Canonical(unit.Position) || unit.Damage != 0
-                || map.TileAt(unit.Position).Ocean || unit.Flags.Automated || unit.Flags.Aboard
+                || map.TileAt(unit.Position).Ocean || unit.Flags.Automated || unit.Flags.Aboard || unit.Flags.SpyMission
                 || unit.Type.Value is not (LocalGameRules.Settler or LocalGameRules.Guard or LocalGameRules.Rider)
                 || unit.Orders is not (UnitOrder.None or UnitOrder.Fortifying or UnitOrder.Fortified)
                     && !(unit.Type.Value == LocalGameRules.Settler && TerrainWorkOrders.IsWork(unit.Orders) && unit.Orders != UnitOrder.Transform)

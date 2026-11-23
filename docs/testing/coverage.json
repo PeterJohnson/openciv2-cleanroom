@@ -4959,6 +4959,38 @@
         "U04.automated-goto-bypass",
         "U04.automated-naval-gate"
       ]
+    },
+    {
+      "id": "unit-turn-reset-recovery",
+      "status": "partial",
+      "contract": "U04 global unit reset and civilization recovery; F04 global-before-civilization timing; X01 mission bookkeeping repair; real V06/V01 expiry",
+      "publicSurface": "UnitTurnReset.Begin/RebuildPresence/ResetOrdinary; CivilizationRecovery.Run; UnitTurnResetOperation; authored desktop turn integration",
+      "review": "Local presence reconstruction uses W01 setters; selectors retain exhaust-only, all and owner semantics. Normal reset preserves old Moved/Paradropped evidence, cadence and unrelated orders/targets; mission timers wrap and expire through real escape/lifecycle/incident services. Invalid relationship writes are omitted, including all-unit reset. Private victim decisions suspend the live scan after actual loss and resume later records without replay. Recovery uses real weighted-city selection followed by ordinary distance, origin-region behavior, facility retention, signed HP factors, positive-owner airbase overrides, Land-on-Ocean sleep and moved range-zero air attrition. Foreign records, visibility, required failures and cosmetic diagnostics are covered. The authored desktop uses shared normal reset and recovery and rejects unsupported mission flags on import instead of erasing them; general spy reset has independent private Session coverage. Full F04/generated desktop composition and complete-game acceptance remain open; browser/cross-platform and network execution remain deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/CivilizationRecovery.cs",
+        "src/OpenCiv2.Core/Units/UnitTurnReset.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/UnitTurnResetOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitTurnCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.local-reset-recovery-admission",
+        "U04.recovery-facilities-airbases",
+        "U04.recovery-healing-factors",
+        "U04.recovery-moved-air-reset",
+        "U04.recovery-nearest-regions",
+        "U04.recovery-signed-hp-facility",
+        "U04.recovery-wake-diagnostics",
+        "U04.reset-failure-fallback",
+        "U04.reset-loss-continuation",
+        "U04.reset-ordinary-selectors",
+        "U04.reset-private-incident",
+        "U04.reset-spy-home-recovery-visibility",
+        "U04.reset-spy-timers-survival"
+      ]
     }
   ]
 }

@@ -766,6 +766,16 @@ private `MovementInteraction` routing with direct movement and advances cooperat
 yields through the runtime queue. Local A01 scheduling uses the same executor; full
 F04 and desktop wiring remain open.
 
+`Units/UnitTurnReset` owns local presence rebuilding and the live global reset
+scan, including actual V06 escape/lifecycle/incident handling at mission expiry.
+Its ordinary reset retains Moved/Paradropped for `CivilizationRecovery`, which
+uses actual C01/C08 queries for healing, wake-up and moved-air attrition. The
+unsupported-domain facility selector is explicit when no preceding supported
+unit supplied it. `UnitTurnResetOperation` routes private victim decisions.
+The authored desktop uses the shared ordinary reset and recovery; its restricted
+save profile rejects mission flags rather than erasing them. General F04/desktop
+composition must use the full retained reset operation.
+
 `Units/UnitRecovery` implements U04 GoHome with actual city/carrier selection,
 raw-region and fuel-reach rules, without changing home affiliation or moving.
 `Ai/UnitTacticsContext` captures the on-map A04 state after parent admission,

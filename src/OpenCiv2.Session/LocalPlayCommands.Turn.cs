@@ -224,6 +224,9 @@ public static partial class LocalPlayCommands
             if (!upkeepCommitted)
             {
                 startGold = CivilizationFinances.NormalizeTreasury(world, context.Actor.Civilization.Value);
+                new CivilizationRecovery(world, context.Process.Rules.Definitions, point =>
+                    context.Effect("map.changed", new([new("x", new CommandValue.Integer(point.X)), new("y", new CommandValue.Integer(point.Y))])))
+                    .Run(context.Actor.Civilization.Value);
                 upkeepCommitted = true;
                 activeWorld = world;
                 world.Production.CivilizationTurnInProgress = true;
@@ -496,29 +499,13 @@ public static partial class LocalPlayCommands
 
         private static void ResetUnits(GameState world)
         {
-            foreach (ref var tile in world.Map.Tiles)
+            UnitTurnReset.RebuildPresence(world);
+            for (int i = 0; i < world.Entities.Units.End; ++i)
             {
-                tile.Features &= ~MapFeatures.Unit;
-            }
-
-            var units = world.Entities.Units.Scanned;
-            for (int i = 0; i < units.Length; i++)
-            {
-                ref var unit = ref units[i];
-                if (!unit.Token.Occupied)
+                if (world.Entities.Units.Storage[i].Token.Occupied)
                 {
-                    continue;
+                    UnitTurnReset.ResetOrdinary(world, i);
                 }
-
-                world.Map.TileAt(unit.Position).Features |= MapFeatures.Unit;
-                unit.MovesUsed = unit.AuxiliaryTimer = 0;
-                unit.Flags.Waiting = false;
-                if (!unit.Flags.BorderIntruder && (world.Globals.Turn & 3) == (i & 3))
-                {
-                    unit.Flags.BorderWarned = false;
-                }
-
-                unit.Flags.BorderIntruder = unit.Flags.Moved = unit.Flags.Paradropped = false;
             }
         }
 
