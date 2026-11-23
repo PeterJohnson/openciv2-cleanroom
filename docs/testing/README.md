@@ -936,3 +936,13 @@ Capacity cases distinguish final failure from last success; visibility, local
 notice/autoplay and cosmetic failures preserve committed creation. The rules bit
 round-trips through save/preferences and retains setup defaults. Full F04 and
 generated desktop-game acceptance remain open; browser execution is deferred.
+
+W06 ransom groups exercise actual classic CITY content, language/install fallback,
+decimal counts, variant selection and explicit malformed-message failure. Demand
+uses the retained nearest city's size before replacing the city. Payment uses
+live treasury, keeps the retained amount and removes actual stacks in radius
+order without the center. Imported mixed-owner links exercise the complete
+stack child and nested last-settler/spy incidents. Session cases cover private
+victim routing, refusal/cancel/timeout, stale replies and changing nested
+recipients; cosmetic and required failures retain their committed prefixes.
+The owning barbarian chooser and full-game desktop integration remain open.

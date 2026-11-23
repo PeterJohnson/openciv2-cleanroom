@@ -959,7 +959,13 @@ queries. Search retries retain the nearest-city replacement; final creation
 failure suppresses the notice without suppressing human-city redraw. Its
 operation routes real nested lifecycle decisions and records cosmetic failures.
 `GameRules.ExpandedBarbarianTypes` carries the specified base-rules bit through
-F06 and setup. F04 invocation, barbarian orders and ransom remain separate work.
+F06 and setup. `BarbarianRansom` retains the chooser's nearest-city size before
+replacing its city, then composes actual stack deletion and nested lifecycle
+decisions after payment. `Formats/ClassicRansomText` reads CITY/BARBARIANS with
+the shared scenario/install reader; missing selected message content fails with
+a P04 diagnostic. `Session/BarbarianRansomOperation` routes payment privately to
+the victim, then any nested decision to its own recipient. The owning barbarian
+chooser and full F04 invocation remain separate work.
 
 `Units/MovementCompletion` composes U02 ordinary arrival, common finish and local
 cleanup. It calls actual C09 capture, W03 revelation, U05 special/transport finish,

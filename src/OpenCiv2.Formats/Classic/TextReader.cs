@@ -441,6 +441,14 @@ public sealed class TextReader : IDisposable
                 token = token[2..];
             }
         }
+        return ParseNumber(token, radix);
+    }
+
+    /// <summary>P04/W06 signed decimal counts; prefix-looking input remains decimal.</summary>
+    public static int ParseDecimal(ReadOnlySpan<byte> token) => ParseNumber(token, 10);
+
+    private static int ParseNumber(ReadOnlySpan<byte> token, uint radix)
+    {
         bool negative = false;
         if (radix == 10)
         {

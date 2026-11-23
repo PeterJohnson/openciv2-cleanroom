@@ -4820,6 +4820,35 @@
         "W06.spawn-uprising-treasury-boundary",
         "W06.spawn-uprising-types-rank"
       ]
+    },
+    {
+      "id": "barbarian-city-ransom",
+      "status": "partial",
+      "contract": "W06 city ransom; P04/F03 CITY content; U01 stack deletion; V01/V06 nested lifecycle; Session private interaction",
+      "publicSurface": "BarbarianRansom.Begin/Operation.Resume; ClassicRansomText.Read; TextReader.ParseDecimal; BarbarianRansomOperation",
+      "review": "Demand retains nearest-city size before target replacement; strongest-civilization pricing, eligibility, missing/no-variant/autoplay routes, current treasury payment and ordered radius stack deletion preserve the specification. Actual CITY scenario/install and language lookup, decimal wrap/counts, signed variant selection and malformed-message diagnostics use the shared reader. Imported mixed-owner linked stacks exercise whole-stack removal and real last-settler elimination/spy incidents. Session cases cover victim privacy, refusal/cancel/timeout, stale replies and nested recipient changes. Cosmetic diagnostics and required failures retain committed payment/deletion. The owning barbarian chooser/full turn/generated desktop integration remains open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/BarbarianRansom.cs",
+        "src/OpenCiv2.Formats/Classic/RansomText.cs",
+        "src/OpenCiv2.Formats/Classic/TextReader.cs",
+        "src/OpenCiv2.Session/BarbarianRansomOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/BarbarianRansomCases.cs"
+      ],
+      "sharedGroups": [
+        "W06.ransom-actual-stack-removal",
+        "W06.ransom-classic-content",
+        "W06.ransom-content-counts-failures",
+        "W06.ransom-content-routes-autoplay",
+        "W06.ransom-demand-retained-city",
+        "W06.ransom-failures-disposal",
+        "W06.ransom-live-payment-survival",
+        "W06.ransom-nested-lifecycle",
+        "W06.ransom-private-session",
+        "W06.ransom-strongest-admission",
+        "W06.ransom-timeout-private-lifecycle"
+      ]
     }
   ]
 }

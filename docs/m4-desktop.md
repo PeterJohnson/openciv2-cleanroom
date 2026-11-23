@@ -4903,3 +4903,52 @@ eight identity tests and three coverage tests passed.
 W06 barbarian orders/ransom, full A04/A01/F04 orchestration, generated desktop
 composition and complete human/AI-game acceptance remain open. Browser and
 cross-platform execution remain deferred.
+
+## W06 city ransom with classic content and private replies
+
+`BarbarianRansom` supplies the empty foreign-city neighbor child. Demand uses
+the retained nearest city's signed size before replacing that city with the
+actual target. Strongest-civilization pricing, human/affordability gates and
+missing-content versus nonpositive-count routes remain distinct. Autoplay still
+loads the selected content and requests visibility, then resumes neighbor logic.
+The child returns Continue, Finish or Paid so the owning chooser retains its
+specified finish behavior.
+
+`ClassicRansomText` reads CITY/BARBARIANS through actual F03 scenario/install
+lookup and language selection. Decimal counts use the shared numeric parser's
+wrapping arithmetic without accepting radix prefixes. Selection preserves the
+signed coordinate remainder. A missing count follows the reader's cleared-line
+semantics; missing selected message content fails explicitly under P04's safe
+malformed-content policy. Streams close on every exit and directory context is
+preserved rather than changing the process working directory.
+
+Acceptance debits the retained amount from current treasury, without another
+affordability gate, then uses actual first-unit queries and whole-stack deletion
+in B[0..19] order. The center is excluded. Required deletion failures retain the
+payment; cosmetic status/map failures are diagnostic. Imported mixed-owner links
+exercise nested last-settler elimination, real spy incidents and the actual
+creation operation's refusal to restart a nonzero-turn human civilization.
+`BarbarianRansomOperation` routes the offer privately to the payer and subsequent
+lifecycle choices to their own recipients. Cancellation and timeout decline;
+accepted payment is not replayed while a nested decision waits.
+
+Eleven groups cover these paths, including retained target replacement, strongest
+pricing, signed/wrapped values, actor survival outside the radius, stale replies
+and disposal. Initial checks corrected an invalid default-without-deadline prompt
+and fixtures that assumed normal placement created mixed-owner links. The nested
+fixture now supplies both the real incident choice and actual creation child.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1390 of 1392**, with the two existing
+platform/audio skips. The shared probe passed **1357 groups** across 153 coverage
+families; source identity verified **725 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-barbarian-ransom-native.json` | `901c785b6d8c548e137d01e63bb9d6e051456980285887c1604a6e78a8eabb27` |
+| `m4-barbarian-ransom-identity.json` | `942300144933c4b0e54801d33cd18ddbc02fcfe7e16b4310e1cb8b1f76ed8da6` |
+
+The owning W06 barbarian chooser, full A04/A01/F04 orchestration, generated
+desktop composition and complete human/AI-game acceptance remain open. Browser
+and cross-platform execution remain deferred.
