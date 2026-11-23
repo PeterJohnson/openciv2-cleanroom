@@ -209,7 +209,7 @@ public static partial class FoundationSuite
                 Equal(UnitOrder.None, f.Data.Unit(0).Orders);
             }
             for (int i = 0; i < 20 && RequiredResult(actor, id).Status == CommandStatus.Pending; ++i)
-            { Equal(true, runtime.ContinueCommand(id)); Equal(true, runtime.AdvanceOne()); }
+            { Equal(false, runtime.ContinueCommand(id)); Equal(true, runtime.AdvanceOne()); }
             Equal(CommandStatus.Completed, RequiredResult(actor, id).Status); Equal(false, f.World.UnitMovementActive);
             Equal(new CommandValue.Integer(variant == 2 ? 0 : 1), RequiredResult(actor, id).Result.Single(v => v.Name == "result").Value);
             if (variant == 1) Equal(new MapPoint(20, 12), f.Data.Unit(2).Position);

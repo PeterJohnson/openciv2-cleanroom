@@ -29,7 +29,12 @@ public sealed record OperationInput(
 /// A continuation's next lifecycle state, terminal result or request for participant interaction.
 /// </summary>
 public sealed record OperationStep(CommandStatus Status = CommandStatus.Completed, OwnedList<NamedValue>? Result = null,
-    string Code = "", InteractionSpec? Interaction = null);
+    string Code = "", InteractionSpec? Interaction = null)
+{
+    /// <summary>A bounded local step has more work and needs no external input. Valid only with
+    /// Pending and no interaction. Queues one Proceed after already admitted work.</summary>
+    public bool ReadyToContinue { get; init; }
+}
 /// <summary>
 /// Trusted services borrowed for a single continuation step.
 /// </summary>

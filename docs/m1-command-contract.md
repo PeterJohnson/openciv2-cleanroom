@@ -32,8 +32,14 @@ controllers of a participant share that ordered lane. Factories create explicit
 continuation objects with retained semantic state, not suspended native stacks.
 
 `AdvanceOne()` consumes at most one queued input and resumes at most one
-continuation. A pending operation needs an explicit `ContinueCommand`, decision,
-cancellation or deadline input; it is not automatically spun each frame.
+continuation. A pending operation normally needs an explicit `ContinueCommand`,
+decision, cancellation or deadline input. A bounded local operation can instead
+return `ReadyToContinue=true` with Pending and no interaction. The runtime then
+queues one Proceed behind already admitted work, unless an input for that command
+is already queued. This is an explicit readiness signal; external waits and private
+decisions are not polled. Each AdvanceOne still runs at most one step. A queued
+cancellation retains FIFO order and prevents another automatic Proceed from being
+added ahead of it. Readiness on terminal/interaction states is an invalid step.
 Recursive `AdvanceOne` is rejected. An owning operation can call injected
 services at its specified boundary, publish effects and reread the live world
 after a callback. This does not implement every X02 scripted reentry domain or

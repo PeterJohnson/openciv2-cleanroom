@@ -312,6 +312,10 @@ public sealed partial class SessionRuntime
         {
             throw new InvalidOperationException("Missing operation step");
         }
+        if (step.ReadyToContinue && (step.Status != CommandStatus.Pending || step.Interaction is not null || record.Executor is not null))
+        {
+            throw new InvalidOperationException("Cooperative readiness requires a local pending step without an interaction");
+        }
 
         if (step.Status is CommandStatus.Completed or CommandStatus.Failed or CommandStatus.Cancelled)
         {
@@ -352,6 +356,10 @@ public sealed partial class SessionRuntime
             {
                 Interaction = new(new(RuntimeState.Assign(ref state.NextInteraction)), participant, observer, spec)
             };
+        }
+        if (step.ReadyToContinue && !state.Ready.Any(work => work.Command == record.Update.Correlation.Command))
+        {
+            state.Ready.Enqueue(new(record.Update.Correlation.Command, new(OperationInputKind.Proceed)));
         }
         Deliver(state, record);
     }

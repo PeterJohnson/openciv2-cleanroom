@@ -1147,11 +1147,14 @@
       "id": "session",
       "contract": "M1 session and command contracts",
       "publicSurface": "Session/participant/controller leases, owned queries/updates, command registration/admission/continuation/interaction, peer routes and retirement",
-      "review": "Stale capabilities, owned retained replies, FIFO/reentry, wrapping deadlines, cancellation after effects, controller/peer authority changes and failed publication/cleanup.",
+      "review": "Stale capabilities, owned retained replies, FIFO/reentry, wrapping deadlines, cancellation after effects, controller/peer authority changes and failed publication/cleanup. Explicit bounded-step readiness queues one Proceed behind admitted inputs; tests cover FIFO fairness, private pauses, queued cancellation, no duplicate work, external waits and invalid readiness states.",
       "sharedGroups": [
         "Session.command-admission-changes",
         "Session.command-cleanup-and-allocation-failures",
         "Session.command-controlled-choice-failure",
+        "Session.command-cooperative-decisions-cancellation",
+        "Session.command-cooperative-failure-waits",
+        "Session.command-cooperative-fairness",
         "Session.command-decisions-and-timeouts",
         "Session.command-descriptor-admission",
         "Session.command-execution-revalidation",
@@ -1185,6 +1188,7 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/CommandCases.cs",
         "tests/OpenCiv2.FoundationCases/CommandPeerCases.cs",
+        "tests/OpenCiv2.FoundationCases/CooperativeCommandCases.cs",
         "tests/OpenCiv2.FoundationCases/SessionCases.cs"
       ]
     },

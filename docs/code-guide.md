@@ -850,3 +850,9 @@ helpers. Missing optional entry selectors fail at their consuming land branch;
 unpublished viewer input is consumed only at the common-finish seen read.
 Desktop player-command composition and the entry-selector specification gap remain
 open; this service does not silently broaden the existing `LandMovement` command.
+
+`MovementOperation` signals `OperationStep.ReadyToContinue` when a bounded child
+yields without a decision. `CommandRuntime` queues exactly one subsequent Proceed
+behind admitted inputs, so the desktop's existing AdvanceOne timer can resume it.
+Plain Pending remains an external wait. Interaction pauses, explicit input ordering,
+effect publication and single disposal keep their existing command contracts.

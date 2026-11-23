@@ -710,3 +710,9 @@ lifetime, AI cleanup and committed failure prefixes. Session cases verify privat
 capture-to-long-move, passenger and fatigue decisions. Existing fixtures can share
 one already-built dependency graph without recreating its unit records. Desktop
 command wiring and resolution of the optional entry-selector gap remain pending.
+
+Cooperative command groups verify one-step advancement, FIFO fairness, private
+interaction pauses, cancellation ordering, duplicate suppression, external waits,
+failure prefixes and disposal. The actual movement session test now advances its
+landfall restart through the automatically queued Proceed, using the same
+AdvanceOne path as the desktop timer; it does not manually wake the command.
