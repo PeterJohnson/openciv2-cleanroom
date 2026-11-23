@@ -4226,3 +4226,37 @@ The W04 player command menu/declaration wrapper, A04 entry/trespass/forced-city
 logic, specialized/site/transport/movement planning, full AI/turn scheduling,
 desktop composition and complete human/AI-game acceptance remain open. Browser
 and cross-platform execution remain deferred.
+
+## W04 player pillage command and private choices
+
+`PillageCommand` now supplies actual player eligibility, captured improvement
+choices, V04 confirmation/declaration and the core W04 child. A single Farmland
+choice remains automatic and removes Mine only; explicitly choosing Farmland
+from a multi-choice menu removes both components. Airbase and Railroad choices
+retain their component and priority rules. The wrapper's positive-city check
+remains distinct from core city-zero confirmation, with the specified resulting
+reputation and treaty effects.
+
+The session adapter routes the menu and each actual nested warning privately.
+Tests move the actor during its menu: the wrapper retains its original diplomacy
+origin, while the core recaptures the live tile. Canceling the second confirmation
+preserves the earlier war declaration. Explicit choices remain selected after
+features change, and cosmetic failure does not skip movement exhaustion. No
+native dialog/text-buffer or unconsumed movement-option backing is introduced.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1217 of 1219**, with the two existing
+platform/audio skips. The shared probe passed **1184 groups** across 136 coverage
+families; source identity verified **670 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-pillage-command-native.json` | `3913f8aa0feac88977db8eec47089602609bdc7dc49a43b17be50a16aa09f308` |
+| `m4-pillage-command-identity.json` | `84c97720f8af3a5cfb6114589160c9c15dd40d7f59d8c64fae1cc298a6263d36` |
+
+The restricted desktop profile does not yet register the player command. Wider
+desktop composition, A04 entry/trespass/forced-city and movement planning,
+specialized/site/transport policies, full AI/turn scheduling and complete
+human/AI-game acceptance remain open. Browser and cross-platform execution remain
+deferred.

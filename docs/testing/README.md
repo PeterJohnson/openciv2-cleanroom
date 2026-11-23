@@ -781,4 +781,11 @@ absent-city memory behavior, self-war flags, actual goals, cosmetic versus
 mechanical failures and private session cancellation. A04 cases join real pillage
 to common Finish and partisan target choices to AI-Goto orders, preserving first
 unit, visibility/region/treaty gates and last direction/city-break semantics.
-The player command wrapper and complete AI chooser remain separate open joins.
+The complete AI chooser and desktop command registration remain open.
+
+W04 player pillage groups cover eligibility, automatic single-choice Farmland,
+explicit multi-choice removal, airbase/railroad menu order, city-zero versus
+positive-city declaration, AI wrapper confirmation, retained menu/coordinates,
+second core confirmation and cancellation after an actual prior declaration.
+Private session menu/warnings and invalid-choice/disposal/cosmetic failures are
+covered. The restricted desktop profile does not yet register this command.

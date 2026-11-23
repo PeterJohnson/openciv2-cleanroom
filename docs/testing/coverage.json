@@ -4311,7 +4311,7 @@
       "status": "partial",
       "contract": "W04 core pillage and A04 section 5 pillage/partisan target decisions",
       "publicSurface": "Pillage.Begin; PillageOperation; GroundPartisans.BeginPillage/Targets",
-      "review": "Actual W04 core retains attack confirmation, captured origin and live type/owner, one feature removal, fresh nearest-city memory/diplomacy/goal tail and movement exhaustion. Redraw failures are reported without skipping mechanics. Session presents private actual attack warnings. A04 selects the actual child with captured city selector and live rule gates, preserves first eligible nonmilitary target and last eligible road direction with immediate city break. Integration exercises actual common Finish and AI-Goto production. Player command eligibility/menu/declaration, full AI chooser, desktop production composition and complete-game acceptance remain open.",
+      "review": "Actual W04 core retains attack confirmation, captured origin and live type/owner, one feature removal, fresh nearest-city memory/diplomacy/goal tail and movement exhaustion. Redraw failures are reported without skipping mechanics. Session presents private actual attack warnings. A04 selects the actual child with captured city selector and live rule gates, preserves first eligible nonmilitary target and last eligible road direction with immediate city break. Integration exercises actual common Finish and AI-Goto production. Full AI chooser, player command registration, desktop production composition and complete-game acceptance remain open.",
       "sources": [
         "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
         "src/OpenCiv2.Core/Ai/GroundPartisans.cs",
@@ -4330,6 +4330,27 @@
         "W04.pillage-failure-session",
         "W04.pillage-feature-priority",
         "W04.pillage-knowledge-diplomacy"
+      ]
+    },
+    {
+      "id": "player-pillage-command",
+      "status": "partial",
+      "contract": "W04 player pillage command with actual V04 and core W04 children",
+      "publicSurface": "PillageCommand.Available/Begin; PillageCommandOperation",
+      "review": "Eligibility retains nonzero attack, Land domain, absent city and raw feature gates. Captured choices preserve Farmland/Airbase and Railroad-versus-Road precedence, automatic single-choice behavior and explicit retained selection after changed state. The positive-city wrapper invokes actual confirmation and declaration without a human gate, then the actual core recaptures live actor position/owner. Cases distinguish city zero and positive declaration reputation, retain prior war on second-confirmation cancellation and route private session choices. Native text/dialog backing and unused movement-option storage have no gameplay consumer. Desktop registration and complete-game integration remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/PillageCommand.cs",
+        "src/OpenCiv2.Session/PillageCommandOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PillageCommandCases.cs"
+      ],
+      "sharedGroups": [
+        "W04.pillage-command-admission",
+        "W04.pillage-command-choices",
+        "W04.pillage-command-declaration",
+        "W04.pillage-command-retained-core",
+        "W04.pillage-command-session-failure"
       ]
     }
   ]

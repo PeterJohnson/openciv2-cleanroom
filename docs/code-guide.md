@@ -770,8 +770,11 @@ counter and second-city tests. `GroundPartisans` selects actual `Units/Pillage`
 children and nonmilitary/road targets, retaining the city selector, first unit
 and last direction rules. `Pillage` performs confirmation, synchronized feature
 removal, memory, diplomatic flags, shared goals and movement exhaustion. The
-session `PillageOperation` retains private attack warnings. The player menu/war
-wrapper, specialized/transport phases and ordinary movement planner remain open.
+session `PillageOperation` retains private attack warnings. `PillageCommand`
+adds player eligibility, retained improvement choices, actual V04 declaration
+and a fresh core child; `PillageCommandOperation` routes its private menu and
+nested warnings. Desktop command registration still awaits the wider gameplay
+composition. Specialized/transport phases and ordinary movement planning remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision
