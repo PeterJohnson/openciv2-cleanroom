@@ -37,7 +37,13 @@ public sealed class SeamApp : Application
     private SeamSession? owner;
     private LocalGame? play;
     private static bool startLocalGame;
-    public static void ConfigureLocalGame() => startLocalGame = true;
+    private static Func<LocalGame, SessionPanel, IDesktopAutomation>? startAutomation;
+    private IDesktopAutomation? automation;
+    public static void ConfigureLocalGame(Func<LocalGame, SessionPanel, IDesktopAutomation>? automationFactory = null)
+    {
+        startLocalGame = true;
+        startAutomation = automationFactory;
+    }
     private MapPainter? painter;
     private DispatcherTimer? timer;
     private GraphicsFonts? fonts;
@@ -183,6 +189,8 @@ public sealed class SeamApp : Application
             play = new();
             panel = new(observeMap: true);
             panel.Bind(play.Player);
+            automation = startAutomation?.Invoke(play, panel);
+            startAutomation = null;
         }
         else
         {
@@ -190,7 +198,7 @@ public sealed class SeamApp : Application
             panel = owner.Panel;
         }
 
-        var view = new SeamView(panel, painter, selected is not null, selected?.Selected, play);
+        var view = new SeamView(panel, painter, selected is not null, selected?.Selected, play, automation);
         CurrentView = view;
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -227,14 +235,17 @@ public sealed class SeamApp : Application
             if (play is { } local && local.AdvanceOne())
             {
                 panel.Refresh();
-                if (panel.View.Command is { } command && command.Status.Terminal())
+                if (panel.View.Command is { } command && command.Status.Terminal()
+                    && automation?.Retains(command.Correlation.Command) != true)
                 {
                     local.RetireCommand(command.Correlation.Command);
                 }
             }
 
+            automation?.Tick();
             owner?.Tick();
             view.Refresh();
+            view.RefreshAutomation();
             view.AdvancePresentation();
             Observe?.Invoke(view.Snapshot());
         };
@@ -328,6 +339,8 @@ public sealed class SeamApp : Application
         CurrentView?.StopServices();
         owner?.Dispose();
         owner = null;
+        automation?.Dispose();
+        automation = null;
         play?.Dispose();
         play = null;
         painter?.Dispose();

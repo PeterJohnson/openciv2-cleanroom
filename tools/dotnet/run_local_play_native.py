@@ -17,6 +17,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report', required=True, type=Path)
     parser.add_argument('--desktop', required=True, type=Path)
+    parser.add_argument('--automation-desktop', type=Path)
     parser.add_argument('--cli', required=True, type=Path)
     parser.add_argument('--probe', required=True, type=Path)
     parser.add_argument('--sqlite-cli', type=Path)
@@ -57,6 +58,7 @@ def drive(args, app, observation, storage):
 
     def wait(predicate):
         deadline = time.monotonic() + 10
+        state = None
         while time.monotonic() < deadline:
             if app.poll() is not None:
                 raise RuntimeError(f'Desktop exited with {app.returncode}')
@@ -68,6 +70,11 @@ def drive(args, app, observation, storage):
             if state.get('play') is not None and predicate(state):
                 return state
             time.sleep(.04)
+        play = (state or {}).get('play') or {}
+        if play.get('automation') is not None:
+            controls = {key: value for key, value in play['controls'].items() if key.startswith('automation.')}
+            raise AssertionError(f"Timed out waiting for the automation window: {play['automation']}; "
+                                 f"controls {controls}; message {state['message']!r}")
         raise AssertionError('Timed out waiting for the expected application state')
 
     def click_box(box, state):
@@ -500,10 +507,110 @@ def drive(args, app, observation, storage):
     identity = json.loads(Path(str(observation) + '.identity.json').read_text())
     validate(identity)
     artifacts = [args.desktop, args.cli, args.probe, args.sqlite_cli, Path(__file__)]
+    automation_identity = None
+    if args.automation_desktop:
+        script = Path(__file__).resolve().parents[2] / 'examples/automation/next-production.lua'
+        observation = observation.with_name('automation-observation.json')
+        storage = storage.with_name('automation-storage')
+        launch = ['dotnet', str(args.automation_desktop), '--script', str(script),
+                  '--observe', str(observation), '--storage-directory', str(storage),
+                  '--renderer-settings', str(observation.with_name('automation-renderer.json'))]
+        if args.assets and args.fonts:
+            launch += ['--assets', str(args.assets), '--fonts', str(args.fonts)]
+        app = subprocess.Popen(launch)
+        try:
+            wait(lambda s: s['play']['automation']['status'] == 'Ready')
+            window = driver.window_for(app.pid, visible=True)
+            assert window
+            driver.wait_placement(window)
+            initial = observation.with_name('automation-initial.sav')
+            expected = observation.with_name('automation-expected.sav')
+            subprocess.run(['dotnet', str(args.probe), '--desktop-production-policy-reference',
+                            str(initial), str(expected)], check=True)
+            state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+            menu_click(state, state['menu']['groups']['File']['bounds'])
+            state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+            menu_click(state, state['menu']['actions']['file.library']['bounds'])
+            import_save(initial)
+            covered_header = driver.pixel(window, 15, 45)
+            stored_control('open')
+            wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.' and s['play']['city'])
+            # The observation can precede the compositor's first frame without the file overlay.
+            wait(lambda s: driver.pixel(window, 15, 45) != covered_header)
+            click('automation.start')
+            wait(lambda s: s['play']['automation']['status'] == 'Running')
+            click('automation.cancel')
+            wait(lambda s: s['play']['automation']['status'] == 'Cancelled')
+            click('automation.start')
+            wait(lambda s: s['play']['automation']['status'] == 'Running')
+            click('automation.pause')
+            wait(lambda s: s['play']['automation']['status'] == 'Paused')
+            assert end_turn(2)['city']['production'] == 2
+            click('automation.pause')
+            final = wait(lambda s: s['play']['automation']['status'] in ('Completed', 'Failed'))['play']
+            assert final['automation'] == {'status': 'Completed', 'detail': 'Selected Outrider'}, final['automation']
+            assert final['city']['production'] == 4
+            click('save')
+            wait(lambda s: s['message'] == 'Classic save written.')
+            actual, reference = saved_classic(), expected.read_bytes()
+            if actual != reference:
+                args.report.parent.mkdir(parents=True, exist_ok=True)
+                args.report.with_suffix('.automation-actual.sav').write_bytes(actual)
+                args.report.with_suffix('.automation-expected.sav').write_bytes(reference)
+                raise AssertionError('Desktop production policy save differs from the direct reference')
+            click('automation.start')
+            wait(lambda s: s['play']['automation']['status'] == 'Running')
+            click('load')
+            loaded = wait(lambda s: s['play']['automation']['status'] == 'Stopped')['play']
+            assert loaded['automation']['detail'] == 'Game reloaded' and loaded['city']['production'] == 4
+            checks.append('optional desktop Lua starts, cancels, pauses and resumes, matches manual save bytes, and stops on reload')
+            driver.close_window(window)
+            assert app.wait(timeout=10) == 0
+        finally:
+            if app.poll() is None:
+                app.terminate()
+                app.wait(timeout=10)
+        automation_identity = json.loads(Path(str(observation) + '.identity.json').read_text())
+        validate(automation_identity, desktop_automation=True)
+        artifacts.extend([args.automation_desktop, args.automation_desktop.with_name('OpenCiv2.Automation.dll'), script])
+
+        interaction_script = observation.with_name('automation-interaction.lua')
+        interaction_script.write_text("""
+local command = game.command('turn.end')
+while command.status == 'Pending' or command.status == 'AwaitingInteraction' do
+    game.wait()
+    command = game.result(command.id)
+end
+assert(command.status == 'Cancelled', command.status)
+game.log('Turn cancelled')
+""")
+        launch[launch.index('--script') + 1] = str(interaction_script)
+        observation = observation.with_name('automation-interaction.json')
+        launch[launch.index('--observe') + 1] = str(observation)
+        app = subprocess.Popen(launch)
+        try:
+            wait(lambda s: s['play']['automation']['status'] == 'Ready')
+            window = driver.window_for(app.pid, visible=True)
+            assert window
+            driver.wait_placement(window)
+            click('automation.start')
+            decision = wait(lambda s: s['status'] == 'AwaitingInteraction' and s['dialog']['visible'])
+            click_box(decision['dialog']['regions']['cancel'], decision)
+            cancelled = wait(lambda s: s['play']['automation']['status'] in ('Completed', 'Failed'))['play']
+            assert cancelled['automation'] == {'status': 'Completed', 'detail': 'Turn cancelled'}
+            assert cancelled['turn'] == 1
+            checks.append('desktop follows a script-submitted interaction and returns the human cancellation to Lua')
+            driver.close_window(window)
+            assert app.wait(timeout=10) == 0
+        finally:
+            if app.poll() is None:
+                app.terminate()
+                app.wait(timeout=10)
     hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in artifacts if path}
     driver.close()
     return {'format': 'openciv2-linux-local-play/1', 'input': 'XTest pointer and keyboard', 'composition': 'cpu',
-            'identity': identity, 'sha256': hashes, 'checks': checks, 'saved': semantic(saved), 'resumed': semantic(resumed)}
+            'identity': identity, 'automationIdentity': automation_identity, 'sha256': hashes,
+            'checks': checks, 'saved': semantic(saved), 'resumed': semantic(resumed)}
 
 
 if __name__ == '__main__':

@@ -59,6 +59,12 @@ and invalidation on load. An automation controller queries a valid next build
 and submits the ordinary production command. Its resulting save matches the
 manual command byte for byte.
 
+The Linux native play runner's optional `--automation-desktop` argument adds
+two checks for the separate Lua launcher. It drives the real task controls,
+compares the production policy's save with the manual command, verifies that
+reload stops the running script, and uses the normal turn dialog to cancel a
+script-submitted command.
+
 Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
 costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
 terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct

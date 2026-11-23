@@ -1,0 +1,20 @@
+<Solution>
+  <Project Path="../src/OpenCiv2.Base/OpenCiv2.Base.csproj" />
+  <Project Path="../src/OpenCiv2.IO/OpenCiv2.IO.csproj" />
+  <Project Path="../src/OpenCiv2.Platform.Native/OpenCiv2.Platform.Native.csproj" />
+  <Project Path="../src/OpenCiv2.IO.Native/OpenCiv2.IO.Native.csproj" />
+  <Project Path="../src/OpenCiv2.Contracts/OpenCiv2.Contracts.csproj" />
+  <Project Path="../src/OpenCiv2.Core/OpenCiv2.Core.csproj" />
+  <Project Path="../src/OpenCiv2.Formats/OpenCiv2.Formats.csproj" />
+  <Project Path="../src/OpenCiv2.Query/OpenCiv2.Query.csproj" />
+  <Project Path="../src/OpenCiv2.Network/OpenCiv2.Network.csproj" />
+  <Project Path="../src/OpenCiv2.Session/OpenCiv2.Session.csproj" />
+  <Project Path="../src/OpenCiv2.ViewModels/OpenCiv2.ViewModels.csproj" />
+  <Project Path="../src/OpenCiv2.Console/OpenCiv2.Console.csproj" />
+  <Project Path="../src/OpenCiv2.App/OpenCiv2.App.csproj" />
+  <Project Path="../src/OpenCiv2.MapRendering/OpenCiv2.MapRendering.csproj" />
+  <Project Path="../src/OpenCiv2.Desktop/OpenCiv2.Desktop.csproj" />
+  <Project Path="../tests/OpenCiv2.MapProbe/OpenCiv2.MapProbe.csproj" />
+  <Project Path="../src/OpenCiv2.Automation/OpenCiv2.Automation.csproj" />
+  <Project Path="../src/OpenCiv2.Desktop.Automation/OpenCiv2.Desktop.Automation.csproj" />
+</Solution>

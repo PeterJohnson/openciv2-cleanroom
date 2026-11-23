@@ -2935,6 +2935,32 @@
       "sharedGroups": [
         "M4.local-city-production-events"
       ]
+    },
+    {
+      "id": "desktop-automation-host",
+      "contract": "M4 optional desktop task hosting, owned player commands and interaction presentation",
+      "publicSurface": "OpenCiv2.Desktop.Automation launcher, desktop start, pause, resume and cancel controls, followed command replies",
+      "status": "partial",
+      "review": "Isolated Linux desktop case imports an authored save, starts and pauses Lua, advances normal turns, resumes a production policy and compares save bytes with the manual command. Covers stopping on reload and cancellation of a script-originated pending interaction through the normal dialog. Task memory accounting and persisted replay remain open.",
+      "sources": [
+        "examples/automation/next-production.lua",
+        "src/OpenCiv2.App/IDesktopAutomation.cs",
+        "src/OpenCiv2.App/SeamApp.cs",
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Desktop.Automation/DesktopScript.cs",
+        "src/OpenCiv2.Desktop.Automation/Program.cs",
+        "src/OpenCiv2.Desktop/Program.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.ViewModels/SessionPanel.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityProductionEventCases.cs",
+        "tests/OpenCiv2.FoundationProbe/Program.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "M4.local-city-production-events"
+      ]
     }
   ]
 }

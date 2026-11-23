@@ -6,7 +6,7 @@
     <Oc2Python Condition="'$(Oc2Python)' == ''">python3</Oc2Python>
   </PropertyGroup>
   <Target Name="Oc2PublishDependencyNotices" AfterTargets="Publish"
-      Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildProjectName)', '^OpenCiv2\.(Cli(\.Sqlite)?|Desktop|Browser|Browser\.Tests|ConformanceBrowser|AutomationBrowser|PerformanceBrowser)$'))">
+      Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(MSBuildProjectName)', '^OpenCiv2\.(Cli(\.Sqlite)?|Desktop(\.Automation)?|Browser|Browser\.Tests|ConformanceBrowser|AutomationBrowser|PerformanceBrowser)$'))">
     <PropertyGroup>
       <_Oc2NoticeOutput>$(PublishDir)</_Oc2NoticeOutput>
       <_Oc2NoticeLock>$(MSBuildProjectDirectory)/packages.lock.json</_Oc2NoticeLock>

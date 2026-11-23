@@ -211,6 +211,13 @@ It keeps parsed requests and admission receipts for replay and supports pausing
 between cooperative ticks. The next-production example exercises the ordinary
 player command, with a matching manual and replay run in the automation suite.
 
+`OpenCiv2.Desktop.Automation` is the opt-in launcher and owns the script file,
+task and binding lifetime. The regular desktop host drives the optional task
+on its existing game tick, and the view model follows the task's visible
+commands so ordinary dialogs and replies still apply. The launcher retains
+script results until the task finishes and revokes its auxiliary lease when
+the task ends or the game reloads.
+
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
 are explicit semantic inputs while their original-file binding remains a gap;

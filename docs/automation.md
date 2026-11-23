@@ -18,6 +18,8 @@ the same client lease; revocation still prevents queries. Tasks do not own world
 The optional native/browser test hosts supply the production session as their
 composition root.
 The normal headless solution, CLI, console and Avalonia host do not require Lua.
+The [optional desktop launcher](BUILDING.md#optional-sqlite-and-lua) loads one
+explicitly selected script for Alder Valley.
 
 ## API 1
 
@@ -115,8 +117,16 @@ Revocation prevents the task from issuing further cancellation/replies; the
 session owner retains responsibility for outstanding interactions. Dispose tasks
 before disposing the session, and do not concurrently call task methods.
 
-Script loading must be explicit. Completion events live on the runtime binding.
-Persisted task metadata and the desktop automation controls remain open.
+Script loading is explicit. The optional desktop launcher accepts a UTF-8
+script up to 64 KiB. Its sidebar starts, pauses, resumes and cancels that
+script. Each start uses a fresh automation binding on the human seat. The
+session keeps advancing during a pause, and visible script interactions use
+the same dialog and replies as player commands. A successful reload stops the
+old task. Start the script again to attach it to the loaded game.
+
+Completion events and command attempts live in the active session. Persisted
+task metadata, per-task memory accounting, and replay of interaction inputs
+remain open.
 
 ## Build and evidence
 

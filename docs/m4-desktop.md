@@ -17,7 +17,7 @@ in the [M2 closeout](m2-closeout.md).
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
-| Automation | The authored game publishes own-city completions to automation bindings. The Lua production example reads those events and choices, supports pause and resume, and records requests for replay on a matching game. Desktop task hosting, memory accounting and extended replay remain open. |
+| Automation | The authored game publishes own-city completions to automation bindings, and the optional Linux desktop launcher hosts Lua scripts on the player seat. The production example uses ordinary choices and request replay. Memory accounting, persisted traces and replay of interaction inputs remain open. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
@@ -1640,3 +1640,36 @@ inputs remain open.
 | `m4-desktop-lua-production-browser.json` | `4d2ddb69f5354148bcf802f650c79ae5f0a3e4c4777df21a930429fd64b3769b` |
 | `m4-desktop-lua-production-headless.xml` | `4664235b9223ed4e435ed7193d452d4994e31715b4939e100e292105c48a0bee` |
 | `m4-desktop-lua-production-root.xml` | `95d83f92abae1d5abc78cb6023afe2d4628960caeafe7f696e1cb839f39e5dad` |
+
+## Optional desktop Lua launcher
+
+The optional managed launcher opens Alder Valley with an explicitly selected Lua
+script. Start, Pause, Resume and Cancel drive the task on the existing game tick.
+Script commands enter through an auxiliary binding on the human seat and their
+pending decisions use the regular player dialog. Terminating a task releases its
+command results and binding after pending work settles. A successful save reload
+ends the previous task and requires an explicit start in the new session.
+
+The normal desktop launcher, shared app and default CLI remain independent of
+the interpreter. The optional native scenario uses the production example,
+compares the saved game with equivalent manual play, and exercises the dialog
+for a script-submitted end turn. Desktop persistence and replay of recorded input
+sequences, task memory accounting, and the generated human/AI game gate remain
+open.
+
+Root, App and optional launcher formatting and Release builds passed. The
+native suite passed **810 of 812 tests**, with two existing skips. The probe
+passed **778 shared cases** and verified **463 compiled inputs**. All **14 Lua
+groups** passed on native and Chromium, with matching results. All **16 Linux
+desktop checks** passed. The optional launcher also published as a managed
+application with verified notices for 31 locked packages.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-automation-play.json` | `d0fd29b4f9c3565b9993f60b2c0ed9116b926942368157c274a455606882434f` |
+| `m4-desktop-automation-headless.xml` | `2d6437d32e07b1822aee6f178690c896f5e2d4bcf1153bd48af7a344559d367e` |
+| `m4-desktop-automation-native.json` | `c53deeb489fe8fc2330cef0ac4c6c7305f46a96818bba5e50a232128f8621a3c` |
+| `m4-desktop-automation-identity.json` | `e73e9036cbff3ae7405f90f44543c3c2f2d966839ce178926e6a89eafe7b60d6` |
+| `m4-desktop-automation-lua.xml` | `ea486212e8e60697b9200ef9f29c6a7b51097ea0417dd7d2aa9c73dbfdc34462` |
+| `m4-desktop-automation-lua-native.json` | `326b74fdd9c2c0d8d041a79ca250dd780a39ebcb3f45f79eaafa4ba788bf23b5` |
+| `m4-desktop-automation-lua-browser.json` | `cc059149d24902bceaff82e2cf6d92de86b9a59484738a65cab16bd80e9df113` |

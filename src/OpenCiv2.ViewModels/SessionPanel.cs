@@ -81,6 +81,28 @@ public sealed class SessionPanel(bool observeMap = false)
         }
     }
 
+    /// <summary>Displays a command submitted by another visible controller on this seat.</summary>
+    public void Follow(CommandId id)
+    {
+        if (command == id || View.Command is { Status: CommandStatus.Pending or CommandStatus.AwaitingInteraction })
+        {
+            return;
+        }
+        try
+        {
+            if (client?.Result(id) is { } update)
+            {
+                command = id;
+                View = View with { Command = update, Message = update.Code };
+                Refresh();
+            }
+        }
+        catch (AccessException)
+        {
+            ClearRevoked();
+        }
+    }
+
     public bool Reply(int choice)
     {
         if (client is null || View.Command?.Interaction is not { } interaction)

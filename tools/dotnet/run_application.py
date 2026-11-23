@@ -22,12 +22,16 @@ def map_content_inputs(assets, fonts):
         fonts / row['file'] for row in [*font_pin['faces'], font_pin['license']]]
 
 
-def validate(build, native_aot=False, source_root=None):
+def validate(build, native_aot=False, source_root=None, desktop_automation=False):
     source_root = Path(source_root).resolve() if source_root else ROOT
     if build.get('format') != 'openciv2-application-seam/1': raise ValueError('Unknown application identity')
     names = [entry['Assembly'] for entry in build['build']]
     hosts = set(names) & HOSTS
     native = {'OpenCiv2.IO.Native', 'OpenCiv2.Platform.Native'} if hosts == {'OpenCiv2.Desktop'} else set()
+    if desktop_automation:
+        if hosts != {'OpenCiv2.Desktop'}:
+            raise ValueError('Expected a desktop automation host')
+        native |= {'OpenCiv2.Desktop.Automation', 'OpenCiv2.Automation'}
     if len(hosts) != 1 or len(names) != len(set(names)) or set(names) != LIBRARIES | hosts | native:
         raise ValueError('Incomplete or duplicate application identity')
     if native_aot and (hosts != {'OpenCiv2.Desktop'} or build.get('dynamicCodeSupported') is not False):
@@ -37,6 +41,9 @@ def validate(build, native_aot=False, source_root=None):
     sources = {}
     for entry in build['build']:
         name = entry['Assembly']; expected = identity.expected_inputs(source_root, name)
+        if name == 'OpenCiv2.Automation':
+            expected.update({p: identity.sha(source_root / p) for p in
+                             ('docs/automation.md', 'src/OpenCiv2.Automation/Prelude.lua')})
         if native_aot and name == 'OpenCiv2.Desktop':
             path = source_root / 'packaging/locks/desktop-aot' / (build['runtimeIdentifier'] + '.json')
             expected[path.relative_to(source_root).as_posix()] = identity.sha(path)

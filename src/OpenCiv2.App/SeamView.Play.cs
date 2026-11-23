@@ -20,6 +20,8 @@ public sealed partial class SeamView
     private const string PlaySave = "file.save-game", PlayReload = "file.reload-game", PlayCity = "city.open";
     private const string SaveKey = "file-alder-valley";
     private readonly LocalGame? game;
+    private readonly IDesktopAutomation? automation;
+    private readonly TextBlock automationStatus = new() { TextWrapping = TextWrapping.Wrap, MaxLines = 3 };
     private readonly Dictionary<string, Control> playControls = [];
     private readonly TextBlock turnLabel = new() { TextWrapping = TextWrapping.Wrap };
     private readonly TextBox cityName = new() { Text = "Alder Crossing", MaxLength = 15 };
@@ -97,6 +99,16 @@ public sealed partial class SeamView
         files.Children.Add(PlayButton("save", "Save game", () => _ = Transfer(false)));
         files.Children.Add(PlayButton("load", "Reload save", () => _ = Transfer(true)));
         playOrders.Children.Add(files);
+        if (automation is not null)
+        {
+            playOrders.Children.Add(automationStatus);
+            var taskControls = new WrapPanel();
+            taskControls.Children.Add(PlayButton("automation.start", "Start script", automation.Start));
+            taskControls.Children.Add(PlayButton("automation.pause", "Pause", automation.TogglePause));
+            taskControls.Children.Add(PlayButton("automation.cancel", "Cancel script", automation.Cancel));
+            playOrders.Children.Add(taskControls);
+            RefreshAutomation();
+        }
         var research = new WrapPanel { Name = "ResearchChoices" };
         playOrders.Children.Add(research);
         return playOrders;
@@ -109,6 +121,20 @@ public sealed partial class SeamView
         button.Click += (_, _) => action();
         playControls[id] = button;
         return button;
+    }
+
+    internal void RefreshAutomation()
+    {
+        if (automation?.State is not { } task)
+        {
+            return;
+        }
+        automationStatus.Text = task.Detail.Length == 0 ? task.Status : $"{task.Status} · {task.Detail}";
+        playControls["automation.start"].IsEnabled = task.CanStart;
+        var pause = (Button)playControls["automation.pause"];
+        pause.Content = task.Paused ? "Resume" : "Pause";
+        pause.IsEnabled = task.CanPause;
+        playControls["automation.cancel"].IsEnabled = task.CanCancel;
     }
 
     private void BuildCityOverlay()
@@ -526,6 +552,11 @@ public sealed partial class SeamView
             ["runtime"] = play.Observation.Runtime.Value,
             ["explored"] = view.Map?.Tiles.Count(t => t.Terrain is not null),
             ["cityOpen"] = cityOverlay.IsVisible,
+            ["automation"] = automation?.State is { } task ? new JsonObject
+            {
+                ["status"] = task.Status,
+                ["detail"] = task.Detail
+            } : null,
             ["city"] = city is null ? null : new JsonObject
             {
                 ["slot"] = city.Slot.Value,

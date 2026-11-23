@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../OpenCiv2.Desktop/OpenCiv2.Desktop.csproj" />
+    <ProjectReference Include="../OpenCiv2.Automation/OpenCiv2.Automation.csproj" />
+  </ItemGroup>
+</Project>

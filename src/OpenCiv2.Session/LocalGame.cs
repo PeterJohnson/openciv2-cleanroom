@@ -36,6 +36,16 @@ public sealed class LocalGame : IDisposable
     /// <summary>Binds an additional controller to the current human seat.</summary>
     public IPlayerClient Bind(ControllerKind kind) => runtime.Bind(participant, kind);
 
+    /// <summary>Releases an auxiliary binding in its original game lifetime.</summary>
+    public void Revoke(ClientIdentity binding)
+    {
+        if (binding.Kind != ControllerKind.Frontend && binding.Runtime == Player.Identity.Runtime
+            && binding.Session == Player.Identity.Session && binding.Participant == participant)
+        {
+            runtime.Revoke(binding.Controller);
+        }
+    }
+
     public bool AdvanceOne() => runtime.AdvanceOne();
     public bool RetireCommand(CommandId command) => runtime.RetireCommand(command);
 

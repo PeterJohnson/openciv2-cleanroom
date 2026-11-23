@@ -7,7 +7,7 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parents[2]
 
 # Direct production references, reviewed against the architecture.
-GUI_PROJECTS = {"OpenCiv2.App", "OpenCiv2.Desktop", "OpenCiv2.Browser"}
+GUI_PROJECTS = {"OpenCiv2.App", "OpenCiv2.Desktop", "OpenCiv2.Desktop.Automation", "OpenCiv2.Browser"}
 RENDERING_PROJECTS = {"OpenCiv2.MapRendering"}
 RENDERING_PACKAGES = {"SkiaSharp", *{f"SkiaSharp.NativeAssets.{platform}"
     for platform in ("Linux", "WebAssembly", "Win32", "macOS")}}
@@ -25,6 +25,7 @@ EDGES = {
     "OpenCiv2.App": {"OpenCiv2.Session", "OpenCiv2.ViewModels", "OpenCiv2.Console", "OpenCiv2.MapRendering"},
     "OpenCiv2.MapRendering": {"OpenCiv2.Base", "OpenCiv2.Contracts", "OpenCiv2.Formats"},
     "OpenCiv2.Desktop": {"OpenCiv2.App", "OpenCiv2.IO.Native", "OpenCiv2.Platform.Native"},
+    "OpenCiv2.Desktop.Automation": {"OpenCiv2.Desktop", "OpenCiv2.Automation"},
     "OpenCiv2.Browser": {"OpenCiv2.App"},
     "OpenCiv2.ViewModels": {"OpenCiv2.Contracts"},
     "OpenCiv2.Console": {"OpenCiv2.Contracts"},
@@ -63,7 +64,7 @@ def main():
                 failures.append(f"Unregistered production project: {project.stem}")
             # GUI/native/optional dependencies cannot arrive silently.
             allowed = {"RandN.Pcg32", "RandN.Core"} | (GUI_PACKAGES if project.stem in GUI_PROJECTS else set())
-            if project.stem == "OpenCiv2.Automation":
+            if project.stem in {"OpenCiv2.Automation", "OpenCiv2.Desktop.Automation"}:
                 allowed |= {"LuaCSharp", "LuaCSharp.Annotations", "LuaCSharp.SourceGenerator"}
             if project.stem in RENDERING_PROJECTS:
                 allowed |= RENDERING_PACKAGES
@@ -101,6 +102,9 @@ def main():
             failures.append(f"{portable} unexpectedly depends on a GUI host")
     if {"OpenCiv2.Automation", "OpenCiv2.Export.Sqlite"} & dependencies("OpenCiv2.Cli"):
         failures.append("Default CLI graph includes optional Lua/SQLite")
+    for host in ("OpenCiv2.Desktop", "OpenCiv2.Browser"):
+        if "OpenCiv2.Automation" in dependencies(host):
+            failures.append(f"{host} unexpectedly includes optional Lua")
     for project in ET.parse(ROOT / "OpenCiv2.slnx").iter("Project"):
         if Path(project.attrib["Path"]).stem in GUI_PROJECTS | RENDERING_PROJECTS | {"OpenCiv2.Automation", "OpenCiv2.AutomationCases", "OpenCiv2.Automation.Tests", "OpenCiv2.AutomationProbe", "OpenCiv2.AutomationBrowser", "OpenCiv2.Export.Sqlite", "OpenCiv2.Cli.Sqlite", "OpenCiv2.Sqlite.Tests"}:
             failures.append("Default solution includes optional GUI/Lua/SQLite")

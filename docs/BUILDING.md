@@ -502,6 +502,22 @@ python3 tools/dotnet/compare_automation.py build/test-results/lua-native.json bu
 The browser command uses the Node/Playwright environment above. See the
 [Lua contract](automation.md) for budgets, permissions and lifetime rules.
 
+The optional desktop launcher uses the existing Avalonia host and an explicit
+script path. Build it separately from the normal desktop solution.
+
+```sh
+dotnet restore solutions/OpenCiv2.Desktop.Automation.slnx --locked-mode
+dotnet build solutions/OpenCiv2.Desktop.Automation.slnx -c Release --no-restore
+dotnet src/OpenCiv2.Desktop.Automation/bin/Release/net11.0/OpenCiv2.Desktop.Automation.dll \
+  --script examples/automation/next-production.lua
+```
+
+Pass the usual graphics and storage options after the script path. The launcher
+opens Alder Valley. Use **Start script** in the sidebar after opening any save
+you want the script to run on. The regular desktop build retains its existing
+dependency graph. Linux verification uses the native play runner with
+`--automation-desktop` pointing at the optional launcher assembly.
+
 ## Independent CLI and conformance checks
 
 [Test instructions](testing/README.md) list all eight CLI/helper suites, X02

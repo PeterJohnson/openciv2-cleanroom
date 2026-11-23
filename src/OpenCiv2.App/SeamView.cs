@@ -62,10 +62,12 @@ public sealed partial class SeamView : UserControl
     private string parseError = "";
     private bool changingItems;
 
-    internal SeamView(SessionPanel model, MapPainter painter, bool pinnedFonts, MapArtSelection? selection, LocalGame? game = null)
+    internal SeamView(SessionPanel model, MapPainter painter, bool pinnedFonts, MapArtSelection? selection,
+        LocalGame? game = null, IDesktopAutomation? automation = null)
     {
         this.model = model;
         this.game = game;
+        this.automation = automation;
         if (game is not null)
         {
             input.Clear();

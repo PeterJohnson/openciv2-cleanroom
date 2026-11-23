@@ -1,12 +1,13 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
-if (args is ["--local-play-reference", string saved, string continued])
+if (args is ["--local-play-reference" or "--desktop-production-policy-reference", string saved, string continued])
 {
-    var reference = FoundationSuite.LocalPlayReference();
+    var reference = args[0] == "--local-play-reference" ? FoundationSuite.LocalPlayReference()
+        : FoundationSuite.DesktopProductionPolicyReference();
     using (var output = new FileStream(saved, FileMode.CreateNew))
     {
-        output.Write(reference.Saved);
+        output.Write(reference.Item1);
     }
 
     using (var output = new FileStream(continued, FileMode.CreateNew))

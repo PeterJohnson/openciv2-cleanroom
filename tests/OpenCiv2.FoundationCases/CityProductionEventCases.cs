@@ -8,6 +8,35 @@ namespace OpenCiv2.FoundationCases;
 
 public static partial class FoundationSuite
 {
+    public static (byte[] Initial, byte[] Continued) DesktopProductionPolicyReference()
+    {
+        byte[] initial;
+        using (var fixture = new LocalGame())
+        {
+            var pioneer = fixture.Player.OwnUnits().Records.Single(unit => unit.Type.Value == 0);
+            RunLocal(fixture, false, "found desktop production policy city", LocalPlayCommands.Found,
+                new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))),
+                new("name", new CommandValue.Text("Alder Crossing")));
+            var saved = ClassicFiles.DecodeStoredSave(fixture.SaveClassic());
+            initial = ClassicFiles.EncodeStoredSave(saved with
+            {
+                Cities = new([saved.Cities[0] with { ShieldBox = 40 }])
+            });
+        }
+
+        // The launcher imports the fixture into a fresh game with no prior city token.
+        using var game = new LocalGame();
+        Equal(LocalLoadResult.Loaded, game.LoadClassic(initial));
+        var turn = EndLocalTurn(game, false, 2);
+        Equal(true, turn.Committed.Any(e => e.Name == "unit.produced"));
+        var city = game.Player.OwnCities().Records.Single();
+        Equal((sbyte)2, city.Production);
+        RunLocal(game, false, "choose next production manually", LocalPlayCommands.Production,
+            new("city", new CommandValue.City(new(city.Slot, city.Token))),
+            new("type", new CommandValue.Integer(4)));
+        return (initial, game.SaveClassic());
+    }
+
     private static void LocalCityProductionEvents()
     {
         foreach (int completedItem in new[] { -BuildingIds.Temple, 2 })

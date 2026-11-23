@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 using Avalonia;
 using OpenCiv2.App;
@@ -6,11 +7,20 @@ using OpenCiv2.Formats.Content;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.IO.Native;
 using OpenCiv2.Platform.Native;
+using OpenCiv2.Session;
+using OpenCiv2.ViewModels;
 
 internal static class Program
 {
     [STAThread]
-    public static int Main(string[] args)
+    public static int Main(string[] args) => DesktopHost.Run(args);
+}
+
+/// <summary>Common native launcher used by the ordinary desktop and optional automation entry points.</summary>
+public static class DesktopHost
+{
+    public static int Run(string[] args, Func<LocalGame, SessionPanel, IDesktopAutomation>? automation = null,
+        params Assembly[] optionalAssemblies)
     {
         try
         {
@@ -138,7 +148,7 @@ internal static class Program
 
             if (localGame)
             {
-                SeamApp.ConfigureLocalGame();
+                SeamApp.ConfigureLocalGame(automation);
             }
 
             if (showcase is not null)
@@ -157,7 +167,8 @@ internal static class Program
                 void WriteIdentity() =>
                     File.WriteAllText(
                         path + ".identity.json",
-                        ApplicationIdentity.Read(typeof(Program).Assembly, typeof(ContentDirectory).Assembly, typeof(NativeAudio).Assembly));
+                        ApplicationIdentity.Read(typeof(DesktopHost).Assembly,
+                            [typeof(ContentDirectory).Assembly, typeof(NativeAudio).Assembly, .. optionalAssemblies]));
                 if (coldView is null)
                 {
                     WriteIdentity();
