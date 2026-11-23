@@ -3403,6 +3403,32 @@
         "V06.embassy-spy-gates",
         "V06.investigation-live-escape"
       ]
+    },
+    {
+      "id": "nuclear-effects",
+      "status": "partial",
+      "contract": "U07 local action/blast; W05 shared pollution placement; U01/V01 stack loss; V04 attitude",
+      "publicSurface": "NuclearEffects.Begin/Blast/Operation; PollutionPlacement.Place; CivilizationElimination.BeginEraseStack; NuclearActionOperation",
+      "review": "Ordered local nuclear action with target notice, first qualifying SDI, semantic animation, actual stack deletion and nested civilization elimination before a separate blast pass. Direct blast retains units and diplomacy, handles signed population and wrapped aliases, consumes primary-law feature/pollution draws and uses real W03 memory and W05 placement. Session continuation routes nested human incidents privately; failures and disposal retain committed prefixes. Tests cover mixed-owner stacks, own and distant delivery units, hotseat attitude gates, third-party interception, live animation completion, failure/retry and network rejection. Movement/combat/device delivery, meltdown and full desktop presentation/game acceptance remain open. No network batch, browser or cross-platform completion is claimed.",
+      "sources": [
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/NuclearEffects.cs",
+        "src/OpenCiv2.Core/PollutionPlacement.cs",
+        "src/OpenCiv2.Core/Units/UnitLoss.cs",
+        "src/OpenCiv2.Session/NuclearActionOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NuclearCases.cs"
+      ],
+      "sharedGroups": [
+        "U07.blast-aliases-live",
+        "U07.blast-features-population",
+        "U07.nested-failures",
+        "U07.sdi-notices",
+        "U07.session-privacy",
+        "U07.stacks-diplomacy",
+        "W05.pollution-placement"
+      ]
     }
   ]
 }

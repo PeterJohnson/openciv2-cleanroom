@@ -51,6 +51,11 @@ escape, captured Spy/type state, live investigation flags and one-point movement
 They exercise actual nested elimination before final notices. Session cases verify
 private window routing, single adapter invocation, closure and failure handling;
 the supplied window fixture is a P07/P06 boundary, not desktop report acceptance.
+U07 groups cover third-party SDI, actual mixed-owner stack deletion and nested V01
+incidents before the blast, direct-blast unit retention, signed city population,
+wrapped aliases, primary feature draws, W05 pollution memory and hotseat attitude
+gates. They verify terminal failure prefixes and private session routing; these
+service cases do not claim movement/combat delivery or desktop nuclear UI acceptance.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

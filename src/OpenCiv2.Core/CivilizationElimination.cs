@@ -61,6 +61,13 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         return Operation.ForDeletion(this, loss, unit, true, call, incidents, candidateBudget);
     }
 
+    /// <summary>U01 whole-stack deletion with actual nested civilization checks and final synchronization.</summary>
+    public Operation BeginEraseStack(UnitLoss loss, int unit, string call, EspionageIncidents incidents, int candidateBudget = 64)
+    {
+        ArgumentNullException.ThrowIfNull(loss);
+        return Operation.ForStack(this, loss, unit, call, incidents, candidateBudget);
+    }
+
     private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false);
     private void RequireLocal() => MapKnowledge.RequireLocal(world);
 
@@ -98,6 +105,10 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         internal static Operation ForDeletion(CivilizationElimination parent, UnitLoss? loss, int unit, bool notify, string call,
             EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
                 complete => parent.DeleteSteps(loss, unit, notify, call, complete));
+
+        internal static Operation ForStack(CivilizationElimination parent, UnitLoss loss, int unit, string call,
+            EspionageIncidents incidents, int candidateBudget) => new(parent, incidents, candidateBudget, false,
+                complete => parent.StackSteps(loss, unit, call, complete));
 
         /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
         /// Result remains null during search. A reply is consumed only by the currently pending incident.</summary>
@@ -157,6 +168,14 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         ArgumentException.ThrowIfNullOrEmpty(call);
         var checks = loss is null ? deletion.EraseSteps(unit, notify) : loss.DestroyAndRedrawSteps(unit, true);
         foreach (var check in checks)
+        { yield return new(call + "/unit/" + check.Unit + "/check", check); }
+        complete(1);
+    }
+
+    private IEnumerable<Work> StackSteps(UnitLoss loss, int unit, string call, Action<int> complete)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(call);
+        foreach (var check in loss.EraseStackSteps(unit, true))
         { yield return new(call + "/unit/" + check.Unit + "/check", check); }
         complete(1);
     }

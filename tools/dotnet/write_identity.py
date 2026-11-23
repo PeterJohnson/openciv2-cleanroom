@@ -32,6 +32,7 @@ COMMON = (
     "docs/algorithms/W02-map-generation.md", "docs/algorithms/U03-pathfinding-and-goto.md",
     "docs/algorithms/U02-movement-and-zones-of-control.md", "docs/algorithms/U04-unit-orders-and-activation.md",
     "docs/algorithms/U05-transport-and-special-movement.md",
+    "docs/algorithms/U07-nuclear-attacks.md",
     "docs/algorithms/F05-game-setup-and-starting-positions.md",
     "docs/algorithms/S01-scenario-loading-and-parameters.md",
     "docs/algorithms/S02-event-language-and-execution.md",

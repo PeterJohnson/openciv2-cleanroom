@@ -544,3 +544,11 @@ after closure; it does not provide a substitute report renderer. `BeginDelete`
 and `BeginDestroy` run actual U01 plain or cargo-aware loss through the resumable
 V01 lifecycle. The owning city controller still dispatches an existing embassy's
 Investigate fallback and supplies full presentation/movement integration.
+
+`Core/NuclearEffects` owns U07's local SDI/action and independent blast. Its action
+uses actual U01 stacks and `CivilizationElimination.BeginEraseStack`, so nested
+V01/espionage decisions finish before population/terrain damage. W05's shared
+`PollutionPlacement` remembers features through W03 without exploring the tile.
+`Session/NuclearActionOperation` routes nested incidents; admission and missile
+consumption remain with movement/combat/device callers. P10 semantic presentation
+is a required adapter, and network batching remains outside this local service.

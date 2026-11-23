@@ -40,7 +40,7 @@ public sealed class UnitLoss(GameState world, RuleTables rules, StackOperations 
 
     internal void CompleteCheck(CivilizationCheck check) => deletion.CompleteCheck(check);
 
-    private IEnumerable<CivilizationCheck> EraseStackSteps(int slot, bool sync)
+    internal IEnumerable<CivilizationCheck> EraseStackSteps(int slot, bool sync)
     {
         Authority();
         for (int current = stacks.First(slot); current >= 0;)
