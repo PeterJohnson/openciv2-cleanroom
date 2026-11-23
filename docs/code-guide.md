@@ -786,7 +786,12 @@ Specialized/site/transport dispatch remains open. `Ai/NavalTargets` supplies
 A05's landing direction and near-shore Goto helpers using actual W01 queries
 and U04 order writes. Landing scoring retains later ties and directed hostile
 city bonuses; coastal targeting retains first matches, raw regions and original
-target fallback. Neither helper executes relocation or cargo unloading.
+target fallback. Neither helper executes relocation or cargo unloading. `NavalCargo.Scan`
+uses the desired-defender quota retained by `GroundGuard` to reserve or release
+actual Land members across the complete stack, returning role slots and both
+counts. `UnitOrders.WakeByRole` uses the same modulo-32 role set and changes only
+full Sleep orders. A quota not produced by a reached guard phase remains
+unresolved; only a cargo branch that consumes it requires it.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

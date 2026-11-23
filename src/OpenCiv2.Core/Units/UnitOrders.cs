@@ -45,4 +45,19 @@ public static class UnitOrders
             }
         }
     }
+
+    public static void WakeByRole(GameState world, RuleTables rules, StackOperations stacks, int slot,
+        UnitRoleSet roles, bool stopAfterFirst)
+    {
+        MapKnowledge.RequireLocal(world);
+        for (int current = stacks.First(slot); current >= 0; current = stacks.Next(current))
+        {
+            ref var unit = ref world.Entities.Units.Storage[current];
+            if (unit.Orders != UnitOrder.Sleeping || !roles.Contains(unchecked((sbyte)rules.Units[unit.Type.Value].Role)))
+            { continue; }
+            unit.Orders = UnitOrder.None;
+            if (stopAfterFirst)
+            { return; }
+        }
+    }
 }

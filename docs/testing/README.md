@@ -814,3 +814,12 @@ distinguish raw regions and first matches, admit occupied/protected targets,
 exclude city neighbors, retain unreachable fallback and wrap only on cylindrical
 maps. One case executes the selected sea order through actual U04/U03/U02 and
 checks arrival/exhaustion; the full naval/transport policy remains open.
+
+A05 cargo cases use the actual A04 guard quota, including Palace floors and
+CapacityPressure versus first-release behavior. They cover full-stack traversal,
+foreign owners, exhausted members, carrier preservation, non-Land exclusion,
+actual Settle versus effective colonist role, signed/custom role slots, away
+defender reservation, fortified bypass and per-scan reset. Missing reached quota
+reads retain earlier order changes; unconsumed quota is not invented. U04 role
+wakeup checks validated order, first-match stopping and preservation of carrier,
+destination and movement. The complete transport controller remains open.

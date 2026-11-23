@@ -4431,6 +4431,30 @@
         "A05.near-shore-first-region-occupancy",
         "A05.near-shore-topology-fallback"
       ]
+    },
+    {
+      "id": "ai-naval-cargo",
+      "status": "partial",
+      "contract": "A05 section 2 cargo scan; A04 section 3 retained desired-defender quota; U04 role wakeup",
+      "publicSurface": "NavalCargo.Scan; NavalCargoResult; UnitTacticsContext.DesiredDefenders; UnitOrders.WakeByRole; UnitRoleSet",
+      "review": "Actual A04 city guarding produces the retained quota only when its calculation is reached. Cargo scan resets role/released/reserved outputs, traverses the complete validated stack, processes actual Land members without extra owner/carrier/movement/capacity filters and preserves fortified-home versus away behavior. CapacityPressure and first-release rules retain reserved counts after release. Actual signed role slots use modulo 32, distinct from effective colonist roles. U04 wakeup changes only full Sleep, optionally stopping after its first match while preserving cargo/destination/spent fields. Tests join actual guard output, preserve prefix effects on missing consumed quota and exercise custom roles and negative quotas. Full transport control, desktop composition and complete-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/GroundGuard.cs",
+        "src/OpenCiv2.Core/Ai/NavalCargo.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs",
+        "src/OpenCiv2.Core/Units/UnitOrders.cs",
+        "src/OpenCiv2.Core/Units/UnitRoleSet.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/NavalCargoCases.cs"
+      ],
+      "sharedGroups": [
+        "A05.cargo-actual-guard-quota",
+        "A05.cargo-away-reservation-reset",
+        "A05.cargo-complete-stack-role-slots",
+        "A05.cargo-unreached-quota-prefix",
+        "U04.cargo-role-wake-preservation"
+      ]
     }
   ]
 }

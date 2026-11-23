@@ -27,6 +27,7 @@ public sealed class UnitTacticsContext
     public UnitAbilities Abilities { get; }
     public RuleDomain Domain { get; }
     public int Policy { get; }
+    public int? DesiredDefenders { get; set; }
     public bool EnemyZone { get; set; }
     public int? AdjacentForeignCivilization { get; set; }
     public bool Fortress { get; set; }

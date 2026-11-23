@@ -116,6 +116,7 @@ public sealed class GroundGuard(GameState world, RuleTables rules, StackOperatio
                 { floor = 4; }
                 desired = Math.Max(floor, desired);
             }
+            c.DesiredDefenders = desired;
         }
         if (c.Role != (int)RuleRole.Defend)
         {

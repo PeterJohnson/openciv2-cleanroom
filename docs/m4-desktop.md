@@ -4363,3 +4363,36 @@ The full naval/transport controller and barbarian callers, specialized/site
 dispatch, full AI/turn scheduling, wider desktop composition and complete
 human/AI-game acceptance remain open. Browser and cross-platform execution
 remain deferred.
+
+## A05 cargo scanning and U04 role wakeup
+
+`GroundGuard` now retains its reached desired-defender calculation in the A04
+context. `NavalCargo.Scan` consumes that value only on the specified branches,
+reserving or releasing actual Land members across the complete validated stack.
+Each scan resets its role set, released count and reserved count. Released
+fortified members still count as reserved; CapacityPressure and the first
+release gate remain distinct. Fortified members away from home skip the quota.
+
+`UnitRoleSet` represents actual role slots modulo 32. `UnitOrders.WakeByRole`
+changes only full Sleep orders, with the specified first-match option, retaining
+carrier, destination and movement. Cases use actual guard quota production,
+Palace floors, negative quotas, foreign/exhausted members, zero ship capacity,
+non-Land exclusion, actual Settle versus effective colonist roles and signed
+custom-role aliases. Missing consumed quota retains preceding order changes;
+no quota is fabricated for a phase that did not run.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1249 of 1251**, with the two existing
+platform/audio skips. The shared probe passed **1216 groups** across 140 coverage
+families; source identity verified **682 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-naval-cargo-native.json` | `f23b5c00f353eb68320637f90cc482952611c45b69eb8740814a57d73268c6f2` |
+| `m4-naval-cargo-identity.json` | `890c05bbd1f889b235b721cf40a83e29d60e34dd65590bc45a4cae049d285fcd` |
+
+Port selection/recruitment, unloading, naval destination policy and complete
+transport dispatch remain open, alongside other specialized/site/barbarian
+choices, full AI/turn scheduling, wider desktop composition and complete
+human/AI-game acceptance. Browser and cross-platform execution remain deferred.
