@@ -798,4 +798,11 @@ attack/guard and zero-cost failure; distinct scaled/unscaled scores can force
 Hold after a valid low-movement partisan attack. Peaceful diplomat scoring skips
 the ordinary tail. Actual fallback/opportunistic V06 bribery, private session
 choices, disposal and publication-failure prefixes preserve changes while rejecting
-the candidate. Full tactical entry/dispatch and complete-game acceptance remain open.
+the candidate. Full tactical dispatch and complete-game acceptance remain open.
+
+A04 ordinary-entry cases cover work orders before context reads, off-map Sleep,
+directed trespass gates and draws, and adjacent empty-city forcing with signed
+roles and treaty protections. They join real recovery to shared Hold/Finish,
+including air movement, exhausted transports and a return-home Goto completed
+through actual U04/U03/U02 execution. Civilization zero is explicitly excluded
+from this entry API until W06 dispatch is composed.

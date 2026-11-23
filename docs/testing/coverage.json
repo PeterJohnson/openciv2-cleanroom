@@ -4388,6 +4388,28 @@
         "A04.planner-territory-city",
         "A04.planner-ties-orders-roles"
       ]
+    },
+    {
+      "id": "ai-ground-ordinary-entry",
+      "status": "partial",
+      "contract": "A04 section 2 ordinary entry, trespass and forced-city dispatch through recovery",
+      "publicSurface": "GroundTacticsEntry.EnterOrdinary; GroundEntryResult; UnitTacticsContext.AdjacentForeignCivilization",
+      "review": "Work orders bypass position/type/domain reads; off-map actors use actual Sleep and Finish. The captured adjacent foreign civilization drives directed attitude and HostileIntent with exact gates and secondary sampling. Adjacent empty-city forcing retains signed roles and ceasefire/peace/alliance exclusions. Actual recovery results complete Hold/Finish through GroundOrders, including real U04 return-home movement. Civilization zero requires W06 dispatch; the complete chooser, specialized policies, desktop composition and full-game acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/GroundTacticsEntry.cs",
+        "src/OpenCiv2.Core/Ai/UnitTacticsContext.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GroundEntryCases.cs"
+      ],
+      "sharedGroups": [
+        "A04.entry-actual-return-movement",
+        "A04.entry-forced-city",
+        "A04.entry-off-map-sleep",
+        "A04.entry-recovery-completion",
+        "A04.entry-trespass-gates",
+        "A04.entry-work-bypass"
+      ]
     }
   ]
 }

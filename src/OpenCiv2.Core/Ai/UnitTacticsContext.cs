@@ -28,6 +28,7 @@ public sealed class UnitTacticsContext
     public RuleDomain Domain { get; }
     public int Policy { get; }
     public bool EnemyZone { get; set; }
+    public int? AdjacentForeignCivilization { get; set; }
     public bool Fortress { get; set; }
     public bool ForceAttack, Hold, Guard, HasOrders, NoMoves, StayHome, SettlerType, RetryTransport;
     public int FortressNeed;
@@ -42,7 +43,8 @@ public sealed class UnitTacticsContext
         Position = actor.Position;
         if (!world.Map.Geometry.InBounds(Position))
         { throw new ArgumentOutOfRangeException(nameof(unit), "A04 context requires an on-map actor"); }
-        EnemyZone = SpatialControl.InEnemyZone(world, Position, Owner) is not null;
+        AdjacentForeignCivilization = SpatialControl.InEnemyZone(world, Position, Owner);
+        EnemyZone = AdjacentForeignCivilization is not null;
         (NearestCity, NearestDistance) = CityQueries.Nearest(world, Position);
         NearestRegion = NearestCity is { } nearest ? (int?)world.Map.LandRegion(world.Entities.Cities.At(nearest).Position) ?? -1 : -1;
         (HomeCity, HomeDistance) = CityQueries.Nearest(world, Position, Owner);

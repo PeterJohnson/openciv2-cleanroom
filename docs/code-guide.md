@@ -778,7 +778,11 @@ composition. `GroundMovementPlanner` supplies the complete ordinary eight-direct
 scan, actual U01 aggregates/U06 preview/V06 bribery, independent scaled/unscaled
 scores and retained-order decision. Its session adapter routes nested private
 mission decisions; the chooser still owns applying the result through
-`GroundOrders`. Entry and specialized/site/transport dispatch remain open.
+`GroundOrders`. `GroundTacticsEntry.EnterOrdinary` now runs work/off-map bypasses,
+directed trespass response, adjacent empty-city forcing and real recovery with
+early Hold/Finish completion. It retains the adjacent foreign civilization in
+the context; civilization zero requires the separate W06 chooser.
+Specialized/site/transport dispatch remains open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

@@ -4303,3 +4303,32 @@ AI chooser/turn schedule, wider desktop composition and complete human/AI-game
 acceptance remain open. Reached missing nearest/home-city reads remain explicit
 boundaries rather than invented backing values. Browser and cross-platform
 execution remain deferred.
+
+## A04 ordinary entry and recovery completion
+
+`GroundTacticsEntry.EnterOrdinary` composes work-order and off-map bypasses,
+context capture, directed trespass response, adjacent empty-city forcing and
+actual recovery. Hold and Finish routes complete through `GroundOrders`; other
+routes retain the context and recovery result for the owning chooser. The
+adjacent foreign civilization is retained separately from the nearest city.
+Civilization zero is explicitly excluded here and requires W06 dispatch.
+
+Authored cases cover all six bypassed work orders, invalid position/type without
+context reads, Sleep field preservation, trespass thresholds and directed flags,
+absent nearest/home equality, signed roles and treaty protections, air Hold,
+exhausted transport bypass and actual U04/U03/U02 return-home movement.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1238 of 1240**, with the two existing
+platform/audio skips. The shared probe passed **1205 groups** across 138 coverage
+families; source identity verified **677 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-ground-entry-native.json` | `0f02289b63a9bc92889d91482c856f0f773e9e9c2ceede5ab27e05efe66455cc` |
+| `m4-ground-entry-identity.json` | `2868f893aafdd5008b0eece6d584450fb9c3d4aefdfc2ce4bee0c1ae7c6e37ce` |
+
+Specialized/site/transport dispatch, W06 barbarian choice, the full AI chooser
+and turn schedule, wider desktop composition and complete human/AI-game
+acceptance remain open. Browser and cross-platform execution remain deferred.
