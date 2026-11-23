@@ -56,6 +56,10 @@ incidents before the blast, direct-blast unit retention, signed city population,
 wrapped aliases, primary feature draws, W05 pollution memory and hotseat attitude
 gates. They verify terminal failure prefixes and private session routing; these
 service cases do not claim movement/combat delivery or desktop nuclear UI acceptance.
+V06 device groups join real capture checks to U07 and V04 identification. They
+verify all capture-loss positions, relocation without a final escape, post-blast
+government/veteran reads (including a destroyed actor), nested elimination from
+either child, actor/victim privacy and terminal failure prefixes.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

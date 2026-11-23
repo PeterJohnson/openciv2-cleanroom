@@ -14,7 +14,7 @@ in the [M2 closeout](m2-closeout.md).
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; last-city famine now joins actual V01 elimination, ordered end reports and game closure. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
-| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. V01 catch-up now invokes full V03 grants with actual Library, Leonardo and government children; elimination/restart joins are tested. V01 elimination now has a resumable operation with actual nested last-settler and foreign-spy incidents, bounded restart search and victim routing. V06 unit bribery and sabotage now compose real transfer, HP and resumable escape/lifecycle effects. City sabotage and poison now use actual building, city-memory and resumable capture/escape children, with actor/victim decision routing. Technology theft now joins actual race selection, physical defender detection, captured-technology selection and research grants; fallback requests still need the city controller. Embassy/investigation now retain their distinct human/AI unit effects through actual nested deletion/destruction, with required intelligence/city presentation adapters. U07 now provides local SDI, actual nested stack loss, independent blast damage and W05 pollution placement. Full diplomacy/movement/mission callers, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear delivery, remaining pollution/warming, huts and barbarians remain pending. |
+| Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. V06 local incidents now compose actual war, stance and government children; failed escape can suspend for the human victim after actual unit loss. V01 catch-up now invokes full V03 grants with actual Library, Leonardo and government children; elimination/restart joins are tested. V01 elimination now has a resumable operation with actual nested last-settler and foreign-spy incidents, bounded restart search and victim routing. V06 unit bribery and sabotage now compose real transfer, HP and resumable escape/lifecycle effects. City sabotage and poison now use actual building, city-memory and resumable capture/escape children, with actor/victim decision routing. Technology theft now joins actual race selection, physical defender detection, captured-technology selection and research grants; fallback requests still need the city controller. Embassy/investigation now retain their distinct human/AI unit effects through actual nested deletion/destruction, with required intelligence/city presentation adapters. U07 now provides local SDI, actual nested stack loss, independent blast damage and W05 pollution placement. The V06 planted-device body calls that real action after capture checks and applies live identification consequences. Full diplomacy/movement/mission callers, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear delivery, remaining pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government, diplomatic stance and alliance-willingness policies are implemented, with actual restricted government changes and V05 patience. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. F04 ship arrival, V08 scheduled retirement and pending outcome dispatch now join real reports and continuation. Semantic ending pages use actual ship/history data; authored ending/fame-title resources, remaining history and generated-game callers remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
@@ -2636,3 +2636,45 @@ No new desktop UI, browser or cross-platform acceptance is claimed.
 | --- | --- |
 | `m4-nuclear-native.json` | `127b06f8d1a5939f6d7295e5849299d40fe6f4ab151c2296dfa1e56960e1e1de` |
 | `m4-nuclear-identity.json` | `bdc74ccc2335592e30f6629419876fd8051d563ec19b60802f3a9227dd3070f1` |
+
+## Planted nuclear-device mission
+
+V06's device helper now runs the actual capture checks and U07 nuclear action
+with SDI disabled, then applies identification through V04 attitude and bilateral
+War setters. Autoplay skips the entire body. Every other actor receives the
+confirmation, and only reply1 proceeds. Palace adds a fourth capture check; loss
+at any check ends without an explosion. Surviving capture checks can relocate
+and exhaust the Spy while retaining the target city.
+
+Identification reads the live actor government and unit Veteran flag after the
+explosion, including a backed unit record whose token U07 cleared. It scans
+civilizations1…7 except the actor without alive/contact gates. Fundamentalism
+skips that draw. The final local notice is unconditional on the admitted branch;
+there is no final escape, movement increment, promotion or generic espionage
+incident. Network notifications remain outside this local operation.
+
+Both the capture and nuclear children retain actual nested V01 elimination and
+foreign-mission incidents. Their decisions complete before the parent's later
+blast or identification/notice. The session continuation routes confirmation to
+the actor and each incident to its own victim, including a third party caught
+in the blast. Cancellation of confirmation leaves the mission unexecuted;
+failures after admitted effects retain their prefix and cannot restart.
+
+Six groups cover these actual joins, SDI bypass, every capture failure position,
+relocation, retained movement, hotseat attitude gating, inactive actor backing,
+private session decisions and terminal failure/disposal. General city admission
+and fallback dispatch, movement/combat joins, full desktop presentation and
+generated-game acceptance remain open. Browser and cross-platform work remain
+deferred.
+
+Root/App formatting and verification, both Release builds and the 43-project
+boundary check passed. Native tests passed **924 of 926**, with the two existing
+platform/audio skips. The probe passed **891 shared groups** across 109 coverage
+families; source identity verified **531 compiled inputs**. Eight identity and
+three coverage validator tests passed. No new desktop UI or platform acceptance
+is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-device-native.json` | `348f9c07ce4b640b19f8d391f6534ae5bf8ebb8761b19a509a0ccfa46d2e91a6` |
+| `m4-device-identity.json` | `ed57f2ef24cf2fa1f0f682ce3fecd850589ea2a90f9826a5ed10699a016d4b31` |

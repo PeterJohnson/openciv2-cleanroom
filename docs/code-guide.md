@@ -552,3 +552,10 @@ V01/espionage decisions finish before population/terrain damage. W05's shared
 `Session/NuclearActionOperation` routes nested incidents; admission and missile
 consumption remain with movement/combat/device callers. P10 semantic presentation
 is a required adapter, and network batching remains outside this local service.
+
+`Core/PlantedNuclearDevice` owns V06's local device body after city admission.
+It composes actual capture and U07 operations, preserving nested incidents before
+post-blast identification and V04 bilateral War setters. The session
+`PlantedNuclearDeviceOperation` routes the initial actor confirmation and each
+nested victim separately. City-controller prerequisite/menu gates and full
+desktop presentation remain with those owners.
