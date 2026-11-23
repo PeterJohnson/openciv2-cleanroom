@@ -5052,7 +5052,7 @@
       "id": "throne-progress-upgrades",
       "contract": "P09 adopted progress and semantic upgrades; actual V08 score, C08 Palace, F06 persistence and V01 initial levels",
       "publicSurface": "ThroneProgress.Check/Threshold/View/BeginUpgrade; ThroneUpgrade; ThroneProgressOperation",
-      "review": "Actual score child, wrapped arithmetic and safe nonterminating-stage rejection, strict turn/palace/mode admission, one progress award including disabled presentation and signed-count wrap. Explicit eligible piece/overlay selections preserve wrapper admission, actor validation, cancellation, owned reports and classic round trips. Private Session routes decisions without raw pixel or temporary-selection semantics. Full F04/desktop composition and authored throne presentation remain open; browser/cross-platform and network execution deferred.",
+      "review": "Actual score child, wrapped arithmetic and safe nonterminating-stage rejection, strict turn/palace/mode admission, one progress award including disabled presentation and signed-count wrap. Explicit eligible piece/overlay selections preserve wrapper admission, actor validation, cancellation, owned reports and classic round trips. Private Session routes decisions without raw pixel or temporary-selection semantics. Full turn-loop/desktop composition and authored throne presentation remain open; browser/cross-platform and network execution deferred.",
       "sharedGroups": [
         "P09.throne-admission",
         "P09.throne-classic-view",
@@ -5068,10 +5068,41 @@
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/ThroneProgress.cs",
+        "src/OpenCiv2.Session/ThroneInteraction.cs",
         "src/OpenCiv2.Session/ThroneProgressOperation.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/ThroneCases.cs"
+      ]
+    },
+    {
+      "id": "global-turn-composition",
+      "contract": "F04 global advancement; actual W06/W05/A01/P09/U04/V04/V07 children and adopted P07 historian ranking/disclosure",
+      "publicSurface": "GlobalTurn.Begin/Operation, GlobalTurnDecision/Reply, GlobalTurnOperation, HistorianReport.Prepare",
+      "review": "Actual old-turn spawning, warming, power and throne before calendar/reset/reputation/history/arrival. Retained private lifecycle/throne choices, initial-turn skips, signed turn/year/peace/history wrap, strict history deadline and autoplay draw, immutable privacy-filtered wealth ranking, first arriving normal slot without alive filter, accepted prefixes and cosmetic diagnostics. Full civilization/city composition and generated desktop integration remain open; browser/cross-platform and network execution deferred.",
+      "sharedGroups": [
+        "F04.global-arrival-order",
+        "F04.global-calendar-peace",
+        "F04.global-cancel-dispose-local",
+        "F04.global-history-deadlines",
+        "F04.global-initial-idempotence",
+        "F04.global-old-turn-throne",
+        "F04.global-private-session",
+        "F04.global-required-failures",
+        "F04.global-reset-reputation-history",
+        "F04.global-session-lifecycle",
+        "F04.global-spawning-cosmetic-failures",
+        "P07.historian-ranking-privacy"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/GlobalTurn.cs",
+        "src/OpenCiv2.Core/HistorianReport.cs",
+        "src/OpenCiv2.Session/GlobalTurnOperation.cs",
+        "src/OpenCiv2.Session/ThroneInteraction.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GlobalTurnCases.cs"
       ]
     }
   ]

@@ -37,6 +37,7 @@
           $(Oc2RepositoryRoot)docs/algorithms/A01-ai-strategy-and-assessment.md;
           $(Oc2RepositoryRoot)docs/algorithms/A08-ai-research-government-and-diplomacy.md;
           $(Oc2RepositoryRoot)docs/algorithms/F04-turn-sequencing.md;
+          $(Oc2RepositoryRoot)docs/algorithms/P07-advisors-reports-and-history.md;
           $(Oc2RepositoryRoot)docs/algorithms/P09-council-and-throne-room.md;
           $(Oc2RepositoryRoot)docs/algorithms/V03-research-and-technology.md;
           $(Oc2RepositoryRoot)docs/algorithms/V01-civilization-lifecycle-and-civil-war.md;

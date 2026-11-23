@@ -1077,3 +1077,15 @@ movement and actual standing/current goals. `SettlerPopulationReturn` composes
 crowded-region return or city growth with actual cargo-aware destruction and
 nested lifecycle checks. The shared chooser now owns this work loop; A01/F04
 and desktop composition remain open.
+
+`GlobalTurn` owns F04 §4 local global advancement. Concrete W06 spawning, W05
+warming, A01 power and P09 throne operations observe the incoming nonzero turn;
+calendar/peace advancement precedes the actual U04 reset, V04 reputation, history
+deadline and V07 arrival. The retained operation forwards lifecycle and throne
+decisions, historian acknowledgement and landing acknowledgement without replay.
+`GlobalTurnOperation` routes private recipients using shared lifecycle/throne
+interaction helpers. Its completion does not dispatch game-over presentation or
+another arrival scan. `HistorianReport` prepares an immutable wealth ranking with
+P07 ties and disclosure, without exposing treasury amounts or adding game RNG.
+Full civilization/city sequencing and generated desktop command composition remain
+open. The authored local profile still owns its explicitly limited turn path.

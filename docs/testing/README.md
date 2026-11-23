@@ -1001,8 +1001,8 @@ Terrain cases cover repeated coastal visits, narrow-map aliases, flat borders,
 all terrain identities, dry coordinate selection, feature/owner preservation,
 selective whole-feature memory refresh and distinct redraw gates. Autoplay
 suppresses notices without suppressing warming; cosmetic failures preserve
-updates and required map failures retain committed prefixes. Full F04/desktop
-composition and ordinary city pollution/meltdown remain open.
+updates and required map failures retain committed prefixes. Full turn-loop and
+desktop composition remain open; city pollution/meltdown is covered below.
 
 W05 city pollution groups cover risk and Solar Plant laws, scenario suppression,
 signed intensity multiplication, all twenty B candidates, rejection without
@@ -1021,4 +1021,16 @@ Semantic piece/overlay choices validate eligibility and local actor, commit once
 and preserve cancellation/disposal behavior. Owned view reports do not calculate
 score; accepted progress/levels round-trip through F06. Private Session cases
 reject another participant's reply, invalid choices and stale replies. V01's
-creation case verifies initial throne levels. F04/desktop integration remains open.
+creation case verifies initial throne levels. Full turn-loop/desktop integration remains open.
+
+F04 global-composition groups exercise actual old-turn spawning/warming/power/
+throne children, the initial-turn skip, signed calendar/peace wrap and retained
+private upgrades. Real mission loss and victim decisions pause reset before
+reputation/history/arrival; subsequent units reset only after that decision.
+History cases cover strict deadlines, autoplay draws, signed deadline wrap,
+immutable wealth rankings, last-equal ties and undisclosed rank gaps. Arrival
+cases admit extinct slots, process one ship, retain winner/reason and defer the
+Won flag until landing acknowledgement. Required failures preserve accepted
+prefixes; cosmetic child failures retain diagnostics. Session cases verify
+recipient privacy, cancellation/timeout, invalid/stale replies and terminal
+idempotence. Full civilization/city and generated desktop acceptance remain open.

@@ -5272,3 +5272,48 @@ Full F04 orchestration, generated desktop integration, authored throne display
 and complete human/AI end-condition acceptance remain open. This checkpoint
 does not claim a new desktop playthrough. Browser/cross-platform qualification
 and network execution remain deferred.
+
+## F04 global advancement composition — 2026-11-23
+
+`GlobalTurn` now joins actual W06 spawning, W05 warming, A01 power publication
+and P09 throne progress on the incoming nonzero turn. Only after these children
+finish does it advance the signed turn/year and peace counter, clear EndOfTurn,
+run the actual U04 reset and V04 reputation maintenance, schedule history and
+process the first newly arrived V07 ship. The initial turn skips only the four
+old-turn children. Private lifecycle and throne decisions retain their operation
+and accepted effects; cancellation of an upgrade preserves the progress award
+and continues advancement. Landing acknowledgement precedes the final Won flag.
+
+`GlobalTurnOperation` routes private decisions through shared Session interaction
+helpers and reports cosmetic child failures after gameplay completes. Required
+failures retain their accepted prefix and prevent replay. `HistorianReport` uses
+P07's adopted wealth ranking, last-equal ties and disclosure predicates, with
+immutable identified ranks and no disclosure of treasury amounts. The permitted
+stock topic choice consumes no extra gameplay RNG; F04 still draws its history
+deadline during autoplay. P07 is now part of both source-identity input lists.
+
+Twelve new shared groups cover actual spawning/warming/scoring composition,
+old-turn history sampling, private upgrades, reset/incident/reputation/history
+ordering, strict and wrapped deadlines, extinct-slot arrivals, one arrival per
+advance, cancellation/disposal, failure prefixes and Session privacy/idempotence.
+The first builds caught a report-constructor ambiguity and a missing test content
+namespace. The first shared run caught a fixture that had omitted the increased
+score penalty after warming clears the AI tally; the corrected case explicitly
+asserts that ordering. All were corrected before final validation.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1498 of 1500**, with two existing
+platform/audio skips. The shared probe passed **1465 groups** across 161 coverage
+families; source identity verified **758 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-global-native.json` | `dcdec1f0cdd41630657cc32b2d628f95dc1684d60bec1284e7a23dd4ae92d988` |
+| `m4-global-identity.json` | `af71f5acf349dcf48b68af7d3120260ffd34dc06bb228304754e35255abbc8bf` |
+
+Full F04 civilization/city sequencing, generated desktop integration and complete
+human/AI end-condition acceptance remain open. The authored desktop profile still
+uses its limited global path; this checkpoint does not claim a new desktop
+playthrough. Browser/cross-platform qualification and network execution remain
+deferred.
