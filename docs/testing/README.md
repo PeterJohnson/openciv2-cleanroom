@@ -642,3 +642,12 @@ charge-before-permission, no-execute result inversion and common-finish routing
 to the origin. Runtime cases retain private expulsion/fatigue/attack decisions.
 These tests cover the foreign-unit phase; full movement dispatch, common finish,
 cleanup and desktop input acceptance remain open.
+
+U02 foreign-city groups verify captured domain/live range, signed attack bounds,
+execute-clear nuclear preview, live city owner and directed treaty admission.
+Actual V04 permission retains senate refusal and does not declare war. Actual
+U07 joins cover SDI, blast population and losses, aggression reset, cargo-aware
+interception destruction and private last-settler incidents. Failure cases retain
+required-notice prefixes while cosmetic origin redraw failures remain diagnostic.
+The phase returns its continuation route; these cases do not complete outer
+movement or desktop nuclear delivery acceptance.

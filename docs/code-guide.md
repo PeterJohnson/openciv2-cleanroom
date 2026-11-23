@@ -774,3 +774,12 @@ an undefined absent-city read after a target role change. `ForeignUnitOperation`
 routes expulsion, fatigue and nested combat decisions through the private session
 interaction boundary. Presentation adapters report cosmetic failures separately
 from required semantic notice failures. Neither service admits remote authority.
+
+`Units/ForeignCityMovement` handles the separate post-landfall city phase. Captured
+domain and live range/attack select occupation denial, nuclear preview/delivery or
+treaty admission. It uses actual V04 permission without declaring war and actual
+U07 SDI/blast action; interception uses cargo-aware U01/V01 loss, unlike the U06
+delivery continuation's basic deletion. Its result tells the outer dispatcher
+whether to continue ordinary movement. `ForeignCityOperation` privately routes
+attack warnings and nested elimination incidents. The dispatcher still owns
+land checks, movement charge, arrival, common finish and cleanup.

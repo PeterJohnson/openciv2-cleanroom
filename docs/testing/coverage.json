@@ -3887,6 +3887,27 @@
         "U02.foreign-unit-combat-join",
         "U02.foreign-unit-private-session"
       ]
+    },
+    {
+      "id": "foreign-city-movement",
+      "status": "partial",
+      "contract": "U02 Foreign city; V04 confirm-attack; U07 nuclear action; U01 cargo-aware loss and nested V01/V06",
+      "publicSurface": "ForeignCityMovement.Begin and retained decisions/Proceed result; ForeignCityOperation",
+      "review": "Local post-landfall city admission resets victim from the captured city live owner. Captured domain and live range select occupation versus nuclear handling; signed live attack controls denial and execute-clear preview. Actual U07 uses SDI, destroys the mover with actual cargo-aware lifecycle only on interception, and resets captured-pair aggression only on detonation. Land/range-zero Air preserves AI order clearing and human prompt/local gates, invokes actual V04 permission without independently declaring war, and returns the outer continuation route. Tests cover domain/range/signed-attack boundaries, prompt suppression, live city ownership, directed treaties, senate refusal, actual blast/cargo losses, private nested last-settler incidents and terminal/cosmetic failures. Full movement dispatch, land checks, common finish/cleanup, desktop effects and complete-game acceptance remain pending; browser/cross-platform work deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/ForeignCityMovement.cs",
+        "src/OpenCiv2.Session/ForeignCityOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ForeignCityCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.foreign-city-domain-signed-attack",
+        "U02.foreign-city-failures-nested-loss",
+        "U02.foreign-city-nuclear-delivery",
+        "U02.foreign-city-private-session",
+        "U02.foreign-city-treaties-permission"
+      ]
     }
   ]
 }
