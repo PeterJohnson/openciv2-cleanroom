@@ -25,11 +25,7 @@ public sealed class CityCaptureOperation(CityCapture.Operation operation, Func<i
     {
         if (completed is not null)
         { return completed; }
-        ResearchReply? reply = null;
-        if (input.Kind == OperationInputKind.Choice && input.Choice is { } selected)
-        { reply = pending is CityCaptureDecision.Technology && selected == 100 ? new(0, 1) : new(selected); }
-        else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && pending is not CityCaptureDecision.Technology)
-        { reply = new(0); }
+        var reply = CityCaptureInteraction.Reply(pending, input);
         pending = operation.Resume(pending is null ? null : reply);
         if (pending is not null)
         {
@@ -47,6 +43,15 @@ public sealed class CityCaptureOperation(CityCapture.Operation operation, Func<i
 
 internal static class CityCaptureInteraction
 {
+    internal static ResearchReply? Reply(CityCaptureDecision? decision, OperationInput input)
+    {
+        ResearchReply? reply = null;
+        if (input.Kind == OperationInputKind.Choice && input.Choice is { } selected)
+        { reply = decision is CityCaptureDecision.Technology && selected == 100 ? new(0, 1) : new(selected); }
+        else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && decision is not CityCaptureDecision.Technology)
+        { reply = new(0); }
+        return reply;
+    }
     internal static InteractionSpec Prompt(OperationContext context, CityCaptureDecision pending, Func<int, ParticipantId> recipient,
         Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt)
     {

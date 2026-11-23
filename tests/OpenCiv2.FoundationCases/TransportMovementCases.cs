@@ -104,8 +104,8 @@ public static partial class FoundationSuite
             f.Transport.Board(new(1), CargoPoint); Equal(sleeping ? new UnitSlot(99) : null, f.Data.Unit(1).Carrier); Equal(null, f.World.Globals.ActiveUnit);
             Equal((byte)6, f.Data.Unit(1).MovesUsed); Sequence(new[] { "draw", "publish" }, f.Effects);
         }
-        f = new(1, 0) { FailDraw = true }; Throws<InvalidOperationException>(() => f.Transport.Board(new(1), CargoPoint));
-        Equal(new UnitSlot(0), f.Data.Unit(1).Carrier); Equal(new UnitSlot(0), f.World.Globals.ActiveUnit); Equal(1, f.Effects.Count);
+        f = new(1, 0) { FailDraw = true }; Equal(1, f.Transport.Board(new(1), CargoPoint).Count);
+        Equal(new UnitSlot(0), f.Data.Unit(1).Carrier); Equal(new UnitSlot(0), f.World.Globals.ActiveUnit); Equal(2, f.Effects.Count);
     }
 
     private static void TransportUnloadAndPortWakeup()

@@ -29,6 +29,9 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
         private readonly SpecialMovementFinish parent;
         private readonly IEnumerator<EspionagePretext?> steps;
         private int? answer;
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
+        internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
         private bool disposed, faulted;
         public bool Completed { get; private set; }
         public bool Stopped { get; internal set; }
@@ -64,7 +67,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
         }
         public void Dispose() { disposed = true; steps.Dispose(); }
     }
-    private bool Aircraft(MovementContinuation movement, MapPoint destination)
+    private bool Aircraft(Operation operation, MovementContinuation movement, MapPoint destination)
     {
         int slot = movement.Unit.Value;
         movement.WorkFlag = world.Map.CityOwner(destination) is not null || world.Map.AirbaseOwner(destination) is not null;
@@ -85,7 +88,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
             Unit(slot).Counter = 0;
             UnitMovement.Exhaust(world, rules, ref Unit(slot));
             stacks.MoveToBottom(slot, true);
-            effects.Redraw(destination);
+            operation.Present(() => effects.Redraw(destination));
             return false;
         }
         if (rules.Units[Unit(slot).Type.Value].Range == 0 || UnitMovement.Left(world, rules, Unit(slot)) != 0)
@@ -119,12 +122,12 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
     }
     private IEnumerable<EspionagePretext?> Execute(Operation operation, MovementContinuation movement, MapPoint destination, int owner, bool coast, string call)
     {
-        bool lost = coast ? Coast(movement, owner, destination, call) : Aircraft(movement, destination);
+        bool lost = coast ? Coast(movement, owner, destination, call) : Aircraft(operation, movement, destination);
         if (!lost)
         { yield break; }
         int slot = movement.Unit.Value;
         if (movement.LocalHuman)
-        { effects.Sound(coast ? MovementLossSound.Sinking : Unit(slot).Type.Value < 30 ? MovementLossSound.EngineSputter : MovementLossSound.JetSputter); }
+        { operation.Present(() => effects.Sound(coast ? MovementLossSound.Sinking : Unit(slot).Type.Value < 30 ? MovementLossSound.EngineSputter : MovementLossSound.JetSputter)); }
         movement.Origin = Unit(slot).Position;
         UnitType type = Unit(slot).Type;
         using var child = coast ? lifecycle.BeginEraseCargo(loss, slot, call + "/loss", incidents)
@@ -136,7 +139,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
             else if (child.Result is null)
             { yield return null; }
         }
-        effects.Redraw(movement.Origin);
+        operation.Present(() => effects.Redraw(movement.Origin));
         if (movement.LocalHuman)
         { effects.Lost(new(type, rules.Units[type.Value].Identity.Name, coast, world.Multiplayer.LocalHuman)); }
         operation.Stopped = true;

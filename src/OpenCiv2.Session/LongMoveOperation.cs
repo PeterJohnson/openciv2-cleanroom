@@ -22,9 +22,7 @@ public sealed class LongMoveOperation(LongMove.Operation operation, Func<int, Pa
             if (pending is { } question)
             {
                 context.Publish();
-                return new(CommandStatus.AwaitingInteraction, Interaction: new("Stop this unit's automated movement?", recipient(question.Actor),
-                    new CommandValue.Unit(question.Unit), new([0, 1]))
-                { Options = new([new(0, "Continue"), new(1, "Stop")]) });
+                return new(CommandStatus.AwaitingInteraction, Interaction: LongMoveInteraction.Prompt(question, recipient(question.Actor)));
             }
             context.Effect("unit.long-move.completed", OwnedList<NamedValue>.Empty);
             return completed = new();
@@ -32,4 +30,11 @@ public sealed class LongMoveOperation(LongMove.Operation operation, Func<int, Pa
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class LongMoveInteraction
+{
+    internal static InteractionSpec Prompt(LongMoveQuestion question, ParticipantId recipient) =>
+        new("Stop this unit's automated movement?", recipient, new CommandValue.Unit(question.Unit), new([0, 1]))
+        { Options = new([new(0, "Continue"), new(1, "Stop")]) };
 }

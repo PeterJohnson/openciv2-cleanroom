@@ -819,3 +819,13 @@ The low-seven regional presence check includes `SettlementRestrictions`, whose
 two independent values are translated by F06; the unrelated high bit remains
 opaque. Out-of-catalog Armor prerequisites require explicit discovery backing.
 Periodic barbarian spawning, orders and ransom remain separate W06 work.
+
+`Units/MovementCompletion` composes U02 ordinary arrival, common finish and local
+cleanup. It calls actual C09 capture, W03 revelation, U05 special/transport finish,
+W06 huts and U04 long move in specification order, then applies bound-sensitive
+cleanup. Capture reloads the shared moving actor; the resulting finishing unit is
+retained through later children. `Session/MovementCompletionOperation` shares
+capture/long-move prompt logic and privately routes nested loss incidents and hut
+city visits. Cosmetic pause/refresh failures are diagnostics. U05 special finish
+also collects cosmetic failures; boarding returns redraw diagnostics after required
+state publication. Outer movement admission, viewing and relocation remain separate.

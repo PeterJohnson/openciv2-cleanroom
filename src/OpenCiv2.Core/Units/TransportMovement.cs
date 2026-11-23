@@ -110,7 +110,7 @@ public sealed class TransportMovement(GameState world, RuleTables rules, StackOp
         return null;
     }
 
-    public void Board(UnitSlot boarded, MapPoint destination)
+    public IReadOnlyList<Exception> Board(UnitSlot boarded, MapPoint destination)
     {
         MapKnowledge.RequireLocal(world);
         UnitOrders.SetSleep(ref Unit(boarded.Value));
@@ -131,8 +131,12 @@ public sealed class TransportMovement(GameState world, RuleTables rules, StackOp
                 break;
             }
         }
-        effects.Redraw(destination);
+        List<Exception> failures = [];
+        try
+        { effects.Redraw(destination); }
+        catch (Exception error) { failures.Add(error); }
         effects.Publish();
+        return failures.AsReadOnly();
     }
 
     public void Unload()

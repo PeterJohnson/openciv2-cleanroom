@@ -185,9 +185,11 @@ public static partial class FoundationSuite
         {
             var f = new SpecialMovementFixture { FailSound = stage == 0, FailRedraw = stage == 1, FailNotice = stage == 2 };
             f.Data.Rules.Units[2] = f.Data.Rules.Units[2] with { Range = 1 }; f.Data.Unit(0).MovesUsed = 6;
-            using var op = f.Aircraft(); Throws<InvalidOperationException>(() => op.Resume()); Throws<InvalidOperationException>(() => op.Resume());
-            Equal((byte)1, f.Data.Unit(0).Counter); Equal(stage == 0, f.Data.Unit(0).Token.Occupied);
-            Equal(stage == 0 ? new MapPoint(2, 2) : CargoPoint, f.Movement.Origin);
+            using var op = f.Aircraft();
+            if (stage == 2) { Throws<InvalidOperationException>(() => op.Resume()); Throws<InvalidOperationException>(() => op.Resume()); }
+            else { f.Complete(op, true); Equal(1, op.PresentationFailures.Count); Equal(1, f.Notices.Count); }
+            Equal((byte)1, f.Data.Unit(0).Counter); Equal(false, f.Data.Unit(0).Token.Occupied);
+            Equal(CargoPoint, f.Movement.Origin);
         }
         var disposed = NestedFlight(); var pending = disposed.Aircraft(); pending.Resume(); pending.Dispose();
         Throws<ObjectDisposedException>(() => pending.Resume(0)); Equal(false, disposed.Data.Unit(0).Token.Occupied); Equal(0, disposed.Notices.Count);

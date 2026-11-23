@@ -685,3 +685,11 @@ rank-index use and capacity failure. Cases include regional restriction-bit
 round trips, explicit prerequisite backing, late-city failure before invalid
 writes, a bounded repeating redirect cycle, and private city visits. Full movement
 and desktop joins and periodic barbarian behavior remain pending.
+
+U02 arrival/finish groups compose actual C09 capture and actor reload, W03
+revelation, U05 port/exploration/boarding and aircraft/cargo loss, W06 hut outcomes,
+U04 long move and local cleanup. They cover landing-count wrap, captured-barbarian
+stack visibility, direction-write timing, bound changes after creation/deletion,
+private capture-to-long-move and nested last-Settler incidents, and cosmetic versus
+required-notice failure behavior. These establish the local finish composition,
+not the outer movement dispatcher or desktop/full-game acceptance.
