@@ -588,6 +588,8 @@ public static partial class FoundationSuite
         ("F04.global-cancel-dispose-local", GlobalTurnCancellationDisposalAndLocalAdmission),
         ("F04.global-private-session", GlobalTurnPrivateSessionChoices),
         ("F04.global-session-lifecycle", GlobalTurnSessionLifecycleAndTerminalEffects),
+        ("F04.desktop-global-throne-history-warming", LocalGlobalThroneHistoryAndWarming),
+        ("F04.desktop-global-single-arrival", LocalGlobalSingleArrival),
         ("W05.city-pollution-risk-laws", CityPollutionRiskLaws),
         ("W05.city-pollution-scenario-threshold", CityPollutionScenarioAndThreshold),
         ("W05.city-pollution-radius", CityPollutionRadiusSelection),

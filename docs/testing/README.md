@@ -1034,3 +1034,9 @@ Won flag until landing acknowledgement. Required failures preserve accepted
 prefixes; cosmetic child failures retain diagnostics. Session cases verify
 recipient privacy, cancellation/timeout, invalid/stale replies and terminal
 idempotence. Full civilization/city and generated desktop acceptance remain open.
+
+Desktop global-turn cases drive actual `turn.end` through direct and console
+clients. They pause in old-turn throne selection, preserve the award on cancel,
+continue to history after advancement, and retain warming/deadline/upgrade state
+through classic save/load. Simultaneously arrived ships verify that post-global
+outcome presentation cannot process a second arrival in the same turn.

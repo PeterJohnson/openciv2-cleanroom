@@ -1088,4 +1088,6 @@ interaction helpers. Its completion does not dispatch game-over presentation or
 another arrival scan. `HistorianReport` prepares an immutable wealth ranking with
 P07 ties and disclosure, without exposing treasury amounts or adding game RNG.
 Full civilization/city sequencing and generated desktop command composition remain
-open. The authored local profile still owns its explicitly limited turn path.
+open. The authored local profile now composes the shared global operation before
+its restricted civilization/city path. `TurnOpeningOperation` presents retirement
+and pending outcomes after global advancement; it never scans arrivals again.

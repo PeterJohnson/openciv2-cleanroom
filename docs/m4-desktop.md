@@ -5317,3 +5317,44 @@ human/AI end-condition acceptance remain open. The authored desktop profile stil
 uses its limited global path; this checkpoint does not claim a new desktop
 playthrough. Browser/cross-platform qualification and network execution remain
 deferred.
+
+## Desktop global-turn integration — 2026-11-23
+
+The authored desktop `turn.end` command now retains `GlobalTurnOperation`
+between movement completion and civilization upkeep. It constructs the actual
+spawning, warming, power, throne, lifecycle/reset and diplomacy children, and
+forwards private decisions without repeating movement exhaustion or global
+advancement. The previous inline calendar/reset/reputation sequence is removed.
+`TurnOpeningOperation` now owns only post-global retirement and pending outcome
+presentation; it cannot scan and process a second spaceship arrival.
+
+Two additional shared groups exercise the real desktop command through both
+direct and console clients. They verify old-turn throne selection/cancellation,
+preserved progress, warming before score, history after advancement, stale reply
+rejection and classic save/load persistence. A simultaneous-arrival case keeps
+playing after the local ship wins and proves that the extinct competitor's ship
+is not processed in the same turn. Existing profile admission restrictions and
+the remaining civilization/city and generated-game work remain explicit.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1500 of 1502**, with two existing
+platform/audio skips. The shared probe passed **1467 groups** across 161 coverage
+families; source identity verified **759 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+The unchanged native input driver also passed all **26 desktop checks** under
+isolated Xvfb/session-bus and in-memory settings. It exercised actual application
+input, city controls, native file dialogs, save/load and direct-client comparison,
+finance/government decisions, score/Hall reports and both scheduled retirement
+paths. The new throne/history and simultaneous-arrival cases are Session command
+checks; the native run covers the existing authored playthrough.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-global-desktop-native.json` | `11a888124df2064e501797356f8972ecda9cc542bf168547d08938cd3bb2a4f3` |
+| `m4-global-desktop-identity.json` | `1329f8a09acb78f367125a793905d0a739dc6a6e80fa450d5783de367ebe63f3` |
+| `m4-global-desktop-play.json` | `00c442da718a881b8789c033986278fbb762a5162fafe688f07a30bec0692057` |
+
+Full F04 civilization/city sequencing, generated desktop play and complete
+human/AI end-condition acceptance remain open. Browser/cross-platform
+qualification and network execution remain deferred.

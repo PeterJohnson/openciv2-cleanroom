@@ -5079,8 +5079,10 @@
       "id": "global-turn-composition",
       "contract": "F04 global advancement; actual W06/W05/A01/P09/U04/V04/V07 children and adopted P07 historian ranking/disclosure",
       "publicSurface": "GlobalTurn.Begin/Operation, GlobalTurnDecision/Reply, GlobalTurnOperation, HistorianReport.Prepare",
-      "review": "Actual old-turn spawning, warming, power and throne before calendar/reset/reputation/history/arrival. Retained private lifecycle/throne choices, initial-turn skips, signed turn/year/peace/history wrap, strict history deadline and autoplay draw, immutable privacy-filtered wealth ranking, first arriving normal slot without alive filter, accepted prefixes and cosmetic diagnostics. Full civilization/city composition and generated desktop integration remain open; browser/cross-platform and network execution deferred.",
+      "review": "Actual old-turn spawning, warming, power and throne before calendar/reset/reputation/history/arrival. Retained private lifecycle/throne choices, initial-turn skips, signed turn/year/peace/history wrap, strict history deadline and autoplay draw, immutable privacy-filtered wealth ranking, first arriving normal slot without alive filter, accepted prefixes and cosmetic diagnostics. The authored desktop command composes this operation, retaining old-turn throne/history decisions and processing only one arrival before outcome presentation. Direct/console cases verify classic persistence. Full civilization/city composition and generated desktop integration remain open; browser/cross-platform and network execution deferred.",
       "sharedGroups": [
+        "F04.desktop-global-single-arrival",
+        "F04.desktop-global-throne-history-warming",
         "F04.global-arrival-order",
         "F04.global-calendar-peace",
         "F04.global-cancel-dispose-local",
@@ -5099,10 +5101,13 @@
         "src/OpenCiv2.Core/GlobalTurn.cs",
         "src/OpenCiv2.Core/HistorianReport.cs",
         "src/OpenCiv2.Session/GlobalTurnOperation.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/OutcomeOperations.cs",
         "src/OpenCiv2.Session/ThroneInteraction.cs"
       ],
       "tests": [
-        "tests/OpenCiv2.FoundationCases/GlobalTurnCases.cs"
+        "tests/OpenCiv2.FoundationCases/GlobalTurnCases.cs",
+        "tests/OpenCiv2.FoundationCases/LocalGlobalTurnCases.cs"
       ]
     }
   ]

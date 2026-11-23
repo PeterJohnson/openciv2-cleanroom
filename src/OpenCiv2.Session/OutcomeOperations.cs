@@ -223,7 +223,8 @@ public sealed class PendingOutcomeOperation(HallOfFame hall) : IContinuation
     public void Dispose() { child?.Dispose(); child = null; }
 }
 
-/// <summary>F04 single-player post-advance boundary, before civilization upkeep.</summary>
+/// <summary>Post-global retirement/outcome presentation. F04 global advancement owns
+/// arrival processing; scanning again here would admit two ships in the same turn.</summary>
 public sealed class TurnOpeningOperation(HallOfFame hall) : IContinuation
 {
     private IContinuation? child;
@@ -238,9 +239,8 @@ public sealed class TurnOpeningOperation(HallOfFame hall) : IContinuation
             {
                 child = stage++ switch
                 {
-                    0 => new SpaceshipArrivalOperation(),
-                    1 => new ScheduledRetirementOperation(),
-                    2 when context.World.PendingEndReason != EndReason.None => new PendingOutcomeOperation(hall),
+                    0 => new ScheduledRetirementOperation(),
+                    1 when context.World.PendingEndReason != EndReason.None => new PendingOutcomeOperation(hall),
                     _ => null
                 };
                 input = new();

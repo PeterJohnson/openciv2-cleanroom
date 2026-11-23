@@ -104,6 +104,7 @@ public static partial class LocalPlayCommands
         private bool confirmed, movementChecked, globalAdvanced, openingFinished, financeFinished, activated;
         private PendingOutcomeOperation? movementOutcome, finalOutcome;
         private TurnOpeningOperation? opening;
+        private GlobalTurnOperation? global;
         private bool upkeepCommitted;
         private int nextCity;
         private CitySlot researchCity;
@@ -147,6 +148,7 @@ public static partial class LocalPlayCommands
             governmentTurn = null;
             governmentSelection = null;
             movementOutcome?.Dispose();
+            global?.Dispose();
             opening?.Dispose();
             finalOutcome?.Dispose();
         }
@@ -201,8 +203,16 @@ public static partial class LocalPlayCommands
             }
             if (!globalAdvanced)
             {
-                AdvanceStart(context);
+                if (global is null)
+                { global = BeginGlobalAdvance(context); input = new(); }
+                var result = global.Resume(context, input);
+                if (!result.Status.Terminal())
+                { return result; }
+                RememberFailure(result);
+                global.Dispose();
+                global = null;
                 globalAdvanced = true;
+                world.Globals.TurnCiv = (sbyte)context.Actor.Civilization.Value;
                 opening = new(hall);
                 input = new();
             }
@@ -407,7 +417,7 @@ public static partial class LocalPlayCommands
         private static OwnedList<NamedValue> TurnValue(GameState world) =>
             new([new("turn", new CommandValue.Integer(world.Globals.Turn))]);
 
-        private static void AdvanceStart(OperationContext context)
+        private GlobalTurnOperation BeginGlobalAdvance(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -422,22 +432,44 @@ public static partial class LocalPlayCommands
             world.PlayerPhaseActive = false;
             world.Multiplayer.ResumeCiv = world.Multiplayer.Saved.ResumeCiv = 0;
 
-            // Global advance and all-unit reset precede civilization recovery and its city pass.
             world.HumanWonders.Update(world);
-            new PowerRanking(world, context.Gameplay).Publish($"local-power/{world.Globals.Turn}");
-            ref var globals = ref world.Globals;
-            ++globals.Turn;
-            if (globals.Turn > 199)
-            {
-                ++globals.PeaceTurns;
-            }
+            var budget = new StackBudget(5_000_000, 64);
+            var stacks = new StackOperations(world, budget);
+            var cityEffects = new CityTurnEffects(context);
+            var effects = new GlobalEffects(() => Current);
+            var deletion = new UnitDeletion(world, rules, budget, cityEffects);
+            var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, cityEffects);
+            var lifecycle = cityEffects.Elimination();
+            var governments = CreateGovernments(context);
+            var policy = new GovernmentPolicy(world, context.Process.Rules, governments, context.Gameplay);
+            var war = new DiplomaticWar(world, rules, stacks, new(world, rules, stacks), context.Gameplay, effects);
+            var incidents = new EspionageIncidents(world, context.Gameplay, war, new(world, context.Process.Rules, policy),
+                governments, effects.Incident);
+            var creation = new UnitCreation(world, context.Process, stacks, new LocalCreation(world, rules, stacks));
+            var spawning = new BarbarianSpawning(world, rules, context.Gameplay, creation, stacks, loss, lifecycle, incidents, effects);
+            var turn = new GlobalTurn(world, rules, context.Gameplay, GameplayContent.Builtin.Values.Calendar, spawning,
+                new(world, effects.Warming, effects.Redraw), new(world, context.Gameplay),
+                new(world, CivilizationScoreOperation.CreateScore(context)), new(world, rules, lifecycle, incidents));
+            return new(turn.Begin(context.Process.OrdinaryPreferences.AcceleratedStart, $"local-global/{world.Globals.Turn}"),
+                c => c == owner ? context.Actor.Participant : throw new InvalidOperationException("The authored profile has no other decision recipient"));
+        }
 
-            globals.Year = (short)Calendar.Year(globals.Turn, globals, world.Scenario, GameplayContent.Builtin.Values.Calendar);
-            globals.TransientFlags.EndOfTurn = false;
-            ResetUnits(world);
-            DiplomaticAttitudes.MaintainReputation(world, rules);
-            globals.TurnCiv = (sbyte)owner;
-
+        private sealed class GlobalEffects(Func<OperationContext> current) : IBarbarianSpawningEffects, IDiplomaticWarEffects
+        {
+            public void Notice(BarbarianUprisingNotice notice) => current().Effect("barbarians.uprising", new([
+                new("owner", new CommandValue.Integer(notice.Owner)), new("kind", new CommandValue.Text(notice.Kind.ToString())),
+                new("city", new CommandValue.Text(notice.CityName)), new("unit", new CommandValue.Unit(notice.Unit))]));
+            public void Warming(WarmingNotice notice) => current().Effect("world.warming", new([new("kind", new CommandValue.Text(notice.ToString()))]));
+            public void Redraw(MapPoint point) => new CityTurnEffects(current()).RedrawTile(point);
+            public void Notice(DiplomaticWarNotice notice) => current().Effect("diplomacy.war_notice", new([
+                new("kind", new CommandValue.Text(notice.Kind.ToString())), new("first", new CommandValue.Integer(notice.First.Civilization)),
+                new("second", new CommandValue.Integer(notice.Second.Civilization))]));
+            public void RedrawMaps(int localHuman) => current().Effect("map.refresh", new([]));
+            public void MoveCursor(MapPoint point) => current().World.Views[current().World.Multiplayer.LocalHuman] =
+                current().World.Views[current().World.Multiplayer.LocalHuman] with { Center = point };
+            public void Incident(EspionageIncidentNotice notice) => current().Effect("diplomacy.incident", new([
+                new("kind", new CommandValue.Text(notice.Kind.ToString())), new("actor", new CommandValue.Integer(notice.Actor.Civilization)),
+                new("victim", new CommandValue.Integer(notice.Victim.Civilization))]));
         }
 
         private static void AssessCivilization(OperationContext context)
@@ -495,18 +527,6 @@ public static partial class LocalPlayCommands
                 + 2 * scores[(int)Government.Despotism]));
             new GovernmentPolicy(world, context.Process.Rules, CreateGovernments(context), context.Gameplay)
                 .AfterCities(owner, largeBalancedCity, cityDisorder);
-        }
-
-        private static void ResetUnits(GameState world)
-        {
-            UnitTurnReset.RebuildPresence(world);
-            for (int i = 0; i < world.Entities.Units.End; ++i)
-            {
-                if (world.Entities.Units.Storage[i].Token.Occupied)
-                {
-                    UnitTurnReset.ResetOrdinary(world, i);
-                }
-            }
         }
 
         private CityProduction.Operation? BeginCityProduction(OperationContext context, CitySlot slot)
