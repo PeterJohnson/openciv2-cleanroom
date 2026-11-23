@@ -2167,7 +2167,7 @@
       "id": "city-route-mutation",
       "contract": "C07 directional route removal, slot writing, insertion and replacement with actual commodity and U03 children",
       "publicSurface": "TradeRoutes",
-      "review": "Preserves signed count iteration, trailing payload, narrowing, pre-clamp duplicate tests, spare-capacity food routes, first minimum tie, connection/airport/owner valuation and raw destination comparison. The X01/C07 uninitialized replacement-index repair retains existing routes. Invalid reads/writes stop with earlier changes retained. Caravan delivery/payment/cargo selection and city deletion/starvation callers remain pending.",
+      "review": "Preserves signed count iteration, trailing payload, narrowing, pre-clamp duplicate tests, spare-capacity food routes, first minimum tie, connection/airport/owner valuation and raw destination comparison. The X01/C07 uninitialized replacement-index repair retains existing routes. Invalid reads/writes stop with earlier changes retained. Caravan entry/delivery/payment now use these primitives through caravan-trade. Cargo selection and remaining parent integrations remain pending.",
       "sharedGroups": [
         "C07.route-append-duplicates",
         "C07.route-failure-prefixes",
@@ -3907,6 +3907,29 @@
         "U02.foreign-city-nuclear-delivery",
         "U02.foreign-city-private-session",
         "U02.foreign-city-treaties-permission"
+      ]
+    },
+    {
+      "id": "caravan-trade",
+      "status": "partial",
+      "contract": "C07 Entering a city with a caravan; Delivery preparation/payment, ordered effects and reciprocal selection/notices; U01/V01 visible deletion; C03 cached calculation; V03 research cost; U03 road connection",
+      "publicSurface": "CaravanTrade.BeginEntry/BeginDelivery with retained payment, return cargo and private decisions; CaravanOperation",
+      "review": "Actual local entry/delivery composition with signed-home entry tests versus unsigned delivery decoding, AI ferry/goto gates, human menu and retained donation choice. Donation uses signed live cost and raw unsigned shield rule, retains short stock and calls actual visible deletion. Delivery uses ordered distance/map-size/region/freight/connection/facility/premium/demand/advance arithmetic, primary floor-cap sample and actual research cost. Initial notice precedes attitude/food-or-gold/science, then real resumable loss, real first route insertion, exactly three reciprocal draws with last ties, reciprocal insertion and names. Food uses cached C03 and shared incoming food rows; neither research completion nor growth is invented. Route rejection does not refund payment or loss. Undefined reciprocal names require explicit caller backing after prior effects. Tests cover formula vectors, cap, wraps, retained box factor, home decoding, real routes and no-refund rejection, signed live donation, AI/autoplay, private nested last-settler incidents and semantic/cosmetic failures. Cargo selection/report search, U02 land admission, C06 cargo/desktop callers and full-game acceptance remain pending. Browser and cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CaravanTrade.cs",
+        "src/OpenCiv2.Session/CaravanOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CaravanTradeCases.cs"
+      ],
+      "sharedGroups": [
+        "C07.caravan-distance-facilities-technology",
+        "C07.caravan-entry-donation",
+        "C07.caravan-food-home-decoding",
+        "C07.caravan-nested-loss-failures",
+        "C07.caravan-payment-formula",
+        "C07.caravan-private-session",
+        "C07.caravan-reciprocal-missing-names"
       ]
     }
   ]

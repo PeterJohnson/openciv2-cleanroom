@@ -651,3 +651,15 @@ interception destruction and private last-settler incidents. Failure cases retai
 required-notice prefixes while cosmetic origin redraw failures remain diagnostic.
 The phase returns its continuation route; these cases do not complete outer
 movement or desktop nuclear delivery acceptance.
+
+C07 caravan groups join actual road connections, research cost, cached city
+calculation, lifecycle/incident handling and route/commodity updates. Authored
+vectors cover repeated demand premiums, map-size/region/facility/freight changes,
+successive technology reductions, payment caps and treasury/science wrapping.
+Food preserves incoming food rows; home decoding distinguishes signed entry
+comparisons from unsigned city selection. Entry cases retain a donation choice
+across changed production/cost/rules. Reciprocal cases verify three draws, last
+ties, suppressed supplies, exact demand bonuses and missing-name failure after
+payment, deletion and route effects. Runtime cases route entry menus and actual
+last-settler incidents privately. These cases do not claim cargo selection,
+general U02/C06 integration or desktop trade acceptance.

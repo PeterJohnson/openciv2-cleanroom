@@ -14,7 +14,7 @@ public static class AdvanceIds
     public const int Polytheism = 64, Rocketry = 73, SpaceFlight = 76, Steel = 79, Tactics = 81, Theology = 82;
     public const int University = 85, WarriorCode = 86;
     public const int BridgeBuilding = 7, Construction = 18, Currency = 20, Monarchy = 54, TheWheel = 87;
-    public const int Radio = 66, Railroad = 67;
+    public const int Flight = 30, Radio = 66, Railroad = 67;
     public const int MobileWarfare = 53;
     public const int Seafaring = 75, Trade = 84, Writing = 88;
     public const int Electronics = 24, Environmentalism = 26, Plastics = 62, Sanitation = 74;
@@ -64,4 +64,5 @@ public static class UnitTypeIds
     public const int Bomber = 28, Trireme = 32, Caravel = 33, Frigate = 35, Transport = 43;
     public const int NuclearMissile = 45, Diplomat = 46, Spy = 47;
     public const int Riflemen = 11, Engineers = 1, Paratroopers = 13;
+    public const int Freight = 49;
 }

@@ -74,8 +74,8 @@ uses this constructor before the full C03 worker/output calculation.
 `CityQueries` also supplies region/port and coastal predicates. Commodity
 refresh includes the specified zero road-accumulator repair. `TradeRoutes` supplies
 C07 directional removal, slot writing, append/replacement and refresh, using the
-actual U03 connection query. Caravan cargo selection and delivery remain separate
-work. `Units/UnitCargo` supplies U01 transport grouping, lifting and repeated
+actual U03 connection query. Caravan cargo selection remains separate; entry and
+delivery now use `CaravanTrade`. `Units/UnitCargo` supplies U01 transport grouping, lifting and repeated
 capacity queries; `UnitLoss` composes actual grouping and basic deletion for
 whole-stack/cargo-aware loss. `StackOperations.ShipsFirst` uses the two real
 staging passes. `CityRetirement` now joins real C05 charges with U01 cargo-aware
@@ -783,3 +783,13 @@ delivery continuation's basic deletion. Its result tells the outer dispatcher
 whether to continue ordinary movement. `ForeignCityOperation` privately routes
 attack warnings and nested elimination incidents. The dispatcher still owns
 land checks, movement charge, arrival, common finish and cleanup.
+
+`City/CaravanTrade` composes C07 local city entry, wonder donation and full
+delivery. It retains the signed-home menu rules, actual U03 connection/V03 cost
+queries, ordered payment arithmetic and three-draw reciprocal selection.
+Payment/food and visible U01/V01 deletion precede actual route insertion; nested
+incidents suspend before routes and do not replay payment. Food calls C03 cached
+mode and consumes the existing shared food-row factor. Missing reciprocal names
+require explicit backing after the earlier changes. `Session/CaravanOperation`
+routes entry menus and deletion incidents privately. Cargo selection/report
+search, C06 production and U02 land-admission callers remain owning work.

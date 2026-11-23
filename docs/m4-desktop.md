@@ -3511,3 +3511,41 @@ passed.
 | --- | --- |
 | `m4-foreign-city-native.json` | `ef192f654df792a056b93fd9dca98609701d9cefc440c95b75cea54b43605168` |
 | `m4-foreign-city-identity.json` | `44139e4f51b5817f1c0b3f85ec109a3e729c024d2f05a6c5736f5551efe5d83f` |
+
+## Caravan city entry and delivery checkpoint
+
+C07 local city entry now applies autoplay, signed-home, AI ferry-port and owned
+goto gates, retains the human menu choice and executes actual delivery or wonder
+donation. Donation uses the live signed unit cost and raw shield-box rule, retains
+short stock arithmetic, marks the decoded home dirty and invokes visible deletion.
+It does not retest wonder eligibility after the retained choice.
+
+Delivery composes actual U03 connection, V03 research cost, C03 cached mode,
+diplomatic attitude, U01/V01 deletion and C07 route/commodity services. Ordered
+distance, map flags, region, freight, facilities, repeated demand premiums and
+advance reductions precede the sampled cap. Payment/food and unit loss precede
+route attempts; rejection does not refund them. Food uses the incoming shared
+food-row factor. Reciprocal selection consumes exactly three primary-law samples
+and retains the last score tie. Missing reciprocal-name backing stops after the
+completed route/payment/loss prefix. Cosmetic sound/status failures are diagnostic;
+required notice failures remain terminal.
+
+Seven shared groups cover arithmetic vectors, cap and wrapping, signed/unsigned
+home behavior, retained food state, live donation inputs, reciprocal ties/names,
+AI/autoplay, real route rejection and private nested last-settler incidents.
+The session adapter retains entry and incident decisions without repeating money
+or deletion. Cargo selection/report search, C06 production joins, U02 land checks,
+desktop presentation and full generated human/AI-game acceptance remain open.
+Browser and cross-platform work stay deferred.
+
+Root/App formatting and verification passed; both Release builds completed with
+zero warnings/errors. Native tests passed **1103 of 1105**, with the two existing
+platform/audio skips. The shared probe passed **1070 groups** across 124 coverage
+families, and source identity verified **619 compiled inputs**. The 43-project
+boundary check, eight identity validator tests and three coverage validator tests
+passed. No new desktop UI or complete-game acceptance is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-caravan-native.json` | `72f103bbc951b5724196744c5bfc1681f1ffc54d8c7b9ec945a484091fc2d94e` |
+| `m4-caravan-identity.json` | `e8b8371c3fee298e0024da638b5e979a5570032809f04e8bdf54940c575639e0` |
