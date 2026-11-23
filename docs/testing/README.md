@@ -86,6 +86,12 @@ fresh-gold payment, slot-zero/replacement quirks, observer-number retention,
 incited units, theft after deletion, actual foreign last-settler incidents and
 separate private Palace/technology/window decisions. CityTaken fixtures exercise
 the required dispatcher boundary; they do not supply S02 matching/actions.
+V06 revolt cases use actual classic text reading, escape/lifecycle, incidents,
+government changes and C09 transfer. They cover signed price/discount order,
+capital-coordinate and government distinctions, all option lines and closure,
+resource failure, AI double-cost admission, custom payments, no-refund unit loss,
+restoration versus ordinary transfer, real nested foreign incidents, senate
+change before capture, private routing and a runtime-valid unaffordable dialog.
 A02 groups now cover the complete ordered chooser with actual A03 tile
 recommendation and U05 AI airlift children: survey captures, free irrigation,
 redundant sales, donor termination, secondary interception, directed spatial

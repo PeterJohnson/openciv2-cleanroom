@@ -591,5 +591,15 @@ The notice partial owns Palace selection/payment and semantic wonder/capture
 announcements with retained numeric input. CityTaken matching/actions are a
 required dispatcher when events are loaded; no presentation callback substitutes
 for it. `Session/CityCaptureOperation` routes each Palace, technology, nested
-incident and required P06 window to its own participant. Movement and V06 city
-admission/payment/escape callers still need to dispatch this operation.
+incident and required P06 window to its own participant. The V06 revolt mission
+now dispatches this operation; movement and city-controller admission remain open.
+
+`Core/CityIncitement` owns V06's revolt body after city admission: price/offer,
+payment, actual resumable escape, explicit incident and actual C09 incited
+transfer. Its returned theft fallback belongs to the city controller. The
+`Formats/Classic/ClassicRevoltOptions` adapter reads all four authored lines with
+the existing classic reader; its caller supplies the filename/search context.
+`Session/CityIncitementOperation` routes the offer and nested incidents, then
+reuses capture presentation for Palace, technology and P06 decisions. An
+unaffordable offer has only a presentation close action in the session. Full
+content/dialog binding and desktop city-controller integration remain open.

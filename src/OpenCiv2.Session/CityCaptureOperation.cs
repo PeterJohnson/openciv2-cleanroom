@@ -34,32 +34,7 @@ public sealed class CityCaptureOperation(CityCapture.Operation operation, Func<i
         if (pending is not null)
         {
             context.Publish();
-            InteractionSpec prompt;
-            switch (pending)
-            {
-                case CityCaptureDecision.Incident incident:
-                    prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
-                    break;
-                case CityCaptureDecision.Window visit:
-                    prompt = windowPrompt ??= window(visit.Request) with { Recipient = recipient(visit.Request.Owner) };
-                    break;
-                case CityCaptureDecision.Palace palace:
-                    prompt = new($"Move the Palace to {palace.Choice.CityName} for {palace.Choice.Cost}?", recipient(palace.Choice.Owner), null, new([0, 1]))
-                    { Options = new([new(0, "Decline"), new(1, "Move Palace")]) };
-                    break;
-                case CityCaptureDecision.Technology technology:
-                    var choice = technology.Choice;
-                    var options = choice.Options.Select(a => new InteractionOption(a.Identity, a.Name)).ToList();
-                    if (options.Count == 0)
-                    { options.Add(new(choice.Recommendation, context.Process.Rules.Definitions.Advances[choice.Recommendation].Identity.Name)); }
-                    options.Add(new(100, "Research goal"));
-                    prompt = new("Choose captured technology", recipient(choice.Civilization), null, new(options.Select(o => o.Value)), Cancellable: false)
-                    { Options = new(options) };
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown city capture decision");
-            }
-            return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
+            return new(CommandStatus.AwaitingInteraction, Interaction: CityCaptureInteraction.Prompt(context, pending, recipient, window, ref windowPrompt));
         }
         if (!operation.Completed)
         { context.Publish(); return new(CommandStatus.Pending); }
@@ -68,4 +43,38 @@ public sealed class CityCaptureOperation(CityCapture.Operation operation, Func<i
         return completed = new(Result: result);
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class CityCaptureInteraction
+{
+    internal static InteractionSpec Prompt(OperationContext context, CityCaptureDecision pending, Func<int, ParticipantId> recipient,
+        Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt)
+    {
+        InteractionSpec prompt;
+        switch (pending)
+        {
+            case CityCaptureDecision.Incident incident:
+                prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
+                break;
+            case CityCaptureDecision.Window visit:
+                prompt = windowPrompt ??= window(visit.Request) with { Recipient = recipient(visit.Request.Owner) };
+                break;
+            case CityCaptureDecision.Palace palace:
+                prompt = new($"Move the Palace to {palace.Choice.CityName} for {palace.Choice.Cost}?", recipient(palace.Choice.Owner), null, new([0, 1]))
+                { Options = new([new(0, "Decline"), new(1, "Move Palace")]) };
+                break;
+            case CityCaptureDecision.Technology technology:
+                var choice = technology.Choice;
+                var options = choice.Options.Select(a => new InteractionOption(a.Identity, a.Name)).ToList();
+                if (options.Count == 0)
+                { options.Add(new(choice.Recommendation, context.Process.Rules.Definitions.Advances[choice.Recommendation].Identity.Name)); }
+                options.Add(new(100, "Research goal"));
+                prompt = new("Choose captured technology", recipient(choice.Civilization), null, new(options.Select(o => o.Value)), Cancellable: false)
+                { Options = new(options) };
+                break;
+            default:
+                throw new InvalidOperationException("Unknown city capture decision");
+        }
+        return prompt;
+    }
 }

@@ -3532,7 +3532,7 @@
       "status": "partial",
       "contract": "C09 ordered local capture and incited-transfer wrapper with actual V04/V01/C08/V03/C01/C06/A02/U01/W03 children",
       "publicSurface": "CityCapture.Begin/BeginIncited/Operation; CityCaptureOperation; required CityTaken dispatcher and P06 presentation adapter",
-      "review": "Captures old owner/center, restoration and name at their specified boundaries. Preserves ordered treaty flags, actual civil-war attempt and zero-result replacement, Palace scoring/payment and ship loss, wonder gates/Eiffel, retained plunder with fresh-gold clamp, reset/parity/population deletion, radius/owner/old-owner knowledge and required CityTaken dispatch, captured-center writes, local announcement numbers, theft even after deletion, supported-unit/production window, actual elimination/partisans and founder/age/Leonardo tail. Incitement uses captured radius, exact adjacent-city gate, descending unit scan and direct byte-count/home/order changes before recapturing parent inputs. Integrated cases include real AI choice, nested foreign loss, signed payment behavior, callback changes, failure/disposal and private Palace/technology/window routing. CityTaken matching/actions remain a required dispatcher, not supplied by presentation; movement/V06 admission, desktop adapters and generated complete games remain open. Network/browser/cross-platform work is deferred.",
+      "review": "Captures old owner/center, restoration and name at their specified boundaries. Preserves ordered treaty flags, actual civil-war attempt and zero-result replacement, Palace scoring/payment and ship loss, wonder gates/Eiffel, retained plunder with fresh-gold clamp, reset/parity/population deletion, radius/owner/old-owner knowledge and required CityTaken dispatch, captured-center writes, local announcement numbers, theft even after deletion, supported-unit/production window, actual elimination/partisans and founder/age/Leonardo tail. Incitement uses captured radius, exact adjacent-city gate, descending unit scan and direct byte-count/home/order changes before recapturing parent inputs. Integrated cases include real AI choice, nested foreign loss, signed payment behavior, callback changes, failure/disposal and private Palace/technology/window routing. CityTaken matching/actions remain a required dispatcher, not supplied by presentation. The V06 revolt body now composes incited transfer; movement/city-controller admission, desktop adapters and generated complete games remain open. Network/browser/cross-platform work is deferred.",
       "sources": [
         "src/OpenCiv2.Core/City/CityCapture.Notices.cs",
         "src/OpenCiv2.Core/City/CityCapture.cs",
@@ -3552,6 +3552,31 @@
         "C09.capture-palace-scoring",
         "C09.capture-session-decisions",
         "C09.capture-wonder-observers"
+      ]
+    },
+    {
+      "id": "city-incitement",
+      "status": "partial",
+      "contract": "V06 section8 local revolt pricing/payment with actual capital, escape, incident and C09 capture children; classic DissidentOptions text",
+      "publicSurface": "CityIncitement.Begin/Operation; ClassicRevoltOptions.Read; CityIncitementOperation",
+      "review": "Democracy/capital/AI admission and fallback preserve unit-coordinate distance, victim Communism then Courthouse order, signed pricing, negative sentinel before successive discounts, captured Spy/live veteran distinction, treaty and double-cost gates. Human offers use the actual classic reader for all four options and close it before publication; unaffordable offers remain closable without reading options, failed resource open ends and truncation stops. Positive custom replies debit retained cost against fresh gold with short subversion wrap. Actual escape uses victim0, retains nested foreign incidents, ignores unit loss and never refunds. Choice1 invokes the real explicit incident and senate/government child; choice2 sets reverse Vendetta/founder before actual C09 incited transfer; other positive choices retain their distinct path. Shared capture presentation routes Palace/technology/window decisions, preserving actor/victim privacy and terminal failures. City-controller fallback/admission, full content/dialog binding, desktop/generated-game acceptance remain open; browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CityIncitement.cs",
+        "src/OpenCiv2.Formats/Classic/RevoltOptions.cs",
+        "src/OpenCiv2.Session/CityCaptureOperation.cs",
+        "src/OpenCiv2.Session/CityIncitementOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/IncitementCases.cs"
+      ],
+      "sharedGroups": [
+        "V06.incitement-admission-capital",
+        "V06.incitement-ai-autoplay",
+        "V06.incitement-failure-nested",
+        "V06.incitement-offer-resources",
+        "V06.incitement-payment-transfer",
+        "V06.incitement-price-discounts",
+        "V06.incitement-session"
       ]
     }
   ]
