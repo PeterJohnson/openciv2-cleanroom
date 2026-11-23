@@ -484,3 +484,9 @@ and cancellation with real C01 destinations and U01 cargo/stack expulsion.
 flags; its current summaries live in `DiplomacyWorkspace`. Presentation effects
 receive identities and names, not treaty-policy callbacks. V04 contact/audience,
 A08 relation review, V06 incident callers and network publication remain open.
+
+`Core/Ai/DiplomaticStance` implements A08's ordered evaluation and alliance
+willingness, plus V05's shared-attitude patience query. It composes V07 race, C08
+wonders, U01 nearest units, V04 treaty primitives and actual A08/V02 government
+choice. Evaluation fields belong to `DiplomacyWorkspace`; evaluating does not
+select its attitude pair, declare a war, sign a treaty or reset an entire audience.

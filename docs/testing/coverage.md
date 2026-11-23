@@ -105,4 +105,6 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 
 | diplomatic-war-and-borders | V04 expulsion, declarations, alliance obligations and mutating border counts with actual C01/U01 children | partial | [DiplomaticWar.cs](../../src/OpenCiv2.Core/DiplomaticWar.cs), [BorderIntrusions.cs](../../src/OpenCiv2.Core/BorderIntrusions.cs), [DiplomaticWarCases.cs](../../tests/OpenCiv2.FoundationCases/DiplomaticWarCases.cs) |
 
+| diplomatic-stance-and-alliance-policy | A08 ordered stance and willingness, V05 patience, real race/wonder/spatial/government children | partial | [DiplomaticStance.cs](../../src/OpenCiv2.Core/Ai/DiplomaticStance.cs), [DiplomaticStanceCases.cs](../../tests/OpenCiv2.FoundationCases/DiplomaticStanceCases.cs) |
+
 The [JSON inventory](coverage.json) contains the complete file lists, review notes and shared test IDs. Keep admitted domains and failure/resume paths explicit when extending it. A partial host row does not claim complete map rendering, menus or gameplay. See the [M4 desktop work record](../m4-desktop.md) for the remaining parent integrations and platform deferrals.

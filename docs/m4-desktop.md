@@ -15,7 +15,7 @@ in the [M2 closeout](m2-closeout.md).
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; last-city famine now joins actual V01 elimination, ordered end reports and game closure. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. V04 local war/alliance transitions, cargo-aware expulsion and mutating border measurement now compose real children. Full diplomacy/incident callers, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
-| Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
+| Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government, diplomatic stance and alliance-willingness policies are implemented, with actual restricted government changes and V05 patience. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Hall of Fame record preparation, classic persistence, insertion/clear continuation and desktop viewing are implemented. Explicit desktop Retire joins retained power history, score, separate rating and Hall insertion; Quit skips reports. F04 ship arrival, V08 scheduled retirement and pending outcome dispatch now join real reports and continuation. Semantic ending pages use actual ship/history data; authored ending/fame-title resources, remaining history and generated-game callers remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
@@ -2225,3 +2225,54 @@ cross-platform qualification.
 | --- | --- |
 | `m4-war-native.json` | `bdc0a8739540d714fcd039d1d9fd2056a385824130c457e4c076593199cddcfa` |
 | `m4-war-identity.json` | `066dfd973241eb769378fd97335decbd68c7d993a1966e1fffd5818c5befb1f6` |
+
+## Diplomatic stance, willingness and patience
+
+A08 diplomatic evaluation now uses actual V07 race queries, C08 active wonders,
+regional military/city summaries, nuclear counts, reputation and directed treaties.
+It preserves unsigned fear contributions and signed demand arithmetic, nearby-unit
+pressure through U01 spatial queries, third-party hostility, first strength ties
+and the last eligible war target. Real captured-city records feed the declaration
+threshold. Scenario overrides run after war intent and preserve earlier demand,
+mode and initial-aggression results.
+
+Evaluation updates only its declared fields. The selected attitude pair survives;
+last contact is captured only for the first active opening evaluation, and war
+intent can remain from an earlier evaluation. Later peace and scenario stages can
+change aggression without rewriting its earlier snapshot or request mode. Final
+attitude caps read the actor-to-counterpart direction. War intent alone changes
+no treaty. Invalid reached arithmetic retains the valid evaluation prefix and
+fails explicitly instead of fabricating a neutral score.
+
+The opening government branch captures the signed request count, computes real
+V05 patience and invokes actual restricted A08 choice/V02 transition when admitted.
+Tests verify the government, announcement, flags and controlled primary draw, plus
+strength and scenario suppression. Patience consumes the shared signed attitude,
+active Eiffel and reverse treaty additions, with War overriding the result.
+
+Alliance willingness consumes that evaluation and retains its ordered overrides.
+Dangerous-enemy admission replaces earlier reasons; common-target search uses
+first ties and the existing-target override without reapplying candidate gates.
+Later vendetta/distrust rejection can be overridden by an already allied target;
+attitude/request rejection retains the accumulated reasons. The result does not
+sign an alliance or stand in for V05's price and accepted response.
+
+Shared cases cover regional boundaries, nuclear balance, reputation, wonders,
+nearby garrisons, third-party ties, captured cities, signed attitude, race/strength
+gates, scenario/export distinctions, retained/fresh state, government changes,
+patience boundaries, common targets and reasons surviving rejection. The next
+joins remain V06 incidents, A08 security/relation review and V04/V05 negotiations.
+Live audience checkpoint restoration and complete generated desktop human/AI games
+remain unfinished; browser and cross-platform work stay deferred.
+
+Root/App formatting and verification, root/App Release builds and the 43-project
+boundary check passed. The native suite passed **867 of 869 tests**, with the two
+existing platform/audio skips. The probe passed **834 shared groups** and verified
+**504 compiled inputs**. Coverage maps all groups across 100 families; eight
+identity and three coverage validator tests passed. No UI controls or Lua task
+code changed, and no new UI/browser/cross-platform acceptance is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-stance-native.json` | `1eeabff06a04002b29b5f720ed1bf4f7515a6b3da2f5d2fa1b65fc3c9b6ded77` |
+| `m4-stance-identity.json` | `cb2ab4c6dcb7343a09df80ca972bc03e8589015cfcbd96c581c0e84910aac95d` |

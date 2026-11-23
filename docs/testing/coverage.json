@@ -3199,6 +3199,29 @@
         "V04.war-alliance-obligations",
         "V04.war-failure-prefixes"
       ]
+    },
+    {
+      "id": "diplomatic-stance-and-alliance-policy",
+      "status": "partial",
+      "contract": "A08 sections4\u20135 ordered diplomatic stance and alliance willingness; V05 section2 patience",
+      "publicSurface": "DiplomaticStance.Evaluate/AllianceWilling/Patience; AllianceReasons; DiplomacyWorkspace evaluation fields",
+      "review": "Evaluates actual V07 race queries, unsigned regional fear and signed demand, C08 wonders, nuclear/reputation modifiers, real U01 nearest units, V04 directed relations, third-party strength/target ties, captured cities, scenario overrides and actual restricted A08/V02 government changes. Preserves selected attitude pair, last-contact/declaration gates, initial aggression and request mode when later policy changes aggression. Final attitude caps use actor-to-counterpart flags. Alliance policy preserves ordered overrides, replaces dangerous-enemy reasons, selects first tied common targets and retains permitted earlier targets without rerunning candidate gates; reasons survive rejection. Patience consumes shared signed attitude and active Eiffel before War override. Tests cover explicit arithmetic faults and authority failure prefixes, real government changes, no invented treaty transition, late scenario behavior and fresh state. V06/A08/V05 caller orchestration, full negotiation, saved live audiences and generated human/AI desktop games remain unfinished; browser and cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/DiplomaticStance.cs",
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticStanceCases.cs"
+      ],
+      "sharedGroups": [
+        "A08.alliance-common-target",
+        "A08.alliance-willingness-overrides",
+        "A08.stance-government-patience",
+        "A08.stance-nuclear-wonders-nearby",
+        "A08.stance-race-scenario",
+        "A08.stance-regions-retention",
+        "A08.stance-third-parties-direction"
+      ]
     }
   ]
 }

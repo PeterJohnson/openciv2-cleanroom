@@ -410,3 +410,10 @@ Border cases retain the first-occupied-tile exit, mixed-stack membership, warnin
 flags, topology and current summaries. These local-engine groups supply pending
 V06/A08 dependencies; desktop diplomacy controls and complete generated games
 remain open.
+
+A08 stance/willingness tests use actual race, wonder, spatial, treaty and restricted
+government children. They verify retained evaluation fields, ordered arithmetic,
+third-party ties, actual captured cities, historical overrides and the V05 patience
+helper. Alliance reasons survive later rejection, and neither evaluation nor
+willingness silently changes a treaty. Full audience/incident/review callers and
+generated desktop-game acceptance remain open.
