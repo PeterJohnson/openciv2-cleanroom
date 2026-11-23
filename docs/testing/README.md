@@ -53,6 +53,12 @@ The desktop fixture imports a polluted city, advances through two city turns
 with a reload between them, and compares civilization records with the direct
 client, including terrain goals and government scores.
 
+The authored game's automation binding can drain completed unit and improvement
+events. The native cases check independent drains, command and city correlation,
+and invalidation on load. An automation controller queries a valid next build
+and submits the ordinary production command. Its resulting save matches the
+manual command byte for byte.
+
 Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
 costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
 terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct

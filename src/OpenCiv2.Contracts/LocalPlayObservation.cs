@@ -4,6 +4,15 @@ namespace OpenCiv2.Contracts;
 
 public sealed record PlayOption(int Id, string Name);
 
+/// <summary>A completed city build. Item uses the same signed ID as the city.production command.</summary>
+public sealed record CityProductionEvent(CommandCorrelation Cause, ulong Revision, CityTarget City, int Item);
+
+/// <summary>Events in publication order. Dropped counts older events lost since the last drain.</summary>
+public sealed record CityProductionEvents(OwnedList<CityProductionEvent> Events, int Dropped)
+{
+    public static CityProductionEvents Empty { get; } = new(OwnedList<CityProductionEvent>.Empty, 0);
+}
+
 public sealed record PlayUnit(UnitTarget Target, string Name, int MovesLeft, bool CanFound, OwnedList<PlayOption> Work);
 
 public sealed record WorkerTile(int Index, MapPoint Position, bool Worked, int Food, int Shields, int Trade);

@@ -10,10 +10,44 @@ namespace OpenCiv2.Session;
 /// </summary>
 internal sealed class Lease(ClientIdentity identity)
 {
+    private const int CityProductionEventLimit = 32;
+    private readonly Queue<CityProductionEvent>? productionEvents =
+        identity.Kind == ControllerKind.Automation ? new() : null;
+    private int droppedProductionEvents;
+
     public ClientIdentity Identity { get; } = identity;
     public bool Active = true;
     public Queue<CommandUpdate> Updates { get; } = new();
     public Dictionary<CommandId, int> DeliveredEffects { get; } = new();
+
+    public void EnqueueProduction(CityProductionEvent notification)
+    {
+        if (productionEvents is null)
+        {
+            return;
+        }
+        if (productionEvents.Count == CityProductionEventLimit)
+        {
+            productionEvents.Dequeue();
+            if (droppedProductionEvents < int.MaxValue)
+            {
+                ++droppedProductionEvents;
+            }
+        }
+        productionEvents.Enqueue(notification);
+    }
+
+    public CityProductionEvents TakeProductionEvents()
+    {
+        if (productionEvents is not { Count: > 0 })
+        {
+            return CityProductionEvents.Empty;
+        }
+        var result = new CityProductionEvents(new(productionEvents), droppedProductionEvents);
+        productionEvents.Clear();
+        droppedProductionEvents = 0;
+        return result;
+    }
 }
 /// <summary>
 /// Retained command lifecycle state, including authority routing, continuation ownership and committed effects.

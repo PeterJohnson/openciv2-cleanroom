@@ -412,5 +412,7 @@ public sealed partial class SessionRuntime : IDisposable
             var (current, grant) = Checked();
             return MapProjection.Observe(current.World, grant.Identity, current.Revision, current.Process.Rules);
         }
+
+        public CityProductionEvents TakeCityProductionEvents() => Checked().Lease.TakeProductionEvents();
     }
 }

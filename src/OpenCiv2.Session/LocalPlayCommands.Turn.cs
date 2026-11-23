@@ -401,10 +401,15 @@ public static partial class LocalPlayCommands
             if (production.Unit is { Outcome: UnitProductionOutcome.Completed, Unit: { } produced })
             {
                 context.Effect("unit.produced", new([new("unit", new CommandValue.Unit(produced)), new("city", new CommandValue.City(target))]));
+                context.CityProductionCompleted?.Invoke(target, world.Entities.Units.At(produced.Slot).Type.Value);
             }
             else if (production.Unit?.Outcome == UnitProductionOutcome.CreationFailed)
             {
                 context.Effect("city.production_spent", new([new("city", new CommandValue.City(target))]));
+            }
+            else if (production is { Outcome: CityProductionOutcome.Completed, Improvement: { } improvement })
+            {
+                context.CityProductionCompleted?.Invoke(target, -improvement);
             }
 
             RetireUnsupportedUnits(context, slot);

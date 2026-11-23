@@ -2913,6 +2913,28 @@
         "A03.road-water-rail-endpoint",
         "M4.local-city-terrain-goals-scores"
       ]
+    },
+    {
+      "id": "local-production-automation-events",
+      "contract": "M4 automation production completion observation and ordinary command execution",
+      "publicSurface": "IPlayerClient.TakeCityProductionEvents",
+      "status": "partial",
+      "review": "Alder Valley completion events are tied to a city token and turn command. Scoped automation bindings drain independent bounded queues. A new binding starts empty and reloading invalidates the old queue and lease. Unit and improvement cases consume the event, query current choices, submit through ordinary authority and compare resulting save bytes with manual commands. Lua policy, host and replay remain open.",
+      "sources": [
+        "src/OpenCiv2.Contracts/Clients.cs",
+        "src/OpenCiv2.Contracts/LocalPlayObservation.cs",
+        "src/OpenCiv2.Session/CommandRuntime.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/Operations.cs",
+        "src/OpenCiv2.Session/RuntimeState.cs",
+        "src/OpenCiv2.Session/SessionRuntime.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityProductionEventCases.cs"
+      ],
+      "sharedGroups": [
+        "M4.local-city-production-events"
+      ]
     }
   ]
 }

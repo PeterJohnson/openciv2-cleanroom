@@ -97,4 +97,6 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 
 | city-terrain-goals | A03 city terrain goals and road planning, desktop city calculation and government score pass | partial | [CityTerrainGoals.cs](../../src/OpenCiv2.Core/Ai/CityTerrainGoals.cs), [CityTerrainGoalCases.cs](../../tests/OpenCiv2.FoundationCases/CityTerrainGoalCases.cs) |
 
+| local-production-automation-events | Own-city completion feed for automation bindings and ordinary production choice equivalence | partial | [CityProductionEventCases.cs](../../tests/OpenCiv2.FoundationCases/CityProductionEventCases.cs) |
+
 The [JSON inventory](coverage.json) contains the complete file lists, review notes and shared test IDs. Keep admitted domains and failure/resume paths explicit when extending it. A partial host row does not claim complete map rendering, menus or gameplay. See the [M4 desktop work record](../m4-desktop.md) for the remaining parent integrations and platform deferrals.

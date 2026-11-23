@@ -142,6 +142,7 @@ public static partial class FoundationSuite
         ("A03.road-first-job-retained-state", CityRoadPlanningFirstJobAndRetainedState),
         ("A03.city-calculation-goals-boundary", CityTerrainCalculationAndBoundary),
         ("M4.local-city-terrain-goals-scores", LocalCityTerrainGoalsAndScores),
+        ("M4.local-city-production-events", LocalCityProductionEvents),
         ("U02.spatial-control-medium-and-city", AiSpatialControlMediumAndCity),
         ("U05.ai-airlift-interception-and-orders", AiAirliftInterceptionAndOrders),
         ("U05.ai-airlift-direction-and-failure-prefix", AiAirliftDirectionAndFailurePrefix),

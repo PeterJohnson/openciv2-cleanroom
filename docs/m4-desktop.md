@@ -17,7 +17,7 @@ in the [M2 closeout](m2-closeout.md).
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
-| Automation | The existing optional Lua adapter remains. The M4 production policy, game caller and replay acceptance remain pending; browser execution is deferred. |
+| Automation | The authored desktop game's session publishes own-city production completions to automation controllers. Lua consumption, desktop task hosting, production policy and replay acceptance remain open. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
@@ -1584,3 +1584,32 @@ Receipts under `build/test-results/` (generated evidence):
 | `m4-desktop-cityjobs-headless.xml` | `38ced4c391776d1c5030654638004038c4b261b6bee0bef8f66c2d41c9843a58` |
 | `m4-desktop-cityjobs-native.json` | `beacac2381e8641e59cc5e35808e48dc78b29655d0922e00d429341c13f18c78` |
 | `m4-desktop-cityjobs-identity.json` | `b48daa693963e2827a9cdd848bc30a3d25737169a5c92d8ae5646cb6889ac2c9` |
+
+## Production completion feed for automation
+
+The authored local game publishes a unit or improvement completion after its
+production operation settles. The notification includes the city token, signed
+production item, observation revision and turn command correlation. It shares
+the participant scope of the command and checks live city ownership before
+delivery. New and replacement bindings begin with an empty queue. Each
+automation binding retains up to 32 events and reports how many older events
+were dropped. Reading one queue leaves other bindings' queues intact.
+
+The integration case reads the event, queries the current city's choices, and
+submits the next build with the ordinary production command. The same choices
+through the frontend and automation bindings produce identical saves. Lua
+consumption, the desktop task lifecycle, and replay of script commands are
+separate remaining work.
+
+Root and App formatting checks passed. The root, App and optional automation
+Release builds passed. The native suite passed **810 of 812 tests**, with two
+existing skips, and the optional Lua suite passed all **13 existing tests**.
+The probe passed **778 shared cases** and verified **463 compiled inputs**.
+Repository checks and all **14 Linux desktop regression checks** passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-productionevents-play.json` | `bd2bcbb4c95fe8ee017adcdf7bd4b229bdbdc0d0c07993c1b58f38ea211d19e3` |
+| `m4-desktop-productionevents-headless.xml` | `12ed7499c8bb9054938c1dc7917791bd254a0c6835e458c5b2faada15a998089` |
+| `m4-desktop-productionevents-native.json` | `09fffee67ac04f9d657825fa5378cfe5facacbe53d0125430d2bca3bb6079abc` |
+| `m4-desktop-productionevents-identity.json` | `79d728ed7603411d72260af840dfb06d2bb8e72cd1d8de92f9ae2165ab20d34a` |

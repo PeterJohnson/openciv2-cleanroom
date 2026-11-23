@@ -32,6 +32,27 @@ public sealed partial class SessionRuntime
     private static CommandUpdate Snapshot(CommandRecord record) =>
         record.Update with { Committed = new(record.Effects) };
 
+    private static void PublishCityProduction(RuntimeState state, CommandRecord record, CityTarget city, int item)
+    {
+        if (!state.LocalPlay || !state.World.Entities.Cities.Live(city.Slot))
+        {
+            return;
+        }
+        ref readonly var current = ref state.World.Entities.Cities.At(city.Slot);
+        if (current.Token != city.Token || current.Owner != record.Actor.Civilization)
+        {
+            return;
+        }
+        var notification = new CityProductionEvent(record.Update.Correlation, state.Revision, city, item);
+        foreach (var lease in state.Leases.Values)
+        {
+            if (Owner(lease, record))
+            {
+                lease.EnqueueProduction(notification);
+            }
+        }
+    }
+
     /// <summary>
     /// Builds a binding-specific update, hiding private interactions and effects from unrelated observers.
     /// </summary>
@@ -411,7 +432,8 @@ public sealed partial class SessionRuntime
                         state.Publish();
                         Deliver(state, record);
                     },
-                    state.Publish);
+                    state.Publish,
+                    (city, item) => PublishCityProduction(state, record, city, item));
                 step = record.Continuation.Resume(context, work.Input);
             }
             catch (ChoiceException error)

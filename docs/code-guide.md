@@ -202,6 +202,11 @@ calculation, publishes goals after research and upkeep, and runs A08 score
 adjustments before assessment. The F04 specification records the remaining
 city-analysis arithmetic.
 
+`IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
+automation bindings in the authored game. The command runtime scopes each
+publication to the actor's participant and verifies the city's current owner
+and token. Each lease drains its own bounded queue in publication order.
+
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
 are explicit semantic inputs while their original-file binding remains a gap;
