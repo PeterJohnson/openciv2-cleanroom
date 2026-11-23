@@ -444,3 +444,11 @@ notice sequence keeps funds gates after the population acknowledgment.
 `RateDecisionPreferences` retains rate holds for that session. The local F04
 adapter captures normalized start gold before upkeep and runs the notice sequence
 once after civilization assessment, retaining accepted effects across decisions.
+
+V08 arithmetic and report preparation live in `CivilizationScore`. `ScoreWorkspace`
+is world-owned scratch; `ScoreReport` is an owned presentation snapshot. Direct
+score queries use stored moods, while explicit ordinary report preparation calls
+actual C03 for every owned city before actual V07 calculation and rating.
+`CivilizationScoreOperation` owns the desktop report lifetime and prevents repaint
+from triggering calculation. Outcome dispatch and fame-title/Hall of Fame
+consumers remain separate work.

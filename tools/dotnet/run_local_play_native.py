@@ -724,6 +724,32 @@ def drive(args, app, observation, storage):
         wait(lambda s: s['message'] == 'Classic save written.')
         compare_work_save(population_continued)
         checks.append('native treasury normalization and population notice suspend the turn, persist the milestone and match direct save/reload continuation')
+        score_saved = observation.with_name('score-saved.sav')
+        score_continued = observation.with_name('score-continued.sav')
+        subprocess.run(['dotnet', str(args.probe), '--local-score-reference', str(score_saved), str(score_continued)], check=True)
+        state = wait(lambda s: s['menu']['groups']['Advisors']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['Advisors']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['civilization.score']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['civilization.score']['bounds'])
+        score = wait(lambda s: s['dialog']['visible'] and s['prompt'].startswith('Civilization score'))
+        assert 'Civilization rating:' in score['prompt'] and 'pending' in score['prompt']
+        assert score['play']['effects'].count('civilization.score.prepared') == 1
+        assert not score['play']['controls']['save']['enabled']
+        settled = wait(lambda s: s['serviceTicks'] >= score['serviceTicks'] + 4)
+        assert settled['prompt'] == score['prompt']
+        assert settled['play']['effects'].count('civilization.score.prepared') == 1
+        choice(0)
+        wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(score_saved)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        end_turn(4)
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(score_continued)
+        checks.append('native score report prepares once, displays rating and pending ship points, and matches direct saved/resumed state')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
     finally:

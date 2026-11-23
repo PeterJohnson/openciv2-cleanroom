@@ -1,6 +1,17 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
+if (args is ["--local-score-reference", string scoreSaved, string scoreContinued])
+{
+    var reference = FoundationSuite.LocalScoreReference();
+    foreach (var (path, bytes) in new[] { (scoreSaved, reference.Saved), (scoreContinued, reference.Continued) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew);
+        output.Write(bytes);
+    }
+    return 0;
+}
+
 if (args is ["--local-population-reference", string populationInitial, string populationSaved, string populationContinued])
 {
     var reference = FoundationSuite.LocalPopulationReference();

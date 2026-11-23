@@ -74,6 +74,7 @@ public sealed class GameState
     public CityCalculationWorkspace Calculation { get; } = new();
     public HumanWonderRanges HumanWonders { get; } = new();
     public SpaceshipWorkspace Spaceship { get; } = new();
+    public ScoreWorkspace Score { get; } = new();
     public DiplomacyWorkspace Diplomacy { get; } = new();
     public ProductionWorkspace Production { get; } = new();
     public GenerationPathWorkspace Paths { get; } = new();

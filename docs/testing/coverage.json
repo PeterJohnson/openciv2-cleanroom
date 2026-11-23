@@ -3066,6 +3066,33 @@
         "V02.population-funds-notices",
         "V02.treasury-population-queries"
       ]
+    },
+    {
+      "id": "civilization-scoring",
+      "status": "partial",
+      "contract": "V08 sections2-3 score/objective/rating arithmetic and semantic report preparation",
+      "publicSurface": "CivilizationScore; ScoreWorkspace; immutable ScoreReport; CivilizationScoreOperation; civilization.score; desktop Advisors score report",
+      "review": "Direct score queries preserve signed mood bytes, raw backed wonder ownership, actual V07 preview mutations and pending/arrived distinctions, pollution and peace arithmetic, conquest scaling and retained objective/rating scratch. Objective scoring retains unsorted threshold precedence, configured perspective, reversal for points and no final ordinary floor. Report preparation runs actual C03 for every live owned city once, skips it for objective reports and skips all calculation when Scored. Rating consumes shared fields with wrapped multiplication. Direct/console reports, replay and native save/reload continuation join real gameplay. Localized fame-title resources, Hall of Fame, outcome scheduling/dispatch and complete generated human/AI games remain unfinished; browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Actions.cs",
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Core/CivilizationScore.cs",
+        "src/OpenCiv2.Core/State/GameState.cs",
+        "src/OpenCiv2.Session/CivilizationScoreOperation.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Score.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ScoreCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "M4.local-score-decisions",
+        "V08.objective-score",
+        "V08.rating-wrap",
+        "V08.report-preparation",
+        "V08.score-components",
+        "V08.spaceship-conquest-score"
+      ]
     }
   ]
 }

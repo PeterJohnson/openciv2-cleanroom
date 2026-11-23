@@ -372,3 +372,10 @@ compare complete saved and resumed bytes with the direct client. The single-city
 profile does not reach the funds warning; composed session tests join its actual
 rate preview/acceptance and preference-output failures. These checks do not
 complete generated human/AI-game acceptance.
+
+V08 score groups exercise signed mood components, backed raw wonder locations,
+actual spaceship preview/arrival points, conquest map scaling, objective threshold
+precedence and perspective, wrapped ratings and one-time semantic report
+preparation. The desktop Advisors score report joins the session command; native
+checks compare complete saved and resumed state against the direct client.
+Localized fame titles, Hall of Fame and end-game dispatch remain open.

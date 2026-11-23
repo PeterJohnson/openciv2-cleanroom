@@ -16,7 +16,7 @@ in the [M2 closeout](m2-closeout.md).
 | City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
-| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
+| Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; V08 score/objective/rating queries and the explicit desktop score report are implemented. Spaceship reports/arrival outcomes, fame-title resources, victory/retirement, remaining history and Hall of Fame remain pending. |
 | Automation | The optional Linux desktop launcher hosts Lua scripts on the player seat and can record and replay the authored game's inputs, including interaction replies and cancellations. Desktop tasks now use separate heap-limited interpreter processes with exchange deadlines. Live task restoration remains M5; browser isolation is deferred. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
@@ -1948,3 +1948,48 @@ timing failure if it recurs; no gameplay failure was established by that attempt
 | `m4-finance-play.json` | `3bd74935c271182d20b4ef86f84c37077a6c6b64a7bdedf50f081501ec84daf5` |
 | `m4-finance-native.json` | `a58cfca45411f5eacdd5c7f9037f131bb1d0ddab0433310e2fa1bd65aac55883` |
 | `m4-finance-identity.json` | `e9c86efdb6e4ebd819e63b24709b5871d7c792709d157043fdafd04a1648cd16` |
+
+
+## Civilization scoring and desktop reports
+
+`CivilizationScore` implements V08 §§2–3's direct score query, objective-value
+query, scenario score and rating preparation. World-owned scratch keeps ordinary
+total separate from conquest bonus, pending ship points separate from arrived
+points, and configured-civilization objective outcome separate from the reporting
+civilization's points. It uses actual V07 performance calculations, retaining
+preview year/population and Fusion effects even for unlaunched ships. Raw wonder
+scoring accepts backed dead/beyond-live slots; report icon eligibility remains
+stricter. Arithmetic preserves signed city mood bytes, wrapping products,
+pollution differences, peace thresholds, sequential map factors and unsorted
+objective thresholds. The original zero floor belongs only to the ordinary sum.
+
+Report preparation is a semantic operation: ordinary reports recalculate every
+live owned city through actual C03 once, objective reports skip that recalculation,
+and Scored games show the existing-score notice without changing score or city
+state. `ScoreReport` owns its values, thresholds and visible-wonder identities;
+painting and closing the report do not rerun the operation. Rating consumes the
+prepared shared score, retaining full-width percentage and title-index selection.
+Localized fame-title resources and their display remain a separate unfinished
+consumer, along with Hall of Fame and outcome dispatch.
+
+The desktop Advisors menu and `civilization.score` command share the session
+continuation. Reports show the component breakdown, pending ship points, the
+selected total/conquest score and rating, with scenario/cheated annotations.
+Direct/console tests cover accepted/Scored reports and input replay. Native
+acceptance opens the report, verifies one preparation across subsequent display
+updates, and compares complete save/reload continuation against the direct client.
+Full generated human/AI-game acceptance and the remaining mechanics/AI/outcome
+work are not closed by these reports. Browser and cross-platform work remain deferred.
+
+Root/App formatting verification, root/desktop automation Release builds and
+project-boundary checks passed. The native suite passed **834 of 836 tests**
+with the two existing platform/audio skips. The probe passed **802 shared groups**
+and verified **485 compiled inputs**. All **26 Linux desktop checks** passed.
+Coverage maps all groups across 95 families; eight identity and three coverage
+validator tests passed. No browser or cross-platform execution was added.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-score-play.json` | `214e57bba09bf3a7d046fefc7761c7dab204acf640f50d913c26fd8610c94fcc` |
+| `m4-score-native.json` | `f52877a5645c60efdb3fc3c19225b250bbb19fea844e192308fc569fee18949c` |
+| `m4-score-identity.json` | `a2628ff67b75a8484bc8f9045e54a96b99cbe2642b6261056df13f23338d9d33` |

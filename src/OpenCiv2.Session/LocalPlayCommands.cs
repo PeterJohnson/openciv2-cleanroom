@@ -17,6 +17,7 @@ public static partial class LocalPlayCommands
             [new("unit", ValueKind.Unit)], SelectUnit, ValidateUnit));
         runtime.RegisterCommand(Define(Move, "Move one step in direction 0–7, clockwise from northeast.",
             [new("unit", ValueKind.Unit), new("direction")], [new("unit", ValueKind.Unit)], MoveUnit, ValidateUnit));
+        RegisterScoreCommand(runtime);
         RegisterCityCommands(runtime);
         RegisterTurnCommands(runtime, preferences, rateChoices);
         RegisterWorkCommands(runtime);
