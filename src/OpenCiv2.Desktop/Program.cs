@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using Avalonia;
 using OpenCiv2.App;
+using OpenCiv2.Core.State;
 using OpenCiv2.Formats.Content;
 using OpenCiv2.Formats.Graphics;
 using OpenCiv2.IO.Native;
@@ -148,7 +149,17 @@ public static class DesktopHost
 
             if (localGame)
             {
-                SeamApp.ConfigureLocalGame(automation, replay);
+                string preferenceDirectory = storageDirectory ?? Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "OpenCiv2", "storage");
+                Directory.CreateDirectory(preferenceDirectory);
+                var preferenceStorage = new ClassicStorage(preferenceDirectory);
+                var preferenceState = new ProcessContext();
+                if (PreferenceFiles.Load(preferenceState, new(1024, true), preferenceStorage) == PreferenceLoadStatus.Input)
+                {
+                    throw new IOException("Could not read gameplay preferences");
+                }
+                SeamApp.ConfigureLocalGame(automation, replay, new ClassicPreferenceWriter(preferenceStorage),
+                    PreferenceFiles.Capture(preferenceState));
             }
 
             if (showcase is not null)

@@ -409,3 +409,12 @@ The P10 WAV service boundary uses `Base/PcmAudio`, `Formats/WaveAudio`,
 `Platform.Native/NativeAudio` and `Browser/BrowserAudio` with `wwwroot/audio.js`.
 `native/audio/oc2_audio.c` is the opaque miniaudio bridge;
 `tools/dotnet/build_audio.py` owns its pinned build and receipt.
+
+
+`CivilizationRates` owns V02 rate preparation, balancing, city previews and
+accepted effects. `RateDraft` holds an opening cap/preferences and staged choices;
+`Preview` and `Report` are explicit preparation operations, not draw callbacks.
+The local `civilization.rates` command joins accepted rates to full C03 city
+calculation and preference output. Desktop supplies `ClassicPreferenceWriter`;
+headless sessions default to `BufferedPreferenceWriter` with owned encoded bytes.
+`PlayRates` is a pure, owned observation and the sidebar only renders it.

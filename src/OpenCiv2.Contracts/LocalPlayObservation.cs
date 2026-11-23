@@ -3,6 +3,7 @@ using OpenCiv2.Base;
 namespace OpenCiv2.Contracts;
 
 public sealed record PlayOption(int Id, string Name);
+public sealed record PlayRates(int Tax, int Science, int Luxury, int Maximum);
 
 /// <summary>A completed city build. Item uses the same signed ID as the city.production command.</summary>
 public sealed record CityProductionEvent(CommandCorrelation Cause, ulong Revision, CityTarget City, int Item);
@@ -46,4 +47,7 @@ public sealed record LocalPlayObservation(
     OwnedList<PlayOption> Research,
     OwnedList<PlayOption> Discovered,
     OwnedList<PlayUnit> Units,
-    PlayCity? City);
+    PlayCity? City)
+{
+    public PlayRates? Rates { get; init; }
+}

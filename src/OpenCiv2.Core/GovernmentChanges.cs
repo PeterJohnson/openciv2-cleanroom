@@ -20,7 +20,7 @@ public sealed class GovernmentChanges(GameState world, RuleState rules, StackOpe
     private int GovernmentOf(int owner) => unchecked((byte)world.Civilizations[owner].Government);
     private bool Wonder(int owner, int wonder) => BuildingQueries.HasWonder(world, rules.Definitions, owner, wonder);
 
-    public int MaximumRate(int owner) => GovernmentOf(owner) switch { < 2 => 6, 2 => 7, < 6 => 8, _ => 10 };
+    public int MaximumRate(int owner) => CivilizationRates.Maximum(world, owner);
 
     public bool Available(int owner, int government)
     {

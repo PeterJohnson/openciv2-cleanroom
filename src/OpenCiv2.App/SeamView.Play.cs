@@ -295,6 +295,10 @@ public sealed partial class SeamView
         string research = play.Research.FirstOrDefault(a => a.Id == play.Researching)?.Name ?? "No advance selected";
         turnLabel.Text = $"Turn {play.Turn} · {Math.Abs(play.Year)} {(play.Year < 0 ? "BC" : "AD")}\n"
             + $"{play.Gold} gold · {research} {play.ResearchProgress}/{play.ResearchCost}";
+        if (play.Rates is { } rates)
+        {
+            turnLabel.Text += $"\nTax {rates.Tax * 10}% · Science {rates.Science * 10}% · Luxury {rates.Luxury * 10}%";
+        }
         var unit = play.Units.FirstOrDefault(u => u.Target == activeTarget);
         var own = unit is null ? null : view.Units?.Records.FirstOrDefault(
             u => u.Slot == unit.Target.Slot && u.Token == unit.Target.Token);
@@ -546,6 +550,13 @@ public sealed partial class SeamView
             ["year"] = play.Year,
             ["phase"] = play.PlayerPhase,
             ["gold"] = play.Gold,
+            ["rates"] = play.Rates is { } rates ? new JsonObject
+            {
+                ["tax"] = rates.Tax,
+                ["science"] = rates.Science,
+                ["luxury"] = rates.Luxury,
+                ["maximum"] = rates.Maximum
+            } : null,
             ["research"] = play.Researching,
             ["progress"] = play.ResearchProgress,
             ["known"] = new JsonArray(play.Discovered.Select(a => (JsonNode?)JsonValue.Create(a.Id)).ToArray()),

@@ -86,6 +86,23 @@ def drive(args, app, observation, storage):
         scaled = {**box, **{key: box[key] * scale for key in ('x', 'y', 'width', 'height')}}
         driver.click(window, scaled)
 
+    def sidebar_visible(select_box):
+        state = wait(lambda s: select_box(s)['width'] > 0)
+        for _ in range(24):
+            box = select_box(state)
+            top, bottom = state['controls']['map']['y'], state['height'] - 16
+            if box['y'] >= top and box['y'] + box['height'] <= bottom:
+                return state
+            # Use the sidebar's scrollbar edge so scrolling cannot change a combo value.
+            scale = state['scaling']
+            driver.move(window, (state['width'] - 22) * scale, (top + 40) * scale)
+            wheel = 4 if box['y'] < top else 5
+            driver.button(wheel, 1)
+            driver.button(wheel, 0)
+            ticks = state['serviceTicks']
+            state = wait(lambda s: s['serviceTicks'] >= ticks + 2)
+        raise AssertionError('Sidebar control did not scroll into view')
+
     def click(name):
         def ready(state):
             box = state['play']['controls'].get(name)
@@ -95,6 +112,7 @@ def drive(args, app, observation, storage):
         # A command can expose a previously measured control before Avalonia arranges it.
         ticks = state['serviceTicks']
         state = wait(lambda s: s['serviceTicks'] >= ticks + 2 and ready(s))
+        state = sidebar_visible(lambda s: s['play']['controls'][name])
         click_box(state['play']['controls'][name], state)
 
     def command(action, expected='Completed'):
@@ -116,6 +134,8 @@ def drive(args, app, observation, storage):
             return state['dialog']['console'] if dialog else state['controls']['input']
 
         state = wait(lambda s: s['dialog']['visible'] == dialog and text_box(s)['width'] > 0)
+        if not dialog:
+            state = sidebar_visible(text_box)
         click_box(text_box(state), state)
         driver.chord('Control_L', 'a')
         type_text(text)
@@ -497,6 +517,68 @@ def drive(args, app, observation, storage):
         end_turn(3)
         compare_city_jobs(jobs_continued)
         checks.append('pollution goals and government scores match all direct-client civilization records after desktop turns and reload')
+
+        # Match the rate reference's fresh-process creation and load history,
+        # including the entity lifetime tokens carried by classic saves.
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
+        observation = observation.with_name('rates-observation.json')
+        storage = storage.with_name('rates-storage')
+        launch[launch.index('--observe') + 1] = str(observation)
+        launch[launch.index('--storage-directory') + 1] = str(storage)
+        app = subprocess.Popen(launch)
+        wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        select(0)
+        click('name')
+        driver.chord('Control_L', 'a')
+        type_text('Rates')
+        command(lambda: click('found'))
+        click('city.close')
+        wait(lambda s: not s['play']['cityOpen'])
+
+        rates_initial = observation.with_name('rates-initial.sav')
+        rates_saved = observation.with_name('rates-saved.sav')
+        rates_continued = observation.with_name('rates-continued.sav')
+        rates_preferences = observation.with_name('rates-preferences.dat')
+        subprocess.run(['dotnet', str(args.probe), '--local-rates-reference', str(rates_initial),
+                        str(rates_saved), str(rates_continued), str(rates_preferences)], check=True)
+        state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['File']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['file.library']['bounds'])
+        import_save(rates_initial)
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
+        changed_rates = command(lambda: type_line('civilization.rates tax=6 science=4'))['play']
+        assert changed_rates['rates'] == {'tax': 6, 'science': 4, 'luxury': 0, 'maximum': 6}
+        assert (storage / 'CIV2.DAT').read_bytes() == rates_preferences.read_bytes()
+        denied_rates = command(lambda: type_line('civilization.rates tax=6 science=6'), 'Failed')
+        assert 'rates_not_available' in denied_rates['message']
+        assert denied_rates['play']['rates'] == changed_rates['rates']
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(rates_saved)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        assert end_turn(2)['rates'] == changed_rates['rates']
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(rates_continued)
+        checks.append('native rate command, cap rejection, CIV2.DAT persistence and save/reload match the direct client')
+
+        preference_file = storage / 'CIV2.DAT'
+        preference_file.unlink()
+        preference_file.mkdir()  # A directory cannot be replaced by the classic preference writer.
+        failed_output = command(lambda: type_line('civilization.rates tax=4 science=6'), 'Failed')
+        assert 'preferences_output_failed' in failed_output['message']
+        assert failed_output['play']['rates'] == {'tax': 4, 'science': 6, 'luxury': 0, 'maximum': 6}
+        assert 'civilization.rates' in failed_output['play']['effects']
+        preference_file.rmdir()
+        assert end_turn(3)['rates'] == failed_output['play']['rates']
+        checks.append('native preference-output failure reports committed rates and the game continues')
 
         driver.close_window(window)
         assert app.wait(timeout=10) == 0

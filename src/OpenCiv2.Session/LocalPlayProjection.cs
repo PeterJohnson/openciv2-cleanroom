@@ -46,7 +46,11 @@ public sealed partial class SessionRuntime
             return new(new(current.Identity, current.Session, current.Revision, observer),
                 world.Globals.Turn, world.Globals.Year, world.PlayerPhaseActive, civ.Gold, civ.Researching,
                 civ.ResearchProgress, LocalResearch.Cost(world, rules, observer.Value), new(research), new(known),
-                new(units), ObserveCity(current, observer, rules));
+                new(units), ObserveCity(current, observer, rules))
+            {
+                Rates = new(civ.TaxRate, civ.ScienceRate, 10 - civ.TaxRate - civ.ScienceRate,
+                    CivilizationRates.Maximum(world, observer.Value))
+            };
         }
 
         private static PlayCity? ObserveCity(RuntimeState current, CivilizationSlot observer, RuleTables rules)

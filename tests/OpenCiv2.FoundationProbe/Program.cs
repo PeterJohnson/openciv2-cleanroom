@@ -1,6 +1,18 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
+if (args is ["--local-rates-reference", string initialRates, string savedRates, string continuedRates, string preferences])
+{
+    var reference = FoundationSuite.LocalRateReference();
+    foreach (var (path, bytes) in new[] { (initialRates, reference.Initial), (savedRates, reference.Saved),
+        (continuedRates, reference.Continued), (preferences, reference.Preferences) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew);
+        output.Write(bytes);
+    }
+    return 0;
+}
+
 if (args is ["--local-play-reference" or "--desktop-production-policy-reference", string saved, string continued])
 {
     var reference = args[0] == "--local-play-reference" ? FoundationSuite.LocalPlayReference()

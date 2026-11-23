@@ -339,3 +339,12 @@ automation cleared, accepted counter changes, switching back to the opening
 category, suppression/Chieftain gates and direct AI editing without wonder notices.
 The desktop stock/save scenarios now import automation flags and verify that
 manual selection clears them before the next city turn.
+
+
+V02 rate cases exercise cap normalization and negative luxury, cyclic balancing
+and retained preferences/holds, captured-cap decision order, real C03/C08 preview
+effects/failure prefixes, explicit report preparation and accepted rate changes.
+Direct/console cases verify invalid-choice rejection, preference bytes, output
+failure with retained effects, save/reload and another turn. The Linux native
+play driver checks `civilization.rates`, sidebar observations and persisted
+`CIV2.DAT` bytes against the direct reference.

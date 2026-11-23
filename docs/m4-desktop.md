@@ -13,7 +13,7 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. Remaining C01–C08 operations, V02 choices/rates, general research presentation/capture/catch-up and full F04 integration are pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate preparation/balancing/preview/acceptance and the desktop rate command are now implemented. Remaining C01–C08 operations, government choices, general research presentation/capture/catch-up and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
@@ -21,8 +21,9 @@ in the [M2 closeout](m2-closeout.md).
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
-catch-up policies, A01 outer movement/U04 order execution, remaining V02 government/rate choices
-and full F04 turn processing needed by the generated desktop game. C04's shared
+catch-up policies, A01 outer movement/U04 order execution, remaining V02 government
+choices and full rate-decision UI, and full F04 turn processing needed by the
+generated desktop game. C04's shared
 disorder/tax/celebration handler now joins actual V02 local government transitions
 and runs in the authored desktop turn; this does not complete general turn processing.
 `GeneratedGameInitialization` now supplies actual starting creation/balancing;
@@ -1749,3 +1750,55 @@ generated human/AI game gate.
 | `m4-lua-isolation-identity.json` | `2ec78e12b2a6487bed91ab702ce2d2496c9514fb68ca995676aa025462064c35` |
 | `m4-lua-isolation-lua-native.json` | `3d7cb68cb8c9f0d9c6d50082e78dfaf0fedd67099f15db55911b64967d929a01` |
 | `m4-lua-isolation-lua-browser.json` | `956be5f66f63e0ce57009eda200918c6e8bc0ed7b2a55b0c69bce2a868105243` |
+
+
+## Civilization rate operations and desktop choices
+
+`CivilizationRates` implements V02 §§7–10 local cap enforcement, explicit live
+normalization, staged balancing/holds, actual C03 distribution and C08 upkeep
+previews, report preparation and acceptance. Preview preserves its city-field
+changes while restoring civilization rates on normal completion; a real child
+failure preserves the reached prefix. Drawing does not normalize rates, run
+previews or apply the research-report science floor.
+
+The `civilization.rates tax=N science=N` command accepts ordinary rates in
+tenths, validates each component against the current government cap, and applies
+full city recalculation. The desktop sidebar displays current tax/science/luxury.
+Early Despotism/Anarchy choices update preferred startup rates and write actual
+classic `CIV2.DAT` bytes in the configured storage directory, preserving existing
+loaded preferences and imported fields across game reloads. Headless sessions
+retain the same encoded output in a `BufferedPreferenceWriter`; owners can
+supply another writer. A failed write reports `preferences_output_failed` and
+retains the accepted rates and their committed effect. Reload retains session
+preferences, and saves with any valid Despotism rates can continue in Alder Valley.
+The authored new-game profile still supplies its fixed starting rates; general
+F05 preference-driven desktop startup remains open.
+
+Shared cases cover normalization including negative derived luxury, all three
+cyclic adjustment orders, fixed preferred values, own/other and multiple holds,
+live decisions with a captured cap, actual city previews, disordered/foreign
+cities, upkeep failure, report science floor/full cost, persistence failure and
+full-width accepted values. Direct and console paths compare saves through
+reload and another turn. The native driver compares the accepted and continued
+saves plus preference bytes against the independent direct-client sequence.
+
+Government/revolution decisions, their rate-dialog continuations, the graphical
+rate editor, population/funds notices, full F04 scheduling and generated-game
+acceptance remain open. Browser and cross-platform execution are deferred.
+
+Root and App formatting verification and root/desktop automation Release builds
+passed. The native suite passed **817 of 819 tests**, with the two existing
+platform/audio skips; the probe passed **785 shared groups** and verified
+**471 compiled inputs**. All **22 Linux desktop checks** passed, including exact
+rate/preference bytes, invalid-choice rejection, reload/turn continuation and
+preference-output failure with committed rates. The driver scrolls sidebar
+controls into view through ordinary mouse input and matches the direct client's
+creation/reload history so entity lifetime tokens remain part of the full-save
+comparison. Project boundaries, coverage inventory, eight identity tests and
+three coverage-inventory tests also passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-rates-play.json` | `e6c16c2165e05f4f58f7b38a63c96be31ad9c976278253089d4d9de4c4813a9c` |
+| `m4-rates-native.json` | `160704b4c04d5e52ad796805b1a653792058df9670cabfb68b34d78fd7024080` |
+| `m4-rates-identity.json` | `1a3556da3de827f30e99bb3a5282c67e8ff72f4885795e262260d44188543ce9` |

@@ -23,15 +23,20 @@ public sealed class LocalGame : IDisposable
     private ulong nextRuntime = 1;
     private ParticipantId participant;
     private readonly LocalReplayRecorder? replay;
+    private readonly IPreferenceWriter preferences;
+    private readonly PreferenceSnapshot? initialPreferences;
 
     public IPlayerClient Player { get; private set; }
     public bool Busy => runtime.HasPendingCommands;
 
     public LocalGame() : this(null) { }
 
-    public LocalGame(LocalReplayRecorder? replay)
+    public LocalGame(LocalReplayRecorder? replay, IPreferenceWriter? preferences = null,
+        PreferenceSnapshot? initialPreferences = null)
     {
         this.replay = replay;
+        this.preferences = preferences ?? new BufferedPreferenceWriter();
+        this.initialPreferences = initialPreferences;
         runtime = NewRuntime();
         AuthorWorld(runtime);
         Player = BindPlayer();
@@ -62,6 +67,15 @@ public sealed class LocalGame : IDisposable
     private SessionRuntime NewRuntime(ProcessTokens? previous = null)
     {
         var process = new ProcessContext();
+        process.OrdinaryPreferences.SetDefaults(1024, true);
+        process.MultiplayerPreferences.SetDefaults();
+        var preferred = previous is not null ? PreferenceFiles.Capture(runtime.Process) : initialPreferences;
+        if (preferred is { } snapshot)
+        {
+            process.OrdinaryPreferences = snapshot.Ordinary;
+            process.MultiplayerPreferences = snapshot.Multiplayer;
+            PreferenceFiles.ReplaceImported(process, snapshot.ImportedOrdinary);
+        }
         if (previous is not null)
         {
             process.Tokens.NextUnit = previous.NextUnit;
@@ -70,7 +84,7 @@ public sealed class LocalGame : IDisposable
 
         var candidate = new SessionRuntime(process, new(nextRuntime++));
         candidate.EnableLocalPlay(replay);
-        LocalPlayCommands.Register(candidate);
+        LocalPlayCommands.Register(candidate, preferences);
         candidate.BeginClientSession(SessionSeeds);
         return candidate;
     }
@@ -249,7 +263,7 @@ public sealed class LocalGame : IDisposable
             || globals.HumanPlayers != seat || globals.CivsAlive != seat || globals.Turn < 1
             || world.Multiplayer.LocalHuman != owner || world.Multiplayer.ResumeCiv != owner
             || world.Events.Loaded || civ.Government != Government.Despotism || civ.Tribe != 0
-            || civ.CityCount is < 0 or > 1 || civ.ScienceRate != 6 || civ.TaxRate != 4
+            || civ.CityCount is < 0 or > 1 || !CivilizationRates.Allowed(world, owner, civ.TaxRate, civ.ScienceRate)
             || civ.Researching is < -1 or > 2 || globals.BestHumanRank >= EntityLimits.Civilizations
             || world.Entities.Cities.End != civ.CityCount)
         {

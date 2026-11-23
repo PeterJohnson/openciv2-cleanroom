@@ -2985,6 +2985,32 @@
         "M4.local-replay-commands-and-decisions",
         "M4.local-replay-recording-limit"
       ]
+    },
+    {
+      "id": "civilization-rates",
+      "status": "partial",
+      "contract": "V02 sections7\u201310 local rate preparation, balancing, preview, acceptance and cap decisions",
+      "publicSurface": "CivilizationRates; RateDraft; civilization.rates player command; owned PlayRates projection; classic desktop preferences and buffered headless output",
+      "review": "Preserves byte normalization including negative luxury, fixed preferred rates, cyclic adjustment order, nonboolean/multiple imported holds, captured cap across live decisions, real C03 distribution and C08 upkeep, retained preview city fields and failure prefixes, explicit report science floor and full research cost. Accepted changes join full city recalculation and actual F06 preference encoding; failed output retains rates and reports committed effects. Direct/console saves and reload/continuation agree. General government/revolution decisions, full F04 maintenance, graphical rate editor and network routing remain open.",
+      "sources": [
+        "src/OpenCiv2.Contracts/LocalPlayObservation.cs",
+        "src/OpenCiv2.Core/CivilizationRates.cs",
+        "src/OpenCiv2.Core/GovernmentChanges.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Rates.cs",
+        "src/OpenCiv2.Session/LocalPlayProjection.cs",
+        "src/OpenCiv2.Session/PreferenceFiles.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CivilizationRateCases.cs"
+      ],
+      "sharedGroups": [
+        "M4.local-rates-persistence",
+        "V02.rate-acceptance-persistence",
+        "V02.rate-cap-decisions",
+        "V02.rate-normalization-balancing",
+        "V02.rate-preview-distribution"
+      ]
     }
   ]
 }

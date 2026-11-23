@@ -16,6 +16,28 @@ public interface IPreferenceWriter
 {
     bool Write(PreferenceSnapshot values, Action? beforeIo = null);
 }
+
+/// <summary>Headless session preference output. Retains actual classic bytes in memory;
+/// desktop composition supplies a filesystem writer instead.</summary>
+public sealed class BufferedPreferenceWriter : IPreferenceWriter
+{
+    private byte[] bytes = [];
+    public byte[] Capture() => (byte[])bytes.Clone();
+
+    public bool Write(PreferenceSnapshot values, Action? beforeIo = null)
+    {
+        var ordinary = StateConversion.ToStored(values.Ordinary);
+        if (values.ImportedOrdinary is { } imported)
+        {
+            ordinary = StateConversion.PreserveOpaque(ordinary, imported);
+        }
+        byte[] encoded = [.. ClassicPreferences.EncodeOrdinary(ordinary),
+            .. ClassicPreferences.EncodeMultiplayer(StateConversion.ToStored(values.Multiplayer))];
+        beforeIo?.Invoke();
+        bytes = encoded;
+        return true;
+    }
+}
 /// <summary>F03 production preference persistence. Both blocks are encoded before external I/O.
 /// Failed writes/close preserve accepted configuration and remove partial output when possible.</summary>
 public sealed class ClassicPreferenceWriter : IPreferenceWriter

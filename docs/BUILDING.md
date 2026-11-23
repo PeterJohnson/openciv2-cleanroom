@@ -64,6 +64,12 @@ graphics and font arguments are optional and use the same renderer as Riverbend.
 dotnet run --project src/OpenCiv2.Desktop -c Release --no-build -- --game alder-valley
 ```
 
+In the local game's console, `civilization.rates tax=6 science=4` sets rates
+in tenths. Tax, science and the remaining luxury rate must each respect the
+current government cap. Early-game changes write preferred rates to `CIV2.DAT`
+in the configured storage directory; the sidebar and classic game saves retain
+the accepted rates even if preference output fails.
+
 To see Riverbend with its river, road, rail and resource sprites, verify the
 pinned archives against `dependencies.json`, extract them, and pass the package
 root containing `package.json` and the font root containing `LICENSE` and `ttf/`.
