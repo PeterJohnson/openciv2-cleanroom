@@ -417,4 +417,10 @@ accepted effects. `RateDraft` holds an opening cap/preferences and staged choice
 The local `civilization.rates` command joins accepted rates to full C03 city
 calculation and preference output. Desktop supplies `ClassicPreferenceWriter`;
 headless sessions default to `BufferedPreferenceWriter` with owned encoded bytes.
+`LocalPlayCommands.RateEditor` owns staged rate decisions and previews behind
+`civilization.rates.edit`. Holds live with the local game and survive reload;
+city-preview effects and accepted normalization survive cancellation. Owned,
+labelled interaction options let the desktop present these choices without
+duplicating their gameplay arithmetic. Checkpoint encoding retains optional
+labels; the editor itself does not yet have a resumable checkpoint codec.
 `PlayRates` is a pure, owned observation and the sidebar only renders it.

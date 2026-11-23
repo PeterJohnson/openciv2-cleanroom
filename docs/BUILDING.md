@@ -64,6 +64,11 @@ graphics and font arguments are optional and use the same renderer as Riverbend.
 dotnet run --project src/OpenCiv2.Desktop -c Release --no-build -- --game alder-valley
 ```
 
+Use **Tax rates** in the local sidebar or Orders menu to preview balanced rate
+choices, hold one rate, and apply or cancel the draft. The same decision is
+available as `civilization.rates.edit` in the console. Holds persist across
+editor openings and reloads in the current game session.
+
 In the local game's console, `civilization.rates tax=6 science=4` sets rates
 in tenths. Tax, science and the remaining luxury rate must each respect the
 current government cap. Early-game changes write preferred rates to `CIV2.DAT`

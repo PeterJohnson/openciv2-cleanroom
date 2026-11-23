@@ -298,6 +298,8 @@ public sealed partial class SessionRuntime
     private static bool InteractionValid(InteractionSpec spec) =>
         !string.IsNullOrEmpty(spec.Prompt) && spec.Choices.Count != 0 &&
         spec.Choices.Distinct().Count() == spec.Choices.Count
+            && spec.Options.All(option => spec.Choices.Contains(option.Value) && !string.IsNullOrEmpty(option.Label))
+            && spec.Options.Select(option => option.Value).Distinct().Count() == spec.Options.Count
             && (spec.DefaultChoice is null
                 || (spec.Deadline is not null && spec.Choices.Contains(spec.DefaultChoice.Value)));
 

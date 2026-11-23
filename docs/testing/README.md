@@ -348,3 +348,10 @@ Direct/console cases verify invalid-choice rejection, preference bytes, output
 failure with retained effects, save/reload and another turn. The Linux native
 play driver checks `civilization.rates`, sidebar observations and persisted
 `CIV2.DAT` bytes against the direct reference.
+
+The rate-editor decision group covers staged previews, retained holds, cancellation,
+invalid/stale replies, rejection of overlapping commands, failed preference output,
+direct-command save equivalence, reload/turn continuation and journal replay.
+The native driver repeats draft cancellation and acceptance through the Tax rates
+button and named choices. Checkpoint cases round-trip named interaction options
+and reject duplicate or unoffered option identities.

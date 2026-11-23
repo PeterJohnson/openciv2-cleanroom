@@ -350,6 +350,7 @@ public static partial class FoundationSuite
         ("V02.rate-preview-distribution", RatePreviewRealDistribution),
         ("V02.rate-acceptance-persistence", RateAcceptanceAndPersistence),
         ("M4.local-rates-persistence", LocalPlayRatesAndPersistence),
+        ("M4.local-rate-editor-decisions", LocalRateEditorDecisions),
         ("C04.disorder-duration-restoration", CityDisorderDurationAndRestoration),
         ("C04.disorder-democracy-collapse", CityDisorderDemocracyCollapse),
         ("C04.mood-tax-wrap-gates", CityMoodTaxWrapAndPlayerGates),

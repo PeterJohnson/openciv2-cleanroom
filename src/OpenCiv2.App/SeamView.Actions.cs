@@ -73,6 +73,9 @@ public sealed partial class SeamView
             case LocalPlayCommands.EndTurn:
                 PlayCommand(LocalPlayCommands.EndTurn);
                 break;
+            case LocalPlayCommands.EditRates:
+                PlayCommand(LocalPlayCommands.EditRates);
+                break;
             case ShellActions.Files:
                 mapOptions.Flyout?.Hide();
                 if (files is not null)

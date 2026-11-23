@@ -13,7 +13,7 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate preparation/balancing/preview/acceptance and the desktop rate command are now implemented. Remaining C01–C08 operations, government choices, general research presentation/capture/catch-up and full F04 integration are pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate preparation/balancing/preview/acceptance, the desktop rate command and staged editor are now implemented. Remaining C01–C08 operations, government choices, general research presentation/capture/catch-up and full F04 integration are pending. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
@@ -22,8 +22,8 @@ in the [M2 closeout](m2-closeout.md).
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
 catch-up policies, A01 outer movement/U04 order execution, remaining V02 government
-choices and full rate-decision UI, and full F04 turn processing needed by the
-generated desktop game. C04's shared
+choices and their rate-decision continuations, and full F04 turn processing
+needed by the generated desktop game. C04's shared
 disorder/tax/celebration handler now joins actual V02 local government transitions
 and runs in the authored desktop turn; this does not complete general turn processing.
 `GeneratedGameInitialization` now supplies actual starting creation/balancing;
@@ -1802,3 +1802,44 @@ three coverage-inventory tests also passed.
 | `m4-rates-play.json` | `e6c16c2165e05f4f58f7b38a63c96be31ad9c976278253089d4d9de4c4813a9c` |
 | `m4-rates-native.json` | `160704b4c04d5e52ad796805b1a653792058df9670cabfb68b34d78fd7024080` |
 | `m4-rates-identity.json` | `1a3556da3de827f30e99bb3a5282c67e8ff72f4885795e262260d44188543ce9` |
+
+
+## Desktop rate decisions
+
+The Tax rates sidebar button and Orders action now submit
+`civilization.rates.edit`. Its session continuation owns the V02 draft, initial
+cap/preferred values, retained holds, explicit C03/C08 previews and Apply/Cancel
+decisions. Adjusting a rate uses the shared cyclic balancing policy; painting
+only displays the published choices and report. Apply uses the same validation,
+full city calculation and preference writer as `civilization.rates`. Cancel
+discards the draft while preserving accepted normalization and preview effects.
+Holds persist across openings and classic reloads in the same `LocalGame`.
+
+Named interaction options supply meaningful labels without UI-specific game
+logic. The checkpoint codec retains these optional labels, validates option
+identities and still reads older payloads without options. The editor itself
+has no pending-operation checkpoint codec; that remains outside this checkpoint.
+The owner checks current phase, government and accepted rates on continuation;
+the local session rejects overlapping commands while a decision is open.
+
+Shared cases compare editor and direct-command saves, reload and next-turn
+results, plus journal replay of holds, cancellation and rejected/stale inputs.
+They also exercise failed preference output. Desktop checks use actual pointer
+input for hold selection, balanced drafts, cancellation and Apply, then compare
+the complete save and preference bytes against the direct-client reference.
+General government/revolution callers, population/funds notices, full F04
+processing and generated human/AI game acceptance remain open. Browser and
+cross-platform execution remain deferred.
+
+Root/App formatting verification and root/desktop automation Release builds
+passed. The native suite passed **818 of 820 tests**, with two existing skips.
+The probe passed **786 shared groups** and verified **473 compiled inputs**.
+All **23 Linux desktop checks** passed, including the new editor decisions and
+the existing automation isolation/replay cases. Project-boundary, coverage,
+eight identity and three coverage-inventory tests also passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-rate-editor-play.json` | `cf56894aebd8b4d04b9a2d06a0287d8fe12ddab70bfa12d9c7b1d160b3d8f1a0` |
+| `m4-rate-editor-native.json` | `23250778a90e13fa924183361a9e212b8e5a4c0c873275d2aac32e62366506cd` |
+| `m4-rate-editor-identity.json` | `fff3bf5ddfabb7e642e023a29e3a0ae2a6d917d10f311c0e9185e4b84e451ec0` |

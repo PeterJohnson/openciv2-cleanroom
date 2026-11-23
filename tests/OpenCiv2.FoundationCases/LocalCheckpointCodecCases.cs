@@ -46,6 +46,27 @@ public static partial class FoundationSuite
         var original = LocalCodecFixture(); var command = original.Command!;
         var noOptionals = original with { Command = command with { Controller = null, Access = AccessClass.Player, Update = command.Update with { Interaction = command.Update.Interaction! with { Spec = command.Update.Interaction.Spec with { Recipient = null, Target = null, Deadline = null, DefaultChoice = null, Cancellable = false } } } } };
         Equal(noOptionals, LocalCheckpointCodec.Decode(LocalCheckpointCodec.Encode(noOptionals)));
+        var interaction = command.Update.Interaction!;
+        var labelled = original with
+        {
+            Command = command with
+            {
+                Update = command.Update with
+                {
+                    Interaction = interaction with
+                    {
+                        Spec = interaction.Spec with { Options = new([new(0, "Keep playing", "A named choice"), new(int.MaxValue, "Finish")]) }
+                    }
+                }
+            }
+        };
+        Equal(labelled, LocalCheckpointCodec.Decode(LocalCheckpointCodec.Encode(labelled)));
+        var labelledPayload = LocalCodecPayload(LocalCheckpointCodec.Encode(labelled));
+        labelledPayload["command"]!["interaction"]!["options"]![0]!["value"] = "42";
+        LocalCodecReject(LocalCodecEnvelope(labelledPayload));
+        labelledPayload = LocalCodecPayload(LocalCheckpointCodec.Encode(labelled));
+        labelledPayload["command"]!["interaction"]!["options"]![1]!["value"] = "0";
+        LocalCodecReject(LocalCodecEnvelope(labelledPayload));
         var exhausted = original with { Origin = new(ulong.MaxValue), Session = new(ulong.MaxValue - 1), Participant = new(ulong.MaxValue - 1), Counters = new(ulong.MaxValue, ulong.MaxValue, ulong.MaxValue, ulong.MaxValue, ulong.MaxValue, ulong.MaxValue), Command = null };
         Equal(exhausted, LocalCheckpointCodec.Decode(LocalCheckpointCodec.Encode(exhausted)));
         var culture = CultureInfo.CurrentCulture;

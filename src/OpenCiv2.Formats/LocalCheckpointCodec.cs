@@ -243,7 +243,7 @@ public static class LocalCheckpointCodec
         var spec = interaction.Spec;
         budget.Add(1024);
         budget.Items(spec.Choices.Count);
-        return new()
+        var result = new JsonObject
         {
             ["id"] = Number(interaction.Id.Value),
             ["recipient"] = Number(interaction.Recipient.Value),
@@ -256,11 +256,22 @@ public static class LocalCheckpointCodec
             ["cancellable"] = spec.Cancellable,
             ["choices"] = new JsonArray(spec.Choices.Select(c => (JsonNode?)JsonValue.Create(Number(c))).ToArray())
         };
+        if (spec.Options.Count != 0)
+        {
+            budget.Items(spec.Options.Count);
+            result["options"] = new JsonArray(spec.Options.Select(option => (JsonNode?)new JsonObject
+            {
+                ["value"] = Number(option.Value),
+                ["label"] = budget.Text(option.Label),
+                ["detail"] = budget.Text(option.Detail)
+            }).ToArray());
+        }
+        return result;
     }
 
     private static Interaction Interaction(ContentReader reader, ParticipantId participant, ulong nextInteraction)
     {
-        reader.Fields(
+        reader.Members(
             [
                 "id",
                 "recipient",
@@ -272,7 +283,7 @@ public static class LocalCheckpointCodec
                 "default",
                 "cancellable",
                 "choices"
-            ]);
+            ], ["options"]);
         var id = new InteractionId(Id(reader.At("id")));
         var recipient = new ParticipantId(Id(reader.At("recipient")));
         Require(
@@ -298,11 +309,28 @@ public static class LocalCheckpointCodec
             prompt.Length != 0 && values.Length != 0
                 && (defaultChoice is null || (deadline is not null && unique.Contains(defaultChoice.Value))),
             "Invalid checkpoint interaction");
+        var options = new List<InteractionOption>();
+        if (reader.Has("options"))
+        {
+            var storedOptions = reader.At("options");
+            var optionValues = new HashSet<int>();
+            for (int i = 0, count = Count(storedOptions); i < count; ++i)
+            {
+                var option = storedOptions.Element(i);
+                option.Fields(["value", "label", "detail"]);
+                int value = Number<int>(option.At("value"));
+                string label = Text(option.At("label"));
+                Require(unique.Contains(value) && optionValues.Add(value) && label.Length != 0,
+                    "Invalid checkpoint option");
+                options.Add(new(value, label, Text(option.At("detail"))));
+            }
+        }
         return new(
             id,
             recipient,
             new(1),
-            new(prompt, specified, target, new(values), deadline, defaultChoice, Boolean(reader.At("cancellable"))));
+            new(prompt, specified, target, new(values), deadline, defaultChoice, Boolean(reader.At("cancellable")))
+            { Options = new(options) });
     }
 
     private static JsonObject Command(CheckpointCommand command, Budget budget)

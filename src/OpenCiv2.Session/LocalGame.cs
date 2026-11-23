@@ -24,6 +24,7 @@ public sealed class LocalGame : IDisposable
     private ParticipantId participant;
     private readonly LocalReplayRecorder? replay;
     private readonly IPreferenceWriter preferences;
+    private readonly LocalRateChoices rateChoices = new();
     private readonly PreferenceSnapshot? initialPreferences;
 
     public IPlayerClient Player { get; private set; }
@@ -84,7 +85,7 @@ public sealed class LocalGame : IDisposable
 
         var candidate = new SessionRuntime(process, new(nextRuntime++));
         candidate.EnableLocalPlay(replay);
-        LocalPlayCommands.Register(candidate, preferences);
+        LocalPlayCommands.Register(candidate, preferences, rateChoices);
         candidate.BeginClientSession(SessionSeeds);
         return candidate;
     }

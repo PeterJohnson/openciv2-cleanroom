@@ -122,8 +122,12 @@ public static class CommandStatuses
         CommandStatus.Completed or CommandStatus.Cancelled or CommandStatus.Failed;
 }
 public sealed record Effect(ulong Index, string Name, OwnedList<NamedValue> Values);
+public sealed record InteractionOption(int Value, string Label, string Detail = "");
 public sealed record InteractionSpec(string Prompt, ParticipantId? Recipient, CommandValue? Target,
-    OwnedList<int> Choices, ulong? Deadline = null, int? DefaultChoice = null, bool Cancellable = true);
+    OwnedList<int> Choices, ulong? Deadline = null, int? DefaultChoice = null, bool Cancellable = true)
+{
+    public OwnedList<InteractionOption> Options { get; init; } = OwnedList<InteractionOption>.Empty;
+}
 public sealed record Interaction(
     InteractionId Id,
     ParticipantId Recipient,

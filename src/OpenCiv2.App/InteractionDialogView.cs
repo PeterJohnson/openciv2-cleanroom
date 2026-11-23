@@ -140,7 +140,9 @@ internal sealed class InteractionDialogView : UserControl
             choices.Children.Clear();
             buttons.Clear();
             // Capture this interaction's identity in every handler, including cancellation.
-            foreach (int value in view.Spec.Choices.OrderBy(value => value == 1 ? 0 : 1))
+            IEnumerable<int> ordered = view.Spec.Options.Count == 0
+                ? view.Spec.Choices.OrderBy(value => value == 1 ? 0 : 1) : view.Spec.Choices;
+            foreach (int value in ordered)
             {
                 string label = value switch { 1 => "Confirm", 0 => "Decline", _ => $"Choice {value}" };
                 string detail = value switch
@@ -149,7 +151,12 @@ internal sealed class InteractionDialogView : UserControl
                     0 => "Leave the stack unchanged",
                     _ => "Use this offered choice"
                 };
-                if (!view.Spec.Cancellable && session.View.Play?.Research.FirstOrDefault(a => a.Id == value) is { } advance)
+                if (view.Spec.Options.FirstOrDefault(option => option.Value == value) is { } option)
+                {
+                    label = option.Label;
+                    detail = option.Detail;
+                }
+                else if (!view.Spec.Cancellable && session.View.Play?.Research.FirstOrDefault(a => a.Id == value) is { } advance)
                 {
                     label = advance.Name;
                     detail = $"Research choice {value}";
@@ -264,7 +271,7 @@ internal sealed class DialogChoiceButton : Button
         public ChoiceSurface(DialogChoiceButton owner, string label, string detail)
         {
             this.owner = owner;
-            MinHeight = 70;
+            MinHeight = detail.Length == 0 ? 40 : 70;
             Child = new StackPanel
             {
                 Margin = new Thickness(18, 12),
@@ -275,7 +282,7 @@ internal sealed class DialogChoiceButton : Button
                     {
                         Text = label, FontSize = 16, FontWeight = FontWeight.Bold, TextWrapping = TextWrapping.Wrap
                     },
-                    new TextBlock { Text = detail, FontSize = 12, TextWrapping = TextWrapping.Wrap }
+                    new TextBlock { Text = detail, FontSize = 12, TextWrapping = TextWrapping.Wrap, IsVisible = detail.Length != 0 }
                 }
             };
             owner.PropertyChanged += (_, _) => InvalidateVisual();

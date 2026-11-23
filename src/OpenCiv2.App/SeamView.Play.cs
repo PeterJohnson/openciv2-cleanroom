@@ -48,6 +48,7 @@ public sealed partial class SeamView
         yield return new(PlaySave, "File", "Save game", "Primary+S", ready && SeamApp.Storage is not null);
         yield return new(PlayReload, "File", "Reload save", null, ready && SeamApp.Storage is not null);
         yield return new(PlayCity, "Orders", "Open city", null, ready && play?.City is not null);
+        yield return new(LocalPlayCommands.EditRates, "Orders", "Tax rates", null, ready);
         yield return new(LocalPlayCommands.Fortify, "Orders", "Fortify unit", null,
             ready && play?.Units.Any(u => u.Target == activeTarget && u.MovesLeft > 0) == true
             && model.View.Units?.Records.Any(u => new UnitTarget(u.Slot, u.Token) == activeTarget
@@ -77,6 +78,7 @@ public sealed partial class SeamView
         var unitOrders = new WrapPanel();
         unitOrders.Children.Add(PlayButton("fortify", "Fortify", () => UnitCommand(LocalPlayCommands.Fortify)));
         unitOrders.Children.Add(PlayButton("end", "End turn", () => PlayCommand(LocalPlayCommands.EndTurn)));
+        unitOrders.Children.Add(PlayButton("rates", "Tax rates", () => PlayCommand(LocalPlayCommands.EditRates)));
         playOrders.Children.Add(unitOrders);
         AutomationProperties.SetName(terrainJob, "Terrain work");
         playControls["work.job"] = terrainJob;
