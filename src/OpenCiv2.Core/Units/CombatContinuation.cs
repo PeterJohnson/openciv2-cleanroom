@@ -49,6 +49,7 @@ public sealed class CombatContinuation(GameState world, RuleTables rules, Combat
             steps = (nuclear ? parent.Deliver(this, combat, call) : parent.FinishSurvivor(this, combat, call)).GetEnumerator();
         }
         internal ResearchReply? TakeReply() { var value = reply; reply = null; return value; }
+        internal void RememberFailures(IEnumerable<Exception> failures) => presentationFailures.AddRange(failures);
         internal void Redraw(Action draw)
         {
             try
@@ -146,6 +147,7 @@ public sealed class CombatContinuation(GameState world, RuleTables rules, Combat
             else if (child.Result is null)
             { yield return null; }
         }
+        operation.RememberFailures(child.PresentationFailures);
         if (child.Result == 0)
         {
             foreach (var pending in Delete(operation, combat.Attacker, call + "/delete"))

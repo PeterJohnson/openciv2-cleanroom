@@ -159,6 +159,15 @@ public static partial class FoundationSuite
 
     private static void DeviceNestedLifecycleAndFailurePrefixes()
     {
+        foreach (bool animation in new[] { false, true })
+        {
+            var display = new DeviceFixture(DeviceChoices());
+            display.Nuclear.FailAnimation = animation; display.Nuclear.FailRedraw = !animation;
+            using var completed = display.Begin(); display.Ask(completed); completed.Resume(1);
+            Equal(true, completed.Completed); Equal(1, completed.PresentationFailures.Count);
+            Equal((sbyte)5, display.World.Entities.Cities.Storage[0].Size); Equal(1, display.Notices.Count);
+            display.Nuclear.Lifecycle.Random.RequireChoicesConsumed();
+        }
         foreach (bool capture in new[] { false, true })
         {
             var f = DeviceNestedFixture(capture); using var op = f.Begin(); f.Ask(op);

@@ -5180,3 +5180,51 @@ F04's nonzero incoming-turn admission and general desktop composition remain
 open, along with ordinary city pollution/meltdown and full human/AI acceptance.
 This checkpoint does not claim a new desktop playthrough. Browser/cross-platform
 qualification and network execution remain deferred.
+
+## W05 city pollution and reactor meltdown — 2026-11-23
+
+`CityPollution` consumes the actual C03 workspace, performs W05's risk sampling
+and single B-neighbor selection, and then runs the independent reactor checks.
+It uses actual W05 placement, C08 facilities, V03 Fusion Power and direct U07
+blast. Solar Plant reduction, no-draw thresholds, signed intensity multiplication,
+scenario suppression, wrapping and rejected-candidate behavior are retained.
+Presentation respects exploration and pollution-message suppression; ordinary
+pollution has no added producer-level autoplay filter.
+
+Meltdowns preserve the distinction from nuclear attacks: SDI, garrison deletion
+and nuclear diplomacy are not invoked. The real blast changes population,
+features and fallout before reactor removal. Disorder/Fusion Power and difficulty
+laws govern admission. No-pollution scenarios and autoplay do not suppress the
+hazard; actual C04 order restoration before this producer does.
+
+The U07 dependency previously stopped gameplay on cosmetic notice, animation or
+redraw exceptions. Those failures now remain diagnostics while the action/blast
+completes, following X01's production boundary. Combat delivery, foreign-city
+movement and planted devices retain the child diagnostics. Required RNG or
+other gameplay failures still stop with their committed prefix. A nuclear test
+now supplies its entities before execution rather than creating them from an
+animation callback.
+
+Twelve new W05 groups cover risk/solar laws, all twenty candidates, suppression,
+rejection/no-retry, memory, count wrap, all stock meltdown difficulties and extra
+unsigned difficulty, actual fallout with surviving garrisons, real mood recovery,
+cosmetic failures and required RNG failure prefixes. The first suite run exposed
+two older caller tests expecting cosmetic nuclear failures to abort. Their
+expectations were corrected against X01, parent diagnostics were retained, and
+a distinct missing-RNG case preserves required-failure coverage.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1476 of 1478**, with two existing
+platform/audio skips. The shared probe passed **1443 groups** across 159 coverage
+families; source identity verified **748 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-city-pollution-native.json` | `fd0502483d79d68a788604ded5f3ebda1017db0b21ca03eda1618c796a4dd1ce` |
+| `m4-city-pollution-identity.json` | `b7356549138d09056fe88aca7b77e969e0f0a2dc3b9e2f3a3a04dd741687eaf3` |
+
+Full F04 city/civilization/global composition, generated desktop integration and
+complete human/AI end-condition acceptance remain open. This is shared mechanics
+and caller validation, not a new desktop playthrough. Browser/cross-platform
+qualification and network execution remain deferred.

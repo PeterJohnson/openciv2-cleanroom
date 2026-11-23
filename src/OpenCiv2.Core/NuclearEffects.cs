@@ -28,14 +28,20 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
 
     private MapPoint Neighbor(MapPoint center, int index) => MapNeighborhoods.Offset(world.Map.Geometry, center,
         index == 8 ? new(0, 0) : MapNeighborhoods.Directions[index], world.Globals.Rules.FlatWorld);
-    private void Notice(NuclearNoticeKind kind, int recipient, string name)
+    private void Notice(NuclearNoticeKind kind, int recipient, string name, List<Exception> failures)
     {
         if (world.Globals.HumanPlayers.Contains(recipient & 31))
-        { effects.Notice(new(kind, recipient, name)); }
+        { Present(() => effects.Notice(new(kind, recipient, name)), failures); }
     }
 
     /// <summary>Direct blast deliberately retains units, diplomacy, city ownership and aggregate population.</summary>
-    public void Blast(MapPoint center, string call)
+    public IReadOnlyList<Exception> Blast(MapPoint center, string call)
+    {
+        List<Exception> failures = [];
+        Blast(center, call, failures);
+        return failures.AsReadOnly();
+    }
+    private void Blast(MapPoint center, string call, List<Exception> failures)
     {
         MapKnowledge.RequireLocal(world);
         ArgumentException.ThrowIfNullOrEmpty(call);
@@ -50,7 +56,7 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
             {
                 ref var city = ref world.Entities.Cities.At(slot);
                 city.Size = unchecked((sbyte)(city.Size - (city.Size >> 1)));
-                effects.Redraw(point);
+                Present(() => effects.Redraw(point), failures);
                 continue;
             }
             ref var tile = ref world.Map.TileAt(point);
@@ -69,11 +75,17 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
             { MapKnowledge.Remember(world, observer, point); }
             if (Draw("pollution", index, 3) != 0)
             { PollutionPlacement.Place(world, point); }
-            effects.Redraw(point);
+            Present(() => effects.Redraw(point), failures);
         }
         int Draw(string site, int index, int bound) => random.PrimaryModulo(new ChoiceKey("U07.blast." + site, call, index), bound);
     }
     private void Clear(MapPoint point, MapFeatures features) => world.Map.Mutate(new TileChange.Features(point, features, false));
+    private static void Present(Action action, List<Exception> failures)
+    {
+        try
+        { action(); }
+        catch (Exception error) { failures.Add(error); }
+    }
 
     public sealed class Operation : IDisposable
     {
@@ -81,6 +93,8 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
         private readonly IEnumerator<CivilizationElimination.Operation> steps;
         private CivilizationElimination.Operation? child;
         private bool faulted, disposed;
+        private readonly List<Exception> failures = [];
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
         public int? Result { get; private set; }
         internal Operation(NuclearEffects parent, int attacker, MapPoint target, bool checkSdi, string call)
         {
@@ -88,7 +102,7 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
             ArgumentOutOfRangeException.ThrowIfNegative(attacker);
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(attacker, EntityLimits.Civilizations);
             this.parent = parent;
-            steps = parent.Action(attacker, target, checkSdi, call, value => Result = value).GetEnumerator();
+            steps = parent.Action(attacker, target, checkSdi, call, value => Result = value, failures).GetEnumerator();
         }
         /// <summary>Returns a pending incident; null with no Result is a bounded lifecycle search slice.</summary>
         public LifecycleDecision? Resume(int? reply = null)
@@ -127,10 +141,10 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
     }
 
     private IEnumerable<CivilizationElimination.Operation> Action(int attacker, MapPoint target, bool checkSdi,
-        string call, Action<int> complete)
+        string call, Action<int> complete, List<Exception> failures)
     {
         int targetOwner = world.Map.CityOrUnitOwner(target) is { } owner ? owner : -1;
-        Notice(NuclearNoticeKind.UseWeapons, targetOwner, world.Names[attacker].Tribe);
+        Notice(NuclearNoticeKind.UseWeapons, targetOwner, world.Names[attacker].Tribe, failures);
         if (checkSdi)
         {
             for (int i = 0; i < world.Entities.Cities.End; ++i)
@@ -141,13 +155,13 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
                     || world.Map.Geometry.StepDistance(city.Position, target, world.Globals.Rules.FlatWorld) >= 4)
                 { continue; }
                 string name = city.Name;
-                Notice(NuclearNoticeKind.Intercepted, city.Owner.Value, name);
-                Notice(NuclearNoticeKind.Intercepted, attacker, name);
+                Notice(NuclearNoticeKind.Intercepted, city.Owner.Value, name, failures);
+                Notice(NuclearNoticeKind.Intercepted, attacker, name, failures);
                 complete(0);
                 yield break;
             }
         }
-        effects.Animate(target);
+        Present(() => effects.Animate(target), failures);
         for (int index = 0; index <= 8; ++index)
         {
             var point = Neighbor(target, index);
@@ -166,7 +180,7 @@ public sealed class NuclearEffects(GameState world, GameplayRandom random, Stack
             }
             yield return lifecycle.BeginEraseStack(loss, first, call + "/tile/" + index, Incidents);
         }
-        Blast(target, call);
+        Blast(target, call, failures);
         complete(1);
     }
 }

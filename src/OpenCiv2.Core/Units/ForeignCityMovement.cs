@@ -47,6 +47,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
             steps = parent.Execute(this, original, movement, step, call).GetEnumerator();
         }
         internal int? TakeReply() { var answer = reply; reply = null; return answer; }
+        internal void RememberFailures(IEnumerable<Exception> failures) => presentationFailures.AddRange(failures);
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
         public ForeignCityDecision? Resume(int? answer = null)
         {
@@ -96,6 +97,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
                     else if (delivery.Result is null)
                     { yield return null; }
                 }
+                operation.RememberFailures(delivery.PresentationFailures);
                 if (delivery.Result == 0)
                 {
                     using var removed = lifecycle.BeginDestroy(loss, movement.Unit.Value, call + "/intercept", incidents);

@@ -93,7 +93,8 @@ public static partial class FoundationSuite
         Equal((sbyte)1, f.World.Entities.Cities.Storage[0].Size); Equal(3, f.Redraws.Count);
         f.Nuclear.Blast(new(0, -1), "nuke"); Equal(3, f.Redraws.Count); f.Lifecycle.Random.RequireChoicesConsumed();
         var live = new NuclearFixture();
-        live.OnAnimation = () => { live.Data.AddCity(0, 2, new(10, 10), 9); live.Data.AddUnit(0, 2, 4, new(11, 9)); };
+        live.Data.AddCity(0, 2, new(10, 10), 9); live.Data.AddUnit(0, 2, 4, new(11, 9));
+        live.OnAnimation = () => { Equal((sbyte)9, live.World.Entities.Cities.Storage[0].Size); Equal(true, live.Data.Unit(0).Token.Occupied); };
         using var action = live.Begin(); action.Resume(); Equal(1, action.Result);
         Equal((sbyte)5, live.World.Entities.Cities.Storage[0].Size); Equal(false, live.Data.Unit(0).Token.Occupied);
         live.Lifecycle.Random.RequireChoicesConsumed();
@@ -181,10 +182,10 @@ public static partial class FoundationSuite
         {
             var f = new NuclearFixture(); f.Data.AddCity(0, 1, new(10, 10), 9); f.Data.AddUnit(0, 1, 4, new(10, 10));
             f.FailNotice = failure == 0; f.FailAnimation = failure == 1; f.FailRedraw = failure == 2;
-            using var failed = f.Begin(); Throws<InvalidOperationException>(() => failed.Resume());
-            Throws<InvalidOperationException>(() => failed.Resume()); Equal(null, failed.Result);
-            Equal(failure != 2, f.Data.Unit(0).Token.Occupied); Equal((sbyte)(failure == 2 ? 5 : 9), f.World.Entities.Cities.Storage[0].Size);
-            Equal(failure == 0 ? 0 : 1, f.Animations); f.Lifecycle.Random.RequireChoicesConsumed();
+            using var failed = f.Begin(); failed.Resume(); Equal(1, failed.Result); Equal(1, failed.PresentationFailures.Count);
+            failed.Resume(); Equal(1, failed.PresentationFailures.Count);
+            Equal(false, f.Data.Unit(0).Token.Occupied); Equal((sbyte)5, f.World.Entities.Cities.Storage[0].Size);
+            Equal(1, f.Animations); f.Lifecycle.Random.RequireChoicesConsumed();
         }
         var denied = new NuclearFixture(); denied.World.Globals.Multiplayer = GameMode.Tcp;
         using var network = denied.Begin(); Throws<InvalidOperationException>(() => network.Resume()); Equal(0, denied.Animations);

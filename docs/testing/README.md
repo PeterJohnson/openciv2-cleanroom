@@ -1003,3 +1003,13 @@ selective whole-feature memory refresh and distinct redraw gates. Autoplay
 suppresses notices without suppressing warming; cosmetic failures preserve
 updates and required map failures retain committed prefixes. Full F04/desktop
 composition and ordinary city pollution/meltdown remain open.
+
+W05 city pollution groups cover risk and Solar Plant laws, scenario suppression,
+signed intensity multiplication, all twenty B candidates, rejection without
+retry, wrapping, memory and notice routing. Reactor cases cover Fusion Power,
+all stock difficulty laws, extra unsigned difficulty, actual fallout/population
+changes with surviving garrisons/SDI and unchanged diplomacy, and actual C04
+restoration before hazard admission. No-pollution/autoplay gates remain distinct.
+Nuclear and pollution presentation failures are diagnostics; required RNG
+failures retain prior pollution and blast mutations without removing the reactor.
+Full F04/desktop phase composition and game acceptance remain open.

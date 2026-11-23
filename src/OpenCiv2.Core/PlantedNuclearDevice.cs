@@ -25,6 +25,8 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
         private readonly IEnumerator<Step> steps;
         private CivilizationElimination.Operation? capture;
         private NuclearEffects.Operation? explosion;
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         private CityEspionageDecision? pending;
         private bool lost, faulted, disposed;
         private int answer;
@@ -100,6 +102,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                             return null;
                         }
 
+                        presentationFailures.AddRange(explosion.PresentationFailures);
                         explosion.Dispose();
                         explosion = null;
                     }

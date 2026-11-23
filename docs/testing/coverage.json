@@ -4996,7 +4996,7 @@
       "id": "global-warming",
       "contract": "W05 global warming pressure and terrain transformation; W01 setters and W03 memory",
       "publicSurface": "GlobalWarming.Update/Transform; WarmingNotice",
-      "review": "Actual Solar Plant queries, signed tally/human scaling, pressure narrowing, old severity and event-count wrap. Deterministic twenty-visit coastal selection and dry pattern use actual W01 setters and W03 memory. Observer and autoplay gates retain cosmetic diagnostics. Local only; full F04/desktop composition and city pollution/meltdown remain open. Browser/cross-platform execution deferred.",
+      "review": "Actual Solar Plant queries, signed tally/human scaling, pressure narrowing, old severity and event-count wrap. Deterministic twenty-visit coastal selection and dry pattern use actual W01 setters and W03 memory. Observer and autoplay gates retain cosmetic diagnostics. Local only; full F04/desktop composition remains open. Browser/cross-platform execution deferred.",
       "sharedGroups": [
         "W05.warming-autoplay-observers",
         "W05.warming-coastal-memory",
@@ -5017,6 +5017,35 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/WarmingCases.cs"
+      ]
+    },
+    {
+      "id": "city-pollution-meltdown",
+      "contract": "W05 ordinary city pollution and nuclear reactor meltdown; actual W01/W03/C08/V03/U07 children",
+      "publicSurface": "CityPollution.Run and ICityPollutionEffects; nuclear action/blast presentation diagnostics",
+      "review": "Actual pollution placement and direct blast, preserving one-candidate draws, Solar Plant reduction, scenario flags, intensity wrap, Fusion Power/disorder gates and difficulty sampling. Real C04 restoration prevents meltdown. Direct blast preserves garrisons/diplomacy and removes the reactor only after successful gameplay. Cosmetic failures accumulate diagnostics; required RNG failures retain prefixes. Full F04 human-city admission and desktop composition remain open. Browser/cross-platform and network execution deferred.",
+      "sharedGroups": [
+        "W05.city-pollution-cosmetic-failures",
+        "W05.city-pollution-radius",
+        "W05.city-pollution-rejections",
+        "W05.city-pollution-required-failures",
+        "W05.city-pollution-risk-laws",
+        "W05.city-pollution-scenario-threshold",
+        "W05.city-pollution-wrap-notices",
+        "W05.meltdown-actual-blast",
+        "W05.meltdown-gates",
+        "W05.meltdown-restored-mood",
+        "W05.meltdown-sampling",
+        "W05.meltdown-scenario-autoplay"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityPollution.cs",
+        "src/OpenCiv2.Core/NuclearEffects.cs",
+        "src/OpenCiv2.Core/PollutionPlacement.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CityPollutionCases.cs"
       ]
     }
   ]

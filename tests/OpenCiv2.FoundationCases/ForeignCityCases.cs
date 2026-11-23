@@ -158,7 +158,8 @@ public static partial class FoundationSuite
         using var failed = notice.Begin(); Throws<InvalidOperationException>(() => failed.Resume()); Throws<InvalidOperationException>(() => failed.Resume());
         Equal(false, failed.Completed); Equal(true, notice.Data.Unit(0).Token.Occupied); Equal(1, notice.Denials.Count);
         var nuclear = new ForeignCityFixture(); nuclear.Nuclear(true); nuclear.F.E.F.FailNuclearNotice = true;
-        using var interrupted = nuclear.Begin(); Throws<InvalidOperationException>(() => interrupted.Resume()); Equal(true, nuclear.Data.Unit(0).Token.Occupied);
+        using var interrupted = nuclear.Begin(); nuclear.Complete(interrupted); Equal(false, nuclear.Data.Unit(0).Token.Occupied);
+        Equal(nuclear.F.E.F.Notices.Count, interrupted.PresentationFailures.Count); Equal(true, interrupted.PresentationFailures.Count > 0);
         var remote = new ForeignCityFixture(); remote.World.Globals.Multiplayer = GameMode.Tcp;
         using var denied = remote.Begin(); Throws<InvalidOperationException>(() => denied.Resume()); Equal(0, remote.Denials.Count);
         var disposed = new ForeignCityFixture(); disposed.World.Civilizations[1].Treaties[2].Peace = true;

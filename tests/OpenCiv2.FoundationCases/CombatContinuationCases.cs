@@ -195,9 +195,14 @@ public static partial class FoundationSuite
         using var denied = remote.Continuation.Nuclear(remote.Prepared, "delivery"); Throws<InvalidOperationException>(() => denied.Resume());
         Equal(remote.Prepared.Defender, remote.State.AnimationDefender); Equal(0, remote.Notices.Count);
         var failure = new ContinuationFixture { FailNuclearNotice = true }; failure.World.Globals.HumanPlayers = CivilizationSet.Only(1).With(2);
-        using var failed = failure.Continuation.Nuclear(failure.Prepared, "delivery"); Throws<InvalidOperationException>(() => failed.Resume());
-        Equal((UnitSlot?)null, failure.State.AnimationDefender); Equal(true, failure.Data.Unit(0).Token.Occupied && failure.Data.Unit(1).Token.Occupied);
-        Throws<InvalidOperationException>(() => failed.Resume());
+        failure.Missile(); failure.Ocean();
+        using var failed = failure.Continuation.Nuclear(failure.Prepared, "delivery"); failure.Complete(failed);
+        Equal((UnitSlot?)null, failure.State.AnimationDefender); Equal(false, failure.Data.Unit(0).Token.Occupied || failure.Data.Unit(1).Token.Occupied);
+        Equal(1, failed.PresentationFailures.Count);
+        var required = new ContinuationFixture();
+        using var interrupted = required.Continuation.Nuclear(required.Prepared, "delivery");
+        Throws<ChoiceException>(() => interrupted.Resume()); Throws<InvalidOperationException>(() => interrupted.Resume());
+        Equal((UnitSlot?)null, required.State.AnimationDefender); Equal(false, interrupted.Completed);
 
         using var runtime = new SessionRuntime(new(), new(221)); var f = NestedCombatContinuation(CreationFixture(new(runtime.Process, runtime.World)));
         ParticipantId victimSeat = default;

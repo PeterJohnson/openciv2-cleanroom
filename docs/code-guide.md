@@ -594,6 +594,17 @@ V01/espionage decisions finish before population/terrain damage. W05's shared
 `Session/NuclearActionOperation` routes nested incidents; admission and missile
 consumption remain with movement/combat/device callers. P10 semantic presentation
 is a required adapter, and network batching remains outside this local service.
+Nuclear notice/animation/redraw failures are retained as diagnostics while the
+action/blast completes. Required gameplay failures still preserve their prefix.
+Combat delivery, foreign-city movement and planted devices retain those child
+diagnostics after completing their own continuation.
+
+`Core/City/CityPollution` consumes the current C03 pollution workspace and runs
+W05's one-candidate risk process followed by reactor checks. It uses actual
+`PollutionPlacement`, Fusion Power/facility queries and direct `NuclearEffects.Blast`.
+Meltdowns preserve garrisons and diplomacy, remove the reactor after the blast,
+and retain presentation diagnostics. F04 owns prior mood/research processing and
+human-city admission; general desktop composition remains open.
 
 `Core/GlobalWarming` owns W05 local pressure updates and deterministic terrain
 transformation. It counts actual Solar Plants, retains signed counters and old
