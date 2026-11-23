@@ -2,5 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="../../src/OpenCiv2.Automation/OpenCiv2.Automation.csproj" />
     <ProjectReference Include="../../src/OpenCiv2.Session/OpenCiv2.Session.csproj" />
+    <EmbeddedResource Include="../../examples/automation/next-production.lua" LogicalName="OpenCiv2.AutomationCases.NextProduction" />
+    <_Oc2IdentityInput Include="$(MSBuildThisFileDirectory)../../examples/automation/next-production.lua" />
   </ItemGroup>
 </Project>

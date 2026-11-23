@@ -2,6 +2,7 @@ using OpenCiv2.Automation;
 using OpenCiv2.Base;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
+using OpenCiv2.Formats;
 using OpenCiv2.Session;
 
 namespace OpenCiv2.AutomationCases;
@@ -14,7 +15,8 @@ public static class AutomationSuite
         ("host-output-command-budgets", HostBudgets), ("script-errors", ScriptErrors),
         ("cancel-before-and-after-effects", Cancellation), ("disposal-and-gc", DisposalAndGc),
         ("revoked-authority", RevokedAuthority), ("task-command-ownership", TaskCommandOwnership),
-        ("stale-target", StaleTarget), ("sandbox-and-limits", SandboxAndLimits), ("error-preserves-effects", ErrorPreservesEffects)
+        ("stale-target", StaleTarget), ("sandbox-and-limits", SandboxAndLimits), ("error-preserves-effects", ErrorPreservesEffects),
+        ("city-production-policy-replay", CityProductionPolicyReplay)
     ];
     public static IReadOnlyList<string> Names => cases.Select(c => c.Name).ToArray();
     public static void Run(string name) => cases.Single(c => c.Name == name).Run();
@@ -84,6 +86,90 @@ public static class AutomationSuite
         using var f = new Fixture(); string before = f.Stack();
         using var task = f.Task("local u=game.units(); assert(#u==3 and u[1].token=='100' and u[3].slot==2); assert(#game.commands()==1); local x=game.command('unit.stack-bottom unit=3:103'); assert(x.status=='Rejected' and x.effects==0)");
         f.Pump(task); Check(task.Status == ScriptStatus.Completed, task.Error); Check(f.Stack() == before && task.SubmittedCommands.Count == 0);
+        Check(task.CommandAttempts.Single().Status == CommandStatus.Rejected);
+    }
+
+    private static void CityProductionPolicyReplay()
+    {
+        using var game = new LocalGame();
+        var pioneer = game.Player.OwnUnits().Records.Single(unit => unit.Type.Value == 0);
+        CompleteLocalCommand(game, new(LocalPlayCommands.Found, new([
+            new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))),
+            new("name", new CommandValue.Text("Workshop"))
+        ])));
+        var initial = ClassicFiles.DecodeStoredSave(game.SaveClassic());
+        byte[] checkpoint = ClassicFiles.EncodeStoredSave(initial with
+        {
+            Cities = new([initial.Cities[0] with { ShieldBox = 40 }])
+        });
+        Check(game.LoadClassic(checkpoint) == LocalLoadResult.Loaded);
+        var automation = game.Bind(ControllerKind.Automation);
+        using var example = new StreamReader(typeof(AutomationSuite).Assembly
+            .GetManifestResourceStream("OpenCiv2.AutomationCases.NextProduction")!);
+        using var task = new ScriptTask(automation, """
+            assert(game.production_choices({slot=0, token='0'}) == nil)
+            assert(game.production_choices({slot=200, token='1'}) == nil)
+
+            """ + example.ReadToEnd());
+        task.Tick();
+        task.Pause();
+        for (int i = 0; i < 210; ++i)
+        {
+            task.Tick();
+        }
+        Check(task.Status == ScriptStatus.Paused && task.CommandAttempts.Count == 0);
+        var turn = CompleteLocalCommand(game, new(LocalPlayCommands.EndTurn, OwnedList<NamedValue>.Empty));
+        Check(turn.Committed.Any(effect => effect.Name == "unit.produced"));
+        task.Resume();
+        for (int i = 0; i < 40 && task.Status == ScriptStatus.Running; ++i)
+        {
+            game.AdvanceOne();
+            task.Tick();
+        }
+        Check(task.Status == ScriptStatus.Completed, task.Error);
+        var attempt = task.CommandAttempts.Single();
+        var city = game.Player.OwnCities().Records.Single();
+        var manual = new CommandRequest(LocalPlayCommands.Production, new([
+            new("city", new CommandValue.City(new(city.Slot, city.Token))),
+            new("type", new CommandValue.Integer(4))
+        ]));
+        Check(attempt.Request == manual && attempt.Status == CommandStatus.Pending);
+        Check(task.Results.Single().Status == CommandStatus.Completed && task.Output == "Selected Outrider\n");
+        byte[] automated = game.SaveClassic();
+        foreach (CommandRequest request in new[] { manual, attempt.Request })
+        {
+            using var comparison = new LocalGame();
+            // Match the lifetime history so the recorded target token is valid in this replay.
+            var founder = comparison.Player.OwnUnits().Records.Single(unit => unit.Type.Value == 0);
+            CompleteLocalCommand(comparison, new(LocalPlayCommands.Found, new([
+                new("unit", new CommandValue.Unit(new(founder.Slot, founder.Token))),
+                new("name", new CommandValue.Text("Workshop"))
+            ])));
+            Check(comparison.LoadClassic(checkpoint) == LocalLoadResult.Loaded);
+            CompleteLocalCommand(comparison, new(LocalPlayCommands.EndTurn, OwnedList<NamedValue>.Empty));
+            CompleteLocalCommand(comparison, request);
+            Check(automated.AsSpan().SequenceEqual(comparison.SaveClassic()));
+        }
+    }
+
+    private static CommandUpdate CompleteLocalCommand(LocalGame game, CommandRequest request)
+    {
+        var submitted = game.Player.Submit(request);
+        Check(submitted.Status == CommandStatus.Pending, submitted.Code);
+        for (int i = 0; i < 8; ++i)
+        {
+            Check(game.AdvanceOne());
+            var update = game.Player.Result(submitted.Correlation.Command)!;
+            if (update.Status == CommandStatus.Completed)
+            {
+                return update;
+            }
+            Check(update.Interaction is not null, update.Code);
+            var interaction = update.Interaction!;
+            int selected = i == 0 && request.Name == LocalPlayCommands.EndTurn ? 1 : interaction.Spec.Choices[0];
+            Check(game.Player.Reply(interaction.Id, selected).Accepted);
+        }
+        throw new InvalidOperationException("Local command did not finish");
     }
     private static void Fails(string code, string expected, ScriptLimits? limits = null)
     {

@@ -25,6 +25,13 @@ The prelude exposes these explicit operations; dispatch never uses reflection:
 
 - `game.units()` returns only own-unit observations: numeric slot/x/y/type and an
   exact decimal-string lifetime token. No mutable engine object crosses the API.
+- `game.production_events()` drains the binding's own-city completion queue. The
+  result contains `events` and a `dropped` count. Each event contains `city` with
+  slot and token, signed production `item`, and decimal strings for the revision
+  and originating command ID (`cause`).
+- `game.production_choices(city)` returns `ready` and current `options` for a
+  matching owned city token. Each option has an item `id` and `name`. The query
+  returns nil for unavailable cities and games without this observation.
 - `game.commands()` returns descriptor help strings.
 - `game.command(text)` uses the ordinary bounded console grammar and typed
   descriptor validation; it returns admission status, not synchronous completion.
@@ -44,6 +51,16 @@ foreign-target rejection, stale-target revalidation and actual U01 stack mutatio
 remain in the session. Direct API, console and Lua tests compare the resulting
 full stack links, effect count and unchanged gameplay/presentation RNG. Existing
 Avalonia input checks exercise the same command separately.
+
+The [next production example](../examples/automation/next-production.lua)
+waits for one city to finish a build, selects a different item from its current
+choices, and waits for the result. Its test submits the same request by hand and
+replays the recorded Lua request on a matching initial save and turn sequence.
+All three games produce identical saved state. The task exposes the parsed
+requests and admission receipts in `CommandAttempts`, including rejected
+requests. The trace currently lives in the host session and covers submissions.
+Replaying a target requires a matching city or unit lifetime, and replay of
+script replies and cancellation requests remains open.
 
 ## Limits and lifetime
 
@@ -87,6 +104,9 @@ metatable mutation/access, user finalizers, random streams, pattern search,
 table sorting/moving and `xpcall` are unavailable. Lua diagnostics name the
 combined `automation` chunk; line numbers currently include the prelude.
 
+An owner can pause a task between ticks and resume it with the same Lua stack
+and remaining tick budget. The owner keeps advancing the session while the
+task is paused. Cancellation works from both running and paused states.
 Cancellation/error/completion stops further submissions and requests ordinary
 cancellation of unfinished task commands. The owner must continue pumping accepted
 cancellations and required replies. Completed effects are never rolled back;
@@ -95,9 +115,8 @@ Revocation prevents the task from issuing further cancellation/replies; the
 session owner retains responsibility for outstanding interactions. Dispose tasks
 before disposing the session, and do not concurrently call task methods.
 
-Script loading must be explicit. This slice does not import scripts from saves,
-serialize VM state, subscribe to events, or add automation UI. General task
-persistence, metadata matching, subscriptions and UI remain M4.
+Script loading must be explicit. Completion events live on the runtime binding.
+Persisted task metadata and the desktop automation controls remain open.
 
 ## Build and evidence
 
@@ -107,19 +126,20 @@ the Lua-CSharp runtime, annotations and source generator, with their pinned MIT
 license attribution under `packaging/notices/`. Ordinary console/core builds
 remain independent of these packages.
 
-`OpenCiv2.AutomationCases` contains 13 portable groups shared by native and browser
+`OpenCiv2.AutomationCases` contains 14 portable groups shared by native and browser
 hosts: command equivalence, observer filtering/descriptors, instruction limits,
 managed runtime/UTF-8 and suspension behavior, host/output/command bounds, script
 errors, cancellation before and after effects, GC/disposal, revoked authority,
 task command ownership, stale targets, restricted capabilities/limit admission,
-and error after effects. Both runners use the production session and Lua-CSharp.
+error after effects, and the city production policy with replay and pause/resume.
+Both runners use the production session and Lua-CSharp.
 The runtime group also exercises allocations beyond the retired 2 MiB cap.
 
 `run_automation.py` records 12 assembly manifests, exact compiled inputs and
 locked dependency graphs, runner inputs and invoked artifacts before/after
 execution. Report format `openciv2-production-lua/2` distinguishes this runtime
 from the retired native bridge. `compare_automation.py` validates identities and
-compares all 13 results and actual production stack links, effect count, changed
+compares all 14 results and actual production stack links, effect count, changed
 flag and output. Evidence tests reject missing/duplicate cases, failures, changed
 outcomes, stale assemblies/locks and old bridge reports. Browser runs have a
 process watchdog and reject page errors. Full automation UI and subscriptions

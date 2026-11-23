@@ -19,7 +19,11 @@ public sealed record ScriptLimits(uint InstructionsPerTick = 100000, uint Ticks 
         }
     }
 }
-public enum ScriptStatus { Running, Completed, Cancelled, Failed }
+public enum ScriptStatus { Running, Completed, Cancelled, Failed, Paused }
+
+/// <summary>A parsed player request and the admission returned for it.</summary>
+public sealed record ScriptCommandAttempt(CommandRequest Request, CommandCorrelation Correlation,
+    CommandStatus Status, string Code);
 
 /// <summary>Single mutation-lane task over an exclusive automation binding. Each Tick resumes
 /// Lua once and handles at most one request; the owner pumps/retire session commands separately.
@@ -30,6 +34,7 @@ public sealed class ScriptTask : IDisposable
     private readonly ScriptLimits limits;
     private readonly LuaMachine machine;
     private readonly List<CommandId> commands = [];
+    private readonly List<ScriptCommandAttempt> commandAttempts = [];
     private readonly StringBuilder output = new();
     private int outputBytes, attempts;
     private LuaValue reply;
@@ -38,6 +43,7 @@ public sealed class ScriptTask : IDisposable
     public string Error { get; private set; } = "";
     public string Output => output.ToString();
     public OwnedList<CommandId> SubmittedCommands => new(commands);
+    public OwnedList<ScriptCommandAttempt> CommandAttempts => new(commandAttempts);
 
     /// <summary>Current command outcomes/effects through the original lease. Read after the
     /// owner pumps cancellation and before retiring commands; revoked leases still fail.</summary>
@@ -114,13 +120,43 @@ public sealed class ScriptTask : IDisposable
             case "commands":
                 Empty(argument);
                 return w.Array(client.Commands().Select(descriptor => w.Text(CommandText.Help(descriptor))));
+            case "production_events":
+                Empty(argument);
+                var batch = client.TakeCityProductionEvents();
+                var events = w.Array(batch.Events.Select(entry => w.Object(
+                    ("city", WriteValue(w, new CommandValue.City(entry.City))),
+                    ("item", w.Integer(entry.Item)),
+                    ("revision", w.Text(Decimal(entry.Revision))),
+                    ("cause", w.Text(Decimal(entry.Cause.Command.Value))))));
+                return w.Object(("dropped", w.Integer(batch.Dropped)), ("events", events));
+            case "production_choices":
+                string[] target = argument.Split(':');
+                if (target.Length != 2)
+                {
+                    throw new ArgumentException("invalid_city_target");
+                }
+                ulong slot = Unsigned(target[0]), token = Unsigned(target[1]);
+                if (slot > ushort.MaxValue || token > uint.MaxValue)
+                {
+                    throw new ArgumentException("invalid_city_target");
+                }
+                var play = client.ObserveLocalPlay();
+                if (play?.City is not { } city || city.Target.Slot.Value != slot || city.Target.Token.Value != token)
+                {
+                    return w.Nil();
+                }
+                return w.Object(("ready", w.Boolean(play.PlayerPhase)),
+                    ("options", w.Array(city.Production.Select(option => w.Object(
+                        ("id", w.Integer(option.Id)), ("name", w.Text(option.Name)))))));
             case "command":
                 if (attempts++ >= limits.Commands)
                 {
                     throw new InvalidOperationException("command_budget");
                 }
 
-                var update = client.Submit(CommandText.Parse(argument, client.Commands()));
+                var request = CommandText.Parse(argument, client.Commands());
+                var update = client.Submit(request);
+                commandAttempts.Add(new(request, update.Correlation, update.Status, update.Code));
                 if (update.Status != CommandStatus.Rejected)
                 {
                     commands.Add(update.Correlation.Command);
@@ -252,9 +288,26 @@ public sealed class ScriptTask : IDisposable
 
     public void Cancel()
     {
-        if (!disposed && Status == ScriptStatus.Running)
+        if (!disposed && Status is ScriptStatus.Running or ScriptStatus.Paused)
         {
             Stop(ScriptStatus.Cancelled, "");
+        }
+    }
+
+    /// <summary>Stops polling and submissions until Resume. The owner still pumps the session.</summary>
+    public void Pause()
+    {
+        if (!disposed && Status == ScriptStatus.Running)
+        {
+            Status = ScriptStatus.Paused;
+        }
+    }
+
+    public void Resume()
+    {
+        if (!disposed && Status == ScriptStatus.Paused)
+        {
+            Status = ScriptStatus.Running;
         }
     }
 

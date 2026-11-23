@@ -14,7 +14,8 @@ LIBRARIES = identity.LIBRARIES - {'OpenCiv2.FoundationCases', 'OpenCiv2.ViewMode
 HOSTS = {'OpenCiv2.AutomationProbe', 'OpenCiv2.AutomationBrowser'}
 CASES = ['command-equivalence', 'observer-and-descriptor', 'instruction-budget', 'lua-csharp-runtime',
          'host-output-command-budgets', 'script-errors', 'cancel-before-and-after-effects', 'disposal-and-gc',
-         'revoked-authority', 'task-command-ownership', 'stale-target', 'sandbox-and-limits', 'error-preserves-effects']
+         'revoked-authority', 'task-command-ownership', 'stale-target', 'sandbox-and-limits', 'error-preserves-effects',
+         'city-production-policy-replay']
 OUTCOME = {'Stack': '2,-1,100,1;-1,2,101,1;1,0,102,1;-1,-1,103,2', 'Effects': 1, 'Changed': True, 'Output': 'completed\n'}
 
 
@@ -23,6 +24,8 @@ def expected_inputs(name):
     extra = []
     if name == 'OpenCiv2.Automation':
         extra = ['docs/automation.md', 'src/OpenCiv2.Automation/Prelude.lua']
+    if name == 'OpenCiv2.AutomationCases':
+        extra = ['examples/automation/next-production.lua']
     expected.update({p: identity.sha(ROOT / p) for p in extra})
     return expected
 

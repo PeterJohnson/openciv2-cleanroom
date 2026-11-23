@@ -3,6 +3,8 @@ local call = _oc2_call
 _oc2_call = nil
 game = {}
 function game.units() return call('units', '') end
+function game.production_events() return call('production_events', '') end
+function game.production_choices(city) return call('production_choices', tostring(city.slot) .. ':' .. city.token) end
 function game.commands() return call('commands', '') end
 function game.command(text) return call('command', text) end
 function game.result(id) return call('result', id) end

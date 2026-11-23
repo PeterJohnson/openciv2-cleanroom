@@ -488,7 +488,7 @@ dotnet build solutions/OpenCiv2.Automation.slnx -c Release --no-restore
 dotnet test --project tests/OpenCiv2.Automation.Tests -c Release --no-build --no-restore
 ```
 
-SQLite adds four tests and the independent export CLI driver. Lua adds thirteen
+SQLite adds four tests and the independent export CLI driver. Lua adds fourteen
 production-session/resource groups. To test Lua-CSharp in WebAssembly:
 
 ```sh

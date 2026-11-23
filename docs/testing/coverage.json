@@ -2919,7 +2919,7 @@
       "contract": "M4 automation production completion observation and ordinary command execution",
       "publicSurface": "IPlayerClient.TakeCityProductionEvents",
       "status": "partial",
-      "review": "Alder Valley completion events are tied to a city token and turn command. Scoped automation bindings drain independent bounded queues. A new binding starts empty and reloading invalidates the old queue and lease. Unit and improvement cases consume the event, query current choices, submit through ordinary authority and compare resulting save bytes with manual commands. Lua policy, host and replay remain open.",
+      "review": "Alder Valley completion events are tied to a city token and turn command. Scoped automation bindings drain independent bounded queues. A new binding starts empty and reloading invalidates the old queue and lease. Unit and improvement cases consume the event, query current choices, submit through ordinary authority and compare resulting save bytes with manual commands. The Lua example queries the finished city and replays its parsed request in an equivalent session. Desktop task hosting, memory accounting and replay of interaction inputs remain open.",
       "sources": [
         "src/OpenCiv2.Contracts/Clients.cs",
         "src/OpenCiv2.Contracts/LocalPlayObservation.cs",

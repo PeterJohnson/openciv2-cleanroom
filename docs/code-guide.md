@@ -206,6 +206,10 @@ city-analysis arithmetic.
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner
 and token. Each lease drains its own bounded queue in publication order.
+The optional Lua adapter exposes completion events and owned production choices.
+It keeps parsed requests and admission receipts for replay and supports pausing
+between cooperative ticks. The next-production example exercises the ordinary
+player command, with a matching manual and replay run in the automation suite.
 
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan

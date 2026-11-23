@@ -17,7 +17,7 @@ in the [M2 closeout](m2-closeout.md).
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
-| Automation | The authored desktop game's session publishes own-city production completions to automation controllers. Lua consumption, desktop task hosting, production policy and replay acceptance remain open. |
+| Automation | The authored game publishes own-city completions to automation bindings. The Lua production example reads those events and choices, supports pause and resume, and records requests for replay on a matching game. Desktop task hosting, memory accounting and extended replay remain open. |
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
@@ -1613,3 +1613,30 @@ Repository checks and all **14 Linux desktop regression checks** passed.
 | `m4-desktop-productionevents-headless.xml` | `12ed7499c8bb9054938c1dc7917791bd254a0c6835e458c5b2faada15a998089` |
 | `m4-desktop-productionevents-native.json` | `09fffee67ac04f9d657825fa5378cfe5facacbe53d0125430d2bca3bb6079abc` |
 | `m4-desktop-productionevents-identity.json` | `79d728ed7603411d72260af840dfb06d2bb8e72cd1d8de92f9ae2165ab20d34a` |
+
+
+## Lua production policy and request replay
+
+The authored game's Lua binding exposes own-city completion events and current
+production choices by city token. The example waits for one completion, chooses
+a different available item, submits the ordinary production command and waits
+for its result. Paused tasks keep their tick budget and can resume or cancel.
+The task retains parsed requests and admission receipts in memory. The
+integration case compares the script, manual command and recorded request
+replay on equivalent loaded games. All three produce identical save bytes.
+
+Root and optional automation formatting and Release builds passed. Native
+headless tests passed 810 of 812 with two existing skips. All 14 shared
+automation groups passed on native and Chromium, and the evidence comparison
+passed. The local browser test bundle needed notice generation with the pinned
+runtime archive from the NuGet cache because the installed SDK did not contain
+it at the notice tool's lookup path. This run verifies the shared Lua tests.
+Desktop task attachment, task memory accounting, and replay of interaction
+inputs remain open.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-desktop-lua-production-native.json` | `bd476eef46351cff65f7d4de2185eba4826b179064b8756281d81eb90c1f1c2e` |
+| `m4-desktop-lua-production-browser.json` | `4d2ddb69f5354148bcf802f650c79ae5f0a3e4c4777df21a930429fd64b3769b` |
+| `m4-desktop-lua-production-headless.xml` | `4664235b9223ed4e435ed7193d452d4994e31715b4939e100e292105c48a0bee` |
+| `m4-desktop-lua-production-root.xml` | `95d83f92abae1d5abc78cb6023afe2d4628960caeafe7f696e1cb839f39e5dad` |
