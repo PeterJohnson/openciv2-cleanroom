@@ -595,3 +595,15 @@ directions or success callbacks. They cover raw target ownership, allied AI
 admission, direction-zero rejection, inherited path modes, first-drop precedence,
 real pending decisions and failure/disposal. Coarse waypoints, general goto,
 combat-parent/desktop integration and complete-game acceptance remain open.
+
+
+U06 continuation groups join actual U01/V01 deletion, U07 SDI/blast action and
+A04 response with its U03/U05/C09 children. They cover current versus original
+moving actors, air exhaustion, signed wrapped fuel counters, consumed-unit loss,
+interception versus detonation bookkeeping and nested incidents before blast
+population changes. Session cases verify victim privacy and a real palace-escape
+prompt reached through AI response/paradrop. Entry through opening, damage rounds,
+resolution and survivor handling shares one world and controlled random stream.
+Cosmetic redraw failures retain gameplay effects and diagnostic exceptions.
+Final rewards/notices, V05 help and full combat/desktop acceptance remain open;
+browser and cross-platform execution stay deferred.

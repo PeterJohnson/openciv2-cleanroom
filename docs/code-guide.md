@@ -723,3 +723,15 @@ and ends after the first eligible paratrooper even on refusal. Otherwise it
 retasks eligible owned/allied AI ground units, preserving U03 modes and A04's
 direction-zero exception. It assigns Goto but does not execute it. Full combat
 and tactical-planner callers remain pending.
+
+
+`Units/CombatContinuation` owns U06's surviving-attacker and nuclear-delivery
+branches. Survive captures the current moving unit, exhausts eligible aircraft,
+uses actual resumable basic deletion for consumed units, preserves signed wrapped
+fuel comparisons and invokes real A04 response. Nuclear uses U07's actual SDI,
+stack loss and blast operation; interception deletes the original attacker,
+while detonation resets captured-owner aggression before any AI response.
+Nested lifecycle and paradrop/capture decisions are exposed by the operation and
+routed privately by `Session/CombatContinuationOperation`. Cosmetic redraw
+failures remain available as diagnostics for the owning command. Final rewards,
+notices, V05 help and full combat/desktop orchestration remain pending.
