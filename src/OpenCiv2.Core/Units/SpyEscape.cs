@@ -37,6 +37,24 @@ public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations
     /// reporting mission completion; this method does not replace its human decision with a default.</summary>
     public SpyEscapeResult Resolve(int slot, int mode, int victim, string call)
     {
+        var resolution = BeginResolve(slot, mode, victim, call);
+        foreach (var check in resolution.Steps())
+        { loss.CompleteCheck(check); }
+        return resolution.Result!;
+    }
+
+    internal sealed class Resolution(SpyEscape parent, int slot, int mode, int victim, string call)
+    {
+        public SpyEscapeResult? Result;
+        public IEnumerable<CivilizationCheck> Steps() => parent.ResolveSteps(slot, mode, victim, call, this);
+    }
+
+    internal Resolution BeginResolve(int slot, int mode, int victim, string call) => new(this, slot, mode, victim, call);
+    internal void CompleteCheck(CivilizationCheck check) => loss.CompleteCheck(check);
+    internal void CompleteIncident(SpyIncidentRequest request) => incident(request.Actor, request.Victim);
+
+    private IEnumerable<CivilizationCheck> ResolveSteps(int slot, int mode, int victim, string call, Resolution resolution)
+    {
         MapKnowledge.RequireLocal(world);
         ArgumentException.ThrowIfNullOrEmpty(call);
         ref var unit = ref world.Entities.Units.Storage[slot];
@@ -85,15 +103,17 @@ public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations
                     }
                     unit.Flags.Veteran = true;
                 }
-                return new(false);
+                resolution.Result = new(false);
+                yield break;
             }
             if (mode >= 0 && Human(owner) && !world.Multiplayer.Saved.AutoplayActive && owner == world.Multiplayer.LocalHuman)
             {
                 effects.Notice(new(target, unit.Type, owner, SpyFate.Died));
             }
         }
-        loss.DestroyAndRedraw(slot, true);
-        return new(true, victim > 0 && mode >= 0 ? new(owner, victim) : null);
+        foreach (var check in loss.DestroyAndRedrawSteps(slot, true))
+        { yield return check; }
+        resolution.Result = new(true, victim > 0 && mode >= 0 ? new(owner, victim) : null);
     }
 
     public bool Caught(int slot, int victim, string call)

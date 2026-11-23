@@ -11,9 +11,9 @@ namespace OpenCiv2.FoundationCases;
 
 public static partial class FoundationSuite
 {
-    private static RevelationFixture CreationFixture()
+    private static RevelationFixture CreationFixture(RevelationFixture? f = null)
     {
-        var f = new RevelationFixture();
+        f ??= new();
         f.World.Map.Regions[1] = new(480, 64, 0, default);
         foreach (ref var tile in f.World.Map.Tiles)
         {

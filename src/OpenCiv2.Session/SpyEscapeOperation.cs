@@ -22,23 +22,32 @@ public sealed class SpyEscapeOperation(SpyEscape escape, EspionageIncidents inci
             { incident = incidents.Begin(request.Actor, request.Victim, call + "/incident"); }
             context.Publish();
         }
-        int? reply = pending is null ? null : input.Kind switch
-        {
-            OperationInputKind.Choice => input.Choice,
-            OperationInputKind.Cancel or OperationInputKind.Timeout => 0,
-            _ => null
-        };
+        int? reply = pending is null ? null : EspionageInteraction.Reply(input);
         pending = incident?.Resume(reply);
         if (pending is { } decision)
         {
-            string response = decision.Allied ? "Cancel the alliance" : "Declare war";
-            var prompt = new InteractionSpec($"Espionage incident\n{decision.Actor.Plural} agents were caught acting against the {decision.Victim.Plural}.\n{response}?",
-                null, null, new([0, 1]))
-            { Options = new([new(0, "Decline"), new(1, response)]) };
-            return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
+            return new(CommandStatus.AwaitingInteraction, Interaction: EspionageInteraction.Prompt(decision));
         }
         var result = new OwnedList<NamedValue>([new("lost", new CommandValue.Boolean(fate.Lost))]);
         context.Effect("espionage.escape.completed", result);
         return new(Result: result);
+    }
+}
+
+internal static class EspionageInteraction
+{
+    internal static int? Reply(OperationInput input) => input.Kind switch
+    {
+        OperationInputKind.Choice => input.Choice,
+        OperationInputKind.Cancel or OperationInputKind.Timeout => 0,
+        _ => null
+    };
+
+    internal static InteractionSpec Prompt(EspionagePretext decision, ParticipantId? recipient = null)
+    {
+        string response = decision.Allied ? "Cancel the alliance" : "Declare war";
+        return new($"Espionage incident\n{decision.Actor.Plural} agents were caught acting against the {decision.Victim.Plural}.\n{response}?",
+            recipient, null, new([0, 1]))
+        { Options = new([new(0, "Decline"), new(1, response)]) };
     }
 }

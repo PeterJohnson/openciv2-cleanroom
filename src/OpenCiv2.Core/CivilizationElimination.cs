@@ -21,9 +21,112 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
 {
     public int Check(int civilization, int killer, string call)
     {
+        int result = 0;
+        foreach (var work in Steps(civilization, killer, call, 256, value => result = value))
+        {
+            if (work.Check is { } check)
+            {
+                if (work.EscapeLoss)
+                { escape.CompleteCheck(check); }
+                else
+                { deletion.CompleteCheck(check); }
+            }
+            else if (work.Incident is { } incident)
+            { escape.CompleteIncident(incident); }
+        }
+        return result;
+    }
+
+    /// <summary>Resumable local lifecycle with actual nested destruction checks and espionage incidents.
+    /// The session serializes mutations, routes pretext decisions and retains this operation until complete.</summary>
+    public Operation Begin(int civilization, int killer, string call, EspionageIncidents incidents, int candidateBudget = 64)
+        => new(this, civilization, killer, call, incidents, candidateBudget);
+
+    private readonly record struct Work(string Call, CivilizationCheck? Check = null, SpyIncidentRequest? Incident = null, bool EscapeLoss = false);
+    private void RequireLocal() => MapKnowledge.RequireLocal(world);
+
+    public sealed class Operation : IDisposable
+    {
+        private readonly CivilizationElimination parent;
+        private readonly EspionageIncidents incidents;
+        private readonly int candidateBudget;
+        private readonly bool barbarian;
+        private readonly Stack<IEnumerator<Work>> frames = new();
+        private EspionageIncidents.Operation? incident;
+        private bool faulted, disposed;
+        public int? Result { get; private set; }
+
+        internal Operation(CivilizationElimination parent, int civilization, int killer, string call,
+            EspionageIncidents incidents, int candidateBudget)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateBudget);
+            ArgumentNullException.ThrowIfNull(incidents);
+            this.parent = parent;
+            this.incidents = incidents;
+            this.candidateBudget = candidateBudget;
+            barbarian = civilization == 0;
+            frames.Push(parent.Steps(civilization, killer, call, candidateBudget, value => Result = value).GetEnumerator());
+        }
+
+        /// <summary>Returns a pending human decision, or null after completion / a bounded search slice.
+        /// Result remains null during search. A reply is consumed only by the currently pending incident.</summary>
+        public EspionagePretext? Resume(int? reply = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
+            { throw new InvalidOperationException("A failed elimination cannot resume"); }
+            if (Result is not null)
+            { return null; }
+            try
+            {
+                if (!barbarian)
+                { parent.RequireLocal(); }
+                while (true)
+                {
+                    if (incident is not null)
+                    {
+                        var decision = incident.Resume(reply);
+                        reply = null;
+                        if (decision is not null)
+                        { return decision; }
+                        incident = null;
+                    }
+                    if (frames.Count == 0)
+                    { return null; }
+                    var frame = frames.Peek();
+                    if (!frame.MoveNext())
+                    { frames.Pop().Dispose(); continue; }
+                    var work = frame.Current;
+                    if (work.Check is { } check)
+                    {
+                        frames.Push(parent.Steps(check.Owner, check.Killer, work.Call, candidateBudget, _ => { }).GetEnumerator());
+                    }
+                    else if (work.Incident is { } request)
+                    {
+                        incident = incidents.Begin(request.Actor, request.Victim, work.Call);
+                        reply = null; // A reply to an earlier incident never accepts the next prompt.
+                    }
+                    else
+                    { return null; } // Continue an unfinished creation search on the next session slice.
+                }
+            }
+            catch { faulted = true; Release(); throw; }
+        }
+
+        private void Release()
+        {
+            while (frames.TryPop(out var frame))
+            { frame.Dispose(); }
+        }
+        public void Dispose() { disposed = true; Release(); }
+    }
+
+    private IEnumerable<Work> Steps(int civilization, int killer, string call, int candidateBudget, Action<int> complete)
+    {
         if (civilization == 0)
         {
-            return 0;
+            complete(0);
+            yield break;
         }
 
         MapKnowledge.RequireLocal(world);
@@ -35,7 +138,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
             ref var city = ref world.Entities.Cities.Storage[i];
             if (city.Token.Occupied && unchecked((sbyte)city.Owner.Value) == civilization)
             {
-                return 0;
+                complete(0);
+                yield break;
             }
         }
         if (killer == -1)
@@ -57,13 +161,19 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
 
             if (unchecked((sbyte)unit.Owner.Value) == civilization)
             {
-                deletion.Erase(i, true);
+                foreach (var check in deletion.EraseSteps(i, true))
+                { yield return new(call + "/unit/" + check.Unit + "/check", check); }
             }
             else if (unit.Flags.SpyMission && unchecked((sbyte)unit.Counter) == civilization)
             {
                 unit.Flags.SpyMission = false;
                 world.Civilizations[civilization].Treaties[unchecked((sbyte)unit.Counter)].SpyChat = false;
-                escape.Try(i, 0, unchecked((sbyte)unit.Counter), call + "/spy/" + i);
+                string escapeCall = call + "/spy/" + i;
+                var resolution = escape.BeginResolve(i, 0, unchecked((sbyte)unit.Counter), escapeCall);
+                foreach (var check in resolution.Steps())
+                { yield return new(escapeCall + "/unit/" + check.Unit + "/check", check, EscapeLoss: true); }
+                if (resolution.Result!.Incident is { } incident)
+                { yield return new(escapeCall + "/incident", Incident: incident); }
             }
         }
         if (world.Globals.HumanPlayers.Contains(civilization))
@@ -78,7 +188,8 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
             world.Multiplayer.Saved.Passwords = new(passwords);
             if (world.Globals.HumanPlayers.With(civilization, false).Count == 0)
             {
-                return 0;
+                complete(0);
+                yield break;
             }
         }
         var formerOwner = CivilizationSet.Only(civilization);
@@ -94,13 +205,13 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
             world.Globals.HumanPlayers = world.Globals.HumanPlayers.With(civilization, false);
         }
         var creation = recreate(civilization);
-        while (creation.Advance(256) is null)
-        { }
+        while (creation.Advance(candidateBudget) is null)
+        { yield return new(call + "/creation"); }
         if (world.Globals.Multiplayer != GameMode.Hotseat || world.Globals.CivsAlive.Contains(world.Multiplayer.LocalHuman))
         {
             effects.RedrawMaps();
         }
-        return 1;
+        complete(1);
     }
 
     private void RecordDestruction(int civilization, int killer)

@@ -5,6 +5,8 @@ using OpenCiv2.Core.State;
 
 namespace OpenCiv2.Core.Units;
 
+internal readonly record struct CivilizationCheck(int Owner, int Killer, int Unit);
+
 /// <summary>Required owning children, not optional observers. Failures retain preceding U01 effects.</summary>
 public interface IUnitDeletionEffects
 {
@@ -72,9 +74,18 @@ public sealed class UnitDeletion
 
     public void Erase(int slot, bool notify)
     {
+        foreach (var check in EraseSteps(slot, notify))
+        { CompleteCheck(check); }
+    }
+
+    internal void CompleteCheck(CivilizationCheck check) => effects.CheckCivilization(check.Owner, check.Killer);
+
+    // The owning lifecycle operation runs the yielded child before advancing the deletion tail.
+    internal IEnumerable<CivilizationCheck> EraseSteps(int slot, bool notify)
+    {
         if (slot < 0 || !stacks.BackedUnit(slot).Token.Occupied)
         {
-            return;
+            yield break;
         }
 
         if (world.Globals.Multiplayer >= GameMode.Tcp && !world.Multiplayer.NetworkHost)
@@ -135,7 +146,7 @@ public sealed class UnitDeletion
         }
         if (Role(type) == 5 && Civilization(owner).CityCount == 0 && ActiveCount(owner, type) == 0)
         {
-            effects.CheckCivilization(owner, -1);
+            yield return new(owner, -1, slot);
         }
 
         if (world.Globals.Multiplayer >= GameMode.Tcp && notify)

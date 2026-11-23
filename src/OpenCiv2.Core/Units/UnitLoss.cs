@@ -34,17 +34,32 @@ public sealed class UnitLoss(GameState world, RuleTables rules, StackOperations 
 
     public void EraseStack(int slot, bool sync)
     {
+        foreach (var check in EraseStackSteps(slot, sync))
+        { CompleteCheck(check); }
+    }
+
+    internal void CompleteCheck(CivilizationCheck check) => deletion.CompleteCheck(check);
+
+    private IEnumerable<CivilizationCheck> EraseStackSteps(int slot, bool sync)
+    {
         Authority();
         for (int current = stacks.First(slot); current >= 0;)
         {
             int next = stacks.Next(current);
-            deletion.Erase(current, false);
+            foreach (var check in deletion.EraseSteps(current, false))
+            { yield return check; }
             current = next;
         }
         Synchronize(sync);
     }
 
     public void EraseWithCargo(int slot, bool sync)
+    {
+        foreach (var check in EraseWithCargoSteps(slot, sync))
+        { CompleteCheck(check); }
+    }
+
+    private IEnumerable<CivilizationCheck> EraseWithCargoSteps(int slot, bool sync)
     {
         Authority();
         world.UnitDeletion.CargoActive = true;
@@ -59,7 +74,8 @@ public sealed class UnitLoss(GameState world, RuleTables rules, StackOperations 
             }
             else if (position.X == UnitStaging.Lifted(unchecked((sbyte)unit.Owner.Value)).X)
             {
-                EraseStack(slot, false);
+                foreach (var check in EraseStackSteps(slot, false))
+                { yield return check; }
                 handled = true;
             }
             else
@@ -70,12 +86,14 @@ public sealed class UnitLoss(GameState world, RuleTables rules, StackOperations 
         if (atSea)
         {
             cargo.Gather(slot, false, false);
-            EraseStack(slot, false);
+            foreach (var check in EraseStackSteps(slot, false))
+            { yield return check; }
             effects.UnitsChangedAt(position);
         }
         else if (!handled)
         {
-            deletion.Erase(slot, false);
+            foreach (var check in deletion.EraseSteps(slot, false))
+            { yield return check; }
         }
         Synchronize(sync);
         world.UnitDeletion.CargoActive = false;
@@ -83,10 +101,17 @@ public sealed class UnitLoss(GameState world, RuleTables rules, StackOperations 
 
     public void DestroyAndRedraw(int slot, bool sync)
     {
+        foreach (var check in DestroyAndRedrawSteps(slot, sync))
+        { CompleteCheck(check); }
+    }
+
+    internal IEnumerable<CivilizationCheck> DestroyAndRedrawSteps(int slot, bool sync)
+    {
         Authority();
         world.UnitDeletion.DestroyActive = true;
         var position = world.Entities.Units.Storage[slot].Position;
-        EraseWithCargo(slot, false);
+        foreach (var check in EraseWithCargoSteps(slot, false))
+        { yield return check; }
         if (world.Map.Geometry.InBounds(position))
         {
             effects.RedrawTile(position);

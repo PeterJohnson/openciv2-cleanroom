@@ -103,7 +103,12 @@ reason. Local lifecycle cases exercise recursive settler checks, actual AI
 restarts, interrupted spy escape, spaceship reset/loss, history and retained
 human/alive/knowledge state. Controlled V06 choices verify escape odds, promotion,
 nearest-city ties and actual relocation/exhaustion. General diplomacy/mission
-callers, resumable elimination and full generated-game outcomes remain open.
+callers and full generated-game outcomes remain open. Resumable elimination cases
+join actual nested last-settler checks and interrupted spy incidents. They verify
+loss before a pending pretext, separate nested replies, retained scan/password
+prefixes, bounded creation search, disposal and terminal failures. A real command
+session routes the decision to the victim and rejects other seats' replies;
+cancellation declines the pretext before the lifecycle completes.
 V02/C04 groups cover local government queries/transitions, actual all-city C03
 recalculation, fixed production substitution, observer-dependent AI tax/notices,
 disorder duration/restoration and real Democracy collapse, tax wrap and celebration
@@ -154,7 +159,7 @@ Library acquisition, Leonardo upgrades and government/city changes. They check
 the temporary inactive seat, post-grant counter resets, retained knowledge after
 placement or restart denial and terminal failures after committed grant effects.
 The actual elimination-to-recreation chain uses the same service. Full generated
-desktop turns and resumable foreign-spy elimination remain open.
+desktop turns and general city/combat/mission caller integration remain open.
 
 V03 cost/options/grant cases cover retained counters, human/AI/scenario scaling,
 selection exemptions, duplicate and future grants, first-discoverer OR, source

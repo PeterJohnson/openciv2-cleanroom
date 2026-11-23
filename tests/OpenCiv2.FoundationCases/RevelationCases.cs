@@ -12,7 +12,7 @@ public static partial class FoundationSuite
 {
     private sealed class RevelationFixture : IUnitRevelationEffects, IUnitCreationEffects, IUnitDeletionEffects
     {
-        public ProcessContext Process { get; } = new();
+        public ProcessContext Process { get; }
         public GameState World { get; }
         public RuleTables Rules => Process.Rules.Definitions;
         public StackOperations Stacks { get; }
@@ -25,9 +25,10 @@ public static partial class FoundationSuite
         public Action<int>? OnReveal;
         public Action<UnitCreationNotice>? OnNotice;
 
-        public RevelationFixture()
+        public RevelationFixture(ProcessContext? process = null, GameState? world = null)
         {
-            World = new(Process);
+            Process = process ?? new();
+            World = world ?? new(Process);
             World.Map.Allocate(new(40, 24));
             World.Globals.Rules = new() { FlatWorld = true, NormalCombat = true };
             World.Globals.HumanPlayers = CivilizationSet.Only(1);

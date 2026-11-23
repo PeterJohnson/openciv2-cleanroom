@@ -14,7 +14,7 @@ public static partial class FoundationSuite
     private sealed class EliminationFixture : IUnitDeletionEffects, IUnitLossEffects, ISpyEscapeEffects,
         ICivilizationEliminationEffects, ICityFoodContinuations
     {
-        public RevelationFixture Data { get; } = CreationFixture();
+        public RevelationFixture Data { get; }
         public GameState World => Data.World;
         public GameplayRandom Random { get; }
         public UnitDeletion Deletion { get; }
@@ -30,8 +30,9 @@ public static partial class FoundationSuite
         public List<MapPoint> Redraws { get; } = [];
         public int Restarts, Checks, MapRefreshes;
 
-        public EliminationFixture(List<Choice>? choices = null)
+        public EliminationFixture(List<Choice>? choices = null, RevelationFixture? data = null)
         {
+            Data = data ?? CreationFixture();
             Random = new(new ControlledChoices(new(choices ?? [])), "elimination");
             World.Globals.Turn = 20; World.Globals.CivsAlive = CivilizationSet.Only(1);
             World.Names[1] = new() { Tribe = "Alderfolk", Adjective = "Alder" };

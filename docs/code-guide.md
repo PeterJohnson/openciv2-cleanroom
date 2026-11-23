@@ -87,8 +87,15 @@ recalculation and food accumulation after it, using actual removal/loss and
 routes. `CivilizationElimination` supplies V01's local last-city check with actual
 U01 deletion, `SpyEscape`, `SpaceshipLifecycle` reset/loss and civilization
 recreation. Famine-to-defeat, recursive last-settler checks, history, AI restart
-and exploration clearing are tested together. The V06 incident service exists,
-but general elimination still needs its resumable caller join. V01 restart
+and exploration clearing are tested together. `CivilizationElimination.Begin`
+retains an explicit stack of child checks and actual V06 incidents across human
+pretext replies and bounded creation search. U01 deletion/cargo loss and V06 escape
+share their effect steps between synchronous and resumable callers. The synchronous
+APIs still invoke their owning callbacks; the resumable operation runs actual
+nested checks before completing each child's tail. `CivilizationEliminationOperation`
+routes the current victim's prompt through the session's participant resolver.
+General city/combat/mission caller joins and saved pending restoration remain open.
+V01 restart
 catch-up now calls actual V03 grants; forced retirement,
 civil war and full outcome handling are separate work. Alder Valley's deletion
 adapter now uses the real last-city check, although its admitted city-center

@@ -2280,28 +2280,37 @@
       "id": "civilization-elimination",
       "status": "partial",
       "contract": "V01 section6 local last-city check; V06 section2 escape/capture; V07 section8 reset/loss; actual C05 starvation integration",
-      "publicSurface": "CivilizationElimination.Check; SpyEscape.Try/Caught; SpaceshipLifecycle.Reset/Lost; desktop food/retirement deletion adapter",
-      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. The real espionage incident service is covered separately; general elimination still needs its resumable incident join. Actual nonzero-turn catch-up, nested Library effects and restart denial are covered by civilization-restart-research. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
+      "publicSurface": "CivilizationElimination.Check/Begin/Operation.Resume; CivilizationEliminationOperation; SpyEscape.Try/Caught; SpaceshipLifecycle.Reset/Lost; desktop food/retirement deletion adapter",
+      "review": "Actual U01 deletion, C01 nearest-city/relocation, U02 exhaustion, V01 recreation and V07 ship reset/loss preserve descending captured scans, recursive settler checks, human/alive distinction, password clearing, history capacity and exploration-only clearing. Tests cover actual AI restart/rejection, local and Hotseat human retention, fixed Spy identity, finite draw laws, interrupted mission self-treaty clearing and food-to-defeat integration. The resumable operation now completes actual nested last-settler checks and espionage incidents before continuing the captured descending scan. Shared deletion/cargo/escape steps retain ordering across suspension; the synchronous APIs retain their owning callbacks. Tests cover multiple nested human victims without reply reuse, loss before pretext, later units/passwords remaining untouched while pending, bounded creation search, disposal and terminal failure prefixes. The session adapter routes each prompt to its victim participant; real command-runtime cases verify privacy, reply authority and cancellation as decline. General city/combat/mission callers and saved pending-operation restoration remain open. Actual nonzero-turn catch-up, nested Library effects and restart denial are covered by civilization-restart-research. Network requests, forced removal, civil war and full endgame/generated-game acceptance remain pending.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationElimination.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
         "src/OpenCiv2.Core/SpaceshipLifecycle.cs",
+        "src/OpenCiv2.Core/Units/Deletion.cs",
         "src/OpenCiv2.Core/Units/SpyEscape.cs",
+        "src/OpenCiv2.Core/Units/UnitLoss.cs",
+        "src/OpenCiv2.Session/CivilizationEliminationOperation.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
       ],
       "sharedGroups": [
         "C05.famine-elimination-integration",
+        "V01.elimination-bounded-search-disposal",
         "V01.elimination-history-spaceship",
         "V01.elimination-hotseat-retention",
+        "V01.elimination-incident-failure-authority",
         "V01.elimination-last-human-recursion",
+        "V01.elimination-nested-loss-replies",
         "V01.elimination-restart-exploration",
+        "V01.elimination-session-victim-routing",
+        "V01.elimination-spy-pretext-resume",
         "V01.elimination-survivor-spy",
         "V06.capture-ordinary-failure",
         "V06.escape-odds-promotion",
         "V06.escape-relocation-gates"
       ],
       "tests": [
-        "tests/OpenCiv2.FoundationCases/EliminationCases.cs"
+        "tests/OpenCiv2.FoundationCases/EliminationCases.cs",
+        "tests/OpenCiv2.FoundationCases/EliminationContinuationCases.cs"
       ]
     },
     {
@@ -3228,7 +3237,7 @@
       "status": "partial",
       "contract": "V06 sections2,11 local failed-escape incident, human pretext and senate consequences",
       "publicSurface": "EspionageIncidents.Begin/Operation.Resume; EspionageWorkspace.LastMission; CityMission; SpyEscape.Resolve; SpyEscapeOperation",
-      "review": "Uses actual V04 war/cancellation, A08 stance and V02 government changes. Retains reverse treaty admission, independent forward alliance response, captured human pretext without expulsion, live city-mission state, leniency attitude formatting before its primary draw/adjustment and early return, government/scenario/autoplay draw order and real Anarchy recalculation. Session escape runs actual unit loss before waiting, retains fate across replies and maps cancel/timeout to decline without repeated loss or draws. Tests cover directed/asymmetric relations, AI and human seats, government changes, alliance expulsion, fresh workspace, invalid victim after loss, presentation-failure prefixes and local authority. Full city/unit missions, mission admission and desktop command integration, saved pending incidents, general elimination caller composition and network response remain unfinished. Browser and cross-platform work are deferred.",
+      "review": "Uses actual V04 war/cancellation, A08 stance and V02 government changes. Retains reverse treaty admission, independent forward alliance response, captured human pretext without expulsion, live city-mission state, leniency attitude formatting before its primary draw/adjustment and early return, government/scenario/autoplay draw order and real Anarchy recalculation. Session escape runs actual unit loss before waiting, retains fate across replies and maps cancel/timeout to decline without repeated loss or draws. Tests cover directed/asymmetric relations, AI and human seats, government changes, alliance expulsion, fresh workspace, invalid victim after loss, presentation-failure prefixes and local authority. Full city/unit missions, mission admission and desktop command integration, saved pending incidents, general city/combat/mission caller composition and network response remain unfinished; civilization-elimination covers the resumable incident join. Browser and cross-platform work are deferred.",
       "sources": [
         "src/OpenCiv2.Core/EspionageIncidents.cs",
         "src/OpenCiv2.Core/State/GameState.cs",
@@ -3253,7 +3262,7 @@
       "status": "partial",
       "contract": "V01 sections3,5,6 nonzero-turn catch-up and elimination restart; actual V03 section10 grants and C08/V02 children",
       "publicSurface": "CivilizationCreationServices.CatchupResearch; CivilizationCreation; ResearchGrants; CivilizationElimination",
-      "review": "Creation takes the real ResearchGrants service, passes self source and skipPedia=false, and completes each grant before continuing its ordered scan. Turn-zero-only generated setup may omit the service after its real reset. Actual restart integration covers temporarily inactive recipients, recursive Great Library grants, Leonardo upgrades, human government prompts and city recalculation, source/known-by retention, unchanged first discoverers, counter clearing after grants, placement overwriting advance count without losing knowledge and later NoRestart rejection. Nested notice and disabled-prerequisite failures retain actual grant prefixes and terminate creation. General elimination still needs resumable foreign spy incidents; complete generated desktop turns, full revival diplomacy and human/AI games remain open. Browser and cross-platform work remain deferred.",
+      "review": "Creation takes the real ResearchGrants service, passes self source and skipPedia=false, and completes each grant before continuing its ordered scan. Turn-zero-only generated setup may omit the service after its real reset. Actual restart integration covers temporarily inactive recipients, recursive Great Library grants, Leonardo upgrades, human government prompts and city recalculation, source/known-by retention, unchanged first discoverers, counter clearing after grants, placement overwriting advance count without losing knowledge and later NoRestart rejection. Nested notice and disabled-prerequisite failures retain actual grant prefixes and terminate creation. Resumable foreign-spy elimination is covered by civilization-elimination; complete generated desktop turns, full revival diplomacy and human/AI games remain open. Browser and cross-platform work remain deferred.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationCreation.cs",
         "src/OpenCiv2.Core/CivilizationElimination.cs",
