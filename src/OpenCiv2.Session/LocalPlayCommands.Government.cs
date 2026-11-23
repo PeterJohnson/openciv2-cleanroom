@@ -10,7 +10,7 @@ public static partial class LocalPlayCommands
 {
     public const string Revolution = "civilization.revolution";
 
-    private static void RegisterGovernmentCommands(SessionRuntime runtime, IPreferenceWriter preferences, LocalRateChoices choices) =>
+    private static void RegisterGovernmentCommands(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences choices) =>
         runtime.RegisterCommand(new(
             new(1, Revolution, "Request a revolution or choose an already available new government.", AccessClass.Player,
                 new([]), new([new("government")])),
@@ -31,7 +31,7 @@ public static partial class LocalPlayCommands
                 new("government", new CommandValue.Integer(notice.NewGovernment)),
                 new("overthrown", new CommandValue.Boolean(notice.Overthrown))])));
 
-    private sealed class RevolutionCommand(IPreferenceWriter preferences, LocalRateChoices choices) : IContinuation
+    private sealed class RevolutionCommand(IPreferenceWriter preferences, RateDecisionPreferences choices) : IContinuation
     {
         private GovernmentPicker? picker;
         private bool started;
@@ -93,10 +93,10 @@ public static partial class LocalPlayCommands
 
     /// <summary>V02 §5 restricted player selection. Offered identities are captured once;
     /// actual setter and rate children finish before the new-government notice.</summary>
-    private sealed class GovernmentPicker(IPreferenceWriter preferences, LocalRateChoices choices, bool duringTurn = false) : IContinuation
+    private sealed class GovernmentPicker(IPreferenceWriter preferences, RateDecisionPreferences choices, bool duringTurn = false) : IContinuation
     {
         private InteractionSpec? decision;
-        private RateEditor? rates;
+        private CivilizationRateDecision? rates;
         private int selected = -1;
 
         public OperationStep Resume(OperationContext context, OperationInput input)

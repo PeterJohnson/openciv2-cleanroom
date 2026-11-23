@@ -77,7 +77,10 @@ def drive(args, app, observation, storage):
             controls = {key: value for key, value in play['controls'].items() if key.startswith('automation.')}
             raise AssertionError(f"Timed out waiting for the automation window: {play['automation']}; "
                                  f"controls {controls}; message {state['message']!r}")
-        raise AssertionError('Timed out waiting for the expected application state')
+        failure = args.report.with_suffix('.failure.json')
+        failure.parent.mkdir(parents=True, exist_ok=True)
+        failure.write_text(json.dumps(state, indent=2) + '\n')
+        raise AssertionError(f'Timed out waiting for the expected application state; current window saved to {failure}')
 
     def click_box(box, state):
         scale = state['scaling']
@@ -173,12 +176,15 @@ def drive(args, app, observation, storage):
         else:
             choice(1)
         state = wait(lambda s: s['play']['turn'] == turn and s['status'] in ('Completed', 'AwaitingInteraction'))
-        if state['status'] == 'AwaitingInteraction':
+        while state['status'] == 'AwaitingInteraction':
+            assert state['prompt'] == 'Choose the next advance.' or state['prompt'].startswith('Your civilization has reached')
             assert not state['play']['phase'] and 'turn.advanced' not in state['play']['effects']
             assert not state['dialog']['regions']['cancel']['enabled']
+            old_prompt = state['prompt']
             offered = sorted(int(key.split('.')[1]) for key in state['dialog']['regions'] if key.startswith('choice.'))
             choice(offered[0])
-            state = wait(lambda s: s['status'] == 'Completed' and s['play']['turn'] == turn)
+            state = wait(lambda s: s['play']['turn'] == turn and
+                         (s['status'] == 'Completed' or (s['status'] == 'AwaitingInteraction' and s['prompt'] != old_prompt)))
         assert state['play']['phase']
         return state['play']
 
@@ -667,6 +673,57 @@ def drive(args, app, observation, storage):
         wait(lambda s: s['message'] == 'Classic save written.')
         compare_work_save(government_continued)
         checks.append('native revolution, Anarchy reload, turn-four government/rate decisions and continuation match the direct client')
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
+        observation = observation.with_name('population-observation.json')
+        storage = storage.with_name('population-storage')
+        launch[launch.index('--observe') + 1] = str(observation)
+        launch[launch.index('--storage-directory') + 1] = str(storage)
+        app = subprocess.Popen(launch)
+        wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        select(0)
+        click('name')
+        driver.chord('Control_L', 'a')
+        type_text('Council')
+        command(lambda: click('found'))
+        click('city.close')
+        wait(lambda s: not s['play']['cityOpen'])
+        population_initial = observation.with_name('population-initial.sav')
+        population_saved = observation.with_name('population-saved.sav')
+        population_continued = observation.with_name('population-continued.sav')
+        subprocess.run(['dotnet', str(args.probe), '--local-population-reference', str(population_initial),
+                        str(population_saved), str(population_continued)], check=True)
+        state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['File']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['file.library']['bounds'])
+        import_save(population_initial)
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
+        click('end')
+        wait(lambda s: s['status'] == 'AwaitingInteraction')
+        choice(1)
+        population = wait(lambda s: s['prompt'].startswith('Your civilization has reached') and s['dialog']['visible'])
+        assert '100,000' in population['prompt']
+        assert population['play']['turn'] == 2 and not population['play']['phase']
+        assert population['play']['gold'] >= 30000
+        assert 'turn.advanced' not in population['play']['effects']
+        assert not population['dialog']['regions']['cancel']['enabled']
+        choice(0)
+        wait(lambda s: s['status'] == 'Completed' and s['play']['phase'])
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(population_saved)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        assert end_turn(3)['phase']
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(population_continued)
+        checks.append('native treasury normalization and population notice suspend the turn, persist the milestone and match direct save/reload continuation')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
     finally:

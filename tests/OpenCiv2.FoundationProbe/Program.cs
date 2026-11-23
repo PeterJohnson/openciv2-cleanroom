@@ -1,6 +1,18 @@
 using System.Text.Json;
 using OpenCiv2.FoundationCases;
 
+if (args is ["--local-population-reference", string populationInitial, string populationSaved, string populationContinued])
+{
+    var reference = FoundationSuite.LocalPopulationReference();
+    foreach (var (path, bytes) in new[] { (populationInitial, reference.Initial), (populationSaved, reference.Saved),
+        (populationContinued, reference.Continued) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew);
+        output.Write(bytes);
+    }
+    return 0;
+}
+
 if (args is ["--local-government-reference", string anarchy, string government, string governmentContinued])
 {
     var reference = FoundationSuite.LocalGovernmentReference();

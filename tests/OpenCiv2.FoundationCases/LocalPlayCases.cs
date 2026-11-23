@@ -244,15 +244,18 @@ public static partial class FoundationSuite
                 var credit = civilizations[c].ReputationCredit.ToArray(); credit[1] = (sbyte)(c % 2 == 0 ? -5 : 7); credit[2] = 7;
                 civilizations[c] = civilizations[c] with { Reputation = 2, ReputationCredit = new(credit) };
             }
-            civilizations[1] = civilizations[1] with { Gold = int.MaxValue };
-            var input = saved with { Globals = saved.Globals with { Turn = 23 }, Civilizations = new(civilizations) };
+            civilizations[1] = civilizations[1] with { Gold = 0, TaxRate = 0, ScienceRate = 6 };
+            var maintainedCity = StateConversion.ToLive(saved.Cities.Single());
+            maintainedCity.Improvements = maintainedCity.Improvements.With(BuildingIds.Temple);
+            var input = saved with { Globals = saved.Globals with { Turn = 23 }, Civilizations = new(civilizations), Cities = new([StateConversion.ToStored(maintainedCity)]) };
             Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
             var before = game.Player.ObserveLocalPlay()!.City!;
             var result = EndLocalTurn(game, console, 24);
             var after = ClassicFiles.DecodeStoredSave(game.SaveClassic());
-            Equal(true, after.Cities.Single().Tax > 0); // Tax wraps the admitted treasury negative before C08.
+            Equal((short)0, after.Cities.Single().Tax); // No income to pay the Temple upkeep.
             Equal(true, result.Committed.Any(e => e.Name == "city.improvement_lost"));
-            Equal(0, after.Civilizations[1].Gold); Equal(default(ImprovementSet), StateConversion.ToLive(after.Cities.Single()).Improvements);
+            Equal(8, after.Civilizations[1].Gold); // Temple refund: two authored rows of four shields.
+            Equal(default(ImprovementSet).With(BuildingIds.Palace), StateConversion.ToLive(after.Cities.Single()).Improvements);
             Equal(saved.Civilizations[1].CapitalX, after.Civilizations[1].CapitalX);
             Equal(false, StateConversion.DecodeCityStatus(after.Cities.Single().Flags).ImprovementSold);
             Equal((short)(saved.Cities.Single().ShieldBox + Math.Max(0, before.Shields - before.ShieldSupport)), after.Cities.Single().ShieldBox);
@@ -264,7 +267,7 @@ public static partial class FoundationSuite
             }
             var bytes = game.SaveClassic(); Equal(LocalLoadResult.Loaded, game.LoadClassic(bytes));
             Equal(false, EndLocalTurn(game, console, 25).Committed.Any(e => e.Name == "city.improvement_lost"));
-            // Forced Palace loss extends the admitted profile only to no facilities.
+            // Unsupported facilities still reject the imported profile.
             var city = StateConversion.ToLive(after.Cities.Single()); city.Improvements = city.Improvements.With(BuildingIds.Marketplace);
             var unsupported = after with { Cities = new([StateConversion.ToStored(city)]) };
             Equal(LocalLoadResult.UnsupportedGame, game.LoadClassic(ClassicFiles.EncodeStoredSave(unsupported)));
@@ -281,10 +284,12 @@ public static partial class FoundationSuite
                 new("unit", new CommandValue.Unit(new(pioneer.Slot, pioneer.Token))), new("name", new CommandValue.Text("Alder Crossing")));
             var saved = ClassicFiles.DecodeStoredSave(game.SaveClassic());
             var civilizations = saved.Civilizations.ToArray();
-            civilizations[1] = civilizations[1] with { Researching = 0, ResearchProgress = 32000, NumAdvances = 255, ResearchCostAdvances = 7, Gold = int.MaxValue };
+            civilizations[1] = civilizations[1] with { Researching = 0, ResearchProgress = 32000, NumAdvances = 255, ResearchCostAdvances = 7, Gold = 0, TaxRate = 0, ScienceRate = 6 };
             var first = saved.Globals.FirstDiscoverer.ToArray(); first[0] = 4;
             var known = saved.Globals.AdvanceKnownBy.ToArray(); known[0] = 0;
-            var input = saved with { Civilizations = new(civilizations), Globals = saved.Globals with { FirstDiscoverer = new(first), AdvanceKnownBy = new(known) } };
+            var maintainedCity = StateConversion.ToLive(saved.Cities.Single());
+            maintainedCity.Improvements = maintainedCity.Improvements.With(BuildingIds.Temple);
+            var input = saved with { Civilizations = new(civilizations), Cities = new([StateConversion.ToStored(maintainedCity)]), Globals = saved.Globals with { FirstDiscoverer = new(first), AdvanceKnownBy = new(known) } };
             Equal(LocalLoadResult.Loaded, game.LoadClassic(ClassicFiles.EncodeStoredSave(input)));
             var id = SubmitLocal(game, console, "turn.end", LocalPlayCommands.EndTurn);
             Decide(game.Player, console, AwaitLocal(game, id), 1); Equal(true, game.AdvanceOne());
@@ -292,7 +297,7 @@ public static partial class FoundationSuite
             Equal(CommandStatus.AwaitingInteraction, pending.Status);
             Equal(true, pending.Committed.Any(e => e.Name == "research.completed"));
             Equal(false, pending.Committed.Any(e => e.Name is "city.improvement_lost" or "turn.advanced"));
-            Equal(true, game.Player.ObserveLocalPlay()!.Gold < 0); // Tax precedes the choice; forced building sale follows it.
+            Equal(0, game.Player.ObserveLocalPlay()!.Gold); // The research choice precedes unpaid Temple upkeep.
             Equal(false, game.Player.Cancel(id).Accepted);
             Decide(game.Player, console, pending, pending.Interaction!.Spec.Choices[0]); Equal(true, game.AdvanceOne());
             var result = game.Player.Result(id)!; Equal(CommandStatus.Completed, result.Status);
@@ -679,8 +684,9 @@ public static partial class FoundationSuite
         Equal(false, player.Cancel(id).Accepted);
         Equal(true, game.AdvanceOne());
         var update = player.Result(id)!;
-        if (update.Interaction is { } research)
+        while (update.Interaction is { } research)
         {
+            Equal(true, research.Spec.Prompt == "Choose the next advance." || research.Spec.Prompt.StartsWith("Your civilization has reached", StringComparison.Ordinal));
             Equal(false, update.Committed.Any(e => e.Name == "turn.advanced")); // Research suspends inside city upkeep.
             Equal(turn, player.ObserveLocalPlay()!.Turn);
             Equal(false, player.ObserveLocalPlay()!.PlayerPhase);

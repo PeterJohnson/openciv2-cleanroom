@@ -2455,7 +2455,7 @@
       "id": "building-effects-reputation",
       "contract": "C08 maintenance/forced loss, Eiffel and Leonardo; V04 sections 2,11; W03 section 8; bounded F04 desktop integration",
       "publicSurface": "BuildingMaintenance quote/payment; WonderEffects Eiffel/Leonardo; DiplomaticAttitudes storage, categories, hostility and global maintenance; ApolloRevelation local publication",
-      "review": "Specification-derived groups cover full-width Barracks upkeep and disabled first-prerequisite walks, ordered multi-building loss, fresh notice inputs/captured owner, scalar wrap and failure prefixes. Actual V04 attitude guards/scratch serve Eiffel; global decay uses active wonder rules and normalizes only human reputation credits. Leonardo uses last-candidate selection, signed defense/capacity, live scan bounds, notice-per-old-type state, retained unit fields and callback failure boundaries. Apollo publishes all-seat exploration/city sizes and normal-seat feature memory without revealing units or setting a cheat. Direct/console desktop tests join tax overflow, Palace loss, save/resume and inactive-seat reputation decay. Local effects reject network execution before mutation; browser/cross-platform work, complete C06/V03/C09/N02 caller joins, general F04 scheduling and full desktop games remain pending.",
+      "review": "Specification-derived groups cover full-width Barracks upkeep and disabled first-prerequisite walks, ordered multi-building loss, fresh notice inputs/captured owner, scalar wrap and failure prefixes. Actual V04 attitude guards/scratch serve Eiffel; global decay uses active wonder rules and normalizes only human reputation credits. Leonardo uses last-candidate selection, signed defense/capacity, live scan bounds, notice-per-old-type state, retained unit fields and callback failure boundaries. Apollo publishes all-seat exploration/city sizes and normal-seat feature memory without revealing units or setting a cheat. Direct/console desktop tests join unaffordable Temple loss/refund, save/resume and inactive-seat reputation decay. Local effects reject network execution before mutation; browser/cross-platform work, complete C06/V03/C09/N02 caller joins, general F04 scheduling and full desktop games remain pending.",
       "sharedGroups": [
         "C08.eiffel-acquisition",
         "C08.leonardo-defensive-same-type",
@@ -2996,8 +2996,8 @@
         "src/OpenCiv2.Contracts/LocalPlayObservation.cs",
         "src/OpenCiv2.Core/CivilizationRates.cs",
         "src/OpenCiv2.Core/GovernmentChanges.cs",
+        "src/OpenCiv2.Session/CivilizationRateDecision.cs",
         "src/OpenCiv2.Session/LocalGame.cs",
-        "src/OpenCiv2.Session/LocalPlayCommands.RateEditor.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Rates.cs",
         "src/OpenCiv2.Session/LocalPlayProjection.cs",
         "src/OpenCiv2.Session/PreferenceFiles.cs"
@@ -3025,9 +3025,9 @@
         "src/OpenCiv2.Core/DiplomacyTurn.cs",
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
         "src/OpenCiv2.Core/GovernmentTurn.cs",
+        "src/OpenCiv2.Session/CivilizationRateDecision.cs",
         "src/OpenCiv2.Session/LocalGame.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Government.cs",
-        "src/OpenCiv2.Session/LocalPlayCommands.RateEditor.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
         "src/OpenCiv2.Session/LocalPlayProjection.cs"
       ],
@@ -3042,6 +3042,29 @@
         "V04.ai-diplomacy-aging",
         "V04.human-diplomacy-turn",
         "V04.stale-diplomacy-children"
+      ]
+    },
+    {
+      "id": "civilization-finances",
+      "status": "partial",
+      "contract": "V02 section11 local treasury normalization, population queries, milestone and funds notices; F04 post-assessment boundary",
+      "publicSurface": "CivilizationFinances; CivilizationFinanceOperation; reusable CivilizationRateDecision and RateDecisionPreferences",
+      "review": "Preserves ordered signed treasury thresholds, token-independent city population, live signed-owner scan and capped civilization population, signed milestones, human/autoplay presentation gates, post-popup live funds gates, retained city-count summary, wrapped forecast and nonzero rate responses. The session child joins real rate preview, acceptance and preference failure retention. Desktop turns normalize before city upkeep and suspend after assessment for population notices without replaying prior stages. Direct/console and native save/reload continuation compare exact bytes. The authored single-city profile cannot reach the funds popup; composed session tests cover that branch without widening the profile. Full F04 and generated-game desktop acceptance remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/CivilizationFinances.cs",
+        "src/OpenCiv2.Session/CivilizationFinanceOperation.cs",
+        "src/OpenCiv2.Session/CivilizationRateDecision.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CivilizationFinanceCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "M4.finance-rate-continuation",
+        "M4.local-population-turn",
+        "V02.population-funds-notices",
+        "V02.treasury-population-queries"
       ]
     }
   ]

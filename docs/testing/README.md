@@ -365,3 +365,10 @@ Desktop/direct/console cases cover revolution refusal/cancellation, Anarchy
 reload, government and rate decisions during upkeep, output failure after an
 accepted change, continued play and journal replay. The native driver compares
 complete saved bytes before and after a further turn/reload.
+
+V02 financial turn cases cover treasury normalization before city upkeep and
+population/funds notices after assessment. Native desktop population decisions
+compare complete saved and resumed bytes with the direct client. The single-city
+profile does not reach the funds warning; composed session tests join its actual
+rate preview/acceptance and preference-output failures. These checks do not
+complete generated human/AI-game acceptance.

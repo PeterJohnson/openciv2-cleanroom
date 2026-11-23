@@ -436,3 +436,11 @@ joining actual government/city recalculation and the existing rate editor.
 The local turn suspends for these decisions, then runs real human diplomacy
 maintenance before assessment. The authored game supports Anarchy/Despotism
 and preserves failed preference output without leaving the completed turn busy.
+
+V02 treasury and population queries live in `CivilizationFinances`; its resumable
+notice sequence keeps funds gates after the population acknowledgment.
+`CivilizationFinanceOperation` supplies session decisions and delegates to
+`CivilizationRateDecision`, also used by sidebar and government commands.
+`RateDecisionPreferences` retains rate holds for that session. The local F04
+adapter captures normalized start gold before upkeep and runs the notice sequence
+once after civilization assessment, retaining accepted effects across decisions.

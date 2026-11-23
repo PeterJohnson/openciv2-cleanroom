@@ -11,7 +11,7 @@ public static partial class LocalPlayCommands
     public const string Select = "unit.select";
     public const string Move = "unit.move";
 
-    internal static void Register(SessionRuntime runtime, IPreferenceWriter preferences, LocalRateChoices rateChoices)
+    internal static void Register(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences rateChoices)
     {
         runtime.RegisterCommand(Define(Select, "Activate an owned unit.", [new("unit", ValueKind.Unit)],
             [new("unit", ValueKind.Unit)], SelectUnit, ValidateUnit));
@@ -32,7 +32,7 @@ public static partial class LocalPlayCommands
             (actor, request, world) => new(ValidatePhase(actor, world) ?? validate?.Invoke(actor, request, world)),
             request => new ImmediateOperation(request, execute, validate));
 
-    private static string? ValidatePhase(CommandActor actor, GameState world, bool playerPhase = true)
+    internal static string? ValidatePhase(CommandActor actor, GameState world, bool playerPhase = true)
     {
         if (world.Globals.Multiplayer != GameMode.SinglePlayer || actor.Source is not null
             || actor.Civilization.Value != world.Globals.TurnCiv

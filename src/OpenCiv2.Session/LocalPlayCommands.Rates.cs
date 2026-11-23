@@ -6,9 +6,10 @@ namespace OpenCiv2.Session;
 
 public static partial class LocalPlayCommands
 {
+    public const string EditRates = "civilization.rates.edit";
     public const string Rates = "civilization.rates";
 
-    private static void RegisterRateCommands(SessionRuntime runtime, IPreferenceWriter preferences, LocalRateChoices choices)
+    private static void RegisterRateCommands(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences choices)
     {
         runtime.RegisterCommand(Define(Rates, "Set tax and science in tenths; the remainder is luxury.",
             [new("tax"), new("science")], [new("tax"), new("science"), new("luxury")],
@@ -17,7 +18,7 @@ public static partial class LocalPlayCommands
             new(1, EditRates, "Preview and edit civilization rates, with balancing and holds.", AccessClass.Player,
                 new([]), new([new("tax"), new("science"), new("luxury")])),
             (actor, _, world) => new(ValidatePhase(actor, world)),
-            _ => new RateEditor(preferences, choices)));
+            _ => new CivilizationRateDecision(preferences, choices)));
     }
 
     private static OperationStep ChangeRates(OperationContext context, CommandRequest request, IPreferenceWriter preferences)
@@ -26,7 +27,7 @@ public static partial class LocalPlayCommands
         return ApplyRates(context, new(tax, science, unchecked(10 - tax - science)), preferences);
     }
 
-    private static OperationStep ApplyRates(OperationContext context, RateValues values, IPreferenceWriter preferences)
+    internal static OperationStep ApplyRates(OperationContext context, RateValues values, IPreferenceWriter preferences)
     {
         int owner = context.Actor.Civilization.Value, tax = values.Tax, science = values.Science;
         if (!CivilizationRates.Allowed(context.World, owner, tax, science))

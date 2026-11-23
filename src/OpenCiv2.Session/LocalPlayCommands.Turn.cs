@@ -17,7 +17,7 @@ public static partial class LocalPlayCommands
     public const string Research = "research.choose";
     public const string EndTurn = "turn.end";
 
-    private static void RegisterTurnCommands(SessionRuntime runtime, IPreferenceWriter preferences, LocalRateChoices choices)
+    private static void RegisterTurnCommands(SessionRuntime runtime, IPreferenceWriter preferences, RateDecisionPreferences choices)
     {
         runtime.RegisterCommand(Define(Fortify, "Fortify an owned land unit and spend its remaining movement.",
             [new("unit", ValueKind.Unit)], [new("unit", ValueKind.Unit)], FortifyUnit, ValidateUnit));
@@ -99,7 +99,7 @@ public static partial class LocalPlayCommands
     }
 
     /// <summary>Local F04 mode adapter. The controller supplies the end-phase and research decisions.</summary>
-    private sealed class EndPlayerPhase(IPreferenceWriter preferences, LocalRateChoices choices) : IContinuation
+    private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices) : IContinuation
     {
         private bool upkeepCommitted;
         private int nextCity;
@@ -109,7 +109,9 @@ public static partial class LocalPlayCommands
         private int foodSurplus;
         private bool largeBalancedCity, cityDisorder;
         private ResearchChoiceNotice? pendingResearch;
-        private bool cityPassFinished, maintenanceFinished;
+        private bool cityPassFinished, maintenanceFinished, assessed;
+        private int startGold;
+        private CivilizationFinanceOperation? finance;
         private GovernmentTurn? governmentTurn;
         private GovernmentPicker? governmentSelection;
         private string deferredFailure = "";
@@ -178,7 +180,7 @@ public static partial class LocalPlayCommands
             }
             if (!upkeepCommitted)
             {
-                AdvanceStart(context);
+                startGold = AdvanceStart(context);
                 upkeepCommitted = true;
                 activeWorld = world;
                 world.Production.CivilizationTurnInProgress = true;
@@ -273,7 +275,24 @@ public static partial class LocalPlayCommands
                 context.Effect("civilization.diplomacy.maintained", GovernmentValue(context));
                 maintenanceFinished = true;
             }
-            AssessCivilization(context);
+            if (!assessed)
+            {
+                AssessCivilization(context);
+                assessed = true;
+                finance = new(preferences, choices, startGold);
+                input = new();
+            }
+            var financialResult = finance!.Resume(context, input);
+            if (financialResult.Status == CommandStatus.AwaitingInteraction)
+            {
+                return financialResult;
+            }
+
+            if (financialResult.Status == CommandStatus.Failed && deferredFailure.Length == 0)
+            {
+                deferredFailure = financialResult.Code;
+            }
+
             world.Production.CivilizationTurnInProgress = false;
             activeWorld = null;
             world.Globals.ActiveUnit = null;
@@ -303,7 +322,7 @@ public static partial class LocalPlayCommands
         private static OwnedList<NamedValue> TurnValue(GameState world) =>
             new([new("turn", new CommandValue.Integer(world.Globals.Turn))]);
 
-        private static void AdvanceStart(OperationContext context)
+        private static int AdvanceStart(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -333,8 +352,7 @@ public static partial class LocalPlayCommands
             ResetUnits(world);
             DiplomaticAttitudes.MaintainReputation(world, rules);
             globals.TurnCiv = (sbyte)owner;
-            ref var treasury = ref world.Civilizations[owner].Gold;
-            treasury = Math.Max(treasury, 0);
+            return CivilizationFinances.NormalizeTreasury(world, owner);
 
         }
 

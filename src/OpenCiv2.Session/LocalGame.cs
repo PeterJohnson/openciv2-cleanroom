@@ -24,7 +24,7 @@ public sealed class LocalGame : IDisposable
     private ParticipantId participant;
     private readonly LocalReplayRecorder? replay;
     private readonly IPreferenceWriter preferences;
-    private readonly LocalRateChoices rateChoices = new();
+    private readonly RateDecisionPreferences rateChoices = new();
     private readonly PreferenceSnapshot? initialPreferences;
 
     public IPlayerClient Player { get; private set; }

@@ -13,7 +13,7 @@ in the [M2 closeout](m2-closeout.md).
 | Group | Current state and remaining scope |
 | --- | --- |
 | F05 generated setup and starts | W02/setup join real V01 reset/leader/admission/placement, U01/W03 units/revelation, compensation and accelerated packages with real V03/A08, C01/C07 and U03 children. Cooperative operations and WorldEntry defaults are tested. Pikemen is now fixed at slot6 from verified repository original-data mapping; the generated desktop gameplay caller remains open. |
-| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers, population/funds notices and full F04 integration are pending. |
+| City, civilization and turn economy | C01 local removal/creation/radius/spatial queries, C05 food/growth/retirement, C07 directional route mutations and the full C03 recalculation are implemented. C01 creation, C03 and the C05 surviving-city food/retirement phases run in Alder Valley founding/turn/load; shared last-city famine now joins actual V01 elimination to the pending defeat reason; complete end-sequence handling remains open. The parent joins actual C02 workers, C05 support, C04 moods, C07 commodity refresh, U03 links and W05 intensity. C04 disorder/tax/celebration, C06 unit/nonunit production, V03 grants and resumable research completion, C08 maintenance and V04 global reputation now run in Alder Valley using real local children. C06 joins actual wonder, Darwin and spaceship effects. V02 rate operations, desktop revolution/government selection, the government maintenance prefix and V04 human diplomacy turns are now integrated. Remaining C01–C08 operations, general research/government callers and full F04 integration are pending. V02 treasury normalization and post-assessment population/funds continuations are integrated; the single-city desktop profile reaches population notices, with funds/rate composition tested through the shared session service. |
 | Unit, world and civilization interactions | U01 creation and shared cargo/loss primitives are implemented. U01 creation, U02 allowance/HP/exhaustion, U04 eligibility/next selection and W03 knowledge primitives are integrated with the local game. W03 local surroundings uses real A01 goals and U04 contact orders. Local V01 last-city checks, V06 escape/capture and V07 reset/loss are joined and tested. W04 work execution and desktop queued jobs are now implemented. Full diplomacy/incident children, restart catch-up grants, map sharing and remaining acquisition callers, complete movement/orders, combat, capture, forced elimination/civil war, remaining espionage, transport/air/nuclear, pollution/warming, huts and barbarians remain pending. |
 | Classic AI | A08 advance valuation is integrated with V03 recommendation. C06 AI spending now consumes real V07 race queries and retained F04 human wonder extrema. A02 city production now has its ordered survey/scoring policy, actual A03 recommendation and U05 AI airlift children, and the desktop automatic-production join. A01 census/strategy, power and goal assignment now compose actual children; desktop turns publish power and run human assessment. A08 government policy is implemented. Outer AI movement, the remaining A03–A08 policies and full turn scheduling remain pending. |
 | Outcomes | V07 configurable capacities, performance/group choice, assembly/local launch, race/arrival predicates, reset/loss and V01 destruction history are implemented. C06 now integrates local spaceship construction; spaceship reports/arrival outcomes, scoring, victory/retirement, remaining history and Hall of Fame remain pending. |
@@ -21,8 +21,8 @@ in the [M2 closeout](m2-closeout.md).
 | Desktop acceptance | Complete human/AI games, full-turn snapshots and G01/G04–G12 cases with custom rules/failure variants remain pending. Implemented services and authored-profile checks do not satisfy this gate. |
 
 The next mechanics integrations are the V06 diplomacy-incident and V03 restart
-catch-up policies, A01 outer movement/U04 order execution, V02 population/funds
-notices and general government/research callers, and full F04 turn processing
+catch-up policies, A01 outer movement/U04 order execution, general
+government/research callers, and full F04 turn processing
 needed by the generated desktop game. C04's shared
 disorder/tax/celebration handler now joins actual V02 local government transitions
 and runs in the authored desktop turn; this does not complete general turn processing.
@@ -1895,3 +1895,56 @@ coverage, eight identity and three coverage-inventory tests also passed.
 | `m4-government-play.json` | `9c07695d9270a322582e0014c305fae5dc799e08d442c217c2c3d8c9b031c191` |
 | `m4-government-native.json` | `0854ae603315645ec08409bb6b873691b8c59de08567505e557dada0f0d5ae8c` |
 | `m4-government-identity.json` | `ffa9d6e2c9b94315e139cd1a3963559132c5e5259285ad29b19a20a84d801bbd` |
+
+## Treasury and population/funds turn decisions
+
+`CivilizationFinances` implements V02 §11's ordered treasury normalization before
+start-gold capture: values below −16384 become 30000; the remaining negatives
+become 0. City upkeep retains its own subsequent effects and there is no closing
+treasury clamp. Population queries use signed city size and owner, live city
+occupancy, triangular population units and the specified civilization cap.
+Milestones preserve rounded-down thresholds, silent AI/autoplay updates and
+malformed negative values. Funds checks use the retained city-count summary and
+wrapped ten-turn forecast, with live presentation gates reread after the
+population acknowledgment. Any nonzero funds response requests the rate child.
+
+The desktop turn now captures normalized gold before recovery/cities, then runs
+the resumable financial notice stage after government/diplomacy and assessment.
+Closing a population notice does not repeat those stages or publish an early
+`turn.advanced`. `CivilizationFinanceOperation` composes actual previews, rate
+acceptance and preference writes through the now-reusable
+`CivilizationRateDecision`. Closing a rate draft completes the financial notice;
+a failed preference write retains accepted rates and its failure code.
+
+Shared cases cover signed treasury boundaries, token-independent city queries,
+signed owner comparisons, population caps/thresholds, post-popup gate changes,
+nonboolean funds responses, wrapped forecasts, real rate acceptance/cancellation
+and failed preference output. Direct and console population turns compare complete
+save bytes with a headless reference, including reload and continued turns. The
+native scenario imports a size-four city and maximum integer treasury, reaches
+the population notice through actual upkeep, and compares saved/resumed bytes.
+The authored one-city profile cannot reach the multi-city funds warning; that
+branch is tested through the shared session service without widening the profile.
+
+Earlier upkeep/research fixtures used a maximum integer treasury to force tax
+overflow before building loss. Required start-of-turn normalization makes that
+setup invalid. Those tests now retain the ordering check using an unaffordable
+Temple and its actual refund; standalone C04 wrapping coverage remains in place.
+Full generated human/AI games and remaining F04/AI/outcome dependencies are still
+open. Browser and cross-platform work remain deferred.
+
+Root/App formatting and verification, root/desktop automation Release builds and
+project-boundary checks passed. The native suite passed **828 of 830 tests**,
+with the two existing platform/audio skips. The probe passed **796 shared groups**
+and verified **481 compiled inputs**. All **25 Linux desktop checks** passed;
+coverage maps all groups across 94 families, and the eight identity/three coverage
+validator tests passed. The first native attempt timed out before opening the
+population scenario's end-turn confirmation; the full rerun passed. The driver
+now persists the current window's observation on timeout to diagnose that input
+timing failure if it recurs; no gameplay failure was established by that attempt.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-finance-play.json` | `3bd74935c271182d20b4ef86f84c37077a6c6b64a7bdedf50f081501ec84daf5` |
+| `m4-finance-native.json` | `a58cfca45411f5eacdd5c7f9037f131bb1d0ddab0433310e2fa1bd65aac55883` |
+| `m4-finance-identity.json` | `e9c86efdb6e4ebd819e63b24709b5871d7c792709d157043fdafd04a1648cd16` |
