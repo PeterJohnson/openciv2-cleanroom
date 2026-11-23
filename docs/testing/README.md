@@ -611,8 +611,10 @@ Generation, acceleration and road queries regress through the same FIFO engine.
 A04 response cases use actual local paths and paradrop rather than supplied
 directions or success callbacks. They cover raw target ownership, allied AI
 admission, direction-zero rejection, inherited path modes, first-drop precedence,
-real pending decisions and failure/disposal. Coarse waypoints, general goto,
-combat-parent/desktop integration and complete-game acceptance remain open.
+real pending decisions and failure/disposal. Coarse snapping/waypoint and Goto
+cases cover actual local children, authored graphs, exact ties, failed snaps, bounded search failure, cylindrical adjacency,
+airbase refusal and conditional cancellation/exhaustion. U04 order execution,
+desktop integration and complete-game acceptance remain open.
 
 
 U06 continuation groups join actual U01/V01 deletion, U07 SDI/blast action and

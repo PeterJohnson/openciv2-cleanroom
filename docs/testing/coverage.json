@@ -3890,16 +3890,26 @@
       "id": "local-pathfinding",
       "status": "partial",
       "contract": "U03 local next-direction and bounded distance queries with ordinary movement, occupancy and diplomacy costs; shared uniform generation/road engine",
-      "publicSurface": "LocalPathfinding.NextDirection/PathLength; GenerationPathWorkspace Goal/SelectedUnitType/GridCenter; GenerationConnectivity.UniformDirection",
-      "review": "One bounded FIFO engine now serves ordinary and uniform local queries, sharing the world goal-only cache. Preserves reverse terrain costs, source/goal medium exceptions, naval region gates, rails/Alpine/roads/river precedence, actual W01 peace and U02 adjacency/U01 role-count penalties, different flood/selection multipliers, coast suppression, strict cutoff, descending costs, 19999 threshold and weighted-distance/first ties. Tests cover authored corridor values, actual stacks and treaties, stale cache reuse across owner/rule/map changes, inherited modes, source seam-window order and explicit incoming owner scratch for otherwise undefined negative-owner selection. Bounded distance retains fixed rule selection and restores owner only on normal return. Original debug callbacks are presentation-only and are not emulated. General coarse BFS/waypoints and unit goto remain pending; these local queries do not authorize movement.",
+      "publicSurface": "LocalPathfinding.NextDirection/PathLength; GenerationPathWorkspace Goal/SelectedUnitType/GridCenter; GenerationConnectivity.UniformDirection; CoarsePathfinding.Snap/Waypoint; UnitGoto.Direction",
+      "review": "One bounded FIFO engine now serves ordinary and uniform local queries, sharing the world goal-only cache. Preserves reverse terrain costs, source/goal medium exceptions, naval region gates, rails/Alpine/roads/river precedence, actual W01 peace and U02 adjacency/U01 role-count penalties, different flood/selection multipliers, coast suppression, strict cutoff, descending costs, 19999 threshold and weighted-distance/first ties. Tests cover authored corridor values, actual stacks and treaties, stale cache reuse across owner/rule/map changes, inherited modes, source seam-window order and safe absent-owner scratch initialization. Bounded distance retains fixed rule selection and restores owner only on normal return. Original debug callbacks are presentation-only and are not emulated. Coarse snapping/BFS and UnitGoto now join the actual local engine and greedy fallback. Authored tests cover D-versus-C snapping, retained distances, failed target snapping, exact ties, budget failure prefixes, adjacent no-admission selection, cylindrical seams, local routing, live airbase refusal and human/AI/Automated reversal and exhaustion. These selectors do not execute U04 orders or establish desktop/full-game acceptance.",
       "sources": [
+        "src/OpenCiv2.Core/CoarsePathfinding.cs",
         "src/OpenCiv2.Core/GenerationPaths.cs",
-        "src/OpenCiv2.Core/LocalPathfinding.cs"
+        "src/OpenCiv2.Core/LocalPathfinding.cs",
+        "src/OpenCiv2.Core/Units/UnitGoto.cs"
       ],
       "tests": [
+        "tests/OpenCiv2.FoundationCases/GotoCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPathCases.cs"
       ],
       "sharedGroups": [
+        "U03.coarse-snap-selection",
+        "U03.coarse-waypoint-paths",
+        "U03.coarse-waypoint-ties-budget",
+        "U03.goto-coarse-rule-retention",
+        "U03.goto-early-local",
+        "U03.goto-greedy-reversal",
+        "U03.goto-no-candidate",
         "U03.local-base-costs",
         "U03.local-cache-limits",
         "U03.local-occupancy-treaties",

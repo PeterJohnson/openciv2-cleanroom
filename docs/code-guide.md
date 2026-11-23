@@ -734,10 +734,13 @@ represent absence without a sentinel. Full combat/desktop orchestration remains 
 bounded distance query. `GenerationConnectivity.UniformDirection` now uses that
 same engine with its declared uniform/absent-owner domain. `GameState.Paths`
 retains costs across generation, roads and ordinary queries; owner/rule/map/mode
-changes do not invalidate a matching goal's cache. Negative-owner nonuniform
-queries require an explicit incoming owner-scratch value if no occupancy query
-has assigned it; no original uninitialized value is invented. Coarse waypoint
-and unit-goto orchestration remain separate work.
+changes do not invalidate a matching goal's cache. Absent-owner queries use the
+documented U03 safe scratch initialization.
+`CoarsePathfinding` supplies graph snapping and bounded waypoint BFS, retaining
+byte distances, queue behavior and deterministic ties. `Units/UnitGoto` joins
+local/coarse queries to the actual greedy fallback, with adjacent/wrapped targets,
+live rule estimates and conditional order cancellation/exhaustion. These selectors
+do not execute movement; U04 order execution and desktop wiring remain open.
 
 `Ai/AttackResponse` implements A04's immediate response using that local query
 and real `Paradrop`. Its operation exposes the child's actual pending decision

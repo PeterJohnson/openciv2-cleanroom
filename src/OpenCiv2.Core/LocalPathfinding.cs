@@ -10,12 +10,12 @@ namespace OpenCiv2.Core;
 public static class LocalPathfinding
 {
     public static int NextDirection(GameState world, RuleTables rules, StackOperations stacks,
-        MapPoint source, int limit, int? incomingOwner = null) =>
+        MapPoint source, int limit) =>
         new Search(world.Map, world.Globals.Rules.FlatWorld, rules, world.Paths, world, stacks, false)
-            .Run(source, limit, incomingOwner);
+            .Run(source, limit);
 
     public static int PathLength(GameState world, RuleTables rules, StackOperations stacks,
-        MapPoint source, MapPoint goal, bool bySea, int limit, int? incomingOwner = null)
+        MapPoint source, MapPoint goal, bool bySea, int limit)
     {
         int distance = world.Map.Geometry.StepDistance(source, goal, world.Globals.Rules.FlatWorld);
         if (distance == 0)
@@ -27,7 +27,7 @@ public static class LocalPathfinding
         state.Goal = goal;
         int owner = state.Owner;
         state.Owner = -1;
-        int direction = NextDirection(world, rules, stacks, source, limit, incomingOwner);
+        int direction = NextDirection(world, rules, stacks, source, limit);
         int result = direction >= 0 ? state.ResultCost : direction;
         state.Owner = owner;
         return result;
@@ -38,7 +38,7 @@ public static class LocalPathfinding
     {
         if (state.Owner >= 0)
         { throw new InvalidOperationException("Uniform connectivity requires an absent path owner"); }
-        return new Search(map, flat, rules, state, null, null, true).Run(source, limit, null);
+        return new Search(map, flat, rules, state, null, null, true).Run(source, limit);
     }
 
     private sealed class Search(MapStorage map, bool flat, RuleTables rules, GenerationPathWorkspace state,
@@ -46,7 +46,7 @@ public static class LocalPathfinding
     {
         private MapPoint center;
         private bool naval, terrainCost, startsOnLand;
-        private int? ownerScratch;
+        private int ownerScratch = -1;
         private bool Uniform => uniformOnly || state.UniformCost;
         private UnitRule Rule => rules.Units[state.SelectedUnitType];
         private int Road => rules.Cosmic.RoadMovementMultiplier;
@@ -103,10 +103,10 @@ public static class LocalPathfinding
         private int Penalties(MapPoint point, int stackFactor)
         {
             var currentWorld = world ?? throw new InvalidOperationException("Path owner penalties require a world");
-            int scratch = ownerScratch ?? throw new InvalidOperationException("U03 nonuniform selection requires its incoming owner scratch when no occupancy query assigned it");
+            int scratch = ownerScratch;
             int penalty = 0;
             var tile = map.TileAt(point);
-            if (state.Owner == scratch && !currentWorld.Globals.HumanPlayers.Contains(scratch & 31)
+            if (scratch >= 0 && state.Owner == scratch && !currentWorld.Globals.HumanPlayers.Contains(scratch & 31)
                 && (tile.Features & (MapFeatures.Unit | MapFeatures.CitySite | MapFeatures.Fortification)) == MapFeatures.Unit
                 && SpatialControl.AdjacentNonalliedUnit(currentWorld, point, state.Owner) is not null)
             {
@@ -118,14 +118,14 @@ public static class LocalPathfinding
             return penalty;
         }
 
-        public int Run(MapPoint source, int limit, int? incomingOwner)
+        public int Run(MapPoint source, int limit)
         {
             center = state.Goal;
             state.GridCenter = center;
             naval = Rule.Domain == RuleDomain.Sea;
             terrainCost = Road < unchecked((sbyte)Rule.Movement);
             startsOnLand = naval && !map.TileAt(source).Ocean;
-            ownerScratch = incomingOwner;
+            ownerScratch = -1; // Supported U03 repair: no occupant until an actual lookup assigns one.
             state.ResultCost = 0;
             var normalizedSource = Normalize(source);
             if (state.CachedGoal != state.Goal || Cost(normalizedSource) == 0)

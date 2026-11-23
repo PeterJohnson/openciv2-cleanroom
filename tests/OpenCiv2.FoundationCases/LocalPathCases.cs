@@ -20,7 +20,7 @@ public static partial class FoundationSuite
             Data.Rules.Terrain[(int)Terrain.Ocean] = new() { MovementCost = 2 };
             State.Goal = Goal; State.Owner = 1; State.SelectedUnitType = 0;
         }
-        public int Run(int limit = 200, int? incomingOwner = null) => LocalPathfinding.NextDirection(Data.World, Data.Rules, Data.Stacks, Source, limit, incomingOwner);
+        public int Run(int limit = 200) => LocalPathfinding.NextDirection(Data.World, Data.Rules, Data.Stacks, Source, limit);
         public void Cost(MapPoint point, int cost)
         {
             // U03 logical grid coordinates, used only to supply a retained search input.
@@ -123,8 +123,8 @@ public static partial class FoundationSuite
         tied.Data.World.Map.TileAt(north).Terrain = tied.Data.World.Map.TileAt(south).Terrain = Terrain.Grassland;
         tied.Cost(tied.Source, 100); tied.Cost(north, 10); tied.Cost(south, 10); Equal(0, tied.Run());
         var unknown = new PathFixture(); unknown.State.Owner = -1;
-        Throws<InvalidOperationException>(() => unknown.Run()); Equal(25, unknown.State.ResultCost);
-        Equal(1, unknown.Run(incomingOwner: 0)); Equal(0, unknown.State.ResultCost);
+        Equal(1, unknown.Run()); Equal(25, unknown.State.ResultCost);
+        Equal(1, unknown.Run()); Equal(0, unknown.State.ResultCost);
         var threshold = new PathFixture(); threshold.Cost(threshold.Source, 30000); threshold.Cost(threshold.Middle, 20000);
         Equal(-1, threshold.Run()); // 19999 is a real selection threshold.
     }

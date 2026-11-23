@@ -4032,3 +4032,37 @@ undefined original memory. Optional caravan/city-entry and autoplay expulsion
 choices retain their separate semantic gaps. Full desktop movement/service
 composition, U04/A01 execution, complete turn/AI scheduling and human/AI-game
 acceptance remain open. Browser and cross-platform work remain deferred.
+
+## U03 coarse waypoints and unit Goto
+
+`CoarsePathfinding` now snaps actual map representatives and traverses retained
+land/sea graphs. It preserves D offsets for snapping, C offsets for BFS,
+modulo-256 distances and the 256-entry ring, failed-target snap seeding, the
+retained tie score and ordered waypoint selection. An explicit finite removal
+budget rejects unfinished searches while retaining their prefix. U03 documents
+this bound, coarse-coordinate rejection and absent-owner scratch initialization
+as supported safety repairs; no original undefined backing value is required.
+
+`UnitGoto` joins actual local/coarse searches and the greedy fallback. It retains
+adjacent cylinder rules, inherited modes/cache, fixed-rule changes made by
+snapping, actual-unit fallback estimates, airbase refusal, reversal and
+human/AI/Automated cancellation/exhaustion. The authored coarse join customizes
+Caravel to Land while the actor remains Sea, demonstrating the specified second
+local-search rule retention without performing movement. Other cases cover
+coarse graph paths, snap failure, exact ties, budget failure prefixes and local
+selection. These selectors do not authorize or execute a movement command.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1177 of 1179**, with the two existing
+platform/audio skips. The shared probe passed **1144 groups** across 130 coverage
+families; source identity verified **650 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-goto-native.json` | `a7336f8ffc51fbf21ae3a16b0fb9ba3feca9fd83efc039f78fffb67dfb2779f7` |
+| `m4-goto-identity.json` | `07955cb2cee361cdc8db9a42574fd56f4983eb3d6ea0abf82e01dec6c141751b` |
+
+U04 order execution, general AI orders, desktop service composition, complete
+turn scheduling and generated human/AI-game acceptance remain open. Browser
+execution and cross-platform qualification remain deferred.

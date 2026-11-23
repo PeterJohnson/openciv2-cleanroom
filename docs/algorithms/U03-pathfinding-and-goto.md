@@ -45,6 +45,32 @@ Search queue priority, first/last selection, retained costs, shared path workspa
 and direction ties remain semantic state. Parallel cost calculations must not
 change the frontier, cache publication, returned path or reached failure boundary.
 
+## Supported safety repairs
+
+These production rules override historical undefined-state and unchecked-input
+prose below; they do not alter defined path costs or deterministic selection.
+
+- Initialize per-call occupant scratch to absent. Apply the AI-stack penalty only
+  for a real nonnegative occupant matching path owner. An absent path owner never
+  indexes a civilization through an uninitialized scratch value. Real occupancy
+  lookups, goal-only cache reuse and the separate peace-territory query remain.
+  No caller supplies original stack bytes. Cases exercise fresh and cached
+  absent-owner paths alongside actual owned-stack penalties.
+- Reject coarse coordinates outside the allocated rectangle before the initial
+  graph read; reject an off-map Goto actor after the existing invalid/equal-target
+  early return. Do not permit a linear-index alias to select another row.
+- Coarse traversal has a configurable positive removal budget (production default
+  1,000,000). Exhaustion raises an explicit failed operation, retaining the search
+  prefix; it never returns a fabricated direction, unreachable result or completed
+  command. This bounds the otherwise potentially nonterminating byte-distance
+  traversal. Searches that finish within the budget retain the 256-entry ring,
+  modulo-256 distances, pending-entry overwrite and original ties. A one-removal
+  case verifies failure before the next expansion and retained distance prefix.
+
+Debug flags, zoom and search display callbacks have no gameplay consumer here
+and need not be reproduced. These repairs establish no original-game capture or
+whole-game conformance claim.
+
 ## Target and scope
 
 This specification describes classic Civilization II Multiplayer Gold Edition
@@ -159,12 +185,11 @@ The direction picker performs its window test **before** this normalization.
    was nonzero, run the debug interaction after that assignment. Return the
    chosen direction, normally −1 or 0..7; do not clear debug flags here.
 
-A per-call owner scratch value survives between flood and direction selection.
-The original does not initialize it. Supply its incoming value when a later
-comparison can use it; an occupancy lookup overwrites it. It is not a persistent
-cache field. Both reconstructions' zero initializer is a preset/repair, not
-proof that the original always began with zero. Uniform-cost selection does not
-read it for penalties. See Appendix B for evidence and validation limits.
+A per-call occupant scratch value survives between flood and direction selection.
+Production initializes it to absent under the supported safety repair above;
+actual occupancy lookups overwrite it. It is not a persistent cache field.
+Uniform-cost selection does not read it for penalties. Historical uninitialized
+state is an executable-comparison concern only.
 
 ### Fresh reverse flood
 

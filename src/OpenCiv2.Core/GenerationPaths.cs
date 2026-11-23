@@ -13,6 +13,7 @@ public sealed class GenerationPathWorkspace
     internal int Head, Tail;
     public MapPoint? CachedGoal { get; internal set; }
     public MapPoint Goal { get; set; }
+    public MapPoint CoarseStart { get; internal set; }
     public MapPoint GridCenter { get; internal set; }
     public int SelectedUnitType { get; set; }
     public int ResultCost { get; internal set; }
@@ -26,7 +27,7 @@ public sealed class GenerationPathWorkspace
         Array.Clear(Queue);
         Head = Tail = 0;
         CachedGoal = null;
-        Goal = GridCenter = default;
+        Goal = GridCenter = CoarseStart = default;
         SelectedUnitType = ResultCost = 0;
         Owner = -1;
         UniformCost = false;
