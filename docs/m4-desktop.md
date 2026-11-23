@@ -5228,3 +5228,47 @@ Full F04 city/civilization/global composition, generated desktop integration and
 complete human/AI end-condition acceptance remain open. This is shared mechanics
 and caller validation, not a new desktop playthrough. Browser/cross-platform
 qualification and network execution remain deferred.
+
+## P09 throne progress and semantic upgrades — 2026-11-23
+
+`ThroneProgress` uses actual V08 score and C08 Palace queries for old-turn
+progress. It preserves scenario/exact-mode exclusion, signed owner admission,
+the strict accelerated-start turn boundary, one increment per check, signed
+progress wrap and awards while the visual preference is disabled. Threshold
+evaluation preserves the modulo-32-bit sum before signed division; the query
+has no admitted mutation callbacks. The explicitly nonterminating `INT32_MAX`
+stage takes P09's permitted safe stop.
+
+`ThroneUpgrade` captures piece/overlay mode and exposes explicit semantic
+choices. It preserves the specified availability wrapper's omission of piece 7,
+revalidates current actor and eligibility, and commits a selection exactly once.
+Cancellation/disposal before acceptance leaves the room unchanged; the earlier
+progress award remains. Existing overlay bits and unused classic storage remain
+intact. Pixel hit fallback and uninitialized/rejected temporary selections are
+not gameplay actions under P09's adopted presentation contract.
+
+`ThroneProgressOperation` routes the decision privately through Session. Its
+owned report exposes piece levels and overlay ownership without recalculating
+score or mutating state. Ten new groups cover threshold boundaries/wrap, actual
+score and admission, hidden awards/count limits, selection/cancellation, owned
+reports, F06 round trips and private/wrong-recipient/invalid/stale replies. The
+existing V01 creation case now verifies initial levels and zero progress.
+P09 is included in both build-time and validator source-identity inputs.
+
+The initial build caught a missing namespace import in the new Session test;
+it was corrected before the successful runs. Root/App formatting and verification
+passed. Both final Release builds completed with zero warnings/errors. Native
+tests passed **1486 of 1488**, with two existing platform/audio skips. The shared
+probe passed **1453 groups** across 160 coverage families; source identity
+verified **752 compiled inputs**. The 43-project graph, eight identity tests and
+three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-throne-native.json` | `0a3142194790960faab933f5321f95ba112a90cc1bf5f53e11d506888bfb1d39` |
+| `m4-throne-identity.json` | `02a770c40c4725415a77f830a17a31c41a60eeded32f99472bdef65e9d80340e` |
+
+Full F04 orchestration, generated desktop integration, authored throne display
+and complete human/AI end-condition acceptance remain open. This checkpoint
+does not claim a new desktop playthrough. Browser/cross-platform qualification
+and network execution remain deferred.

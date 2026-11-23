@@ -5047,6 +5047,32 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/CityPollutionCases.cs"
       ]
+    },
+    {
+      "id": "throne-progress-upgrades",
+      "contract": "P09 adopted progress and semantic upgrades; actual V08 score, C08 Palace, F06 persistence and V01 initial levels",
+      "publicSurface": "ThroneProgress.Check/Threshold/View/BeginUpgrade; ThroneUpgrade; ThroneProgressOperation",
+      "review": "Actual score child, wrapped arithmetic and safe nonterminating-stage rejection, strict turn/palace/mode admission, one progress award including disabled presentation and signed-count wrap. Explicit eligible piece/overlay selections preserve wrapper admission, actor validation, cancellation, owned reports and classic round trips. Private Session routes decisions without raw pixel or temporary-selection semantics. Full F04/desktop composition and authored throne presentation remain open; browser/cross-platform and network execution deferred.",
+      "sharedGroups": [
+        "P09.throne-admission",
+        "P09.throne-classic-view",
+        "P09.throne-count-limits",
+        "P09.throne-failures-actor",
+        "P09.throne-overlay",
+        "P09.throne-piece-cancel",
+        "P09.throne-private-session",
+        "P09.throne-score-progress",
+        "P09.throne-threshold",
+        "P09.throne-wrapper-mode"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/ThroneProgress.cs",
+        "src/OpenCiv2.Session/ThroneProgressOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ThroneCases.cs"
+      ]
     }
   ]
 }

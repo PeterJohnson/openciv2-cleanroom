@@ -83,6 +83,8 @@ public static partial class FoundationSuite
         Equal(1, operation.Advance(1)!.Value); // Inactive human still receives the reset, no unit creation.
         random.RequireChoicesConsumed();
         Equal(0, civ.Gold);
+        Sequence(new byte[] { 1, 1, 0, 1, 0, 0, 1, 0, 0, 0 }, ((ReadOnlySpan<byte>)civ.ThroneRoom).ToArray());
+        Equal((short)0, civ.ThroneRoomUpgrades);
         Equal((byte)0, civ.NumAdvances);
         Equal((short)0, civ.ResearchProgress);
         Equal((short)19, civ.Researching);

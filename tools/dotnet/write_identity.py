@@ -48,6 +48,7 @@ COMMON = (
     "docs/algorithms/A01-ai-strategy-and-assessment.md",
     "docs/algorithms/A08-ai-research-government-and-diplomacy.md",
     "docs/algorithms/F04-turn-sequencing.md",
+    "docs/algorithms/P09-council-and-throne-room.md",
     "docs/algorithms/V03-research-and-technology.md",
     "docs/algorithms/V01-civilization-lifecycle-and-civil-war.md",
     "docs/algorithms/A02-ai-city-production.md",

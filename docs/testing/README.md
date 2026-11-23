@@ -1013,3 +1013,12 @@ restoration before hazard admission. No-pollution/autoplay gates remain distinct
 Nuclear and pollution presentation failures are diagnostics; required RNG
 failures retain prior pollution and blast mutations without removing the reactor.
 Full F04/desktop phase composition and game acceptance remain open.
+
+P09 throne groups cover threshold wrap and the nonterminating-stage safe stop,
+scenario/mode/palace/turn admission, actual V08 scoring, one increment per call,
+hidden progress, signed count limits and the piece-7 availability distinction.
+Semantic piece/overlay choices validate eligibility and local actor, commit once,
+and preserve cancellation/disposal behavior. Owned view reports do not calculate
+score; accepted progress/levels round-trip through F06. Private Session cases
+reject another participant's reply, invalid choices and stale replies. V01's
+creation case verifies initial throne levels. F04/desktop integration remains open.

@@ -502,6 +502,14 @@ actual C03 for every owned city before actual V07 calculation and rating.
 from triggering calculation. Outcome dispatch and fame-title resources remain
 separate work.
 
+P09 `ThroneProgress` uses actual V08 score for old-turn progress, retaining signed
+threshold/count arithmetic and one award per check. `ThroneUpgrade` captures the
+piece/overlay mode, revalidates the local actor and current eligibility, and
+commits one semantic selection. Its owned view report performs no score or game
+updates. `ThroneProgressOperation` privately routes the choice and retains the
+progress award across cancellation. General F04/desktop dispatch and authored
+throne presentation remain separate integration work.
+
 F06 Hall of Fame bytes are owned by `ClassicHallOfFame`; numeric rows retain their
 full name-field bytes. `HallOfFame` in Session owns V08 preparation, sparse I/O,
 ranking and display decoding. `HallOfFameOperation` owns the insertion/clear modal
