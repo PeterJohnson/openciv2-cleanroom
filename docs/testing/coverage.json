@@ -2961,6 +2961,30 @@
       "sharedGroups": [
         "M4.local-city-production-events"
       ]
+    },
+    {
+      "id": "local-automation-input-replay",
+      "contract": "M4 desktop automation recording and replay without a Lua VM",
+      "publicSurface": "LocalReplayRecorder, LocalReplayCodec, LocalReplay.Run, optional desktop --record and --replay",
+      "status": "partial",
+      "review": "The authored local profile records typed commands from all local bindings, replies and cancellations, continuation outcomes, retires, loads and save digests. Native coverage verifies rejection, divergence, pending input, bounds, script-free replay and byte-identical saves. Live task restoration and generated games remain open.",
+      "sources": [
+        "src/OpenCiv2.Contracts/LocalReplay.cs",
+        "src/OpenCiv2.Desktop.Automation/Program.cs",
+        "src/OpenCiv2.Formats/LocalReplayCodec.cs",
+        "src/OpenCiv2.Session/CommandRuntime.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalReplay.cs",
+        "src/OpenCiv2.Session/LocalReplayRecorder.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalReplayCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "M4.local-replay-commands-and-decisions",
+        "M4.local-replay-recording-limit"
+      ]
     }
   ]
 }

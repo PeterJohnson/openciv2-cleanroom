@@ -218,6 +218,12 @@ commands so ordinary dialogs and replies still apply. The launcher retains
 script results until the task finishes and revokes its auxiliary lease when
 the task ends or the game reloads.
 
+The optional launcher can record local inputs as a separate replay journal.
+`LocalReplayRecorder` observes the existing command and file boundaries.
+`LocalReplayCodec` owns the bounded, versioned representation.
+`LocalReplay.Run` drives a fresh authored game through the recorded inputs and
+checks receipts and save digests before returning the result.
+
 `BuildingAvailability` owns C06 nonunit eligibility with actual knowledge,
 stored facilities and active wonder effects. Scenario NoNewWonders/AllowManhattan
 are explicit semantic inputs while their original-file binding remains a gap;

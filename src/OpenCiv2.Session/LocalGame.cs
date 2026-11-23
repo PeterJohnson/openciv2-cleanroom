@@ -22,12 +22,16 @@ public sealed class LocalGame : IDisposable
     private ClassicFileState files = NewFileState();
     private ulong nextRuntime = 1;
     private ParticipantId participant;
+    private readonly LocalReplayRecorder? replay;
 
     public IPlayerClient Player { get; private set; }
     public bool Busy => runtime.HasPendingCommands;
 
-    public LocalGame()
+    public LocalGame() : this(null) { }
+
+    public LocalGame(LocalReplayRecorder? replay)
     {
+        this.replay = replay;
         runtime = NewRuntime();
         AuthorWorld(runtime);
         Player = BindPlayer();
@@ -65,7 +69,7 @@ public sealed class LocalGame : IDisposable
         }
 
         var candidate = new SessionRuntime(process, new(nextRuntime++));
-        candidate.EnableLocalPlay();
+        candidate.EnableLocalPlay(replay);
         LocalPlayCommands.Register(candidate);
         candidate.BeginClientSession(SessionSeeds);
         return candidate;
@@ -170,11 +174,20 @@ public sealed class LocalGame : IDisposable
             throw new IOException("Classic save failed.");
         }
 
-        return storage.Bytes.ToArray();
+        byte[] bytes = storage.Bytes.ToArray();
+        replay?.Record(new LocalReplayStep.Save(ContentIdentity.Sha256(bytes)));
+        return bytes;
     }
 
     /// <summary>Stages an F06 load under the declared authored rules and installs it only if this mode can resume it.</summary>
     public LocalLoadResult LoadClassic(ReadOnlyMemory<byte> bytes)
+    {
+        var result = LoadClassicCore(bytes);
+        replay?.RecordLoad(bytes, result);
+        return result;
+    }
+
+    private LocalLoadResult LoadClassicCore(ReadOnlyMemory<byte> bytes)
     {
         if (Busy)
         {

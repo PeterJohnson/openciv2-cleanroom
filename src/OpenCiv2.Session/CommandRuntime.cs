@@ -400,8 +400,11 @@ public sealed partial class SessionRuntime
         }
 
         var record = state.Commands[work.Command.Value];
+        void RecordAdvance() => state.Replay?.Record(new LocalReplayStep.Advance(work.Command,
+            record.Update.Status, record.Update.Code, record.Update.Interaction?.Id, record.Effects.Count));
         if (record.Update.Status.Terminal())
         {
+            RecordAdvance();
             return true;
         }
 
@@ -464,6 +467,7 @@ public sealed partial class SessionRuntime
         finally
         {
             state.Advancing = false;
+            RecordAdvance();
         }
     }
 
@@ -577,6 +581,7 @@ public sealed partial class SessionRuntime
         }
 
         state.Commands.Remove(command.Value);
+        state.Replay?.Record(new LocalReplayStep.Retire(command));
         return true;
     }
 
@@ -730,7 +735,10 @@ public sealed partial class SessionRuntime
         public CommandUpdate Submit(CommandRequest request)
         {
             var (current, grant) = Checked();
-            return SessionRuntime.Submit(current, Actor(grant), request, Correlation(current), grant);
+            var result = SessionRuntime.Submit(current, Actor(grant), request, Correlation(current), grant);
+            current.Replay?.Record(new LocalReplayStep.Submit(grant.Identity.Kind, request, result.Correlation.Command,
+                result.Status, result.Code));
+            return result;
         }
 
         public OwnedList<CommandUpdate> Updates()
@@ -750,6 +758,13 @@ public sealed partial class SessionRuntime
         public InputReceipt Reply(InteractionId interaction, int choice)
         {
             var (current, grant) = Checked();
+            var result = ReplyCore(current, grant, interaction, choice);
+            current.Replay?.Record(new LocalReplayStep.Reply(grant.Identity.Kind, interaction, choice, result));
+            return result;
+        }
+
+        private static InputReceipt ReplyCore(RuntimeState current, Lease grant, InteractionId interaction, int choice)
+        {
             foreach (var record in current.Commands.Values)
             {
                 if (record.Update.Interaction is { } pending && pending.Id == interaction
@@ -770,6 +785,13 @@ public sealed partial class SessionRuntime
         public InputReceipt Cancel(CommandId command)
         {
             var (current, grant) = Checked();
+            var result = CancelCore(current, grant, command);
+            current.Replay?.Record(new LocalReplayStep.Cancel(grant.Identity.Kind, command, result));
+            return result;
+        }
+
+        private static InputReceipt CancelCore(RuntimeState current, Lease grant, CommandId command)
+        {
             if (!current.Commands.TryGetValue(command.Value, out var record) || record.Update.Status.Terminal()
                 || (!Owner(grant, record) && !DecisionAccess(grant, record)))
             {

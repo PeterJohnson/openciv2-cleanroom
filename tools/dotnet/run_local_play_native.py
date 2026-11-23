@@ -512,7 +512,10 @@ def drive(args, app, observation, storage):
         script = Path(__file__).resolve().parents[2] / 'examples/automation/next-production.lua'
         observation = observation.with_name('automation-observation.json')
         storage = storage.with_name('automation-storage')
-        launch = ['dotnet', str(args.automation_desktop), '--script', str(script),
+        script_copy = observation.with_name('native-production.lua')
+        script_copy.write_bytes(script.read_bytes())
+        trace = observation.with_name('production-trace.json')
+        launch = ['dotnet', str(args.automation_desktop), '--script', str(script_copy), '--record', str(trace),
                   '--observe', str(observation), '--storage-directory', str(storage),
                   '--renderer-settings', str(observation.with_name('automation-renderer.json'))]
         if args.assets and args.fonts:
@@ -563,6 +566,9 @@ def drive(args, app, observation, storage):
             click('load')
             loaded = wait(lambda s: s['play']['automation']['status'] == 'Stopped')['play']
             assert loaded['automation']['detail'] == 'Game reloaded' and loaded['city']['production'] == 4
+            click('save')
+            wait(lambda s: s['message'] == 'Classic save written.')
+            replay_expected = saved_classic()
             checks.append('optional desktop Lua starts, cancels, pauses and resumes, matches manual save bytes, and stops on reload')
             driver.close_window(window)
             assert app.wait(timeout=10) == 0
@@ -573,6 +579,19 @@ def drive(args, app, observation, storage):
         automation_identity = json.loads(Path(str(observation) + '.identity.json').read_text())
         validate(automation_identity, desktop_automation=True)
         artifacts.extend([args.automation_desktop, args.automation_desktop.with_name('OpenCiv2.Automation.dll'), script])
+        script_copy.unlink()
+        payload = json.loads(json.loads(trace.read_bytes())['payload'])
+        assert payload['scriptSha256'] == hashlib.sha256(script.read_bytes()).hexdigest()
+        assert any(step['kind'] == 'submit' and step['controller'] == 'Automation' for step in payload['steps'])
+
+        def replay_save(recording, expected):
+            output = recording.with_suffix('.sav')
+            subprocess.run(['dotnet', str(args.automation_desktop), '--replay', str(recording),
+                            '--output', str(output)], check=True)
+            assert output.read_bytes() == expected
+
+        replay_save(trace, replay_expected)
+        checks.append('desktop production input journal replays without the script source and matches the reloaded save')
 
         interaction_script = observation.with_name('automation-interaction.lua')
         interaction_script.write_text("""
@@ -585,6 +604,8 @@ assert(command.status == 'Cancelled', command.status)
 game.log('Turn cancelled')
 """)
         launch[launch.index('--script') + 1] = str(interaction_script)
+        interaction_trace = observation.with_name('interaction-trace.json')
+        launch[launch.index('--record') + 1] = str(interaction_trace)
         observation = observation.with_name('automation-interaction.json')
         launch[launch.index('--observe') + 1] = str(observation)
         app = subprocess.Popen(launch)
@@ -594,11 +615,15 @@ game.log('Turn cancelled')
             assert window
             driver.wait_placement(window)
             click('automation.start')
-            decision = wait(lambda s: s['status'] == 'AwaitingInteraction' and s['dialog']['visible'])
+            decision = wait(lambda s: s['status'] == 'AwaitingInteraction' and s['dialog']['visible']
+                            and s['dialog']['regions']['cancel']['width'] > 0)
             click_box(decision['dialog']['regions']['cancel'], decision)
             cancelled = wait(lambda s: s['play']['automation']['status'] in ('Completed', 'Failed'))['play']
             assert cancelled['automation'] == {'status': 'Completed', 'detail': 'Turn cancelled'}
             assert cancelled['turn'] == 1
+            click('save')
+            wait(lambda s: s['message'] == 'Classic save written.')
+            interaction_expected = saved_classic()
             checks.append('desktop follows a script-submitted interaction and returns the human cancellation to Lua')
             driver.close_window(window)
             assert app.wait(timeout=10) == 0
@@ -606,6 +631,9 @@ game.log('Turn cancelled')
             if app.poll() is None:
                 app.terminate()
                 app.wait(timeout=10)
+        interaction_script.unlink()
+        replay_save(interaction_trace, interaction_expected)
+        checks.append('desktop journal replays cancellation of a Lua command through the normal player dialog')
     hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in artifacts if path}
     driver.close()
     return {'format': 'openciv2-linux-local-play/1', 'input': 'XTest pointer and keyboard', 'composition': 'cpu',

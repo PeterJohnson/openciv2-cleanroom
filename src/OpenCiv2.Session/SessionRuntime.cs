@@ -93,7 +93,11 @@ public sealed partial class SessionRuntime : IDisposable
         }
     }
 
-    internal void EnableLocalPlay() => state.LocalPlay = true;
+    internal void EnableLocalPlay(LocalReplayRecorder? replay = null)
+    {
+        state.LocalPlay = true;
+        state.Replay = replay;
+    }
 
     public bool Active => state.Active && !state.Disposed;
 

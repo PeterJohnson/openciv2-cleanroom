@@ -518,6 +518,11 @@ you want the script to run on. The regular desktop build retains its existing
 dependency graph. Linux verification uses the native play runner with
 `--automation-desktop` pointing at the optional launcher assembly.
 
+Add `--record TRACE` immediately after the script path to record the local
+session. Replay the journal with the same optional launcher and
+`--replay TRACE --output SAVE`. The trace includes imported save bytes and
+the commands issued by the player and the script. Both output paths must be new.
+
 ## Independent CLI and conformance checks
 
 [Test instructions](testing/README.md) list all eight CLI/helper suites, X02

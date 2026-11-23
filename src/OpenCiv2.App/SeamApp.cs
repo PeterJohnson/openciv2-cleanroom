@@ -38,11 +38,14 @@ public sealed class SeamApp : Application
     private LocalGame? play;
     private static bool startLocalGame;
     private static Func<LocalGame, SessionPanel, IDesktopAutomation>? startAutomation;
+    private static LocalReplayRecorder? localReplay;
     private IDesktopAutomation? automation;
-    public static void ConfigureLocalGame(Func<LocalGame, SessionPanel, IDesktopAutomation>? automationFactory = null)
+    public static void ConfigureLocalGame(Func<LocalGame, SessionPanel, IDesktopAutomation>? automationFactory = null,
+        LocalReplayRecorder? replay = null)
     {
         startLocalGame = true;
         startAutomation = automationFactory;
+        localReplay = replay;
     }
     private MapPainter? painter;
     private DispatcherTimer? timer;
@@ -186,7 +189,8 @@ public sealed class SeamApp : Application
         if (startLocalGame && ApplicationLifetime is IClassicDesktopStyleApplicationLifetime)
         {
             startLocalGame = false;
-            play = new();
+            play = new(localReplay);
+            localReplay = null;
             panel = new(observeMap: true);
             panel.Bind(play.Player);
             automation = startAutomation?.Invoke(play, panel);

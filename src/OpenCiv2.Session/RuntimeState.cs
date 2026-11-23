@@ -92,6 +92,7 @@ internal sealed class RuntimeState(ProcessContext process, RuntimeId identity)
     public bool Active, Advancing, Disposed, Checkpointing;
     public int Activities;
     public bool LocalPlay;
+    public LocalReplayRecorder? Replay;
     public SessionId Session;
     public ulong NextSession = 1, NextParticipant = 1, NextController = 1, Revision;
     public ulong NextCommand = 1, NextInteraction = 1;

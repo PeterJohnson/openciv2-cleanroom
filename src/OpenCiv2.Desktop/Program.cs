@@ -20,7 +20,7 @@ internal static class Program
 public static class DesktopHost
 {
     public static int Run(string[] args, Func<LocalGame, SessionPanel, IDesktopAutomation>? automation = null,
-        params Assembly[] optionalAssemblies)
+        LocalReplayRecorder? replay = null, params Assembly[] optionalAssemblies)
     {
         try
         {
@@ -148,7 +148,7 @@ public static class DesktopHost
 
             if (localGame)
             {
-                SeamApp.ConfigureLocalGame(automation);
+                SeamApp.ConfigureLocalGame(automation, replay);
             }
 
             if (showcase is not null)

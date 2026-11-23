@@ -60,9 +60,8 @@ choices, and waits for the result. Its test submits the same request by hand and
 replays the recorded Lua request on a matching initial save and turn sequence.
 All three games produce identical saved state. The task exposes the parsed
 requests and admission receipts in `CommandAttempts`, including rejected
-requests. The trace currently lives in the host session and covers submissions.
-Replaying a target requires a matching city or unit lifetime, and replay of
-script replies and cancellation requests remains open.
+requests. The desktop recorder also captures replies and cancellations at the
+session boundary.
 
 ## Limits and lifetime
 
@@ -124,9 +123,20 @@ session keeps advancing during a pause, and visible script interactions use
 the same dialog and replies as player commands. A successful reload stops the
 old task. Start the script again to attach it to the loaded game.
 
-Completion events and command attempts live in the active session. Persisted
-task metadata, per-task memory accounting, and replay of interaction inputs
-remain open.
+Use `--script PATH --record TRACE` in the optional launcher to write a local
+replay journal on close. The journal starts with the fresh Alder Valley
+profile and contains ordered player and automation inputs, receipts,
+continuation steps, imported save bytes, and hashes of explicit saves. It
+includes the selected script's SHA-256. The trace is versioned separately
+from classic saves.
+
+`--replay TRACE --output SAVE` runs headlessly, verifies receipts and recorded
+save hashes, and writes a new classic save if the journal ends with no pending
+command. Replay needs the journal and the matching game profile. It never
+loads the script. Journal export stops at its size or step limit and reports
+the error without interrupting the game. Both outputs require a new path.
+
+Live task checkpoint restoration and per-task memory accounting remain open.
 
 ## Build and evidence
 

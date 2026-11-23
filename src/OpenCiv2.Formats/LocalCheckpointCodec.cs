@@ -27,13 +27,13 @@ public static class LocalCheckpointCodec
         }
     }
 
-    private static string Number<T>(T value) where T : IFormattable =>
+    internal static string Number<T>(T value) where T : IFormattable =>
         value.ToString(null, CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Reads a canonical decimal string, preserving full integer precision across JSON consumers.
     /// </summary>
-    private static T Number<T>(ContentReader reader) where T : struct, System.Numerics.IBinaryInteger<T>
+    internal static T Number<T>(ContentReader reader) where T : struct, System.Numerics.IBinaryInteger<T>
     {
         string text = reader.Text();
         if (!T.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var value)
@@ -45,7 +45,7 @@ public static class LocalCheckpointCodec
         return value;
     }
 
-    private static ulong Id(ContentReader reader)
+    internal static ulong Id(ContentReader reader)
     {
         ulong value = Number<ulong>(reader);
         if (value == 0)
@@ -56,7 +56,7 @@ public static class LocalCheckpointCodec
         return value;
     }
 
-    private static bool Boolean(ContentReader reader)
+    internal static bool Boolean(ContentReader reader)
     {
         if (reader.Value?.GetValueKind() is not (JsonValueKind.True or JsonValueKind.False))
         {
@@ -66,7 +66,7 @@ public static class LocalCheckpointCodec
         return reader.Value!.GetValue<bool>();
     }
 
-    private static int Count(ContentReader reader)
+    internal static int Count(ContentReader reader)
     {
         int count = reader.ArraySize();
         if (count > MaximumItems)
@@ -90,13 +90,13 @@ public static class LocalCheckpointCodec
         return text;
     }
 
-    private static OwnedList<byte> Blob(ContentReader reader) =>
+    internal static OwnedList<byte> Blob(ContentReader reader) =>
         new(Convert.FromHexString(Hex(reader, 2, MaximumOwnerBytes)));
 
     /// <summary>
     /// Decodes bounded hexadecimal UTF-16 code units without normalizing or repairing the original text.
     /// </summary>
-    private static string Text(ContentReader reader)
+    internal static string Text(ContentReader reader)
     {
         string text = Hex(reader, 4, MaximumText);
         var chars = new char[text.Length / 4];
@@ -116,7 +116,7 @@ public static class LocalCheckpointCodec
     /// <summary>
     /// Conservatively accounts for text, blobs and collections before building an oversized JSON payload.
     /// </summary>
-    private sealed class Budget
+    internal sealed class Budget
     {
         private int remaining = MaximumPayload;
 
@@ -172,7 +172,7 @@ public static class LocalCheckpointCodec
         };
     }
 
-    private static CommandValue Value(ContentReader reader)
+    private static CommandValue Value(ContentReader reader, bool validate = true)
     {
         string kind = reader.At("kind").Text();
         if (kind is "unit" or "city")
@@ -196,7 +196,7 @@ public static class LocalCheckpointCodec
                 return new CommandValue.Text(Text(v));
             case "civilization":
                 byte slot = Number<byte>(v);
-                if (slot >= EntityLimits.Civilizations)
+                if (validate && slot >= EntityLimits.Civilizations)
                 {
                     v.Error("invalid civilization");
                 }
@@ -207,7 +207,7 @@ public static class LocalCheckpointCodec
         }
     }
 
-    private static JsonArray Values(OwnedList<NamedValue> values, Budget budget)
+    internal static JsonArray Values(OwnedList<NamedValue> values, Budget budget)
     {
         budget.Items(values.Count);
         var result = new JsonArray();
@@ -219,7 +219,7 @@ public static class LocalCheckpointCodec
         return result;
     }
 
-    private static OwnedList<NamedValue> Values(ContentReader reader)
+    internal static OwnedList<NamedValue> Values(ContentReader reader, bool validate = true)
     {
         var values = new NamedValue[Count(reader)];
         var names = new HashSet<string>(StringComparer.Ordinal);
@@ -228,12 +228,12 @@ public static class LocalCheckpointCodec
             var row = reader.Element(i);
             row.Fields(["name", "value"]);
             string name = Text(row.At("name"));
-            if (name.Length == 0 || !names.Add(name))
+            if (validate && (name.Length == 0 || !names.Add(name)))
             {
                 row.Error("empty or duplicate named value");
             }
 
-            values[i] = new(name, Value(row.At("value")));
+            values[i] = new(name, Value(row.At("value"), validate));
         }
         return new(values);
     }

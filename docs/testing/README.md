@@ -65,6 +65,12 @@ compares the production policy's save with the manual command, verifies that
 reload stops the running script, and uses the normal turn dialog to cancel a
 script-submitted command.
 
+The desktop automation driver also records those sessions, removes the temporary
+script files, and runs headless replay against the journals. It compares the
+resulting classic saves byte for byte. Shared cases check invalid choices,
+cancelled commands, incomplete traces, divergent receipts, damaged envelopes,
+and journal capacity.
+
 Player purchase/sale groups cover raw-row pricing, signed unit/unsigned building
 costs, zero-stock doubling, caps/narrowing, affordability/disorder, cancellation,
 terminal failures, Palace/scenario exceptions and once-per-turn sales. The direct

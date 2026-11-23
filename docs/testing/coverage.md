@@ -99,4 +99,6 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 
 | local-production-automation-events | Own-city completion feed for automation bindings and ordinary production choice equivalence | partial | [CityProductionEventCases.cs](../../tests/OpenCiv2.FoundationCases/CityProductionEventCases.cs) |
 
+| local-automation-input-replay | Versioned local input journal, rejection checks and script-free desktop replay | partial | [LocalReplayCases.cs](../../tests/OpenCiv2.FoundationCases/LocalReplayCases.cs) |
+
 The [JSON inventory](coverage.json) contains the complete file lists, review notes and shared test IDs. Keep admitted domains and failure/resume paths explicit when extending it. A partial host row does not claim complete map rendering, menus or gameplay. See the [M4 desktop work record](../m4-desktop.md) for the remaining parent integrations and platform deferrals.
