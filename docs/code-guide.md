@@ -592,14 +592,24 @@ announcements with retained numeric input. CityTaken matching/actions are a
 required dispatcher when events are loaded; no presentation callback substitutes
 for it. `Session/CityCaptureOperation` routes each Palace, technology, nested
 incident and required P06 window to its own participant. The V06 revolt mission
-now dispatches this operation; movement and city-controller admission remain open.
+now dispatches this operation through the local city controller; movement admission remains open.
 
 `Core/CityIncitement` owns V06's revolt body after city admission: price/offer,
 payment, actual resumable escape, explicit incident and actual C09 incited
-transfer. Its returned theft fallback belongs to the city controller. The
+transfer. The local city controller consumes its returned theft fallback. The
 `Formats/Classic/ClassicRevoltOptions` adapter reads all four authored lines with
 the existing classic reader; its caller supplies the filename/search context.
 `Session/CityIncitementOperation` routes the offer and nested incidents, then
 reuses capture presentation for Palace, technology and P06 decisions. An
 unaffordable offer has only a presentation close action in the session. Full
 content/dialog binding and desktop city-controller integration remain open.
+
+`Core/CityMissions` owns the local V06 city entry, menu availability, ordered
+AI/nonlocal/autoplay selection and repeated fallback dispatch. It captures the
+mission context once, publishes `Espionage.LastMission` before each actual child,
+and composes visits, theft, sabotage/poison, planted devices and incitement.
+`Formats/Classic/ClassicCityMissionOptions` reads all seven ordinary authored
+options; the caller supplies the Spy annotation and filename/search context.
+`Session/CityMissionOperation` routes menu/body/incident/capture decisions and
+requires actual P06/P07 presentation adapters. Movement admission, full desktop
+content binding and network chat interception remain separate work.

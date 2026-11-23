@@ -498,3 +498,9 @@ third-party ties, actual captured cities, historical overrides and the V05 patie
 helper. Alliance reasons survive later rejection, and neither evaluation nor
 willingness silently changes a treaty. Full audience/incident/review callers and
 generated desktop-game acceptance remain open.
+
+V06 city-controller groups exercise actual mission/fallback chains, retained
+context across yields, complete authored option reading, UN/Manhattan and
+technology gates, ordered AI selection and session actor/victim/capture routing.
+Custom hidden replies reach the real bodies; custom network Chat stops explicitly.
+These are service/content/session checks, not generated desktop-game acceptance.

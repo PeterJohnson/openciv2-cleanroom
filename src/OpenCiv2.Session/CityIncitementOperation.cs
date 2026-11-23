@@ -35,29 +35,7 @@ public sealed class CityIncitementOperation(CityIncitement.Operation operation, 
         if (pending is not null)
         {
             context.Publish();
-            InteractionSpec prompt;
-            switch (pending)
-            {
-                case RevoltDecision.Offer offer:
-                    // The unaffordable dialog has no payment options. Session's required choice is
-                    // only its presentation close action, not another admission or payment branch.
-                    var options = offer.Request.Options.Count == 0 ? new[] { new InteractionOption(0, "Close") }
-                        : offer.Request.Options.Select(o => new InteractionOption(o.Value, o.Text)).ToArray();
-                    string title = offer.Request.Options.Count == 0
-                        ? $"Insufficient gold to incite a revolt in {offer.Request.CityName}. Cost: {offer.Request.Price}."
-                        : $"Incite a revolt in {offer.Request.CityName} for {offer.Request.Price}?";
-                    prompt = new(title, recipient(offer.Request.Actor), new CommandValue.City(offer.Request.City), new(options.Select(o => o.Value)))
-                    { Options = new(options) };
-                    break;
-                case RevoltDecision.Incident incident:
-                    prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
-                    break;
-                case RevoltDecision.Capture capture:
-                    prompt = CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt);
-                    break;
-                default:
-                    throw new InvalidOperationException("Unknown revolt decision");
-            }
+            var prompt = RevoltInteraction.Prompt(context, pending, recipient, window, ref windowPrompt);
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (!operation.Completed)
@@ -67,4 +45,36 @@ public sealed class CityIncitementOperation(CityIncitement.Operation operation, 
         return completed = new(Result: result);
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class RevoltInteraction
+{
+    internal static InteractionSpec Prompt(OperationContext context, RevoltDecision pending, Func<int, ParticipantId> recipient,
+        Func<CaptureCityVisit, InteractionSpec> window, ref InteractionSpec? windowPrompt)
+    {
+        InteractionSpec prompt;
+        switch (pending)
+        {
+            case RevoltDecision.Offer offer:
+                // The unaffordable dialog has no payment options. Session's required choice is
+                // only its presentation close action, not another admission or payment branch.
+                var options = offer.Request.Options.Count == 0 ? new[] { new InteractionOption(0, "Close") }
+                    : offer.Request.Options.Select(o => new InteractionOption(o.Value, o.Text)).ToArray();
+                string title = offer.Request.Options.Count == 0
+                    ? $"Insufficient gold to incite a revolt in {offer.Request.CityName}. Cost: {offer.Request.Price}."
+                    : $"Incite a revolt in {offer.Request.CityName} for {offer.Request.Price}?";
+                prompt = new(title, recipient(offer.Request.Actor), new CommandValue.City(offer.Request.City), new(options.Select(o => o.Value)))
+                { Options = new(options) };
+                break;
+            case RevoltDecision.Incident incident:
+                prompt = EspionageInteraction.Prompt(incident.Pretext, recipient(incident.Pretext.Victim.Civilization));
+                break;
+            case RevoltDecision.Capture capture:
+                prompt = CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt);
+                break;
+            default:
+                throw new InvalidOperationException("Unknown revolt decision");
+        }
+        return prompt;
+    }
 }
