@@ -174,7 +174,7 @@ The `scenario-trigger-callers` family covers [ordinary matching](../../src/OpenC
 and actual capture/casualty event boundaries. [Trigger cases](../../tests/OpenCiv2.FoundationCases/ScenarioTriggerCases.cs)
 exercise live traversal and names, persistent wildcard binding, random and
 technology polling, real nested Library/emissary decisions and private Session
-completion. Remaining turn/cession/UI hooks and full desktop composition
+completion. Remaining cession/UI hooks and full desktop composition
 remain open.
 
 The `retained-load-workflow` family covers [F06 post-load composition](../../src/OpenCiv2.Session/ClassicLoadDialog.cs)
@@ -183,3 +183,10 @@ and [actual lifecycle cleanup](../../src/OpenCiv2.Session/ClassicLoadedUnitClean
 real loaded state, retained scenario/restart choices, world-pin release and
 failure/disposal prefixes. Desktop participant UI and complete load acceptance
 remain pending.
+
+The `single-player-turn-entry` family covers [F04 entry composition](../../src/OpenCiv2.Session/SinglePlayerTurnEntryOperation.cs)
+with actual global, outcome and scenario children. [Entry cases](../../tests/OpenCiv2.FoundationCases/TurnEntryCases.cs)
+check runtime/saved resume separation, one-time event admission, fresh turn
+arguments, quit ordering, private Library choices and required/cosmetic failure
+prefixes. The authored desktop command now uses this entry; complete civilization
+and AI scheduling, general scenario composition and graphical acceptance remain open.

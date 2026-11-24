@@ -101,10 +101,9 @@ public static partial class LocalPlayCommands
     /// <summary>Local F04 mode adapter. The controller supplies the end-phase and research decisions.</summary>
     private sealed class EndPlayerPhase(IPreferenceWriter preferences, RateDecisionPreferences choices, HallOfFame hall) : IContinuation
     {
-        private bool confirmed, movementChecked, globalAdvanced, openingFinished, financeFinished, activated;
+        private bool confirmed, movementChecked, entryFinished, financeFinished, activated;
         private PendingOutcomeOperation? movementOutcome, finalOutcome;
-        private TurnOpeningOperation? opening;
-        private GlobalTurnOperation? global;
+        private SinglePlayerTurnEntryOperation? entry;
         private bool upkeepCommitted;
         private CityPass.Operation? cityPass;
         private CitySlot researchCity;
@@ -149,8 +148,7 @@ public static partial class LocalPlayCommands
             governmentTurn = null;
             governmentSelection = null;
             movementOutcome?.Dispose();
-            global?.Dispose();
-            opening?.Dispose();
+            entry?.Dispose();
             finalOutcome?.Dispose();
         }
 
@@ -202,32 +200,20 @@ public static partial class LocalPlayCommands
                 }
                 movementChecked = true;
             }
-            if (!globalAdvanced)
+            if (!entryFinished)
             {
-                if (global is null)
-                { global = BeginGlobalAdvance(context); input = new(); }
-                var result = global.Resume(context, input);
+                if (entry is null)
+                { entry = BeginTurnEntry(context); input = new(); }
+                var result = entry.Resume(context, input);
                 if (!result.Status.Terminal())
                 { return result; }
                 RememberFailure(result);
-                global.Dispose();
-                global = null;
-                globalAdvanced = true;
-                world.Globals.TurnCiv = (sbyte)context.Actor.Civilization.Value;
-                opening = new(hall);
-                input = new();
-            }
-            if (!openingFinished)
-            {
-                var result = opening!.Resume(context, input);
-                if (!result.Status.Terminal())
-                { return result; }
-                RememberFailure(result);
-                if (opening.Quit)
+                if (entry.Quit)
                 { return CloseGame(context); }
-                opening.Dispose();
-                opening = null;
-                openingFinished = true;
+                entry.Dispose();
+                entry = null;
+                entryFinished = true;
+                world.Globals.TurnCiv = (sbyte)context.Actor.Civilization.Value;
                 input = new();
             }
 
@@ -417,7 +403,7 @@ public static partial class LocalPlayCommands
         private static OwnedList<NamedValue> TurnValue(GameState world) =>
             new([new("turn", new CommandValue.Integer(world.Globals.Turn))]);
 
-        private GlobalTurnOperation BeginGlobalAdvance(OperationContext context)
+        private SinglePlayerTurnEntryOperation BeginTurnEntry(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -432,7 +418,7 @@ public static partial class LocalPlayCommands
             world.PlayerPhaseActive = false;
             world.Multiplayer.ResumeCiv = world.Multiplayer.Saved.ResumeCiv = 0;
 
-            world.HumanWonders.Update(world);
+            world.Multiplayer.ResumeEvent = world.Multiplayer.Saved.ResumeEvent = 0;
             var budget = new StackBudget(5_000_000, 64);
             var stacks = new StackOperations(world, budget);
             var cityEffects = new CityTurnEffects(context);
@@ -452,8 +438,9 @@ public static partial class LocalPlayCommands
             var turn = new GlobalTurn(world, rules, context.Gameplay, GameplayContent.Builtin.Values.Calendar, spawning,
                 new(world, effects.Warming, effects.Redraw), new(world, context.Gameplay),
                 new(world, CivilizationScoreOperation.CreateScore(context)), new(world, rules, lifecycle, incidents));
-            return new(turn.Begin(context.Process.OrdinaryPreferences.AcceleratedStart, $"local-global/{world.Globals.Turn}"),
-                c => c == owner ? context.Actor.Participant : throw new InvalidOperationException("The authored profile has no other decision recipient"));
+            return new(turn, () => throw new InvalidOperationException("The authored profile does not admit loaded scenario events"), hall,
+                c => c == owner ? context.Actor.Participant : throw new InvalidOperationException("The authored profile has no other decision recipient"),
+                context.Process.OrdinaryPreferences.AcceleratedStart, $"local-global/{world.Globals.Turn}");
         }
 
         private sealed class GlobalEffects(Func<OperationContext> current) : IBarbarianSpawningEffects, IDiplomaticWarEffects,

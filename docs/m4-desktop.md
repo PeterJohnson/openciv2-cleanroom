@@ -6552,3 +6552,44 @@ load/generated-game acceptance remain open. F04 turn passes, V05 cession and
 foreign-minister scenario hooks also remain integration work. These authored
 checks do not supply original-game evidence or resolve the recorded formula gaps.
 Browser, cross-platform and network execution remain deferred. M4 is ongoing.
+
+## F04 retained single-player turn entry
+
+`SinglePlayerTurnEntryOperation` joins the human-wonder snapshot, actual global
+advancement when there is no runtime resume slot, scheduled retirement/pending
+outcome handling, and the four ordered S02 turn passes. A quit outcome finishes
+before events. Event admission reads current Loaded/resume/reprocess values after
+outcomes; admitted passes each read their own live turn argument without repeating
+that gate. Actual global, outcome and scenario choices remain suspended in their
+children, with private recipient routing and no replay of accepted effects.
+
+The runtime reprocess flag is separate from F06's signed saved word. F06 installation
+retains the incoming runtime value, and the authored desktop movement boundary
+clears both runtime/saved resume pairs. The desktop end-turn command now uses the
+shared entry before its existing restricted city/civilization path. Its profile
+continues to exclude loaded scenario events; the general event service factory is
+exercised through the real Session workflow, not claimed as desktop scenario UI.
+
+Seven shared groups cover the resume/admission matrix, saved/runtime retention,
+fresh pass arguments, one-time admission, real throne and outcome ordering,
+quit-before-events, private recursive Library choices, stale replies, terminal
+idempotence, disposal, required event failures and deferred global presentation
+diagnostics. Existing direct/console desktop turn and outcome regressions pass.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1721/1723**, with the
+two existing platform/audio skips. All **1688 shared groups** passed across
+**186 coverage families**; identity verified **840 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-turn-entry-native.json` | `088c349da397da940a81d611b086d579b182531fca030e63a2295632f0314f02` |
+| `m4-turn-entry-identity.json` | `3cdd41eed2bc74f3da2542d7d7bb95e17f4964b1211f20c84532841a0c967c72` |
+
+Full civilization/AI scheduling, general desktop scenario composition and
+generated-game/graphical acceptance remain open. The unresolved gameplay formulas
+still require specification clarification or independent original-game evidence.
+This checkpoint uses specification-derived expectations and adds no original-game
+observations. Browser, cross-platform and network execution remain deferred.
+M4 is ongoing.

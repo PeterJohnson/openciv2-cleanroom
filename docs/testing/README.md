@@ -1256,3 +1256,14 @@ cleanup retains last-settler restart/Library decisions and observes later live
 scan bounds; separate cases check the local-mode and stack-budget boundaries.
 Existing synchronous F06 groups also run. Host participant UI and full desktop
 load acceptance remain open; these authored cases are not original-game evidence.
+
+F04 turn-entry groups compose actual global advancement, retirement/outcome
+reports and all four scenario passes. The resume matrix distinguishes runtime
+and saved values, including signed nonzero reprocess flags. Retained choices
+separate live turn reads and confirm that later passes do not repeat the entry
+gate. Quit suppresses events; Library choices retain private recipients; disposal
+and required failures preserve completed effects. Cosmetic global failures still
+allow event execution and remain diagnostic failures at completion. Existing
+direct/console desktop end-turn regressions run through this shared entry.
+Full civilization/AI scheduling, general scenario desktop composition and graphical
+acceptance remain open; browser/cross-platform execution remains deferred.

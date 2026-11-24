@@ -36,6 +36,8 @@ public record struct MultiplayerState
     public MultiplayerValues Saved;
     public PasswordFlags Passwords;
     public int LocalHuman, ResumeCiv;
+    // F04 runtime reprocess flag; F06 retains a separate signed saved word.
+    public int ResumeEvent;
     public CivilizationSet HotseatParticipants;
     public int NetworkTurnCiv;
     public bool NetworkHost;

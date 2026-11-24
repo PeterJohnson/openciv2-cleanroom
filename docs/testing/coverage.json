@@ -5113,6 +5113,7 @@
         "src/OpenCiv2.Session/GlobalTurnOperation.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
         "src/OpenCiv2.Session/OutcomeOperations.cs",
+        "src/OpenCiv2.Session/SinglePlayerTurnEntryOperation.cs",
         "src/OpenCiv2.Session/ThroneInteraction.cs"
       ],
       "tests": [
@@ -5735,7 +5736,7 @@
       "id": "scenario-trigger-callers",
       "contract": "S02 \u00a7\u00a77,11 ordinary trigger matching; C09 takeover and U06 casualty event boundaries",
       "publicSurface": "ScenarioTriggers; ScenarioTriggerOperation; retained CityCapture/CombatCasualties constructors and Session adapters",
-      "review": "Seven ordinary trigger kinds use live collection traversal, captured turn arguments, signed remainder, controlled primary RandomTurn rolls, sticky UnitKilled/CityTaken selectors and live city names. Technology polling captures the wildcard branch once, checks live Alive/knowledge and retains the final successful receiver, including consumed events. Actual capture pauses after owner/radius/reveal and before center-owner/announcements; casualties pause after loss/history/kill count and before actual deletion. Real recursive Library and emissary choices, appended events at player decisions, invalidation/fault/disposal prefixes, private replies, cancellation/timeout and post-completion diagnostics are covered. F04 turn-pass orchestration, V05 cession and foreign-minister hooks, parser/desktop presentation composition, broader enclosing diagnostic propagation and generated complete-game/graphical acceptance remain open. Specification-derived tests are not original-game observations. Browser, cross-platform and network execution are deferred. F06 post-load now composes actual retained triggers and cleanup in retained-load-workflow; desktop host presentation remains pending.",
+      "review": "Seven ordinary trigger kinds use live collection traversal, captured turn arguments, signed remainder, controlled primary RandomTurn rolls, sticky UnitKilled/CityTaken selectors and live city names. Technology polling captures the wildcard branch once, checks live Alive/knowledge and retains the final successful receiver, including consumed events. Actual capture pauses after owner/radius/reveal and before center-owner/announcements; casualties pause after loss/history/kill count and before actual deletion. Real recursive Library and emissary choices, appended events at player decisions, invalidation/fault/disposal prefixes, private replies, cancellation/timeout and post-completion diagnostics are covered. V05 cession and foreign-minister hooks, parser/desktop presentation composition, broader enclosing diagnostic propagation and generated complete-game/graphical acceptance remain open. Specification-derived tests are not original-game observations. Browser, cross-platform and network execution are deferred. F06 post-load now composes actual retained triggers and cleanup in retained-load-workflow; desktop host presentation remains pending. F04 turn-pass orchestration is now covered by single-player-turn-entry; general desktop scenario composition remains open.",
       "sharedGroups": [
         "S02.capture-retained-trigger",
         "S02.casualty-retained-trigger",
@@ -5780,6 +5781,33 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/RetainedLoadCases.cs"
+      ]
+    },
+    {
+      "id": "single-player-turn-entry",
+      "contract": "F04 \u00a7\u00a72\u20133 single-player round entry; S02 four turn passes; F06 \u00a76 runtime/saved resume separation",
+      "publicSurface": "SinglePlayerTurnEntryOperation; MultiplayerState.ResumeEvent; authored desktop EndPlayerPhase integration",
+      "review": "Actual human-wonder snapshot, optional GlobalTurn, scheduled retirement/pending outcome and ordered Turn/Interval/Random/Technology passes. A single live post-outcome gate admits events; later passes read current turn arguments without repeating that gate. Resume matrix, saved/runtime independence, retained throne and outcome choices, quit-before-events, private recursive Library choices, terminal idempotence, disposal, required failure prefixes and cosmetic diagnostics are covered. The authored desktop end-turn path clears both runtime/saved resume pairs and uses this entry; its existing profile still excludes loaded scenario events. Existing direct/console global/outcome regressions remain covered. Full civilization/AI scheduler, general scenario desktop composition, complete generated games and graphical acceptance remain open. Specification-derived expectations are not original-game observations. Browser, cross-platform and network execution are deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/State/Multiplayer.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/SinglePlayerTurnEntryOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalGlobalTurnCases.cs",
+        "tests/OpenCiv2.FoundationCases/TurnEntryCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.desktop-global-single-arrival",
+        "F04.desktop-global-throne-history-warming",
+        "F04.entry-failure-disposal",
+        "F04.entry-four-live-passes",
+        "F04.entry-global-before-events",
+        "F04.entry-outcome-before-events",
+        "F04.entry-private-session",
+        "F04.entry-resume-admission",
+        "F04.entry-resume-storage"
       ]
     }
   ]

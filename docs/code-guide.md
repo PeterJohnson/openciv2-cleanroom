@@ -1126,6 +1126,17 @@ open. The authored local profile now composes the shared global operation before
 its restricted civilization/city path. `TurnOpeningOperation` presents retirement
 and pending outcomes after global advancement; it never scans arrivals again.
 
+`SinglePlayerTurnEntryOperation` composes F04 §3's human-wonder snapshot, optional
+global advancement, retirement/outcome handling and four ordered S02 passes.
+The event gate reads the current runtime resume values after outcomes, then
+admits all four passes; each turn argument is read when its pass starts. Nested
+choices keep their actual recipient. Quit skips events, required failures stop
+the entry, and presentation diagnostics are returned after semantic completion.
+Runtime `Multiplayer.ResumeEvent` remains separate from the F06 saved word.
+The authored desktop end-turn command uses this entry and clears both resume
+pairs after movement; its existing profile still excludes loaded scenario events.
+The caller owns civilization/AI scheduling and subsequent resume clearing.
+
 `Core/Ai/RelationReview` implements A08 §7 with actual border measurement, retained
 emissary/warning/violation decisions, city knowledge, U01 relocation, V02 Anarchy
 and V04 war/attitude effects. Its nullable incoming delta remains unknown unless
