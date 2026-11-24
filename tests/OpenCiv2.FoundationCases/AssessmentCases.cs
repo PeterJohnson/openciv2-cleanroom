@@ -29,9 +29,10 @@ public static partial class FoundationSuite
         public List<GovernmentChangeNotice> Governments { get; } = [];
         public List<ProductionWonderNotice> ProductionNotices { get; } = [];
 
-        public AssessmentFixture(params Choice[] choices)
+        public AssessmentFixture(params Choice[] choices) : this(null, choices) { }
+        public AssessmentFixture(RevelationFixture? data, params Choice[] choices)
         {
-            Lifecycle = new(choices.ToList());
+            Lifecycle = new(choices.ToList(), data);
             Civ.Government = Government.Despotism;
             Civ.ContinentPolicy[1] = 5;
             World.Globals.TurnCiv = 1;

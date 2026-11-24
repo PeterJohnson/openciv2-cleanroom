@@ -204,3 +204,9 @@ and explicit civilization/recipient rate editing. [Integration cases](../../test
 exercise actual human and AI children, private handoffs, imported flag clearing,
 captured choices, persistence and failure/disposal boundaries. The desktop turn
 uses the shared composition; complete civilization scheduling remains open.
+
+The `ai-civilization-assessment` family also covers [retained assignment lifecycle children](../../src/OpenCiv2.Core/Ai/CivilizationAssessment.Operation.cs)
+and their [private Session adapter](../../src/OpenCiv2.Session/CivilizationAssessmentOperation.cs).
+The desktop turn waits for this assessment before its financial notices. Actual
+nested incidents, recreation, disposal and failure boundaries supplement the
+existing census/assignment cases; they do not establish full generated-game play.

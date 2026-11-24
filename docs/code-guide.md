@@ -206,7 +206,12 @@ are owned by `TerrainWorkerTactics`; generated-game orchestration remains open.
 `CivilizationAssessment` owns A01 staging, ordered census, regional policy,
 reverse goal assignment and goal aging. Its required children are the actual
 production orders/policy, government transition, support, loss and elimination
-services. `AssessmentQueries` owns the small role/quota/coastal queries;
+services. Its `Begin` continuation retains actual elimination and retirement
+children through nested incidents and bounded recreation. The synchronous entry
+shares the same ordered stages. `CivilizationAssessmentOperation` routes private
+lifecycle choices and holds later desktop financial notices until completion;
+disposal/failure preserves the completed prefix. `AssessmentQueries` owns the
+small role/quota/coastal queries;
 `PowerRanking` publishes retained power/history and directed coordination using
 `CityObjectives` for V08 objective values. `GovernmentPolicy` owns A08 post-city
 rates/strategic scoring and government selection; F04 still supplies preceding

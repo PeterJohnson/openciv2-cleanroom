@@ -118,6 +118,7 @@ public static partial class LocalPlayCommands
         private int startGold;
         private CivilizationFinanceOperation? finance;
         private CivilizationPoliticsOperation? politics;
+        private CivilizationAssessmentOperation? assessment;
         private string deferredFailure = "";
         private GameState? activeWorld;
         private OperationContext? currentContext;
@@ -146,6 +147,8 @@ public static partial class LocalPlayCommands
             pendingResearch = null;
             politics?.Dispose();
             politics = null;
+            assessment?.Dispose();
+            assessment = null;
             movementOutcome?.Dispose();
             entry?.Dispose();
             finalOutcome?.Dispose();
@@ -299,7 +302,13 @@ public static partial class LocalPlayCommands
             }
             if (!assessed)
             {
-                AssessCivilization(context);
+                assessment ??= BeginAssessment(context);
+                var result = assessment.Resume(context, input);
+                if (!result.Status.Terminal())
+                { return result; }
+                RememberFailure(result);
+                assessment.Dispose();
+                assessment = null;
                 assessed = true;
                 finance = new(preferences, choices, startGold);
                 input = new();
@@ -452,7 +461,7 @@ public static partial class LocalPlayCommands
                 new("name", new CommandValue.Text(notice.Name)), new("credit", new CommandValue.Integer(notice.Credit))]));
         }
 
-        private static void AssessCivilization(OperationContext context)
+        private CivilizationAssessmentOperation BeginAssessment(OperationContext context)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
@@ -461,10 +470,18 @@ public static partial class LocalPlayCommands
             var effects = new CityTurnEffects(context);
             var deletion = new UnitDeletion(world, rules, budget, effects);
             var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
-            var governments = new GovernmentPolicy(world, context.Process.Rules, CreateGovernments(context), context.Gameplay);
-            new CivilizationAssessment(world, context.Process.Rules, stacks, CreateProductionOrders(context),
+            var changes = CreateGovernments(context);
+            var governments = new GovernmentPolicy(world, context.Process.Rules, changes, context.Gameplay);
+            var notices = new GlobalEffects(() => Current);
+            var war = new DiplomaticWar(world, rules, stacks, new(world, rules, stacks), context.Gameplay, notices);
+            var incidents = new EspionageIncidents(world, context.Gameplay, war, new(world, context.Process.Rules, governments),
+                changes, notices.Incident);
+            int owner = context.Actor.Civilization.Value;
+            var participant = context.Actor.Participant;
+            return new(new CivilizationAssessment(world, context.Process.Rules, stacks, CreateProductionOrders(context),
                 governments, loss, effects.Elimination(), context.Gameplay)
-                .Assess(context.Actor.Civilization.Value, $"local-assessment/{world.Globals.Turn}");
+                .Begin(owner, $"local-assessment/{world.Globals.Turn}", incidents),
+                c => c == owner ? participant : throw new InvalidOperationException("The authored profile has no other assessment recipient"));
         }
 
         private void FinishCity(OperationContext context, CitySlot slot)

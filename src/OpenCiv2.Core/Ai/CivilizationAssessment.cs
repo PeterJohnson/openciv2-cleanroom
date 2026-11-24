@@ -26,8 +26,19 @@ public sealed partial class CivilizationAssessment(GameState world, RuleState in
     public void Assess(int owner, string call)
     {
         MapKnowledge.RequireLocal(world);
-        new Assessment(this, owner, call).Run();
+        foreach (var work in new Assessment(this, owner, call).Run())
+        {
+            if (work.Unit is { } unit)
+            { loss.DestroyAndRedraw(unit, true); }
+            else
+            { elimination.Check(owner, 0, call + "/eliminate"); }
+        }
     }
+
+    public Operation Begin(int owner, string call, EspionageIncidents incidents, int candidateBudget = 64) =>
+        new(this, owner, call, incidents, candidateBudget);
+
+    private sealed record Work(int? Unit = null);
 
     private sealed partial class Assessment(CivilizationAssessment parent, int owner, string call)
     {
@@ -47,7 +58,7 @@ public sealed partial class CivilizationAssessment(GameState world, RuleState in
         private bool NearbyEnemy(MapPoint point) => SpatialControl.AdjacentNonalliedUnit(World, point, owner, true) is not null;
         private static int Signed(byte value) => unchecked((sbyte)value);
 
-        public void Run()
+        public IEnumerable<Work> Run()
         {
             StageParatroopers();
             Reset();
@@ -55,7 +66,8 @@ public sealed partial class CivilizationAssessment(GameState world, RuleState in
             Units();
             Cities();
             Regions();
-            Assign();
+            foreach (var work in Assign())
+            { yield return work; }
             for (int i = 0; i < World.Entities.Cities.End; ++i)
             {
                 ref var city = ref World.Entities.Cities.Storage[i];

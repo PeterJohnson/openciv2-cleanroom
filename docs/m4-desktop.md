@@ -6677,3 +6677,44 @@ and original-game evidence gaps remain unresolved. These checks are specificatio
 derived; they add no original-game observations. V05 multiplayer offer controllers
 are outside M4. Browser, cross-platform and network execution remain deferred.
 M4 is ongoing.
+
+## A01 retained assessment lifecycle children
+
+`CivilizationAssessment.Begin` now retains the actual V01 elimination and U01
+obsolete-unit retirement children. Its ordered census, captured human flag,
+assignment scan and goal weights survive nested lifecycle decisions and bounded
+civilization recreation. Later government/assignment work, port cleanup and goal
+aging follow the completed child. The synchronous entry shares those same stages;
+it retains its existing immediate-child domain.
+
+`CivilizationAssessmentOperation` routes lifecycle prompts privately, publishes
+bounded pending work and reports child presentation diagnostics after completion.
+Disposal and required failures stop later stages while preserving completed
+effects. The authored desktop end-turn path now uses this operation and waits
+before financial notices. Its existing human profile and admission remain scoped;
+this does not establish generated desktop AI play.
+
+Four new groups join actual elimination, foreign mission interruption, nested
+last-settler loss, human pretext decisions and recreation. They check stable
+pending prompts, no synchronous lifecycle fallback, deferred retirement redraw,
+continued processing after the active flag is cleared, bounded search, disposal,
+required-provider failure, private/stale replies and terminal idempotence.
+Existing census, production, government, assignment and desktop direct/console
+turn regressions pass through the shared implementation.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1739/1741**, with the
+two existing platform/audio skips. All **1706 shared groups** passed across
+**188 coverage families**; identity verified **850 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-assessment-native.json` | `3629bcb0302e9533d2cbf31af9c14556ca4a33ea6d6f14105c4095d8d812be15` |
+| `m4-assessment-identity.json` | `0fce2b4b23c64a670b72e1496ed707ce74c9209a0b322658db2dd7aadd9d05a0` |
+
+Full F04 scheduling, general production service composition, generated human/AI
+games, full-turn snapshots and graphical acceptance remain open. The recorded
+formula and independent original-game evidence gaps remain unresolved. These
+specification-derived native cases add no original-game observations. Browser,
+cross-platform and network execution remain deferred. M4 is ongoing.

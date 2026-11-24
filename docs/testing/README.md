@@ -1288,3 +1288,12 @@ tutorial timing, explicit rate targets, persisted values and terminal idempotenc
 Cancellation, timeout, disposal and invalid routing preserve completed effects;
 existing desktop direct/console government and end-turn regressions also run.
 Full civilization/AI scheduling and general desktop service composition remain open.
+
+A01 retained assessment cases exercise actual V01 elimination, U01 obsolete-unit
+retirement, nested last-settler checks and V06 human pretext decisions. They cover
+pending-choice polling, ordered retirement redraw, bounded recreation, disposal,
+required-provider failure, private/stale replies and completion after the active
+turn flag is cleared. Existing census, assignment, government, production and
+desktop direct/console regressions exercise the shared stage iterator. These are
+specification-derived native cases; full generated turns and graphical acceptance
+remain open.

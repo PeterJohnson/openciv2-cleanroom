@@ -2878,22 +2878,25 @@
     {
       "id": "ai-civilization-assessment",
       "contract": "A01 \u00a7\u00a72\u20136 and \u00a77 assessment tail; A08 \u00a73; V08 \u00a72 objective value; X01 invalid-write repairs",
-      "publicSurface": "CivilizationAssessment, AssessmentQueries, PowerRanking, GovernmentPolicy and CityObjectives; desktop pre-advance power and post-city human assessment",
+      "publicSurface": "CivilizationAssessment, AssessmentQueries, PowerRanking, GovernmentPolicy and CityObjectives; desktop pre-advance power and post-city human assessment; CivilizationAssessment.Begin/Operation; CivilizationAssessmentOperation",
       "status": "partial",
-      "review": "Ordered staging/census/regions/reverse assignment and goal aging, with actual A02/C06 production reset, A08/V02 government change, C05 support and U01/V01 loss/elimination/recreation. Cases distinguish stale upgrade counts from actual deletion effects, retained rival summaries, allied double counting, negative history/ranks, one-sided coordination and conditional draws, air range/division failure, anti-submarine role retention, historical routes and fortress versus airbase behavior. Native desktop direct/console turns publish old power before refreshed census and continue identically after save/reload. Local A01 unit passes and U04 execution now have separate owning families; full F04 generated-game integration remains pending. Browser/cross-platform execution is deferred; these are authored specification tests, not original-game comparison.",
+      "review": "Ordered staging/census/regions/reverse assignment and goal aging, with actual A02/C06 production reset, A08/V02 government change, C05 support and U01/V01 loss/elimination/recreation. Cases distinguish stale upgrade counts from actual deletion effects, retained rival summaries, allied double counting, negative history/ranks, one-sided coordination and conditional draws, air range/division failure, anti-submarine role retention, historical routes and fortress versus airbase behavior. Native desktop direct/console turns publish old power before refreshed census and continue identically after save/reload. Local A01 unit passes and U04 execution now have separate owning families; full F04 generated-game integration remains pending. Browser/cross-platform execution is deferred; these are authored specification tests, not original-game comparison. Retained assignment now waits for actual V01 elimination and U01 retirement, including nested human V06 decisions and bounded recreation, before later assignment/port/goal work. The desktop turn uses its private Session adapter before financial notices. Shared cases cover disposal, required failure, continued gameplay after active-flag clearing, stale replies and no duplicate completion. This does not complete the general F04 scheduler or generated desktop service graph.",
       "sources": [
         "src/OpenCiv2.Core/Ai/AssessmentQueries.cs",
         "src/OpenCiv2.Core/Ai/CivilizationAssessment.Assignment.cs",
+        "src/OpenCiv2.Core/Ai/CivilizationAssessment.Operation.cs",
         "src/OpenCiv2.Core/Ai/CivilizationAssessment.Regions.cs",
         "src/OpenCiv2.Core/Ai/CivilizationAssessment.cs",
         "src/OpenCiv2.Core/Ai/GovernmentPolicy.cs",
         "src/OpenCiv2.Core/Ai/PowerRanking.cs",
         "src/OpenCiv2.Core/City/CityObjectives.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/CivilizationAssessmentOperation.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
       ],
       "tests": [
-        "tests/OpenCiv2.FoundationCases/AssessmentCases.cs"
+        "tests/OpenCiv2.FoundationCases/AssessmentCases.cs",
+        "tests/OpenCiv2.FoundationCases/AssessmentContinuationCases.cs"
       ],
       "sharedGroups": [
         "A01.assessment-air-goals-failure-prefix",
@@ -2906,6 +2909,10 @@
         "A01.assessment-paratrooper-staging",
         "A01.assessment-queries",
         "A01.assessment-regional-production",
+        "A01.assessment-retained-elimination",
+        "A01.assessment-retained-private-session",
+        "A01.assessment-retained-retirement-disposal",
+        "A01.assessment-retained-search-failure",
         "A01.assessment-retirement-upgrade",
         "A01.assessment-settlers-sleeping",
         "A01.assessment-threat-late-region",

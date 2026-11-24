@@ -11,11 +11,11 @@ public sealed partial class CivilizationAssessment
 {
     private sealed partial class Assessment
     {
-        private void Assign()
+        private IEnumerable<Work> Assign()
         {
             if (owner == 0)
             {
-                return;
+                yield break;
             }
 
             bool human = Human;
@@ -23,7 +23,7 @@ public sealed partial class CivilizationAssessment
             {
                 if (settlersTotal == 0 && Civ.CityCount == 0)
                 {
-                    parent.elimination.Check(owner, 0, call + "/eliminate");
+                    yield return new();
                 }
 
                 if ((World.Globals.Turn + owner) % 8 == 0)
@@ -86,6 +86,7 @@ public sealed partial class CivilizationAssessment
 
                 if (!human && (World.Globals.Turn & i & 15) == 0 && Retire(i, point, region))
                 {
+                    yield return new(i);
                     continue;
                 }
 
@@ -174,7 +175,6 @@ public sealed partial class CivilizationAssessment
                 ref var record = ref World.Entities.Cities.At(city);
                 record.ShieldBox = unchecked((short)(record.ShieldBox + unchecked(Signed(Rules.Units[unit.Type.Value].CostRows) * World.Calculation.ShieldRows) / 2));
             }
-            parent.loss.DestroyAndRedraw(slot, true);
             return true;
         }
 
