@@ -34,6 +34,14 @@ reporting failed cosmetic presentation, with no duplicate completion on polling.
 Desktop science uses this composition; full foreign-actor presentation remains
 outside the authored profile.
 
+The single-player diplomacy composition cases join actual gold/technology gifts,
+map exchange, treaty signing and AI advance exchange with private recursive
+Library replies. The scenario cycle uses the same contact graph from unit
+creation/revelation and waits through permission-event grants before later
+money/text effects. Denial, failure, disposal, repeated polls and stale/private
+replies preserve their prefixes. This qualifies the shared composition;
+desktop movement admission and generated-game UI acceptance remain open.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

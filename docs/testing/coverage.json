@@ -6302,6 +6302,26 @@
         "U04.disband-signed-shields",
         "U04.local-disband-replay-defeat"
       ]
+    },
+    {
+      "id": "single-player-diplomacy-composition",
+      "contract": "V04 section 10; V05 sections 2-6; A08 diplomacy/advance exchange; V03 grants; S02 negotiation and unit creation",
+      "publicSurface": "SinglePlayerDiplomacy and typed semantic effects; actual shared war, senate, ally help, exchange, capture/technology, treaties, conversation, audience and contact services",
+      "review": "Production composition joins SinglePlayerResearch to actual V04/V05/A08 controllers and retained S02 permissions. Shared cases exercise gold and technology gifts, map exchange, alliance signing, recursive Great Library grants with private session replies, and the actual S02-to-U01/W03/contact-to-S02 cycle. Pending decisions retain creation tokens and defer later money/text effects; denied audiences and required failures preserve committed grants, while disposal does not execute the tail. Cosmetic status failures propagate through conversation completion. Existing leaf/controller families retain their detailed domain coverage. The general desktop movement and generated-game callers are not yet connected; native UI acceptance for this graph remains open. Browser/cross-platform and network execution are deferred.",
+      "status": "partial",
+      "sharedGroups": [
+        "V04.single-player-diplomacy-audience-permission",
+        "V04.single-player-diplomacy-conversation",
+        "V04.single-player-diplomacy-private-exchange",
+        "V04.single-player-diplomacy-scenario-creation"
+      ],
+      "sources": [
+        "src/OpenCiv2.Session/SinglePlayerDiplomacy.cs",
+        "src/OpenCiv2.Session/SinglePlayerResearch.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SinglePlayerDiplomacyCases.cs"
+      ]
     }
   ]
 }

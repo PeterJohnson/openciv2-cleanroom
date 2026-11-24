@@ -7817,3 +7817,49 @@ M4 remains active and incomplete. The next composition work is the full retained
 diplomacy, scenario, lifecycle and movement graph; generated human/AI scheduling,
 full-turn evidence and the recorded original-game observations remain open.
 Browser and cross-platform work remain deferred.
+
+## Shared retained diplomacy composition
+
+`Session/SinglePlayerDiplomacy` joins actual V04 war/contact, V05 senate, ally
+help, technology negotiation, gifts, favors, demands, treaties, conversation and
+audience services with A08 stance/ordered exchange and the shared V03 research
+bundle. Captured technology uses the same grants and the supplied C06 production
+service. Semantic notices and view effects remain explicit typed ports; gameplay
+choices are returned by retained child operations.
+
+Both contact and audience use actual retained S02 permission actions. The
+scenario dispatcher's factory closes the S02 unit-creation → U01/W03 revelation
+→ V04 contact → S02 permission cycle before execution. The integration fixture
+binds this graph back into real scenario unit and civilization actions, including
+the same research grants and diplomatic war service.
+
+Four shared groups exercise gold and technology gifts, actual map sharing,
+alliance signing, status-view failure propagation, private recursive Library
+choices during ordered AI advance exchange, and scenario-created units whose
+contact triggers another scenario grant. A pending government decision keeps
+the created unit's token and postpones later money/text/event-consumption work.
+Denial, required failure, disposal, cancellation/timeout, repeated polling and
+stale/private replies preserve the committed prefix and child ordering.
+
+The bundle is available to trusted session composition. General desktop
+movement admission, full lifecycle/combat composition and generated-game
+scheduling remain open; these shared cases do not establish native UI or
+original-game acceptance for the complete diplomacy graph.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1865/1867**, with the two existing
+platform/audio skips. All **1830 shared groups** passed across **204 coverage
+families**; identity verified **912 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua suites
+were not rerun: their integrations did not change, and this graph has no new
+desktop command admission yet.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-diplomacy-composition-native.json` | `472a0568eefc74e890a5b939d55b63647c1ec11abe34f2c821bb0a56f4f79bb7` |
+| `m4-diplomacy-composition-identity.json` | `54a52d21a606d96c08845a7d0758bc4b63985a1fc71fdf66f7d2ce88daea2a2a` |
+
+M4 remains active and incomplete. The next work connects the lifecycle/scenario
+and combat/capture dependencies needed by the full movement dispatcher.
+Generated human/AI scheduling, complete-game evidence and the original-observation
+gaps remain open. Browser and cross-platform work remain deferred.

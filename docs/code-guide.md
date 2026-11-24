@@ -151,6 +151,15 @@ foreign research recipients. The grant and flow Session adapters report cosmetic
 failures after finishing committed gameplay, retaining their successful result
 values and preventing repeated grants on later polls.
 
+`Session/SinglePlayerDiplomacy` composes the actual V04 war/contact and V05
+audience/conversation graph with A08 stance, ordered advance exchange, V03 grants
+and retained S02 permission actions. Technology, gifts, favors, demands, treaties,
+map exchange, senate checks and ally help share those services. The explicit
+presentation record supplies semantic notices and view effects; decisions remain
+retained operations. A scenario dispatcher factory closes the unit-creation,
+revelation and contact cycle before execution. Movement and generated-game host
+composition remain open.
+
 `CityUnitProduction` handles C06's unit-at-entry branch with actual U01 creation,
 veteran/transport initialization, first obsolete-type replacement, stock spending
 and settler population/city-removal consequences. Its retained entry shares the

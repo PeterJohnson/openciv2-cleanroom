@@ -5,6 +5,7 @@ using OpenCiv2.Core;
 using OpenCiv2.Core.City;
 using OpenCiv2.Core.Rules;
 using OpenCiv2.Core.State;
+using OpenCiv2.Core.Units;
 using OpenCiv2.Formats;
 using OpenCiv2.Session;
 
@@ -56,14 +57,17 @@ public static partial class FoundationSuite
             CivilWar = new(World, Data.Stacks, Create, Permissions, this);
         }
         private CivilizationCreation Create(int owner) { ++Created; return (Recreate ?? throw new InvalidOperationException("Unexpected civilization reset"))(owner); }
-        public void RebindDispatcher()
+        public void RebindDispatcher(DiplomaticContact? contact = null, ResearchGrants? grants = null, DiplomaticWar? war = null)
         {
             var incidents = Contact.F.T.T.Damage.Incidents.Incidents;
             var removal = new CivilizationRemoval(World, Data.Rules, Data.Stacks, Life.Elimination, incidents, Create, RedrawMaps);
             var terrain = new ScenarioTerrain(World, Data.Stacks, new(World, Data.Rules, Data.Stacks, Life.Loss, _ => { }),
                 Life.Elimination, incidents, Create, new ScenarioTerrainEncoding(World.Map, new(World.Map)), _ => { }, (_, _) => RedrawMaps());
-            Dispatcher = new(World, new(World, Data.Rules, RetainedCreation(Contact)), terrain,
-                new(World, War(Data, new()), Contact.F.T.T.Research), new(World, removal), Presentation);
+            var creation = contact is null ? RetainedCreation(Contact)
+                : new UnitCreation(World, Data.Process, Data.Stacks,
+                    new UnitRevelation(World, Data.Rules, Data.Stacks, contact, Data), Data);
+            Dispatcher = new(World, new(World, Data.Rules, creation), terrain,
+                new(World, war ?? War(Data, new()), grants ?? Contact.F.T.T.Research), new(World, removal), Presentation);
             Triggers = new(World, Contact.F.T.T.Random, () => Dispatcher);
         }
         public void Schism(CivilWarNotice _) => throw new InvalidOperationException("Vetoed schism must not partition");
