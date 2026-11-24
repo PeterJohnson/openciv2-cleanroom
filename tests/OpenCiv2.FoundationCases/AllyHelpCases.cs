@@ -27,7 +27,7 @@ public static partial class FoundationSuite
         public List<int> Leaders { get; } = [];
         public int Closed, Status;
         public string? Failure;
-        public AllyHelpFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public AllyHelpFixture(List<Choice>? choices = null, RevelationFixture? data = null, IEmissaryEffects? emissaryEffects = null)
         {
             Data = data ?? new(); Random = WarRandom((choices ?? []).ToArray());
             World.Globals.HumanPlayers = CivilizationSet.Only(1); World.Multiplayer.LocalHuman = 1;
@@ -42,7 +42,7 @@ public static partial class FoundationSuite
             var governments = new GovernmentChanges(World, Data.Process.Rules, Data.Stacks,
                 _ => throw new InvalidOperationException("Unexpected government choice"), _ => throw new InvalidOperationException("Unexpected rate choice"), _ => { });
             var stance = new DiplomaticStance(World, Data.Process.Rules, new(World, Data.Process.Rules, governments, Random));
-            Emissaries = new(World, Data.Rules, Random, stance, this);
+            Emissaries = new(World, Data.Rules, Random, stance, emissaryEffects ?? this);
             Help = new(World, Emissaries, War(Data, WarEffects, Random), this);
         }
         public void Notice(EmissaryNotice notice) { Notices.Add(notice); Fail("notice"); }

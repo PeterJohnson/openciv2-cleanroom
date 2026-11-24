@@ -103,6 +103,18 @@ classic viewport/font inputs to select a city prefix. Other report formulas and
 game operations above remain unchanged. Random flavor choices and authored
 conditional content are resolved for an interaction, not on each repaint.
 
+### Open specification gap: embassy and foreign-report appraisal
+
+The attitude preparation in §§9–10 names a V04 “contact appraisal” whose inputs,
+effects and resulting attitude are not defined by V04. V04 §2 defines stored
+attitude queries and signed display categories; A08 §4 defines a separate,
+mutating diplomatic-stance evaluation. Neither is specified as this report's
+appraisal. Before implementing that preparation, establish its meaning through
+the behavioral contract or independent original-game observations. Do not
+silently invoke the full A08 evaluation or assume a stored-attitude lookup is
+equivalent. This gap concerns report preparation, not the already specified
+V05 emissary evaluation and greeting category.
+
 ## Original-file input contract
 
 F03/P04 own resource parsing, substitution and original label meanings. Preserve

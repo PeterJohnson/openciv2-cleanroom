@@ -405,6 +405,11 @@ when rebinding or losing access, and the desktop shows a recent-notices panel.
 reference facts, tutorials and government notices to this feed. Local-viewer
 announcements remain distinct from explicitly owner-addressed notices; retained
 operations still own all required decisions. Desktop science uses this adapter.
+`SinglePlayerEmissaryPresentation` supplies V05 reception notices through the same
+feed, using installed attitude names and captured ruler/nuclear/vendetta inputs.
+It updates only the receiver's map center and publishes textual leader context;
+there is no separate portrait window. Desktop research binds it, while general
+diplomacy composition and P07 intelligence-report appraisal remain open.
 
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each

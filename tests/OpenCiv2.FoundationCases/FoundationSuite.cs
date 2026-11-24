@@ -23,6 +23,8 @@ public static partial class FoundationSuite
         ("P04.notices-bounds-reset", PlayerNoticesBoundsAndSessionReset),
         ("V03.notices-retained-acquisition", ResearchNoticesRetainedAcquisition),
         ("V03.notices-distinct-recipients", ResearchNoticesDistinctRecipients),
+        ("V05.emissary-presentation-retained", EmissaryPresentationRetainedReception),
+        ("V05.emissary-presentation-nuclear-failure", EmissaryPresentationNuclearAndFailure),
         ("P04.classic-expansion-tokens", ClassicExpansionTokenRules),
         ("P04.classic-expansion-boundaries", ClassicExpansionBoundaries),
         ("P04.classic-expansion-capture", ClassicExpansionCaptureAndCulture),

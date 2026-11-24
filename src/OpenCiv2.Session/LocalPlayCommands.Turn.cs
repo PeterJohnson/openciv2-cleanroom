@@ -665,7 +665,8 @@ public static partial class LocalPlayCommands
             var governments = CreateGovernments(context);
             var researchEffects = new SinglePlayerResearchPresentation(() => Current, () => Current.World.Multiplayer.LocalHuman);
             var services = new SinglePlayerResearch(world, context.Process.Rules, context.Gameplay,
-                new(world, new(5_000_000, 64)), governments, CreateWonders(context), researchEffects, researchEffects, new AuthoredEmissaryEffects());
+                new(world, new(5_000_000, 64)), governments, CreateWonders(context), researchEffects, researchEffects,
+                new SinglePlayerEmissaryPresentation(() => Current));
             return services.Flow(CreateProductionOrders(context), researchEffects, researchEffects);
         }
 
@@ -711,17 +712,6 @@ public static partial class LocalPlayCommands
                 context.Effect("city.removed", new([new("city", new CommandValue.City(target))])));
             return new(world, rules, stacks, CreateProductionOrders(context), loss, removal,
                 effects.Elimination(), CreateIncidents(context, stacks, () => context), presentation);
-        }
-
-        // No foreign civilization exists in Alder Valley. The general gameplay host owns
-        // leader/intelligence presentation when binding its diplomacy services.
-        private sealed class AuthoredEmissaryEffects : IEmissaryEffects
-        {
-            private static InvalidOperationException OutsideProfile() => new("The authored profile has no foreign emissary");
-            public void Notice(EmissaryNotice notice) => throw OutsideProfile();
-            public void OpenLeader(int counterpart) => throw OutsideProfile();
-            public void CloseLeader() => throw OutsideProfile();
-            public void EnsureVisible(MapPoint point, int observer) => throw OutsideProfile();
         }
 
         private CityProduction CreateProduction(OperationContext context)

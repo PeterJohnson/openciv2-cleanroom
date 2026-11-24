@@ -6561,6 +6561,24 @@
         "V03.notices-distinct-recipients",
         "V03.notices-retained-acquisition"
       ]
+    },
+    {
+      "id": "emissary-presentation",
+      "status": "partial",
+      "contract": "V05 \u00a72/P04/X01 recipient-scoped emissary greeting, nuclear information and leader context",
+      "publicSurface": "SinglePlayerEmissaryPresentation; default local research composition",
+      "review": "Actual V05 reception retains player decisions before publishing custom leader/attitude text to the receiving civilization, independently of command ownership. Tests exercise acceptance, refusal, cancellation, observer focus, nuclear-forced reception, vendetta and bilateral nuclear notices, narrow session reset and required publication failure without repeated effects. Textual leader context uses the existing notice panel; separate portraits/media remain content-host work. Intelligence-report appraisal is an explicit P07 specification gap. The authored desktop profile contains no foreign civilization, so binding does not qualify generated-game diplomacy UI acceptance. Broader diplomacy presentation and desktop acceptance remain open; browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/SinglePlayerEmissaryPresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/EmissaryPresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.emissary-presentation-nuclear-failure",
+        "V05.emissary-presentation-retained"
+      ]
     }
   ]
 }

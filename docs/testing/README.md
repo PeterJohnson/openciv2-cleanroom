@@ -18,6 +18,13 @@ history, revocation/reassignment and new-session isolation. Actual V03 acquisiti
 and government continuation use the desktop research presentation adapter. Native
 input checks inspect its rendered completion notice and clear history on reload.
 
+Emissary presentation cases run real V05 reception through Session with a
+different command initiator and receiving player. They cover acceptance,
+refusal, cancellation, retained prompts, per-observer focus, installed attitude
+text, nuclear/vendetta disclosures, reset and notice failure after publication.
+The default desktop research graph binds this adapter, but its authored world
+has no foreign civilization; generated-game diplomacy UI acceptance remains open.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

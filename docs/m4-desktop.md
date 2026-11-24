@@ -8389,3 +8389,46 @@ captured pixels.
 | `m4-player-notices-identity.json` | `ab6c52df705564207e6d640eaa70ac8bd3cbed3fa9aef2b62137f8201fbca480` |
 | `m4-player-notices-desktop.json` | `f4300d99ec064c60615f69a273dd58e15a2e6cb443563bcb9cbfa2998f35af49` |
 | `m4-player-notices-desktop.notices.png` | `aae9f5b4b7af65ec46182f16840a5fe8b81eda12807617c2de18cee569bdc4d6` |
+
+## Emissary presentation for desktop composition
+
+`SinglePlayerEmissaryPresentation` binds V05 §2's required information to the
+receiver's existing private notice history. It uses the supplied ruler/title and
+civilization names, the installed diplomatic-attitude text for the actual
+category, and the supplied vendetta/nuclear disclosures. The greeting presents
+leader context as text; separate portraits/media remain content-host work. Map
+focus updates only the receiving civilization's view center. It does not reveal
+map knowledge or answer reception/intelligence decisions.
+
+Desktop research now binds this adapter instead of a profile-only throwing
+emissary adapter. Alder Valley still has no foreign civilization; this binding
+does not broaden save admission or qualify generated-game diplomacy. The full
+negotiation notice adapters and intelligence report remain separate work.
+
+Two shared groups exercise the adapter through actual V05 reception and Session,
+with distinct initiating and receiving participants. They cover retained prompts,
+acceptance/refusal/cancellation, installed custom text, observer focus, narrow
+meeting reset, nuclear-forced reception, vendetta, both parties' nuclear weapons
+and a required notice failure after publication. Delivered notices survive the
+failure without repeated effects or exposure to the initiating participant.
+
+P07 now records a narrow report-preparation gap: embassy and foreign reports name
+a V04 contact appraisal without defining its inputs/effects/result. The V04
+stored-attitude query and full A08 stance evaluation are distinct operations;
+neither is silently substituted. V05 emissary stance/greeting behavior is already
+defined and is unaffected by that gap. Resolving this report ambiguity, the F04
+formulas, general gameplay presentation/scheduling and complete generated games
+remains necessary before M4 completion. Browser/cross-platform work is deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1928/1930**, with the two existing
+platform/audio skips. All **1893 shared groups** passed across **213 coverage
+families**; compiled identity verified **937 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. No Lua automation or
+widget source changed. The earlier rendered-notice receipt remains scoped to
+its checkpoint; this change does not claim a new native diplomacy UI run.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-emissary-presentation-native.json` | `9307893955d08b2c07376a3a49a69b831e90df59754d5c5253435f94b7e1fa0a` |
+| `m4-emissary-presentation-identity.json` | `474364b1550901294eb8c6f03e6dec7ba79e446cbd445c3f31deb881c95e0f10` |
