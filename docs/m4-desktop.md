@@ -5620,3 +5620,59 @@ required. Full audience integration, F04 city-analysis formula gaps and complete
 city/civilization orchestration, generated desktop play and complete human/AI
 end-condition acceptance remain open. Browser/cross-platform qualification and
 network execution remain deferred.
+
+## A08 retained relation review and border decisions — 2026-11-23
+
+`RelationReview` now implements A08 §7's local review using actual V04 border
+measurement, A08 stance, retained V05 reception, W03 city knowledge/exploration,
+C01 nearest destinations, U01 relocation, V02 Anarchy and V04 war/attitude effects.
+No-peace complaints retain their random draws and first emissary request; A08's
+Intrusion relation maps to V04's HostileIntent through the specified shared 0x20
+encoding. Peace paths retain recent-peace/contact gates, first warnings and
+repeated withdraw-or-fight decisions. Withdrawal clears each reached marker before
+its owner check, moves only admitted units with a real destination and preserves
+range-dependent counters. Democracy skips the senate draw; other governments draw
+before the Republic test. Scenario prohibition suppresses the actual Anarchy step.
+
+The operation retains an optional supplied attitude delta as an explicit input.
+Border assignment replaces it when specified. Otherwise nullable signed arithmetic
+propagates the unknown through all independent queries; the final no-contact
+rule can establish zero. An unresolved contacted result fails before AdjustAttitude
+while preserving border effects, including completed withdrawal or war and marker
+cleanup. It never supplies the historical replay constant or an invented zero.
+Nuclear reductions are independent, rank halving uses signed division, and explicit
+arithmetic shifts and wrapped additions retain their separate meanings.
+
+The full retained `DiplomacyTurn` composition runs this service before actual
+military aid and war-ally requests. Session routes reception, warnings and
+withdraw-or-fight choices privately to the intruding participant. Canceling a
+warning acknowledges it; canceling a repeated demand chooses withdrawal. Required
+notice failures and disposal preserve their actual prefix. Cosmetic tile/leader
+failures are reported separately from committed effects.
+
+Seven new groups cover unknown/supplied deltas and final zero publication, border
+warning/cleanup and recent contact boundaries, actual emissary refusal/acceptance,
+withdrawal and failures after relocation, senate/scenario/war effects, arithmetic
+and wonder/race/rank thresholds, and private V04/Session decisions. The first probe
+caught a fixture that inherited Settler role for its intended military intruder;
+the role is now explicit. That initial result remains `m4-review-initial.json` for
+diagnosis. Final private cases exercise both completed warnings and withdrawal
+retained before a missing-delta failure, through actual Core/Session composition.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1540 of 1542**, with two existing
+platform/audio skips. The shared probe passed all **1507 groups** across 167
+coverage families; source identity verified **773 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. This checkpoint uses
+composed native turn/Session evidence and the App build; it does not claim a new
+run of the graphical input driver or a general desktop AI game.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-review-native.json` | `ff682b2207f5e9febac03a5ef4ae58052a49e312632c8b695991bf44f34b806e` |
+| `m4-review-identity.json` | `e0ed1ae9acd6b4f67ce03962ebd3e0ef7bcd152a5780358bdf7f5e46800756eb` |
+
+The original incoming attitude-delta producer, full V05 audience/controller,
+F04 city-analysis formulas and complete city/civilization orchestration, generated
+desktop play and full human/AI end-condition acceptance remain open. Browser,
+cross-platform qualification and network execution remain deferred.

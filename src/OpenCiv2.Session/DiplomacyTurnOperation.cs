@@ -26,15 +26,20 @@ public sealed class DiplomacyTurnOperation(DiplomacyTurn.Operation operation, Fu
             {
                 DiplomacyTurnDecision.Research research => ResearchGrantInteraction.Reply(research.Decision, input),
                 DiplomacyTurnDecision.WarAlly ally => WarAllyInteraction.Reply(ally.Decision, input),
+                DiplomacyTurnDecision.Review review => RelationReviewInteraction.Reply(review.Decision, input),
                 _ => null
             };
             pending = operation.Resume(answer);
             if (pending is not null)
             {
                 context.Publish();
-                var prompt = pending is DiplomacyTurnDecision.Research research
-                    ? ResearchGrantInteraction.Prompt(context, research.Decision, recipient, intelligence, ref window)
-                    : WarAllyInteraction.Prompt(context, ((DiplomacyTurnDecision.WarAlly)pending).Decision, recipient, intelligence, ref window);
+                var prompt = pending switch
+                {
+                    DiplomacyTurnDecision.Research research => ResearchGrantInteraction.Prompt(context, research.Decision, recipient, intelligence, ref window),
+                    DiplomacyTurnDecision.WarAlly ally => WarAllyInteraction.Prompt(context, ally.Decision, recipient, intelligence, ref window),
+                    DiplomacyTurnDecision.Review review => RelationReviewInteraction.Prompt(review.Decision, recipient, intelligence, ref window),
+                    _ => throw new InvalidOperationException("Unknown diplomacy decision")
+                };
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
@@ -47,6 +52,30 @@ public sealed class DiplomacyTurnOperation(DiplomacyTurn.Operation operation, Fu
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
     public void Dispose() => operation.Dispose();
+}
+
+internal static class RelationReviewInteraction
+{
+    internal static int? Reply(RelationReviewDecision pending, OperationInput input) => pending is RelationReviewDecision.Emissary emissary
+        ? EmissaryInteraction.Reply(emissary.Decision, input)
+        : input.Kind == OperationInputKind.Choice ? input.Choice
+        : input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout ? 0 : null;
+
+    internal static InteractionSpec Prompt(RelationReviewDecision pending, Func<int, ParticipantId> recipient,
+        Func<EmissaryIntelligence, InteractionSpec> intelligence, ref InteractionSpec? window)
+    {
+        if (pending is RelationReviewDecision.Emissary emissary)
+        { return EmissaryInteraction.Prompt(emissary.Decision, recipient, intelligence, ref window); }
+        var request = ((RelationReviewDecision.Border)pending).Request;
+        string location = request.Cities < 2 ? request.City : $"{request.City} and other cities";
+        return request.Repeated
+            ? new($"The {request.Owner.Plural} demand that your forces withdraw from near {location}.",
+                recipient(request.Recipient), null, new([0, 1]))
+            { Options = new([new(0, "Withdraw"), new(1, "Refuse and fight")]) }
+            : new($"The {request.Owner.Plural} warn that your forces are intruding near {location}.",
+                recipient(request.Recipient), null, new([0]))
+            { Options = new([new(0, "Continue")]) };
+    }
 }
 
 internal static class WarAllyInteraction

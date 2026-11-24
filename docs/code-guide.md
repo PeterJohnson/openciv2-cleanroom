@@ -1116,3 +1116,12 @@ Full civilization/city sequencing and generated desktop command composition rema
 open. The authored local profile now composes the shared global operation before
 its restricted civilization/city path. `TurnOpeningOperation` presents retirement
 and pending outcomes after global advancement; it never scans arrivals again.
+
+`Core/Ai/RelationReview` implements A08 §7 with actual border measurement, retained
+emissary/warning/violation decisions, city knowledge, U01 relocation, V02 Anarchy
+and V04 war/attitude effects. Its nullable incoming delta remains unknown unless
+the border phase assigns it or the final no-contact rule resolves it. Unknown
+contacted results fail before attitude publication while retaining earlier effects.
+The full retained `DiplomacyTurn` composition invokes this child before actual
+military aid and war-ally requests. Session routes review choices to the intruder.
+Full V05 audiences and the original missing-delta producer remain open.

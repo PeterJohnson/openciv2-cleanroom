@@ -5241,6 +5241,31 @@
         "V04.human-diplomacy-turn",
         "V04.stale-diplomacy-children"
       ]
+    },
+    {
+      "id": "ai-relation-review",
+      "status": "partial",
+      "contract": "A08 section7 periodic relation review; V04 turn and private Session integration",
+      "publicSurface": "RelationReview.Begin/Operation; RelationReviewDecision; BorderRequest/BorderNotice; IRelationReviewEffects; DiplomacyTurnDecision.Review",
+      "review": "Uses actual V04 border scans, A08 stance, V05 retained emissaries, W03 city knowledge/exploration, C01 nearest destinations, U01 relocation, V02 Anarchy and V04 war/attitude effects. Retains marker cleanup and warnings, required failures/disposal and cosmetic diagnostics. Nullable delta arithmetic preserves unknown input until an actual producer or final no-Contact overwrite; an unresolved contacted result fails before AdjustAttitude without rollback. Tests cover original no-peace/peace paths, withdrawal and war decisions, arithmetic and private retained V04/Session composition with actual military aid and war-ally requests. The incoming original private delta producer, full audiences and generated desktop human/AI end-condition acceptance remain open; browser, cross-platform and network execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/RelationReview.Attitude.cs",
+        "src/OpenCiv2.Core/Ai/RelationReview.cs",
+        "src/OpenCiv2.Core/DiplomacyTurn.cs",
+        "src/OpenCiv2.Session/DiplomacyTurnOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RelationReviewCases.cs"
+      ],
+      "sharedGroups": [
+        "A08.review-attitude-arithmetic",
+        "A08.review-fight-senate-failures",
+        "A08.review-first-warning-recent-peace",
+        "A08.review-no-peace-emissary",
+        "A08.review-unknown-supplied-delta",
+        "A08.review-withdrawal-missing-prefix",
+        "V04.review-turn-private-border"
+      ]
     }
   ]
 }

@@ -21,6 +21,7 @@ public abstract record DiplomacyTurnDecision
 {
     public sealed record Research(ResearchGrantDecision Decision) : DiplomacyTurnDecision;
     public sealed record WarAlly(WarAllyDecision Decision) : DiplomacyTurnDecision;
+    public sealed record Review(RelationReviewDecision Decision) : DiplomacyTurnDecision;
 }
 
 /// <summary>V04 §11 local continuation after the completed V02 government prefix.
@@ -29,6 +30,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
 {
     private readonly AiAdvanceExchange? exchange;
     private readonly WarAllyRequests? warAllies;
+    private readonly RelationReview? review;
     private GameState World => world;
     public DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random,
         AiAdvanceExchange exchange, IDiplomacyTurnEffects effects) : this(world, rules, random, effects)
@@ -38,6 +40,11 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         AiAdvanceExchange exchange, WarAllyRequests warAllies, IDiplomacyTurnEffects effects)
         : this(world, rules, random, exchange, effects)
     { this.warAllies = warAllies; }
+
+    public DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random,
+        AiAdvanceExchange exchange, WarAllyRequests warAllies, RelationReview review, IDiplomacyTurnEffects effects)
+        : this(world, rules, random, exchange, warAllies, effects)
+    { this.review = review; }
 
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
 
@@ -180,7 +187,19 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
                 {
                     if (other == world.Multiplayer.LocalHuman)
                     {
-                        effects.ReviewRelation(owner, other);
+                        if (review is null)
+                        { effects.ReviewRelation(owner, other); }
+                        else
+                        {
+                            using var child = review.Begin(owner, other, $"{call}/review/{other}");
+                            while (!child.Completed)
+                            {
+                                var decision = child.Resume(operation.TakeAnswer());
+                                if (!child.Completed && decision is not null)
+                                { yield return new DiplomacyTurnDecision.Review(decision); }
+                            }
+                            operation.Report(child.PresentationFailures);
+                        }
                     }
                 }
             }

@@ -1079,3 +1079,13 @@ traits and independent third-party treaty terms. Military-aid cases retain both
 bounds gates, including a city-marked fallback tile, and verify no transfers on
 flat or cylindrical maps. V04 and war-ally Session cases now use the actual aid
 scan instead of a gameplay callback. Full relation review and audience remain open.
+
+A08 relation-review cases cover missing/supplied attitude deltas, final no-contact
+resolution, border marker retention/cleanup, first warnings, recent peace/contact
+gates, emissary refusal/acceptance, bilateral intrusion flags, actual withdrawal
+and missing-delta failures after relocation, senate draws and Anarchy/war effects.
+Arithmetic cases distinguish signed division from shifts and test wrapped scores,
+wonder transforms, race/rank gates, nuclear pressure and AI-coordination behavior.
+The V04/Session case uses actual review, military aid and war-ally policies and
+checks private warning routing and cancellation. Full audiences and generated
+human/AI acceptance remain open.
