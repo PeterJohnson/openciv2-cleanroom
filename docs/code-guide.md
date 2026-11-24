@@ -1138,4 +1138,11 @@ remain open.
 composes the technology survey, retained grants, nearest-city query and stack
 transfer. The meeting gift counter belongs to `DiplomacyWorkspace`; the future
 audience entry owns its reset. `Session/DiplomaticGiftOperation` routes gift and
-nested research choices privately. Favor and full audience callers remain open.
+nested research choices privately. Full audience callers remain open.
+
+`Core/DiplomaticFavors` owns V05 §4's favor controller and war price/distrust
+queries. It composes actual technology negotiation, A08 patience, retained grants,
+W03 `Units/NegotiatedMaps` and V04 alliance cancellation. Mercenary treaty changes
+remain distinct from generic war declaration. `Session/DiplomaticFavorOperation`
+shares technology interaction handling with direct exchanges. Full audience and
+treaty-negotiation callers remain open.

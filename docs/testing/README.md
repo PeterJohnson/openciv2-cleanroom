@@ -1103,4 +1103,12 @@ Military cases use real nearest-city and stack operations, check selective owner
 counters and live destination coordinates, and exercise obsolescence and strength
 gates. Breakthrough tests cover index-zero suppression and grants without donor
 knowledge. Private Session, cancellation, nested government and required-failure
-cases preserve committed effects. Full audience/favor integration remains open.
+cases preserve committed effects. Full audience integration remains open.
+
+V05 favor/W03 negotiated-map cases distinguish asymmetric feature memory and
+city-size sharing, direct unit visibility, map acceptance gates, request wrapping
+and publication failures. War cases cover sequential price rounding, signed
+distrust, admission overrides, cached payment, nested two-technology grants,
+mercenary/betrayal flags and failure prefixes. Actual exchange and Session cases
+cover patience repetition, private prompts and cancellation. Full desktop audience
+and generated-game acceptance remain open.

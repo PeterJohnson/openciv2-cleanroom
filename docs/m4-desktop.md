@@ -5765,3 +5765,54 @@ Full V05 audiences, favor/map-exchange and treaty negotiation remain open,
 together with the previously recorded F04 formulas, relation-review input gap,
 complete turn orchestration and generated human/AI end-condition acceptance.
 Browser, cross-platform qualification and network execution remain deferred.
+
+## V05 favors and W03 negotiated maps — 2026-11-23
+
+`DiplomaticFavors` implements V05 §4's local favor controller using actual
+technology exchange, A08 patience, retained research grants and V04 alliance
+cancellation. Exchange success can reopen the menu; exhausted patience and failed
+exchange publish state before returning. War requests retain their price and
+money-versus-technology offer across decisions, recheck live affordability and
+grant the live first and second technologies in order. Mercenary execution applies
+its own treaty flags and publication order, with separate alliance/peace betrayal
+branches; it does not inherit generic declaration reputation effects.
+
+`NegotiatedMaps` implements W03 §7's accepted local AI exchange. Exploration and
+feature memory follow the specified direction, preserving stale recipient memory
+and intersecting donor memory with live features. Unit visibility uses direct
+unions, including owners. City sharing preserves remembered size in the reverse
+knowledge-only branch and publishes current size in the forward branch. The
+acceptance notice precedes request adjustment; final publication precedes redraw.
+
+Session favors privately route target/payment choices and nested grants or
+technology exchanges. Direct and favor exchanges now share the same interaction
+helper, preserving the non-cancellable captured-technology choice and grant
+defaults. Required publication/notice failures retain their actual prefix;
+cosmetic status/map failures are reported after committed gameplay.
+
+Ten new groups cover directional map memory and entity knowledge, request wrap,
+barbarian memory exclusion, publication failures, sequential war-price rounding,
+signed distrust, admission overrides, cached money payment, live second-technology
+selection after a government decision, betrayal branches and failure timing.
+Private Session tests exercise actual exchange repetition and cancel/timeout
+defaults. The initial build caught missing namespace imports in the extracted
+interaction helper; both initial and final shared probes passed their cases.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1567 of 1569**, with two existing
+platform/audio skips. The shared probe passed all **1534 groups** across 170
+coverage families; source identity verified **784 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. This checkpoint uses
+native Core/Session composition and the App build; it does not claim a new
+graphical input-driver run or full desktop audience acceptance.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-favor-native.json` | `70b8cb6e147f15ee3913986243ab90d6496170756dee02635c053719b7247c45` |
+| `m4-favor-identity.json` | `969a93512bb091a6e315e94078462b33f2c0a5667bb477130d3012eeadd60671` |
+
+Full V05 audiences and treaty negotiation remain open, together with the
+previously recorded F04 formulas, relation-review input gap, complete turn
+orchestration and generated human/AI end-condition acceptance. Directional
+multiplayer map offers are separate work. Browser, cross-platform qualification
+and network execution remain deferred.

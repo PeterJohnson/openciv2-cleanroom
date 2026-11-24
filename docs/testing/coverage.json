@@ -5276,7 +5276,8 @@
       "sources": [
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
         "src/OpenCiv2.Core/DiplomaticTechnology.cs",
-        "src/OpenCiv2.Session/DiplomaticTechnologyOperation.cs"
+        "src/OpenCiv2.Session/DiplomaticTechnologyOperation.cs",
+        "src/OpenCiv2.Session/TechnologyNegotiationInteraction.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/DiplomaticTechnologyCases.cs"
@@ -5298,7 +5299,7 @@
       "status": "partial",
       "contract": "V05 section4 local gift menu, technology/gold gifts and military transfer with breakthrough",
       "publicSurface": "DiplomaticGifts.GoldValue/Begin; DiplomaticGiftDecision; DiplomaticGiftOperation; DiplomacyWorkspace.GiftsThisMeeting",
-      "review": "Actual V05 technology survey, V03 retained grants, C01 nearest destination and U01 detach/attach. Signed gold/request/cost arithmetic, alternative gift values best, live destination coordinates, selective unit counters and knowledge-based breakthrough. Private Session routing, cancellation, required-failure prefixes and cosmetic diagnostics. Full audience integration and favor/map-exchange controllers remain open; browser/cross-platform and network work are deferred.",
+      "review": "Actual V05 technology survey, V03 retained grants, C01 nearest destination and U01 detach/attach. Signed gold/request/cost arithmetic, alternative gift values best, live destination coordinates, selective unit counters and knowledge-based breakthrough. Private Session routing, cancellation, required-failure prefixes and cosmetic diagnostics. Full audience integration remains open; browser/cross-platform and network work are deferred.",
       "sources": [
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
         "src/OpenCiv2.Core/DiplomaticGifts.cs",
@@ -5316,6 +5317,34 @@
         "V05.gift-private-session",
         "V05.gift-session-cancellation",
         "V05.gift-technology-failures"
+      ]
+    },
+    {
+      "id": "diplomatic-favors-maps",
+      "status": "partial",
+      "contract": "V05 section4 favor controller, war pricing/distrust and mercenary execution; W03 section7 accepted local AI map exchange",
+      "publicSurface": "DiplomaticFavors.Begin/WarPrice/WarDistrust; NegotiatedMaps.Exchange; DiplomaticFavorOperation; shared TechnologyNegotiationInteraction",
+      "review": "Actual technology controller, retained research grants, A08 patience and V04 alliance cancellation. Local map exchange preserves direction, stale memory, unit visibility and asymmetric city-size publication. War admission and cached money/two-technology offers lead to ordered mercenary flags, publications and betrayal branches. Session privately routes nested exchange/grant decisions. Full audience, treaty negotiations and generated desktop acceptance remain open; network, browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomaticFavors.cs",
+        "src/OpenCiv2.Core/Units/NegotiatedMaps.cs",
+        "src/OpenCiv2.Session/DiplomaticFavorOperation.cs",
+        "src/OpenCiv2.Session/TechnologyNegotiationInteraction.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticFavorCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.favor-betrayal-failures",
+        "V05.favor-exchange-repetition",
+        "V05.favor-map-admission",
+        "V05.favor-prices-distrust",
+        "V05.favor-private-session",
+        "V05.favor-session-cancellation",
+        "V05.favor-technology-payments",
+        "V05.favor-war-admission-payment",
+        "W03.negotiated-maps-directional",
+        "W03.negotiated-maps-entities-failures"
       ]
     }
   ]
