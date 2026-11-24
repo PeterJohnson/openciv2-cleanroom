@@ -6638,6 +6638,25 @@
         "U06.presentation-casualty-failure",
         "U07.presentation-nuclear-recipients"
       ]
+    },
+    {
+      "id": "mission-presentation",
+      "status": "partial",
+      "contract": "V06 \u00a7\u00a74\u20139 recipient-scoped mission information with actual retained visits, grants and unit bribery",
+      "publicSurface": "SinglePlayerMissionPresentation.Effects; IUnitEspionageEffects.Incorruptible explicit actor",
+      "review": "Embassy/investigation notices address the victim after the actor closes the required visit and completes its unit effect. Ordinary theft notices address the actor before the actual retained grant and escape. Incorruptible now carries its actor explicitly; desertion uses the local former-owner viewer even though the live unit already belongs to the buyer. Actual Session cases verify distinct initiator/actor/victim recipients, installed names, observer focus, retained replies and required notice failures preserving the exact effect prefixes. Test visit prompts qualify continuation boundaries, not complete P06/P07 windows. General desktop host assembly, intelligence-report appraisal and native mission UI acceptance remain open. Cosmetic sound/animation/delays are omitted; browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/UnitEspionage.cs",
+        "src/OpenCiv2.Session/SinglePlayerMissionPresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MissionPresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "V06.presentation-bribe-recipients",
+        "V06.presentation-theft-failure",
+        "V06.presentation-visits-failure"
+      ]
     }
   ]
 }

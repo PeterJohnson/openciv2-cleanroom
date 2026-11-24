@@ -39,7 +39,7 @@ public abstract record UnitMissionDecision
 /// <summary>Semantic V06 presentation/publication. These callbacks do not choose outcomes or implement transfer/damage.</summary>
 public interface IUnitEspionageEffects
 {
-    void Incorruptible(UnitMissionSubject target);
+    void Incorruptible(UnitMissionSubject target, int actor);
     void Sound(UnitEspionageSound sound);
     void Publish();
     void RefreshStatus(int civilization);
@@ -149,7 +149,7 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
                         if (w.Civilizations[victim].Government == Government.Democracy)
                         {
                             if (!w.Multiplayer.Saved.AutoplayActive && parent.Human(actor))
-                            { parent.Effects.Incorruptible(parent.Subject(target, victim)); }
+                            { parent.Effects.Incorruptible(parent.Subject(target, victim), actor); }
                             return Finish(0);
                         }
                         if (!parent.Human(actor) && !CivilizationKnowledge.KnowsAdvance(w.Civilizations, actor,

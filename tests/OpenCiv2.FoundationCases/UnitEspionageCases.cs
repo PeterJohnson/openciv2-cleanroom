@@ -33,7 +33,7 @@ public static partial class FoundationSuite
         }
         public UnitEspionage.Operation Bribe() => Missions.Bribe(1, 1, "bribe");
         public UnitEspionage.Operation Mission() => Missions.Mission(0, 1, 1, "mission");
-        public void Incorruptible(UnitMissionSubject target) => Order.Add("incorruptible");
+        public void Incorruptible(UnitMissionSubject target, int actor) => Order.Add("incorruptible");
         public void Sound(UnitEspionageSound sound) => Order.Add("sound:" + sound);
         public void Publish() { Order.Add("publish"); if (FailPublish) { throw new InvalidOperationException("Publication failed"); } }
         public void RefreshStatus(int civilization) => Order.Add("status:" + civilization);

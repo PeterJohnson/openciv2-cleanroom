@@ -23,7 +23,8 @@ public static partial class FoundationSuite
         public UnitMissionFixture UnitEffects { get; } = new();
         public List<PlantedNuclearNotice> Devices { get; } = [];
         public SinglePlayerMissions Services { get; }
-        public SinglePlayerMissionFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public SinglePlayerMissionFixture(List<Choice>? choices = null, RevelationFixture? data = null,
+            SinglePlayerMissionEffects? presentation = null)
         {
             Combat = new(choices, data); F = new(data: Data, capture: Combat.F.F.Drop.Capture);
             Life.Life.Deletion.Erase(1, false);
@@ -33,7 +34,7 @@ public static partial class FoundationSuite
                 Life.Diplomacy.Grant.Services, Life.Diplomacy.Services, Combat.Services,
                 () => { ++F.Reads; using var reader = F.Text.Reader(); return ClassicCityMissionOptions.Read(reader, "missions", " (Spy authored)"); },
                 () => { ++F.Revolt.Reads; using var reader = F.Revolt.Text.Reader(); return ClassicRevoltOptions.Read(reader, "revolt"); },
-                new(F, F.Capture.Theft.Damage, F.Capture.Theft, F.Revolt, UnitEffects, Devices.Add, () => ++F.Stops));
+                presentation ?? new(F, F.Capture.Theft.Damage, F.Capture.Theft, F.Revolt, UnitEffects, Devices.Add, () => ++F.Stops));
         }
         public CityMissions.Operation Begin() => Services.Cities.Begin(0, new(0), 77, "city");
         public void Complete(CityMissions.Operation operation)

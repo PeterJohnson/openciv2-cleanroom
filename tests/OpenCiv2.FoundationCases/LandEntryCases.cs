@@ -54,7 +54,7 @@ public static partial class FoundationSuite
         public void Reciprocal(CaravanReciprocalNotice notice) { }
         public void Donation(CaravanDonationNotice notice) => ++Donations;
         public void RefreshStatus() { }
-        public void Incorruptible(UnitMissionSubject target) { }
+        public void Incorruptible(UnitMissionSubject target, int actor) { }
         public void Sound(UnitEspionageSound sound) { }
         public void Publish() { }
         public void RefreshStatus(int civilization) { }

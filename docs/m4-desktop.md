@@ -8568,3 +8568,49 @@ and cross-platform execution remain deferred.
 | --- | --- |
 | `m4-combat-presentation-native.json` | `5f0a1a4bd85a4a799817c811cb488ad719458a4e3845b471e0905f0c2be82537` |
 | `m4-combat-presentation-identity.json` | `20d252898162962c12958fccf9862d1e21f6ea30975d3b6b1fcaadb6c75e626b` |
+
+## Espionage information for general desktop gameplay
+
+`SinglePlayerMissionPresentation` supplies all informational/publication ports in
+`SinglePlayerMissionEffects`. Embassy and investigation notices address the victim;
+city damage, theft and revolt-refusal notices address the actor. Unit sabotage
+information likewise addresses its captured actor. Desertion uses the local former
+owner's viewer because the target already belongs to the buyer. Planted-device
+announcements preserve the identified/unidentified distinction in the local feed.
+Installed unit, improvement, advance and government names remain visible without
+reading a deleted unit or inventing a gameplay decision.
+
+`IUnitEspionageEffects.Incorruptible` now carries the bribing actor explicitly.
+Previously its target-only payload could not distinguish the intended recipient
+from the viewer or command initiator. Core passes its retained actor under the
+existing human/autoplay gate; no admission, price or transfer rule changes.
+
+Three shared groups run actual retained missions through Session. Embassy and
+investigation wait for the actor's visit before the victim's notice and preserve
+the completed unit and embassy effects when that notice fails. Ordinary theft
+announces the captured advance before the real V03 grant/government continuation;
+a failed notice prevents that grant and final escape, while success completes
+both. Bribery tests distinguish actor-directed refusal from former-owner-directed
+desertion, including custom government/unit names and failure after committed
+payment/transfer/focus. Repeated unanswered polls preserve notices and state.
+
+Required P06/P07 visits and mission choices remain in their owning continuations.
+Test visit prompts qualify those boundaries, not complete intelligence or city
+windows. The P07 appraisal gap remains open. Repaints expose current observations;
+cosmetic sound, explosion animation and delays are omitted under X01/P10. There
+is no separate active-unit blink queue in the current desktop host. General host
+assembly and native mission UI acceptance remain open.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1940/1942**, with the two existing
+platform/audio skips. All **1905 shared groups** passed across **217 coverage
+families**; compiled identity verified **948 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua and widget sources
+are unchanged; no new native mission UI acceptance run is claimed. General
+desktop host binding, the recorded formula/report gaps and complete generated
+human/AI games remain required for M4. Browser/cross-platform work is deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-mission-presentation-native.json` | `746a98ddc4dbe6c71aa52d1c8cb10d380f7e9cb035c39e2ab1d7746419faa8de` |
+| `m4-mission-presentation-identity.json` | `03ec38ee2ccd701cd4bcdc045502c5c738e28d27af94a2b325548de5913cc928` |

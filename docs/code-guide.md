@@ -433,6 +433,14 @@ The host must also supply actual paradrop targeting; this adapter does not answe
 retained combat/capture decisions. Cosmetic audio and animation are omitted.
 The generated desktop host still needs to assemble these ports and content.
 
+`SinglePlayerMissionPresentation` binds V06 mission information to scoped notices.
+Visit notices address the victim; theft/damage/refusal notices address the actor.
+The unit-bribery refusal callback carries its actor explicitly. Desertion uses
+the local former-owner viewer, not the unit's already-transferred owner. Required
+city/intelligence visits and mission choices stay in their retained operations;
+the generated host must still provide the actual P06/P07 windows. Repaints publish
+existing state, and cosmetic sound/animation/delays are omitted.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

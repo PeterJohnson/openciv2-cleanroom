@@ -364,3 +364,10 @@ its committed prefix; nuclear-notice failure preserves the interception/blast.
 The adapter accepts explicit casualty-color content and paradrop-targeting ports;
 generated desktop host binding and native gameplay acceptance remain open. See
 [CombatPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/CombatPresentationCases.cs).
+
+Mission presentation joins actual embassy/investigation, theft and bribery to
+recipient-scoped Session notices. Tests retain required visit/grant replies and
+check failures against the committed mission prefix. The incorruptible callback
+now carries its actor; desertion uses the old owner's viewer after transfer.
+Actual P06/P07 windows and native mission UI acceptance remain open. See
+[MissionPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/MissionPresentationCases.cs).

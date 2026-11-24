@@ -46,6 +46,14 @@ failure preserves its prefix; a failed nuclear notice is reported after the
 actual interception or blast completes. General native combat UI acceptance and
 the generated host's color/targeting bindings remain open.
 
+Mission presentation cases run actual embassy/investigation, ordinary technology
+theft and unit bribery through Session. They check victim versus actor notices,
+custom rule names, retained visit/grant replies, observer focus and notice failures
+before or after the appropriate committed effects. Incorruptible notices carry an
+explicit actor; desertion uses the old owner's view after ownership has changed.
+The visit prompts qualify continuation boundaries, not complete P06/P07 windows.
+General native mission UI acceptance remains open.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the
