@@ -14,7 +14,7 @@ public sealed class DiplomacyWorkspace
     public CivilizationArray<bool> RecentPeace;
     public BorderIntrusionSummary Intrusions;
     public bool OpeningEvaluationActive, InitialEvaluationDone;
-    public bool MeetingActive, AskedEmissary;
+    public bool MeetingActive, AskedEmissary, AiMeetingActive;
     public int EmissaryResponse;
     public bool RaceThreat, OutranksTarget, TargetIsLeader, Aggressive, InitiallyAggressive, SuppressedAggression, DeclareWar;
     public int Fear, Demand, RequestMode, PeaceInclination, LastContact, NearbyUnits, CapturedCities;

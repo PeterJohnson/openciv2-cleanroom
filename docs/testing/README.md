@@ -1135,3 +1135,12 @@ wonder protection, captured request modes and retained grants. Proposal cases
 cover options, treaty dispatch, ordered cancellation/expulsion, private government
 choices and nested exchange/treaty cancellation. Full audience orchestration and
 generated desktop acceptance remain open.
+
+V05 conversation groups compose actual gift/map/proposal effects and retained
+government choices, greetings, first-contact emissary reception, forced treaties,
+later-tie denunciation and border/region notices. Cleanup cases cover fresh patience
+across bounded yields, direction-specific hostility, ceasefire expiration,
+ambassador intelligence, post-reset tutorial reads and required/cosmetic failures.
+Session cases verify actor-to-recipient-to-actor privacy, cancellation, timeout and
+single intelligence-window creation. Entry/opening negotiation and full desktop
+audience acceptance remain open.

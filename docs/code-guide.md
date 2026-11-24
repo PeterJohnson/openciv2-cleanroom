@@ -1166,4 +1166,14 @@ treaty/demand children. Its cancellation branch runs actual stance and expulsion
 `DiplomacyWorkspace.HadCeasefire` is the retained meeting input whose capture belongs
 to the future audience entry. `Session/DiplomaticProposalOperation` routes private
 nested choices; treaty interactions are shared with direct negotiation. The
-full audience loop still owns favor/gift dispatch and overall meeting cleanup.
+audience entry/opening remains with the enclosing controller.
+
+`Core/DiplomaticConversation` owns V05 §6 main conversation and common cleanup,
+consuming explicit opening outcomes. It joins actual emissary reception, senate
+queries, border measurement, treaty/demand responses, favors and gifts. Forced
+treaties use bare V04 primitives; cleanup retains bounded request increments,
+post-reset intelligence/tutorial reads and the separate AI-meeting-active flag.
+`Session/DiplomaticConversationOperation` privately routes actor menus, nested
+recipient choices and intelligence. Direct and conversation callers share the
+gift, favor and proposal interaction adapters. Entry/opening negotiation, S02
+admission and full desktop audience composition remain open.

@@ -5303,6 +5303,7 @@
       "sources": [
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
         "src/OpenCiv2.Core/DiplomaticGifts.cs",
+        "src/OpenCiv2.Session/DiplomaticGiftInteraction.cs",
         "src/OpenCiv2.Session/DiplomaticGiftOperation.cs"
       ],
       "tests": [
@@ -5328,6 +5329,7 @@
       "sources": [
         "src/OpenCiv2.Core/DiplomaticFavors.cs",
         "src/OpenCiv2.Core/Units/NegotiatedMaps.cs",
+        "src/OpenCiv2.Session/DiplomaticFavorInteraction.cs",
         "src/OpenCiv2.Session/DiplomaticFavorOperation.cs",
         "src/OpenCiv2.Session/TechnologyNegotiationInteraction.cs"
       ],
@@ -5385,6 +5387,7 @@
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
         "src/OpenCiv2.Core/DiplomaticDemands.cs",
         "src/OpenCiv2.Core/DiplomaticProposals.cs",
+        "src/OpenCiv2.Session/DiplomaticProposalInteraction.cs",
         "src/OpenCiv2.Session/DiplomaticProposalOperation.cs",
         "src/OpenCiv2.Session/TreatyNegotiationInteraction.cs"
       ],
@@ -5427,6 +5430,36 @@
         "S02.negotiation-first-match",
         "S02.negotiation-permission-encoding",
         "S02.negotiation-stored-classification"
+      ]
+    },
+    {
+      "id": "diplomatic-conversation",
+      "contract": "V05 section6 main conversation and common cleanup with actual V04 senate/relations/borders and V05 responses",
+      "publicSurface": "DiplomaticConversation.Begin/BeginCleanup/Operation; AudienceConclusion; DiplomaticConversationOperation",
+      "review": "Actual emissary, gift, favor, map, negotiated proposal and grant continuations; bare forced treaties, live direction-sensitive gates, later-tie denunciation including dead third parties, city-index border text and regions1-62. Cleanup preserves signed request increments, bounded progress with fresh patience, required notices, cosmetic close diagnostics, separate AI-active state and post-reset intelligence/tutorial reads. Private actor/recipient/actor routing, cancellation/timeout, report caching, disposal and failure prefixes are exercised. Entry/opening, S02 admission, full desktop audience composition and complete-game acceptance remain open; browser/cross-platform/network execution deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/DiplomaticConversation.cs",
+        "src/OpenCiv2.Session/DiplomaticConversationOperation.cs",
+        "src/OpenCiv2.Session/DiplomaticFavorInteraction.cs",
+        "src/OpenCiv2.Session/DiplomaticGiftInteraction.cs",
+        "src/OpenCiv2.Session/DiplomaticProposalInteraction.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticConversationCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.conversation-actual-menus",
+        "V05.conversation-borders-regions",
+        "V05.conversation-cleanup-counters",
+        "V05.conversation-cleanup-intelligence-tutorial",
+        "V05.conversation-denunciation",
+        "V05.conversation-failures-patience",
+        "V05.conversation-forced-treaties",
+        "V05.conversation-greetings-admission",
+        "V05.conversation-private-grant",
+        "V05.conversation-session-cancel-intelligence"
       ]
     }
   ]

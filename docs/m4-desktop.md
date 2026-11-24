@@ -5955,3 +5955,53 @@ input gap, complete turn orchestration and generated human/AI end-condition
 acceptance remain open. This checkpoint needed no original-game observations;
 the Windows installation remains available for the unresolved behavioral gaps.
 Browser, cross-platform qualification and network execution remain deferred.
+
+## V05 main conversation and common cleanup — 2026-11-23
+
+`DiplomaticConversation` implements V05 §6's main conversation and common cleanup
+from explicit retained opening outcomes. It joins actual emissary reception,
+senate queries, border measurement, proposal responses, favors and gifts. Actor
+menus can suspend through a recipient's real research/government decision and
+then return to the actor without repeating accepted effects. Forced treaties use
+bare V04 setters, preserving their distinction from negotiated treaty wrappers.
+
+Greeting selection retains initiation, relations, paid-demand, request and address
+rules. Denunciation scans the specified directed relations, includes dead third
+parties and chooses later credit ties. Border messages use selected city index;
+ally region checks cover1…62. Proposal termination and ordinary menu exit keep
+their distinct request-counter effects. Patience reads are fresh after children.
+
+Cleanup clears incidents and updates directed hostility, advances signed request
+counts with bounded continuation, resets emissary state, handles ceasefire expiry
+and retains intelligence after ambassador/Embassy publication. Tutorial conditions
+read the actual post-reset asked/response fields. The separate AI-meeting-active
+flag remains set until cleanup finishes. Required failures preserve their prefix;
+cosmetic close/status failures remain diagnostics. Entry and opening still own
+the capture of `HadCeasefire`, opening outcomes and initial active-state setup.
+
+Direct and conversation Session callers now share gift/favor/proposal interaction
+adapters. Ten groups cover actual gold gifts, maps, treaties and provocation,
+emissary acceptance/refusal, greeting/admission, denunciation, forced treaties,
+borders/regions, bounded cleanup, intelligence/tutorial ordering, failures,
+private actor/recipient/actor routing, cancellation and timeout. The initial
+probe exposed an existing-city fixture collision and an incorrect expectation
+that a non-owner retains command results after its private prompt closes. Both
+fixtures were corrected; the final probe passes.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1604 of 1606**, with two existing
+platform/audio skips. The shared probe passed all **1571 groups** across 174
+coverage families; source identity verified **801 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. These are native
+Core/Session integration cases and an App build, not a new graphical input-driver
+run or full desktop audience acceptance.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-conversation-native.json` | `77bd1c9dcb2b5412da0d1a490ca47bda8d5d684a8b2e321a0d91e05cbfa19707` |
+| `m4-conversation-identity.json` | `4b8d2a6d21df0fe982154b23b25dc7362dc6642d4f2f0351ca6fe257c5562189` |
+
+V05 audience entry/opening and complete desktop composition remain open, along
+with the recorded F04 formulas, relation-review input gap, full turn orchestration
+and generated human/AI end-condition acceptance. Browser, cross-platform
+qualification and network execution remain deferred.

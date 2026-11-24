@@ -20,9 +20,9 @@ public sealed class DiplomaticProposalOperation(DiplomaticProposals.Operation op
         { return completed; }
         try
         {
-            pending = operation.Resume(Reply(input));
+            pending = operation.Resume(DiplomaticProposalInteraction.Reply(pending, input));
             if (pending is not null)
-            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: Prompt(context, pending)); }
+            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: DiplomaticProposalInteraction.Prompt(context, pending, recipient, intelligence, ref window)); }
             if (!operation.Completed)
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("endsAudience", new CommandValue.Boolean(operation.EndsAudience))]);
@@ -32,19 +32,5 @@ public sealed class DiplomaticProposalOperation(DiplomaticProposals.Operation op
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
-    private ResearchReply? Reply(OperationInput input) => pending switch
-    {
-        DiplomaticProposalDecision.Treaty treaty => TreatyNegotiationInteraction.Reply(treaty.Decision, input),
-        DiplomaticProposalDecision.Demand { Decision: DiplomaticDemandDecision.Technology technology } => TechnologyNegotiationInteraction.Reply(technology.Decision, input),
-        DiplomaticProposalDecision.Demand { Decision: DiplomaticDemandDecision.Grant grant } => ResearchGrantInteraction.ResearchReply(grant.Decision, input),
-        _ => null
-    };
-    private InteractionSpec Prompt(OperationContext context, DiplomaticProposalDecision decision) => decision switch
-    {
-        DiplomaticProposalDecision.Treaty treaty => TreatyNegotiationInteraction.Prompt(context, treaty.Decision, recipient, intelligence, ref window),
-        DiplomaticProposalDecision.Demand { Decision: DiplomaticDemandDecision.Technology technology } => TechnologyNegotiationInteraction.Prompt(context, technology.Decision, recipient, intelligence, ref window),
-        DiplomaticProposalDecision.Demand { Decision: DiplomaticDemandDecision.Grant grant } => ResearchGrantInteraction.Prompt(context, grant.Decision, recipient, intelligence, ref window),
-        _ => throw new InvalidOperationException("Unknown proposal decision")
-    };
     public void Dispose() => operation.Dispose();
 }
