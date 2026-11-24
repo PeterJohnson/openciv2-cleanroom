@@ -6,6 +6,12 @@ and the browser host. Native I/O/API boundary tests are in `OpenCiv2.Base.Tests`
 Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 [implementation coverage](coverage.md) for admitted APIs and exclusions.
 
+The unified local gameplay factory is exercised through actual movement contact,
+recursive scenario creation/contact/Library grants, capture and automatic AI
+production. Its content and presentation fixtures do not replace gameplay
+children. These native cases qualify construction and continuation ownership;
+desktop content/presentation binding and complete generated games remain open.
+
 U04 activation cases now join the next-unit search to real contact-capable W03
 revelation. They check the combat-loss origin, order-sensitive timer clearing,
 retained contact, live simultaneous-mode tail and private reply routing. Failures

@@ -206,6 +206,15 @@ the current step through an accessor that is unavailable outside `Resume`.
 The default authored desktop command still uses its bounded handler until the
 general content/presentation binding is installed.
 
+`Session/SinglePlayerGameplay` constructs those services from one world, installed
+rules, RNG, content and semantic presentation. It owns actual stacks, cargo,
+deletion, economy, A02 production, research, diplomacy, lifecycle, combat, missions,
+movement and focus. The deletion and scenario-permission cycles close over the
+actual lifecycle before any operation runs. Player government/rate decisions use
+retained Session operations; unsupported synchronous callbacks fail explicitly.
+The owner must rebuild the graph when replacing world/rules and supply a unique
+call scope. Native content/presentation binding remains the next integration step.
+
 `City/CapturePartisans.Begin` retains actual U01 creation through W03/V04 contact.
 Fortification, veteran sampling and visibility follow the completed child; later
 placement attempts read the live map while keeping the initial count/threshold.

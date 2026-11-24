@@ -334,3 +334,11 @@ decisions, outcome continuation and required/cosmetic failures. See
 and [the shared cases](../../tests/OpenCiv2.FoundationCases/PlayerMovementCommandCases.cs).
 The default authored desktop movement handler has not yet been replaced; its
 general content/presentation binding and native acceptance remain open.
+
+The `single-player-gameplay-construction` family executes movement contact,
+scenario creation/contact/Library decisions, city capture and automatic AI
+production through [SinglePlayerGameplay.cs](../../src/OpenCiv2.Session/SinglePlayerGameplay.cs).
+Its [shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerGameplayCases.cs)
+supply authored state and presentation, while the root constructs all gameplay
+children. Polling and disposal preserve committed prefixes. Native binding,
+generated turns and complete-game acceptance remain open.

@@ -6477,6 +6477,26 @@
         "U02.player-pending-outcome",
         "U02.player-private-mission"
       ]
+    },
+    {
+      "id": "single-player-gameplay-construction",
+      "status": "partial",
+      "contract": "U02/C09/W03/V04/S02/V03 local gameplay construction with actual A02 production and V01 deletion ownership",
+      "publicSurface": "SinglePlayerGameplay; SinglePlayerGameplayContent; SinglePlayerGameplayEffects; SinglePlayerDeletionPresentation",
+      "review": "One world-owned graph constructs stacks, cargo, deletion, economy, government, production, research, diplomacy, lifecycle, combat, missions, movement and focus. Scenario permission and deletion callbacks close over the actual lifecycle after construction. Authored content and semantic presentation remain supplied inputs. Root cases exercise movement contact, recursive scenario creation/contact/Library choices, scenario-restricted capture, automatic A02 production selection and actual last-settler deletion, including retained polling and disposal. Synchronous player government/rate callbacks reject unsupported use; retained operations own those decisions. General native content/presentation binding, generated turns and complete-game acceptance remain open. Browser and cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/SinglePlayerGameplay.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SinglePlayerGameplayCases.cs"
+      ],
+      "sharedGroups": [
+        "C06.gameplay-production",
+        "C09.gameplay-capture",
+        "S02.gameplay-scenario-cycle",
+        "U02.gameplay-movement-contact",
+        "V01.gameplay-deletion"
+      ]
     }
   ]
 }

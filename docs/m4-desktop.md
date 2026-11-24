@@ -8225,3 +8225,49 @@ integration are unchanged.
 | --- | --- |
 | `m4-player-movement-native.json` | `8acaed7731b391c410762648903bd29ac34c827ec92e90f42db348e0b9636828` |
 | `m4-player-movement-identity.json` | `f048e49a08b800b29c99c315c60badced0579ecfd42bf2c2e8cdbeb05841076a` |
+
+## Unified local gameplay construction
+
+`SinglePlayerGameplay` constructs the shared local services from installed state,
+rules, RNG, content and semantic presentation. Stacks, cargo, basic deletion,
+economy, government, wonders, actual A02 production, research, diplomacy,
+lifecycle, combat, missions, movement and contact-capable focus share that owner.
+Scenario permission callbacks close over its actual dispatcher; deletion's
+required civilization check closes over its actual lifecycle. The host supplies
+presentation for deletion, rather than a replacement civilization-check callback.
+
+The content contract preserves naming, city preferences, starting positions,
+gameplay values, map compatibility, scenario media/text preparation and classic
+mission/revolt readers. Explicit wonder restrictions reach both production and
+capture. Their unspecified classic-file flag mapping remains a separate gap.
+The owner supplies a unique call scope and rebuilds after replacing world/rules.
+Synchronous player government/rate callbacks reject unsupported use; the retained
+Session operations own those decisions. AI production airlift excludes settler
+roles before selecting its donor, so that synchronous path cannot enter a
+last-settler restart prompt.
+
+Five shared groups exercise actual movement/contact/scenario text, recursive
+creation/contact/Library decisions with polling and disposal, capture including
+scenario restrictions, automatic production and deletion through the actual
+last-settler check. They supply authored state and presentation without replacing
+the root's gameplay children.
+
+This closes service construction, not native host binding. The default authored
+desktop movement handler still uses its bounded path. General native content,
+presentation and interaction adapters, generated human/AI scheduling and complete
+game acceptance remain open. The F04 formula observations remain unresolved;
+the available original Windows installation is still the observation target.
+Browser and cross-platform qualification remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1917/1919**, with the two existing
+platform/audio skips. All **1882 shared groups** passed across **210 coverage
+families**; identity verified **928 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua
+suites were not rerun because this checkpoint changes service construction
+without changing desktop command admission or automation.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-gameplay-construction-native.json` | `6c63fb047c5606bc0e49c8339dee19c0790c9fa2cafa8161ec8ba8ff1885e607` |
+| `m4-gameplay-construction-identity.json` | `75deea28d9ddaf4b7eccecd4e9f2f94561a993881471725c86a59c7c050f327f` |
