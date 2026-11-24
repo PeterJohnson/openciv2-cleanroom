@@ -12,7 +12,7 @@ public static partial class FoundationSuite
 
     private sealed class ShipFixture : ISpaceshipConstructionEffects
     {
-        public RevelationFixture Data { get; } = new();
+        public RevelationFixture Data { get; }
         public GameState World => Data.World;
         public SpaceshipPerformance Performance { get; }
         public SpaceshipConstruction Construction { get; }
@@ -27,8 +27,9 @@ public static partial class FoundationSuite
         public Action? OnFull, OnLaunch;
         public Action<CitySlot>? OnReselect;
 
-        public ShipFixture(bool human = true, SpaceshipValues? values = null)
+        public ShipFixture(bool human = true, SpaceshipValues? values = null, RevelationFixture? data = null)
         {
+            Data = data ?? new();
             Values = values ?? ClassicShip;
             World.Globals.HumanPlayers = CivilizationSet.Only(human ? 1 : 2);
             World.Globals.Difficulty = Difficulty.Prince;

@@ -1317,3 +1317,11 @@ resume skips autosave, and headless replay preserves the same writer effects.
 Native cases exercise actual files, case aliases, backups and failed replacement.
 The authored ruler name now survives ordinary save/load. These tests do not
 establish full scheduling, general scenario-host composition or graphical acceptance.
+
+V07 report and F04 ship-tail cases cover raw/capped quantities, custom capacities,
+strict arrival display, current shared success at confirmation, accepted launch
+without revalidation, private replies and retained failure/disposal effects. An
+actual structural addition runs between upkeep capture and report; autosave waits
+for the real launch decision. Direct/console advisor commands save and replay the
+launched state. The isolated native driver additionally exercises the production
+Spaceships menu, report, decline/confirm, exact save comparison and reload.

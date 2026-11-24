@@ -5923,6 +5923,36 @@
         "F04.autosave-rotation-writer",
         "M4.local-autosave-decisions"
       ]
+    },
+    {
+      "id": "spaceship-report-and-upkeep",
+      "contract": "V07 \u00a77 text status, selector and window result; F04 \u00a76 steps 1 and 8; V07 \u00a76 actual launch",
+      "publicSurface": "SpaceshipReport; SpaceshipStatusOperation; SpaceshipSelectionOperation; SpaceshipPresentationOperation; SpaceshipUpkeep; spaceship.view desktop command",
+      "status": "partial",
+      "review": "Actual support-inclusive performance prepares an owned report with raw counts, capacity annotation, population and strict report arrival comparison. Captured offered launch choices lead to a confirmation using current shared success; accepted nonzero confirmation invokes actual launch without a second eligibility check. Tests cover custom capacities, human/allow/habitation/success gates, decline/timeout/disposal, callback failure prefixes, cached completion and private/stale replies. Selector scans Exists ships in civilization order without contact/alive filters, captures counts and retains a window child before live-membership text fallback; active-window success suppresses fallback. Upkeep compares captured and live sums, including loss/acquisition of human control or ship, before autosave. Actual structural construction, private status/confirmation and ordinary save compose in a session case. Direct/console advisor commands launch, serialize and replay. Authored desktop uses semantic text presentation and waits for the upkeep tail before autosave/movement. Graphical ship artwork/media, general advisor-picture closing, general construction choices, full civilization scheduling and generated-game acceptance remain open. Browser/network/cross-platform execution is deferred; expectations are specification-derived.",
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Actions.cs",
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Core/SpaceshipReport.cs",
+        "src/OpenCiv2.Core/SpaceshipUpkeep.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Spaceship.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/SpaceshipPresentationOperation.cs",
+        "src/OpenCiv2.Session/SpaceshipStatusOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SpaceshipReportCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "F04.ship-upkeep-private-autosave",
+        "F04.ship-upkeep-sum-gates",
+        "M4.local-ship-report-launch",
+        "V07.report-cancel-dispose-failure",
+        "V07.report-retained-launch",
+        "V07.report-values-gates",
+        "V07.window-fallback-selector"
+      ]
     }
   ]
 }

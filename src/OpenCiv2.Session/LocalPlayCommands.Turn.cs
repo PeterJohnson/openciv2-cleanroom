@@ -119,6 +119,9 @@ public static partial class LocalPlayCommands
         private bool cityPassFinished;
         private int startGold;
         private CivilizationPostCityOperation? postCity;
+        private SpaceshipUpkeep? shipUpkeep;
+        private SpaceshipPresentationOperation? shipPresentation;
+        private bool shipChecked;
         private string deferredFailure = "";
         private GameState? activeWorld;
         private OperationContext? currentContext;
@@ -145,6 +148,8 @@ public static partial class LocalPlayCommands
             production?.Dispose();
             production = null;
             pendingResearch = null;
+            shipPresentation?.Dispose();
+            shipPresentation = null;
             postCity?.Dispose();
             postCity = null;
             movementOutcome?.Dispose();
@@ -220,13 +225,14 @@ public static partial class LocalPlayCommands
             ResearchReply? reply = ResearchFlowInteraction.Reply(pendingResearch, input);
             if (!upkeepCommitted)
             {
+                activeWorld = world;
+                world.Production.CivilizationTurnInProgress = true;
+                shipUpkeep = new(world, context.Actor.Civilization.Value);
                 startGold = CivilizationFinances.NormalizeTreasury(world, context.Actor.Civilization.Value);
                 new CivilizationRecovery(world, context.Process.Rules.Definitions, point =>
                     context.Effect("map.changed", new([new("x", new CommandValue.Integer(point.X)), new("y", new CommandValue.Integer(point.Y))])))
                     .Run(context.Actor.Civilization.Value);
                 upkeepCommitted = true;
-                activeWorld = world;
-                world.Production.CivilizationTurnInProgress = true;
                 cityPass = new CityPass(world,
                     new(world, context.Process.Rules, CreateGovernments(context), context.Gameplay))
                     .Begin(context.Actor.Civilization.Value);
@@ -290,6 +296,26 @@ public static partial class LocalPlayCommands
                 postCity.Dispose();
                 postCity = null;
                 postCityFinished = true;
+                input = new();
+            }
+            if (!shipChecked)
+            {
+                shipChecked = true;
+                if (shipUpkeep!.NeedsPresentation())
+                {
+                    shipPresentation = new(context.Actor.Civilization.Value, shipUpkeep.BeforeParts,
+                        CreateSpaceshipConstruction, (_, _) => null, context.Actor.Participant);
+                    input = new();
+                }
+            }
+            if (shipPresentation is not null)
+            {
+                var result = shipPresentation.Resume(context, input);
+                if (!result.Status.Terminal())
+                { return result; }
+                RememberFailure(result);
+                shipPresentation.Dispose();
+                shipPresentation = null;
                 input = new();
             }
             if (!activated)
@@ -621,6 +647,14 @@ public static partial class LocalPlayCommands
                 new(world, rules, values.Spaceship, values.Calendar),
                 new(world, rules, values.Spaceship, values.Calendar, city => orders.Set(city, 99), effects),
                 values.Spaceship, new(world, context.Process.Rules, new(world, new(5_000_000, 64))), effects);
+        }
+
+        internal static SpaceshipConstruction CreateSpaceshipConstruction(OperationContext context)
+        {
+            var values = GameplayContent.Builtin.Values;
+            var orders = CreateProductionOrders(context);
+            return new(context.World, context.Process.Rules.Definitions, values.Spaceship, values.Calendar,
+                city => orders.Set(city, 99), new AuthoredProductionEffects(() => context));
         }
 
         private static ProductionOrders CreateProductionOrders(OperationContext context)

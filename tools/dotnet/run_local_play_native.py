@@ -862,6 +862,62 @@ def drive(args, app, observation, storage):
         assert ended['play']['effects'] == ['game.closed']
         assert hall_file.read_bytes() == retirement_hall.read_bytes()
         checks.append('native reload reopens gameplay after retirement and explicit Quit skips reports and preserves Hall bytes')
+        # Match the reference's entity identity history without excluding token bytes.
+        # Run after the existing Hall/retirement sequence so its retained record bytes survive.
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
+        observation = observation.with_name('ship-observation.json')
+        launch[launch.index('--observe') + 1] = str(observation)
+        app = subprocess.Popen(launch)
+        wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        ship_initial = observation.with_name('ship-initial.sav')
+        ship_launched = observation.with_name('ship-launched.sav')
+        subprocess.run(['dotnet', str(args.probe), '--local-spaceship-reference', str(ship_initial), str(ship_launched)], check=True)
+        state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['File']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['file.library']['bounds'])
+        import_save(ship_initial)
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
+
+        def open_ship():
+            state = wait(lambda s: s['menu']['groups']['Advisors']['bounds'] is not None)
+            menu_click(state, state['menu']['groups']['Advisors']['bounds'])
+            state = wait(lambda s: s['menu']['actions']['spaceship.view']['bounds'] is not None)
+            menu_click(state, state['menu']['actions']['spaceship.view']['bounds'])
+            wait(lambda s: s['dialog']['visible'] and s['prompt'] == 'View a spaceship')
+            choice(1)
+            return wait(lambda s: s['dialog']['visible'] and 'Population: 40000' in s['prompt'])
+
+        ship = open_ship()
+        assert 'Structural: 39' in ship['prompt'] and 'Success: 100%' in ship['prompt']
+        assert not ship['play']['controls']['save']['enabled']
+        choice(1)
+        wait(lambda s: s['dialog']['visible'] and s['prompt'].startswith('Launch spaceship?'))
+        choice(0)
+        declined = wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        assert 'spaceship.launched' not in declined['play']['effects']
+        open_ship()
+        choice(1)
+        wait(lambda s: s['dialog']['visible'] and s['prompt'].startswith('Launch spaceship?'))
+        choice(1)
+        launched = wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        assert launched['play']['effects'].count('spaceship.launched') == 1
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(ship_launched)
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        ship = open_ship()
+        assert ('In flight' in ship['prompt'] or 'Arrived' in ship['prompt'])
+        assert sorted(k for k in ship['dialog']['regions'] if k.startswith('choice.')) == ['choice.0']
+        choice(0)
+        wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+        checks.append('native Spaceships advisor shows actual statistics, declines and confirms launch once, matches the direct save and restores launched status')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
         observation = observation.with_name('scheduled-observation.json')

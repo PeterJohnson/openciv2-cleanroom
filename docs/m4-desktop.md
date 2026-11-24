@@ -6813,3 +6813,73 @@ composition, generated human/AI games and graphical acceptance remain open. The
 recorded formula/evidence gaps are unresolved. These specification-derived tests
 add no original-game observations. Browser, cross-platform and network execution
 remain deferred. M4 is ongoing; Windows migration is not required for this checkpoint.
+
+## V07 spaceship reports and F04 upkeep tail
+
+The 2026-11-24 checkpoint adds the desktop Spaceships advisor and V07 §7 text
+status/launch flow. `SpaceshipReport` runs the actual support-inclusive calculation
+and owns raw part counts, capacities, over-capacity annotation, population,
+performance and arrival display. Arrival equality still displays in-flight here,
+while the shared arrival predicate already returns true. Offered launch choices
+are captured with the report. An accepted extra result builds confirmation from
+current shared success; acceptance invokes the actual V07 launch without a second
+eligibility check. Cancellation retains preview effects, and completion/failure
+cannot repeat launch.
+
+The selector lists Exists ships in civilization order without contact/alive/human
+filters. It snapshots parts before its retained window request. An already-active
+window result suppresses fallback; an unavailable graphical presentation runs the
+actual text status using human membership read after the request. The authored
+desktop host provides the semantic text path. Specialized ship artwork, launch
+video and graphical region/timer behavior are not supplied by this checkpoint.
+
+`SpaceshipUpkeep` captures six counts before treasury normalization and healing,
+and compares the eligible sum with the live sum after finances. Loss of the ship
+or human control does not erase an earlier captured sum; equal sums with changed
+subtypes do not request a window. The desktop caller now sets civilization
+processing at upkeep entry and waits for any ship presentation before clearing
+that flag, autosaving and activating movement. General advisor-picture closing,
+construction choices and full civilization scheduling remain separate work.
+
+Seven shared groups cover report arithmetic/gates, custom capacities, strict
+arrival display, live confirmation success, accepted launch after eligibility
+changes, cancellation/disposal, required callback failure, window results and
+selector ordering. Actual structural construction, a private human launch during
+another participant's command, and the ordinary autosave writer run sequentially
+in a session case. Direct and console advisor commands save and replay the launch.
+
+The extended native input driver passed **27 desktop checks**. It opens the new
+menu, shows actual statistics, declines and then confirms launch exactly once,
+compares the complete save bytes with a direct-client reference, reloads and
+verifies launched status. Existing Hall, retirement and continuation checks also
+passed. The independent ship scenario starts in a fresh process after the Hall
+sequence so both unit-token and retained Hall-record histories match their inputs;
+no file fields or comparisons were excluded.
+
+Earlier native attempts and byte diagnostics remain under
+`build/test-results/m4-spaceship-report-play-attempt*.log` and sibling save/Hall
+images. Two attempts could not find the native picker while host portals
+activated. The passing environment used isolated Xvfb/XDG directories and a
+private session bus without host portal autoactivation, exercising the native GTK
+fallback. One earlier process exited with signal 11 during a government-save
+import; its cause is not established. Later complete execution passed that path.
+The save/Hall mismatches during driver development were resolved by correcting
+scenario process ordering, not by changing gameplay or weakening expectations.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1760/1762**, with the two existing
+platform/audio skips. All **1725 shared groups** passed across **191 coverage
+families**; identity verified **860 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-spaceship-report-native.json` | `93c8461c594b362828e6135013c7a403b4a7e1c42b7c296f7b25af38e44b6f0f` |
+| `m4-spaceship-report-identity.json` | `a340b7e61148d247f7a2d9792143fb7942f7c99d0f8aaf5e211ab08b93137ceb` |
+| `m4-spaceship-report-play.json` | `bd731e8315f5b640559d8e21e287842e61152a8ae4a07bfbf4ae89e98fa2ff72` |
+
+This is authored desktop acceptance plus specification-derived shared cases, not
+a complete generated human/AI game or independent original-game evidence. Full
+city/production/civilization orchestration and the recorded formula/evidence gaps
+remain open. Browser, cross-platform and network execution remain deferred. M4
+is ongoing.

@@ -553,7 +553,21 @@ mutations. `LocalGame` initializes the human ruler's saved name during setup, as
 ordinary F06 load restores that name from the civilization record. Shared hosts
 supply the localized label and scenario directory; the authored desktop profile
 uses English `Auto` and its own storage directory. This does not complete the
-spaceship tail or general civilization scheduler.
+general civilization scheduler.
+
+`Core/SpaceshipUpkeep` captures all six presentation counts before treasury/healing
+and checks the F04 sum difference after finances. The local turn waits for
+`SpaceshipPresentationOperation` before clearing civilization processing, saving
+and activating movement. The retained window-result interface supports an active
+window or an unavailable graphical presentation; the latter runs the real text
+status with human membership read after the window request.
+`SpaceshipReport` prepares V07 support-inclusive performance and raw report values.
+`SpaceshipStatusOperation` retains its report and launch confirmation, samples live
+shared success at confirmation, and invokes the actual V07 launch exactly once
+without a second eligibility check. `SpaceshipSelectionOperation` lists all Exists
+ships in civilization order. The desktop `spaceship.view` advisor uses this text
+path and real launch logic; graphical artwork/media and general construction
+selection remain separate work.
 
 V08 arithmetic and report preparation live in `CivilizationScore`. `ScoreWorkspace`
 is world-owned scratch; `ScoreReport` is an owned presentation snapshot. Direct

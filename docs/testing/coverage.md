@@ -226,3 +226,11 @@ retained decisions and replay. [Native storage cases](../../tests/OpenCiv2.Base.
 verify real turn saves, backups and failed replacement. The authored desktop turn
 uses this boundary before movement; full scheduling and graphical acceptance
 remain open.
+
+The `spaceship-report-and-upkeep` family covers [status and launch decisions](../../src/OpenCiv2.Session/SpaceshipStatusOperation.cs),
+[window/selector composition](../../src/OpenCiv2.Session/SpaceshipPresentationOperation.cs)
+and the [F04 part-sum boundary](../../src/OpenCiv2.Core/SpaceshipUpkeep.cs).
+[Shared cases](../../tests/OpenCiv2.FoundationCases/SpaceshipReportCases.cs) compose
+actual construction, private launch and ordinary save, plus desktop command/replay
+checks. The native input driver includes the advisor flow. Graphical ship media,
+general construction choices and complete generated turns remain open.

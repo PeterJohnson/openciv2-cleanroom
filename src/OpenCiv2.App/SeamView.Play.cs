@@ -53,6 +53,7 @@ public sealed partial class SeamView
         yield return new(LocalPlayCommands.Hall, "Advisors", "Hall of Fame", null, ready);
         yield return new(LocalPlayCommands.Power, "Advisors", "Power history", null, ready);
         yield return new(LocalPlayCommands.Score, "Advisors", "Civilization score", null, ready);
+        yield return new(LocalPlayCommands.Spaceship, "Advisors", "Spaceships", null, ready);
         yield return new(LocalPlayCommands.EditRates, "Orders", "Tax rates", null, ready);
         yield return new(LocalPlayCommands.Revolution, "Orders", "Revolution", null, ready && play?.CanRevolt == true);
         yield return new(LocalPlayCommands.Fortify, "Orders", "Fortify unit", null,
