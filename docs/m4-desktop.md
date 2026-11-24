@@ -6181,3 +6181,45 @@ Production movement/revelation and desktop contact composition remain open. The
 recorded F04 formulas and A08 input need independent evidence; complete turn and
 generated human/AI end-condition acceptance remain outstanding. Browser,
 cross-platform qualification and network execution remain deferred. M4 is ongoing.
+
+## W03/U02 retained contact during movement revelation — 2026-11-23
+
+`UnitRevelation.Begin` now composes actual V04 contact at both empty-city and
+foreign-unit meeting points. Adjacent disclosure precedes the private meeting;
+post-contact goals and outer observers wait until it completes. The continuation
+retains the specified entry/neighbor values and rereads the later live operands.
+Its synchronous entry rejects contact-capable execution before mutations when
+contact is allowed. Contact-free creation and existing synchronous adapters keep
+their bounded behavior.
+
+`MovementCompletion` joins revelation after arrival and before special finish,
+final direction and cleanup. Actual dispatcher cases charge and relocate before
+the meeting, retain that committed prefix during disposal, and release movement
+ownership without replaying the move. Both Session movement adapters route private
+contact choices and preserve full replies. They now report collected presentation
+failures after completed gameplay. This exposed an older animation fixture that
+checked unit zero while a passenger moved; it now checks the supplied moving unit,
+and the private dispatcher cases assert that no presentation failure is hidden.
+
+Seven new groups cover city/unit meetings, pre-meeting disclosure, deferred outer
+visibility, cached/live reads, synchronous admission, disposal and required failure,
+actual Library grants, real movement retention, private replies and cancellation/
+timeout diagnostics through direct completion and dispatcher adapters.
+
+Root/App formatting and verification passed, and both Release builds completed
+with zero warnings/errors. Native tests passed **1652 of 1654**, with two existing
+platform/audio skips. All **1619 shared groups** passed across 178 coverage families;
+identity verified **812 compiled inputs**. The 43-project graph, eight identity
+tests and three coverage tests passed. No new graphical input-driver run was
+performed; the App build does not establish graphical audience acceptance.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-reveal-contact-native.json` | `2eb63946e33b97fee64d8a0f237bfd2fee019fdfc154b5fd78b111fbe481816b` |
+| `m4-reveal-contact-identity.json` | `8b5966f95179ae4c5cbb707db357468def33554eb96db9c9037861142bf5e187` |
+
+The production desktop service graph, audience presentation, complete turn
+orchestration and generated human/AI end conditions remain open. F04 formulas,
+the A08 incoming review delta and the other recorded independent-observation gaps
+are unchanged. Browser, cross-platform qualification and network execution remain
+deferred. M4 is not complete.

@@ -1211,5 +1211,15 @@ uses the actual C01 nearest query; absent city information is semantic absence.
 help decisions through shared interaction adapters. `DiplomacyTurn` can compose
 the actual contact child before stale-contact cleanup and later relation work;
 `DiplomacyTurnOperation` forwards full replies and private child choices. Production
-movement/revelation and desktop contact callers remain open; network forwarding and
+desktop contact callers remain open; movement/revelation now composes the contact
+continuation below. Network forwarding and
 two-human network parley belong to the network session.
+
+`UnitRevelation.Begin` retains the ordered W03 scan through actual diplomatic
+contact. Cached entry and neighbor values survive private choices; later goals
+and outer visibility read their specified live inputs. The synchronous entry
+rejects a contact-capable graph when contact is allowed, before mutations.
+`MovementCompletion` composes this continuation after arrival and before special
+finish/cleanup. Direct and parent movement Session adapters route its private
+choices and report cosmetic failures after completed gameplay. The desktop
+composition root still needs the full service graph and audience presentation.

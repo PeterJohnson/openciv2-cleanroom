@@ -9,6 +9,7 @@ public sealed record MovementFinishInputs(bool OrdinaryArrival, bool OriginOcean
     int PriorResult, bool LocalSeen, bool Unanimated, int CaptureNumber);
 public abstract record MovementCompletionDecision
 {
+    public sealed record Contact(DiplomaticContactDecision Decision) : MovementCompletionDecision;
     public sealed record Capture(CityCaptureDecision Decision) : MovementCompletionDecision;
     public sealed record Lifecycle(LifecycleDecision Decision) : MovementCompletionDecision;
     public sealed record Hut(HutCityVisit Visit) : MovementCompletionDecision;
@@ -119,7 +120,16 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
         movement.Unit = finishing;
         if (Unit(finishing).Next is not null && Rule(finishing).Attack == 0)
         { stacks.MoveToBottom(finishing.Value, false); }
-        services.Revelation.Reveal(finishing.Value, true);
+        using (var revelation = services.Revelation.Begin(finishing.Value, true, call + "/revelation"))
+        {
+            while (!revelation.Completed)
+            {
+                var decision = revelation.Resume(operation.TakeReply());
+                if (!revelation.Completed)
+                { yield return decision is null ? null : new MovementCompletionDecision.Contact(decision); }
+            }
+            operation.Report(revelation.PresentationFailures);
+        }
         operation.Present(() => effects.CityUnitsChanged(new(finishing, Unit(finishing).Token), step.From));
         if (world.Multiplayer.LocalHuman != step.Owner
             && inputs.LocalSeen

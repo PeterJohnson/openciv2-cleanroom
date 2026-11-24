@@ -36,7 +36,8 @@ public sealed class MovementOperation(MovementDispatcher.Operation operation, Fu
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var values = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result!.Value))]);
             context.Effect("movement.completed", values);
-            return completed = new(Result: values);
+            return completed = operation.PresentationFailures.Count == 0 ? new(Result: values)
+                : new(CommandStatus.Failed, Result: values, Code: "movement_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }

@@ -5521,7 +5521,7 @@
       "id": "diplomatic-contact",
       "contract": "V04 section10 local contact dispatch and AI peace/alliance/war transitions; V05 audiences and ally help; A08 security and advance exchange; V04 section11 retained turn contact",
       "publicSurface": "DiplomaticContact.Begin/Operation/NeedsAudience; DiplomaticContactOperation; DiplomacyTurn.Operation.ResumeDecision",
-      "review": "Actual scenario permission/actions and full local audience preserve double permission checks and post-audience first-contact capture. AI paths use actual security, ordered advance exchange and retained V03 Library grants, raw peace/alliance/war primitives, observer-qualified ordered ally joins and retained ally help. Tests cover no extra alive/distinct gates, contact cadence, historical exclusions, force/ally/observer notices, player-civilization reputation, NATO nearest-city ties, repeated directed incident gate, no expulsion/reputation normalization, failure/disposal prefixes and private Session replies/cancel/timeout. Missing city text is represented semantically as absent, without a native formatter buffer. S02 full authored-action domains still require owning adapters. Production movement/desktop callers and complete-game acceptance remain open; network forwarding/parley, browser and cross-platform execution deferred. The actual turn contact child suspends before stale-contact cleanup and later relation work, retaining private Library grants and ally-help choices; failures preserve completed effects and the unresolved review delta stays explicit.",
+      "review": "Actual scenario permission/actions and full local audience preserve double permission checks and post-audience first-contact capture. AI paths use actual security, ordered advance exchange and retained V03 Library grants, raw peace/alliance/war primitives, observer-qualified ordered ally joins and retained ally help. Tests cover no extra alive/distinct gates, contact cadence, historical exclusions, force/ally/observer notices, player-civilization reputation, NATO nearest-city ties, repeated directed incident gate, no expulsion/reputation normalization, failure/disposal prefixes and private Session replies/cancel/timeout. Missing city text is represented semantically as absent, without a native formatter buffer. S02 full authored-action domains still require owning adapters. Actual movement/revelation now composes contact; desktop callers and complete-game acceptance remain open; network forwarding/parley, browser and cross-platform execution deferred. The actual turn contact child suspends before stale-contact cleanup and later relation work, retaining private Library grants and ally-help choices; failures preserve completed effects and the unresolved review delta stays explicit.",
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/DiplomacyTurn.cs",
@@ -5554,6 +5554,32 @@
         "V04.turn-contact-private-grant",
         "V04.turn-contact-retained-ally-help",
         "V04.turn-contact-session-cancellation"
+      ]
+    },
+    {
+      "id": "revelation-contact",
+      "contract": "W03 sections3-5; V04 section10; U02 common finish",
+      "publicSurface": "UnitRevelation.Begin/Operation; MovementCompletionDecision.Contact; MovementInteraction",
+      "review": "Actual contact suspends the adjacent revelation scan after visibility and before live post-contact goals and outer observers. Actual movement retains charged relocation while contact is pending and completes final direction and cleanup after private replies. Covers city/unit contact, cached versus live reads, Library grants, failure/disposal, private Session routing and cancellation/timeout with presentation diagnostics. Synchronous contact-capable invocation is rejected before effects. Desktop composition and full-game acceptance remain open; browser/cross-platform/network execution deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/Units/MovementCompletion.cs",
+        "src/OpenCiv2.Core/Units/UnitRevelation.cs",
+        "src/OpenCiv2.Session/MovementCompletionOperation.cs",
+        "src/OpenCiv2.Session/MovementInteraction.cs",
+        "src/OpenCiv2.Session/MovementOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/RevelationContactCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.actual-contact-retention",
+        "U02.actual-contact-session-cancellation",
+        "U02.actual-contact-session-privacy",
+        "W03.actual-contact-admission-disposal",
+        "W03.actual-contact-library",
+        "W03.actual-contact-live-reads",
+        "W03.actual-contact-order"
       ]
     }
   ]

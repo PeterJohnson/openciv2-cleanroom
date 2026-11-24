@@ -34,7 +34,7 @@ public static partial class FoundationSuite
         public void Redraw(MapPoint point) { Equal(Step.From, point); Cosmetic("redraw"); }
         public void Slide(MovementSlide movement)
         {
-            Equal(UnitStaging.Lifted(Data.Unit(0).Owner.Value), Data.Unit(0).Position);
+            Equal(UnitStaging.Lifted(Data.Unit(movement.Unit.Slot.Value).Owner.Value), Data.Unit(movement.Unit.Slot.Value).Position);
             Equal(Step.From, movement.Origin); Equal(Step.To, movement.Destination); Equal(Step.Direction, movement.Direction);
             Cosmetic("slide");
         }

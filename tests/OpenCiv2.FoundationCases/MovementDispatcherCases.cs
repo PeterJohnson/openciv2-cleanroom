@@ -26,9 +26,9 @@ public static partial class FoundationSuite
         public MovementDispatchInputs Inputs = new(new(false), new(false, false), 77, 77, "retained city", "Diplomat", "");
         public int Blinks, OffMap;
         public bool FailBlink, FailOffMap;
-        public DispatcherFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
+        public DispatcherFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false, Func<RevelationFixture, UnitRevelation>? revelation = null)
         {
-            Foreign = new(choices, data, retainGrants); Land = new(city: new(capture: Capture)); Finish = new(capture: Capture);
+            Foreign = new(choices, data, retainGrants); Land = new(city: new(capture: Capture)); Finish = new(capture: Capture, revelation: revelation);
             Relocation = new(Data); City = new(foreign: Foreign);
             var transport = new TransportMovement(World, Data.Rules, Data.Stacks, new(World, Data.Rules, Data.Stacks), Finish);
             Dispatcher = new(World, Data.Rules, Data.Stacks, new(Land.Entry, Foreign.Foreign, transport, City.City,
@@ -211,8 +211,9 @@ public static partial class FoundationSuite
             }
             if (variant == 2) { f.Data.Stacks.Relocate(0, new(10, 8), false); f.Data.Unit(0).MovesUsed = 5; }
             ParticipantId actorSeat = default, observerSeat = default; int windows = 0;
+            MovementDispatcher.Operation? operation = null;
             runtime.RegisterCommand(new(new(1, "test.move", "Authored movement dispatch", AccessClass.Player, new([]), new([new("result")])), (_, _, _) => new(),
-                _ => new MovementOperation(f.Begin(), c => c == 1 ? actorSeat : observerSeat,
+                _ => new MovementOperation(operation = f.Begin(), c => c == 1 ? actorSeat : observerSeat,
                     _ => throw new InvalidOperationException("No investigation"), _ => throw new InvalidOperationException("No intelligence"),
                     visit => { ++windows; return new("Captured city", observerSeat, new CommandValue.City(visit.City), new([0])); },
                     _ => throw new InvalidOperationException("No hut city"))));
@@ -229,6 +230,7 @@ public static partial class FoundationSuite
             }
             for (int i = 0; i < 20 && RequiredResult(actor, id).Status == CommandStatus.Pending; ++i)
             { Equal(false, runtime.ContinueCommand(id)); Equal(true, runtime.AdvanceOne()); }
+            Equal("", string.Join("; ", operation!.PresentationFailures.Select(e => e.Message)));
             Equal(CommandStatus.Completed, RequiredResult(actor, id).Status); Equal(false, f.World.UnitMovementActive);
             Equal(new CommandValue.Integer(variant == 2 ? 0 : 1), RequiredResult(actor, id).Result.Single(v => v.Name == "result").Value);
             if (variant == 1) Equal(new MapPoint(20, 12), f.Data.Unit(2).Position);

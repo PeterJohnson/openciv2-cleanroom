@@ -24,18 +24,24 @@ public sealed class MovementCompletionOperation(MovementCompletion.Operation ope
         {
             ResearchReply? reply = pending switch
             {
+                MovementCompletionDecision.Contact contact => DiplomaticContactInteraction.Reply(contact.Decision, input),
                 MovementCompletionDecision.Capture capture => CityCaptureInteraction.Reply(capture.Decision, input),
                 MovementCompletionDecision.Grant grant => ResearchGrantInteraction.ResearchReply(grant.Decision, input),
                 MovementCompletionDecision.Lifecycle lifecycle => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
                 null => null,
                 _ => AttackConfirmationInteraction.Reply(input) is { } choice ? new(choice) : null
             };
+            var previous = pending;
             pending = operation.Resume(reply);
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
                 var prompt = pending switch
                 {
+                    MovementCompletionDecision.Contact contact => DiplomaticContactInteraction.Prompt(context, contact.Decision, recipient,
+                        intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow),
                     MovementCompletionDecision.Capture capture => CityCaptureInteraction.Prompt(context, capture.Decision, recipient, captureWindow, ref capturePrompt, ref intelligenceWindow, intelligence),
                     MovementCompletionDecision.Grant grant => ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
                         intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow),
@@ -47,10 +53,11 @@ public sealed class MovementCompletionOperation(MovementCompletion.Operation ope
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result!.Value))]);
             context.Effect("movement.completed", result);
-            return completed = new(Result: result);
+            return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+                : new(CommandStatus.Failed, Result: result, Code: "movement_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }

@@ -23,6 +23,7 @@ public sealed class UnitRevelation
     private readonly StackOperations stacks;
     private readonly SharedGoals goals;
     private readonly IUnitRevelationEffects effects;
+    private readonly DiplomaticContact? contact;
 
     public UnitRevelation(GameState world, RuleTables rules, StackOperations stacks, IUnitRevelationEffects effects)
     {
@@ -31,6 +32,55 @@ public sealed class UnitRevelation
         this.stacks = stacks;
         this.effects = effects ?? throw new ArgumentNullException(nameof(effects));
         goals = new(world, rules, new MovementGoalQueries(world, rules));
+    }
+
+    public UnitRevelation(GameState world, RuleTables rules, StackOperations stacks,
+        DiplomaticContact contact, IUnitRevelationEffects effects) : this(world, rules, stacks, effects)
+    { this.contact = contact; }
+
+    public Operation Begin(int slot, bool allowContact, string call) => new(this, slot, allowContact, call);
+
+    public sealed class Operation : IDisposable
+    {
+        private readonly UnitRevelation parent;
+        private readonly IEnumerator<DiplomaticContactDecision?> steps;
+        private readonly List<Exception> failures = [];
+        private ResearchReply? reply;
+        private bool faulted, disposed;
+        public bool Completed { get; private set; }
+        public DiplomaticContactDecision? Pending { get; private set; }
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal Operation(UnitRevelation parent, int slot, bool allowContact, string call)
+        {
+            ArgumentException.ThrowIfNullOrEmpty(call);
+            this.parent = parent;
+            steps = parent.Execute(this, slot, allowContact, call).GetEnumerator();
+        }
+        internal ResearchReply? TakeReply() { var result = reply; reply = null; return result; }
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
+        public DiplomaticContactDecision? Resume(ResearchReply? answer = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
+            { throw new InvalidOperationException("A failed revelation cannot resume"); }
+            if (Completed)
+            { return null; }
+            try
+            {
+                MapKnowledge.RequireLocal(parent.world);
+                if (Pending is not null && answer is null)
+                { return Pending; }
+                reply = Pending is null ? null : answer;
+                Pending = null;
+                if (steps.MoveNext())
+                { return Pending = steps.Current; }
+                Completed = true;
+                steps.Dispose();
+                return null;
+            }
+            catch { faulted = true; steps.Dispose(); throw; }
+        }
+        public void Dispose() { disposed = true; steps.Dispose(); }
     }
 
     private ref Unit Unit(int slot) => ref world.Entities.Units.Storage[slot];
@@ -50,7 +100,15 @@ public sealed class UnitRevelation
 
     public void Reveal(int slot, bool allowContact)
     {
-        MapKnowledge.RequireLocal(world);
+        if (allowContact && contact is not null)
+        { throw new InvalidOperationException("Contact-capable revelation requires Begin/Resume"); }
+        using var operation = Begin(slot, allowContact, "revelation");
+        while (!operation.Completed)
+        { operation.Resume(); }
+    }
+
+    private IEnumerable<DiplomaticContactDecision?> Execute(Operation operation, int slot, bool allowContact, string call)
+    {
         var origin = Unit(slot).Position;
         int owner = unchecked((sbyte)Unit(slot).Owner.Value);
         var entryRule = Rule(slot);
@@ -115,7 +173,8 @@ public sealed class UnitRevelation
                     PublishOrigin();
                     if (allowContact)
                     {
-                        effects.Meet(owner, cityOwner, point);
+                        foreach (var decision in Meet(operation, owner, cityOwner, point, call + "/adjacent-" + i))
+                        { yield return decision; }
                     }
                 }
                 continue;
@@ -170,7 +229,8 @@ public sealed class UnitRevelation
                 }
                 if (allowContact && Unit(slot).Type.Value != UnitTypeIds.Partisans)
                 {
-                    effects.Meet(owner, otherOwner, point);
+                    foreach (var decision in Meet(operation, owner, otherOwner, point, call + "/adjacent-" + i))
+                    { yield return decision; }
                 }
                 if (unchecked((sbyte)Rule(slot).Role) < 6)
                 {
@@ -251,4 +311,18 @@ public sealed class UnitRevelation
             }
         }
     }
+    private IEnumerable<DiplomaticContactDecision?> Meet(Operation operation, int owner, int other, MapPoint point, string call)
+    {
+        if (contact is null)
+        { effects.Meet(owner, other, point); yield break; }
+        using var child = contact.Begin(owner, other, point, call);
+        while (!child.Completed)
+        {
+            var decision = child.Resume(operation.TakeReply());
+            if (!child.Completed)
+            { yield return decision; }
+        }
+        operation.Report(child.PresentationFailures);
+    }
+
 }

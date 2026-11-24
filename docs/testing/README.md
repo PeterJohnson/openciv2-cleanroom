@@ -1179,3 +1179,11 @@ cleanup and later turn work; disposal, required failures and cancellation retain
 completed effects. Session tests reject replies from the wrong participant and
 report presentation failures after cleanup. The unresolved review delta remains
 an explicit failure when needed. Movement and desktop contact composition remain open.
+
+W03/U02 contact integration cases use real audiences and Library grants during
+revelation. They verify pre-meeting disclosure, deferred outer visibility, cached
+versus live post-contact inputs, synchronous admission and failure/disposal effects.
+Actual movement charges and relocates once before the private meeting; final
+direction and cleanup wait for its reply. Session privacy, cancellation and timeout
+cover direct completion and dispatcher routes, including presentation diagnostics.
+These checks do not establish graphical audience or full-game acceptance.

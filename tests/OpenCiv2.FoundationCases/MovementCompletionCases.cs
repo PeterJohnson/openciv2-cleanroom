@@ -28,7 +28,7 @@ public static partial class FoundationSuite
         public List<int> Pauses { get; } = [];
         public List<MapPoint> OldPositions { get; } = [];
         public bool FailDisplay, FailLoss;
-        public CompletionFixture(List<Choice>? choices = null, RevelationFixture? data = null, CityCaptureFixture? capture = null)
+        public CompletionFixture(List<Choice>? choices = null, RevelationFixture? data = null, CityCaptureFixture? capture = null, Func<RevelationFixture, UnitRevelation>? revelation = null)
         {
             Capture = capture ?? new(choices, data); World.Globals.Rules.NoRestart = true;
             if (capture is null) { Data.Unit(0).Type = new(4); Data.Stacks.Relocate(0, new(18, 12), false); }
@@ -38,7 +38,7 @@ public static partial class FoundationSuite
             var transport = new TransportMovement(World, Data.Rules, Data.Stacks, new(World, Data.Rules, Data.Stacks), this);
             var special = new SpecialMovementFinish(World, Data.Rules, Data.Stacks, Life.Random, Life.Elimination, Life.Loss, incidents, this);
             var huts = new HutEntry(World, Data.Rules, Life.Random, new(World, Data.Process, Data.Stacks, Data), CityCreator(Data), Capture.Theft.Research, this);
-            Completion = new(World, Data.Rules, Data.Stacks, new(Capture.Capture, new(World, Data.Rules, Data.Stacks, Data), special, huts, transport, new(World)), this);
+            Completion = new(World, Data.Rules, Data.Stacks, new(Capture.Capture, revelation?.Invoke(Data) ?? new(World, Data.Rules, Data.Stacks, Data), special, huts, transport, new(World)), this);
         }
         public MovementCompletion.Operation Begin() => Completion.Begin(Movement, Step, Inputs, "finish");
         public void Complete(MovementCompletion.Operation op)
