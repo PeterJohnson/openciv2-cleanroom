@@ -21,6 +21,7 @@ public sealed class DiplomacyWorkspace
     public int? WarTarget, StrongestEnemy, WeakestEnemy;
     public int? BestTechnology, SecondTechnology, WantedTechnology;
     public int GiftsThisMeeting;
+    public bool HadCeasefire;
 }
 
 /// <summary>V04 §2 attitude/hostility primitives and §11 global reputation maintenance.

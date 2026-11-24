@@ -5861,3 +5861,53 @@ Full V05 proposal dispatch, demands and audience orchestration remain open,
 together with the previously recorded F04 formulas, relation-review input gap,
 complete turn orchestration and generated human/AI end-condition acceptance.
 Browser, cross-platform qualification and network execution remain deferred.
+
+## V05 demands, withdrawal and proposal responses — 2026-11-23
+
+`DiplomaticDemands` implements V05 §5's aid, tribute, withdrawal and provocation
+using actual A08 patience, C01 nearest cities, U01 relocation, retained V03 grants,
+V05 allied technology exchange and V04 alliance cancellation. It captures the
+incoming request counter before replacing it, preserving allied mode selection.
+Tribute retains contact-age reductions, signed amounts, wonder and technology-gap
+gates. Withdrawal preserves signed role checks, the weighted-distance boundary,
+visibility/order changes and the original conditional random draws.
+
+Immediate provocation writes the actor's contact turn before the required notice;
+later provocation writes it afterward. Both use the specified treaty primitive
+rather than generic declaration reputation effects. Payments retain their cached
+amount and live gold/technology inputs. A granted technology remains pending
+through its real government decision before wanted-choice clearing and ceasefire
+publication. The retained HadCeasefire meeting input controls Tribute; its capture
+belongs to the still-unfinished audience entry.
+
+`DiplomaticProposals` supplies the specified menu options and response dispatcher.
+Treaty responses use the completed bargaining controller; demand responses use the
+new service. Cancellation clears Alliance, adjusts/evaluates attitude, presents its
+notice, increments reputation and then invokes actual V04 cancellation/expulsion.
+Favor and gift execution remain owned by the audience. The Session response adapter
+shares treaty interaction handling and privately routes all nested choices.
+
+Eleven new groups cover option/dispatch gates, both provocation failure orders,
+withdrawal eligibility and conditional draws, tribute age/ceasefire and negative
+amounts, aid and wonder gates, captured request modes, real grants, actual alliance
+expulsion, private Session decisions, cancellation and disposal. Initial, expanded
+and final probes passed; the expanded cases added aid/wonder and expulsion checks.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1588 of 1590**, with two existing
+platform/audio skips. The shared probe passed all **1555 groups** across 172
+coverage families; source identity verified **793 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. This checkpoint uses
+native Core/Session composition and the App build; it does not claim a new
+graphical input-driver run or full desktop audience acceptance.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-demand-native.json` | `07f7a9ffe3852ba73cef841b7825484804a0b45f28269e9fd80c171fcc034b44` |
+| `m4-demand-identity.json` | `64d2d5f71087ecc0ffd1de4886d21c0fb18bbbdf57407c2efebbfb7ef2f07191` |
+
+Full V05 audience entry, opening negotiation and conversation/cleanup orchestration
+remain open, together with the previously recorded F04 formulas, relation-review
+input gap, complete turn orchestration and generated human/AI end-condition
+acceptance. Browser, cross-platform qualification and network execution remain
+deferred.

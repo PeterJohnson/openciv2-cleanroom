@@ -5352,10 +5352,11 @@
       "status": "partial",
       "contract": "V04 section5 negotiated alliance/peace/ceasefire; V05 section5 alliance and peace bargaining",
       "publicSurface": "NegotiatedTreaties.FormAlliance/SignPeace/AgreeCeasefire; TreatyNegotiation.Begin/PeaceWillingness/GoldPrice; TreatyNegotiationOperation",
-      "review": "Actual A08 willingness/evaluation, V03 retained grants and V04 mediated war. Payment conditions, live post-grant valuation, wonder-compelled peace, cached gold and solidarity refusal preserve ordered state. Treaty wrappers retain attitude gates, contact/request updates and post-notice ceasefire cleanup. Session routes payment/solidarity and nested government choices privately. Full proposal/demand and audience integration remains open; network, browser and cross-platform work deferred.",
+      "review": "Actual A08 willingness/evaluation, V03 retained grants and V04 mediated war. Payment conditions, live post-grant valuation, wonder-compelled peace, cached gold and solidarity refusal preserve ordered state. Treaty wrappers retain attitude gates, contact/request updates and post-notice ceasefire cleanup. Session routes payment/solidarity and nested government choices privately. Full audience integration remains open; network, browser and cross-platform work deferred.",
       "sources": [
         "src/OpenCiv2.Core/NegotiatedTreaties.cs",
         "src/OpenCiv2.Core/TreatyNegotiation.cs",
+        "src/OpenCiv2.Session/TreatyNegotiationInteraction.cs",
         "src/OpenCiv2.Session/TreatyNegotiationOperation.cs"
       ],
       "tests": [
@@ -5372,6 +5373,36 @@
         "V05.treaty-solidarity-payment-refusal",
         "V05.treaty-technology-live-valuation",
         "V05.treaty-wonder-compulsion"
+      ]
+    },
+    {
+      "id": "diplomatic-demands-proposals",
+      "status": "partial",
+      "contract": "V05 section5 proposal options/response dispatch, aid, tribute and withdrawal",
+      "publicSurface": "DiplomaticDemands.Begin; DiplomaticProposals.Options/BeginResponse; DiplomaticProposalOperation; DiplomacyWorkspace.HadCeasefire",
+      "review": "Real A08 patience/stance, U01 relocation, C01 nearest cities, V03 grants, V05 allied exchange/treaty negotiation and V04 alliance cancellation. Counter capture, conditional draws, protection, tribute arithmetic, request modes, payment and provocation order preserve their live-state boundaries. Private Session routes nested treaty/exchange/grant decisions. Full audience entry/loop and desktop acceptance remain open; browser/cross-platform and network execution deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/DiplomaticDemands.cs",
+        "src/OpenCiv2.Core/DiplomaticProposals.cs",
+        "src/OpenCiv2.Session/DiplomaticProposalOperation.cs",
+        "src/OpenCiv2.Session/TreatyNegotiationInteraction.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticDemandCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.demand-aid-wonder-gates",
+        "V05.demand-allied-exchange",
+        "V05.demand-grant-continuation",
+        "V05.demand-provocation-timing",
+        "V05.demand-tribute-ceasefire",
+        "V05.demand-withdrawal",
+        "V05.demand-withdrawal-draws",
+        "V05.proposal-cancel-alliance",
+        "V05.proposal-options-dispatch",
+        "V05.proposal-private-grant",
+        "V05.proposal-session-cancellation"
       ]
     }
   ]

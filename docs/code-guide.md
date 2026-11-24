@@ -1151,4 +1151,12 @@ treaty-negotiation callers remain open.
 wrappers, including actual stance evaluation. `Core/TreatyNegotiation` owns V05
 §5's willingness, payment and solidarity stages and composes real grants, war and
 treaty effects. `Session/TreatyNegotiationOperation` routes actor choices and nested
-recipient research decisions. Full proposal/demand and audience callers remain open.
+recipient research decisions. Full audience callers remain open.
+
+`Core/DiplomaticDemands` owns V05 §5 aid, tribute, withdrawal and provocation;
+`DiplomaticProposals` supplies proposal options and response dispatch through real
+treaty/demand children. Its cancellation branch runs actual stance and expulsion.
+`DiplomacyWorkspace.HadCeasefire` is the retained meeting input whose capture belongs
+to the future audience entry. `Session/DiplomaticProposalOperation` routes private
+nested choices; treaty interactions are shared with direct negotiation. The
+full audience loop still owns favor/gift dispatch and overall meeting cleanup.

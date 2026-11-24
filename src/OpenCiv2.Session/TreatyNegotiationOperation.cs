@@ -20,11 +20,11 @@ public sealed class TreatyNegotiationOperation(TreatyNegotiation.Operation opera
         { return completed; }
         try
         {
-            pending = operation.Resume(Reply(input));
+            pending = operation.Resume(TreatyNegotiationInteraction.Reply(pending, input));
             if (pending is not null)
             {
                 context.Publish();
-                return new(CommandStatus.AwaitingInteraction, Interaction: Prompt(context, pending));
+                return new(CommandStatus.AwaitingInteraction, Interaction: TreatyNegotiationInteraction.Prompt(context, pending, recipient, intelligence, ref window));
             }
             if (!operation.Completed)
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
@@ -34,27 +34,6 @@ public sealed class TreatyNegotiationOperation(TreatyNegotiation.Operation opera
                 : new(CommandStatus.Failed, result, "treaty_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
-    }
-    private ResearchReply? Reply(OperationInput input)
-    {
-        if (pending is TreatyNegotiationDecision.Grant grant)
-        { return ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
-        if (input.Kind == OperationInputKind.Choice && input.Choice is { } choice)
-        { return new(choice); }
-        return input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout ? new(0) : null;
-    }
-    private InteractionSpec Prompt(OperationContext context, TreatyNegotiationDecision decision)
-    {
-        if (decision is TreatyNegotiationDecision.Grant grant)
-        { return ResearchGrantInteraction.Prompt(context, grant.Decision, recipient, intelligence, ref window); }
-        var (player, title) = decision switch
-        {
-            TreatyNegotiationDecision.Technology t => (t.Recipient, $"Give {t.Advance.Name} to the {t.Partner.Plural} to negotiate {(t.Alliance ? "an alliance" : "peace")}?"),
-            TreatyNegotiationDecision.Gold g => (g.Recipient, $"Pay the {g.Partner.Plural} {g.Price} gold to negotiate {(g.Alliance ? "an alliance" : "peace")}?"),
-            TreatyNegotiationDecision.Solidarity s => (s.Recipient, $"Join the {s.Partner.Plural} in war against the {s.Target.Plural}?"),
-            _ => throw new InvalidOperationException("Unknown treaty decision")
-        };
-        return new(title, recipient(player), null, new([0, 1])) { Options = new([new(0, "Decline"), new(1, "Accept")]) };
     }
     public void Dispose() => operation.Dispose();
 }

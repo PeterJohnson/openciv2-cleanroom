@@ -1118,5 +1118,12 @@ hotseat attitude storage, request/contact updates and ceasefire cleanup after th
 required notice. Bargaining cases cover peace reasons and wonder compulsion, gold
 rounding, payment retention, live post-grant valuation, solidarity/mediated war,
 refusal branches and private nested government choices. Cancellation and failure
-cases preserve actual prefixes. Full proposal/demand and audience integration
-remain open.
+cases preserve actual prefixes. Full audience integration remains open.
+
+V05 demand/proposal cases exercise conditional government/avoid-war draws, immediate
+versus later provocation failure timing, signed role/distance withdrawal gates,
+actual relocation, tribute ages and signed amounts, aid rank/technology gaps,
+wonder protection, captured request modes and retained grants. Proposal cases
+cover options, treaty dispatch, ordered cancellation/expulsion, private government
+choices and nested exchange/treaty cancellation. Full audience orchestration and
+generated desktop acceptance remain open.
