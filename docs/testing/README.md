@@ -10,7 +10,10 @@ U04 activation cases now join the next-unit search to real contact-capable W03
 revelation. They check the combat-loss origin, order-sensitive timer clearing,
 retained contact, live simultaneous-mode tail and private reply routing. Failures
 and disposal preserve the published selection/revelation prefix. These cases do
-not yet qualify general native focus/stack selection or human-phase scheduling.
+not yet qualify general native focus/stack selection. The F04 human-phase family
+now composes actual selection and active execution, with wait/city-window gates,
+bound-change reselection, distinct session/phase exits and private Session
+segments. General native human-phase admission remains open.
 
 P04 substitution cases check token case/advancement, decimal wrap, safe HEX widths,
 selector boundaries, culture-independent numbers and captured parameter ownership.

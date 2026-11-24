@@ -263,3 +263,13 @@ does not reset the counter. Session cases release the command lane for actual
 fortification, preserve private/stale reply rules, block world replacement while
 held and release pins on completion/disposal. General native admission and the
 explicit hold producer remain unresolved; these are not complete human-turn runs.
+
+The F04 human movement phase family composes actual U04 selection/focus and the
+active-unit cycle. Cases check entry selection, idle versus actual input waits,
+Always Wait, city-window resets, creation-triggered reselection, private contact
+and movement retention, and distinct phase/session exit cleanup. A Session case
+runs actual fortification between phase segments and completes without advancing
+the global turn. Pins, cancellation, failure and disposal are covered. Native
+blink/music pumping is replaced by cooperative scheduling; it cannot manufacture
+the waited flag. Full native admission, U04 hold production and complete generated
+human/AI turns remain open. Browser/cross-platform execution is deferred.

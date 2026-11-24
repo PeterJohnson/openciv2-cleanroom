@@ -7538,3 +7538,62 @@ M4 remains active. Complete generated human/AI games, full-turn snapshots,
 F04's original-observation formula gaps and other recorded integration gates
 remain unresolved. Browser, cross-platform qualification and network execution
 remain deferred.
+
+## F04 cooperative human movement phase
+
+`HumanMovementPhase` now composes actual U04 selection, focus and active-unit
+execution. Entry clears the prior selection; movement-mode iterations reselect
+when the unit bound changes or the current unit becomes unavailable. Selection
+retains actual W03/V04 contact, and execution retains real movement/tactics
+children. Neither a handled order nor a child dialog manufactures a player-input
+wait. Automatic completion requires the remembered active-cycle wait, Always Wait
+off and no city-window-opened indicator. A still-selected opened city resets the
+remembered wait; closing the selection clears its indicator.
+
+The phase keeps F04's separate exit paths: a stopped session after input returns
+before common cleanup; ordinary phase completion or loss of human control closes
+a foreign city window, flushes input and clears player-phase activity. A requested
+host stop finishes accepted child work first. It is distinct from U04's End Player
+Turn command, which exhausts units without advancing the global turn. Required
+failures terminate the operation; cosmetic failures remain separately reported.
+
+`HumanMovementPhaseHost` pins the world across command segments and routes nested
+contact, movement and automated decisions privately. Input segments release the
+command lane so ordinary player commands can run before an explicit input-handled
+resume. Completion/disposal releases the pin. Cursor and selected-city facts come
+from the host's current view. Native blink/music pumping and empty native loops
+are replaced by event-driven idle boundaries under F04/U04/X01 presentation
+freedom; an idle boundary never sets the active-cycle waited flag. This adds no
+original native-message timing or synthetic gameplay callback requirements.
+
+Eight shared groups cover entry/revelation, actual fortification and automatic
+end without calendar advancement, handled orders without input, Always Wait,
+city-window resets, real unit creation forcing reselection, session/phase/control
+exits, retained movement, failure/disposal and private contact. The Session case
+runs actual fortification between segments, completes the phase and permits world
+replacement only after releasing its pin. Contact cancellation preserves the
+accepted revelation tail. These are specification-derived integration cases,
+not independent original-game compatibility observations.
+
+General native human-phase admission, full F04 civilization/global scheduling,
+U04's unknown hold producer and the two F04 city-analysis formula observations
+remain open. The service keeps hold explicit and does not claim those gaps are
+resolved. Browser/cross-platform qualification and network execution remain
+deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1836/1838**, with the two existing
+platform/audio skips. All **1801 shared groups** passed across **200 coverage
+families**; identity verified **899 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. No native input run or
+optional Lua run was performed: this checkpoint changes the reusable Core/Session
+phase and its tests, without changing the authored desktop command path or Lua
+integration.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-human-phase-native.json` | `1cc49a3549531cb900a811e13893b6ae7d69117e67ac59c71d8088442379da7c` |
+| `m4-human-phase-identity.json` | `c51d704b2e930df2ea33aab61aa530e9b862a5b52238b0f500a48ec74de7b51c` |
+
+M4 remains active and incomplete. Generated human/AI games, full-turn snapshots
+and the recorded original-observation/integration gates remain unresolved.

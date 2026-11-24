@@ -261,7 +261,15 @@ pins the world and lends one command segment at a time. A segment finishes at an
 input boundary, allowing an actual player command before the next segment; it
 routes nested decisions privately and releases ownership at completion or disposal.
 Cancellation/timeout finishes the child's default reply/tail before stopping.
-Full F04/native human-phase admission and U04's unknown hold producer remain open.
+`HumanMovementPhase` composes selection/focus and this active cycle under F04's
+human-phase rules. It tracks actual input waiting separately from idle scheduling,
+applies Always Wait and city-window resets, reselects after bound changes, and
+preserves the session-stop early return before common phase cleanup.
+`Session/HumanMovementPhaseHost` pins the world across private child decisions and
+input segments, allowing real commands between segments. The host supplies current
+cursor/selected-city facts; blink/music/tutorial procedures remain presentation
+policy. General native admission, full civilization/global scheduling and U04's
+unknown hold producer remain open.
 
 `TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
 It uses actual stacks, movement exhaustion, map mutations, remembered features

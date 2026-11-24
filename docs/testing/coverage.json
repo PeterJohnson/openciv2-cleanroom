@@ -6166,7 +6166,7 @@
       "status": "partial",
       "contract": "U04 active-unit gameplay/automation cycle; X01 cooperative presentation freedom",
       "publicSurface": "ActiveUnitCycle.Begin; ActiveUnitCycleHost.BeginSegment/ResultSchema",
-      "review": "Live selection/phase/bound/human gates with a captured execution actor, actual U04/A04 children, explicit player-input boundaries, cumulative automation limit and retained failure effects. Session segments release the command lane for actual player commands while pinning the world, route real child decisions privately and release ownership on completion/disposal. Hold producer, full F04 human-phase/native admission and tutorial presentation remain caller work.",
+      "review": "Live selection/phase/bound/human gates with a captured execution actor, actual U04/A04 children, explicit player-input boundaries, cumulative automation limit and retained failure effects. Session segments release the command lane for actual player commands while pinning the world, route real child decisions privately and release ownership on completion/disposal. Hold producer, general F04/native admission and tutorial presentation remain caller work.",
       "sources": [
         "src/OpenCiv2.Core/Units/ActiveUnitCycle.cs",
         "src/OpenCiv2.Session/ActiveUnitCycleHost.cs"
@@ -6182,6 +6182,30 @@
         "U04.active-cycle-private-session-pin",
         "U04.active-cycle-retained-movement",
         "U04.active-cycle-session-input-boundary"
+      ]
+    },
+    {
+      "id": "human-movement-phase",
+      "status": "partial",
+      "contract": "F04 section 7 human movement; U04 actual selection/focus/active cycle; X01 cooperative presentation",
+      "publicSurface": "HumanMovementPhase.Begin; HumanMovementPhaseHost.BeginSegment/ResultSchema",
+      "review": "Actual U04 children retain contact/movement choices through input segments. Tests cover entry selection, actual fortification without turn advancement, waited/Always Wait/city-window gates, real creation changing the bound, session-stop early return versus common phase cleanup, accepted child tails, private replies, failures and world pins. Idle scheduling is event-driven and does not set the active-cycle waited flag. General native admission, the U04 hold producer and complete F04 civilization/global scheduling remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/HumanMovementPhase.cs",
+        "src/OpenCiv2.Session/HumanMovementPhaseHost.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/HumanMovementPhaseCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.human-phase-bound-reselection",
+        "F04.human-phase-city-window",
+        "F04.human-phase-entry-automatic-end",
+        "F04.human-phase-exit-paths",
+        "F04.human-phase-idle-always-wait",
+        "F04.human-phase-movement-failures",
+        "F04.human-phase-private-contact-pin",
+        "F04.human-phase-session-commands"
       ]
     }
   ]
