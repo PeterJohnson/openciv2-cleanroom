@@ -39,7 +39,8 @@ public sealed class CityFoundingOperation(CityFounding.Operation operation, Func
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("outcome", new CommandValue.Text(operation.Result!.Value.ToString()))]);
             context.Effect("city.founding-completed", result);
-            return completed = new(Result: result);
+            return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+                : new(CommandStatus.Failed, Result: result, Code: "city_founding_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }

@@ -6733,6 +6733,25 @@
         "U04.single-player-execution-contact",
         "W06.single-player-execution-ransom"
       ]
+    },
+    {
+      "id": "single-player-unit-execution-presentation",
+      "status": "partial",
+      "contract": "W04/C01/W06/F04 local unit execution information and view effects",
+      "publicSurface": "SinglePlayerUnitExecutionPresentation; CityFoundingOperation",
+      "review": "Binds private work/founding/landing information and host view effects to the shared unit execution graph. Actual Session cases cover installed work names, owner/viewer/initiator separation, retained naming and city visits, required notice failure after founding, cosmetic failures reported after completion, and human input/foreign-city closing through actual fortification. Host must supply the current city view and focus/close callbacks. No generated-host admission, original formula evidence or complete-game acceptance is claimed.",
+      "sources": [
+        "src/OpenCiv2.Session/CityFoundingOperation.cs",
+        "src/OpenCiv2.Session/SinglePlayerUnitExecutionPresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitExecutionPresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "C01.presentation-unit-founding",
+        "F04.presentation-unit-human",
+        "W04.presentation-unit-work"
+      ]
     }
   ]
 }

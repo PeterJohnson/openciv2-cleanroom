@@ -84,6 +84,13 @@ combat, mission and movement children; tests supply authored state and presentat
 General phase scheduling, unresolved Hold/entry inputs and native acceptance remain
 open; these cases do not claim a complete generated turn or game.
 
+Unit-execution presentation cases run real work admission, city founding and human
+movement through Session. They check installed names, recipient privacy, viewer
+focus, retained naming/visits, notice failure after founding and cosmetic errors
+after completion. Actual fortification completes a human phase and closes a
+foreign city through the host callback, including callback failure. These are
+contract tests, not original-game observations or native UI acceptance.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

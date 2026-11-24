@@ -476,6 +476,15 @@ authored ransom text and semantic presentation, then admits phase inputs includi
 the unresolved U04 Hold value. It does not construct the full civilization turn
 or infer missing movement-input producers.
 
+`SinglePlayerUnitExecutionPresentation` supplies that graph's informational and
+view effects. Work rejections use installed rule names and address the unit owner;
+founding and landing notices retain their explicit recipients. Founding/landing
+focus follows the local viewer, while ransom focus follows the human victim.
+The host supplies its current visible city and actual focus/close callbacks.
+Required naming, ransom and city visits remain retained operations. The founding
+Session wrapper reports accumulated cosmetic failures after the final city visit,
+without undoing the city or settler deletion.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

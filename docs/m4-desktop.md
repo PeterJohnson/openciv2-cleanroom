@@ -8759,3 +8759,39 @@ Browser and cross-platform work remain deferred.
 | --- | --- |
 | `m4-unit-execution-native.json` | `ede89e8d2a44e42aa1a983a8ce9d2d3167bbe413a2f537fd9e76450995961ac5` |
 | `m4-unit-execution-identity.json` | `f1b199a7137e584b69bd8cef023dc214311913ef3140819aba55b41c4fdc50f3` |
+
+## Unit execution presentation and founding error reporting
+
+`SinglePlayerUnitExecutionPresentation` binds W04/C01/W06/F04 information and
+view effects to the shared unit-execution graph. Terrain rejection text uses the
+installed unit/advance names and addresses the owner. Founding and landing retain
+explicit recipients; their map focus follows the viewer, while ransom focus
+follows its human victim. The host supplies its current city view and actual
+input-focus/city-close callbacks. Required naming, ransom and city visits remain
+retained decisions; input flushing does not discard admitted Session commands.
+
+`CityFoundingOperation` now reports Core's accumulated cosmetic failures after
+completing the final city visit. It retains the founded result and committed city
+and settler deletion. Required notice failures retain their existing earlier
+failure boundary. Three Session integration groups exercise actual terrain-work
+admission, creation/naming/deletion/visit and human selection/input/fortification.
+They cover private recipients, installed names, viewer focus, required notice
+failure, cosmetic publication failure and failed city-close callbacks.
+
+This checkpoint does not close the general generated host or M4. The original
+F04 formulas still require independent evidence; the Windows capture procedure
+is in `docs/testing/f04-original-observations.md`. U04 Hold, movement-entry
+selection, P07 appraisal and complete generated human/AI acceptance remain open.
+Browser and cross-platform work remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1958/1960**, with the two existing platform/audio skips. All **1923 shared
+groups** passed across **222 coverage families**; compiled identity verified
+**959 inputs**. The 43-project graph, eight identity tests and three coverage
+tests passed. Lua and widget sources are unchanged; no new native UI acceptance
+is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-unit-execution-presentation-native.json` | `f3398295a44a182cb8947e2ae95cef36177d1e024f0871e2f62c37b0a68f3d4f` |
+| `m4-unit-execution-presentation-identity.json` | `b34c36c1c612982408ef5ffbe921c17e651758e68c00cffb92046a14bb28d72d` |
