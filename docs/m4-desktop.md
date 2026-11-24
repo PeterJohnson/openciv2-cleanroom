@@ -7947,3 +7947,43 @@ authored desktop profile, whose human constructor remains synchronous.
 | --- | --- |
 | `m4-city-defender-native.json` | `fd7664ffddd3255539480fd48e7ef104cfdd41318c499be9a41ceb42d0c8c61b` |
 | `m4-city-defender-identity.json` | `833247aef3c209f7db7f51c7ebcfed71f3ea4ab6e62663c2e21c3366ff25eca5` |
+
+## Retained hut creation and movement finish
+
+`HutEntry` now awaits actual retained U01 creation for mercenaries, nomads and
+barbarians, and retained C01 creation for tribe cities. Pending contact leaves
+the allocated reward intact while home clearing, late-city awards and redraw
+wait. City awards read the live year after creation; controlled-choice traces
+verify the four late-city choices occur only after contact returns. The original
+integer reply entry remains available; `ResumeDecision` carries full research
+replies through nested contacts.
+
+`HutOperation` privately routes those decisions and reports cosmetic failures
+after committing remaining gameplay. U02 completion forwards contacts through
+its existing contact union before direction/cleanup, preserving full replies.
+Required failures and disposal preserve allocated rewards without later reward
+effects; repeated polling does not repeat allocation or choices.
+
+Four shared groups use the production diplomacy graph with real S02 permission
+text. They cover mercenary/nomad support, no-choice barbarian creation, AI city
+defender contact, live year/local-human tails, private/stale replies,
+cancellation/defaults, required media failure, cosmetic redraw failure and the
+actual U02 completion join. An initial trace assertion was corrected to inspect
+controlled choices rather than the generator's draw counter.
+
+General desktop movement admission, lifecycle/scenario and combat composition,
+generated-game scheduling, complete-game evidence and original-observation gaps
+remain open. Browser and cross-platform qualification remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1876/1878**, with the two existing
+platform/audio skips. All **1841 shared groups** passed across **204 coverage
+families**; identity verified **915 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua suites
+were not rerun: these new retained rewards have no new authored desktop command
+admission or automation integration.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-hut-creation-native.json` | `d54d613a94d1e31816a1eb4a9df0d4a9a9fe832781b5df3e095fb7a4cf79c6c6` |
+| `m4-hut-creation-identity.json` | `829e55679e4c156d5659d65b7db5306b41dd1e6db68fa863957009abd742b0cd` |

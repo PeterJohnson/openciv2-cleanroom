@@ -4160,20 +4160,23 @@
       "id": "hut-entry",
       "status": "partial",
       "contract": "W06 Hut entry/consumption and outcomes 0..5; C01 city creation; U01 unit creation/W03 revelation; V03 eligibility/grants; F06 regional presence flags",
-      "publicSurface": "HutEntry.Begin retained city/grant decisions and bounded redirects; HutOperation; RegionalPresence.SettlementRestrictions with classic conversion",
-      "review": "Actual local hut outcomes compose city and unit creation and research grants. Preserves human override draw, recorded regional counts and low-seven presence flags, global versus owner-only unsupported settlers, fixed global-technology type choices, distinct year 1000 boundaries, signed/wrapped gold, ordered barbarian gates/stride/rank-index use and Armor signed-prerequisite backing. Scroll search uses 999 eligibility calls and bounded repeated redirects without invented fallback. Real creation failure retains prefixes and rejects the excluded late-city invalid write after the size draw. Private city visits retain choices and cosmetic failures are diagnostic. Two previously opaque regional flag bits now participate in settlement eligibility and round-trip through their defined F06 mapping; the high unrelated bit remains opaque. Tests cover real children, all outcome families, thresholds, failed creation, repeated direct entry, private visits, flags and malformed input stops. Outer movement finish/desktop callers, periodic spawning/barbarian orders/ransom and full-game acceptance remain pending; browser/cross-platform execution deferred. Scroll grants now retain government and actual AI emissary choices. Tests cover private recipients, cancel/timeout declines, disposal prefixes and actual U02 dispatcher continuation after relocation.",
+      "publicSurface": "HutEntry.Begin retained city/grant/contact decisions and full ResearchReply via ResumeDecision and bounded redirects; HutOperation; RegionalPresence.SettlementRestrictions with classic conversion",
+      "review": "Actual local hut outcomes compose city and unit creation and research grants. Preserves human override draw, recorded regional counts and low-seven presence flags, global versus owner-only unsupported settlers, fixed global-technology type choices, distinct year 1000 boundaries, signed/wrapped gold, ordered barbarian gates/stride/rank-index use and Armor signed-prerequisite backing. Scroll search uses 999 eligibility calls and bounded repeated redirects without invented fallback. Real creation failure retains prefixes and rejects the excluded late-city invalid write after the size draw. Private city visits retain choices and cosmetic failures are diagnostic. Two previously opaque regional flag bits now participate in settlement eligibility and round-trip through their defined F06 mapping; the high unrelated bit remains opaque. Tests cover real children, all outcome families, thresholds, failed creation, repeated direct entry, private visits, flags and malformed input stops. Outer movement finish/desktop callers, periodic spawning/barbarian orders/ransom and full-game acceptance remain pending; browser/cross-platform execution deferred. Scroll grants now retain government and actual AI emissary choices. Tests cover private recipients, cancel/timeout declines, disposal prefixes and actual U02 dispatcher continuation after relocation. Mercenary, nomad, barbarian and city rewards now await actual retained U01/C01 creation. Contact decisions route privately through HutOperation and U02 completion; home changes, city awards, redraw and movement cleanup wait. New cases use production diplomacy and S02 permission text, test no rerolls, retained identities, live year/local-human tails, disposal, required failure, cancellation/default replies and cosmetic failure reporting after committed gameplay. General desktop admission and generated-game acceptance remain open.",
       "sources": [
         "src/OpenCiv2.Core/HutEntry.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
         "src/OpenCiv2.Core/State/SemanticFlags.cs",
+        "src/OpenCiv2.Core/Units/MovementCompletion.cs",
         "src/OpenCiv2.Formats/FlagConversion.cs",
         "src/OpenCiv2.Session/HutOperation.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
-        "tests/OpenCiv2.FoundationCases/HutCases.cs"
+        "tests/OpenCiv2.FoundationCases/HutCases.cs",
+        "tests/OpenCiv2.FoundationCases/HutCreationContinuationCases.cs"
       ],
       "sharedGroups": [
+        "U02.finish-retained-hut-contact",
         "U02.movement-retained-hut-grant",
         "V03.acquisition-grant-private-sessions",
         "V03.captured-technology-retained-grant",
@@ -4186,7 +4189,10 @@
         "W06.hut-override-regional-flags",
         "W06.hut-private-city-failures",
         "W06.hut-redirect-gates-capacity",
+        "W06.hut-retained-city-awards",
+        "W06.hut-retained-failure-private-replies",
         "W06.hut-retained-grant-cancellation",
+        "W06.hut-retained-unit-rewards",
         "W06.hut-tribe-creation-failures"
       ]
     },
@@ -4195,13 +4201,14 @@
       "status": "partial",
       "contract": "U02 Ordinary arrival, Common finish and local Cleanup; C09 capture; W03 revelation; U05 special/transport continuations; W06 hut entry; U04 long move",
       "publicSurface": "MovementCompletion.Begin with retained inputs, private nested decisions and full cleanup result; MovementCompletionOperation",
-      "review": "Composes actual capture, revelation, aircraft/coast loss, huts, exploration, boarding, long move and local cleanup. Preserves captured-domain landing count, captured foreign-city admission, damage-before-capture and shared actor reload, unusual captured-barbarian stack visibility, port wakeup, zero-attack stack-bottom ordering and old-position publication. Losses retain prior result until bound-sensitive cleanup; successful tail writes direction and result one before cleanup can override it. Hut-created units and deletions can change the bound without rolling back earlier effects. Tests exercise real child mutations, private capture/long-move and last-Settler incident sequences, selected-actor reload, retained direction, boarding and diagnostic cosmetics versus terminal notices. Special-movement sound/redraw and boarding redraw now continue through gameplay while retaining diagnostics; required publication/notices remain terminal. Outer admission/viewer/authority/relocation dispatcher and desktop/full-game acceptance remain pending. Browser/cross-platform deferred. Actual scroll-grant decisions now suspend the finish tail before LastDirection and cleanup, preserving earlier charge/relocation and the movement guard.",
+      "review": "Composes actual capture, revelation, aircraft/coast loss, huts, exploration, boarding, long move and local cleanup. Preserves captured-domain landing count, captured foreign-city admission, damage-before-capture and shared actor reload, unusual captured-barbarian stack visibility, port wakeup, zero-attack stack-bottom ordering and old-position publication. Losses retain prior result until bound-sensitive cleanup; successful tail writes direction and result one before cleanup can override it. Hut-created units and deletions can change the bound without rolling back earlier effects. Tests exercise real child mutations, private capture/long-move and last-Settler incident sequences, selected-actor reload, retained direction, boarding and diagnostic cosmetics versus terminal notices. Special-movement sound/redraw and boarding redraw now continue through gameplay while retaining diagnostics; required publication/notices remain terminal. Outer admission/viewer/authority/relocation dispatcher and desktop/full-game acceptance remain pending. Browser/cross-platform deferred. Actual scroll-grant decisions now suspend the finish tail before LastDirection and cleanup, preserving earlier charge/relocation and the movement guard. Hut unit/city creation also forwards contact decisions and full research replies, preserving LastDirection and cleanup until the real child completes.",
       "sources": [
         "src/OpenCiv2.Core/Units/MovementCompletion.cs",
         "src/OpenCiv2.Session/MovementCompletionOperation.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
+        "tests/OpenCiv2.FoundationCases/HutCreationContinuationCases.cs",
         "tests/OpenCiv2.FoundationCases/MovementCompletionCases.cs"
       ],
       "sharedGroups": [
@@ -4212,12 +4219,16 @@
         "U02.finish-huts-bound-result",
         "U02.finish-ordering-long-move",
         "U02.finish-private-session",
+        "U02.finish-retained-hut-contact",
         "U02.movement-retained-hut-grant",
         "V03.acquisition-grant-private-sessions",
         "V03.captured-technology-retained-grant",
         "V06.theft-retained-grant-ordering",
         "W06.hut-grant-emissary-routing",
-        "W06.hut-retained-grant-cancellation"
+        "W06.hut-retained-city-awards",
+        "W06.hut-retained-failure-private-replies",
+        "W06.hut-retained-grant-cancellation",
+        "W06.hut-retained-unit-rewards"
       ]
     },
     {

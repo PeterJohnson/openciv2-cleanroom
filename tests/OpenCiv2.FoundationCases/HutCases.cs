@@ -30,7 +30,7 @@ public static partial class FoundationSuite
         public List<MapPoint> Draws { get; } = [];
         public int NeighborDraws, Status, CityLimits;
         public bool FailNotice, FailDraw;
-        public HutFixture(List<Choice> choices, RevelationFixture? data = null, IReadOnlyDictionary<int, CivilizationSet>? backing = null, bool retainGrants = false)
+        public HutFixture(List<Choice> choices, RevelationFixture? data = null, IReadOnlyDictionary<int, CivilizationSet>? backing = null, bool retainGrants = false, UnitCreation? units = null)
         {
             Data = data ?? new(); Random = new(new ControlledChoices(new(choices)), "hut");
             World.Globals.Turn = 80; World.Globals.Year = 999; World.Globals.BarbarianActivity = 3;
@@ -45,7 +45,7 @@ public static partial class FoundationSuite
             Data.AddCity(0, 1, new(4, 4)); Data.AddUnit(0, 1, 9, Point);
             Grant = new(Data, Random);
             Retained = retainGrants ? new(Grant) : null;
-            Huts = new(World, Data.Rules, Random, new(World, Data.Process, Data.Stacks, Data), CityCreator(Data, () => ++CityLimits), Retained?.Grants ?? Grant.Grants, this, backing);
+            Huts = new(World, Data.Rules, Random, units ?? new(World, Data.Process, Data.Stacks, Data), CityCreator(Data, () => ++CityLimits, units: units), Retained?.Grants ?? Grant.Grants, this, backing);
             Movement = new(new(0), World.Entities.Units.End, Point) { LocalHuman = true };
         }
         public HutEntry.Operation Begin(string call = "hut") => Huts.Begin(new(0), Movement, call);

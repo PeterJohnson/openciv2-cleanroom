@@ -167,11 +167,13 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
             using var hut = services.Huts.Begin(finishing, movement, call + "/hut");
             while (!hut.Completed)
             {
-                var pending = hut.Resume(operation.TakeReply()?.Selected);
+                var pending = hut.ResumeDecision(operation.TakeReply());
                 if (pending is HutCityVisit visit)
                 { yield return new MovementCompletionDecision.Hut(visit); }
                 else if (pending is HutDecision.Grant grant)
                 { yield return new MovementCompletionDecision.Grant(grant.Decision); }
+                else if (pending is HutDecision.Contact contact)
+                { yield return new MovementCompletionDecision.Contact(contact.Decision); }
                 else if (!hut.Completed)
                 { yield return null; }
             }

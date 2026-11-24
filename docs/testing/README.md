@@ -56,6 +56,14 @@ changes are read on completion. Disposal, required child failure and failed
 unit allocation retain their specified effects. A private founding/session case
 waits through contact before deleting its settler.
 
+W06 retained-creation cases join mercenary, nomad, barbarian and tribe rewards
+to actual U01/C01 and production diplomacy. They verify home clearing and
+late-city choices wait for contact, unchanged identities/choice traces across
+polls, live year/local-human decisions, private replies, cancellation/defaults,
+disposal and required/cosmetic failures. U02 completion forwards the same contact
+before its direction and cleanup tail. General native movement admission remains
+open.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

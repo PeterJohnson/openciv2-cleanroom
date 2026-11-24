@@ -1210,6 +1210,11 @@ Redirects yield bounded work, including the permitted repeating scroll/nomad
 cycle. `Session/HutOperation` routes created-city visits and scroll-grant choices
 privately. U02 finish forwards the grant decision before its direction/cleanup tail;
 the complete local dispatcher is tested through relocation, grant and cleanup.
+Mercenary, nomad, barbarian and city rewards await retained U01/C01 creation.
+`HutEntry.Operation.ResumeDecision` carries full contact replies; `HutOperation`
+and U02 finish forward the resulting private decisions before home clearing,
+late-city awards, redraw and movement cleanup. Cosmetic failures are reported
+after committed gameplay completes, without duplicating rewards on polling.
 The low-seven regional presence check includes `SettlementRestrictions`, whose
 two independent values are translated by F06; the unrelated high bit remains
 opaque. Out-of-catalog Armor prerequisites require explicit discovery backing.

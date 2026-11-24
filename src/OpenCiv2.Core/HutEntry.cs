@@ -13,6 +13,7 @@ public sealed record HutNotice(HutNoticeKind Kind, int Actor, MapPoint Position,
 public abstract record HutDecision
 {
     public sealed record Grant(ResearchGrantDecision Decision) : HutDecision;
+    public sealed record Contact(DiplomaticContactDecision Decision) : HutDecision;
 }
 public sealed record HutCityVisit(int Actor, CityTarget City, string Name) : HutDecision;
 public interface IHutEffects
@@ -47,7 +48,7 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
         private readonly List<Exception> presentationFailures = [];
         private bool disposed, faulted;
         public bool Completed { get; private set; }
-        private int? answer;
+        private ResearchReply? answer;
         public HutDecision? Pending { get; private set; }
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         internal Operation(HutEntry parent, UnitSlot unit, MovementContinuation movement, string call)
@@ -57,9 +58,10 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
             steps = parent.Execute(this, unit, movement, call).GetEnumerator();
         }
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
-        internal int? TakeReply() { var reply = answer; answer = null; return reply; }
+        internal ResearchReply? TakeReply() { var reply = answer; answer = null; return reply; }
         internal void Report(IEnumerable<Exception> failures) => presentationFailures.AddRange(failures);
-        public HutDecision? Resume(int? reply = null)
+        public HutDecision? Resume(int? reply = null) => ResumeDecision(reply is { } selected ? new(selected) : null);
+        public HutDecision? ResumeDecision(ResearchReply? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -123,7 +125,18 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                     if (world.Map.ClaimantOrFertility(point) <= 11)
                     { outcome = 5; break; }
                     Notice(HutNoticeKind.Tribe);
-                    var city = cities.Create(new((byte)actor), point);
+                    CitySlot? city;
+                    using (var creation = cities.Begin(new((byte)actor), point, call + "/city"))
+                    {
+                        while (!creation.Completed)
+                        {
+                            var contact = creation.Resume(operation.TakeReply());
+                            if (!creation.Completed)
+                            { yield return contact is null ? null : new HutDecision.Contact(contact); }
+                        }
+                        operation.Report(creation.PresentationFailures);
+                        city = creation.Result;
+                    }
                     if (world.Globals.Year >= 1000)
                     {
                         int size = Roll("city-size", call, 4) + 1;
@@ -187,7 +200,18 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                     }
 
                     int type = Roll("mercenary-type", call, 2) == 0 ? mounted : foot;
-                    var mercenary = units.Create(new((byte)type), new((byte)actor), point);
+                    UnitSlot? mercenary;
+                    using (var creation = units.Begin(new((byte)type), new((byte)actor), point, call + "/mercenary"))
+                    {
+                        while (!creation.Completed)
+                        {
+                            var contact = creation.Resume(operation.TakeReply());
+                            if (!creation.Completed)
+                            { yield return contact is null ? null : new HutDecision.Contact(contact); }
+                        }
+                        operation.Report(creation.PresentationFailures);
+                        mercenary = creation.Result;
+                    }
                     if (!movement.LocalHuman && world.Multiplayer.LocalHuman != actor)
                     {
                         if (mercenary is { } unsupported)
@@ -245,7 +269,18 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                             if (Known(AdvanceIds.GuerrillaWarfare))
                             { rough = UnitTypeIds.Fanatics; flat = UnitTypeIds.Partisans; }
                             int selected = unchecked((sbyte)rules.Terrain[(int)world.Map.TileAt(target).Terrain].MovementCost) < 3 ? flat : rough;
-                            var barbarian = units.Create(new((byte)selected), new(0), target);
+                            UnitSlot? barbarian;
+                            using (var creation = units.Begin(new((byte)selected), new(0), target, call + "/barbarian/" + step))
+                            {
+                                while (!creation.Completed)
+                                {
+                                    var contact = creation.Resume(operation.TakeReply());
+                                    if (!creation.Completed)
+                                    { yield return contact is null ? null : new HutDecision.Contact(contact); }
+                                }
+                                operation.Report(creation.PresentationFailures);
+                                barbarian = creation.Result;
+                            }
                             if (barbarian is { } spawned)
                             {
                                 world.Entities.Units.At(spawned).Visibility = world.Entities.Units.At(spawned).Visibility.Union(world.Map.TileAt(point).RevealedTo);
@@ -274,7 +309,7 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                     {
                         while (!grant.Completed)
                         {
-                            if (grant.Resume(operation.TakeReply()) is { } decision)
+                            if (grant.Resume(operation.TakeReply()?.Selected) is { } decision)
                             { yield return new HutDecision.Grant(decision); }
                             else if (!grant.Completed)
                             { yield return null; }
@@ -288,7 +323,18 @@ public sealed class HutEntry(GameState world, RuleTables rules, GameplayRandom r
                     if (UnsupportedSettlers(actor) > (world.Civilizations[actor].CityCount >> 3))
                     { outcome = 4; break; }
                     Notice(HutNoticeKind.Nomads);
-                    var settler = units.Create(new(UnitTypeIds.Settlers), new((byte)actor), point);
+                    UnitSlot? settler;
+                    using (var creation = units.Begin(new(UnitTypeIds.Settlers), new((byte)actor), point, call + "/nomad"))
+                    {
+                        while (!creation.Completed)
+                        {
+                            var contact = creation.Resume(operation.TakeReply());
+                            if (!creation.Completed)
+                            { yield return contact is null ? null : new HutDecision.Contact(contact); }
+                        }
+                        operation.Report(creation.PresentationFailures);
+                        settler = creation.Result;
+                    }
                     if (settler is { } nomad)
                     {
                         world.Entities.Units.At(nomad).Home = null;
