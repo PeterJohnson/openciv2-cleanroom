@@ -457,6 +457,16 @@ paradrop targeting and the scenario wonder-presentation request. Its `Research`
 adapter is also available to retained research choices/completion. This bundle
 does not supply the generated host's scheduler, command admission or report windows.
 
+`ClassicGameplayContent` binds selected classic CITY/CITYPREF and GAME option
+resources to `SinglePlayerGameplayContent`. Naming is an owned scenario/home
+snapshot; preferences update the supplied per-game state with F03 retention.
+Mission/revolt options are read only when their retained operation requests them,
+using the current selected directories and language. Each read closes its stream.
+The caller supplies resolved labels, media, scenario text expansion, starts,
+gameplay values and the existing map compatibility object; the binding does not
+replace imported map metadata or guess label indices. Rebind after replacing
+world/rules. Native JSON text binding and the generated host remain separate work.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

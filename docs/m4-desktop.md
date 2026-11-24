@@ -8684,3 +8684,42 @@ Browser and cross-platform work remain deferred.
 | --- | --- |
 | `m4-gameplay-presentation-native.json` | `3f8b1f4a6f8431ad831c5874479669782569c6e1f8d34c24ddb6eb744fb4cebb` |
 | `m4-gameplay-presentation-identity.json` | `d0cbb5a6d921897bb8be56bf04fa2368f33318e77a174c38dd0e34b9f677a8a5` |
+
+## Classic resource binding for the gameplay graph
+
+`ClassicGameplayContent` connects the existing classic CITY/CITYPREF and
+SpyOptions/DissidentOptions readers to `SinglePlayerGameplayContent`. It loads
+owned ordered naming layers and applies F03's update to the supplied per-game
+preferences, preserving inactive payload and NoDefend when required. Mission
+options remain lazy: the retained V06 operation decides when to read the current
+selected file, language and scenario/home resource. Each read closes its stream,
+including malformed-resource failures. GAME is the default mission filename;
+the caller can select another source explicitly.
+
+The host supplies the resolved Food/Spy labels, starts, gameplay values, existing
+map compatibility, scenario text expansion and media services. The adapter does
+not create replacement map metadata or infer original label indices. Rebinding
+after world/rule replacement remains the host's responsibility. This classic path
+does not complete native JSON text binding or general desktop admission.
+
+Three shared groups use authored resources. They cover layered names, optional
+preference retention, selected filename/language, section fallback, missing versus
+malformed text and reader cleanup. The actual unified mission graph retains its
+selected menu across unanswered polls, then reads newly selected revolt text at
+that later decision. A malformed initial option list leaves bilateral Contact
+committed and does not publish a last mission. No original executable observations
+or copied original resources are used in these tests.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1951/1953**, with the two existing
+platform/audio skips. All **1916 shared groups** passed across **220 coverage
+families**; compiled identity verified **955 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua and widget sources are
+unchanged. Native JSON text, general desktop host composition, recorded formula
+gaps and complete generated human/AI acceptance remain open. Browser and
+cross-platform work remain deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-classic-gameplay-content-native.json` | `54e7a462c68dd0648ef7c5f1beafde8fd94beee21dd020c314c9a57b403655f3` |
+| `m4-classic-gameplay-content-identity.json` | `5ded36a4925bb9f4b08a4f714646de01074cb646e3e5ef1fdf171c8db6b5672e` |

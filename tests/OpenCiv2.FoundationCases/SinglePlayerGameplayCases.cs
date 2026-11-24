@@ -22,7 +22,8 @@ public static partial class FoundationSuite
         public RevelationFixture Data => F.Data;
         public GameState World => F.World;
         public GameplayFixture(List<Choice>? choices = null, WonderBuildRestrictions? restrictions = null,
-            RevelationFixture? data = null, SinglePlayerGameplayEffects? presentation = null)
+            RevelationFixture? data = null, SinglePlayerGameplayEffects? presentation = null,
+            Func<GameplayFixture, SinglePlayerGameplayContent>? content = null)
         {
             F = new(choices, data);
             var life = F.Life; var events = life.Diplomacy.Events; var grant = life.Diplomacy.Grant;
@@ -31,7 +32,7 @@ public static partial class FoundationSuite
             var combat = F.Combat.F; var capture = combat.F.Drop.Capture;
             var mission = F.Missions.F; var move = F.F;
             Services = new(World, Data.Process, life.Random,
-                new(NamingCatalog(["First", "Second"]), new(), new(), GameplayContent.Builtin.Values,
+                content?.Invoke(this) ?? new(NamingCatalog(["First", "Second"]), new(), new(), GameplayContent.Builtin.Values,
                     new(World.Map), events.Media, lines => { events.Texts.Add(lines); return lines; },
                     () => { using var reader = mission.Text.Reader(); return ClassicCityMissionOptions.Read(reader, "missions", " (Spy authored)"); },
                     () => { using var reader = mission.Revolt.Text.Reader(); return ClassicRevoltOptions.Read(reader, "revolt"); }, "Food",

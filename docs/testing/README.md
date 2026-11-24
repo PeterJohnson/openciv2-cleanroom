@@ -69,6 +69,13 @@ and committed prefixes on notice failure. Actual AI airlift transfer/deletion
 uses the same bundle and real graph deletion. These do not qualify the generated
 desktop scheduler, native targeting or P06/P07 report windows.
 
+Classic gameplay-content cases bind authored scenario/home resources to the
+actual unified mission graph. They check name-layer fallback, retained preference
+payload, selected filenames/languages, lazy option reads, held menu text and
+later revolt text. Missing sections and malformed resources retain their distinct
+outcomes; malformed mission text leaves bilateral Contact committed and closes
+the reader. These are specification-derived cases, not original-game captures.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

@@ -6696,6 +6696,24 @@
         "U05.presentation-gameplay-airlift",
         "V02.presentation-gameplay-government"
       ]
+    },
+    {
+      "id": "classic-gameplay-content",
+      "status": "partial",
+      "contract": "F03/C01/V06 selected classic resources for local gameplay",
+      "publicSurface": "ClassicGameplayContent.Load",
+      "review": "Binds existing classic name/preference adapters and lazy mission/revolt option readers to SinglePlayerGameplayContent. Preserves ordered scenario/home names, supplied preference state and selected filename/language fallback. Actual unified mission graph tests retain selected menus and read revolt text later; malformed text preserves Contact and closes the stream. Host supplies resolved labels, media, starts, gameplay values, scenario expansion and map compatibility; no original data or executable observations are used. Native JSON text binding, generated-host admission/scheduling and full-game acceptance remain open. Browser and cross-platform execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/ClassicGameplayContent.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ClassicGameplayContentCases.cs"
+      ],
+      "sharedGroups": [
+        "F03.gameplay-content-names-preferences",
+        "V06.gameplay-content-lazy-options",
+        "V06.gameplay-content-mission-graph"
+      ]
     }
   ]
 }

@@ -384,3 +384,10 @@ Actual graph/contact and mutation/failure cases verify its recipients, retained
 scenario suppression request and installed names. Host scheduling, targeting,
 reports and complete-game acceptance remain open. See
 [GameplayPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/GameplayPresentationCases.cs).
+
+Classic gameplay content now binds ordered names, preference updates and lazy
+mission/revolt options to the gameplay graph. Authored resource cases exercise
+scenario/home fallback, language/filename selection and malformed/missing text,
+including actual retained mission decisions. Native JSON text and generated-host
+acceptance remain open. See
+[ClassicGameplayContentCases.cs](../../tests/OpenCiv2.FoundationCases/ClassicGameplayContentCases.cs).
