@@ -14,7 +14,6 @@ public interface IDiplomacyTurnEffects
     void Meet(int from, int to);
     void WarEnded(int from, int to);
     void ReviewRelation(int from, int human);
-    void MilitaryAid(int owner);
     void SeekWarAlly(int from, int human);
 }
 
@@ -185,7 +184,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
                     }
                 }
             }
-            effects.MilitaryAid(owner);
+            MilitaryAid.Run(world, rules, owner);
             for (int other = 1; other < 8; ++other)
             {
                 if (Human(other) && other == world.Multiplayer.LocalHuman)

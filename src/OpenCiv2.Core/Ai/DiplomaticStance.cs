@@ -21,6 +21,76 @@ public sealed class DiplomaticStance(GameState world, RuleState rules, Governmen
     private bool Wonder(int c, int w) => BuildingQueries.HasWonder(world, rules.Definitions, c, w);
     private int Distrust(int a, int b) => world.Civilizations[a].Reputation - world.Civilizations[b].ReputationCredit[a];
 
+    /// <summary>A08 §6 security query. The judging civilization is C; this does not
+    /// alter the evaluation workspace, treaties or random stream.</summary>
+    public bool FeelsSecure(int c, int d)
+    {
+        MapKnowledge.RequireLocal(world);
+        unchecked
+        {
+            var relation = world.Civilizations[c].Treaties[d];
+            bool alliance = relation.Alliance;
+            if (relation.Aggressor || relation.Vendetta)
+            { return true; }
+            for (int h = 1; h < EntityLimits.Civilizations; ++h)
+            {
+                if (!world.Globals.HumanPlayers.Contains(h))
+                { continue; }
+                if (DiplomaticAttitudes.Hostile(world, c, h) && Strength(d) < Strength(h)
+                    && !world.Civilizations[h].Treaties[d].Alliance)
+                { return false; }
+                if (DiplomaticAttitudes.Hostile(world, d, h) && Strength(c) < Strength(h)
+                    && !world.Civilizations[h].Treaties[c].Alliance)
+                { return false; }
+            }
+            if (Nuclear(c) < Nuclear(d))
+            { return false; }
+            int security = 0;
+            for (int k = 1; k < EntityLimits.Civilizations; ++k)
+            {
+                if (k == c || k == d)
+                { continue; }
+                if (DiplomaticAttitudes.Hostile(world, c, k))
+                { ++security; }
+                if (world.Globals.HumanPlayers.Contains(k) && world.Civilizations[c].Treaties[k].Alliance)
+                {
+                    if (world.Civilizations[d].Treaties[k].Alliance)
+                    {
+                        ++security;
+                        if (Rank(k) > Rank(c) && Rank(k) > Rank(d))
+                        { ++security; }
+                    }
+                    if (world.Civilizations[d].Treaties[k].War)
+                    { --security; }
+                }
+                if (Rank(k) == 7 && world.Globals.Turn > 199 && world.Civilizations[d].Treaties[k].War)
+                { --security; }
+            }
+            if (!DiplomaticAttitudes.Hostile(world, c, d))
+            { ++security; }
+            if (alliance)
+            { ++security; }
+            security -= rules.Leaders[world.Civilizations[c].Tribe].Attack;
+            int ownAttack = 0, theirStrength = 1, sharedCities = 0;
+            for (int r = 1; r < MapLimits.Regions - 1; ++r)
+            {
+                ref var actor = ref world.Civilizations[c];
+                ref var other = ref world.Civilizations[d];
+                int attack = actor.ContinentAttack[r], enemyAttack = other.ContinentAttack[r];
+                int enemyMilitary = other.ContinentMilitary[r];
+                if (actor.ContinentCities[r] != 0 && attack + actor.ContinentMilitary[r] < enemyAttack)
+                { return false; }
+                if (attack != 0 && enemyMilitary != 0)
+                {
+                    ownAttack += attack;
+                    theirStrength += (enemyAttack >> 1) + enemyMilitary;
+                    sharedCities += actor.ContinentCities[r];
+                }
+            }
+            return !((ownAttack << 2) / theirStrength < security + 4 && sharedCities != 0);
+        }
+    }
+
     /// <summary>V05 §2 consumes the current evaluation attitude; War overrides all prior additions.</summary>
     public int Patience(int a, int b)
     {

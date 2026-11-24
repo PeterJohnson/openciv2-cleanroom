@@ -73,7 +73,6 @@ public static partial class FoundationSuite
         public void Meet(int from, int to) => Call($"meet/{from}/{to}");
         public void WarEnded(int from, int to) => Call($"peace/{from}/{to}");
         public void ReviewRelation(int from, int human) => Call($"review/{from}/{human}");
-        public void MilitaryAid(int owner) => Call($"aid/{owner}");
         public void SeekWarAlly(int from, int human) => Call($"seek/{from}/{human}");
     }
 
@@ -131,7 +130,7 @@ public static partial class FoundationSuite
         Equal(true, world.Civilizations[2].Treaties[1].Alliance); Equal(false, world.Civilizations[2].Treaties[1].HostileIntent);
         Equal(true, world.Civilizations[2].Treaties[3].Aggressor);
         Equal(false, world.Civilizations[2].Treaties[3].ExtendedAggressor || world.Civilizations[2].Treaties[3].Tribute);
-        Equal(true, children.Calls.SequenceEqual(["review/2/1", "aid/2", "seek/2/1"])); // Entry to the later block is captured.
+        Equal(true, children.Calls.SequenceEqual(["review/2/1", "seek/2/1"])); // Entry to the later block is captured.
 
         world.Globals.HumanPlayers = CivilizationSet.Only(1); world.Globals.Turn = 64;
         children.OnCall = null; children.Calls.Clear(); random = DiplomacyRandom("next");

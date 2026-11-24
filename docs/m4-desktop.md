@@ -5574,3 +5574,49 @@ F04 city-analysis formula gaps, complete city/civilization orchestration,
 remaining diplomacy policies, generated desktop play and complete human/AI
 end-condition acceptance remain open. Browser/cross-platform qualification and
 network execution remain deferred.
+
+## A08 security and actual military-aid scan — 2026-11-23
+
+`DiplomaticStance.FeelsSecure` now implements A08 §6's security query, including
+forward Aggressor/Vendetta shortcuts, both directed human-threat checks without
+alive/self exclusions, active nuclear strength, independent third-party relation
+terms and the live leader attack trait. Regional accumulation visits 1–62,
+preserves the local city-defense veto, signed division/truncation and final
+shared-city gate, and changes neither treaties nor evaluation workspace.
+
+`MilitaryAid.Run` implements A08 §8's ordered ally/enemy/unit admission and real
+map queries. Its first bounds test requires an outside coordinate, and the
+following city-owner query cannot return an owner there. This preserves the
+specified no-transfer behavior, including a city-marked fallback tile; no dormant
+transfer path or inverted bounds test was introduced. `DiplomacyTurn` now calls
+this implementation directly after relation review. The old required military-aid
+callback and the desktop adapter's unsupported placeholder are removed.
+
+Four new shared groups cover human direction/dead/self slots, nuclear shortcuts,
+region boundaries, local defense equality, truncated aggregate ratios, shared-city
+gating, alliance/hostility thresholds, leader traits, independently overlapping
+third-party terms, local-only admission, and flat/cylindrical no-transfer cases.
+Existing V04 exchange and war-ally Core/Session compositions now execute actual
+military aid. The first validation run exposed one stale callback-count assertion
+in the exchange case; it now verifies arrival at the subsequent war-request step.
+The initial failed probe remains `m4-security-initial-failed.json` for diagnosis.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1533 of 1535**, with two existing
+platform/audio skips. The shared probe passed all **1500 groups** across 166
+coverage families; source identity verified **770 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. No graphical behavior
+changed, so this checkpoint uses the native composed turn/Session tests and
+App build; it does not claim a new desktop input-driver run.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-security-native.json` | `c4d8eb69091bd8f5ca19cf16cb55c799c9969bdfc4802ed9f10c3940320f7540` |
+| `m4-security-identity.json` | `5a4f54218ec8b86d6f411ae3c8cc602772f617c8ca2a7bea2262cfa2040e3f38` |
+
+Periodic relation review still has an undefined incoming attitude value on paths
+without a producer; the explicit owning-specification missing-input policy remains
+required. Full audience integration, F04 city-analysis formula gaps and complete
+city/civilization orchestration, generated desktop play and complete human/AI
+end-condition acceptance remain open. Browser/cross-platform qualification and
+network execution remain deferred.

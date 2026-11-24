@@ -1072,3 +1072,10 @@ for government decisions before treaty/payment effects. V04/Session cases check
 private recipient routing, cancellation at all three decision kinds, cosmetic
 diagnostics after committed effects, and required failures/disposal. These do
 not supply the remaining relation-review or audience policies.
+
+A08 security cases cover directed human threats including dead/self slots, nuclear
+shortcuts, region boundaries 1–62, truncated ratios, shared-city gating, leader
+traits and independent third-party treaty terms. Military-aid cases retain both
+bounds gates, including a city-marked fallback tile, and verify no transfers on
+flat or cylindrical maps. V04 and war-ally Session cases now use the actual aid
+scan instead of a gameplay callback. Full relation review and audience remain open.

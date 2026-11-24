@@ -5205,6 +5205,42 @@
         "A08.war-ally-required-disposal",
         "A08.war-ally-session-cancellation"
       ]
+    },
+    {
+      "id": "ai-security-and-military-aid",
+      "status": "partial",
+      "contract": "A08 sections6,8 security assessment and contradictory military-aid admission; V04 turn integration",
+      "publicSurface": "DiplomaticStance.FeelsSecure; MilitaryAid.Run; DiplomacyTurn actual aid call",
+      "review": "Security preserves directed human threats without alive/self exclusions, nuclear shortcuts, independent political terms and region 1\u201362 accumulation, truncation and shared-city gating. It has no RNG or workspace/treaty mutations. Military aid performs the specified ally/enemy/unit scans and actual bounds/city-owner queries; no unit can pass the contradictory bounds gates on a stable map. DiplomacyTurn invokes it directly after relation review, removing the supplied gameplay child. Shared tests cover arithmetic thresholds, trait reads, scan boundaries, original no-transfer behavior and existing retained V04/Session paths. Full audience and relation-review composition, generated desktop games and end-condition acceptance remain open; browser and cross-platform execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/DiplomaticStance.cs",
+        "src/OpenCiv2.Core/Ai/MilitaryAid.cs",
+        "src/OpenCiv2.Core/DiplomacyTurn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CivilizationMaintenanceCases.cs",
+        "tests/OpenCiv2.FoundationCases/DiplomaticSecurityCases.cs",
+        "tests/OpenCiv2.FoundationCases/WarAllyCases.cs"
+      ],
+      "sharedGroups": [
+        "A08.military-aid-contradictory-bounds",
+        "A08.security-political-thresholds-purity",
+        "A08.security-regional-boundaries-ratios",
+        "A08.security-shortcuts-human-direction",
+        "A08.war-ally-admission-cleanup",
+        "A08.war-ally-borrowed-technology",
+        "A08.war-ally-intelligence-ties",
+        "A08.war-ally-paid-unpaid",
+        "A08.war-ally-payment-failures",
+        "A08.war-ally-private-session",
+        "A08.war-ally-refusal-first-enemy",
+        "A08.war-ally-required-disposal",
+        "A08.war-ally-session-cancellation",
+        "V02.government-turn-calendar",
+        "V04.ai-diplomacy-aging",
+        "V04.human-diplomacy-turn",
+        "V04.stale-diplomacy-children"
+      ]
     }
   ]
 }

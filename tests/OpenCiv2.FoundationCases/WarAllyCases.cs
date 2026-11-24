@@ -228,7 +228,7 @@ public static partial class FoundationSuite
             Equal(true, human.Reply(prompt, 0).Accepted); runtime.AdvanceOne();
             Equal(failure ? CommandStatus.Failed : CommandStatus.Completed, RequiredResult(actor, command).Status);
             Equal(true, f.World.Civilizations[1].Treaties[3].War); Equal(510, f.World.Civilizations[1].Gold);
-            Equal(false, effects.Calls.Any(c => c.StartsWith("seek/"))); Equal(1, effects.Calls.Count(c => c == "aid/2"));
+            Equal(false, effects.Calls.Any(c => c.StartsWith("seek/")));
             Equal(1, f.Aid.Closed); f.Aid.Random.RequireChoicesConsumed();
         }
     }

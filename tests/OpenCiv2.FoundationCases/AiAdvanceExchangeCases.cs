@@ -221,7 +221,7 @@ public static partial class FoundationSuite
             Equal(true, w.Civilizations[3].Advances.Contains(94));
             Equal(false, w.Civilizations[2].Treaties[4].ChangedThisTurn);
             Equal(false, children.Calls.Any(c => c.StartsWith("exchange/")));
-            Equal(1, children.Calls.Count(c => c == "aid/2"));
+            Equal(1, children.Calls.Count(c => c == "seek/2/1"));
             f.G.Random.RequireChoicesConsumed();
         }
     }

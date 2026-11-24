@@ -403,7 +403,6 @@ public static partial class LocalPlayCommands
             public void Meet(int from, int to) => throw Outside();
             public void WarEnded(int from, int to) => throw Outside();
             public void ReviewRelation(int from, int human) => throw Outside();
-            public void MilitaryAid(int owner) => throw Outside();
             public void SeekWarAlly(int from, int human) => throw Outside();
         }
 

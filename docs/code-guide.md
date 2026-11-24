@@ -568,6 +568,10 @@ willingness, plus V05's shared-attitude patience query. It composes V07 race, C0
 wonders, U01 nearest units, V04 treaty primitives and actual A08/V02 government
 choice. Evaluation fields belong to `DiplomacyWorkspace`; evaluating does not
 select its attitude pair, declare a war, sign a treaty or reset an entire audience.
+Its A08 security query combines directed human threats, nuclear strength, third-party
+relations and regional strength without changing the workspace. `Core/Ai/MilitaryAid`
+preserves A08’s contradictory coordinate gates and performs no transfers on a stable
+map. `DiplomacyTurn` calls this implementation directly after relation review.
 
 `Core/EspionageIncidents` owns V06's local treaty response and senate consequences,
 with actual war, stance and government services. Its operation retains the human
