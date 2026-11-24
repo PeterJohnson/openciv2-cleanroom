@@ -1285,6 +1285,17 @@ substitutions and its suppression delegate publishes the S01 request. Desktop ad
 and these broader presentation integrations remain required. Remaining caller hooks,
 general desktop composition and pending-operation persistence remain open.
 
+`DiplomaticCities` owns V05 §8's offered-city list and local cession. It resolves
+live IDs descending for every item, including duplicates, then composes actual
+S02 CityTaken, U01 cargo deletion/V01 lifecycle checks, C06 production eligibility
+and C08 Leonardo upgrades. Its current city can change after a garrison transfer;
+later support, production and capture fields use that replacement. A missing
+nearest result stops at the next required city read, preserving completed effects.
+`DiplomaticCitiesOperation` routes nested choices privately. Negotiation admission,
+the enclosing offer's final destruction checks and desktop UI remain caller work.
+`City/TransferredCityProduction` shares C09/V05's first-eligible-defender repair;
+it preserves signed cost/defense arithmetic and the zero-cost failure boundary.
+
 `ScenarioTriggers` owns ordinary S02 matching for Turn, TurnInterval, RandomTurn,
 ScenarioLoaded, UnitKilled, CityTaken and ReceivedTechnology. It preserves live
 traversal, persistent wildcard binding and polling, and invokes the real retained

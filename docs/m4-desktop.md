@@ -6593,3 +6593,45 @@ still require specification clarification or independent original-game evidence.
 This checkpoint uses specification-derived expectations and adds no original-game
 observations. Browser, cross-platform and network execution remain deferred.
 M4 is ongoing.
+
+## V05 retained negotiated city transfers
+
+`DiplomaticCities` executes offered-city lists against descending live ID lookup,
+including duplicate IDs and repeated same-owner cession. Its local cession joins
+real S02 CityTaken actions, U01 cargo deletion with V01 lifecycle checks, C06
+production eligibility and C08 Leonardo upgrades. The current city changes through
+the actual nearest-city query after a garrison transfer; later unit tests,
+production and founder/captured-turn writes use that current city. Exploration
+still uses the original center. A missing nearest city stops at the next required
+city read, preserving prior ownership/counter changes without an invalid write.
+
+`DiplomaticCitiesOperation` retains nested Library and text choices through the
+private Session path. City ownership/radius changes precede the scenario choice;
+center ownership and the captured unit scan follow its completion. View failures
+are reported after gameplay, while required failures preserve their completed
+prefix and stop the operation. `TransferredCityProduction` shares C09/V05's
+production repair, retaining the first eligible defender rule, signed arithmetic,
+anti-horse bonus and zero-cost divide failure. Existing capture callers use it.
+
+Eight shared groups exercise real child operations, live offer lookup, duplicates,
+wrapped counters, current-city replacement, supported cargo deletion, Leonardo,
+fresh post-event unit bounds, retained captured turns, exploration without feature
+memory replacement, private/stale replies, cancellation/timeout, disposal and
+required/cosmetic failures. C09 capture regressions also pass.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1729/1731**, with the
+two existing platform/audio skips. All **1696 shared groups** passed across
+**187 coverage families**; identity verified **844 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-city-cession-native.json` | `82a3a51898c8a48d65197d969a211b93d31f5df7f4b37f357ac30c0c6211f6cd` |
+| `m4-city-cession-identity.json` | `ca48829f38e524d2bcf908ca48872a8796129a13f92247349e2799790dfa8481` |
+
+Enclosing negotiation offer execution/final destruction checks and desktop UI
+remain open. Full civilization/AI scheduling, generated games, graphical acceptance
+and the recorded original-game evidence/formula gaps also remain. These are
+specification-derived native checks, not original-game observations. Browser,
+cross-platform and network execution remain deferred. M4 is ongoing.

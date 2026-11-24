@@ -174,7 +174,7 @@ The `scenario-trigger-callers` family covers [ordinary matching](../../src/OpenC
 and actual capture/casualty event boundaries. [Trigger cases](../../tests/OpenCiv2.FoundationCases/ScenarioTriggerCases.cs)
 exercise live traversal and names, persistent wildcard binding, random and
 technology polling, real nested Library/emissary decisions and private Session
-completion. Remaining cession/UI hooks and full desktop composition
+completion. Remaining foreign-minister/UI hooks and full desktop composition
 remain open.
 
 The `retained-load-workflow` family covers [F06 post-load composition](../../src/OpenCiv2.Session/ClassicLoadDialog.cs)
@@ -190,3 +190,10 @@ check runtime/saved resume separation, one-time event admission, fresh turn
 arguments, quit ordering, private Library choices and required/cosmetic failure
 prefixes. The authored desktop command now uses this entry; complete civilization
 and AI scheduling, general scenario composition and graphical acceptance remain open.
+
+The `diplomatic-city-transfer` family covers [V05 cession](../../src/OpenCiv2.Core/DiplomaticCities.cs)
+and its [private Session adapter](../../src/OpenCiv2.Session/DiplomaticCitiesOperation.cs).
+[City-transfer cases](../../tests/OpenCiv2.FoundationCases/DiplomaticCityCases.cs)
+exercise actual scenario/lifecycle/production/wonder children, live ID lookup,
+current-city replacement, ordered partial effects, private choices and failure
+boundaries. The enclosing offer executor and desktop negotiation UI remain open.

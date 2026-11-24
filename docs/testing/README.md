@@ -1267,3 +1267,14 @@ allow event execution and remain diagnostic failures at completion. Existing
 direct/console desktop end-turn regressions run through this shared entry.
 Full civilization/AI scheduling, general scenario desktop composition and graphical
 acceptance remain open; browser/cross-platform execution remains deferred.
+
+V05 city-transfer cases join real S02 matching/actions, cargo/lifecycle deletion,
+C06 eligibility and C08 Leonardo upgrades. They cover descending live ID lookup,
+duplicates and same-owner cession, wrapped counters, the mutable current city,
+first eligible defender selection with signed cost/defense and divide failure,
+event-before-unit ordering, captured turns, live post-event scan bounds and
+exploration without feature-memory replacement. Private Library/text choices,
+cancellation, timeout, disposal, invalid nearest-city results and required/cosmetic
+failures preserve committed effects. Existing C09 tests exercise the shared
+production repair. Enclosing offers and desktop negotiation UI remain open;
+these are specification-derived native cases, not original-game observations.

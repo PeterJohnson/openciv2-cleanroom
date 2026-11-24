@@ -53,26 +53,7 @@ public sealed class CaptureProduction(GameState world, RuleTables rules, StackOp
             return null;
         }
         effects.RedrawNeighbors(city.Position);
-        bool eligible = city.Production < 0 || UnitAvailability.CanBuild(world, rules, newOwner, slot, new((byte)city.Production));
-        if (eligible && city.Production < 0)
-        { eligible = BuildingAvailability.Improvement(world, rules, newOwner, slot, -city.Production, scenario); }
-        if (!eligible)
-        {
-            city.Production = UnitTypeIds.Settlers;
-            // C09's nominal candidate 62 has declared role 0x19, so cannot enter eligibility.
-            for (int type = RuleLimits.UnitTypes - 1; type >= 0; --type)
-            {
-                var rule = rules.Units[type];
-                if (rule.Role != RuleRole.Defend || !UnitAvailability.CanBuild(world, rules, newOwner, slot, new((byte)type)))
-                { continue; }
-                int score = unchecked((sbyte)rule.Defense * 8) / unchecked((sbyte)rule.CostRows);
-                if (rule.Abilities.AntiHorseDefense)
-                { ++score; }
-                if (score > 0)
-                { city.Production = (sbyte)type; }
-                break;
-            }
-        }
+        TransferredCityProduction.Repair(world, rules, slot, newOwner, scenario);
         foreach (var offset in MapNeighborhoods.Directions)
         {
             var point = MapNeighborhoods.Offset(world.Map.Geometry, center, offset, world.Globals.Rules.FlatWorld);

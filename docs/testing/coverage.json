@@ -3613,6 +3613,7 @@
       "sources": [
         "src/OpenCiv2.Core/City/CapturePartisans.cs",
         "src/OpenCiv2.Core/City/CaptureProduction.cs",
+        "src/OpenCiv2.Core/City/TransferredCityProduction.cs",
         "src/OpenCiv2.Core/Units/MapKnowledge.cs",
         "src/OpenCiv2.Session/CaptureProductionOperation.cs"
       ],
@@ -5736,7 +5737,7 @@
       "id": "scenario-trigger-callers",
       "contract": "S02 \u00a7\u00a77,11 ordinary trigger matching; C09 takeover and U06 casualty event boundaries",
       "publicSurface": "ScenarioTriggers; ScenarioTriggerOperation; retained CityCapture/CombatCasualties constructors and Session adapters",
-      "review": "Seven ordinary trigger kinds use live collection traversal, captured turn arguments, signed remainder, controlled primary RandomTurn rolls, sticky UnitKilled/CityTaken selectors and live city names. Technology polling captures the wildcard branch once, checks live Alive/knowledge and retains the final successful receiver, including consumed events. Actual capture pauses after owner/radius/reveal and before center-owner/announcements; casualties pause after loss/history/kill count and before actual deletion. Real recursive Library and emissary choices, appended events at player decisions, invalidation/fault/disposal prefixes, private replies, cancellation/timeout and post-completion diagnostics are covered. V05 cession and foreign-minister hooks, parser/desktop presentation composition, broader enclosing diagnostic propagation and generated complete-game/graphical acceptance remain open. Specification-derived tests are not original-game observations. Browser, cross-platform and network execution are deferred. F06 post-load now composes actual retained triggers and cleanup in retained-load-workflow; desktop host presentation remains pending. F04 turn-pass orchestration is now covered by single-player-turn-entry; general desktop scenario composition remains open.",
+      "review": "Seven ordinary trigger kinds use live collection traversal, captured turn arguments, signed remainder, controlled primary RandomTurn rolls, sticky UnitKilled/CityTaken selectors and live city names. Technology polling captures the wildcard branch once, checks live Alive/knowledge and retains the final successful receiver, including consumed events. Actual capture pauses after owner/radius/reveal and before center-owner/announcements; casualties pause after loss/history/kill count and before actual deletion. Real recursive Library and emissary choices, appended events at player decisions, invalidation/fault/disposal prefixes, private replies, cancellation/timeout and post-completion diagnostics are covered. Foreign-minister hooks, parser/desktop presentation composition, broader enclosing diagnostic propagation and generated complete-game/graphical acceptance remain open. Specification-derived tests are not original-game observations. Browser, cross-platform and network execution are deferred. F06 post-load now composes actual retained triggers and cleanup in retained-load-workflow; desktop host presentation remains pending. F04 turn-pass orchestration is now covered by single-player-turn-entry; general desktop scenario composition remains open. V05 city-taken cession is now composed by diplomatic-city-transfer; enclosing offer/UI integration remains open.",
       "sharedGroups": [
         "S02.capture-retained-trigger",
         "S02.casualty-retained-trigger",
@@ -5808,6 +5809,31 @@
         "F04.entry-private-session",
         "F04.entry-resume-admission",
         "F04.entry-resume-storage"
+      ]
+    },
+    {
+      "id": "diplomatic-city-transfer",
+      "contract": "V05 \u00a78 local city items/cession; S02 CityTaken; U01/V01 cargo/lifecycle; C06/C09 production repair; C08 Leonardo; X01 invalid-index repair",
+      "publicSurface": "DiplomaticCities.Begin/Operation; DiplomaticCitiesOperation; TransferredCityProduction.Repair",
+      "review": "Every offered city ID resolves descending against live records, without donor-owner or same-owner filters. Actual scenario choices precede the captured unit scan. Garrison transfer replaces the current city through real C01 nearest-city lookup; later supported deletion, production and capture fields use that index, while exploration retains the original center. Actual cargo deletion/lifecycle and Leonardo children, signed/wrapped counts, first available defender rather than highest score, anti-horse bonus and zero-cost failure are covered. Missing nearest results stop before invalid city access and retain preceding unit effects. Private recursive Library and text choices, stale replies, cancellation/timeout, disposal, required event failures and cosmetic completion diagnostics are tested. Shared C09 production repair keeps its declared nominal extra role probe. Enclosing negotiation offer dispatch/final destruction checks, desktop UI and complete-game acceptance remain open. Native specification-derived tests are not original-game evidence; network, browser and cross-platform execution are deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/TransferredCityProduction.cs",
+        "src/OpenCiv2.Core/DiplomaticCities.cs",
+        "src/OpenCiv2.Session/DiplomaticCitiesOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticCityCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.city-transfer-basic",
+        "V05.city-transfer-cargo-leonardo",
+        "V05.city-transfer-failure-prefixes",
+        "V05.city-transfer-mutable-index",
+        "V05.city-transfer-offer-lookup",
+        "V05.city-transfer-private-session",
+        "V05.city-transfer-production",
+        "V05.city-transfer-retained-event"
       ]
     }
   ]
