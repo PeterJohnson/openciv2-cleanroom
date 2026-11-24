@@ -5518,3 +5518,59 @@ F04's open city-analysis arithmetic, full city/civilization sequencing, remainin
 AI diplomacy policies, generated desktop play and complete human/AI end-condition
 acceptance remain open. Browser/cross-platform qualification and network
 execution remain deferred.
+
+## A08 war-ally requests and private turn decisions — 2026-11-23
+
+`WarAllyRequests` now implements A08 §9's paid and unpaid request paths using
+actual V05 emissary reception, A08 advance valuation, V03 retained grants and
+V04 alliance/war operations. It checks the sender's turn slot and distrust,
+scans live distinct enemies in order, clears Fighting on non-request paths,
+and returns after the first request without that enemy's cleanup. Refusal
+retains the specified signed contact-date updates.
+
+Paid offers capture their amount before technology selection and retain it
+through the decision. Technology may come from the enemy when the local-human
+intelligence gates permit it; actual acquisition by the sender precedes the
+ordinary grant to the partner. Both grants finish before treaties, war, contact
+dates and payment. Unpaid requests retain their separate contact/write order
+and perform no payment or status redraw. The minimum paid offer can make the
+sender's treasury negative; no affordability recheck was introduced.
+
+`DiplomacyTurn` now invokes the real request after relation review and military
+aid when this composition is supplied. `DiplomacyTurnDecision` distinguishes
+research and war-ally children. `DiplomacyTurnOperation` routes private emissary,
+intelligence, offer and nested research choices through the existing Session
+interaction helpers. A cancellation declines its current choice: declining a
+later revolution still completes a previously accepted war offer. Cosmetic
+status/close failures are reported after committed gameplay; required child
+failures and disposal retain their actual prefix without completing later effects.
+
+Nine specification-derived groups cover paid/unpaid acceptance, requests against
+an existing ally, admission and cleanup, first-enemy/refusal behavior, borrowed
+technology and government choices, local-versus-partner intelligence gates,
+strict technology ties, payment limits, cosmetic and required failures, disposal,
+private recipient routing and cancellation/timeout at all three decision kinds.
+The V04/Session integration also checks that legacy war-ally callbacks are not
+invoked and that cosmetic diagnostics propagate through the parent to the final
+command result. Remaining audience, security/review and military-aid boundaries
+are not supplied by these tests.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1529 of 1531**, with two existing
+platform/audio skips. The shared probe passed **1496 groups** across 165 coverage
+families; source identity verified **768 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The unchanged isolated
+native input driver passed all **26 desktop checks** on its first run. That
+native run covers the existing authored playthrough; the new war-ally policy and
+private decisions are exercised through actual Core/Session compositions.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-war-ally-native.json` | `015484e4dbbe73856b97ee9a4805834a6a2be5a2e5a8909791aeb89df0a90ae1` |
+| `m4-war-ally-identity.json` | `ce49d30a29a29b61fdd8a30c32bd8625317c77075d25b684c5c42c2d9fe18e3b` |
+| `m4-war-ally-play.json` | `088c3e271622a87621149ef6332f4a83ae2a3aab1135d6cbe78d0a3af9c528dd` |
+
+F04 city-analysis formula gaps, complete city/civilization orchestration,
+remaining diplomacy policies, generated desktop play and complete human/AI
+end-condition acceptance remain open. Browser/cross-platform qualification and
+network execution remain deferred.

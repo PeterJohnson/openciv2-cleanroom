@@ -210,8 +210,8 @@ public static partial class FoundationSuite
             var service = new DiplomacyTurn(w, f.G.Rules, f.G.Random, ExchangeService(f), children);
             Throws<InvalidOperationException>(() => service.Run(2, "sync"));
             using var op = service.Begin(2, "turn");
-            var pending = (ResearchGrantDecision.Government)op.Resume()!;
-            Equal(1, pending.Choice.Civilization); Equal(pending, op.Resume());
+            var pending = (DiplomacyTurnDecision.Research)op.Resume()!;
+            Equal(1, ((ResearchGrantDecision.Government)pending.Decision).Choice.Civilization); Equal(pending, op.Resume());
             Equal((byte)254, w.Civilizations[1].AdvanceSource[AdvanceIds.Monarchy]);
             Equal(false, w.Civilizations[3].Advances.Contains(94));
             Equal(true, w.Civilizations[2].Treaties[4].ChangedThisTurn); Equal(0, children.Calls.Count);

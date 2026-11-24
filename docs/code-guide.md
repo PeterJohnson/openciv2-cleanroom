@@ -496,6 +496,11 @@ composition uses it for both periodic and stale-contact exchanges, forwarding
 real research decisions and diagnostics before proceeding with later relations.
 Its synchronous adapter remains for callers without retained exchanges. Other
 AI policy/audience children still require their owning implementations.
+`WarAllyRequests` supplies A08 §9's paid/unpaid requests with real V05 reception,
+V03 grants and V04 treaties/war. The retained diplomacy turn invokes it after
+relation review and military aid. `DiplomacyTurnDecision` distinguishes research
+and war-ally children; `DiplomacyTurnOperation` routes their private choices,
+including nested research, and reports cosmetic diagnostics after completion.
 `LocalPlayCommands.Government` implements revolution and restricted selection,
 joining actual government/city recalculation and the existing rate editor.
 The local turn suspends for these decisions, then runs real human diplomacy

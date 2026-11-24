@@ -1064,3 +1064,11 @@ retained government/emissary choices and required-failure prefixes. A V04 parent
 case reaches an actual Great Library grant to the human during both exchange
 paths, suspends before the second transfer and later relations, then completes
 without replaying choices or grants. Other AI diplomacy children remain open.
+
+A08 war-ally cases cover paid/unpaid acceptance, alliance-breaking requests,
+admission and enemy cleanup, refusal contact timing, first-enemy return, local
+intelligence gates and technology ties. Actual borrowed-technology grants pause
+for government decisions before treaty/payment effects. V04/Session cases check
+private recipient routing, cancellation at all three decision kinds, cosmetic
+diagnostics after committed effects, and required failures/disposal. These do
+not supply the remaining relation-review or audience policies.

@@ -18,15 +18,27 @@ public interface IDiplomacyTurnEffects
     void SeekWarAlly(int from, int human);
 }
 
+public abstract record DiplomacyTurnDecision
+{
+    public sealed record Research(ResearchGrantDecision Decision) : DiplomacyTurnDecision;
+    public sealed record WarAlly(WarAllyDecision Decision) : DiplomacyTurnDecision;
+}
+
 /// <summary>V04 §11 local continuation after the completed V02 government prefix.
 /// Actual AI policy/audience children belong to their owners; human maintenance needs none.</summary>
 public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random, IDiplomacyTurnEffects effects)
 {
     private readonly AiAdvanceExchange? exchange;
+    private readonly WarAllyRequests? warAllies;
     private GameState World => world;
     public DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random,
         AiAdvanceExchange exchange, IDiplomacyTurnEffects effects) : this(world, rules, random, effects)
     { this.exchange = exchange; }
+
+    public DiplomacyTurn(GameState world, RuleTables rules, GameplayRandom random,
+        AiAdvanceExchange exchange, WarAllyRequests warAllies, IDiplomacyTurnEffects effects)
+        : this(world, rules, random, exchange, effects)
+    { this.warAllies = warAllies; }
 
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
 
@@ -47,12 +59,12 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
     public sealed class Operation : IDisposable
     {
         private readonly DiplomacyTurn parent;
-        private readonly IEnumerator<ResearchGrantDecision?> steps;
+        private readonly IEnumerator<DiplomacyTurnDecision?> steps;
         private readonly List<Exception> failures = [];
         private int? answer;
         private bool faulted, disposed;
         public bool Completed { get; private set; }
-        public ResearchGrantDecision? Pending { get; private set; }
+        public DiplomacyTurnDecision? Pending { get; private set; }
         public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
         internal Operation(DiplomacyTurn parent, int owner, string call)
         {
@@ -62,7 +74,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         }
         internal int? TakeAnswer() { var result = answer; answer = null; return result; }
         internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
-        public ResearchGrantDecision? Resume(int? reply = null)
+        public DiplomacyTurnDecision? Resume(int? reply = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
             if (faulted)
@@ -87,7 +99,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         public void Dispose() { disposed = true; steps.Dispose(); }
     }
 
-    private IEnumerable<ResearchGrantDecision?> Execute(Operation operation, int owner, string call)
+    private IEnumerable<DiplomacyTurnDecision?> Execute(Operation operation, int owner, string call)
     {
         MapKnowledge.RequireLocal(world);
         if (owner == 0)
@@ -178,13 +190,25 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
             {
                 if (Human(other) && other == world.Multiplayer.LocalHuman)
                 {
-                    effects.SeekWarAlly(owner, other);
+                    if (warAllies is null)
+                    { effects.SeekWarAlly(owner, other); }
+                    else
+                    {
+                        using var child = warAllies.Begin(owner, other, $"{call}/ally/{other}");
+                        while (!child.Completed)
+                        {
+                            var decision = child.Resume(operation.TakeAnswer());
+                            if (!child.Completed)
+                            { yield return decision is null ? null : new DiplomacyTurnDecision.WarAlly(decision); }
+                        }
+                        operation.Report(child.PresentationFailures);
+                    }
                 }
             }
         }
     }
 
-    private IEnumerable<ResearchGrantDecision?> StaleContact(Operation operation, int owner, int other, string call)
+    private IEnumerable<DiplomacyTurnDecision?> StaleContact(Operation operation, int owner, int other, string call)
     {
         if (!world.Civilizations[owner].Treaties[other].Alliance)
         {
@@ -217,7 +241,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         }
     }
 
-    private IEnumerable<ResearchGrantDecision?> Exchange(Operation operation, int owner, int other, string call)
+    private IEnumerable<DiplomacyTurnDecision?> Exchange(Operation operation, int owner, int other, string call)
     {
         if (exchange is null)
         { effects.ExchangeAdvances(owner, other); yield break; }
@@ -226,7 +250,7 @@ public sealed class DiplomacyTurn(GameState world, RuleTables rules, GameplayRan
         {
             var decision = child.Resume(operation.TakeAnswer());
             if (!child.Completed)
-            { yield return decision; }
+            { yield return decision is null ? null : new DiplomacyTurnDecision.Research(decision); }
         }
         operation.Report(child.PresentationFailures);
     }
