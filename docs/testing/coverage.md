@@ -371,3 +371,9 @@ check failures against the committed mission prefix. The incorruptible callback
 now carries its actor; desertion uses the old owner's viewer after transfer.
 Actual P06/P07 windows and native mission UI acceptance remain open. See
 [MissionPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/MissionPresentationCases.cs).
+
+Movement/selection presentation uses actual arrival/hut, caravan-donation and
+revelation/contact operations through Session. Required notice failure preserves
+committed prefixes; cosmetic focus failure preserves selection and queued commands.
+General native movement UI and host input binding remain open. See
+[MovementPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/MovementPresentationCases.cs).

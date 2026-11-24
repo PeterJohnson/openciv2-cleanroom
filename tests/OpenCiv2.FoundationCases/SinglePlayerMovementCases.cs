@@ -22,7 +22,8 @@ public static partial class FoundationSuite
         public RevelationFixture Data => Missions.Data;
         public GameState World => Data.World;
         public SinglePlayerMovement Services { get; }
-        public SinglePlayerMovementFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public SinglePlayerMovementFixture(List<Choice>? choices = null, RevelationFixture? data = null,
+            SinglePlayerMovementEffects? presentation = null)
         {
             Missions = new(choices, data); F = new(data: Data);
             World.Civilizations[1].Treaties[2] = World.Civilizations[2].Treaties[1] = default;
@@ -33,7 +34,7 @@ public static partial class FoundationSuite
             Services = new(World, Data.Process, Life.Random, Data.Stacks, new(World, Data.Rules, Data.Stacks),
                 NamingCatalog(["First", "Second"]), new(World, Data.Process.Rules, Data.Stacks), Life.Services,
                 Life.Diplomacy.Grant.Services, Life.Diplomacy.Services, Combat.Services, Missions.Services,
-                new(F, F.Land, F.Land, F.Foreign, F.Foreign, F.Finish, F.City, F.Relocation, F.Finish, F.Finish, F.Finish,
+                presentation ?? new(F, F.Land, F.Land, F.Foreign, F.Foreign, F.Finish, F.City, F.Relocation, F.Finish, F.Finish, F.Finish,
                     () => throw new InvalidOperationException("Unexpected city limit")), "Food");
         }
         public MovementDispatcher.Operation Begin(int direction = 1, MovementOptions? options = null)

@@ -54,6 +54,13 @@ explicit actor; desertion uses the old owner's view after ownership has changed.
 The visit prompts qualify continuation boundaries, not complete P06/P07 windows.
 General native mission UI acceptance remains open.
 
+Movement presentation cases run arrival/hut rewards, retained caravan donation
+and contact-capable unit selection through Session. They check committed arrival
+and donation prefixes on required notice failure, viewer-specific focus, retained
+scenario contact and queued-command preservation after cosmetic focus failure.
+These qualify the shared presentation binding; general native movement/selection
+UI acceptance and unresolved movement-input contracts remain open.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

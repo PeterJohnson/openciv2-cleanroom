@@ -441,6 +441,13 @@ city/intelligence visits and mission choices stay in their retained operations;
 the generated host must still provide the actual P06/P07 windows. Repaints publish
 existing state, and cosmetic sound/animation/delays are omitted.
 
+`SinglePlayerMovementPresentation` supplies the movement graph's information and
+publication ports together with U04 selection focus. Core retains activation,
+relocation, visibility, rewards and decisions. Focus changes the host viewer's
+map; notices use their supplied recipients and captured names. Cosmetic effects
+are omitted, and input-flush callbacks do not discard admitted session commands.
+The generated desktop caller still needs to bind the general movement inputs.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

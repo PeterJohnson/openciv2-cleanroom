@@ -8614,3 +8614,35 @@ human/AI games remain required for M4. Browser/cross-platform work is deferred.
 | --- | --- |
 | `m4-mission-presentation-native.json` | `746a98ddc4dbe6c71aa52d1c8cb10d380f7e9cb035c39e2ab1d7746419faa8de` |
 | `m4-mission-presentation-identity.json` | `03ec38ee2ccd701cd4bcdc045502c5c738e28d27af94a2b325548de5913cc928` |
+
+## Movement and selection information for general desktop gameplay
+
+`SinglePlayerMovementPresentation` supplies all eleven movement presentation
+interfaces and U04 selection focus. Notices address the supplied recipient,
+including trade, expulsion, landing, loss and hut information; installed names
+remain visible. Focus moves the host viewer's map, independently of unit ownership
+and command initiation. Core retains activation, relocation, visibility, rewards
+and all choices. Cosmetic animation, sound and delays are omitted under X01/P10;
+the input-flush callback does not discard admitted Session commands.
+
+Three shared groups run actual movement and selection through Session. Hut cases
+verify arrival before reward notification and creation. Caravan cases retain the
+donation choice, add shields, notify and then delete the caravan. Required notice
+failures preserve those committed prefixes. Selection focuses the observer before
+actual W03/V04/S02 contact and retains its private scenario decision. Cosmetic
+focus failure preserves selection and contact; an independently admitted command
+still completes through the ordinary ready queue.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1943/1945**, with the two existing
+platform/audio skips. All **1908 shared groups** passed across **218 coverage
+families**; compiled identity verified **951 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua and widget sources are
+unchanged; no new native movement UI acceptance is claimed. General desktop host
+assembly, unresolved movement inputs and gameplay formulas, and complete generated
+human/AI games remain open. Browser/cross-platform execution remains deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-movement-presentation-native.json` | `98a5b7d0a8f993b38eb412e441989b9425e981ed573af057dd8b0b5698baa281` |
+| `m4-movement-presentation-identity.json` | `86aba21326a6ab34b188f5b53842cfcb4d12ff420679b08da0684ca222167b16` |

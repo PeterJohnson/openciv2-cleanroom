@@ -6657,6 +6657,25 @@
         "V06.presentation-theft-failure",
         "V06.presentation-visits-failure"
       ]
+    },
+    {
+      "id": "movement-presentation",
+      "status": "partial",
+      "contract": "U02/U04/U05/C07/W06 movement, selection, transport, trade and hut information",
+      "publicSurface": "SinglePlayerMovementPresentation.Effects and IUnitSelectionEffects",
+      "review": "Scoped notices preserve explicit recipients and captured commodity/city/unit names. Movement/selection focus changes the host viewer, not the selected unit owner or command initiator. Actual movement cases verify arrival before hut reward notices/creation and retained caravan choices before donation, notice and deletion. Selection runs real W03/V04/S02 contact after focus and preserves admitted queued commands even when cosmetic publication fails. Required notice failures retain committed prefixes and private histories. Gameplay mutation and all decisions stay in Core and retained session operations; presentation omits cosmetic animation/sound/delays and does not flush admitted input. General desktop host assembly, unresolved movement input contracts and native full-game acceptance remain open. Browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/SinglePlayerMovementPresentation.Rewards.cs",
+        "src/OpenCiv2.Session/SinglePlayerMovementPresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/MovementPresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "C07.presentation-donation-failure",
+        "U04.presentation-selection-contact",
+        "W06.presentation-arrival-hut-failure"
+      ]
     }
   ]
 }
