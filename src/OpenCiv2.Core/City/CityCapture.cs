@@ -42,6 +42,12 @@ public sealed record CityCaptureServices(DiplomaticWar War, CivilWar CivilWar, C
 public sealed partial class CityCapture(GameState world, RuleTables rules, StackOperations stacks, GameplayRandom random,
     CityCaptureServices services, Action<CitySlot, int, int> cityTaken, ICityCaptureEffects effects)
 {
+    private readonly ScenarioTriggers? retainedEvents;
+    public CityCapture(GameState world, RuleTables rules, StackOperations stacks, GameplayRandom random,
+        CityCaptureServices services, ScenarioTriggers events, ICityCaptureEffects effects)
+        : this(world, rules, stacks, random, services,
+            (_, _, _) => throw new InvalidOperationException("Retained scenario events require their continuation"), effects)
+    { retainedEvents = events; }
     private GameState World => world;
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
     private bool Autoplay => world.Multiplayer.Saved.AutoplayActive;
@@ -67,6 +73,9 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
         internal string Name = string.Empty;
         internal bool Restored;
         public CitySlot? RemainingCity { get; internal set; }
+        private readonly List<Exception> failures = [];
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
         public bool Completed { get; private set; }
         public CityCaptureDecision? Pending { get; private set; }
         internal Operation(CityCapture parent, CitySlot city, int newOwner, int mode, int number, string call, bool incited = false)
@@ -191,6 +200,7 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
             using var schism = services.CivilWar.Begin(o, call + "/schism");
             while (schism.AdvanceDecision(answer: op.TakeReply()) is null)
             { yield return schism.Pending switch { ResearchGrantDecision grant => new CityCaptureDecision.Grant(grant), { } decision => new CityCaptureDecision.Lifecycle(decision), _ => null }; }
+            op.Report(schism.PresentationFailures);
             if (schism.Result == 0)
             {
                 City(originalCity).Owner = new(byte.MaxValue);
@@ -229,7 +239,25 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
             op.RemainingCity = population.RemainingCity;
         }
         if (op.RemainingCity is { } city)
-        { Takeover(city, n, o, center); }
+        {
+            Takeover(city, n, o, center);
+            if (world.Events.Loaded)
+            {
+                if (retainedEvents is null)
+                { cityTaken(city, n, o); }
+                else
+                {
+                    using var trigger = retainedEvents.BeginTaken(city, n, o, call + "/city-taken");
+                    while (trigger.Result is null)
+                    {
+                        var pending = trigger.Resume(op.TakeReply());
+                        if (trigger.Result is null)
+                        { yield return pending is null ? null : new CityCaptureDecision.Lifecycle(pending); }
+                    }
+                    op.Report(trigger.PresentationFailures);
+                }
+            }
+        }
         world.Map.TileAt(center).Owner = (byte)n;
         if (Local == n || Local == o)
         { effects.BarracksSound(); }
@@ -322,7 +350,5 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
         }
         City(city).Owner = new((byte)n);
         MapKnowledge.RevealCity(world, o, city);
-        if (world.Events.Loaded)
-        { cityTaken(city, n, o); }
     }
 }

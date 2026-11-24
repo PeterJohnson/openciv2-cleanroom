@@ -38,6 +38,7 @@ public static partial class FoundationSuite
         public ScenarioPresentationActions Presentation { get; }
         public ScenarioPermissionActions Permissions { get; }
         public ScenarioDispatcher Dispatcher { get; }
+        public ScenarioTriggers Triggers { get; }
         public CivilWar CivilWar { get; }
         public List<OwnedList<string>> Texts { get; } = [];
         public int Suppressed, Created, MapRedraws;
@@ -57,6 +58,7 @@ public static partial class FoundationSuite
                 Life.Elimination, incidents, Create, new ScenarioTerrainEncoding(World.Map, new(World.Map)), _ => { }, (_, _) => RedrawMaps());
             Dispatcher = new(World, new(World, Data.Rules, RetainedCreation(Contact)), terrain,
                 new(World, War(Data, new()), Contact.F.T.T.Research), new(World, removal), Presentation);
+            Triggers = new(World, Contact.F.T.T.Random, () => Dispatcher);
             CivilWar = new(World, Data.Stacks, Create, Permissions, this);
         }
         public void Schism(CivilWarNotice _) => throw new InvalidOperationException("Vetoed schism must not partition");

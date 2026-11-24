@@ -56,6 +56,12 @@ public readonly record struct CombatDeath(UnitType Type, int Winner, int Loser);
 public sealed class CombatCasualties(GameState world, StackOperations stacks, CombatWorkspace state,
     CombatHistory history, CivilizationElimination lifecycle, EspionageIncidents incidents, Action<CombatDeath> unitKilled)
 {
+    private readonly ScenarioTriggers? retainedEvents;
+    public CombatCasualties(GameState world, StackOperations stacks, CombatWorkspace state,
+        CombatHistory history, CivilizationElimination lifecycle, EspionageIncidents incidents, ScenarioTriggers events)
+        : this(world, stacks, state, history, lifecycle, incidents,
+            _ => throw new InvalidOperationException("Retained scenario events require their continuation"))
+    { retainedEvents = events; }
     private GameState World => world;
     private ref Unit Unit(UnitSlot slot) => ref world.Entities.Units.At(slot);
     public Operation Begin(UnitSlot loser, UnitSlot opponent, MapPoint battle, string call) => new(this, loser, opponent, battle, call, false);
@@ -67,6 +73,9 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
         private readonly IEnumerator<LifecycleDecision?> steps;
         private ResearchReply? reply;
         private bool faulted, disposed;
+        private readonly List<Exception> failures = [];
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
         public bool Completed { get; private set; }
         public LifecycleDecision? Pending { get; private set; }
         internal Operation(CombatCasualties parent, UnitSlot loser, UnitSlot opponent, MapPoint battle, string call, bool stack)
@@ -119,7 +128,22 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
             history.Record(slot, opponent, battle, world.Globals.Year);
             state.KillCount = unchecked(state.KillCount + 1);
             if (world.Events.Loaded)
-            { unitKilled(new(Unit(slot).Type, Unit(opponent).Owner.Value, Unit(slot).Owner.Value)); }
+            {
+                var death = new CombatDeath(Unit(slot).Type, Unit(opponent).Owner.Value, Unit(slot).Owner.Value);
+                if (retainedEvents is null)
+                { unitKilled(death); }
+                else
+                {
+                    using var trigger = retainedEvents.BeginKilled(death, call + "/casualty/" + ordinal + "/event");
+                    while (trigger.Result is null)
+                    {
+                        var pending = trigger.Resume(operation.TakeDecision());
+                        if (trigger.Result is null)
+                        { yield return pending; }
+                    }
+                    operation.Report(trigger.PresentationFailures);
+                }
+            }
             using (var child = lifecycle.BeginDelete(current, true, call + "/casualty/" + ordinal, incidents))
             {
                 while (child.Result is null)
@@ -129,6 +153,7 @@ public sealed class CombatCasualties(GameState world, StackOperations stacks, Co
                     else if (child.Result is null)
                     { yield return null; }
                 }
+                operation.Report(child.PresentationFailures);
             }
             current = next;
             ordinal = checked(ordinal + 1);

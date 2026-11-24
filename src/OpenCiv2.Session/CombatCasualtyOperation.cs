@@ -33,7 +33,7 @@ public sealed class CombatCasualtyOperation(CombatCasualties.Operation operation
             if (!operation.Completed)
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             context.Effect("combat.casualties.completed", new([]));
-            return completed = new();
+            return completed = operation.PresentationFailures.Count == 0 ? new() : new(CommandStatus.Failed, Code: "combat_casualties_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }

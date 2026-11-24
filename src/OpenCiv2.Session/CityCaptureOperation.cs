@@ -26,17 +26,20 @@ public sealed class CityCaptureOperation(CityCapture.Operation operation, Func<i
         if (completed is not null)
         { return completed; }
         var reply = CityCaptureInteraction.Reply(pending, input);
+        var previous = pending;
         pending = operation.Resume(pending is null ? null : reply);
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
         if (pending is not null)
         {
             context.Publish();
             return new(CommandStatus.AwaitingInteraction, Interaction: CityCaptureInteraction.Prompt(context, pending, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence));
         }
         if (!operation.Completed)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var result = new OwnedList<NamedValue>([new("city", new CommandValue.Integer(operation.RemainingCity?.Value ?? -1))]);
         context.Effect("city.capture.completed", result);
-        return completed = new(Result: result);
+        return completed = operation.PresentationFailures.Count == 0 ? new(Result: result) : new(CommandStatus.Failed, result, "city_capture_presentation_failed");
     }
     public void Dispose() => operation.Dispose();
 }

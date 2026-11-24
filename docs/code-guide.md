@@ -691,9 +691,8 @@ these helpers; movement/mission admission and the desktop adapter remain separat
 Its resumable sequence composes actual war, civil war, population/deletion,
 research theft, supported-unit/production and elimination/partisan children.
 The notice partial owns Palace selection/payment and semantic wonder/capture
-announcements with retained numeric input. CityTaken matching/actions are a
-required dispatcher when events are loaded; no presentation callback substitutes
-for it. `Session/CityCaptureOperation` routes each Palace, technology, nested
+announcements with retained numeric input. The retained constructor uses actual S02 CityTaken matching/actions when
+events are loaded; the synchronous constructor retains its required dispatcher. `Session/CityCaptureOperation` routes each Palace, technology, nested
 incident and required P06 window to its own participant. The V06 revolt mission
 now dispatches this operation through the local city controller; movement admission remains open.
 
@@ -1242,7 +1241,7 @@ records and radius-claim behavior; actual lifecycle spy escapes and recreation
 can retain private decisions. `ScenarioDestruction` resolves the S02 recipient,
 publishes local defeat when required, and waits for this removal before returning.
 The matching Session adapters retain full replies and completion diagnostics.
-General trigger matching and the desktop composition remain open.
+The remaining caller hooks and desktop composition remain open.
 
 `ScenarioTerrain` owns the S02 two-pass terrain action and cityless-civilization
 reset loop. It retains actual C01/U01 deletion and V01 creation decisions;
@@ -1250,7 +1249,7 @@ reset loop. It retains actual C01/U01 deletion and V01 creation decisions;
 path. `ScenarioTerrainEncoding` in Formats replaces the whole terrain encoding,
 including retained file flags, through allocation-bound `MapCompatibility`.
 W01 rectangular lookup aliases noncanonical parity; it does not select fallback
-for parity alone. General trigger matching and desktop composition remain open.
+for parity alone. The remaining caller hooks and desktop composition remain open.
 
 `ScenarioCivilizationActions` owns S02 MakeAggression and GiveTechnology
 admission. Forced war invokes the actual synchronous V04 child; technology uses
@@ -1272,5 +1271,15 @@ factory closes the event/contact/creation dependency cycle.
 all present text lines and applies the autoplay gate after required preparation.
 Its media port owns platform playback; its text preparation delegate owns P04 authored
 substitutions and its suppression delegate publishes the S01 request. Desktop adapters
-and these broader presentation integrations remain required. Other trigger families,
+and these broader presentation integrations remain required. Remaining caller hooks,
 general desktop composition and pending-operation persistence remain open.
+
+`ScenarioTriggers` owns ordinary S02 matching for Turn, TurnInterval, RandomTurn,
+ScenarioLoaded, UnitKilled, CityTaken and ReceivedTechnology. It preserves live
+traversal, persistent wildcard binding and polling, and invokes the real retained
+dispatcher. `ScenarioTriggerOperation` routes its private choices. Capture and
+casualty constructors use these triggers at their specified ownership/deletion
+boundaries; their Session adapters report retained child presentation failures
+after semantic completion. Broader enclosing diagnostic propagation remains open.
+The F04 turn passes, F06 post-load, V05 cession and foreign-minister caller hooks
+still need integration; direct trigger calls do not add those callers' gates.

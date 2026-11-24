@@ -167,5 +167,12 @@ The `scenario-retained-dispatch` family covers [action composition](../../src/Op
 [retained permissions](../../src/OpenCiv2.Core/ScenarioPermissionActions.cs), media/text
 policy and actual diplomacy/civil-war callers. [Integration cases](../../tests/OpenCiv2.FoundationCases/ScenarioDispatchCases.cs)
 exercise nested real choices, final-only consumption, re-entry, private replies,
-cancellation and failure prefixes. Desktop media/P04/S01 adapters, other trigger
-families and complete-game acceptance remain open.
+cancellation and failure prefixes. Desktop media/P04/S01 adapters, remaining caller hooks and complete-game
+acceptance remain open.
+
+The `scenario-trigger-callers` family covers [ordinary matching](../../src/OpenCiv2.Core/ScenarioTriggers.cs)
+and actual capture/casualty event boundaries. [Trigger cases](../../tests/OpenCiv2.FoundationCases/ScenarioTriggerCases.cs)
+exercise live traversal and names, persistent wildcard binding, random and
+technology polling, real nested Library/emissary decisions and private Session
+completion. Remaining turn/load/cession/UI hooks and full desktop composition
+remain open.

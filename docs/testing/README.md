@@ -1224,7 +1224,7 @@ alliance expulsion, zero-result effects, source-zero/duplicate/future grants and
 retained recipient/advance operands. Library acceptance recalculates the city
 through the real government setter. Session cases check private recipients, stale
 replies, cancellation/timeout and diagnostic completion after emissary closure.
-Retained action dispatch is covered below; general trigger matching and desktop commands remain open.
+Retained action dispatch and ordinary matching are covered below; remaining caller hooks and desktop commands remain open.
 
 Retained S02 dispatcher groups join all eleven actions and actual nested gameplay
 children. They cover live flags, final-only consumption, actual grant-notice
@@ -1236,5 +1236,14 @@ matching events without a Loaded gate. Direct audience and civil-war callers
 retain these choices before their normal work. Media cases cover wave fallback,
 Sound-only gating, CD retries/close, sparse text lines and autoplay preparation.
 These tests use required media/text ports; platform playback, full authored P04
-substitutions, S01 suppression consumption, other triggers and graphical/desktop
+substitutions, S01 suppression consumption, remaining caller hooks and graphical/desktop
 acceptance remain separate gates.
+
+Ordinary S02 trigger groups cover all seven kinds, captured turn and signed
+interval inputs, controlled RandomTurn draws, live appended events, persistent
+wildcard bindings and technology polling through action changes. Actual C09
+capture and U06 casualty chains retain Library decisions before their later
+ownership/deletion effects. Session cases cover private/stale replies, cancel,
+timeout and diagnostics after committed gameplay. Required-failure, invalidated
+event and disposal cases preserve completed prefixes. F04/F06/V05/UI hooks and
+general desktop/generated-game acceptance remain separate integration gates.

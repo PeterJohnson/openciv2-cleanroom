@@ -6467,3 +6467,46 @@ These contract tests do not establish original-game behavior or generated-game,
 full-turn and graphical acceptance. The F04/A08/original-observation gaps remain;
 specified implementation can continue on Linux. Browser, cross-platform and
 network execution remain deferred. M4 is ongoing.
+
+## S02 ordinary triggers with capture and casualty callers
+
+Implemented `ScenarioTriggers` for Turn, TurnInterval, RandomTurn,
+ScenarioLoaded, UnitKilled, CityTaken and ReceivedTechnology. The retained scans
+preserve captured turn inputs, signed remainder faults, primary random rolls,
+live traversal and city names, persistent wildcard bindings and technology
+polling across action changes. Matching includes consumed records; the action
+child still owns late one-shot consumption. Callers retain their Loaded, Music
+and phase gates.
+
+Actual C09 capture invokes the retained trigger after radius/owner/reveal changes
+and before center ownership and capture announcements. Actual U06 casualties
+invoke it after loss/history/kill-count updates and before deletion, retaining
+captured stack links. Their private Session adapters preserve nested event choices,
+text acknowledgements and cancellation defaults; retained presentation failures
+are reported after committed completion. Capture also forwards civil-war
+presentation diagnostics and schedules bounded continuation work.
+
+Nine shared groups cover every ordinary trigger kind, live appended records,
+consumed wildcard binding, captured versus live polling inputs, invalid selectors,
+required failure/invalidation/disposal prefixes, actual Library decisions during
+capture and casualty handling, private/stale replies, cancel/timeout and emissary
+closure failure after completed deletion.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1708/1710**, with the
+two existing platform/audio skips. All **1675 shared groups** passed across
+**184 coverage families**; identity verified **836 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-scenario-triggers-native.json` | `a3f6b877788997c67208b19898e660c359b33091a82c6dee392d946bc85580ab` |
+| `m4-scenario-triggers-identity.json` | `8a9131bc107e66969570eabb5020576967f081088168368d351cc77e81df0d2b` |
+
+F04 turn-pass orchestration, F06 post-load, V05 cession and foreign-minister event
+hooks remain open, as do parser/desktop presentation composition and broader
+enclosing diagnostic propagation. General desktop/generated-game, full-turn and
+graphical acceptance still require integration. These are specification-derived
+checks, not independent original-game observations. The recorded formula/evidence
+gaps remain; browser, cross-platform and network execution remain deferred.
+M4 is ongoing.

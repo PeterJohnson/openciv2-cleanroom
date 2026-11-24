@@ -12,7 +12,7 @@ public static partial class FoundationSuite
 {
     private sealed class CasualtyFixture : ICombatHistoryEffects
     {
-        public EliminationFixture Life { get; } = new(null, CargoFixture(4, 4, 4));
+        public EliminationFixture Life { get; }
         public RevelationFixture Data => Life.Data;
         public GameState World => Data.World;
         public CombatWorkspace State { get; } = new();
@@ -22,14 +22,17 @@ public static partial class FoundationSuite
         public Action<CombatDeath>? OnDeath;
         public Action? OnColor, OnName, OnRefresh;
         public List<string> Calls { get; } = [];
-        public CasualtyFixture()
+        public CasualtyFixture(ScenarioTriggers? events = null, RevelationFixture? data = null)
         {
+            Life = new(null, data ?? CargoFixture(4, 4, 4));
             Data.AddUnit(3, 2, 4, new(20, 10));
             var incidents = new IncidentFixture(Life.Random, Data);
             World.Globals.Year = -400; World.Civilizations[1].UnitsActive[4] = 3; World.UnitTotals[1] = 3;
             History = new(World, this);
-            Casualties = new(World, Data.Stacks, State, History, Life.Elimination, incidents.Incidents, death =>
-            { Calls.Add("event"); Deaths.Add(death); OnDeath?.Invoke(death); });
+            Casualties = events is null
+                ? new(World, Data.Stacks, State, History, Life.Elimination, incidents.Incidents, death =>
+                { Calls.Add("event"); Deaths.Add(death); OnDeath?.Invoke(death); })
+                : new(World, Data.Stacks, State, History, Life.Elimination, incidents.Incidents, events);
         }
         public int SecondaryColor(int civilization) { Calls.Add("color:" + civilization); OnColor?.Invoke(); return 300 + civilization; }
         public string PluralName(int civilization) { Calls.Add("name:" + civilization); OnName?.Invoke(); return World.Names[civilization].Tribe; }

@@ -29,7 +29,7 @@ public static partial class FoundationSuite
         public List<LeonardoUpgradeNotice> Upgrades { get; } = [];
         public Action<CitySlot, int, int>? OnTaken;
         public Action<CaptureNotice>? OnNotice;
-        public CityCaptureFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
+        public CityCaptureFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false, ScenarioTriggers? events = null)
         {
             Theft = new(choices, data, retainGrants); Data.AddCity(1, 2, new(26, 16), 4);
             World.Civilizations[2].CityCount = 2; World.Civilizations[2].TotalCitySize = 9;
@@ -52,8 +52,10 @@ public static partial class FoundationSuite
                 new(World, rules, new(World, Data.Process, Data.Stacks, Data), Life.Random, this),
                 Theft.Captured, Life.Elimination, incidents, orders, new(World, rules, Upgrades.Add, Redraw),
                 new(World, rules, new MovementGoalQueries(World, rules)));
-            Capture = new(World, rules, Data.Stacks, Life.Random, services, (city, n, o) =>
-            { Order.Add("event"); (OnTaken ?? throw new InvalidOperationException("Required CityTaken dispatcher unavailable"))(city, n, o); }, this);
+            Capture = events is null
+                ? new(World, rules, Data.Stacks, Life.Random, services, (city, n, o) =>
+                { Order.Add("event"); (OnTaken ?? throw new InvalidOperationException("Required CityTaken dispatcher unavailable"))(city, n, o); }, this)
+                : new(World, rules, Data.Stacks, Life.Random, services, events, this);
         }
         public CityCapture.Operation Begin(int mode = 1, int owner = 1, bool incited = false, CitySlot? city = null) =>
             incited ? Capture.BeginIncited(city ?? new(0), owner, mode, 77, "capture") : Capture.Begin(city ?? new(0), owner, mode, 77, "capture");
