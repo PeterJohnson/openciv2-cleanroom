@@ -165,6 +165,16 @@ retained operations. A scenario dispatcher factory closes the unit-creation,
 revelation and contact cycle before execution. Movement and generated-game host
 composition remain open.
 
+`Session/SinglePlayerLifecycle` joins that research/diplomacy graph to retained
+unit creation/loss, espionage incidents, elimination/recreation, city removal,
+retirement, civil war and scenario terrain/actions/triggers. The composition
+owner supplies the same basic deletion service used by production, then binds
+the scenario permission factory to this graph's dispatcher before execution.
+Contextual recreation factories receive the owning operation's call path;
+legacy one-argument constructors remain available. Operations that can prompt
+use the retained lifecycle entries, including the incident child of spy escape.
+Full desktop host admission and synchronous callback binding remain caller work.
+
 `City/CapturePartisans.Begin` retains actual U01 creation through W03/V04 contact.
 Fortification, veteran sampling and visibility follow the completed child; later
 placement attempts read the live map while keeping the initial count/threshold.

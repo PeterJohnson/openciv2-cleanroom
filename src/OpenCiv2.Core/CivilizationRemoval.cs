@@ -9,9 +9,13 @@ namespace OpenCiv2.Core;
 /// <summary>V01 §8 local forced removal/retirement. Its inline asset changes are distinct
 /// from ordinary unit/city deletion and last-city checks. Session owns network orchestration.</summary>
 public sealed class CivilizationRemoval(GameState world, RuleTables rules, StackOperations stacks,
-    CivilizationElimination lifecycle, EspionageIncidents incidents, Func<int, CivilizationCreation> create,
+    CivilizationElimination lifecycle, EspionageIncidents incidents, Func<int, string, CivilizationCreation> create,
     Action redrawMaps)
 {
+    public CivilizationRemoval(GameState world, RuleTables rules, StackOperations stacks,
+        CivilizationElimination lifecycle, EspionageIncidents incidents, Func<int, CivilizationCreation> create,
+        Action redrawMaps) : this(world, rules, stacks, lifecycle, incidents, (owner, _) => create(owner), redrawMaps) { }
+
     private GameState World => world;
     public Operation Begin(int civilization, int kill, int recreate, string call) => new(this, civilization, kill, recreate, call);
 
@@ -115,7 +119,7 @@ public sealed class CivilizationRemoval(GameState world, RuleTables rules, Stack
         { yield break; }
         if (recreate)
         {
-            using var child = create(owner);
+            using var child = create(owner, call + "/creation");
             while (child.AdvanceDecision(64, op.TakeReply()) is null)
             { yield return child.Pending; }
             op.Report(child.PresentationFailures);

@@ -22,6 +22,13 @@ public interface ISpyEscapeEffects
 public sealed class SpyEscape(GameState world, RuleTables rules, StackOperations stacks, UnitLoss loss,
     GameplayRandom random, Action<int, int> incident, ISpyEscapeEffects effects)
 {
+    /// <summary>Retained composition: CivilizationElimination owns the actual incident child and its replies.</summary>
+    public SpyEscape(GameState world, RuleTables rules, StackOperations stacks, UnitLoss loss,
+        GameplayRandom random, ISpyEscapeEffects effects)
+        : this(world, rules, stacks, loss, random,
+            (_, _) => throw new InvalidOperationException("Use the retained lifecycle operation to resolve espionage incidents"), effects)
+    { }
+
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner & 31);
 
     /// <returns>True when the unit was lost, false when it escaped.</returns>

@@ -18,8 +18,12 @@ public interface ICivilizationEliminationEffects
 /// <summary>V01 §6 local last-city check, using real U01 deletion, V06 escape, V07 loss and V01 recreation.
 /// Forced retirement and civil war are separate operations. Network request orchestration belongs to the session.</summary>
 public sealed class CivilizationElimination(GameState world, UnitDeletion deletion, SpyEscape escape,
-    Func<int, CivilizationCreation> recreate, ICivilizationEliminationEffects effects)
+    Func<int, string, CivilizationCreation> recreate, ICivilizationEliminationEffects effects)
 {
+    public CivilizationElimination(GameState world, UnitDeletion deletion, SpyEscape escape,
+        Func<int, CivilizationCreation> recreate, ICivilizationEliminationEffects effects)
+        : this(world, deletion, escape, (owner, _) => recreate(owner), effects) { }
+
     public int Check(int civilization, int killer, string call)
     {
         int result = 0;
@@ -323,7 +327,7 @@ public sealed class CivilizationElimination(GameState world, UnitDeletion deleti
         {
             world.Globals.HumanPlayers = world.Globals.HumanPlayers.With(civilization, false);
         }
-        using var creation = recreate(civilization);
+        using var creation = recreate(civilization, call + "/creation");
         yield return new(call + "/creation", Creation: creation);
         if (world.Globals.Multiplayer != GameMode.Hotseat || world.Globals.CivsAlive.Contains(world.Multiplayer.LocalHuman))
         {

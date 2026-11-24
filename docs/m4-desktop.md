@@ -7987,3 +7987,46 @@ admission or automation integration.
 | --- | --- |
 | `m4-hut-creation-native.json` | `d54d613a94d1e31816a1eb4a9df0d4a9a9fe832781b5df3e095fb7a4cf79c6c6` |
 | `m4-hut-creation-identity.json` | `829e55679e4c156d5659d65b7db5306b41dd1e6db68fa863957009abd742b0cd` |
+
+## Retained lifecycle and scenario composition
+
+`SinglePlayerLifecycle` composes actual revelation/creation, loss, spy escape,
+incidents, elimination/recreation, city removal, forced removal, civil war,
+terrain actions and scenario dispatch/triggers over the retained research and
+diplomacy bundles. Its scenario permission factory is bound to the completed
+dispatcher before use, closing the creation → contact → permission → research
+cycle. The same basic deletion instance is supplied by the composition owner
+for production and lifecycle use; full host wiring of its synchronous
+compatibility callbacks remains separate work.
+
+Elimination, removal, schism and terrain now accept contextual recreation
+factories. They pass the parent call path to actual civilization creation,
+keeping random choices distinct without a hidden sequence counter or replacement
+RNG. One-argument factory constructors remain compatible with existing callers.
+A retained spy-escape constructor leaves incident decisions to the real
+lifecycle/incident service rather than requiring a synchronous response.
+
+Five shared groups exercise the production graph: scenario-created units pause
+through contact and recursive Library grants before later event effects;
+elimination, retirement, civil war and terrain catch-up use their own choice
+keys; private last-settler deletion retains its committed loss while a different
+participant answers the government prompt. Cancellation, required grant failure
+and disposal preserve their prefixes. Actual incident-to-war and turn-zero
+settler placement also run through the composed services.
+
+General desktop movement/combat admission, generated human/AI scheduling,
+complete-game evidence and original-observation gaps remain open. Browser,
+cross-platform and network work remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1881/1883**, with the two existing
+platform/audio skips. All **1846 shared groups** passed across **205 coverage
+families**; identity verified **917 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua suites
+were not rerun: this graph adds no authored desktop command admission or
+automation integration.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-lifecycle-composition-native.json` | `a566dfe67f684cb2c8d9cf3ece7911a32e81e03642f77bf8835e97768ee41d6f` |
+| `m4-lifecycle-composition-identity.json` | `623bb56d680779adff182d7d140a02f4bf88a8a8f3814408a1a5456fd6f9b4ab` |

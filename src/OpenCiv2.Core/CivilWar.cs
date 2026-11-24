@@ -15,10 +15,17 @@ public interface ICivilWarEffects
 
 /// <summary>V01 §§9–11 local civil war with actual creation, C01 transfer, C09 central selection and U01 stacks.
 /// Scenario action dispatch is required when NoSchism matches; no events-loaded gate or default execution is supplied.</summary>
-public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, CivilizationCreation> create,
+public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, string, CivilizationCreation> create,
     Action<Event> executeEvent, ICivilWarEffects effects)
 {
     private readonly ScenarioPermissionActions? retainedEvents;
+    public CivilWar(GameState world, StackOperations stacks, Func<int, CivilizationCreation> create,
+        Action<Event> executeEvent, ICivilWarEffects effects)
+        : this(world, stacks, (owner, _) => create(owner), executeEvent, effects) { }
+    public CivilWar(GameState world, StackOperations stacks, Func<int, string, CivilizationCreation> create,
+        ScenarioPermissionActions events, ICivilWarEffects effects)
+        : this(world, stacks, create, _ => throw new InvalidOperationException("Retained scenario events require their continuation"), effects)
+    { retainedEvents = events; }
     public CivilWar(GameState world, StackOperations stacks, Func<int, CivilizationCreation> create,
         ScenarioPermissionActions events, ICivilWarEffects effects)
         : this(world, stacks, create, _ => throw new InvalidOperationException("Retained scenario events require their continuation"), effects)
@@ -136,7 +143,7 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
         if (capital is null)
         { complete(0); yield break; }
         world.Globals.CivsAlive = world.Globals.CivsAlive.With(rebel, false);
-        using var creation = create(rebel);
+        using var creation = create(rebel, call + "/creation");
         while (creation.AdvanceDecision(budget(), takeReply()) is null)
         {
             yield return creation.Pending;

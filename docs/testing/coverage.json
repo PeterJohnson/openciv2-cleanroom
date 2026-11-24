@@ -6344,6 +6344,31 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/SinglePlayerDiplomacyCases.cs"
       ]
+    },
+    {
+      "id": "single-player-lifecycle-composition",
+      "status": "partial",
+      "contract": "V01 creation/elimination/retirement/civil war; V06 escape/incidents; S02 retained scenario execution; U01/W03 creation and deletion",
+      "publicSurface": "SinglePlayerLifecycle and semantic effects; contextual creation factories in CivilizationElimination, CivilizationRemoval, CivilWar and ScenarioTerrain; retained SpyEscape constructor",
+      "review": "Production composition shares retained research/diplomacy across revelation, creation, loss, espionage incidents, elimination, city removal, civilization removal, civil war, terrain changes and scenario dispatch/triggers. Each contextual recreation receives its owning operation call path; legacy one-argument factories remain source-compatible. Shared cases cover the actual scenario-create/contact/recursive-grant cycle, elimination/retirement/schism/terrain catch-up keys, private last-settler deletion with cancellation, required grant failure, disposal, actual incident-to-war and settler placement. Existing basic deletion is supplied by the composition owner and reused by production; the full host must bind legacy synchronous callbacks where used. General desktop movement/combat admission, generated-game scheduling and full-game acceptance remain open. Browser/cross-platform and network execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CivilWar.cs",
+        "src/OpenCiv2.Core/CivilizationElimination.cs",
+        "src/OpenCiv2.Core/CivilizationRemoval.cs",
+        "src/OpenCiv2.Core/ScenarioTerrain.cs",
+        "src/OpenCiv2.Core/Units/SpyEscape.cs",
+        "src/OpenCiv2.Session/SinglePlayerLifecycle.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SinglePlayerLifecycleCases.cs"
+      ],
+      "sharedGroups": [
+        "V01.single-player-lifecycle-contextual-recreation",
+        "V01.single-player-lifecycle-failure-placement",
+        "V01.single-player-lifecycle-private-deletion",
+        "V01.single-player-lifecycle-scenario-cycle",
+        "V01.single-player-lifecycle-terrain-incidents"
+      ]
     }
   ]
 }

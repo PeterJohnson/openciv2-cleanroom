@@ -19,6 +19,7 @@ public static partial class FoundationSuite
         public ResearchGrants Grants { get; }
         public ResearchGovernmentPrompts Governments { get; }
         public SinglePlayerResearch Services { get; }
+        public GovernmentChanges Setter { get; }
         public List<EmissaryNotice> EmissaryNotices { get; } = [];
         public int Closed;
         public bool FailClose, FailRevolution;
@@ -33,10 +34,10 @@ public static partial class FoundationSuite
             World.Civilizations[2].Treaties[1].Contact = true;
             for (int i = 0; i < RuleLimits.Governments; ++i)
             { G.Rules.Governments[i] = G.Rules.Governments[i] with { Identity = new("government-" + i, "Government " + i) }; }
-            var setter = new GovernmentChanges(World, G.Data.Process.Rules, G.Data.Stacks,
+            Setter = new GovernmentChanges(World, G.Data.Process.Rules, G.Data.Stacks,
                 _ => throw new InvalidOperationException("No government selector in direct Anarchy"),
                 _ => throw new InvalidOperationException("No rates dialog in direct Anarchy"), _ => { });
-            Services = new(World, G.Data.Process.Rules, G.Random, G.Data.Stacks, setter,
+            Services = new(World, G.Data.Process.Rules, G.Random, G.Data.Stacks, Setter,
                 new(World, G.Rules, G.Upgrades.Add, _ => { }), this, G, this);
             Governments = Services.GovernmentPrompts;
             Grants = Services.Grants;

@@ -70,6 +70,8 @@ public static partial class FoundationSuite
                 new(World, war ?? War(Data, new()), grants ?? Contact.F.T.T.Research), new(World, removal), Presentation);
             Triggers = new(World, Contact.F.T.T.Random, () => Dispatcher);
         }
+        public void UseDispatcher(ScenarioDispatcher dispatcher, ScenarioTriggers triggers)
+        { Dispatcher = dispatcher; Triggers = triggers; }
         public void Schism(CivilWarNotice _) => throw new InvalidOperationException("Vetoed schism must not partition");
         public void RedrawMaps() { ++MapRedraws; if (FailMap) { throw new IOException("Map view unavailable"); } }
         public Event Text(string text = "Authored event")

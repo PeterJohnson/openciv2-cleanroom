@@ -295,3 +295,10 @@ The Disband family joins U04 confirmation and live shield credit to actual C06
 snapshots, U01 cargo loss, C01 removal and V01/V06 retained decisions. Direct and
 console save/replay cases cover city credit and last-settler defeat, while native
 menus exercise the same outcomes. General editor/network admission is not claimed.
+
+The single-player lifecycle composition family joins retained research and
+diplomacy to unit/city loss, recreation, incidents, civil war and scenario
+execution. Its [shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerLifecycleCases.cs)
+verify private recursive decisions and contextual recreation keys, including
+failure/disposal prefixes. General desktop movement/combat admission and
+generated-game acceptance remain open.

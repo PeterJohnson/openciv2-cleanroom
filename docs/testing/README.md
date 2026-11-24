@@ -64,6 +64,13 @@ disposal and required/cosmetic failures. U02 completion forwards the same contac
 before its direction and cleanup tail. General native movement admission remains
 open.
 
+The single-player lifecycle composition family uses the production research,
+diplomacy and lifecycle bundles together. It covers scenario creation entering
+contact and recursive grants, contextual recreation through elimination,
+retirement, schism and terrain changes, private last-settler catch-up, accepted
+espionage pretexts, required failure/disposal and actual settler placement. These
+shared joins do not establish full desktop admission or complete-game acceptance.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

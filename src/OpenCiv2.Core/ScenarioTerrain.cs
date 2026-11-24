@@ -14,9 +14,14 @@ public interface IScenarioTerrainEncoding
 /// <summary>S02 §9 ChangeTerrain with actual C01/U01 deletion and retained V01 reset.
 /// Rectangle scans yield periodically without clamping signed coordinates or changing their order.</summary>
 public sealed class ScenarioTerrain(GameState world, StackOperations stacks, CityRemoval cities,
-    CivilizationElimination lifecycle, EspionageIncidents incidents, Func<int, CivilizationCreation> create,
+    CivilizationElimination lifecycle, EspionageIncidents incidents, Func<int, string, CivilizationCreation> create,
     IScenarioTerrainEncoding terrain, Action<MapPoint> redrawTile, Action<int, int> redrawMaps)
 {
+    public ScenarioTerrain(GameState world, StackOperations stacks, CityRemoval cities,
+        CivilizationElimination lifecycle, EspionageIncidents incidents, Func<int, CivilizationCreation> create,
+        IScenarioTerrainEncoding terrain, Action<MapPoint> redrawTile, Action<int, int> redrawMaps)
+        : this(world, stacks, cities, lifecycle, incidents, (owner, _) => create(owner), terrain, redrawTile, redrawMaps) { }
+
     private GameState World => world;
     public Operation Begin(Event entry, string call) => new(this, entry, call);
 
@@ -158,7 +163,7 @@ public sealed class ScenarioTerrain(GameState world, StackOperations stacks, Cit
                 for (int y = 0; y < world.Map.Geometry.Height; ++y)
                 { world.Map.Mutate(new TileChange.Revelation(new(x, y), CivilizationSet.Only(owner), false)); }
             }
-            using var child = create(owner);
+            using var child = create(owner, call + "/cityless/" + owner + "/creation");
             while (child.AdvanceDecision(64, op.TakeReply()) is null)
             { yield return child.Pending; }
             op.Report(child.PresentationFailures);
