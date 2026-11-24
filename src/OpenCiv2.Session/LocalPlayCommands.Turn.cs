@@ -790,7 +790,8 @@ public static partial class LocalPlayCommands
             var removal = new CityRemoval(world, rules, stacks, loss, target =>
                 context.Effect("city.removed", new([new("city", new CommandValue.City(target))])));
             var creation = new UnitCreation(world, context.Process, stacks, new LocalCreation(world, rules, stacks));
-            return new(world, rules, creation, deletion, removal, context.Gameplay, effects, effects);
+            return new(world, rules, creation, deletion, removal, context.Gameplay, effects, effects,
+                new CargoSelection(world, rules, context.Gameplay, "Food"));
         }
 
         private static CityFood CreateFood(OperationContext context)

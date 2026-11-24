@@ -7,6 +7,7 @@ public abstract record UnitProductionDecision;
 public sealed record SettlerAbandonment(int Owner, CityTarget City, string CityName, UnitType Type,
     string UnitName) : UnitProductionDecision;
 public sealed record UnitProductionLifecycle(LifecycleDecision Decision) : UnitProductionDecision;
+public sealed record UnitProductionCargo(CargoDecision Decision) : UnitProductionDecision;
 
 public sealed partial class CityUnitProduction
 {
@@ -18,13 +19,16 @@ public sealed partial class CityUnitProduction
         private readonly string call;
         private readonly int candidateBudget;
         private readonly IEnumerator<ProductionWork> steps;
+        private readonly CitySlot slot;
         private CivilizationElimination.Operation? child;
+        private CargoSelection.Operation? cargo;
         private Action<int>? childResult;
         private readonly List<Exception> failures = [];
         private bool disposed, faulted;
         public UnitProductionResult? Result { get; private set; }
         public UnitProductionDecision? Pending { get; private set; }
         public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        public bool ZoomRequested { get; private set; }
 
         internal Operation(CityUnitProduction parent, CitySlot slot, string call,
             CivilizationElimination lifecycle, EspionageIncidents incidents, int candidateBudget)
@@ -34,6 +38,7 @@ public sealed partial class CityUnitProduction
             ArgumentException.ThrowIfNullOrEmpty(call);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(candidateBudget);
             this.parent = parent;
+            this.slot = slot;
             this.lifecycle = lifecycle;
             this.incidents = incidents;
             this.call = call;
@@ -75,6 +80,19 @@ public sealed partial class CityUnitProduction
                 Pending = null;
                 while (true)
                 {
+                    if (cargo is not null)
+                    {
+                        var decision = cargo.Resume(reply);
+                        reply = null;
+                        if (decision is not null)
+                        {
+                            return Pending = new UnitProductionCargo(decision);
+                        }
+
+                        ZoomRequested |= cargo.ZoomRequested;
+                        cargo.Dispose();
+                        cargo = null;
+                    }
                     if (child is not null)
                     {
                         var decision = child.ResumeDecision(reply);
@@ -103,6 +121,20 @@ public sealed partial class CityUnitProduction
                         return Pending = action.Choice;
                     }
 
+                    if (action.Kind == ProductionWorkKind.Cargo)
+                    {
+                        if (action.Human)
+                        {
+                            cargo = parent.Cargo.BeginHuman(slot, action.Owner, new((ushort)action.Target));
+                        }
+                        else
+                        {
+                            parent.Cargo.SelectAi(slot, new((ushort)action.Target), call + "/cargo");
+                        }
+
+                        continue;
+                    }
+
                     childResult = action.Reply;
                     child = action.Kind switch
                     {
@@ -115,7 +147,7 @@ public sealed partial class CityUnitProduction
             }
             catch { faulted = true; Release(); throw; }
         }
-        private void Release() { child?.Dispose(); child = null; steps.Dispose(); }
+        private void Release() { child?.Dispose(); child = null; cargo?.Dispose(); cargo = null; steps.Dispose(); }
         public void Dispose() { disposed = true; Release(); }
     }
 }

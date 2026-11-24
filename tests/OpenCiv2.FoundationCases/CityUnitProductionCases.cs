@@ -25,7 +25,7 @@ public static partial class FoundationSuite
         public Action<UnitSlot>? Cargo;
         public List<AlmostWonderNotice> AlmostWonders { get; } = [];
 
-        public UnitProductionFixture(EliminationFixture? lifecycle = null)
+        public UnitProductionFixture(EliminationFixture? lifecycle = null, bool retainedCargo = false)
         {
             Lifecycle = lifecycle ?? new();
             Data.AddCity(0, 1, new(10, 10), 3);
@@ -38,7 +38,8 @@ public static partial class FoundationSuite
             World.Calculation.Shields = 5; World.Calculation.ShieldSupport = 1; World.Calculation.ShieldRows = 10;
             var creator = new UnitCreation(World, Data.Process, Data.Stacks, Data);
             var removal = new CityRemoval(World, Data.Rules, Data.Stacks, Lifecycle.Loss, Removed.Add);
-            Production = new(World, Data.Rules, creator, Lifecycle.Deletion, removal, Lifecycle.Random, this, this);
+            Production = new(World, Data.Rules, creator, Lifecycle.Deletion, removal, Lifecycle.Random, this, this,
+                retainedCargo ? new(World, Data.Rules, Lifecycle.Random, "Food") : null);
         }
         public ref City City => ref World.Entities.Cities.Storage[0];
         public UnitProductionResult Run() => Production.Run(new(0), "production");

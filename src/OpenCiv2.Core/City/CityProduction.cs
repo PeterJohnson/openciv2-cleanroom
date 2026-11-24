@@ -84,6 +84,7 @@ public sealed class CityProduction
         private ResearchOperation? child;
         private CityUnitProduction.Operation? unit;
         public UnitProductionDecision? UnitDecision { get; private set; }
+        public bool ZoomRequested { get; private set; }
         private readonly List<Exception> failures = [];
         public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
         private CityProductionOutcome outcome = CityProductionOutcome.NotReady;
@@ -148,6 +149,7 @@ public sealed class CityProduction
                         }
 
                         failures.AddRange(unit.PresentationFailures);
+                        ZoomRequested |= unit.ZoomRequested;
                         Result = new(CityProductionOutcome.Unit, Unit: unit.Result);
                         unit.Dispose();
                         unit = null;

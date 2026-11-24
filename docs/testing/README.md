@@ -39,8 +39,12 @@ waits through actual deletion, city removal and elimination before its second
 creation and completion notices. Full production/session cases route the city
 owner's choice and a nested foreign victim's decision independently; cancel,
 timeout, disposal, failure and Darwin's research sequence retain their ordering.
-Desktop production uses this adapter. Trade cargo remains a required owning
-callback, and the authored desktop profile still excludes settler production.
+Desktop production uses this adapter. Its retained trade branch now uses actual
+C07 cargo selection: AI sampling, human confirmation/report loops and private
+commodity lists are covered through the production/session parent. Dismissal of
+confirmation/report returns to selection; dismissal of the selection itself
+stops at the undefined negative-slot read, preserving the paid/created prefix.
+The authored desktop profile still excludes settler and trade production.
 V06 incident cases compose actual war, stance and Anarchy transitions. They cover
 directed treaty gates, live mission retention, human pretext without expulsion,
 leniency and senate draw order, scenario/autoplay gates and retained failures.

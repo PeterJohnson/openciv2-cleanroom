@@ -15,6 +15,7 @@ public sealed class CityProductionOperation(CityProduction.Operation operation, 
     private OperationStep? completed;
     private bool faulted, disposed;
     public CityProductionResult? Result => operation.Result;
+    public bool ZoomRequested => operation.ZoomRequested;
 
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
@@ -36,6 +37,7 @@ public sealed class CityProductionOperation(CityProduction.Operation operation, 
                 SettlerAbandonment => input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout ? new(0)
                     : input.Kind == OperationInputKind.Choice && input.Choice is { } choice ? new(choice) : null,
                 UnitProductionLifecycle lifecycle => LifecycleInteraction.ResearchReply(lifecycle.Decision, input),
+                UnitProductionCargo cargo => CargoInteraction.Reply(cargo.Decision, input),
                 _ => ResearchFlowInteraction.Reply(research, input)
             };
             var previousResearch = research;
@@ -55,6 +57,7 @@ public sealed class CityProductionOperation(CityProduction.Operation operation, 
                 { Options = new([new(0, "Keep city"), new(1, "Abandon city")]) },
                 UnitProductionLifecycle lifecycle => LifecycleInteraction.Prompt(context, lifecycle.Decision, recipient,
                     ref intelligenceWindow, intelligence),
+                UnitProductionCargo cargo => CargoInteraction.Prompt(cargo.Decision, recipient),
                 _ => research is null ? null : ResearchFlowInteraction.Prompt(context, research, recipient, ref intelligenceWindow, intelligence)
             };
             if (prompt is not null)

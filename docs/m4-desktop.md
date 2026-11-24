@@ -7057,3 +7057,52 @@ production/session parent. C07 cargo, general city/civilization scheduling,
 generated human/AI game acceptance, the undefined F04 government-score and
 best-shield formulas, and independent original-game evidence remain open.
 Browser, cross-platform and network execution are deferred; M4 remains active.
+
+## Production cargo and private commodity reports
+
+C07 production cargo now has an actual owning service. AI selection consumes the
+prescribed primary-law draw, scans supply slots cyclically, and takes a second
+draw only when the retained signed counter is still negative. It sets HadCaravan
+without suppressing supply or forcing a commodity refresh, including the signed
+-128 fallback. Human choices retain supply-slot identities, confirm before
+acceptance, rebuild live options on rejection, and use the live signed supply
+entry when writing cargo and suppression. Food and identity zero keep their
+specified behavior. The accepted city-zoom request is exposed through the
+production result owner for later presentation integration.
+
+`CommodityReport.Cities` implements the demand-then-supply passes without
+recalculation, exact signed membership, no duplicate entry within a pass, revealed
+foreign sizes and Palace/reveal gates. Foreign supply remains hidden unless
+reveal-map is active. The session adapter displays those permitted rows and
+returns to cargo selection after the report; a report selection never becomes
+cargo. Confirmation/report cancellation returns to selection. Selection dismissal
+stops at the undefined negative supply read, with no invented default Food and
+no refund or repeated creation.
+
+The retained C06 unit/production parent now owns this child before human stock
+clearing or AI reconsideration. Desktop composition supplies the service and the
+same private production adapter handles cargo choices. The synchronous production
+entry retains its explicit supplied cargo callback. Seven shared groups cover
+published AI vectors, signed boundaries, live human acceptance, reports/privacy,
+bounded stops, actual production ordering, private replies and cancel/timeout
+prefixes. Alder Valley still excludes trade production, so the native regression
+below does not claim a cargo-admission scenario. Commodity search entry, general
+city-zoom presentation, generated games and remaining F04 integration stay open.
+
+Validation applied and verified root/App formatting; both Release builds passed
+with zero warnings/errors. Native tests passed **1780/1782**, with the two
+existing platform/audio skips. All **1745 shared groups** passed across **192
+coverage families**; identity verified **873 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. The isolated native
+driver passed **27 desktop checks** on its first run for this checkpoint,
+including save-byte comparisons and reload/continuation paths.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-cargo-native.json` | `18717f5cabcb1645877a4911f261540d528940e40f3ee32d47494bcdbd8331cd` |
+| `m4-cargo-identity.json` | `e9a44334545e09b5bffb7eb40fc629cf20c68c9cb93b7a5c3bb70e3333fb4c5d` |
+| `m4-cargo-play.json` | `38fb56aea259fbabd83673f969809e726bec2c3c31f882bf00d18125f30c77d5` |
+
+These are implementation/contract regressions, not independent original-game
+observations. The full desktop M4 gate, undefined F04 formulas and original-game
+evidence remain open. Browser, cross-platform and network execution are deferred.

@@ -36,11 +36,12 @@ public interface ICityUnitProductionEffects
 /// a chooser changing the next item does not run a second completion pass.</summary>
 public sealed partial class CityUnitProduction(GameState world, RuleTables rules, UnitCreation creation,
     UnitDeletion deletion, CityRemoval removal, GameplayRandom random,
-    ICityUnitProductionContinuations continuations, ICityUnitProductionEffects effects)
+    ICityUnitProductionContinuations continuations, ICityUnitProductionEffects effects, CargoSelection? cargo = null)
 {
     private readonly AiProductionPurchase purchase = new(world, rules, continuations.ReconsiderProduction, effects.AlmostWonder);
     private GameState World => world;
     private CityRemoval Removal => removal;
+    private CargoSelection Cargo => cargo ?? throw new InvalidOperationException("Retained trade production requires cargo selection services");
     private ref State.City CityAt(CitySlot slot) => ref world.Entities.Cities.At(slot);
     private CityCalculationWorkspace Work => world.Calculation;
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner);
@@ -67,18 +68,22 @@ public sealed partial class CityUnitProduction(GameState world, RuleTables rules
                 case ProductionWorkKind.CheckOwner:
                     action.Reply!(continuations.CheckCivilization(action.Target, -1));
                     break;
+                case ProductionWorkKind.Cargo:
+                    continuations.ChooseTradeCargo(slot, action.Owner, new((ushort)action.Target));
+                    break;
             }
         }
         return result!;
     }
 
     /// <summary>Retain GhostTown and actual deletion/elimination before completing C06's unit branch.
-    /// Production policy and trade cargo remain required owning continuations.</summary>
+    /// Production policy remains a required owning continuation; trade requires C07 services.</summary>
     public Operation Begin(CitySlot slot, string call, CivilizationElimination lifecycle,
         EspionageIncidents incidents, int candidateBudget = 64) => new(this, slot, call, lifecycle, incidents, candidateBudget);
 
-    private enum ProductionWorkKind { Abandon, DeleteUnit, RemoveCity, CheckOwner }
-    private sealed record ProductionWork(ProductionWorkKind Kind, int Target, Action<int>? Reply = null, SettlerAbandonment? Choice = null);
+    private enum ProductionWorkKind { Abandon, DeleteUnit, RemoveCity, CheckOwner, Cargo }
+    private sealed record ProductionWork(ProductionWorkKind Kind, int Target, Action<int>? Reply = null, SettlerAbandonment? Choice = null,
+        int Owner = 0, bool Human = false);
 
     private IEnumerable<ProductionWork> Steps(CitySlot slot, string call, Action<UnitProductionResult> complete)
     {
@@ -205,7 +210,7 @@ public sealed partial class CityUnitProduction(GameState world, RuleTables rules
         {
             if (rules.Units[type].Role == RuleRole.Trade)
             {
-                continuations.ChooseTradeCargo(slot, owner, created!.Value);
+                yield return new(ProductionWorkKind.Cargo, created!.Value.Value, Owner: owner);
             }
 
             if (rules.Units[type].Role == RuleRole.Diplomacy)
@@ -230,7 +235,7 @@ public sealed partial class CityUnitProduction(GameState world, RuleTables rules
             {
                 if (role == (int)RuleRole.Trade)
                 {
-                    continuations.ChooseTradeCargo(slot, owner, created!.Value);
+                    yield return new(ProductionWorkKind.Cargo, created!.Value.Value, Owner: owner, Human: true);
                 }
                 else if (!world.Globals.MessageOptions.UnitBuilt)
                 {
