@@ -326,3 +326,11 @@ contact, capture diagnostics and failure/disposal are exercised through the
 retained graph. See [SinglePlayerMovement.cs](../../src/OpenCiv2.Session/SinglePlayerMovement.cs)
 and [the shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerMovementCases.cs).
 Desktop command admission and generated-game acceptance remain separate gates.
+
+The `player-movement-command` family covers Session player admission around the
+actual graph, including revalidation after queueing, private mission and focus
+decisions, outcome continuation and required/cosmetic failures. See
+[PlayerMovementCommands.cs](../../src/OpenCiv2.Session/PlayerMovementCommands.cs)
+and [the shared cases](../../tests/OpenCiv2.FoundationCases/PlayerMovementCommandCases.cs).
+The default authored desktop movement handler has not yet been replaced; its
+general content/presentation binding and native acceptance remain open.

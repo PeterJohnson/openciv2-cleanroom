@@ -98,6 +98,13 @@ boarding, hut creation, caravan donation and expulsion. Required failures and
 disposal release movement ownership while preserving committed effects. General
 native command admission and generated human/AI scheduling remain open.
 
+Player movement command cases add actual scoped admission and execution-time
+identity checks around this graph. They route private mission/focus contact,
+retain cooperative fallback scheduling, preserve movement results through game
+outcomes, and verify cancellation, disposal and required/cosmetic failures.
+The default desktop content/presentation binding and native command UI acceptance
+remain open.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

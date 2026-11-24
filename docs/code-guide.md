@@ -198,6 +198,14 @@ special movement loss and completion. Names, food/commodity backing and semantic
 presentation ports are explicit. Viewer/entry inputs and admission remain with
 the caller; generated desktop turns do not yet own this graph.
 
+`Session/PlayerMovementCommands` admits an owned live unit and direction through
+the player lane, rechecks both at execution, and retains actual U02 movement,
+pending outcomes and U04 focus. `PlayerMovementBinding` supplies the gameplay
+graph, content/view inputs and private interaction adapters. Its factory borrows
+the current step through an accessor that is unavailable outside `Resume`.
+The default authored desktop command still uses its bounded handler until the
+general content/presentation binding is installed.
+
 `City/CapturePartisans.Begin` retains actual U01 creation through W03/V04 contact.
 Fortification, veteran sampling and visibility follow the completed child; later
 placement attempts read the live map while keeping the initial count/threshold.

@@ -8185,3 +8185,43 @@ child diagnostic propagation without new desktop admission or automation.
 | --- | --- |
 | `m4-movement-composition-native.json` | `81fdc9db23765be99506dbbccb02a20e26dcc75ebf9fee2e6f521be46fda7c5a` |
 | `m4-movement-composition-identity.json` | `d339d59778c2dfd6c61c381d971ad037337e6ffd09df709c90927c7e8c47847e` |
+
+## Player movement command continuation
+
+`PlayerMovementCommands` registers scoped `unit.move` admission over the real
+movement graph. It validates the player phase, owned live unit identity and
+adjacent direction at submission and again before execution. The command then
+retains movement, pending game outcomes and actual contact-capable U04 focus.
+Its result preserves the requested unit identity and U02 result, including when
+a later presentation fails. Quit closes both player and turn phases; ordinary
+completion updates the end-of-turn selection flag.
+
+`PlayerMovementBinding` supplies the gameplay graph, private interaction adapters,
+view/entry inputs, live cursor and Hall of Fame storage. Its factory receives a
+current-step accessor rather than an operation context retained across steps.
+The accessor is unavailable while the command is suspended or finished. Queued
+identity rejection and cancellation before execution do not construct services.
+
+Six shared groups exercise admission/revalidation, private mission fallbacks,
+contact reached by selecting the next unit, cosmetic failure and empty focus,
+cancellation/disposal/required failures, and pending outcome continuation or
+quit. An unrelated participant cannot query the private command record at all.
+
+This is command-engine integration. The default authored desktop movement
+handler still uses its bounded synchronous path: its general content and
+presentation binding must be installed before claiming native movement command
+acceptance. Generated human/AI scheduling and complete-game evidence remain
+open; browser and cross-platform work remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1912/1914**, with the two existing
+platform/audio skips. All **1877 shared groups** passed across **209 coverage
+families**; identity verified **926 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua
+suites were not rerun because the default desktop binding and automation
+integration are unchanged.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-player-movement-native.json` | `8acaed7731b391c410762648903bd29ac34c827ec92e90f42db348e0b9636828` |
+| `m4-player-movement-identity.json` | `f048e49a08b800b29c99c315c60badced0579ecfd42bf2c2e8cdbeb05841076a` |

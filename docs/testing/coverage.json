@@ -6456,6 +6456,27 @@
         "U02.composed-ordinary-transport",
         "U02.composed-private-mission-fallback"
       ]
+    },
+    {
+      "id": "player-movement-command",
+      "status": "partial",
+      "contract": "Session-scoped U02 player movement admission followed by U04 focus and V08 pending outcomes",
+      "publicSurface": "PlayerMovementCommands.Register; PlayerMovementCommands.Operation; PlayerMovementBinding",
+      "review": "The authoritative command validates phase, owner, live token and direction both at submission and before binding services. Actual movement, pending outcomes and contact-capable focus share one retained command. Private/stale replies, cooperative mission fallback, queued identity changes, empty focus, cosmetic diagnostics, required failure/disposal and end-game continuation are exercised. Binding callbacks borrow the current operation context only during Resume. The result retains the requested unit identity and actual U02 integer result. This is command-engine integration; the default authored desktop handler still uses its existing bounded path pending general content/presentation binding. Generated-game scheduling and native UI acceptance remain open; browser/cross-platform work is deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/PlayerMovementCommands.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PlayerMovementCommandCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.player-admission-recheck",
+        "U02.player-cancel-dispose",
+        "U02.player-cosmetic-empty-focus",
+        "U02.player-focus-contact",
+        "U02.player-pending-outcome",
+        "U02.player-private-mission"
+      ]
     }
   ]
 }
