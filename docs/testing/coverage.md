@@ -318,3 +318,11 @@ bribery and planted nuclear delivery. See
 [the shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerMissionCases.cs).
 General desktop movement/mission admission and complete-game acceptance remain
 open; browser and cross-platform validation are deferred.
+
+The `single-player-movement-composition` family joins the full U02 dispatcher
+to those production services, including actual caravan/hut creation, transport,
+expulsion, capture and contact. Private mission scheduling, combat events then
+contact, capture diagnostics and failure/disposal are exercised through the
+retained graph. See [SinglePlayerMovement.cs](../../src/OpenCiv2.Session/SinglePlayerMovement.cs)
+and [the shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerMovementCases.cs).
+Desktop command admission and generated-game acceptance remain separate gates.

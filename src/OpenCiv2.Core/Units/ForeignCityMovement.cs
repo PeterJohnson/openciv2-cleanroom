@@ -110,6 +110,7 @@ public sealed class ForeignCityMovement(GameState world, RuleTables rules, Attac
                         else if (removed.Result is null)
                         { yield return null; }
                     }
+                    operation.RememberFailures(removed.PresentationFailures);
                     operation.Present(() => effects.Redraw(step.From));
                 }
                 else

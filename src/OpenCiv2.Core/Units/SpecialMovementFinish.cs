@@ -31,6 +31,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
         private ResearchReply? answer;
         private readonly List<Exception> presentationFailures = [];
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
+        internal void Report(IEnumerable<Exception> errors) => presentationFailures.AddRange(errors);
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
         private bool disposed, faulted;
         public bool Completed { get; private set; }
@@ -140,6 +141,7 @@ public sealed class SpecialMovementFinish(GameState world, RuleTables rules, Sta
             else if (child.Result is null)
             { yield return null; }
         }
+        operation.Report(child.PresentationFailures);
         operation.Present(() => effects.Redraw(movement.Origin));
         if (movement.LocalHuman)
         { effects.Lost(new(type, rules.Units[type.Value].Identity.Name, coast, world.Multiplayer.LocalHuman)); }

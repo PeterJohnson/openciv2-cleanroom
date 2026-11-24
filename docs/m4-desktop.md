@@ -8145,3 +8145,43 @@ admission or automation integration.
 | --- | --- |
 | `m4-mission-composition-native.json` | `df6e7e9044df544a15a07cf912c62f1f08019bd2fc0d499d1b1a7d9617beeb83` |
 | `m4-mission-composition-identity.json` | `565e7ed8f8c718412e17c38ef20fc04b1ef862c92ead2830f21eee81b6d847b3` |
+
+## Shared movement composition
+
+`SinglePlayerMovement` constructs the full local U02 dispatcher over the retained
+combat, mission, lifecycle, diplomacy and research bundles. Its real children
+include caravan delivery, C01 city creation and W06 huts, expulsion, transport,
+foreign-unit/city entry, movement charge, relocation, special movement loss and
+completion. Authored names and food/commodity backing remain explicit inputs;
+viewer/entry selection and command admission stay with the caller.
+
+Capture completion, caravan deletion, special movement loss and intercepted
+nuclear delivery now retain their lifecycle/capture presentation diagnostics.
+The complete movement result reports those failures after committed gameplay
+and releases the movement guard. The capture regression joins a real CityTaken
+technology grant and emissary close failure through the final session result.
+
+Eight shared groups cover ordinary movement/preview, landfall restarts and
+boarding, private mission fallback scheduling, combat casualty events followed
+by contact, capture/grants/contact, hut creation, failure/disposal, capture
+presentation diagnostics, caravan wonder donation and expulsion. The initial
+joined cases were corrected to supply transport capacity, answer the actual
+post-combat first contact and expect the human-victim expulsion notice. Gameplay
+algorithms were not changed to fit those test assumptions.
+
+This qualifies shared composition. General native movement/combat/mission
+command admission, generated human/AI turns and complete-game acceptance remain
+open. Browser and cross-platform work remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1906/1908**, with the two existing
+platform/audio skips. All **1871 shared groups** passed across **208 coverage
+families**; identity verified **924 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua
+suites were not rerun because this checkpoint changes shared composition and
+child diagnostic propagation without new desktop admission or automation.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-movement-composition-native.json` | `81fdc9db23765be99506dbbccb02a20e26dcc75ebf9fee2e6f521be46fda7c5a` |
+| `m4-movement-composition-identity.json` | `d339d59778c2dfd6c61c381d971ad037337e6ffd09df709c90927c7e8c47847e` |

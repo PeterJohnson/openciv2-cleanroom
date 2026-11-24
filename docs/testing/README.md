@@ -91,6 +91,13 @@ Private visits, cooperative fallbacks, required failure/disposal and retained
 presentation errors are checked alongside poison and unit bribery. These shared
 cases do not yet qualify general desktop movement or mission admission.
 
+The shared single-player movement composition exercises those services through
+the actual dispatcher: private mission fallback scheduling, combat casualty
+events followed by contact, capture grants/diagnostics, transport restarts and
+boarding, hut creation, caravan donation and expulsion. Required failures and
+disposal release movement ownership while preserving committed effects. General
+native command admission and generated human/AI scheduling remain open.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

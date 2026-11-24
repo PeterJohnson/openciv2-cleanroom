@@ -77,6 +77,7 @@ public sealed class CaravanTrade(GameState world, RuleTables rules, GameplayRand
         }
         internal ResearchReply? TakeDecision() { var result = reply; reply = null; return result; }
         internal int? TakeReply() => TakeDecision()?.Selected;
+        internal void Report(IEnumerable<Exception> errors) => presentationFailures.AddRange(errors);
         internal void Present(Action action) { try { action(); } catch (Exception error) { presentationFailures.Add(error); } }
         public CaravanDecision? Resume(int? answer = null) => ResumeDecision(answer is { } value ? new(value) : null);
         public CaravanDecision? ResumeDecision(ResearchReply? answer = null)
@@ -113,6 +114,7 @@ public sealed class CaravanTrade(GameState world, RuleTables rules, GameplayRand
             else if (child.Result is null)
             { yield return null; }
         }
+        operation.Report(child.PresentationFailures);
     }
     private IEnumerable<CaravanDecision?> Enter(Operation operation, UnitSlot unit, CitySlot destination, string call)
     {

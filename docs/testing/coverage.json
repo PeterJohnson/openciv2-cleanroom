@@ -6429,6 +6429,33 @@
         "V06.composed-private-fallback",
         "V06.composed-theft-grant"
       ]
+    },
+    {
+      "id": "single-player-movement-composition",
+      "status": "partial",
+      "contract": "U02 local movement joining U05/U06/C07/C09/V06/W03/W06 and retained scenario/lifecycle children",
+      "publicSurface": "SinglePlayerMovement; SinglePlayerMovementEffects; retained movement child presentation diagnostics",
+      "review": "World-owned dispatcher graph shares combat, missions, lifecycle, diplomacy and research. Actual caravan delivery, city creation, huts, expulsion, transport, foreign-city entry, charge, relocation and finish are constructed with explicit content/view ports. Joined cases exercise private mission fallback scheduling, combat casualty events then contact, capture/grants and diagnostic completion, ordinary preview/movement, landfall/boarding, hut creation, donation/expulsion and required failure/disposal. Capture, special-loss, intercepted delivery and caravan deletion retain child presentation errors. This qualifies the shared graph, not general desktop command admission or complete generated games. Browser and cross-platform validation remain deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/City/CaravanTrade.cs",
+        "src/OpenCiv2.Core/Units/ForeignCityMovement.cs",
+        "src/OpenCiv2.Core/Units/MovementCompletion.cs",
+        "src/OpenCiv2.Core/Units/SpecialMovementFinish.cs",
+        "src/OpenCiv2.Session/SinglePlayerMovement.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SinglePlayerMovementCases.cs"
+      ],
+      "sharedGroups": [
+        "U02.composed-capture-contact",
+        "U02.composed-capture-diagnostics",
+        "U02.composed-caravan-expulsion",
+        "U02.composed-combat-event",
+        "U02.composed-failure-disposal",
+        "U02.composed-hut-creation",
+        "U02.composed-ordinary-transport",
+        "U02.composed-private-mission-fallback"
+      ]
     }
   ]
 }

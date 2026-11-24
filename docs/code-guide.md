@@ -191,6 +191,13 @@ and land-entry parents retain child presentation errors for the final session
 result; cooperative fallbacks mark themselves ready for another local step.
 General native movement/mission admission remains open.
 
+`Session/SinglePlayerMovement` joins those bundles to the full local U02
+dispatcher. It constructs actual caravan delivery, retained C01 city creation
+and W06 huts, expulsion, transport, foreign-unit/city entry, charge, relocation,
+special movement loss and completion. Names, food/commodity backing and semantic
+presentation ports are explicit. Viewer/entry inputs and admission remain with
+the caller; generated desktop turns do not yet own this graph.
+
 `City/CapturePartisans.Begin` retains actual U01 creation through W03/V04 contact.
 Fortification, veteran sampling and visibility follow the completed child; later
 placement attempts read the live map while keeping the initial count/threshold.

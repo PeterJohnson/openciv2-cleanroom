@@ -101,6 +101,7 @@ public sealed class MovementCompletion(GameState world, RuleTables rules, StackO
                     else if (!capture.Completed)
                     { yield return null; }
                 }
+                operation.Report(capture.PresentationFailures);
                 finishing = world.Globals.MovingUnit ?? throw new InvalidOperationException("Capture did not retain a finishing moving unit");
                 movement.Unit = finishing;
             }
