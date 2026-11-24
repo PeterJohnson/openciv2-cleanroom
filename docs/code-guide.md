@@ -251,6 +251,18 @@ interaction windows are retained per pending decision. The unspecified U04 hold
 producer remains an explicit input/gap. F04 and generated desktop composition
 remain open.
 
+`Units/ActiveUnitCycle` drives actual order execution and automated continuation
+with a captured execution actor and live selection/phase/bound/human gates. It
+retains real child decisions, distinguishes those dialogs from a player-input
+wait, and exhausts the captured actor after more than twenty automated passes.
+Its explicit input boundary lets a host process ordered commands; native blink,
+music and tutorial presentation remain host policy. `Session/ActiveUnitCycleHost`
+pins the world and lends one command segment at a time. A segment finishes at an
+input boundary, allowing an actual player command before the next segment; it
+routes nested decisions privately and releases ownership at completion or disposal.
+Cancellation/timeout finishes the child's default reply/tail before stopping.
+Full F04/native human-phase admission and U04's unknown hold producer remain open.
+
 `TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
 It uses actual stacks, movement exhaustion, map mutations, remembered features
 and C03 refresh for an eligible nearby city selection. It preserves per-unit

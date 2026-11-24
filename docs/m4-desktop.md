@@ -7479,3 +7479,62 @@ admission or complete generated human/AI games. M4 remains active and incomplete
 F04's original-observation formula gaps and the other recorded integration gates
 remain open. Browser, cross-platform qualification and network execution remain
 deferred.
+
+## U04 cooperative active-unit gameplay cycle
+
+`ActiveUnitCycle` composes actual U04 order execution and automated U04/A04
+continuation. It captures the execution actor and unit bound once, while each
+iteration checks the current shared selection, player/session activity, live bound
+and local human membership. A handled order does not count as waiting for input,
+even when its movement child required a private decision. Unhandled orders yield
+an explicit player-input boundary. The automated counter survives intervening
+manual iterations; its twenty-first pass exhausts the earlier captured actor,
+which can differ from the live unit used by automated continuation.
+
+The cycle yields completed work cooperatively instead of emulating the native
+blink/music/message-pump procedure. Tutorial and focus presentation remain host
+policy under the U04/P05/X01 presentation contract. A requested stop is honored
+at the next iteration boundary after an accepted child finishes; disposal ends
+that child without replaying or rolling back its prefix. Required failures are
+terminal, and cosmetic child failures are accumulated separately.
+
+`ActiveUnitCycleHost` owns the cycle and a world pin across command segments.
+A segment completing at an input boundary releases the command lane while keeping
+the actor/counter alive. The host can execute real player commands, then resume
+with an explicit input-handled signal. Child decisions use the ordinary private
+movement/tactics adapters. Cancellation/timeout supplies the child's normal reply
+and stops after its required tail. Completion releases the pin; abandonment
+releases it and disposes the cycle. Command result fields have a shared schema.
+
+Seven shared groups cover entry gates, actual fortification/work, real unit
+creation changing the scan bound, cached-actor execution after selection changes,
+manual and automated retained movement decisions, failures/disposal and Session
+ownership. Actual zero-cost rail movement reaches the twenty-first automated
+pass, including an input interruption and a different live moving unit; no
+supplied gameplay child manufactures the counter result. A Session case completes
+an input segment, runs actual fortification, resumes and permits world replacement
+only after the cycle releases its pin.
+
+Full F04 human-phase scheduling and native gameplay-service admission remain open.
+U04's hold producer remains an explicit specification gap: standalone callers
+supply the value; this service does not invent a default or close that gap. No
+new native UI command is admitted by this checkpoint. These are specification
+and actual-child integration cases, not original-game compatibility captures.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1828/1830**, with the two existing
+platform/audio skips. All **1793 shared groups** passed across **199 coverage
+families**; identity verified **896 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. No native input run was
+performed: this checkpoint adds the core cycle and trusted Session owner, without
+changing the authored desktop command path or adding general native admission.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-active-cycle-native.json` | `51f972f635f2860f97dd3caac4b4a4a7544bbb37fe0ff697490707f766625d40` |
+| `m4-active-cycle-identity.json` | `6c299b6735c56e9e29b918f8fd54a227c642ca8b1e86e4230c600e62e7a93a9f` |
+
+M4 remains active. Complete generated human/AI games, full-turn snapshots,
+F04's original-observation formula gaps and other recorded integration gates
+remain unresolved. Browser, cross-platform qualification and network execution
+remain deferred.

@@ -6160,6 +6160,29 @@
         "U04.stack-selection-private-session",
         "U04.stack-selection-rows-wake"
       ]
+    },
+    {
+      "id": "active-unit-gameplay-cycle",
+      "status": "partial",
+      "contract": "U04 active-unit gameplay/automation cycle; X01 cooperative presentation freedom",
+      "publicSurface": "ActiveUnitCycle.Begin; ActiveUnitCycleHost.BeginSegment/ResultSchema",
+      "review": "Live selection/phase/bound/human gates with a captured execution actor, actual U04/A04 children, explicit player-input boundaries, cumulative automation limit and retained failure effects. Session segments release the command lane for actual player commands while pinning the world, route real child decisions privately and release ownership on completion/disposal. Hold producer, full F04 human-phase/native admission and tutorial presentation remain caller work.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/ActiveUnitCycle.cs",
+        "src/OpenCiv2.Session/ActiveUnitCycleHost.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ActiveUnitCycleCases.cs"
+      ],
+      "sharedGroups": [
+        "U04.active-cycle-automation-limit",
+        "U04.active-cycle-failures-disposal",
+        "U04.active-cycle-gates-handled-orders",
+        "U04.active-cycle-input-captured-actor",
+        "U04.active-cycle-private-session-pin",
+        "U04.active-cycle-retained-movement",
+        "U04.active-cycle-session-input-boundary"
+      ]
     }
   ]
 }

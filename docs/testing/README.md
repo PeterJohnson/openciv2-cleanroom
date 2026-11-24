@@ -1399,3 +1399,12 @@ keep wake and activation separate, reject private/stale replies and retain wake
 changes on cancel/timeout. The authored explicit selection command uses the same
 accepted path; its direct/console save/replay cases remain part of the coverage.
 General native stack-chooser admission and human-phase scheduling remain open.
+
+The active-unit cycle family uses actual U04 work/movement and automated children.
+Cases distinguish handled orders and child dialogs from player-input waits, retain
+the execution actor across live selection changes, and check the twenty-first
+automated pass through real zero-cost rail movement. An intervening input wait
+does not reset the counter. Session cases release the command lane for actual
+fortification, preserve private/stale reply rules, block world replacement while
+held and release pins on completion/disposal. General native admission and the
+explicit hold producer remain unresolved; these are not complete human-turn runs.
