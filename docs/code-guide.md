@@ -1125,3 +1125,11 @@ contacted results fail before attitude publication while retaining earlier effec
 The full retained `DiplomacyTurn` composition invokes this child before actual
 military aid and war-ally requests. Session routes review choices to the intruder.
 Full V05 audiences and the original missing-delta producer remain open.
+
+`Core/DiplomaticTechnology` implements V05 §3's survey, cached-price sale and
+repeated exchange controller. Shared best/second/wanted choices live in
+`DiplomacyWorkspace`; survey counts and scores belong to each iteration. Actual
+A08 valuation, V05 reception, V03 grants and captured-technology selection supply
+the gameplay children. `Session/DiplomaticTechnologyOperation` routes offers,
+research/government and intelligence choices privately. Full audience/menu callers
+remain open.

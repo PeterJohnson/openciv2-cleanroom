@@ -53,7 +53,7 @@ public enum Commodity
     Hides, Wool, Beads, Cloth, Salt, Coal, Copper, Dye, Wine, Silk, Silver, Spice, Gems, Gold, Oil, Uranium
 }
 
-/// <summary>A08 fixed unit identities used to read customizable rule prerequisites.</summary>
+/// <summary>A08/V05 fixed unit identities used to read customizable rule prerequisites.</summary>
 public static class UnitTypeIds
 {
     public const int AlpineTroops = 10, Marines = 12, Crusaders = 18, Dragoons = 20, Cavalry = 21, Armor = 22;
@@ -64,5 +64,5 @@ public static class UnitTypeIds
     public const int Bomber = 28, Trireme = 32, Caravel = 33, Frigate = 35, Transport = 43;
     public const int NuclearMissile = 45, Diplomat = 46, Spy = 47;
     public const int Riflemen = 11, Engineers = 1, Paratroopers = 13;
-    public const int Cannon = 24, Artillery = 25, Freight = 49;
+    public const int Cannon = 24, Artillery = 25, Howitzer = 26, Freight = 49;
 }

@@ -5266,6 +5266,32 @@
         "A08.review-withdrawal-missing-prefix",
         "V04.review-turn-private-border"
       ]
+    },
+    {
+      "id": "diplomatic-technology",
+      "status": "partial",
+      "contract": "V05 section3 local technology survey, sales and exchange; actual A08/V03/V05 composition",
+      "publicSurface": "DiplomaticTechnology.Survey/Begin/BeginSale; TechnologySurvey; TechnologyNegotiationDecision; DiplomaticTechnologyOperation; shared diplomacy technology choices",
+      "review": "Surveys actual knowledge/valuation with later ties and blocking-wonder scans, preserves captured alliance and per-iteration scores, prices and presents sales without paying the seller, implements refusal and gift gates, and grants the donor technology before the actual V03 captured-technology chooser. Retains choices across government/emissary continuations, repeats nonzero modes, and reports cosmetic failures after gameplay while preserving required-failure prefixes. Shared tests cover survey, exchange/alternate choices, repetition, sale thresholds and wrapped prices, gifts/refusals, required failures/disposal, private Session routing and actual government decisions. Fixed prerequisite unit slots were checked against supplied original RULES.TXT data; no original executable behavior is claimed. Full audience/menu integration and generated human/AI desktop acceptance remain open; browser/cross-platform and network work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/DiplomaticTechnology.cs",
+        "src/OpenCiv2.Session/DiplomaticTechnologyOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticTechnologyCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.technology-exchange-captured-choice",
+        "V05.technology-leader-sale-modes",
+        "V05.technology-petty-government-failure",
+        "V05.technology-private-session",
+        "V05.technology-refusal-gifts",
+        "V05.technology-repeated-exchange",
+        "V05.technology-sales-pricing",
+        "V05.technology-session-cancellation",
+        "V05.technology-survey-blocking"
+      ]
     }
   ]
 }

@@ -1089,3 +1089,10 @@ wonder transforms, race/rank gates, nuclear pressure and AI-coordination behavio
 The V04/Session case uses actual review, military aid and war-ally policies and
 checks private warning routing and cancellation. Full audiences and generated
 human/AI acceptance remain open.
+
+V05 technology-negotiation cases exercise later survey ties, blocking wonders,
+sales and price thresholds, actual captured-technology choice after the donor
+grant, repeated exchange, refusal/gift paths, alternate-offer rejection, required
+failure/disposal and nested government decisions. Session cases prove private
+routing and non-cancellable technology selection. The displayed wanted advance
+does not replace V03's actual chooser. Full audience integration remains open.

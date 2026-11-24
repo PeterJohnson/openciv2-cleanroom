@@ -1174,7 +1174,12 @@ F06/N02 own persistent/wire layouts; no packed struct is required for gameplay.
 - Technology identities include Advanced Flight0, Alphabet1, Conscription17,
   Guerrilla Warfare34, Gunpowder35, Invention38, Map Making46, Mobile Warfare53,
   Tactics81 and Writing88. The exchange branch comparing best against fixed
-  unit prerequisites uses the six unit identities in section3. Technology0 is
+  unit prerequisites uses Armor22, Cavalry21, Artillery25, Howitzer26,
+  Riflemen11 and Musketeers7. These stock unit positions were checked in the
+  supplied original MGE `RULES.TXT` (SHA-256
+  `8a6f98b8260405091cd41d574c30bb05aa805c99a1f4357c49a73cf382fc2c03`).
+  This is original data evidence, not executable-code inspection or behavioral
+  validation of the controller. Technology0 is
   excluded by explicit `best>0` payment tests even though it is a valid technology.
 - Trait reason bits in alliance willingness are1 allied target,2 dangerous enemy,
   4 new common target. Peace reason bits are1 ordinary willingness,2 dangerous

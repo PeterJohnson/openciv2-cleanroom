@@ -5676,3 +5676,44 @@ The original incoming attitude-delta producer, full V05 audience/controller,
 F04 city-analysis formulas and complete city/civilization orchestration, generated
 desktop play and full human/AI end-condition acceptance remain open. Browser,
 cross-platform qualification and network execution remain deferred.
+
+## V05 retained technology exchange and sales — 2026-11-23
+
+`DiplomaticTechnology` implements V05 §3's survey, sale and repeated exchange
+controller with actual A08 valuation, V05 reception, V03 grants and captured
+technology selection. Surveys preserve later ties, blocking-wonder scans and the
+specified prerequisite admission. Sales retain the offered price, use live gold
+and technology on acceptance, preserve signed arithmetic and do not credit the
+seller. Exchange retains the captured alliance across iterations, applies refusal,
+leader and gift gates, and grants the donor technology before asking the recipient
+to choose through the actual captured-technology operation.
+
+The Session adapter routes reception, exchange, purchase and nested research or
+government choices privately. Cancel and timeout decline offers; the captured
+technology chooser remains non-cancellable. Required failures preserve committed
+payment or knowledge; cosmetic failures are reported separately. Nine new groups
+cover these paths, pricing boundaries, alternate offers, repeated exchanges,
+leader exceptions, gift counters and private Session routing.
+
+The supplied original MGE `RULES.TXT` established Howitzer's fixed unit identity
+and verified the other five prerequisite unit identities. V05 Appendix A records
+the data hash and evidence scope. No executable code was inspected, and this
+data check does not establish original-game behavioral conformance.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1549 of 1551**, with two existing
+platform/audio skips. The shared probe passed all **1516 groups** across 168
+coverage families; source identity verified **776 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. This checkpoint uses
+native Core/Session composition and the App build; it does not claim a new
+graphical input-driver run or full desktop audience integration.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-tech-native.json` | `a48fd87f68b7c29b48a8599a2ccf47322c5af0a3e872d256fd882d24e7052602` |
+| `m4-tech-identity.json` | `00cea78c3a214407732458a0ded07b5d2682b1cdc60ed9d17fe26ec0eba4e02c` |
+
+Full V05 audiences, gifts/favors and treaty negotiation remain open, together with
+the previously recorded F04 formulas, relation-review input gap, complete turn
+orchestration and generated human/AI end-condition acceptance. Browser,
+cross-platform qualification and network execution remain deferred.

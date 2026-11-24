@@ -19,6 +19,7 @@ public sealed class DiplomacyWorkspace
     public bool RaceThreat, OutranksTarget, TargetIsLeader, Aggressive, InitiallyAggressive, SuppressedAggression, DeclareWar;
     public int Fear, Demand, RequestMode, PeaceInclination, LastContact, NearbyUnits, CapturedCities;
     public int? WarTarget, StrongestEnemy, WeakestEnemy;
+    public int? BestTechnology, SecondTechnology, WantedTechnology;
 }
 
 /// <summary>V04 §2 attitude/hostility primitives and §11 global reputation maintenance.
