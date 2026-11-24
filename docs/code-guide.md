@@ -1028,8 +1028,13 @@ search, clears timers only for qualifying orders and preserves the captured
 selected slot through diplomacy. Contact completion precedes the live simultaneous
 input-flush gate and missing-selection presentation. `Session/UnitSelectionOperation`
 routes nested decisions privately and reports cosmetic failures after completion.
-Full focus/stack selection, human-phase scheduling and desktop command admission
-remain caller work; the authored local activation loop is still separate.
+`Units/UnitFocus` captures original selectability after entering Move-units,
+retains activation/contact, then validates the current shared active unit.
+`Session/UnitFocusOperation` routes the nested private decisions. The authored
+`unit.select` command clears the requested unit's orders, runs focus and reveals
+the originally selected slot when unmoved. Its reactive map supplies presentation;
+foreign contact remains outside that profile. General stack chooser, human-phase
+scheduling and general desktop contact admission remain caller work.
 
 `Units/CombatContinuation` owns U06's surviving-attacker and nuclear-delivery
 branches. Survive captures the current moving unit, exhausts eligible aircraft,

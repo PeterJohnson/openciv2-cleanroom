@@ -1384,3 +1384,10 @@ actual structural addition runs between upkeep capture and report; autosave wait
 for the real launch decision. Direct/console advisor commands save and replay the
 launched state. The isolated native driver additionally exercises the production
 Spaceships menu, report, decline/confirm, exact save comparison and reload.
+
+U04 focus cases retain actual activation/contact, distinguish initial focus from
+later selection, and validate the live shared active unit after contact. Private
+reply, failure and disposal cases preserve accepted prefixes. The authored
+selection command uses this path; direct/console cases compare saves and replay
+when the requested unit is exhausted, with and without another eligible unit.
+General stack chooser and human-phase scheduling remain open.

@@ -6094,7 +6094,7 @@
       "status": "partial",
       "contract": "U04 select-and-publish next unit; actual W03 revelation and V04 contact",
       "publicSurface": "UnitSelection.BeginNext; UnitSelectionOperation",
-      "review": "Actual next-unit search, combat-loss origin, order-sensitive timer reset, contact before final input/presentation tail, private replies and terminal failure/disposal prefixes. General focus/stack selection, human-phase scheduling and desktop command admission remain open.",
+      "review": "Actual next-unit search, combat-loss origin, order-sensitive timer reset, contact before final input/presentation tail, private replies and terminal failure/disposal prefixes. The separate focus family composes this service. General stack selection, human-phase scheduling and foreign-contact desktop admission remain open.",
       "sources": [
         "src/OpenCiv2.Core/Units/UnitSelection.cs",
         "src/OpenCiv2.Session/UnitSelectionOperation.cs"
@@ -6108,6 +6108,28 @@
         "U04.selection-private-session",
         "U04.selection-retained-contact",
         "U04.selection-timers-empty"
+      ]
+    },
+    {
+      "id": "retained-unit-focus",
+      "status": "partial",
+      "contract": "U04 focus active and explicit selected-unit activation; X01 presentation freedom",
+      "publicSurface": "UnitFocus.Begin; UnitFocusOperation; LocalPlayCommands.Select",
+      "review": "Mode and original selectability capture, actual activation/contact, shared-active revalidation, private replies and failure prefixes. Authored desktop selection composes focus and original-slot revelation with direct/console/save/replay cases. General stack chooser, human-phase scheduling and foreign-contact desktop admission remain open.",
+      "sources": [
+        "src/OpenCiv2.Core/Units/UnitFocus.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.cs",
+        "src/OpenCiv2.Session/UnitFocusOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitFocusCases.cs"
+      ],
+      "sharedGroups": [
+        "U04.focus-existing",
+        "U04.focus-failure-prefixes",
+        "U04.focus-private-session",
+        "U04.focus-retained-revalidation",
+        "U04.local-selection-focus-replay"
       ]
     }
   ]

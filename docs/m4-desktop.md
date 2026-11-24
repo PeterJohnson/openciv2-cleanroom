@@ -7363,3 +7363,57 @@ operation, not its general desktop command admission.
 M4 remains active. The F04 formula/original-observation gaps, complete generated
 human/AI games and other recorded integration gates remain unresolved. Browser,
 cross-platform qualification and network execution remain deferred.
+
+## U04 retained focus and authored selection
+
+`UnitFocus.Begin` now enters Move-units and captures the original active unit's
+selectability. An unavailable unit invokes actual retained next-unit activation,
+including W03 revelation and V04 contact. After that child completes, focus reads
+and validates the current shared active slot; a contact-induced replacement is
+not overwritten. Initial focus depends on the original query, not on the child
+finding a unit. Failure and disposal preserve prior mode/selection/revelation
+changes, while cosmetic failures are reported after semantic completion.
+`UnitFocusOperation` routes the actual nested contact choices privately.
+
+The authored desktop `unit.select` command now composes this service. It clears
+the requested unit's orders and Automated flag, enters View mode, then focuses.
+Selecting an exhausted unit can therefore advance to another eligible unit or
+leave no active unit. Final revelation still concerns the originally requested
+slot when it is unmoved. The full-map reactive view provides presentation; the
+profile admits no foreign contact. Its other automatic activation callers and
+the general stack chooser/human-phase scheduler remain separate work.
+
+Five shared groups cover existing selection and initial-focus capture, retained
+contact with live replacement/rejection, private/wrong/stale replies,
+cancel/timeout, required and cosmetic failures, disposal, and authored
+exhausted-unit selection through direct/console commands. Full saves match replay
+before and after reload; reload allocates fresh unit identities, with every other
+saved byte checked unchanged. These are specification and regression cases,
+not independent original-game compatibility observations.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1815/1817**, with the two existing
+platform/audio skips. All **1780 shared groups** passed across **197 coverage
+families**; identity verified **890 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-unit-focus-native.json` | `f23a20c5a597e06ffdc71b0f5398df7f6c722a7306ccc84a114b7ecf9e8642d7` |
+| `m4-unit-focus-identity.json` | `63fb9e3ccdc3b0178c9f8927bbb4bd15381427997ebba1a588d75fa652824e6f` |
+
+The first native input attempt stopped in the commodity advisor because its
+choice region had been published with zero width/height before layout. The
+input driver now waits for an enabled, nonzero region before scrolling/clicking;
+its existing semantic and save comparisons remain unchanged. The failure log is
+retained as `build/test-results/m4-unit-focus-play-first-failure.log`.
+
+The rerun passed all **28 isolated native input checks**, including direct-client
+save comparison, reload/continuation and the advisor flows. Optional Lua execution
+was not run; no automation source changed. The native receipt is
+`m4-unit-focus-play.json`, SHA-256
+`53798442bfe54122fdbf62d9d88f790c7cd0006636da2b52d3c856461d7f9a25`.
+This qualifies the authored local UI regression, not general native contact or
+complete generated human/AI games. M4 remains active; F04's original-observation
+formula gaps and the other recorded integration gates remain open. Browser,
+cross-platform qualification and network execution remain deferred.

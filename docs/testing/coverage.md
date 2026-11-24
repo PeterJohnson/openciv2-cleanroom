@@ -239,3 +239,10 @@ and the [F04 part-sum boundary](../../src/OpenCiv2.Core/SpaceshipUpkeep.cs).
 actual construction, private launch and ordinary save, plus desktop command/replay
 checks. The native input driver includes the advisor flow. Graphical ship media,
 general construction choices and complete generated turns remain open.
+
+U04 focus cases retain actual activation/contact, distinguish initial focus from
+later selection, and validate the live shared active unit after contact. Private
+reply, failure and disposal cases preserve accepted prefixes. The authored
+selection command uses this path; direct/console cases compare saves and replay
+when the requested unit is exhausted, with and without another eligible unit.
+General stack chooser and human-phase scheduling remain open.

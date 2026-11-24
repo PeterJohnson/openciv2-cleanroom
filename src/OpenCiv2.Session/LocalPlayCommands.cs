@@ -72,14 +72,34 @@ public static partial class LocalPlayCommands
         ref var unit = ref world.Entities.Units.At(target.Slot);
         unit.Orders = UnitOrder.None;
         unit.Flags.Automated = false;
-        if (unit.MovesUsed == 0)
-        {
-            LocalVisibility.RevealAround(world, unit, context.Process.Rules.Definitions.Units[unit.Type.Value]);
-        }
-
         world.Globals.ActiveUnit = target.Slot;
-        world.MovementMode = MovementMode.MoveUnits;
+        world.MovementMode = MovementMode.View;
+        var rules = context.Process.Rules.Definitions;
+        var stacks = new StackOperations(world, new(100000, 64));
+        var revelation = new UnitRevelation(world, rules, stacks, new LocalCreation(world, rules, stacks));
+        var effects = LocalSelectionPresentation.Instance;
+        var focus = new UnitFocus(world, rules, new(world, rules, new(), revelation, effects), effects);
+        using (var operation = focus.Begin(unit.Position, 0, world.Multiplayer.LocalHuman, "local-select"))
+        {
+            while (!operation.Completed)
+            {
+                if (operation.Resume() is not null)
+                { throw new InvalidOperationException("Foreign contact is outside the authored local profile"); }
+            }
+        }
+        // Explicit selection reveals the originally selected slot, even if focus chose another unit.
+        if (world.Entities.Units.At(target.Slot).MovesUsed == 0)
+        { revelation.Reveal(target.Slot.Value, true); }
         return Commit(context, "unit.selected", new NamedValue("unit", new CommandValue.Unit(target)));
+    }
+
+    // The authored full-map view renders the committed selection and has no raw input queue.
+    private sealed class LocalSelectionPresentation : IUnitSelectionEffects
+    {
+        public static LocalSelectionPresentation Instance { get; } = new();
+        public void Focus(UnitTarget unit, MapPoint position, int owner) { }
+        public void FlushInput() { }
+        public void RedrawMaps() { }
     }
 
     private static OperationStep MoveUnit(OperationContext context, CommandRequest request)

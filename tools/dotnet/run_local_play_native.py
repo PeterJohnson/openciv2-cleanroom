@@ -949,7 +949,10 @@ def drive(args, app, observation, storage):
         wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
 
         def commodity_choice(value):
-            state = wait(lambda s: s['dialog']['visible'] and f'choice.{value}' in s['dialog']['regions'])
+            # The observation can publish a choice before Avalonia has laid it out.
+            state = wait(lambda s: s['dialog']['visible']
+                         and (box := s['dialog']['regions'].get(f'choice.{value}')) is not None
+                         and box['enabled'] and box['width'] > 0 and box['height'] > 0)
             for _ in range(48):
                 box = state['dialog']['regions'][f'choice.{value}']
                 if box['y'] >= 55 and box['y'] + box['height'] <= state['height'] - 55:

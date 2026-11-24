@@ -64,6 +64,10 @@ graphics and font arguments are optional and use the same renderer as Riverbend.
 dotnet run --project src/OpenCiv2.Desktop -c Release --no-build -- --game alder-valley
 ```
 
+Selecting an owned unit clears its orders and focuses an eligible unit. If the
+requested unit has exhausted its movement, focus advances to another eligible
+unit, or leaves no active unit when all are unavailable.
+
 Use **Tax rates** in the local sidebar or Orders menu to preview balanced rate
 choices, hold one rate, and apply or cancel the draft. The same decision is
 available as `civilization.rates.edit` in the console. Holds persist across
