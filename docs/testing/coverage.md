@@ -302,3 +302,9 @@ execution. Its [shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerL
 verify private recursive decisions and contextual recreation keys, including
 failure/disposal prefixes. General desktop movement/combat admission and
 generated-game acceptance remain open.
+
+The `single-player-combat-composition` family joins the production lifecycle,
+research and diplomacy bundles to actual capture, casualty events, nuclear
+delivery and paradrop response. See [SinglePlayerCombat.cs](../../src/OpenCiv2.Session/SinglePlayerCombat.cs)
+and [the shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerCombatCases.cs).
+General desktop admission and complete-game acceptance remain open.

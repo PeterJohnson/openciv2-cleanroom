@@ -35,10 +35,13 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
         private readonly CombatResolution parent;
         private readonly IEnumerator<LifecycleDecision?> steps;
         private ResearchReply? reply;
+        private readonly List<Exception> failures = [];
         private bool disposed, faulted;
         public LifecycleDecision? Pending { get; private set; }
         public ResolvedCombat? Result { get; internal set; }
         public bool Completed => Result is not null;
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
         internal Operation(CombatResolution parent, PreparedCombat combat, bool won, string call)
         {
             ArgumentException.ThrowIfNullOrEmpty(call);
@@ -113,6 +116,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
             else if (child.Result is null)
             { yield return null; }
         }
+        operation.Report(child.PresentationFailures);
     }
     private IEnumerable<LifecycleDecision?> Execute(Operation operation, PreparedCombat combat, bool won, string call)
     {
@@ -144,6 +148,7 @@ public sealed class CombatResolution(GameState world, RuleTables rules, CombatWo
                 else if (!casualties.Completed)
                 { yield return null; }
             }
+            operation.Report(casualties.PresentationFailures);
         }
         CitySlot? city = won ? state.City : null;
         if (city is { } targetCity)

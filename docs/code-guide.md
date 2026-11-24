@@ -175,6 +175,14 @@ legacy one-argument constructors remain available. Operations that can prompt
 use the retained lifecycle entries, including the incident child of spy escape.
 Full desktop host admission and synchronous callback binding remain caller work.
 
+`Session/SinglePlayerCombat` builds capture, partisans, paradrop/response,
+nuclear effects, casualties and combat execution over those same lifecycle,
+research, diplomacy and production services. One workspace carries combat
+preparation, rounds, result and survivor state. CityTaken/UnitKilled use the
+shared retained scenario triggers; child presentation diagnostics reach combat
+completion. Semantic content, view and publication ports are explicit. Full
+movement/mission/turn admission and the generated desktop host remain open.
+
 `City/CapturePartisans.Begin` retains actual U01 creation through W03/V04 contact.
 Fortification, veteran sampling and visibility follow the completed child; later
 placement attempts read the live map while keeping the initial count/threshold.

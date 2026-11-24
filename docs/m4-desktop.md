@@ -8073,3 +8073,41 @@ automation integration.
 | --- | --- |
 | `m4-paradrop-contact-native.json` | `b0712a08019e0b0f88d9c28979fb25dbfeb3f100661ff6e166ef488bc9158285` |
 | `m4-paradrop-contact-identity.json` | `57ff70fcf57fbf59ecefea7bb6715c36a06127f189015e562b659a4bb2d22615` |
+
+## Shared combat and capture composition
+
+`SinglePlayerCombat` composes actual capture, partisans, paradrop, reactive
+response, nuclear delivery, casualty recording/deletion and combat execution over
+the retained lifecycle/research/diplomacy bundles. The same scenario triggers
+handle UnitKilled and CityTaken. One world-owned combat workspace is shared by
+strength, preparation, rounds, resolution, aftermath and survivor handling.
+Required presentation and content ports remain explicit; they do not supply
+replacement gameplay or answer choices. `SharedGoals` now has a production
+constructor using its actual U04 activation/movement queries.
+
+Resolution preserves presentation errors reported by casualties and lifecycle
+children, and execution forwards them to the existing session result. Without
+this join an event's completed grant could lose its failed-presentation diagnostic.
+
+Six groups exercise the composed graph: ordinary wins/losses and permission
+refusal; private casualty events with recursive Library choices; capture event
+order; reactive response through capture and landing contact; intercepted and
+detonated nuclear delivery; required failure/disposal and cosmetic failures.
+They establish shared service integration. General desktop command admission,
+full movement/mission/turn composition, generated human/AI scheduling and
+complete-game evidence remain open. Original-observation gaps remain explicit;
+browser and cross-platform work remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1893/1895**, with the two existing
+platform/audio skips. All **1858 shared groups** passed across **206 coverage
+families**; identity verified **920 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The diagnostic fixture was
+corrected to use field combat rather than supplying ordinary defense choices
+for City Walls. Native input and Lua suites were not rerun because this graph
+adds no authored desktop admission or automation integration.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-combat-composition-native.json` | `6740e6416bb73bc17dbc00b1e22c5323b3b59a0ce969673807223ac50f0f5b5a` |
+| `m4-combat-composition-identity.json` | `644db4b39ee4eb6822c7ca2efd1a79e0457472c381eb781e3bf645b0ec934730` |

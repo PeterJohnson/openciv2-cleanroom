@@ -114,6 +114,7 @@ public sealed class CombatExecution(GameState world, CombatWorkspace state, Comb
             else if (!resolution.Completed)
             { yield return null; }
         }
+        operation.Report(resolution.PresentationFailures);
         using var aftermath = services.Aftermath.Begin(combat, resolution.Result!, entry.Result.ForceWar, call + "/aftermath");
         while (!aftermath.Completed)
         {

@@ -23,6 +23,9 @@ internal sealed class MovementGoalQueries(GameState world, RuleTables rules) : I
 /// <summary>A01 §2 engine operations. Session authority and client admission belong to the caller.</summary>
 public sealed class SharedGoals(GameState world, RuleTables rules, IUnitMovementQueries queries)
 {
+    /// <summary>Production composition with the actual U04 activation/movement queries.</summary>
+    public SharedGoals(GameState world, RuleTables rules) : this(world, rules, new MovementGoalQueries(world, rules)) { }
+
     private ref Civilization Civilization(int slot)
     {
         if (slot < 0 || slot >= world.Civilizations.Length)

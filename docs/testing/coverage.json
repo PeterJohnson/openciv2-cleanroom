@@ -6376,6 +6376,30 @@
         "V01.single-player-lifecycle-scenario-cycle",
         "V01.single-player-lifecycle-terrain-incidents"
       ]
+    },
+    {
+      "id": "single-player-combat-composition",
+      "status": "partial",
+      "contract": "U06/C09 local combat and capture graph with retained S02/V01/V03/V04 children and actual U05/A04/U07 continuations",
+      "publicSurface": "SinglePlayerCombat; SinglePlayerCombatEffects; SharedGoals production constructor; CombatResolution.Operation.PresentationFailures",
+      "review": "World-owned composition shares lifecycle, research, diplomacy, production and scenario triggers across capture, partisans, casualty recording/deletion, nuclear delivery, paradrop and reactive response. One combat workspace belongs to preparation, strength, rounds, resolution, aftermath and continuation. Explicit semantic presentation/content/publication ports leave decisions in retained operations. Cases join ordinary wins/losses and permission refusal, private recursive Library casualty events, city-capture event order, response through capture and landing contact, intercepted/detonated nuclear delivery, required failure/disposal and cosmetic error propagation. Resolution now retains casualty/lifecycle diagnostics for the owning execution and session result. This qualifies the service graph, not general desktop admission or complete-game acceptance; full movement/mission/turn composition remains open. Browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/Ai/SharedGoals.cs",
+        "src/OpenCiv2.Core/Units/CombatExecution.cs",
+        "src/OpenCiv2.Core/Units/CombatResolution.cs",
+        "src/OpenCiv2.Session/SinglePlayerCombat.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SinglePlayerCombatCases.cs"
+      ],
+      "sharedGroups": [
+        "C09.composed-capture-event",
+        "U06.composed-execution-permission",
+        "U06.composed-failure-disposal",
+        "U06.composed-private-casualty-event",
+        "U06.composed-response-capture-contact",
+        "U07.composed-nuclear-delivery"
+      ]
     }
   ]
 }

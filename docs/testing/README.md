@@ -78,6 +78,13 @@ retirement, schism and terrain changes, private last-settler catch-up, accepted
 espionage pretexts, required failure/disposal and actual settler placement. These
 shared joins do not establish full desktop admission or complete-game acceptance.
 
+The single-player combat composition family joins retained lifecycle, diplomacy
+and research to capture, casualties, nuclear delivery and paradrop response.
+Actual UnitKilled/CityTaken events can suspend through recursive Library grants;
+private replies preserve the losing unit and delayed capture fields. Required
+failures/disposal retain their prefixes, and casualty presentation errors reach
+the final combat result. Full desktop combat/movement admission remains open.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

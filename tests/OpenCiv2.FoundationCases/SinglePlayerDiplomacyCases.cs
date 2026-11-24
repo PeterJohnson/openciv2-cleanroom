@@ -19,6 +19,7 @@ public static partial class FoundationSuite
         public GameState World => Events.World;
         public RevelationFixture Data => Events.Data;
         public SinglePlayerDiplomacy Services { get; }
+        public ProductionOrders Production { get; }
         public ConversationFixture Conversation => Events.Contact.F.C;
         public RetainedGrantFixture Grant => Events.Grant;
         public SinglePlayerDiplomacyFixture(List<Choice>? choices = null, RevelationFixture? data = null)
@@ -33,9 +34,9 @@ public static partial class FoundationSuite
                 new(World, Data.Process.Rules, Data.Stacks), Data.Stacks, new(World, Data.Rules, ClassicShip, ClassicCalendar),
                 new(World, Data.Rules, Data.Stacks, Events.Life.Deletion, theft.Random,
                     _ => throw new InvalidOperationException("No airlift in the diplomacy cases")));
-            var orders = new ProductionOrders(World, Data.Rules, city => production.Choose(city, "diplomacy-production"), _ => { });
+            Production = new ProductionOrders(World, Data.Rules, city => production.Choose(city, "diplomacy-production"), _ => { });
             Services = new(World, Data.Process.Rules, theft.Random, Data.Stacks, new(World, Data.Rules, Data.Stacks),
-                Grant.Services, orders, Events.Permissions, new(
+                Grant.Services, Production, Events.Permissions, new(
                     War: treaties.WarEffects, AllyHelp: Events.Contact, Technology: audience.T, OpeningTreaty: audience,
                     TreatyNegotiation: treaties, Proposal: demands, Favor: conversation, Gift: conversation,
                     Demand: demands, Map: conversation, Audience: audience, ResearchChoice: theft,
