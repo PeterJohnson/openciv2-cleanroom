@@ -58,6 +58,8 @@ public sealed class CityEspionageDamage(GameState world, RuleTables rules, Gamep
 
     public sealed class Operation : IDisposable
     {
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         private sealed record Step(CityEspionageDecision? Decision = null, CivilizationElimination.Operation? Child = null);
         private readonly CityEspionageDamage parent;
         private readonly CityMissionContext mission;
@@ -102,6 +104,7 @@ public sealed class CityEspionageDamage(GameState world, RuleTables rules, Gamep
                         if (child.Result is null)
                         { return null; }
                         childLost = child.Result == 1;
+                        presentationFailures.AddRange(child.PresentationFailures);
                         child.Dispose();
                         child = null;
                     }

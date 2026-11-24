@@ -87,6 +87,7 @@ public sealed class PlantedNuclearDevice(GameState world, GameplayRandom random,
                         }
 
                         lost = capture.Result == 1;
+                        presentationFailures.AddRange(capture.PresentationFailures);
                         capture.Dispose();
                         capture = null;
                     }

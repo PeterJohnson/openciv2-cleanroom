@@ -6400,6 +6400,35 @@
         "U06.composed-response-capture-contact",
         "U07.composed-nuclear-delivery"
       ]
+    },
+    {
+      "id": "single-player-mission-composition",
+      "status": "partial",
+      "contract": "V06 local missions and fallbacks over retained V03/C09/U07/S02 services",
+      "publicSurface": "SinglePlayerMissions; SinglePlayerMissionEffects; mission Operation.PresentationFailures",
+      "review": "World-owned mission composition shares lifecycle, research, diplomacy, capture and nuclear services with combat. Authored menu/revolt readers and semantic presentation ports leave gameplay in actual retained children. Joined cases cover private visits, fallback readiness, technology grants and required failure/disposal, capture events and cosmetic diagnostics, poison/bribery and nuclear delivery. Child presentation failures reach mission and land-entry owners after committed gameplay. This qualifies shared composition, not general desktop admission or complete-game acceptance. Browser and cross-platform work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CityEspionageDamage.cs",
+        "src/OpenCiv2.Core/CityEspionageVisits.cs",
+        "src/OpenCiv2.Core/CityIncitement.cs",
+        "src/OpenCiv2.Core/CityMissions.cs",
+        "src/OpenCiv2.Core/CityTechnologyTheft.cs",
+        "src/OpenCiv2.Core/PlantedNuclearDevice.cs",
+        "src/OpenCiv2.Core/UnitEspionage.cs",
+        "src/OpenCiv2.Core/Units/LandEntry.cs",
+        "src/OpenCiv2.Session/CityMissionOperation.cs",
+        "src/OpenCiv2.Session/SinglePlayerMissions.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/SinglePlayerMissionCases.cs"
+      ],
+      "sharedGroups": [
+        "V06.composed-capture-diagnostics",
+        "V06.composed-damage-bribe",
+        "V06.composed-nuclear-delivery",
+        "V06.composed-private-fallback",
+        "V06.composed-theft-grant"
+      ]
     }
   ]
 }

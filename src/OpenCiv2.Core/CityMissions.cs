@@ -75,6 +75,9 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
 
     public sealed class Operation : IDisposable
     {
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
+        internal void Report(IEnumerable<Exception> errors) => presentationFailures.AddRange(errors);
         private readonly CityMissions parent;
         private readonly IEnumerator<CityMissionDecision?> steps;
         private ResearchReply? reply;
@@ -153,6 +156,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                             else if (!child.Completed)
                             { yield return null; }
                         }
+                        op.Report(child.PresentationFailures);
                         fallback = child.Fallback;
                     }
                     break;
@@ -166,6 +170,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                             else if (!child.Completed)
                             { yield return null; }
                         }
+                        op.Report(child.PresentationFailures);
                         fallback = child.Fallback;
                     }
                     break;
@@ -180,6 +185,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                             else if (!child.Completed)
                             { yield return null; }
                         }
+                        op.Report(child.PresentationFailures);
                     }
                     break;
                 case CityMission.PlantNuclear:
@@ -192,6 +198,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                             else if (!child.Completed)
                             { yield return null; }
                         }
+                        op.Report(child.PresentationFailures);
                     }
                     break;
                 case CityMission.Incite:
@@ -204,6 +211,7 @@ public sealed class CityMissions(GameState world, RuleTables rules, GameplayRand
                             else if (!child.Completed)
                             { yield return null; }
                         }
+                        op.Report(child.PresentationFailures);
                         fallback = child.Fallback;
                     }
                     break;

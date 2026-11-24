@@ -152,6 +152,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
                     else if (!mission.Completed)
                     { yield return null; }
                 }
+                operation.Report(mission.PresentationFailures);
                 Restore(original, movement);
                 operation.Result = new(true, destinationOwner);
                 yield break;
@@ -164,6 +165,7 @@ public sealed class LandEntry(GameState world, RuleTables rules, StackOperations
                 else if (unitMission.Result is null)
                 { yield return null; }
             }
+            operation.Report(unitMission.PresentationFailures);
             Restore(original, movement);
             if (unitMission.Result != 0)
             { operation.Result = new(true, destinationOwner); yield break; }

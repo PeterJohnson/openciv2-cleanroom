@@ -34,10 +34,11 @@ public sealed class CityIncitementOperation(CityIncitement.Operation operation, 
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (!operation.Completed)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var result = new OwnedList<NamedValue>([new("fallback", new CommandValue.Integer(operation.Fallback is { } mission ? (int)mission : -1))]);
         context.Effect("espionage.incitement.completed", result);
-        return completed = new(Result: result);
+        return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+            : new(CommandStatus.Failed, Result: result, Code: "city_incitement_presentation_failed");
     }
     public void Dispose() => operation.Dispose();
 }

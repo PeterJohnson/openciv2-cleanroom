@@ -36,6 +36,8 @@ public sealed class CityEspionageVisits(GameState world, UnitLoss loss, Civiliza
 
     public sealed class Operation : IDisposable
     {
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         private enum Phase { Begin, Visit, Loss, Tail, Done }
         private readonly CityEspionageVisits parent;
         private readonly CityMissionContext mission;
@@ -120,6 +122,7 @@ public sealed class CityEspionageVisits(GameState world, UnitLoss loss, Civiliza
                         pending = null;
                         if (child.Result is null)
                         { return null; }
+                        presentationFailures.AddRange(child.PresentationFailures);
                         child.Dispose();
                         child = null;
                         phase = Phase.Tail;

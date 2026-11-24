@@ -64,7 +64,8 @@ public sealed class CityEspionageDamageOperation(CityEspionageDamage.Operation o
         if (!operation.Completed)
         { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         context.Effect("espionage.city-damage.completed", new([]));
-        return completed = new();
+        return completed = operation.PresentationFailures.Count == 0 ? new()
+            : new(CommandStatus.Failed, Code: "city_damage_presentation_failed");
     }
     public void Dispose() => operation.Dispose();
 }

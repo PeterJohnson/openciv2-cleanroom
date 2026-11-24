@@ -54,7 +54,8 @@ public sealed class CityEspionageVisitOperation(CityEspionageVisits.Operation op
         { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var values = new OwnedList<NamedValue>([new("fallback", new CommandValue.Integer(operation.Fallback is { } mission ? (int)mission : -1))]);
         context.Effect("espionage.visit.completed", values);
-        return completed = new(Result: values);
+        return completed = operation.PresentationFailures.Count == 0 ? new(Result: values)
+            : new(CommandStatus.Failed, Result: values, Code: "city_visit_presentation_failed");
     }
     public void Dispose() => operation.Dispose();
 }

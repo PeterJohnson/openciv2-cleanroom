@@ -94,6 +94,7 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
                         if (loss.Result is null)
                         { return null; }
                         lost = loss.Result == 1;
+                        presentationFailures.AddRange(loss.PresentationFailures);
                         loss.Dispose();
                         loss = null;
                     }

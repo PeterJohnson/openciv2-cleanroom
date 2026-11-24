@@ -40,7 +40,8 @@ public sealed class UnitEspionageOperation(UnitEspionage.Operation operation, Fu
         { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         var result = new OwnedList<NamedValue>([new("stop", new CommandValue.Boolean(operation.Result == 1))]);
         context.Effect("unit.mission.completed", result);
-        return completed = new(Result: result);
+        return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+            : new(CommandStatus.Failed, Result: result, Code: "unit_espionage_presentation_failed");
     }
 
     public void Dispose() => operation.Dispose();

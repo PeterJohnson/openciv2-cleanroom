@@ -308,3 +308,13 @@ research and diplomacy bundles to actual capture, casualty events, nuclear
 delivery and paradrop response. See [SinglePlayerCombat.cs](../../src/OpenCiv2.Session/SinglePlayerCombat.cs)
 and [the shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerCombatCases.cs).
 General desktop admission and complete-game acceptance remain open.
+
+The `single-player-mission-composition` family joins actual V06 city/unit
+missions to those same research, capture, nuclear and lifecycle services. It
+checks private visits, retained fallback context/readiness, theft grants,
+required failure/disposal, capture-event presentation diagnostics, poison,
+bribery and planted nuclear delivery. See
+[SinglePlayerMissions.cs](../../src/OpenCiv2.Session/SinglePlayerMissions.cs) and
+[the shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerMissionCases.cs).
+General desktop movement/mission admission and complete-game acceptance remain
+open; browser and cross-platform validation are deferred.

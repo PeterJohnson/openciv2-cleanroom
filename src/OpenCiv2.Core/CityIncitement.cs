@@ -56,6 +56,9 @@ public sealed class CityIncitement(GameState world, CivilizationElimination life
 
     public sealed class Operation : IDisposable
     {
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
+        internal void Report(IEnumerable<Exception> errors) => presentationFailures.AddRange(errors);
         private readonly CityIncitement parent;
         private readonly IEnumerator<RevoltDecision?> steps;
         private ResearchReply? reply;
@@ -147,6 +150,7 @@ public sealed class CityIncitement(GameState world, CivilizationElimination life
                 else if (escape.Result is null)
                 { yield return null; }
             }
+            op.Report(escape.PresentationFailures);
         }
         if (choice == 1)
         {
@@ -172,5 +176,6 @@ public sealed class CityIncitement(GameState world, CivilizationElimination life
             else if (!transfer.Completed)
             { yield return null; }
         }
+        op.Report(transfer.PresentationFailures);
     }
 }

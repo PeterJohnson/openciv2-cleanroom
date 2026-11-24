@@ -183,6 +183,14 @@ shared retained scenario triggers; child presentation diagnostics reach combat
 completion. Semantic content, view and publication ports are explicit. Full
 movement/mission/turn admission and the generated desktop host remain open.
 
+`Session/SinglePlayerMissions` composes city visits, damage, theft, planted
+devices, incitement and unit espionage over the same retained services. Required
+readers supply authored mission and revolt options. Capture events, technology
+grants and lifecycle escape decisions stay with their actual children. Mission
+and land-entry parents retain child presentation errors for the final session
+result; cooperative fallbacks mark themselves ready for another local step.
+General native movement/mission admission remains open.
+
 `City/CapturePartisans.Begin` retains actual U01 creation through W03/V04 contact.
 Fortification, veteran sampling and visibility follow the completed child; later
 placement attempts read the live map while keeping the initial count/threshold.

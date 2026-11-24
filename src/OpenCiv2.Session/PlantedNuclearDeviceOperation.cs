@@ -59,7 +59,8 @@ public sealed class PlantedNuclearDeviceOperation(PlantedNuclearDevice.Operation
         if (!operation.Completed)
         { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         context.Effect("espionage.device.completed", new([]));
-        return completed = new();
+        return completed = operation.PresentationFailures.Count == 0 ? new()
+            : new(CommandStatus.Failed, Code: "planted_nuclear_device_presentation_failed");
     }
     public void Dispose() => operation.Dispose();
 }

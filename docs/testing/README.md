@@ -85,6 +85,12 @@ private replies preserve the losing unit and delayed capture fields. Required
 failures/disposal retain their prefixes, and casualty presentation errors reach
 the final combat result. Full desktop combat/movement admission remains open.
 
+The single-player mission composition joins authored city options to actual
+research grants, capture events, nuclear delivery and lifecycle services.
+Private visits, cooperative fallbacks, required failure/disposal and retained
+presentation errors are checked alongside poison and unit bribery. These shared
+cases do not yet qualify general desktop movement or mission admission.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

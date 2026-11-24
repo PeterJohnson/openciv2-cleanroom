@@ -74,6 +74,8 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
 
     public sealed class Operation : IDisposable
     {
+        private readonly List<Exception> presentationFailures = [];
+        public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         private enum Phase { Start, Menu, BribeStart, BribeReply, Escape, Done }
         private readonly UnitEspionage parent;
         private readonly int? actorUnit;
@@ -189,6 +191,7 @@ public sealed class UnitEspionage(GameState world, RuleTables rules, StackOperat
                         pending = null;
                         if (escape.Result is null)
                         { return null; }
+                        presentationFailures.AddRange(escape.PresentationFailures);
                         return Finish(1);
                     default:
                         return null;

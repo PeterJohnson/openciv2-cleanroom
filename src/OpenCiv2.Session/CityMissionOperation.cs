@@ -35,9 +35,10 @@ public sealed class CityMissionOperation(CityMissions.Operation operation, Func<
             return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
         }
         if (!operation.Completed)
-        { context.Publish(); return new(CommandStatus.Pending); }
+        { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
         context.Effect("espionage.city-mission.completed", new([]));
-        return completed = new();
+        return completed = operation.PresentationFailures.Count == 0 ? new()
+            : new(CommandStatus.Failed, Code: "city_mission_presentation_failed");
     }
     public void Dispose() => operation.Dispose();
 }

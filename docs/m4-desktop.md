@@ -8111,3 +8111,37 @@ adds no authored desktop admission or automation integration.
 | --- | --- |
 | `m4-combat-composition-native.json` | `6740e6416bb73bc17dbc00b1e22c5323b3b59a0ce969673807223ac50f0f5b5a` |
 | `m4-combat-composition-identity.json` | `644db4b39ee4eb6822c7ca2efd1a79e0457472c381eb781e3bf645b0ec934730` |
+
+## Shared city and unit mission composition
+
+`SinglePlayerMissions` composes city visits, damage, theft, planted devices,
+incitement and unit espionage using the same retained lifecycle, research,
+diplomacy, capture and nuclear services as combat. Required mission/revolt
+readers supply authored content; semantic presentation ports do not replace
+mission decisions or gameplay children.
+
+Mission parents now retain child presentation errors through escape, grant,
+capture and nuclear delivery. City/unit mission results and the land-entry
+parent preserve those diagnostics after completed gameplay. Cooperative city
+fallback, revolt and theft continuations mark themselves ready for another
+session step rather than waiting indefinitely for external input.
+
+Five shared groups join private visits and retained fallback context, theft
+through a real government decision, required failure/disposal, revolt capture
+through scenario grants and presentation failure, poison/bribery, and actual
+planted nuclear delivery. These qualify the shared service graph. General native
+movement/mission admission, generated human/AI turns and complete-game evidence
+remain open. Browser and cross-platform work remain deferred.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1898/1900**, with the two existing
+platform/audio skips. All **1863 shared groups** passed across **207 coverage
+families**; identity verified **922 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua
+suites were not rerun because this composition adds no authored desktop
+admission or automation integration.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-mission-composition-native.json` | `df6e7e9044df544a15a07cf912c62f1f08019bd2fc0d499d1b1a7d9617beeb83` |
+| `m4-mission-composition-identity.json` | `565e7ed8f8c718412e17c38ef20fc04b1ef862c92ead2830f21eee81b6d847b3` |
