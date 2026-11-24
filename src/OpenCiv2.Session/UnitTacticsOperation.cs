@@ -36,7 +36,8 @@ public sealed class UnitTacticsOperation(UnitTactics.Operation operation, Func<i
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result.Value))]);
             context.Effect("ai.unit-tactics.completed", result);
-            return completed = new(Result: result);
+            return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+                : new(CommandStatus.Failed, Result: result, Code: "unit_tactics_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
@@ -47,6 +48,7 @@ internal sealed class UnitTacticsInteraction(Func<int, ParticipantId> recipient,
     Func<EmissaryIntelligence, InteractionSpec>? intelligence)
 {
     private InteractionSpec? visit, intelligenceWindow;
+    private UnitTacticsDecision? previous;
     internal UnitTacticsReply? Reply(UnitTacticsDecision? pending, OperationInput input) => pending switch
     {
         UnitTacticsDecision.Barbarian barb => BarbarianOrderInteraction.Reply(barb.Decision, input) is { } b ? new(Research: b) : null,
@@ -57,23 +59,26 @@ internal sealed class UnitTacticsInteraction(Func<int, ParticipantId> recipient,
         UnitTacticsDecision.Paradrop drop => DropReply(drop.Decision, input),
         _ => null
     };
-    internal InteractionSpec Prompt(OperationContext context, UnitTacticsDecision pending) => pending switch
+    internal InteractionSpec Prompt(OperationContext context, UnitTacticsDecision pending)
     {
-        UnitTacticsDecision.Barbarian barb => BarbarianOrderInteraction.Prompt(context, barb.Decision, recipient, ref intelligenceWindow, intelligence),
-        UnitTacticsDecision.Lifecycle life => LifecycleInteraction.Prompt(context, life.Decision, recipient, ref intelligenceWindow, intelligence),
-        UnitTacticsDecision.Founding found => CityFoundingInteraction.Prompt(context, found.Decision, recipient, window, ref visit, ref intelligenceWindow, intelligence),
-        UnitTacticsDecision.Mission mission => UnitMissionInteraction.Prompt(context, mission.Decision, recipient, ref intelligenceWindow, intelligence),
-        UnitTacticsDecision.Pillage pillage => AttackConfirmationInteraction.Prompt(pillage.Warning, recipient(pillage.Warning.Actor.Civilization)),
-        UnitTacticsDecision.Paradrop { Decision: ParadropDecision.Attack attack } =>
-            AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
-        UnitTacticsDecision.Paradrop { Decision: ParadropDecision.Capture capture } =>
-            CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref visit, ref intelligenceWindow, intelligence),
-        _ => throw new InvalidOperationException("Unknown unit tactics decision")
-    };
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
+        previous = pending;
+        return pending switch
+        {
+            UnitTacticsDecision.Barbarian barb => BarbarianOrderInteraction.Prompt(context, barb.Decision, recipient, ref intelligenceWindow, intelligence),
+            UnitTacticsDecision.Lifecycle life => LifecycleInteraction.Prompt(context, life.Decision, recipient, ref intelligenceWindow, intelligence),
+            UnitTacticsDecision.Founding found => CityFoundingInteraction.Prompt(context, found.Decision, recipient, window, ref visit, ref intelligenceWindow, intelligence),
+            UnitTacticsDecision.Mission mission => UnitMissionInteraction.Prompt(context, mission.Decision, recipient, ref intelligenceWindow, intelligence),
+            UnitTacticsDecision.Pillage pillage => AttackConfirmationInteraction.Prompt(pillage.Warning, recipient(pillage.Warning.Actor.Civilization)),
+            UnitTacticsDecision.Paradrop drop => ParadropInteraction.Prompt(context, drop.Decision, recipient,
+                window, ref visit, ref intelligenceWindow, intelligence),
+            _ => throw new InvalidOperationException("Unknown unit tactics decision")
+        };
+    }
     private static UnitTacticsReply? DropReply(ParadropDecision pending, OperationInput input)
     {
-        ResearchReply? reply = pending is ParadropDecision.Capture capture ? CityCaptureInteraction.Reply(capture.Decision, input)
-            : AttackConfirmationInteraction.Reply(input) is { } answer ? new(answer) : null;
+        var reply = ParadropInteraction.Reply(pending, input);
         return reply is { } supplied ? new(Research: supplied) : null;
     }
 }

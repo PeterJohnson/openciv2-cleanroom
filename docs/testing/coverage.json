@@ -3804,7 +3804,7 @@
       "status": "partial",
       "contract": "U05 local landfall, boarding, unloading, port/exploration wakeup, aircraft basing/fuel and Coast-bound loss with actual U01/V01 children; player airlift command and direct executor; local paradrop admission, viewer publication, approach and capture/revelation",
       "publicSurface": "TransportMovement; MovementContinuation; SpecialMovementFinish; CivilizationElimination.BeginEraseCargo; LandfallOperation; SpecialMovementOperation; PlayerAirlift; PlayerAirliftOperation; Paradrop; ParadropOperation; StackOperations.ClearVisibility",
-      "review": "Landfall preserves captured-bound clearing, validated first eligible passenger selection, captured selection across reply, distinct no-passenger notice and prompt/autoplay answer semantics. Boarding uses actual set-sleep/exhaust/gather and accepts spent-equals-allowance ships, retaining other cargo changes. Unload wakes all sleeping land units then uses actual U04 selectability and last matching selection, applying the known-selectable U04 focus branch and MoveUnits state in the core; port and exploration wakeups preserve cargo links and their distinct gates. Aircraft basing uses city/airbase or physical carrier/submarine membership without ownership/capacity admission, the range-one postattack exception, signed byte fuel comparison and basic deletion. Coast-bound odds preserve Lighthouse/advance gates, draw-before-coast and retained work state, with actual cargo-aware deletion and nested last-Settler/foreign-spy incidents. Session continuations route landfall actors and nested victims; failures/disposal retain committed prefixes. U02 arrival/common finish now compose the actual services; outer movement dispatch, full desktop command/UI/content binding and generated complete-game acceptance remain open. Browser/cross-platform work is deferred. Player airlift retains actor/origin/owner across destination and warning choices, includes used airports in the selection, checks directed actor-to-fighter war with no domain or movement gate, and consumes one primary remainder test per risk point. Actual single-unit relocation, city-window notification and basic deletion preserve ordered effects, nested victim decisions, live observer notices and terminal failure prefixes. Direct transfer bypasses command eligibility; AI airlift remains separate. Paradrop composes actual V04 confirmation, U01 cargo lift/whole-stack visibility and relocation, C09 capture and W03 revelation. Retains captured owner/city/origin, approach tie/draw laws, human movement preservation, moving-actor reload and ordered finish effects. U05 documents X01 repairs for unwritten viewer locals, absent nearest-city names/approaches and absent actors; these change presentation or bound invalid access, not ordinary gameplay. Tests exercise command versus direct entry, peace/senate cancellation, viewers, approach ties, cargo, actual capture/P06 suspension, actor replacement and committed failure prefixes. P01/P05 desktop controls, outer AI/turn orchestration and complete-game acceptance remain open. Special-movement sound/redraw and boarding redraw failures are diagnostic and no longer suppress later gameplay or state publication; required loss notices remain terminal.",
+      "review": "Landfall preserves captured-bound clearing, validated first eligible passenger selection, captured selection across reply, distinct no-passenger notice and prompt/autoplay answer semantics. Boarding uses actual set-sleep/exhaust/gather and accepts spent-equals-allowance ships, retaining other cargo changes. Unload wakes all sleeping land units then uses actual U04 selectability and last matching selection, applying the known-selectable U04 focus branch and MoveUnits state in the core; port and exploration wakeups preserve cargo links and their distinct gates. Aircraft basing uses city/airbase or physical carrier/submarine membership without ownership/capacity admission, the range-one postattack exception, signed byte fuel comparison and basic deletion. Coast-bound odds preserve Lighthouse/advance gates, draw-before-coast and retained work state, with actual cargo-aware deletion and nested last-Settler/foreign-spy incidents. Session continuations route landfall actors and nested victims; failures/disposal retain committed prefixes. U02 arrival/common finish now compose the actual services; outer movement dispatch, full desktop command/UI/content binding and generated complete-game acceptance remain open. Browser/cross-platform work is deferred. Player airlift retains actor/origin/owner across destination and warning choices, includes used airports in the selection, checks directed actor-to-fighter war with no domain or movement gate, and consumes one primary remainder test per risk point. Actual single-unit relocation, city-window notification and basic deletion preserve ordered effects, nested victim decisions, live observer notices and terminal failure prefixes. Direct transfer bypasses command eligibility; AI airlift remains separate. Paradrop composes actual V04 confirmation, U01 cargo lift/whole-stack visibility and relocation, C09 capture and W03 revelation. Retains captured owner/city/origin, approach tie/draw laws, human movement preservation, moving-actor reload and ordered finish effects. U05 documents X01 repairs for unwritten viewer locals, absent nearest-city names/approaches and absent actors; these change presentation or bound invalid access, not ordinary gameplay. Tests exercise command versus direct entry, peace/senate cancellation, viewers, approach ties, cargo, actual capture/P06 suspension, actor replacement and committed failure prefixes. P01/P05 desktop controls, outer AI/turn orchestration and complete-game acceptance remain open. Special-movement sound/redraw and boarding redraw failures are diagnostic and no longer suppress later gameplay or state publication; required loss notices remain terminal. Contact-capable paradrop now retains actual W03/V04 decisions after relocation and capture, before city notification, garrison clearing and status. The production lifecycle/diplomacy graph supplies scenario contact and recursive Library decisions. Shared private routing covers player, reactive combat and proactive unit-tactics callers; cancellation/defaults, stable polling, required failure/disposal and child presentation diagnostics preserve committed landing effects. General desktop admission remains open. Local paradrop/combat/foreign-unit adapters now queue cooperative continuation after bounded child work; a multi-round combat command completes through SessionRuntime without external replies or manual Resume.",
       "sources": [
         "src/OpenCiv2.Core/CivilizationElimination.cs",
         "src/OpenCiv2.Core/Units/Paradrop.cs",
@@ -3820,11 +3820,13 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/ParadropCases.cs",
+        "tests/OpenCiv2.FoundationCases/ParadropContactCases.cs",
         "tests/OpenCiv2.FoundationCases/PlayerAirliftCases.cs",
         "tests/OpenCiv2.FoundationCases/SpecialMovementCases.cs",
         "tests/OpenCiv2.FoundationCases/TransportMovementCases.cs"
       ],
       "sharedGroups": [
+        "A04.chooser-paradrop-contact",
         "U05.aircraft-basing-attack",
         "U05.aircraft-fuel-basic-loss",
         "U05.boarding-actual-cargo",
@@ -3837,7 +3839,10 @@
         "U05.paradrop-capture-session",
         "U05.paradrop-cargo-revelation",
         "U05.paradrop-command-target-admission",
+        "U05.paradrop-contact-failure-disposal",
+        "U05.paradrop-contact-private-replies",
         "U05.paradrop-failure-prefixes",
+        "U05.paradrop-retained-contact-order",
         "U05.paradrop-treaty-senate",
         "U05.paradrop-visibility-approach-repairs",
         "U05.player-airlift-admission",
@@ -3848,7 +3853,9 @@
         "U05.player-airlift-threats",
         "U05.special-failure-prefixes",
         "U05.special-nested-session",
-        "U05.unload-port-wakeup"
+        "U05.unload-port-wakeup",
+        "U06.response-paradrop-contact",
+        "U06.session-cooperative-rounds"
       ]
     },
     {

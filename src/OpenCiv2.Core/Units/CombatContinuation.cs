@@ -101,6 +101,7 @@ public sealed class CombatContinuation(GameState world, RuleTables rules, Combat
             else if (!child.Completed)
             { yield return null; }
         }
+        operation.RememberFailures(child.PresentationFailures);
     }
     private IEnumerable<CombatContinuationDecision?> FinishSurvivor(Operation operation, PreparedCombat combat, string call)
     {

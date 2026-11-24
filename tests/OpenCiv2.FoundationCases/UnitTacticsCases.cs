@@ -33,10 +33,10 @@ public static partial class FoundationSuite
         public List<string> Effects { get; } = [];
         public bool FailCosmetic;
         public MapPoint Point => Data.Unit(0).Position;
-        public TacticsFixture(List<Choice>? choices = null, RevelationFixture? data = null, List<Choice>? paraChoices = null)
+        public TacticsFixture(List<Choice>? choices = null, RevelationFixture? data = null, List<Choice>? paraChoices = null, UnitRevelation? revelation = null)
         {
             Data = data ?? new();
-            Missions = new(data: Data); Para = new(paraChoices, Data); Found = new(choices: choices, data: Data);
+            Missions = new(data: Data); Para = new(paraChoices, Data, revelation: revelation); Found = new(choices: choices, data: Data);
             var incidents = new IncidentFixture(Random, Data);
             // Build the real child graph first, then author a coherent, empty world for this group.
             World.Entities.Units.SetEnd(0); World.Entities.Cities.SetEnd(0);

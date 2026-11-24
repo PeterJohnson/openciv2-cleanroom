@@ -8030,3 +8030,46 @@ automation integration.
 | --- | --- |
 | `m4-lifecycle-composition-native.json` | `a566dfe67f684cb2c8d9cf3ece7911a32e81e03642f77bf8835e97768ee41d6f` |
 | `m4-lifecycle-composition-identity.json` | `623bb56d680779adff182d7d140a02f4bf88a8a8f3814408a1a5456fd6f9b4ab` |
+
+## Retained paradrop contact
+
+The combat dependency audit found U05 still calling synchronous W03 revelation
+with contact enabled. Paradrop now retains the actual revelation operation after
+landing and capture, before city notification, garrison clearing and status.
+Its player, A07/A04 and U06 response callers forward the full research/contact
+reply. A shared interaction adapter handles attack, capture and contact decisions;
+new pending decisions invalidate cached intelligence presentations.
+
+Child capture/contact presentation diagnostics pass through reactive and proactive
+AI parents to the owning combat or tactics result. Session adapters report those
+failures after committed gameplay rather than silently returning success.
+
+Six shared groups cover the production lifecycle/diplomacy graph joined to
+paradrop, recursive Library grants, private player replies, reactive combat and
+proactive unit tactics. They check stable landing identity and choice traces,
+delayed garrison/status effects, cancellation/defaults, required media failure,
+disposal and cosmetic contact failure. Initial fixtures were corrected to use
+the local human for Library government decisions and the shared research
+emissary service for presentation failure injection. These joins remove the
+synchronous revelation blocker; they do not close full desktop combat/movement
+composition, generated-game scheduling or complete-game acceptance. Original-observation gaps
+remain open; browser and cross-platform work remain deferred.
+
+Review also found that the local combat, response, paradrop, paratrooper-policy
+and foreign-unit adapters could leave bounded work pending without scheduling a
+next step. They now return cooperative readiness. A real multi-round combat
+command advances through the session queue without external replies, preserving
+its one-time movement charge and casualty result.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1887/1889**, with the two existing
+platform/audio skips. All **1852 shared groups** passed across **205 coverage
+families**; identity verified **918 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Native input and Lua suites
+were not rerun: this checkpoint adds no authored desktop command admission or
+automation integration.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-paradrop-contact-native.json` | `b0712a08019e0b0f88d9c28979fb25dbfeb3f100661ff6e166ef488bc9158285` |
+| `m4-paradrop-contact-identity.json` | `57ff70fcf57fbf59ecefea7bb6715c36a06127f189015e562b659a4bb2d22615` |

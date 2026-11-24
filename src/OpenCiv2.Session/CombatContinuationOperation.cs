@@ -23,7 +23,10 @@ public sealed class CombatContinuationOperation(CombatContinuation.Operation ope
         { return completed; }
         try
         {
+            var previous = pending;
             pending = operation.Resume(pending is null ? null : CombatContinuationInteraction.Reply(pending, input));
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -31,10 +34,11 @@ public sealed class CombatContinuationOperation(CombatContinuation.Operation ope
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result!.Value))]);
             context.Effect("combat.continuation.completed", result);
-            return completed = new(Result: result);
+            return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+                : new(CommandStatus.Failed, Result: result, Code: "combat_continuation_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
@@ -47,8 +51,8 @@ internal static class CombatContinuationInteraction
     {
         if (pending is CombatContinuationDecision.Lifecycle lifecycle)
         { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
-        if (pending is CombatContinuationDecision.Response { Decision: ParadropDecision.Capture capture })
-        { return CityCaptureInteraction.Reply(capture.Decision, input); }
+        if (pending is CombatContinuationDecision.Response response)
+        { return ParadropInteraction.Reply(response.Decision, input); }
         return input.Kind switch
         {
             OperationInputKind.Choice when input.Choice is { } choice => new(choice),
@@ -62,8 +66,8 @@ internal static class CombatContinuationInteraction
         return pending switch
         {
             CombatContinuationDecision.Lifecycle incident => LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence),
-            CombatContinuationDecision.Response { Decision: ParadropDecision.Attack attack } => AttackConfirmationInteraction.Prompt(attack.Warning, recipient(attack.Warning.Actor.Civilization)),
-            CombatContinuationDecision.Response { Decision: ParadropDecision.Capture capture } => CityCaptureInteraction.Prompt(context, capture.Decision, recipient, window, ref windowPrompt, ref intelligenceWindow, intelligence),
+            CombatContinuationDecision.Response response => ParadropInteraction.Prompt(context, response.Decision, recipient,
+                window, ref windowPrompt, ref intelligenceWindow, intelligence),
             _ => throw new InvalidOperationException("Unknown combat continuation decision")
         };
     }

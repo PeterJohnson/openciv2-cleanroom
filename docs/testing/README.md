@@ -64,6 +64,13 @@ disposal and required/cosmetic failures. U02 completion forwards the same contac
 before its direction and cleanup tail. General native movement admission remains
 open.
 
+U05 paradrop retains W03 contact after landing, including scenario text and
+recursive research decisions, before city notification and garrison cleanup.
+Player, reactive combat and proactive unit-tactics cases use actual retained
+revelation; private replies, cancellation/defaults, disposal and required failures
+preserve the landing prefix. Child presentation failures reach the owning result.
+General native paradrop and combat admission remain open.
+
 The single-player lifecycle composition family uses the production research,
 diplomacy and lifecycle bundles together. It covers scenario creation entering
 contact and recursive grants, contextual recreation through elimination,

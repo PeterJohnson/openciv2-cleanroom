@@ -24,7 +24,10 @@ public sealed class ForeignUnitOperation(ForeignUnitMovement.Operation operation
         try
         {
             var reply = ForeignUnitInteraction.Reply(pending, input);
+            var previous = pending;
             pending = operation.Resume(pending is null ? null : reply);
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -32,7 +35,7 @@ public sealed class ForeignUnitOperation(ForeignUnitMovement.Operation operation
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = operation.Result!;
             var values = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(result.Value)),
                 new("finish", new CommandValue.Boolean(result.Finish)), new("x", new CommandValue.Integer(result.Destination.X)), new("y", new CommandValue.Integer(result.Destination.Y))]);

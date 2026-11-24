@@ -57,6 +57,7 @@ public sealed partial class UnitTactics
                 else if (child.Result is null)
                 { yield return null; }
             }
+            op.Report(child.PresentationFailures);
             if (Apply(op, f, child.Result.Value))
             { yield break; }
         }

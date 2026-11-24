@@ -24,6 +24,7 @@ public abstract record ParadropDecision
 {
     public sealed record Attack(AttackWarning Warning) : ParadropDecision;
     public sealed record Capture(CityCaptureDecision Decision) : ParadropDecision;
+    public sealed record Contact(DiplomaticContactDecision Decision) : ParadropDecision;
 }
 
 /// <summary>U05 local paradrop with actual V04 permission, U01 cargo/placement, C09 capture and W03
@@ -52,10 +53,12 @@ public sealed class Paradrop(GameState world, RuleTables rules, StackOperations 
         private readonly Paradrop parent;
         private readonly IEnumerator<ParadropDecision?> steps;
         private ResearchReply? reply;
+        private readonly List<Exception> failures = [];
         private bool disposed, faulted;
         public bool Completed { get; private set; }
         public bool Landed { get; internal set; }
         public ParadropDecision? Pending { get; private set; }
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
         internal Operation(Paradrop parent, UnitSlot actor, MapPoint target, string call)
         {
             ArgumentException.ThrowIfNullOrEmpty(call);
@@ -63,6 +66,7 @@ public sealed class Paradrop(GameState world, RuleTables rules, StackOperations 
             steps = parent.Execute(this, actor, target, call).GetEnumerator();
         }
         internal ResearchReply? TakeReply() { var result = reply; reply = null; return result; }
+        internal void Report(IEnumerable<Exception> errors) => failures.AddRange(errors);
         public ParadropDecision? Resume(ResearchReply? response = null)
         {
             ObjectDisposedException.ThrowIf(disposed, this);
@@ -196,9 +200,20 @@ public sealed class Paradrop(GameState world, RuleTables rules, StackOperations 
                 else if (!child.Completed)
                 { yield return null; }
             }
+            operation.Report(child.PresentationFailures);
             actor = world.Globals.MovingUnit ?? throw new InvalidOperationException("Capture did not retain a continuing paradrop actor");
         }
-        revelation.Reveal(actor.Value, true);
+        using (var child = revelation.Begin(actor.Value, true, call + "/revelation"))
+        {
+            while (!child.Completed)
+            {
+                if (child.Resume(operation.TakeReply()) is { } pending)
+                { yield return new ParadropDecision.Contact(pending); }
+                else if (!child.Completed)
+                { yield return null; }
+            }
+            operation.Report(child.PresentationFailures);
+        }
         effects.CityUnitChanged(actor, origin);
         Unit(actor).Flags.Garrison = false;
         effects.RedrawStatus();

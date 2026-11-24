@@ -26,9 +26,9 @@ public static partial class FoundationSuite
         public List<string> Calls { get; } = [];
         public List<NuclearNotice> Notices { get; } = [];
         public bool FailRedraw, FailNuclearNotice;
-        public ContinuationFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
+        public ContinuationFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false, UnitRevelation? revelation = null)
         {
-            Drop = new(choices, data, retainGrants); Incidents = new(Life.Random, Data);
+            Drop = new(choices, data, retainGrants, revelation); Incidents = new(Life.Random, Data);
             Data.Rules.Units[0] = Data.Rules.Units[0] with { Attack = 10, Defense = 1, Firepower = 10, HitPoints = 10 };
             Data.Rules.Units[4] = Data.Rules.Units[4] with { Attack = 2, Defense = 1, Firepower = 1, HitPoints = 10 };
             Data.AddUnit(1, 2, 4, new(12, 8)); World.Globals.MovingUnit = new(0);

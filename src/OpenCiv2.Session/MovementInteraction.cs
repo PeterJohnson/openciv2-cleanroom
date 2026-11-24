@@ -14,6 +14,7 @@ public sealed class MovementInteraction(Func<int, ParticipantId> recipient,
     private InteractionSpec? visitWindow, intelligenceWindow, captureWindow, hutWindow;
     private DiplomaticContactDecision? contactDecision;
     private InteractionSpec? contactWindow;
+    private MovementDecision? previous;
     public ResearchReply? Reply(MovementDecision? pending, OperationInput input)
     {
         return pending switch
@@ -33,6 +34,9 @@ public sealed class MovementInteraction(Func<int, ParticipantId> recipient,
     }
     public InteractionSpec Prompt(OperationContext context, MovementDecision pending)
     {
+        if (!ReferenceEquals(previous, pending))
+        { intelligenceWindow = null; }
+        previous = pending;
         return pending switch
         {
             MovementDecision.Land { Decision: LandEntryDecision.Caravan trade } => CaravanInteraction.Prompt(context, trade.Decision, recipient, ref intelligenceWindow, intelligence),

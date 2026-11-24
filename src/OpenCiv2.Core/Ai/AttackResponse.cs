@@ -22,6 +22,8 @@ public sealed class AttackResponse(GameState world, RuleTables rules, StackOpera
         private readonly string call;
         private Paradrop.Operation? child;
         private bool started, disposed, faulted;
+        private readonly List<Exception> failures = [];
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
         public bool Completed { get; private set; }
         public UnitSlot? Paratrooper { get; private set; }
         public int RetaskedUnits { get; private set; }
@@ -57,7 +59,7 @@ public sealed class AttackResponse(GameState world, RuleTables rules, StackOpera
                 }
                 var pending = child!.Resume(reply);
                 if (child.Completed)
-                { Completed = true; child.Dispose(); }
+                { failures.AddRange(child.PresentationFailures); Completed = true; child.Dispose(); }
                 return pending;
             }
             catch { faulted = true; child?.Dispose(); throw; }

@@ -28,14 +28,14 @@ public static partial class FoundationSuite
         public List<(MapPoint From, MapPoint To, int Direction)> Animations { get; } = [];
         public Action? OnChanged;
         public string? Failure;
-        public ParadropFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false)
+        public ParadropFixture(List<Choice>? choices = null, RevelationFixture? data = null, bool retainGrants = false, UnitRevelation? revelation = null)
         {
             Capture = new(choices ?? [], data, retainGrants); Data.Unit(0).Type = new(0);
             Data.Rules.Units[0] = Data.Rules.Units[0] with { Role = RuleRole.Attack, Identity = new("jumper", "Jumper") };
             Data.Rules.Cosmic = Data.Rules.Cosmic with { ParadropRange = 6 };
             World.Globals.ActiveUnit = new(0);
             var confirmation = new AttackConfirmation(World, Data.Rules, AttackNotices.Add);
-            Drop = new(World, Data.Rules, Data.Stacks, new(World, Data.Rules, Data.Stacks), new(World, Data.Rules, Data.Stacks, Data),
+            Drop = new(World, Data.Rules, Data.Stacks, new(World, Data.Rules, Data.Stacks), revelation ?? new(World, Data.Rules, Data.Stacks, Data),
                 Capture.Capture, confirmation, Capture.Life.Random, this);
         }
         private void Effect(string name) { Effects.Add(name); if (Failure == name) throw new InvalidOperationException("Unavailable " + name); }

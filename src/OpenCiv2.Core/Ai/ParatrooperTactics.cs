@@ -88,6 +88,8 @@ public sealed class ParatrooperTactics(GameState world, RuleTables rules, StackO
         private readonly string call;
         private bool started, faulted, disposed;
         private Paradrop.Operation? child;
+        private readonly List<Exception> failures = [];
+        public IReadOnlyList<Exception> PresentationFailures => failures.AsReadOnly();
         public SpecialUnitChoice? Result { get; private set; }
         public MapPoint? Destination { get; private set; }
         public bool Landed { get; private set; }
@@ -117,7 +119,7 @@ public sealed class ParatrooperTactics(GameState world, RuleTables rules, StackO
                 var pending = child!.Resume(reply);
                 Landed = child.Landed;
                 if (child.Completed)
-                { Result = new(SpecialUnitRoute.ReturnZero); child.Dispose(); child = null; }
+                { failures.AddRange(child.PresentationFailures); Result = new(SpecialUnitRoute.ReturnZero); child.Dispose(); child = null; }
                 return pending;
             }
             catch { faulted = true; if (child is not null) { Landed = child.Landed; } child?.Dispose(); throw; }

@@ -24,7 +24,10 @@ public sealed class CombatOperation(CombatExecution.Operation operation, Func<in
         try
         {
             var reply = CombatInteraction.Reply(pending, input);
+            var previous = pending;
             pending = operation.Resume(pending is null ? null : reply);
+            if (!ReferenceEquals(previous, pending))
+            { intelligenceWindow = null; }
             if (pending is not null)
             {
                 context.Publish();
@@ -32,10 +35,11 @@ public sealed class CombatOperation(CombatExecution.Operation operation, Func<in
                 return new(CommandStatus.AwaitingInteraction, Interaction: prompt);
             }
             if (!operation.Completed)
-            { context.Publish(); return new(CommandStatus.Pending); }
+            { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("result", new CommandValue.Integer(operation.Result!.Value))]);
             context.Effect("combat.completed", result);
-            return completed = new(Result: result);
+            return completed = operation.PresentationFailures.Count == 0 ? new(Result: result)
+                : new(CommandStatus.Failed, Result: result, Code: "combat_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
