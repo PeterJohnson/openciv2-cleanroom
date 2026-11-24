@@ -1133,3 +1133,9 @@ A08 valuation, V05 reception, V03 grants and captured-technology selection suppl
 the gameplay children. `Session/DiplomaticTechnologyOperation` routes offers,
 research/government and intelligence choices privately. Full audience/menu callers
 remain open.
+
+`Core/DiplomaticGifts` owns V05 §4's gift menu and gold attitude valuation. It
+composes the technology survey, retained grants, nearest-city query and stack
+transfer. The meeting gift counter belongs to `DiplomacyWorkspace`; the future
+audience entry owns its reset. `Session/DiplomaticGiftOperation` routes gift and
+nested research choices privately. Favor and full audience callers remain open.

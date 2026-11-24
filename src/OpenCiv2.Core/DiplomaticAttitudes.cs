@@ -20,6 +20,7 @@ public sealed class DiplomacyWorkspace
     public int Fear, Demand, RequestMode, PeaceInclination, LastContact, NearbyUnits, CapturedCities;
     public int? WarTarget, StrongestEnemy, WeakestEnemy;
     public int? BestTechnology, SecondTechnology, WantedTechnology;
+    public int GiftsThisMeeting;
 }
 
 /// <summary>V04 §2 attitude/hostility primitives and §11 global reputation maintenance.

@@ -5292,6 +5292,31 @@
         "V05.technology-session-cancellation",
         "V05.technology-survey-blocking"
       ]
+    },
+    {
+      "id": "diplomatic-gifts",
+      "status": "partial",
+      "contract": "V05 section4 local gift menu, technology/gold gifts and military transfer with breakthrough",
+      "publicSurface": "DiplomaticGifts.GoldValue/Begin; DiplomaticGiftDecision; DiplomaticGiftOperation; DiplomacyWorkspace.GiftsThisMeeting",
+      "review": "Actual V05 technology survey, V03 retained grants, C01 nearest destination and U01 detach/attach. Signed gold/request/cost arithmetic, alternative gift values best, live destination coordinates, selective unit counters and knowledge-based breakthrough. Private Session routing, cancellation, required-failure prefixes and cosmetic diagnostics. Full audience integration and favor/map-exchange controllers remain open; browser/cross-platform and network work are deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
+        "src/OpenCiv2.Core/DiplomaticGifts.cs",
+        "src/OpenCiv2.Session/DiplomaticGiftOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomaticGiftCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.gift-breakthrough",
+        "V05.gift-gold-counters",
+        "V05.gift-government-continuation",
+        "V05.gift-military-rejections",
+        "V05.gift-military-transfer",
+        "V05.gift-private-session",
+        "V05.gift-session-cancellation",
+        "V05.gift-technology-failures"
+      ]
     }
   ]
 }

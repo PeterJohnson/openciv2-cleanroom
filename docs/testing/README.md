@@ -1096,3 +1096,11 @@ grant, repeated exchange, refusal/gift paths, alternate-offer rejection, require
 failure/disposal and nested government decisions. Session cases prove private
 routing and non-cancellable technology selection. The displayed wanted advance
 does not replace V03's actual chooser. Full audience integration remains open.
+
+V05 gift cases cover blockwise gold valuation, offered amount deduplication,
+signed gift/request counters, alternative technology valuation and actual grants.
+Military cases use real nearest-city and stack operations, check selective owner
+counters and live destination coordinates, and exercise obsolescence and strength
+gates. Breakthrough tests cover index-zero suppression and grants without donor
+knowledge. Private Session, cancellation, nested government and required-failure
+cases preserve committed effects. Full audience/favor integration remains open.

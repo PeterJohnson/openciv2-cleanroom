@@ -5717,3 +5717,51 @@ Full V05 audiences, gifts/favors and treaty negotiation remain open, together wi
 the previously recorded F04 formulas, relation-review input gap, complete turn
 orchestration and generated human/AI end-condition acceptance. Browser,
 cross-platform qualification and network execution remain deferred.
+
+## V05 retained gifts and military transfers — 2026-11-23
+
+`DiplomaticGifts` implements V05 §4's gift menu with the actual technology survey,
+retained V03 grants, C01 nearest-city query and U01 detach/attach operations.
+Technology gifts value the best choice even when giving the alternative. Gold
+offers use the specified quantized, deduplicated amounts and blockwise attitude
+value; accepted off-nominal negative amounts reverse the transfer. Gift counters
+retain signed32 and their request adjustment reads signed8, independently of the
+signed8 request counter. The future audience entry owns the meeting-counter reset.
+
+Military gifts retain the selected destination identity and use its live position
+after unit selection. They update only the specified owner/type counters,
+visibility and home, leaving movement, orders and military totals unchanged.
+Obsolescence and strength gates execute before transfer. Breakthrough uses actual
+V03 ancestry, suppresses index zero and can grant an advance the donor does not
+know. Actual grant decisions retain transfer effects and delay the gift tail.
+
+The Session adapter routes menu, city, unit, gold, technology and nested grant
+choices privately. Cancel/timeout maps to the specified decline for each prompt.
+Required notices stop at their actual mutation prefix; status/city presentation
+failures are collected without undoing gameplay. Eight groups cover arithmetic,
+rejection gates, transfer/stack effects, breakthroughs, government continuations,
+private routing, cancellation and failures/disposal.
+
+Initial probes caught missing/misencoded controlled emissary draws in the
+breakthrough fixture and missing terrain-work rules in the government fixture.
+The corrected fixtures now exercise the actual grant and city-recalculation
+children. Earlier failing receipts are retained for diagnosis; final evidence is
+listed below.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1557 of 1559**, with two existing
+platform/audio skips. The shared probe passed all **1524 groups** across 169
+coverage families; source identity verified **779 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. This checkpoint uses
+native Core/Session evidence and the App build; no new graphical input-driver run
+or full desktop audience acceptance is claimed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-gift-final-probe.json` | `01cfa24262cb22f36d6c1ba7410c51e70b85695545b402e75e5cb9f4931b1986` |
+| `m4-gift-identity.json` | `885ff0445fa8e1e2595b7f173fa7e4c39ebd77a426556b34ef79dc7f35509270` |
+
+Full V05 audiences, favor/map-exchange and treaty negotiation remain open,
+together with the previously recorded F04 formulas, relation-review input gap,
+complete turn orchestration and generated human/AI end-condition acceptance.
+Browser, cross-platform qualification and network execution remain deferred.
