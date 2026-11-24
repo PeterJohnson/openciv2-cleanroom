@@ -6239,7 +6239,7 @@
       "status": "partial",
       "contract": "U04 shared/player order mutations; U01 section 8 explicit home affiliation",
       "publicSurface": "UnitPlayerOrders Fortify/Sleep/Home/Wait/BeginAutomation/EndPlayerTurn; desktop unit.wait/unit.sleep/unit.home/unit.fortify",
-      "review": "Fortify queues and exhausts without applying AI home changes; air/city/airbase and sleep carrier/submarine/coast gates retain their distinctions. Sleep uses actual U01 mutation without movement cost. Home refreshes old/new affiliation or invokes actual U04 recovery search; Trade refusal and foreign-city acceptance remain distinct. Wait joins actual selection/revelation/contact; End Player Turn only exhausts local units. Wait also hands selected queued Fortify/work orders to the existing desktop execution loop. Shared/custom-rule and direct/console/native save/replay tests cover the admitted desktop commands. Full movement/Skip/Disband composition, native off-city Home/Goto and automation hold production remain open; browser/cross-platform execution deferred.",
+      "review": "Fortify queues and exhausts without applying AI home changes; air/city/airbase and sleep carrier/submarine/coast gates retain their distinctions. Sleep uses actual U01 mutation without movement cost. Home refreshes old/new affiliation or invokes actual U04 recovery search; Trade refusal and foreign-city acceptance remain distinct. Wait joins actual selection/revelation/contact; End Player Turn only exhausts local units. Wait also hands selected queued Fortify/work orders to the existing desktop execution loop. Shared/custom-rule and direct/console/native save/replay tests cover the admitted desktop commands. Full movement/Skip composition, native off-city Home/Goto and automation hold production remain open; browser/cross-platform execution deferred.",
       "sources": [
         "src/OpenCiv2.App/SeamView.Actions.cs",
         "src/OpenCiv2.App/SeamView.Play.cs",
@@ -6262,6 +6262,36 @@
         "U04.player-orders-sleep-air",
         "U04.player-orders-sleep-coast",
         "U04.player-orders-wait-contact"
+      ]
+    },
+    {
+      "id": "unit-disband-command",
+      "status": "partial",
+      "contract": "U04 Disband; C06 build snapshot; U01 cargo loss; C01 removal; V01/V06 lifecycle",
+      "publicSurface": "UnitDisband; UnitDisbandOperation; desktop unit.disband",
+      "review": "Local command captures unit/city confirmation and reads live shield-credit inputs after acceptance. Actual cargo loss and city deletion retain nested elimination/incident decisions; cosmetic redraw errors preserve completed gameplay. Shared, private-session and direct/console replay cases cover arithmetic, gates, cargo, failures, cancellation and last-settler defeat. Native menus compare complete saves and exercise ordered defeat reports. General generated-game, editor and network admission remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Actions.cs",
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Core/Units/UnitDisband.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Disband.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/UnitDisbandOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DisbandCases.cs",
+        "tests/OpenCiv2.FoundationProbe/Program.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "U04.disband-admission-live-credit",
+        "U04.disband-cargo",
+        "U04.disband-city",
+        "U04.disband-failure",
+        "U04.disband-private-session",
+        "U04.disband-retained-loss",
+        "U04.disband-signed-shields",
+        "U04.local-disband-replay-defeat"
       ]
     }
   ]

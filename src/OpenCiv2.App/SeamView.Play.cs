@@ -71,6 +71,7 @@ public sealed partial class SeamView
         bool onCity = model.View.Units?.Records.Any(u => new UnitTarget(u.Slot, u.Token) == activeTarget
             && model.View.Cities?.Records.Any(c => c.Position == u.Position) == true) == true;
         yield return new(LocalPlayCommands.Home, "Orders", "Set home city", null, ready && onCity);
+        yield return new(LocalPlayCommands.Disband, "Orders", "Disband unit", null, ready && activeTarget is not null);
         yield return new(LocalPlayCommands.EndTurn, "Orders", "End turn", null, ready);
         var availableWork = play?.Units.FirstOrDefault(u => u.Target == activeTarget)?.Work;
         foreach (var job in LocalPlayCommands.WorkJobs)

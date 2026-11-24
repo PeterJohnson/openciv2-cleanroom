@@ -15,6 +15,11 @@ now composes actual selection and active execution, with wait/city-window gates,
 bound-change reselection, distinct session/phase exits and private Session
 segments. General native human-phase admission remains open.
 
+U04 Disband cases join actual cargo loss, city removal, production snapshots
+and retained lifecycle decisions. They cover signed credit, live confirmation
+inputs, private/stale replies, cancellation, failures and desktop save/replay.
+Native input checks exercise both city shield credit and last-settler defeat.
+
 U04 player-order cases cover Fortify versus applied fortification, air and coast
 Sleep gates, explicit Home versus recovery orders, real Wait contact and simple
 local-unit exhaustion. The desktop suite exercises Wait/Sleep, waking selection,

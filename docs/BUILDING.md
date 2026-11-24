@@ -76,6 +76,11 @@ the owned city and changes its support affiliation. The same actions are
 identity. Sleeping units survive save/reload. Off-city return-home/Goto execution
 is not yet admitted by the authored profile.
 
+**Orders → Disband unit** asks for confirmation. At a city, disbanding credits
+that unit's shield value before removing it. Disbanding the last pioneer before
+founding a city eliminates the civilization and shows the defeat reports. The
+console command is `unit.disband unit=slot:token`.
+
 When High Council is enabled in a loaded game's options, turns 51, 101, 151,
 and subsequent fifty-turn intervals offer a council invitation before unit
 activation. **Consult council** shows a stock summary of military, research,

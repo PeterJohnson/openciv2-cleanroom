@@ -279,6 +279,14 @@ invitation/report/tutorial interactions. The authored desktop turn invokes it
 after upkeep/autosave and before unit activation. General generated scheduling
 and original council content admission remain open.
 
+`Units/UnitDisband` joins accepted shield credit, the actual C06 build snapshot,
+U01 cargo-aware deletion and retained V01/V06 decisions. Its local cheat branch
+joins C01 city removal and the captured owner's elimination check.
+`UnitDisbandOperation` routes private confirmations and nested decisions. The
+desktop `unit.disband` caller uses these services and handles last-settler defeat
+through the existing outcome reports before closing gameplay. General editor
+and network admission remain separate.
+
 `Units/UnitPlayerOrders` owns U04 Fortify/Sleep/Home/Wait, starting settlement
 automation and exhausting local units at End Player Turn. It uses actual stack,
 U01 sleep, U04 recovery and retained selection services. Cosmetic failures do not

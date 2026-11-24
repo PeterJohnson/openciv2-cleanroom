@@ -71,6 +71,7 @@ public sealed partial class SeamView
             case LocalPlayCommands.Wait:
             case LocalPlayCommands.Sleep:
             case LocalPlayCommands.Home:
+            case LocalPlayCommands.Disband:
                 UnitCommand(id);
                 break;
             case LocalPlayCommands.Hall:

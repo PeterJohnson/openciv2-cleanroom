@@ -287,5 +287,10 @@ settler automation entry and local-unit exhaustion. It uses actual validated
 stacks, sleep mutation, recovery search and contact-capable activation, with
 custom-domain and failure cases. Desktop menus/console admit Wait, Sleep and
 on-city Home; direct/native complete saves and resumed turns are compared.
-Off-city Home execution, Skip/Disband's full service graph and general automated
+Off-city Home execution, Skip's full service graph and general automated
 native play remain open.
+
+The Disband family joins U04 confirmation and live shield credit to actual C06
+snapshots, U01 cargo loss, C01 removal and V01/V06 retained decisions. Direct and
+console save/replay cases cover city credit and last-settler defeat, while native
+menus exercise the same outcomes. General editor/network admission is not claimed.

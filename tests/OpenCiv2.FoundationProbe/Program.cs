@@ -146,6 +146,16 @@ if (args is ["--local-unit-orders-reference", string ordersSleeping, string orde
     return 0;
 }
 
+if (args is ["--local-disband-reference", string disbanded, string disbandContinued])
+{
+    var reference = FoundationSuite.LocalDisbandReference();
+    foreach (var (path, bytes) in new[] { (disbanded, reference.Disbanded), (disbandContinued, reference.Continued) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew); output.Write(bytes);
+    }
+    return 0;
+}
+
 string report = FoundationSuite.RunJson(typeof(Program).Assembly);
 Console.WriteLine(report);
 using var parsed = JsonDocument.Parse(report);

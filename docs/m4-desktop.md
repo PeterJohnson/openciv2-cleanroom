@@ -7713,3 +7713,63 @@ M4 remains active and incomplete. Full native movement/Skip/Disband, off-city
 Home/Goto, generated human/AI scheduling and full-turn evidence remain open,
 alongside the recorded original-observation gaps. Browser and cross-platform
 qualification remain deferred.
+
+## U04 Disband and desktop removal
+
+`UnitDisband` implements local unit selection from Move-units mode or the map
+cursor, the local-owner/full-revelation gate and a retained confirmation. Only
+reply 1 accepts. The captured slot survives the decision, while position, type,
+signed unit cost and unsigned shield-box rows are read afterward. On-city credit
+truncates toward zero and retains the city's signed-16 stock cyclically. Cargo
+adds no extra credit. When an engine city window is open, the actual C06 build
+snapshot follows the credit before its refresh.
+
+Accepted unit removal uses actual U01 cargo grouping/deletion and the retained
+V01/V06 lifecycle. Last-settler checks and foreign-spy incidents finish before the
+final redraw, whose position is captured after confirmation and whose observer
+is live. The local cheat-mode/View branch joins actual C01 city removal, then
+the originally captured owner's elimination check. Other modes do not substitute
+uncaptured cursor coordinates. Network execution is rejected at the local boundary.
+
+`UnitDisbandOperation` routes private unit/city confirmations and nested lifecycle
+choices. Cancel and timeout decline the current confirmation; they do not undo an
+already accepted deletion. Required failures retain committed prefixes and make
+the operation terminal. Cosmetic refresh/redraw failures are reported after the
+remaining gameplay. Disposal releases retained children without executing their tail.
+
+The desktop **Orders → Disband unit** and `unit.disband` console command use the
+shared service. Declining does not execute queued orders. After removal, the
+existing activation loop processes remaining orders. Last-settler elimination
+with no surviving local units runs the actual defeat, history, score, rating and
+Hall reports before closing gameplay. The desktop city card uses projections;
+production transactions each open their own current C06 snapshot instead of
+retaining an engine city window. General editor admission remains separate.
+
+Eight shared groups cover selection/confirmation gates, live prices and positions,
+signed credit and stock wrapping, city snapshots, actual cargo loss, city deletion,
+retained incidents, private/stale replies, cancellation/timeout, disposal and
+required/cosmetic failures. Direct/console cases compare full saves and replay
+for decline/accept, reload and the next turn; a separate path checks last-settler
+defeat and replay. Native input scenarios exercise city credit with exact save
+comparisons and the ordered last-settler ending through production controls.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1858/1860**, with the two existing
+platform/audio skips. All **1823 shared groups** passed across **203 coverage
+families**; identity verified **909 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The isolated native input
+run passed **32 checks** on its first run, including both new Disband scenarios
+and exact complete-save comparisons. No Lua integration changed; optional Lua
+was not run.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-disband-native.json` | `015d2fee639c287c2d39f1184a824399cfc7800f29ac5fff150db029714e2974` |
+| `m4-disband-identity.json` | `bed20fc6eaf7b55fd27542cc71a1db59d4b4df70dde3ad5b9ebde4edb0ad35b9` |
+| `m4-disband-play.json` | `1bab2368ae4f2794f74c973393d47c44a248dc510266747d7e796909504aea38` |
+
+This closes the ordinary authored desktop Disband caller and its last-settler
+outcome integration. M4 remains active and incomplete: full movement/Skip/Goto,
+generated human/AI scheduling, full-turn evidence and the recorded original-game
+observation gaps remain open. Browser and cross-platform qualification remain
+deferred.

@@ -685,15 +685,33 @@ public static partial class LocalPlayCommands
                     : throw new InvalidOperationException("The authored profile has no other decision recipient"));
         }
 
-        private EspionageIncidents CreateIncidents(OperationContext context, StackOperations stacks)
+        private EspionageIncidents CreateIncidents(OperationContext context, StackOperations stacks) =>
+            CreateIncidents(context, stacks, () => Current);
+
+        private static EspionageIncidents CreateIncidents(OperationContext context, StackOperations stacks, Func<OperationContext> current)
         {
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
             var governments = CreateGovernments(context);
-            var global = new GlobalEffects(() => Current);
+            var global = new GlobalEffects(current);
             var policy = new GovernmentPolicy(world, context.Process.Rules, governments, context.Gameplay);
             var war = new DiplomaticWar(world, rules, stacks, new(world, rules, stacks), context.Gameplay, global);
             return new(world, context.Gameplay, war, new(world, context.Process.Rules, policy), governments, global.Incident);
+        }
+
+        public static UnitDisband CreateDisband(OperationContext context, IDisbandEffects presentation)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
+            var budget = new StackBudget(1_000_000, 64);
+            var stacks = new StackOperations(world, budget);
+            var effects = new CityTurnEffects(context);
+            var deletion = new UnitDeletion(world, rules, budget, effects);
+            var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
+            var removal = new CityRemoval(world, rules, stacks, loss, target =>
+                context.Effect("city.removed", new([new("city", new CommandValue.City(target))])));
+            return new(world, rules, stacks, CreateProductionOrders(context), loss, removal,
+                effects.Elimination(), CreateIncidents(context, stacks, () => context), presentation);
         }
 
         // The admitted ordinary advances0..2 have no grant notices, emissary, Barracks or
