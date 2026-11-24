@@ -6395,3 +6395,38 @@ complete-game or graphical acceptance. F04/A08/original-observation gaps remain;
 Windows may support those observations, but specified implementation work remains
 available on Linux. Browser, cross-platform and network execution stay deferred.
 M4 remains in progress.
+
+## S02 forced war and retained technology grants
+
+Implemented `ScenarioCivilizationActions` for MakeAggression and GiveTechnology.
+The parent resolves selectors once, applies the specified Alive/range checks and
+invokes actual V04 force-war or V03 research. Forced war preserves child return
+values, alliance expulsion and zero-result partial effects. Technology captures
+its recipient and advance, passes source zero, and adds no duplicate/technology
+filter or immediate ReceivedTechnology dispatch.
+
+The grant operation retains actual recursive Library government and emissary
+choices. Its Session adapter routes each choice privately, preserves the captured
+operands across replies, and reports presentation diagnostics after semantic
+completion. Seven groups cover direct selectors and rejection, same-civilization
+child behavior, real alliance expulsion, ordinary dispatch after a zero result,
+turn-zero storage and future technologies, duplicate counts, source-zero prompt
+gates, Library acceptance through actual city recalculation, failure/disposal,
+private/stale replies and cancellation/timeout.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1686/1688**, with the
+two existing platform/audio skips. All **1653 shared groups** passed across
+**182 coverage families**, and identity verified **828 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-scenario-civilizations-native.json` | `1c799c0fb410669d0db2b5dab019b620db69c71db3e3c33e5a29015c1d79c22b` |
+| `m4-scenario-civilizations-identity.json` | `4a0101d62b872318a6d4935c745828968e15a09c11df1bc9348c30c6d003a5de` |
+
+Full retained event dispatch, S02 presentation actions and the negotiation/schism
+callers that still use synchronous event callbacks remain integration work. Other
+U01 creation callers, the general desktop graph, generated complete-game and
+graphical acceptance, and the recorded F04/A08/original-observation gaps remain
+open. Browser, cross-platform and network execution stay deferred. M4 is ongoing.

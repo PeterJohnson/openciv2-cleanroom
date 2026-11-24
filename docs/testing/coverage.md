@@ -156,3 +156,8 @@ S02 ChangeTerrain now has a retained operation and actual C01/U01/V01 children.
 The `scenario-terrain` family covers rectangle aliases and ordering, complete
 terrain-byte replacement, cityless resets, private nested choices and failure
 prefixes. Full retained event dispatch and desktop integration remain open.
+
+The `scenario-civilization-actions` family joins S02 MakeAggression to actual
+V04 force-war/expulsion and GiveTechnology to retained V03 grants. Library and
+emissary decisions use the private Session path, with real city recalculation
+and failure/cancellation coverage. Full retained event dispatch remains open.

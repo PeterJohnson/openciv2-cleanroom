@@ -5666,6 +5666,29 @@
       "tests": [
         "tests/OpenCiv2.FoundationCases/ScenarioTerrainCases.cs"
       ]
+    },
+    {
+      "id": "scenario-civilization-actions",
+      "contract": "S02 \u00a79 MakeAggression/GiveTechnology; actual V04 force-war and V03 retained grant",
+      "publicSurface": "ScenarioCivilizationActions.MakeAggression/BeginGrant; ScenarioTechnologyOperation",
+      "review": "One-level selector resolution and recipient/alive gates; forced war returns the real V04 result, admits same-civilization inputs to the child, performs actual alliance expulsion and preserves zero-result effects through ordinary dispatch. Technology captures recipient/advance once, uses source zero without an extra duplicate/technology gate or immediate ReceivedTechnology dispatch, and retains actual recursive Library government and emissary decisions. Cases cover turn-zero storage, future technologies, duplicate counts, retained child parameters, real city recalculation on revolution, disposal/failure prefixes, private reply authority, cancellation/timeout and completion diagnostics. Full retained event dispatch and general desktop composition remain pending; browser, cross-platform and network execution are deferred.",
+      "sharedGroups": [
+        "S02.aggression-actual-effects",
+        "S02.aggression-admission",
+        "S02.technology-admission-storage",
+        "S02.technology-failure-disposal",
+        "S02.technology-private-session",
+        "S02.technology-retained-library",
+        "S02.technology-source-duplicates"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/ScenarioCivilizationActions.cs",
+        "src/OpenCiv2.Session/ScenarioTechnologyOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ScenarioCivilizationCases.cs"
+      ]
     }
   ]
 }

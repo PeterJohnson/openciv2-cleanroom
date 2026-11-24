@@ -1251,3 +1251,9 @@ path. `ScenarioTerrainEncoding` in Formats replaces the whole terrain encoding,
 including retained file flags, through allocation-bound `MapCompatibility`.
 W01 rectangular lookup aliases noncanonical parity; it does not select fallback
 for parity alone. Full scenario dispatch and desktop composition remain open.
+
+`ScenarioCivilizationActions` owns S02 MakeAggression and GiveTechnology
+admission. Forced war invokes the actual synchronous V04 child; technology uses
+the retained V03 grant with source zero. `ScenarioTechnologyOperation` routes
+Library and emissary decisions privately and preserves diagnostic completion.
+The full retained event dispatcher remains a separate integration step.

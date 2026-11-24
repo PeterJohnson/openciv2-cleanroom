@@ -1218,3 +1218,10 @@ last-settler/Library children retain private choices; session cases cover
 cancellation, timeout and diagnostic completion. W01 rectangular parity aliases
 are tested independently of the shared fallback tile. Full event dispatch and
 graphical acceptance remain separate gates.
+
+S02 civilization-action cases cover one-level selectors, Alive admission, actual
+alliance expulsion, zero-result effects, source-zero/duplicate/future grants and
+retained recipient/advance operands. Library acceptance recalculates the city
+through the real government setter. Session cases check private recipients, stale
+replies, cancellation/timeout and diagnostic completion after emissary closure.
+Full retained event dispatch and general desktop commands remain open.
