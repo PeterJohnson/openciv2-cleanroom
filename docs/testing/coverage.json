@@ -6676,6 +6676,26 @@
         "U04.presentation-selection-contact",
         "W06.presentation-arrival-hut-failure"
       ]
+    },
+    {
+      "id": "gameplay-presentation",
+      "status": "partial",
+      "contract": "V02/C08/C06/U05/S02 local gameplay presentation composition",
+      "publicSurface": "SinglePlayerGameplayPresentation.Effects and Research",
+      "review": "Composes concrete research, emissary, diplomacy, lifecycle, combat, mission and movement adapters for the full gameplay graph. Required host bindings retain content colors, targeting and scenario wonder suppression. Government announcements use the old ruler title before mutation; Leonardo addresses the owner; AI wonder and airlift announcements address the local viewer without disclosing hidden city names beyond supplied notice operands. Actual graph movement/contact and real government, upgrade, production and airlift operations test privacy and failure prefixes. No generated-host scheduling, native targeting/report windows or complete-game acceptance is claimed. Browser and cross-platform execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/SinglePlayerGameplayPresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/GameplayPresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "C06.presentation-gameplay-wonders",
+        "C08.presentation-gameplay-leonardo",
+        "S02.presentation-gameplay-contact",
+        "U05.presentation-gameplay-airlift",
+        "V02.presentation-gameplay-government"
+      ]
     }
   ]
 }

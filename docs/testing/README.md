@@ -61,6 +61,14 @@ scenario contact and queued-command preservation after cosmetic focus failure.
 These qualify the shared presentation binding; general native movement/selection
 UI acceptance and unresolved movement-input contracts remain open.
 
+Gameplay-presentation composition cases run the full service graph's movement
+and scenario contact with the concrete presentation bundle. They retain the
+scenario suppression callback until after its text decision. Government,
+Leonardo and wonder-production cases check recipient privacy, installed names
+and committed prefixes on notice failure. Actual AI airlift transfer/deletion
+uses the same bundle and real graph deletion. These do not qualify the generated
+desktop scheduler, native targeting or P06/P07 report windows.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

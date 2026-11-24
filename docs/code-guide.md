@@ -448,6 +448,15 @@ map; notices use their supplied recipients and captured names. Cosmetic effects
 are omitted, and input-flush callbacks do not discard admitted session commands.
 The generated desktop caller still needs to bind the general movement inputs.
 
+`SinglePlayerGameplayPresentation` assembles these adapters into the complete
+`SinglePlayerGameplayEffects` record. It also supplies V02 government, C08 upgrade,
+C06 wonder-production and U05 AI-airlift notices. Government information retains
+the old ruler title; Leonardo addresses the owner, while the other announcements
+use the host viewer under Core's gates. The host must supply content history colors,
+paradrop targeting and the scenario wonder-presentation request. Its `Research`
+adapter is also available to retained research choices/completion. This bundle
+does not supply the generated host's scheduler, command admission or report windows.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

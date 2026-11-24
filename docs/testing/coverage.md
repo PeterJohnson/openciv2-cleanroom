@@ -377,3 +377,10 @@ revelation/contact operations through Session. Required notice failure preserves
 committed prefixes; cosmetic focus failure preserves selection and queued commands.
 General native movement UI and host input binding remain open. See
 [MovementPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/MovementPresentationCases.cs).
+
+The aggregate gameplay presentation bundle composes all concrete adapters and
+supplies government, Leonardo, wonder-production and AI-airlift information.
+Actual graph/contact and mutation/failure cases verify its recipients, retained
+scenario suppression request and installed names. Host scheduling, targeting,
+reports and complete-game acceptance remain open. See
+[GameplayPresentationCases.cs](../../tests/OpenCiv2.FoundationCases/GameplayPresentationCases.cs).

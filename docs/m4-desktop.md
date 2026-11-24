@@ -8646,3 +8646,41 @@ human/AI games remain open. Browser/cross-platform execution remains deferred.
 | --- | --- |
 | `m4-movement-presentation-native.json` | `98a5b7d0a8f993b38eb412e441989b9425e981ed573af057dd8b0b5698baa281` |
 | `m4-movement-presentation-identity.json` | `86aba21326a6ab34b188f5b53842cfcb4d12ff420679b08da0684ca222167b16` |
+
+## Concrete presentation bundle for the gameplay graph
+
+`SinglePlayerGameplayPresentation` assembles the research, emissary, diplomacy,
+lifecycle, combat, mission and movement adapters into `SinglePlayerGameplayEffects`.
+It supplies the remaining V02 government, C08 Leonardo, C06 AI wonder-production
+and U05 AI-airlift notices. Government announcements retain the current ruler's
+old title before the transition. Leonardo addresses the owner; the other notices
+address the local viewer under Core's existing gates. Wonder announcements use
+the supplied civilization/project names without revealing a hidden city's name.
+The host must provide actual history colors, paradrop targeting and the scenario
+wonder-presentation request. Research choices/completion can reuse its exposed
+research adapter. No gameplay child or retained decision is replaced.
+
+Five shared groups test the bundle through Session. The full gameplay graph runs
+movement into real diplomatic/scenario contact, waits for the intended observer's
+text reply and then invokes the host suppression request. Its failure retains
+arrival without marking the event consumed or completing movement. Actual
+government, Leonardo and production services verify installed names, recipient
+privacy and their mutation prefixes on notice failure. Actual AI airlift uses
+the graph's stacks/deletion and controlled secondary draws; relocation, city
+airlift flags and any interception remain committed when its final notice fails.
+This qualifies the transfer child, not a new complete A02 donor-selection run.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1948/1950**, with the two existing
+platform/audio skips. All **1913 shared groups** passed across **219 coverage
+families**; compiled identity verified **953 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua and widget sources are
+unchanged; no new native full-game UI acceptance is claimed. The generated host
+still needs scheduling, command inputs, content/targeting bindings and P06/P07
+windows. Recorded formula gaps and complete generated human/AI games remain open.
+Browser and cross-platform work remain deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-gameplay-presentation-native.json` | `3f8b1f4a6f8431ad831c5874479669782569c6e1f8d34c24ddb6eb744fb4cebb` |
+| `m4-gameplay-presentation-identity.json` | `d0cbb5a6d921897bb8be56bf04fa2368f33318e77a174c38dd0e34b9f677a8a5` |

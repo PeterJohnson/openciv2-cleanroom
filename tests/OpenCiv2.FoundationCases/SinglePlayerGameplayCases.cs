@@ -21,9 +21,10 @@ public static partial class FoundationSuite
         public SelectionEffects Selection { get; } = new();
         public RevelationFixture Data => F.Data;
         public GameState World => F.World;
-        public GameplayFixture(List<Choice>? choices = null, WonderBuildRestrictions? restrictions = null)
+        public GameplayFixture(List<Choice>? choices = null, WonderBuildRestrictions? restrictions = null,
+            RevelationFixture? data = null, SinglePlayerGameplayEffects? presentation = null)
         {
-            F = new(choices);
+            F = new(choices, data);
             var life = F.Life; var events = life.Diplomacy.Events; var grant = life.Diplomacy.Grant;
             var audience = events.Contact.F; var conversation = audience.C;
             var demands = conversation.F; var treaties = demands.F; var theft = audience.T.T;
@@ -35,7 +36,7 @@ public static partial class FoundationSuite
                     () => { using var reader = mission.Text.Reader(); return ClassicCityMissionOptions.Read(reader, "missions", " (Spy authored)"); },
                     () => { using var reader = mission.Revolt.Text.Reader(); return ClassicRevoltOptions.Read(reader, "revolt"); }, "Food",
                     WonderRestrictions: restrictions),
-                new(grant, grant.G, grant,
+                presentation ?? new(grant, grant.G, grant,
                     new(treaties.WarEffects, events.Contact, audience.T, audience, treaties, demands, conversation, conversation,
                         demands, conversation, audience, theft, _ => { }, treaties.Agreements.Add,
                         conversation.Notices.Add, events.Contact.Notices.Add, theft.Taken.Add),
