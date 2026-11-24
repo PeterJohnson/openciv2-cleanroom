@@ -8432,3 +8432,50 @@ its checkpoint; this change does not claim a new native diplomacy UI run.
 | --- | --- |
 | `m4-emissary-presentation-native.json` | `9307893955d08b2c07376a3a49a69b831e90df59754d5c5253435f94b7e1fa0a` |
 | `m4-emissary-presentation-identity.json` | `474364b1550901294eb8c6f03e6dec7ba79e446cbd445c3f31deb881c95e0f10` |
+
+## Full diplomacy notice presentation
+
+`SinglePlayerDiplomacyPresentation.Effects` now supplies every informational port
+of the actual single-player diplomacy graph: war/alliance notices, attack
+permission, ally help, technology negotiation, opening treaties, bargaining,
+favors, gifts, demands, map exchange, audiences, conversations, AI contact and
+captured-technology announcements. Required choices still belong to retained
+operations, and treaty/transfer/war policy remains in Core. The adapter does not
+simulate those effects or answer decisions.
+
+Explicit recipients receive their notices independently of command ownership.
+Announcements already admitted by Core's observer gates use the host's viewer;
+no additional disclosure gate or duplicate gameplay query is introduced.
+Attack permission says whether an attack is allowed and does not claim war has
+been declared. Text preserves installed government/wonder/attitude names,
+captured civilization/technology names, signed gold amounts and supplied third
+party/city context. Flavor wording uses the presentation freedom in X01.
+
+The authored desktop turn now also sends its war notices through this channel.
+Its legacy war command effects are retained only when the initiating
+civilization is the notice recipient. General generated-game content/presentation
+construction, intelligence-report appraisal and complete-game desktop acceptance
+remain open; binding these ports does not broaden the authored profile.
+
+Three shared groups cover real retained gold gifts, map exchange and alliance
+negotiation through Session with a different initiating participant; actual
+attack permission without war mutation; actual alliance cancellation with
+participant/observer disclosure; and signed/custom payload delivery without
+extra gameplay or private command effects. Repeated unanswered interaction polls
+leave notices unchanged. Existing diplomacy/scenario tests keep their original
+presentation fixtures and continue to qualify the underlying gameplay graph.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1931/1933**, with the two existing
+platform/audio skips. All **1896 shared groups** passed across **214 coverage
+families**; compiled identity verified **941 inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. Lua automation and widget
+source are unchanged. No new native diplomacy UI acceptance run is claimed;
+complete generated human/AI games, the recorded formula/report gaps and the
+remaining general desktop bindings are still required for M4. Browser and
+cross-platform execution remain deferred.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-diplomacy-presentation-native.json` | `026269da79600fe949c7999d848b4545fb1666e208edc6e6e5de8f354b941926` |
+| `m4-diplomacy-presentation-identity.json` | `69096ae3bf81c5e0358d1874bd3263922d0fc8d4d6718642cb1a174a33a91dc9` |

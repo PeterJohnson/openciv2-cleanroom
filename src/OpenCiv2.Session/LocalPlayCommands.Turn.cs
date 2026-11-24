@@ -499,9 +499,17 @@ public static partial class LocalPlayCommands
                 new("city", new CommandValue.Text(notice.CityName)), new("unit", new CommandValue.Unit(notice.Unit))]));
             public void Warming(WarmingNotice notice) => current().Effect("world.warming", new([new("kind", new CommandValue.Text(notice.ToString()))]));
             public void Redraw(MapPoint point) => new CityTurnEffects(current()).RedrawTile(point);
-            public void Notice(DiplomaticWarNotice notice) => current().Effect("diplomacy.war_notice", new([
-                new("kind", new CommandValue.Text(notice.Kind.ToString())), new("first", new CommandValue.Integer(notice.First.Civilization)),
-                new("second", new CommandValue.Integer(notice.Second.Civilization))]));
+            public void Notice(DiplomaticWarNotice notice)
+            {
+                new SinglePlayerDiplomacyPresentation(current, () => current().World.Multiplayer.LocalHuman).Notice(notice);
+                // Legacy command effects are visible only to the initiating participant.
+                if (current().Actor.Civilization.Value == (notice.Participant ?? current().World.Multiplayer.LocalHuman))
+                {
+                    current().Effect("diplomacy.war_notice", new([
+                        new("kind", new CommandValue.Text(notice.Kind.ToString())), new("first", new CommandValue.Integer(notice.First.Civilization)),
+                        new("second", new CommandValue.Integer(notice.Second.Civilization))]));
+                }
+            }
             public void RedrawMaps(int localHuman) => current().Effect("map.refresh", new([]));
             public void MoveCursor(MapPoint point) => current().World.Views[current().World.Multiplayer.LocalHuman] =
                 current().World.Views[current().World.Multiplayer.LocalHuman] with { Center = point };

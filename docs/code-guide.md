@@ -408,8 +408,15 @@ operations still own all required decisions. Desktop science uses this adapter.
 `SinglePlayerEmissaryPresentation` supplies V05 reception notices through the same
 feed, using installed attitude names and captured ruler/nuclear/vendetta inputs.
 It updates only the receiver's map center and publishes textual leader context;
-there is no separate portrait window. Desktop research binds it, while general
-diplomacy composition and P07 intelligence-report appraisal remain open.
+there is no separate portrait window. Desktop research binds it, while generated
+desktop gameplay composition and P07 intelligence-report appraisal remain open.
+`SinglePlayerDiplomacyPresentation.Effects` binds the complete V04/V05 diplomacy
+graph's informational ports. Explicit recipients take precedence over command
+ownership; Core-gated observer announcements use the host's current viewer.
+Attack permission remains distinct from war declaration. Names, signed amounts,
+technology/wonder identities and supplied city/third-party context remain visible.
+The authored turn's war effects also publish scoped notices and retain legacy
+command effects only when their recipient is the initiating civilization.
 
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each

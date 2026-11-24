@@ -6579,6 +6579,27 @@
         "V05.emissary-presentation-nuclear-failure",
         "V05.emissary-presentation-retained"
       ]
+    },
+    {
+      "id": "diplomacy-presentation",
+      "status": "partial",
+      "contract": "V04 \u00a7\u00a74\u201310/V05 \u00a7\u00a72\u20136/W03 \u00a77 recipient-scoped diplomacy information and actual retained conversation integration",
+      "publicSurface": "SinglePlayerDiplomacyPresentation.Effects; desktop turn war notice binding",
+      "review": "Semantic presentation supplies all SinglePlayerDiplomacyEffects interfaces/delegates without replacing gameplay children or answering retained choices. Explicit recipients remain independent of command ownership; Core-gated observer announcements use the current viewer. Actual retained gold gifts, map exchange and alliance negotiation use this adapter through Session. Real attack confirmation preserves permission versus war and custom installed names; alliance cancellation preserves observer disclosure. Payload tests cover signed values, technology/wonder names and third-party/city context with no extra gameplay or command-effect publication. Broader generated-game desktop composition and acceptance, intelligence report appraisal and authored media remain open. Browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/SinglePlayerDiplomacyPresentation.Conversation.cs",
+        "src/OpenCiv2.Session/SinglePlayerDiplomacyPresentation.Negotiation.cs",
+        "src/OpenCiv2.Session/SinglePlayerDiplomacyPresentation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/DiplomacyPresentationCases.cs"
+      ],
+      "sharedGroups": [
+        "V04.presentation-attack-observer",
+        "V05.presentation-conversation",
+        "V05.presentation-payloads-recipients"
+      ]
     }
   ]
 }

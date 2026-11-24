@@ -25,6 +25,13 @@ text, nuclear/vendetta disclosures, reset and notice failure after publication.
 The default desktop research graph binds this adapter, but its authored world
 has no foreign civilization; generated-game diplomacy UI acceptance remains open.
 
+Diplomacy presentation tests traverse real retained gold gifts, map exchange and
+treaty negotiation with distinct initiating/receiving participants. Actual attack
+confirmation tests check permission without war mutation, installed government
+and wonder names, and Core's observer gates for alliance cancellation. Separate
+payload cases retain signed payments, custom technology/wonder names and third
+party/city context without exposing private notices through command effects.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the
