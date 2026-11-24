@@ -6,6 +6,13 @@ and the browser host. Native I/O/API boundary tests are in `OpenCiv2.Base.Tests`
 Optional Lua/SQLite and the X02 adapter have separate test hosts. See
 [implementation coverage](coverage.md) for admitted APIs and exclusions.
 
+P04 substitution cases check token case/advancement, decimal wrap, safe HEX widths,
+selector boundaries, culture-independent numbers and captured parameter ownership.
+Actual parsed scenario text uses the adapter through private retained interactions;
+preparation errors preserve earlier money changes without consuming the event.
+Autoplay still prepares text. Process replacement is observed at the next action,
+while already pending content remains unchanged.
+
 Classic EVENTS grammar cases cover S02 triggers/actions through the F03 byte
 reader, live name resolution, shared recognition flags, numeric gates, repeated
 text/coordinates and partial failure. Parsed actions also run through the retained

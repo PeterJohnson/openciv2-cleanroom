@@ -19,6 +19,13 @@ public static partial class FoundationSuite
 {
     private static readonly (string Name, Action Run)[] Cases =
     [
+        ("P04.classic-expansion-tokens", ClassicExpansionTokenRules),
+        ("P04.classic-expansion-boundaries", ClassicExpansionBoundaries),
+        ("P04.classic-expansion-capture", ClassicExpansionCaptureAndCulture),
+        ("S02.expanded-text-retention", ClassicScenarioTextRetainsPreparedContent),
+        ("S02.expanded-text-failure-autoplay", ClassicScenarioTextFailureAndAutoplay),
+        ("S02.expanded-text-process-replacement", ClassicScenarioTextProcessReplacement),
+        ("S02.expanded-text-private-parser", ClassicScenarioTextPrivateParsedEvent),
         ("S02.classic-event-triggers", ClassicEventTriggers),
         ("S02.classic-event-actions", ClassicEventActions),
         ("S02.classic-event-shared-recognition", ClassicEventSharedRecognition),

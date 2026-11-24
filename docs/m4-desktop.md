@@ -7274,3 +7274,48 @@ expressions still require a precise contract or independent original-game
 observations. Complete generated human/AI games and the other recorded mechanics
 and integration gates remain open; browser/cross-platform and network execution
 remain deferred.
+
+
+## P04 substitutions in retained scenario text
+
+`ClassicTextExpansion` implements the adopted P04 token spelling, decimal
+selector conversion and fixed cursor advancement. STRING comparison is ASCII
+case-insensitive; NUMBER/HEX retain their case sensitivity. Unknown percent
+markers, escaped percent signs and the documented STRING00/NUMBER01 suffixes
+retain their specified expanded text. Inserted text is not rescanned. Inputs
+are owned snapshots, with six numbers, eleven ordinary strings and an explicitly
+supplied optional profile string. Unicode semantic parameter values are preserved;
+classic source encoding remains a format boundary.
+
+Unsupported selectors, truncated tokens and embedded NUL inputs stop explicitly.
+HEX values exceeding four digits use P04's permitted rejection of the original
+unsafe padding case. `ClassicScenarioText.Prepare` captures the current process
+parameter object once per action, including after replacement. An already pending
+scenario prompt retains its prepared text; the next action observes new parameters.
+
+Seven authored groups cover exact token outputs, signed decimal wrap, HEX bounds,
+culture independence, snapshot ownership and process replacement. Actual retained
+scenario actions preserve all present lines across holes and empty strings, and
+prepare even during autoplay. A preparation failure retains earlier money effects,
+stops later suppression and does not mark the event consumed. A parsed EVENTS
+text action runs through private command-runtime routing, with wrong-recipient
+rejection and completion only after the intended participant replies.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1805/1807**, with the two existing
+platform/audio skips. All **1770 shared groups** passed across **195 coverage
+families**; identity verified **884 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. No native input run was
+performed: this is the text-preparation adapter and core/session integration;
+general native scenario admission remains open.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-classic-text-native.json` | `84611aa406471a8de0c98b8997ca92d6964305169b07a463c5c883bb6d2c331a` |
+| `m4-classic-text-identity.json` | `2440769f287c879456dc5db4e650ee7a4d0be1141755fe4c532bf9d3b1ce9525` |
+
+General P04 dialog-resource parsing, native media services and S01's setup caller
+that consumes the wonder-suppression request remain open. M4 is active and
+incomplete; the F04 formula/original-observation gaps, generated human/AI games
+and other recorded integration gates are unchanged. Browser, cross-platform
+qualification and network execution remain deferred.

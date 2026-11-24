@@ -1356,9 +1356,11 @@ factory closes the event/contact/creation dependency cycle.
 
 `ScenarioPresentationActions` owns S02 wave-search and CD-selection policy, collects
 all present text lines and applies the autoplay gate after required preparation.
-Its media port owns platform playback; its text preparation delegate owns P04 authored
-substitutions and its suppression delegate publishes the S01 request. Desktop adapters
-and these broader presentation integrations remain required. Remaining caller hooks,
+Its media port owns platform playback; its text preparation delegate accepts
+`ClassicScenarioText.Prepare`, which captures the current process's number/string
+parameters once and applies P04's adopted substitution grammar. Its suppression
+delegate publishes the S01 request. Native media adapters, the setup caller's
+suppression consumption and broader presentation integration remain required. Remaining caller hooks,
 general desktop composition and pending-operation persistence remain open.
 
 `DiplomaticCities` owns V05 §8's offered-city list and local cession. It resolves
@@ -1371,6 +1373,14 @@ nearest result stops at the next required city read, preserving completed effect
 the enclosing offer's final destruction checks and desktop UI remain caller work.
 `City/TransferredCityProduction` shares C09/V05's first-eligible-defender repair;
 it preserves signed cost/defense arithmetic and the zero-cost failure boundary.
+
+`Formats/Classic/ClassicTextExpansion` preserves classic token spelling, selector
+meaning and fixed cursor advancement, including STRING/NUMBER suffix behavior.
+It uses owned inputs, does not rescan inserted text and preserves Unicode semantic
+parameter values. Missing selectors, truncated tokens and unsafe HEX padding widths
+receive explicit diagnostics. `ClassicScenarioText` captures fresh parameters for
+each action and follows process parameter-object replacement; retained prompts keep
+their already prepared content. General P04 dialog-section parsing remains open.
 
 `Formats/Classic/ClassicEventParser` reads classic EVENTS through the shared F03
 reader into the same S02 event records. It preserves ordered append, shared

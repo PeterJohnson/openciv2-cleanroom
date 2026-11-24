@@ -6066,6 +6066,28 @@
         "S02.classic-event-text-failures",
         "S02.classic-event-triggers"
       ]
+    },
+    {
+      "id": "classic-text-expansion",
+      "status": "partial",
+      "contract": "P04 adopted substitution grammar and selector domains; S02 retained text preparation",
+      "publicSurface": "ClassicTextExpansion.Capture / Expand; ClassicScenarioText.Prepare",
+      "review": "Exact token recognition/advancement, signed decimal and safe HEX bounds, owned interaction parameters, actual parsed scenario dispatch and private session routing. General dialog-resource parsing, native scenario admission and S01 suppression consumption remain open.",
+      "sources": [
+        "src/OpenCiv2.Formats/Classic/TextExpansion.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ClassicTextExpansionCases.cs"
+      ],
+      "sharedGroups": [
+        "P04.classic-expansion-boundaries",
+        "P04.classic-expansion-capture",
+        "P04.classic-expansion-tokens",
+        "S02.expanded-text-failure-autoplay",
+        "S02.expanded-text-private-parser",
+        "S02.expanded-text-process-replacement",
+        "S02.expanded-text-retention"
+      ]
     }
   ]
 }

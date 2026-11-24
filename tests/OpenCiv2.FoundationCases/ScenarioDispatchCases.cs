@@ -44,13 +44,14 @@ public static partial class FoundationSuite
         public int Suppressed, Created, MapRedraws;
         public Func<int, CivilizationCreation>? Recreate;
         public bool FailMap;
-        public EventFixture(RevelationFixture? data = null, List<Choice>? choices = null)
+        public EventFixture(RevelationFixture? data = null, List<Choice>? choices = null,
+            Func<OwnedList<string>, OwnedList<string>>? prepareText = null)
         {
             Data = data ?? new();
             Permissions = new(World, () => Dispatcher!);
             Contact = new(choices, Data, Permissions);
             Data.Rules.Units[10] = Data.Rules.Units[0] with { Role = RuleRole.Attack, Domain = RuleDomain.Land };
-            Presentation = new(World, Media, lines => { Texts.Add(lines); return lines; }, () => ++Suppressed);
+            Presentation = new(World, Media, lines => { var prepared = prepareText?.Invoke(lines) ?? lines; Texts.Add(prepared); return prepared; }, () => ++Suppressed);
             RebindDispatcher();
             CivilWar = new(World, Data.Stacks, Create, Permissions, this);
         }
