@@ -6635,3 +6635,45 @@ remain open. Full civilization/AI scheduling, generated games, graphical accepta
 and the recorded original-game evidence/formula gaps also remain. These are
 specification-derived native checks, not original-game observations. Browser,
 cross-platform and network execution remain deferred. M4 is ongoing.
+
+## F04 retained government and diplomacy composition
+
+`CivilizationPoliticsOperation` joins the actual V02 government prefix to the
+retained V04/A08 diplomacy turn. Government selection and rate children finish
+before diplomatic random draws and relation maintenance. Imported Reserved40
+metadata is cleared through its format adapter. AI calendar transitions and
+recursive human Library decisions use actual gameplay children. Preference-output
+failures retain committed government/rate effects and are reported after diplomacy
+finishes. The authored desktop end-turn path now uses this shared operation.
+
+`GovernmentSelectionOperation` captures restricted or unrestricted offered
+identities for an explicit civilization and private recipient. It preserves the
+human entry gate, accepts an offered identity without a second availability test,
+and completes notices/tutorial state after actual rate editing. Explicit rate
+civilization and recipient arguments must be supplied together; they preserve the
+admitted command actor. Cached terminal results prevent duplicate rate persistence.
+Existing player commands retain their own admission checks and use these children.
+
+Six shared groups cover private government-to-rate handoff, imported flag clearing,
+calendar-dependent maintenance and preference persistence, captured choices,
+unrestricted selection, tutorial timing, actual AI contact/Library continuations,
+cancellation, timeout, disposal, stale replies and deferred output failure.
+Existing direct/console desktop government and end-turn regressions also pass.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1735/1737**, with the
+two existing platform/audio skips. All **1702 shared groups** passed across
+**188 coverage families**; identity verified **847 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-politics-native.json` | `5939b9e53ba515ed49435400b8643a2ddee1495e942e73d4798450fbd5a370ab` |
+| `m4-politics-identity.json` | `b803f415d46bcf4f7d7214815cdac75de6e2157e3bdebeeef1be6a2b008457ca` |
+
+Full F04 city/civilization scheduling, generated desktop service composition,
+complete games and graphical acceptance remain open. The recorded F04/A08 formula
+and original-game evidence gaps remain unresolved. These checks are specification
+derived; they add no original-game observations. V05 multiplayer offer controllers
+are outside M4. Browser, cross-platform and network execution remain deferred.
+M4 is ongoing.

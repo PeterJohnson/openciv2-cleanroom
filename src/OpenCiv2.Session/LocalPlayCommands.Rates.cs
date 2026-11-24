@@ -27,18 +27,6 @@ public static partial class LocalPlayCommands
         return ApplyRates(context, new(tax, science, unchecked(10 - tax - science)), preferences);
     }
 
-    internal static OperationStep ApplyRates(OperationContext context, RateValues values, IPreferenceWriter preferences)
-    {
-        int owner = context.Actor.Civilization.Value, tax = values.Tax, science = values.Science;
-        if (!CivilizationRates.Allowed(context.World, owner, tax, science))
-        {
-            return new(CommandStatus.Failed, Code: "rates_not_available");
-        }
-        var rates = new CivilizationRates(context.World, context.Process, new StackOperations(context.World, new(5_000_000, 64)));
-        bool saved = rates.Accept(owner, values,
-            () => preferences.Write(PreferenceFiles.Capture(context.Process)));
-        var result = Commit(context, "civilization.rates", new("tax", new CommandValue.Integer(tax)),
-            new("science", new CommandValue.Integer(science)), new("luxury", new CommandValue.Integer(values.Luxury)));
-        return saved ? result : result with { Status = CommandStatus.Failed, Code = "preferences_output_failed" };
-    }
+    internal static OperationStep ApplyRates(OperationContext context, RateValues values, IPreferenceWriter preferences) =>
+        CivilizationRateDecision.Accept(context, context.Actor.Civilization.Value, values, preferences);
 }

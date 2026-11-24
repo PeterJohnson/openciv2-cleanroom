@@ -95,64 +95,14 @@ public static partial class LocalPlayCommands
     /// actual setter and rate children finish before the new-government notice.</summary>
     private sealed class GovernmentPicker(IPreferenceWriter preferences, RateDecisionPreferences choices, bool duringTurn = false) : IContinuation
     {
-        private InteractionSpec? decision;
-        private CivilizationRateDecision? rates;
-        private int selected = -1;
-
+        private GovernmentSelectionOperation? selection;
         public OperationStep Resume(OperationContext context, OperationInput input)
         {
             if (ValidatePhase(context.Actor, context.World, !duringTurn) is { } error)
-            {
-                return new(CommandStatus.Failed, Code: error);
-            }
-            int owner = context.Actor.Civilization.Value;
-            if (rates is not null)
-            {
-                var result = rates.Resume(context, input);
-                return result.Status == CommandStatus.AwaitingInteraction ? result : Finish(context, result);
-            }
-            var governments = PlayerGovernments(context,
-                _ => throw new InvalidOperationException("Selection cannot recursively request selection"),
-                _ => rates = new(preferences, choices, duringTurn));
-            if (decision is null)
-            {
-                var options = Enumerable.Range(1, 6).Where(g => governments.Available(owner, g))
-                    .Select(g => new InteractionOption(g, GovernmentName(context, g))).ToArray();
-                decision = new("Choose a new government.", null, null, new(options.Select(o => o.Value)))
-                { Options = new(options) };
-                return new(CommandStatus.AwaitingInteraction, Interaction: decision);
-            }
-            if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout)
-            {
-                return new(CommandStatus.Cancelled, Code: "cancelled");
-            }
-            if (input.Choice is not int value || !decision.Choices.Contains(value))
-            {
-                return new(CommandStatus.AwaitingInteraction, Interaction: decision);
-            }
-            selected = value;
-            governments.Set(owner, value);
-            context.Effect("civilization.government", GovernmentValue(context));
-            if (rates is not null)
-            {
-                var result = rates.Resume(context, new());
-                return result.Status == CommandStatus.AwaitingInteraction ? result : Finish(context, result);
-            }
-            return Finish(context, new());
+            { return new(CommandStatus.Failed, Code: error); }
+            selection ??= new(context.Actor.Civilization.Value, context.Actor.Participant, preferences, choices);
+            return selection.Resume(context, input);
         }
-
-        private OperationStep Finish(OperationContext context, OperationStep child)
-        {
-            context.Effect("civilization.government.established", new([
-                new("government", new CommandValue.Integer(selected)),
-                new("name", new CommandValue.Text(GovernmentName(context, selected)))]));
-            if (selected > 4 && context.World.Globals.GameOptions.Tutorial && !context.World.Globals.ShownEventFlags.Government)
-            {
-                context.Effect("civilization.government.tutorial", GovernmentValue(context));
-                context.World.Globals.ShownEventFlags.Government = true;
-            }
-            return new(child.Status == CommandStatus.Failed ? CommandStatus.Failed : CommandStatus.Completed,
-                GovernmentValue(context), child.Status == CommandStatus.Failed ? child.Code : "");
-        }
+        public void Dispose() => selection?.Dispose();
     }
 }

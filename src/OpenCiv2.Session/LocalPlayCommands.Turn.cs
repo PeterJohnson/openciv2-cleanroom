@@ -117,8 +117,7 @@ public static partial class LocalPlayCommands
         private bool cityPassFinished, maintenanceFinished, assessed;
         private int startGold;
         private CivilizationFinanceOperation? finance;
-        private GovernmentTurn? governmentTurn;
-        private GovernmentPicker? governmentSelection;
+        private CivilizationPoliticsOperation? politics;
         private string deferredFailure = "";
         private GameState? activeWorld;
         private OperationContext? currentContext;
@@ -145,8 +144,8 @@ public static partial class LocalPlayCommands
             production?.Dispose();
             production = null;
             pendingResearch = null;
-            governmentTurn = null;
-            governmentSelection = null;
+            politics?.Dispose();
+            politics = null;
             movementOutcome?.Dispose();
             entry?.Dispose();
             finalOutcome?.Dispose();
@@ -279,47 +278,23 @@ public static partial class LocalPlayCommands
             {
                 cityPass!.Finish();
                 cityPassFinished = true;
-                governmentTurn = new(world, context.Process.Rules.Definitions, context.Actor.Civilization.Value, owner =>
-                {
-                    if (RecordCompatibility.Find(world.Lifetime) is { } opaque)
-                    {
-                        opaque.Civilizations[owner] = opaque.Civilizations[owner] with
-                        { Flags = (ushort)(opaque.Civilizations[owner].Flags & ~0x40) };
-                    }
-                });
+                int owner = context.Actor.Civilization.Value;
+                var participant = context.Actor.Participant;
+                politics = new(owner,
+                    new DiplomacyTurn(world, context.Process.Rules.Definitions, context.Gameplay, new AuthoredDiplomacyTurn()),
+                    preferences, choices, c => c == owner ? participant
+                        : throw new InvalidOperationException("The authored profile has no other government recipient"),
+                    _ => throw new InvalidOperationException("The authored profile has no emissary intelligence"),
+                    $"local-diplomacy/{world.Globals.Turn}");
             }
             if (!maintenanceFinished)
             {
-                if (governmentSelection is not null)
-                {
-                    var result = governmentSelection.Resume(context, input);
-                    if (result.Status == CommandStatus.AwaitingInteraction)
-                    {
-                        return result;
-                    }
-                    if (result.Status == CommandStatus.Failed)
-                    {
-                        deferredFailure = result.Code;
-                    }
-                    governmentSelection = null;
-                    governmentTurn!.ChangeCompleted();
-                }
-                while (governmentTurn!.NextChange() is int requested)
-                {
-                    int owner = context.Actor.Civilization.Value;
-                    PlayerGovernments(context, _ => governmentSelection = new(preferences, choices, duringTurn: true),
-                        _ => throw new InvalidOperationException("Turn government selection owns the rate child"))
-                        .Change(owner, requested);
-                    context.Effect("civilization.government.selection", GovernmentValue(context));
-                    if (governmentSelection is not null)
-                    {
-                        return governmentSelection.Resume(context, new());
-                    }
-                    governmentTurn.ChangeCompleted();
-                }
-                new DiplomacyTurn(world, context.Process.Rules.Definitions, context.Gameplay, new AuthoredDiplomacyTurn())
-                    .Run(context.Actor.Civilization.Value, $"local-diplomacy/{world.Globals.Turn}");
-                context.Effect("civilization.diplomacy.maintained", GovernmentValue(context));
+                var result = politics!.Resume(context, input);
+                if (!result.Status.Terminal())
+                { return result; }
+                RememberFailure(result);
+                politics.Dispose();
+                politics = null;
                 maintenanceFinished = true;
             }
             if (!assessed)

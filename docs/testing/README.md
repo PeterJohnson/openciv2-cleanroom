@@ -1278,3 +1278,13 @@ cancellation, timeout, disposal, invalid nearest-city results and required/cosme
 failures preserve committed effects. Existing C09 tests exercise the shared
 production repair. Enclosing offers and desktop negotiation UI remain open;
 these are specification-derived native cases, not original-game observations.
+
+F04 politics groups join the actual government prefix, selection/rate operations
+and full V04/A08 diplomacy children. They verify imported flag clearing, private
+government-to-rate handoff, diplomacy only after the rate child finishes, preference
+failure propagation, calendar-driven AI announcements and recursive Library choices.
+V02 cases cover captured eligibility, unrestricted identities, the human entry gate,
+tutorial timing, explicit rate targets, persisted values and terminal idempotence.
+Cancellation, timeout, disposal and invalid routing preserve completed effects;
+existing desktop direct/console government and end-turn regressions also run.
+Full civilization/AI scheduling and general desktop service composition remain open.

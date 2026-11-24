@@ -504,16 +504,26 @@ V03 grants and V04 treaties/war. The retained diplomacy turn invokes it after
 relation review and military aid. `DiplomacyTurnDecision` distinguishes research
 and war-ally children; `DiplomacyTurnOperation` routes their private choices,
 including nested research, and reports cosmetic diagnostics after completion.
-`LocalPlayCommands.Government` implements revolution and restricted selection,
-joining actual government/city recalculation and the existing rate editor.
-The local turn suspends for these decisions, then runs real human diplomacy
-maintenance before assessment. The authored game supports Anarchy/Despotism
-and preserves failed preference output without leaving the completed turn busy.
+`GovernmentSelectionOperation` supplies restricted or unrestricted V02 selection
+for an explicit civilization and private recipient, joining actual government/city
+recalculation and rate editing. It captures offered identities once and retains
+accepted government effects when the rate draft is cancelled. The legacy player
+command keeps its phase admission and delegates to this shared selector.
+`CivilizationPoliticsOperation` joins the actual government prefix to retained
+V04/A08 diplomacy, clearing imported Reserved40 metadata and waiting for all
+selection/rate children before diplomacy starts. The authored desktop end-turn
+path uses it before assessment. AI announcements and recursive human Library
+decisions use the same operation; full generated desktop service composition
+remains open. Preference-output failures preserve gameplay and are reported after
+the diplomacy continuation finishes.
 
 V02 treasury and population queries live in `CivilizationFinances`; its resumable
 notice sequence keeps funds gates after the population acknowledgment.
 `CivilizationFinanceOperation` supplies session decisions and delegates to
 `CivilizationRateDecision`, also used by sidebar and government commands.
+An explicit civilization/recipient pair lets trusted parent workflows edit rates
+without substituting the command actor. The legacy constructor keeps player-phase
+admission. Completion and failures are terminal; a cached result cannot save twice.
 `RateDecisionPreferences` retains rate holds for that session. The local F04
 adapter captures normalized start gold before upkeep and runs the notice sequence
 once after civilization assessment, retaining accepted effects across decisions.

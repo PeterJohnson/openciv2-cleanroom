@@ -3088,12 +3088,14 @@
       "status": "partial",
       "contract": "V02 sections5-6 local revolution/selection and government maintenance; V04 section11 local civilization diplomacy maintenance",
       "publicSurface": "GovernmentTurn; DiplomacyTurn.Run/Begin/Operation; IDiplomacyTurnEffects; civilization.revolution; desktop government/rate continuations; DiplomacyTurnDecision; DiplomacyTurnOperation",
-      "review": "Resumable calendar/Statue/revolution prefix acknowledges actual government children before diplomacy draws; adapter clears imported Reserved40 without inventing live semantic state. Human and AI relation scans retain signed request wrapping, directed flags, hostile draw gates, recent-peace publication, two-boundary aggression aging, stale contact and later policy order. Retained AI advance exchange now composes actual V03 grants at both exchange sites; war-ally requests now use actual emissary/grant/treaty/war children and private Session routing. Other AI negotiation/review/aid children remain required boundaries. Desktop joins real revolution, restricted selection, C03 government recalculation, rate decisions and human diplomacy maintenance; selection/output failures retain committed state. Direct/console replay and save/reload tests cover the authored Anarchy/Despotism domain. Full generated games, remaining V04/A08 children, broader government UI/domain and full F04 processing remain open.",
+      "review": "Resumable calendar/Statue/revolution prefix acknowledges actual government children before diplomacy draws; adapter clears imported Reserved40 without inventing live semantic state. Human and AI relation scans retain signed request wrapping, directed flags, hostile draw gates, recent-peace publication, two-boundary aggression aging, stale contact and later policy order. Retained AI advance exchange now composes actual V03 grants at both exchange sites; war-ally requests now use actual emissary/grant/treaty/war children and private Session routing. Other AI negotiation/review/aid children remain required boundaries. Desktop joins real revolution, restricted selection, C03 government recalculation, rate decisions and human diplomacy maintenance; selection/output failures retain committed state. Direct/console replay and save/reload tests cover the authored Anarchy/Despotism domain. Full generated games, remaining V04/A08 children, broader government UI/domain and full F04 processing remain open. Shared government/rate selection and the complete retained government-to-diplomacy join are now covered by civilization-politics-composition; full F04 scheduling remains open.",
       "sources": [
         "src/OpenCiv2.Core/DiplomacyTurn.cs",
         "src/OpenCiv2.Core/DiplomaticAttitudes.cs",
         "src/OpenCiv2.Core/GovernmentTurn.cs",
+        "src/OpenCiv2.Session/CivilizationPoliticsOperation.cs",
         "src/OpenCiv2.Session/CivilizationRateDecision.cs",
+        "src/OpenCiv2.Session/GovernmentSelectionOperation.cs",
         "src/OpenCiv2.Session/LocalGame.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Government.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
@@ -5834,6 +5836,35 @@
         "V05.city-transfer-private-session",
         "V05.city-transfer-production",
         "V05.city-transfer-retained-event"
+      ]
+    },
+    {
+      "id": "civilization-politics-composition",
+      "contract": "F04 \u00a76 government/diplomacy sequence; V02 \u00a7\u00a75\u20136 selection/maintenance and rate children; actual V04/A08 diplomacy",
+      "publicSurface": "CivilizationPoliticsOperation; GovernmentSelectionOperation; CivilizationRateDecision explicit civilization/recipient pair; legacy desktop command adapters",
+      "review": "The real GovernmentTurn prefix clears imported Reserved40 metadata, retains actual GovernmentChanges selection/city recalculation/rates, then runs the typed DiplomacyTurn operation. Cases cover human selection and private rates before diplomacy draws/flags, first preference-output failure carried through completed diplomacy, calendar-driven AI announcements, real AI contact/Library choices, disposal and private/stale replies. Shared V02 selection captures eligibility once, supports unrestricted IDs for trusted callers, honors the initial human gate and emits tutorial state after the rate child. Explicit rate target and recipient are paired, preserve the admitted actor, edit/persist the target values and cache terminal results. Legacy direct/console desktop commands and turns use the shared operations. Full F04 city/civilization scheduler, generated desktop service graph and graphical acceptance remain open. Multiplayer offer controllers are outside M4; browser/cross-platform and network execution are deferred. These are specification-derived native cases, not independent original-game evidence.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Session/CivilizationPoliticsOperation.cs",
+        "src/OpenCiv2.Session/CivilizationRateDecision.cs",
+        "src/OpenCiv2.Session/GovernmentSelectionOperation.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Government.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Rates.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/LocalGovernmentCases.cs",
+        "tests/OpenCiv2.FoundationCases/PoliticsOperationCases.cs"
+      ],
+      "sharedGroups": [
+        "F04.politics-ai-retained-library",
+        "F04.politics-cancellation-failure",
+        "F04.politics-human-prefix-rates",
+        "F04.politics-private-session",
+        "M4.local-government-failure",
+        "M4.local-government-turns",
+        "V02.rates-explicit-civilization",
+        "V02.selection-captured-choices"
       ]
     }
   ]

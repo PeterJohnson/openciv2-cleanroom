@@ -11,25 +11,52 @@ public sealed class RateDecisionPreferences
 }
 
 /// <summary>V02 decisions stay on the session lane. Presentation renders owned choices;
-/// preview and normalization effects survive cancellation of the draft.</summary>
-public sealed class CivilizationRateDecision(IPreferenceWriter preferences, RateDecisionPreferences choices, bool duringTurn = false) : IContinuation
+/// preview and normalization effects survive cancellation of the draft. Supplying a civilization
+/// and recipient is a trusted parent workflow; the legacy constructor keeps player-phase admission.</summary>
+public sealed class CivilizationRateDecision(IPreferenceWriter preferences, RateDecisionPreferences choices, bool duringTurn = false,
+    int? civilization = null, ParticipantId? recipient = null) : IContinuation
 {
     private RateDraft? draft;
     private RateReport report;
     private int menu;
     private int government, liveTax, liveScience;
+    private OperationStep? completed;
+    private bool disposed, faulted;
 
     public OperationStep Resume(OperationContext context, OperationInput input)
     {
+        ObjectDisposedException.ThrowIf(disposed, this);
+        if (faulted)
+        { throw new InvalidOperationException("A failed rate decision cannot resume"); }
+        if (completed is not null)
+        { return completed; }
+        try
+        {
+            var result = ResumeStep(context, input);
+            if (result.Status.Terminal())
+            { completed = result; }
+            return result;
+        }
+        catch { faulted = true; context.Publish(); throw; }
+    }
+    public void Dispose() => disposed = true;
+    private OperationStep ResumeStep(OperationContext context, OperationInput input)
+    {
+        if (civilization.HasValue != recipient.HasValue)
+        { throw new ArgumentException("An explicit rate civilization and recipient must be supplied together"); }
         if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout)
         {
             return new(CommandStatus.Cancelled, Code: "cancelled");
         }
-        if (LocalPlayCommands.ValidatePhase(context.Actor, context.World, !duringTurn) is { } error)
+        string? error = civilization is null ? LocalPlayCommands.ValidatePhase(context.Actor, context.World, !duringTurn)
+            : context.World.Globals.Multiplayer != GameMode.SinglePlayer ? "single_player_required" : null;
+        if (error is not null)
         {
             return new(CommandStatus.Failed, Code: error);
         }
-        int owner = context.Actor.Civilization.Value;
+        int owner = civilization ?? context.Actor.Civilization.Value;
+        if (owner < 0 || owner >= EntityLimits.Civilizations)
+        { throw new ArgumentOutOfRangeException(nameof(civilization)); }
         ref var civ = ref context.World.Civilizations[owner];
         var rates = new CivilizationRates(context.World, context.Process,
             new StackOperations(context.World, new(5_000_000, 64)));
@@ -60,7 +87,7 @@ public sealed class CivilizationRateDecision(IPreferenceWriter preferences, Rate
             {
                 if (value == 1)
                 {
-                    return LocalPlayCommands.ApplyRates(context, draft.Selected, preferences);
+                    return Accept(context, owner, draft.Selected, preferences);
                 }
                 menu = value;
             }
@@ -120,8 +147,19 @@ public sealed class CivilizationRateDecision(IPreferenceWriter preferences, Rate
             prompt += $"\nChoose {(RateKind)(menu - 2)}; the other rates will balance to 100%.";
             options = Enumerable.Range(0, draft.Cap + 1).Select(value => new InteractionOption(value, $"{value * 10}%")).ToArray();
         }
-        return new(CommandStatus.AwaitingInteraction, Interaction: new(prompt, null, null,
+        return new(CommandStatus.AwaitingInteraction, Interaction: new(prompt, recipient, null,
             new(options.Select(option => option.Value)))
         { Options = new(options) });
+    }
+
+    internal static OperationStep Accept(OperationContext context, int owner, RateValues values, IPreferenceWriter preferences)
+    {
+        if (!CivilizationRates.Allowed(context.World, owner, values.Tax, values.Science))
+        { return new(CommandStatus.Failed, Code: "rates_not_available"); }
+        var rates = new CivilizationRates(context.World, context.Process, new StackOperations(context.World, new(5_000_000, 64)));
+        bool saved = rates.Accept(owner, values, () => preferences.Write(PreferenceFiles.Capture(context.Process)));
+        var result = Values(values);
+        context.Effect("civilization.rates", result);
+        return new(saved ? CommandStatus.Completed : CommandStatus.Failed, result, saved ? "" : "preferences_output_failed");
     }
 }

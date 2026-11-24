@@ -197,3 +197,10 @@ and its [private Session adapter](../../src/OpenCiv2.Session/DiplomaticCitiesOpe
 exercise actual scenario/lifecycle/production/wonder children, live ID lookup,
 current-city replacement, ordered partial effects, private choices and failure
 boundaries. The enclosing offer executor and desktop negotiation UI remain open.
+
+The `civilization-politics-composition` family covers the [F04 government/diplomacy join](../../src/OpenCiv2.Session/CivilizationPoliticsOperation.cs),
+[shared government selection](../../src/OpenCiv2.Session/GovernmentSelectionOperation.cs)
+and explicit civilization/recipient rate editing. [Integration cases](../../tests/OpenCiv2.FoundationCases/PoliticsOperationCases.cs)
+exercise actual human and AI children, private handoffs, imported flag clearing,
+captured choices, persistence and failure/disposal boundaries. The desktop turn
+uses the shared composition; complete civilization scheduling remains open.
