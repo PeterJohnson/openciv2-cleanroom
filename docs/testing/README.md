@@ -1144,3 +1144,12 @@ ambassador intelligence, post-reset tutorial reads and required/cosmetic failure
 Session cases verify actor-to-recipient-to-actor privacy, cancellation, timeout and
 single intelligence-window creation. Entry/opening negotiation and full desktop
 audience acceptance remain open.
+
+V05 opening-treaty groups cover alliance gates and later target ties without alive
+filtering, solidarity against slot zero, refused-solidarity outcomes, conditional
+concession/senate/wonder draws, unsigned peace thresholds and signed cash arithmetic.
+Actual government grants suspend before treaty publication; grovel grants scan live
+knowledge after earlier decisions. Tests verify cached versus live payments,
+required-notice failure after signed treaties, private grant routing and the distinct
+zero-accepts cancellation defaults. Full audience entry and parent composition
+remain open.

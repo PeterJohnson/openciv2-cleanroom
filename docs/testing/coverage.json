@@ -5461,6 +5461,32 @@
         "V05.conversation-private-grant",
         "V05.conversation-session-cancel-intelligence"
       ]
+    },
+    {
+      "id": "opening-treaties",
+      "contract": "V05 section6 opening alliance, ceasefire, peace and concessions with actual V03/V04 children",
+      "publicSurface": "OpeningTreaties.Begin/Operation/PeaceThreshold/ConcessionGold; OpeningTreatyInputs/Result; OpeningTreatyOperation",
+      "review": "Alliance admission and later target ties without alive filtering, target zero and actual mediated war, failed solidarity retaining treaty-made. Ceasefire and peace retain distinct acceptance conventions, senate/wonder short-circuit sampling, concession roll gates, signed cash and unsigned strength arithmetic. Actual government grants preserve live wanted technology and grovel treasury/knowledge scanning; payment offers retain cached cash. Required notice failures preserve signed treaties and no later effects; cosmetic refresh failures are diagnostics. Native private grant/cancel/timeout cases cover zero-accepts treaty choices. Audience entry, earlier requests/demands/threats, parent composition and complete desktop acceptance remain open. Browser/cross-platform/network execution deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/OpeningTreaties.cs",
+        "src/OpenCiv2.Session/OpeningTreatyOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/OpeningTreatyCases.cs"
+      ],
+      "sharedGroups": [
+        "V05.opening-alliance-solidarity",
+        "V05.opening-alliance-targets-admission",
+        "V05.opening-cancellation-failures",
+        "V05.opening-ceasefire-refusal-draws",
+        "V05.opening-concession-arithmetic-gold",
+        "V05.opening-grovel-live-inputs",
+        "V05.opening-peace-admission-concessions",
+        "V05.opening-private-grant",
+        "V05.opening-senate-wonder-draws",
+        "V05.opening-technology-concession"
+      ]
     }
   ]
 }

@@ -6005,3 +6005,50 @@ V05 audience entry/opening and complete desktop composition remain open, along
 with the recorded F04 formulas, relation-review input gap, full turn orchestration
 and generated human/AI end-condition acceptance. Browser, cross-platform
 qualification and network execution remain deferred.
+
+## V05 opening treaty offers and concessions — 2026-11-23
+
+`OpeningTreaties` implements V05 §6 opening alliance, ceasefire and peace offers
+using actual emissary, senate, declaration, research-grant and negotiated-treaty
+services. Explicit inputs carry the earlier opening's declared-war, paid,
+no-contact and hostile outcomes; results carry treaty-made, concession,
+senate-blocked and audience-termination outcomes for the enclosing controller.
+The phase does not reset the meeting or perform common audience cleanup.
+
+Alliance admission preserves directed relations, later target ties without alive
+filtering, target zero, and actual mediated war. Refused solidarity retains
+`treaty-made` after an accepted alliance proposal even when no alliance forms.
+Ceasefire/peace preserve zero-valued acceptance replies, the conditional senate
+and wonder draws, concession-roll gates and their distinct termination outcomes.
+Unsigned strength thresholds and signed cash arithmetic follow the specification.
+
+Technology concessions grant the live wanted advance and retain it afterward.
+Cash offers retain their amount while transferring live treasuries. Grovel takes
+all live treasury, then scans live technology knowledge in ascending order through
+actual government decisions, excluding advances with both prerequisites disabled.
+Required-notice failures preserve already signed treaties; cosmetic status
+failures remain diagnostics. The private Session adapter declines cancelled or
+timed-out treaty offers despite their zero-accepts convention and routes actual
+recipient research decisions.
+
+Ten new groups cover alliance gates/targets/solidarity, ceasefire refusal and
+compulsion, concession arithmetic and grants, grovel input retention, senate/wonder
+sampling, peace admission, private decisions, cancellation and failure/disposal.
+The initial and expanded/final native probes passed all groups. Root/App formatting
+and verification passed, and both Release builds completed with zero warnings/errors.
+Native tests passed **1614 of 1616**, with two existing platform/audio skips. The
+shared probe passed all **1581 groups** across 175 coverage families; source
+identity verified **804 compiled inputs**. The 43-project graph, eight identity
+tests and three coverage tests passed. This is Core/Session integration plus an
+App build; no new graphical input-driver run was performed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-opening-native.json` | `87e051559c73176d361dec43f91caea753c1161928db87dec789f232824f4359` |
+| `m4-opening-identity.json` | `9802f0f4f7b81085e6ddac5aaca5300d61dd1b6e7578cadc13faafa2a7afe07c` |
+
+Audience entry, earlier requests/demands/threats and complete parent/desktop
+composition remain open, together with the recorded F04 formulas, relation-review
+input gap, complete turn orchestration and generated human/AI end-condition
+acceptance. Browser, cross-platform qualification and network execution remain
+deferred.

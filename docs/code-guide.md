@@ -1177,3 +1177,13 @@ post-reset intelligence/tutorial reads and the separate AI-meeting-active flag.
 recipient choices and intelligence. Direct and conversation callers share the
 gift, favor and proposal interaction adapters. Entry/opening negotiation, S02
 admission and full desktop audience composition remain open.
+
+`Core/OpeningTreaties` owns V05 §6's opening alliance, ceasefire and peace offers,
+separately from player-initiated bargaining. Explicit opening inputs carry paid,
+declared-war, no-contact and hostile outcomes. The operation joins actual emissary,
+senate, war, research-grant and negotiated-treaty services; its result carries
+treaty-made, concession, senate-blocked and audience-termination outcomes to the
+enclosing controller. Concessions retain live technology and grovel inputs versus
+cached cash amounts. `Session/OpeningTreatyOperation` supplies private choices with
+the specified zero-accepts treaty replies and decline-on-cancel behavior. Audience
+entry, earlier demands/threats and final parent composition remain open.
