@@ -18,8 +18,13 @@ public interface ICivilWarEffects
 public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, CivilizationCreation> create,
     Action<Event> executeEvent, ICivilWarEffects effects)
 {
+    private readonly ScenarioPermissionActions? retainedEvents;
+    public CivilWar(GameState world, StackOperations stacks, Func<int, CivilizationCreation> create,
+        ScenarioPermissionActions events, ICivilWarEffects effects)
+        : this(world, stacks, create, _ => throw new InvalidOperationException("Retained scenario events require their continuation"), effects)
+    { retainedEvents = events; }
     private GameState World => world;
-    public Operation Begin(int parent) => new(this, parent);
+    public Operation Begin(int parent, string call = "civil-war") => new(this, parent, call);
 
     public sealed class Operation : IDisposable
     {
@@ -33,12 +38,13 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
         private readonly List<Exception> presentationFailures = [];
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         public int? Result { get; private set; }
-        internal Operation(CivilWar service, int parent)
+        internal Operation(CivilWar service, int parent, string call)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(parent);
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(parent, EntityLimits.Civilizations);
+            ArgumentException.ThrowIfNullOrEmpty(call);
             this.service = service;
-            steps = service.Execute(parent, () => candidateBudget, TakeReply, presentationFailures.AddRange, result => Result = result).GetEnumerator();
+            steps = service.Execute(parent, () => candidateBudget, TakeReply, presentationFailures.AddRange, result => Result = result, call).GetEnumerator();
         }
         /// <summary>Null is a bounded creation search or a completed fallback city transfer; resume without restarting.</summary>
         public int? Advance(int candidateBudget = 64, int? answer = null) => AdvanceDecision(candidateBudget, answer is { } value ? new(value) : null);
@@ -78,9 +84,24 @@ public sealed class CivilWar(GameState world, StackOperations stacks, Func<int, 
         public void Dispose() { disposed = true; steps.Dispose(); }
     }
 
-    private IEnumerable<LifecycleDecision?> Execute(int parent, Func<int> budget, Func<ResearchReply?> takeReply, Action<IEnumerable<Exception>> report, Action<int> complete)
+    private IEnumerable<LifecycleDecision?> Execute(int parent, Func<int> budget, Func<ResearchReply?> takeReply, Action<IEnumerable<Exception>> report, Action<int> complete, string call)
     {
-        if (!ScenarioPermissions.AllowSchism(world, parent, executeEvent))
+        bool allowed;
+        if (retainedEvents is null)
+        { allowed = ScenarioPermissions.AllowSchism(world, parent, executeEvent); }
+        else
+        {
+            using var permission = retainedEvents.BeginSchism(parent, call + "/permission");
+            while (permission.Allowed is null)
+            {
+                var pending = permission.Resume(takeReply());
+                if (permission.Allowed is null)
+                { yield return pending; }
+            }
+            report(permission.PresentationFailures);
+            allowed = permission.Allowed.Value;
+        }
+        if (!allowed)
         { complete(0); yield break; }
         int rebel = -1;
         for (int i = 1; i < EntityLimits.Civilizations; ++i)

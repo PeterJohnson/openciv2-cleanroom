@@ -30,7 +30,7 @@ public static class ScenarioPermissions
         return true;
     }
 
-    private static bool Matches(GameState world, int selector, int control, int participant)
+    internal static bool Matches(GameState world, int selector, int control, int participant)
     {
         if (selector != participant && selector != -2)
         { return false; }

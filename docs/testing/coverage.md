@@ -14,7 +14,7 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 | world-state | F02 ownership; X01 fresh-world/text repair; F05/F06 retained values: ProcessContext/GameState, world lifetime, history/layout/scenario/setup/text state, owned rule and label text | implemented | [RuleState.cs](../../src/OpenCiv2.Core/Rules/RuleState.cs); [GameState.cs](../../src/OpenCiv2.Core/State/GameState.cs); [EntityCases.cs](../../tests/OpenCiv2.FoundationCases/EntityCases.cs); [RuleCases.cs](../../tests/OpenCiv2.FoundationCases/RuleCases.cs) |
 | civilizations | F02 civilization fields; V03 knowledge; F06 census/post-load: Civilization/global records; knowledge sentinels; loaded-unit counts and real post-load cleanup | implemented | [Calendar.cs](../../src/OpenCiv2.Core/Calendar.cs); [Civilizations.cs](../../src/OpenCiv2.Core/State/Civilizations.cs); [CalendarCases.cs](../../tests/OpenCiv2.FoundationCases/CalendarCases.cs); [CivilizationCases.cs](../../tests/OpenCiv2.FoundationCases/CivilizationCases.cs) |
 | events | F02/S02 §2; F06 event block: Event presence/aliases, append/copy/compact/install; stored events and live output | implemented | [Events.cs](../../src/OpenCiv2.Core/State/Events.cs); [ClassicLive.cs](../../src/OpenCiv2.Formats/ClassicLive.cs); [EventCases.cs](../../tests/OpenCiv2.FoundationCases/EventCases.cs); [LiveWriterCases.cs](../../tests/OpenCiv2.FoundationCases/LiveWriterCases.cs) |
-| scenario-permissions-actions | S02 §§7–9 local negotiation, synchronous live action dispatch and money; remaining authored actions and retained caller integration pending | partial | [ScenarioPermissions.cs](../../src/OpenCiv2.Core/ScenarioPermissions.cs), [ScenarioActions.cs](../../src/OpenCiv2.Core/ScenarioActions.cs), [ScenarioPermissionCases.cs](../../tests/OpenCiv2.FoundationCases/ScenarioPermissionCases.cs) |
+| scenario-permissions-actions | S02 §§7–9 local negotiation, synchronous live action dispatch and money; retained action/caller integration in scenario-retained-dispatch | partial | [ScenarioPermissions.cs](../../src/OpenCiv2.Core/ScenarioPermissions.cs), [ScenarioActions.cs](../../src/OpenCiv2.Core/ScenarioActions.cs), [ScenarioPermissionCases.cs](../../tests/OpenCiv2.FoundationCases/ScenarioPermissionCases.cs) |
 | preferences | F03 §8; F06 CIV2.DAT: Ordinary/multiplayer preference values/defaults, stored codecs/live conversions, load/save/default staging | implemented | [Preferences.cs](../../src/OpenCiv2.Core/State/Preferences.cs); [ClassicPreferences.cs](../../src/OpenCiv2.Formats/ClassicPreferences.cs); [BinaryPreferenceCases.cs](../../tests/OpenCiv2.FoundationCases/BinaryPreferenceCases.cs); [PreferenceFileCases.cs](../../tests/OpenCiv2.FoundationCases/PreferenceFileCases.cs) |
 | multiplayer-state | F06 §§6,9: Saved/live multiplayer values, password encode/decode/reset/flags and loaded-mode adaptation | implemented | [Multiplayer.cs](../../src/OpenCiv2.Core/State/Multiplayer.cs); [ClassicLive.cs](../../src/OpenCiv2.Formats/ClassicLive.cs); [AuxStateCases.cs](../../tests/OpenCiv2.FoundationCases/AuxStateCases.cs); [LiveWriterCases.cs](../../tests/OpenCiv2.FoundationCases/LiveWriterCases.cs) |
 | map | W01 geometry/spatial state; F06 map input: Geometry indices/canonical coordinates/wrap/distance/neighbors/regions; MapStorage allocate/release/swap/layers/lookup/features/mutate/sync; staged MapInput install | implemented | [Geometry.cs](../../src/OpenCiv2.Core/Geometry.cs); [MapInput.cs](../../src/OpenCiv2.Core/MapInput.cs); [MapCases.cs](../../tests/OpenCiv2.FoundationCases/MapCases.cs); [QueryCases.cs](../../tests/OpenCiv2.FoundationCases/QueryCases.cs) |
@@ -131,7 +131,7 @@ Run `python3 tools/dotnet/check_coverage.py` from the root to check all source/t
 | diplomatic-audience | V05 local entry, requests/threats and complete treaty/conversation sequence with actual children and private Session decisions; local contact composed; production movement/turn/desktop integration pending | partial | [DiplomaticAudience.cs](../../src/OpenCiv2.Core/DiplomaticAudience.cs), [DiplomaticAudienceOperation.cs](../../src/OpenCiv2.Session/DiplomaticAudienceOperation.cs), [DiplomaticAudienceCases.cs](../../tests/OpenCiv2.FoundationCases/DiplomaticAudienceCases.cs) |
 | diplomatic-contact | V04 local contact dispatch, AI peace/alliance/war transitions and actual retained audiences, grants, ally help, turn and movement contact; desktop callers pending | partial | [DiplomaticContact.cs](../../src/OpenCiv2.Core/DiplomaticContact.cs), [DiplomaticContactOperation.cs](../../src/OpenCiv2.Session/DiplomaticContactOperation.cs), [DiplomaticContactCases.cs](../../tests/OpenCiv2.FoundationCases/DiplomaticContactCases.cs) |
 | revelation-contact | W03 retained actual contact and U02 movement completion, private choices and failure/disposal prefixes; desktop composition pending | partial | [UnitRevelation.cs](../../src/OpenCiv2.Core/Units/UnitRevelation.cs), [MovementCompletion.cs](../../src/OpenCiv2.Core/Units/MovementCompletion.cs), [RevelationContactCases.cs](../../tests/OpenCiv2.FoundationCases/RevelationContactCases.cs) |
-| scenario-unit-actions | U01 retained creation; S02 actual CreateUnit and classic slot-selected MoveUnit with private contact decisions; full action dispatcher pending | partial | [UnitCreation.cs](../../src/OpenCiv2.Core/Units/UnitCreation.cs), [ScenarioUnitActions.cs](../../src/OpenCiv2.Core/ScenarioUnitActions.cs), [ScenarioUnitActionCases.cs](../../tests/OpenCiv2.FoundationCases/ScenarioUnitActionCases.cs) |
+| scenario-unit-actions | U01 retained creation; S02 actual CreateUnit and classic slot-selected MoveUnit with private contact decisions; joined by scenario-retained-dispatch | partial | [UnitCreation.cs](../../src/OpenCiv2.Core/Units/UnitCreation.cs), [ScenarioUnitActions.cs](../../src/OpenCiv2.Core/ScenarioUnitActions.cs), [ScenarioUnitActionCases.cs](../../tests/OpenCiv2.FoundationCases/ScenarioUnitActionCases.cs) |
 
 | local-pathfinding | U03 ordinary/uniform local FIFO search, shared retained cache and actual occupancy/treaty/stack costs; coarse waypoints and full goto pending | partial | [LocalPathfinding.cs](../../src/OpenCiv2.Core/LocalPathfinding.cs), [LocalPathCases.cs](../../tests/OpenCiv2.FoundationCases/LocalPathCases.cs) |
 | ai-attack-response | A04 immediate response using actual U03 directions and resumable U05 paradrop, joined by U06 survivor/nuclear continuations; full combat/desktop caller pending | partial | [AttackResponse.cs](../../src/OpenCiv2.Core/Ai/AttackResponse.cs), [AttackResponseCases.cs](../../tests/OpenCiv2.FoundationCases/AttackResponseCases.cs) |
@@ -149,15 +149,23 @@ Full generated desktop composition and graphical acceptance remain open.
 
 V01 forced removal now has its own retained service and S02 destruction wrapper,
 with inline stack/city/radius semantics and real spy/recreation children. See
-[RemovalCases.cs](../../tests/OpenCiv2.FoundationCases/RemovalCases.cs). Full scenario
-dispatch, general desktop integration and graphical acceptance remain pending.
+[RemovalCases.cs](../../tests/OpenCiv2.FoundationCases/RemovalCases.cs). Retained
+action dispatch is covered below; general desktop integration and graphical
+acceptance remain pending.
 
 S02 ChangeTerrain now has a retained operation and actual C01/U01/V01 children.
 The `scenario-terrain` family covers rectangle aliases and ordering, complete
 terrain-byte replacement, cityless resets, private nested choices and failure
-prefixes. Full retained event dispatch and desktop integration remain open.
+prefixes. Retained action dispatch is covered below; desktop integration remains open.
 
 The `scenario-civilization-actions` family joins S02 MakeAggression to actual
 V04 force-war/expulsion and GiveTechnology to retained V03 grants. Library and
 emissary decisions use the private Session path, with real city recalculation
-and failure/cancellation coverage. Full retained event dispatch remains open.
+and failure/cancellation coverage. Retained action dispatch is covered below.
+
+The `scenario-retained-dispatch` family covers [action composition](../../src/OpenCiv2.Core/ScenarioDispatcher.cs),
+[retained permissions](../../src/OpenCiv2.Core/ScenarioPermissionActions.cs), media/text
+policy and actual diplomacy/civil-war callers. [Integration cases](../../tests/OpenCiv2.FoundationCases/ScenarioDispatchCases.cs)
+exercise nested real choices, final-only consumption, re-entry, private replies,
+cancellation and failure prefixes. Desktop media/P04/S01 adapters, other trigger
+families and complete-game acceptance remain open.

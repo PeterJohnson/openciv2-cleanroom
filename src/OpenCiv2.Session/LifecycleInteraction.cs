@@ -10,6 +10,7 @@ internal static class LifecycleInteraction
     internal static ResearchReply? ResearchReply(LifecycleDecision? decision, OperationInput input) => decision switch
     {
         ResearchGrantDecision grant => ResearchGrantInteraction.ResearchReply(grant, input),
+        ScenarioText => input.Kind is OperationInputKind.Choice or OperationInputKind.Cancel or OperationInputKind.Timeout ? new(0) : null,
         EspionagePretext => EspionageInteraction.Reply(input) is { } value ? new(value) : null,
         LifecycleContact contact => DiplomaticContactInteraction.Reply(contact.Decision, input),
         _ => null
@@ -18,6 +19,8 @@ internal static class LifecycleInteraction
         Func<int, ParticipantId> recipient, ref InteractionSpec? intelligenceWindow,
         Func<EmissaryIntelligence, InteractionSpec>? intelligence = null) => decision switch
         {
+            ScenarioText text => new(string.Join("\n", text.Lines), recipient(text.Recipient), null, new([0]))
+            { Options = new([new(0, "Continue")]) },
             LifecycleContact contact => DiplomaticContactInteraction.Prompt(context, contact.Decision, recipient,
                 intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow),
             EspionagePretext pretext => EspionageInteraction.Prompt(pretext, recipient(pretext.Victim.Civilization)),

@@ -16,6 +16,7 @@ public enum AudienceNoticeKind { OutaHere, OutaHereAlly, Begone, Provoke, Reject
 public sealed record AudienceNotice(AudienceNoticeKind Kind, int Recipient, DiplomaticParty Partner, int Reaction, int Variant = 0);
 public abstract record DiplomaticAudienceDecision
 {
+    public sealed record Scenario(LifecycleDecision Value) : DiplomaticAudienceDecision;
     public sealed record Offer(AudienceOffer Value) : DiplomaticAudienceDecision;
     public sealed record Emissary(EmissaryDecision Value) : DiplomaticAudienceDecision;
     public sealed record Technology(TechnologyNegotiationDecision Value) : DiplomaticAudienceDecision;
@@ -31,12 +32,20 @@ public interface IDiplomaticAudienceEffects
 
 /// <summary>V05 §6 local AI/player audience from entry through common cleanup. Composes the
 /// actual A08 evaluation, V05 exchanges/offers/conversation and V03/V04 gameplay children.
-/// Loaded scenario actions remain a required synchronous S02 owning adapter.</summary>
+/// Loaded scenario actions can retain actual S02 child decisions before audience initialization.</summary>
 public sealed class DiplomaticAudience(GameState world, RuleState rules, GameplayRandom random,
     DiplomaticStance stance, EmissaryReception emissaries, DiplomaticTechnology technology, ResearchGrants grants,
     DiplomaticWar war, OpeningTreaties treaties, DiplomaticConversation conversation,
     Action<Event> executeEvent, IDiplomaticAudienceEffects effects)
 {
+    private readonly ScenarioPermissionActions? retainedEvents;
+    public DiplomaticAudience(GameState world, RuleState rules, GameplayRandom random,
+        DiplomaticStance stance, EmissaryReception emissaries, DiplomaticTechnology technology, ResearchGrants grants,
+        DiplomaticWar war, OpeningTreaties treaties, DiplomaticConversation conversation,
+        ScenarioPermissionActions events, IDiplomaticAudienceEffects effects)
+        : this(world, rules, random, stance, emissaries, technology, grants, war, treaties, conversation,
+            _ => throw new InvalidOperationException("Retained scenario events require their continuation"), effects)
+    { retainedEvents = events; }
     private GameState World => world;
     private DiplomacyWorkspace E => world.Diplomacy;
     private Relationship Relation(int a, int b) => world.Civilizations[a].Treaties[b];
@@ -113,8 +122,26 @@ public sealed class DiplomaticAudience(GameState world, RuleState rules, Gamepla
     private IEnumerable<DiplomaticAudienceDecision?> Run(Operation op, int a, int b, bool player, MapPoint focus, string call)
     {
         E.AiMeetingActive = true;
-        if (world.Events.Loaded && !ScenarioPermissions.AllowNegotiation(world, a, b, executeEvent))
-        { E.AiMeetingActive = false; op.ScenarioDenied = true; yield break; }
+        if (world.Events.Loaded)
+        {
+            bool allowed;
+            if (retainedEvents is null)
+            { allowed = ScenarioPermissions.AllowNegotiation(world, a, b, executeEvent); }
+            else
+            {
+                using var permission = retainedEvents.BeginNegotiation(a, b, call + "/permission");
+                while (permission.Allowed is null)
+                {
+                    var pending = permission.Resume(op.TakeReply());
+                    if (permission.Allowed is null)
+                    { yield return pending is null ? null : new DiplomaticAudienceDecision.Scenario(pending); }
+                }
+                op.Report(permission.PresentationFailures);
+                allowed = permission.Allowed.Value;
+            }
+            if (!allowed)
+            { E.AiMeetingActive = false; op.ScenarioDenied = true; yield break; }
+        }
         E.SelectedPair = (b, a);
         E.GiftsThisMeeting = 0;
         if (!player)

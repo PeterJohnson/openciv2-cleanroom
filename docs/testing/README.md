@@ -1224,4 +1224,17 @@ alliance expulsion, zero-result effects, source-zero/duplicate/future grants and
 retained recipient/advance operands. Library acceptance recalculates the city
 through the real government setter. Session cases check private recipients, stale
 replies, cancellation/timeout and diagnostic completion after emissary closure.
-Full retained event dispatch and general desktop commands remain open.
+Retained action dispatch is covered below; general trigger matching and desktop commands remain open.
+
+Retained S02 dispatcher groups join all eleven actions and actual nested gameplay
+children. They cover live flags, final-only consumption, actual grant-notice
+re-entry, real terrain/reset and destruction/Library choices, required failures
+and cosmetic diagnostics after completed gameplay. A real event→creation→contact→
+negotiation-event→Library chain verifies private replies and delayed money/text.
+Negotiation captures the first permission before actions, while NoSchism runs all
+matching events without a Loaded gate. Direct audience and civil-war callers
+retain these choices before their normal work. Media cases cover wave fallback,
+Sound-only gating, CD retries/close, sparse text lines and autoplay preparation.
+These tests use required media/text ports; platform playback, full authored P04
+substitutions, S01 suppression consumption, other triggers and graphical/desktop
+acceptance remain separate gates.

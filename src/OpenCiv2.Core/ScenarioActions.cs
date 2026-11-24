@@ -12,13 +12,13 @@ public enum ScenarioAction
 /// synchronous adapter for an action that can suspend for a participant decision.</summary>
 public static class ScenarioActions
 {
-    private static readonly ScenarioAction[] order =
+    internal static IReadOnlyList<ScenarioAction> Order { get; } = Array.AsReadOnly<ScenarioAction>(
     [
         ScenarioAction.PlayWaveFile, ScenarioAction.PlayCdTrack, ScenarioAction.CreateUnit,
         ScenarioAction.MoveUnit, ScenarioAction.ChangeTerrain, ScenarioAction.MakeAggression,
         ScenarioAction.ChangeMoney, ScenarioAction.DestroyCivilization, ScenarioAction.GiveTechnology,
         ScenarioAction.Text, ScenarioAction.SuppressWonderMovies
-    ];
+    ]);
 
     public static int Execute(Event entry, Func<ScenarioAction, Event, int> execute)
     {
@@ -26,7 +26,7 @@ public static class ScenarioActions
         ArgumentNullException.ThrowIfNull(execute);
         if (entry.Values.Actions.JustOnce && entry.Values.Actions.Consumed)
         { return 0; }
-        foreach (var action in order)
+        foreach (var action in Order)
         {
             if (Enabled(entry.Values.Actions, action))
             { _ = execute(action, entry); }
@@ -36,7 +36,7 @@ public static class ScenarioActions
         return 1;
     }
 
-    private static bool Enabled(EventActions actions, ScenarioAction action) => action switch
+    internal static bool Enabled(EventActions actions, ScenarioAction action) => action switch
     {
         ScenarioAction.PlayWaveFile => actions.PlayWaveFile,
         ScenarioAction.PlayCdTrack => actions.PlayCdTrack,

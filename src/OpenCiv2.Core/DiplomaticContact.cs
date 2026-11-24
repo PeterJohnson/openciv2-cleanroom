@@ -12,6 +12,7 @@ public sealed record ContactNotice(ContactNoticeKind Kind, DiplomaticParty First
     DiplomaticParty? Target = null, CitySlot? City = null, string? CityName = null);
 public abstract record DiplomaticContactDecision
 {
+    public sealed record Scenario(LifecycleDecision Value) : DiplomaticContactDecision;
     public sealed record Audience(DiplomaticAudienceDecision Value) : DiplomaticContactDecision;
     public sealed record Grant(ResearchGrantDecision Value) : DiplomaticContactDecision;
     public sealed record Ally(AllyHelpDecision Value) : DiplomaticContactDecision;
@@ -24,6 +25,13 @@ public sealed class DiplomaticContact(GameState world, RuleState rules, Diplomat
     DiplomaticAudience audiences, AiAdvanceExchange exchange, DiplomaticWar war, AllyHelp help,
     Action<Event> executeEvent, Action<ContactNotice> notice)
 {
+    private readonly ScenarioPermissionActions? retainedEvents;
+    public DiplomaticContact(GameState world, RuleState rules, DiplomaticStance stance,
+        DiplomaticAudience audiences, AiAdvanceExchange exchange, DiplomaticWar war, AllyHelp help,
+        ScenarioPermissionActions events, Action<ContactNotice> notice)
+        : this(world, rules, stance, audiences, exchange, war, help,
+            _ => throw new InvalidOperationException("Retained scenario events require their continuation"), notice)
+    { retainedEvents = events; }
     private GameState World => world;
     private bool Human(int c) => world.Globals.HumanPlayers.Contains(c);
     private Relationship Relation(int a, int b) => world.Civilizations[a].Treaties[b];
@@ -89,8 +97,27 @@ public sealed class DiplomaticContact(GameState world, RuleState rules, Diplomat
     {
         if (a == 0 || b == 0 || world.Globals.Turn == 0)
         { yield break; }
-        if (world.Events.Loaded && !ScenarioPermissions.AllowNegotiation(world, a, b, executeEvent))
-        { yield break; }
+        if (world.Events.Loaded)
+        {
+            if (retainedEvents is null)
+            {
+                if (!ScenarioPermissions.AllowNegotiation(world, a, b, executeEvent))
+                { yield break; }
+            }
+            else
+            {
+                using var permission = retainedEvents.BeginNegotiation(a, b, call + "/permission");
+                while (permission.Allowed is null)
+                {
+                    var pending = permission.Resume(op.TakeReply());
+                    if (permission.Allowed is null)
+                    { yield return pending is null ? null : new DiplomaticContactDecision.Scenario(pending); }
+                }
+                op.Report(permission.PresentationFailures);
+                if (!permission.Allowed.Value)
+                { yield break; }
+            }
+        }
         // Both local dispatch branches (single-player/either AI and hotseat/email two-human)
         // perform these ordered tests. The second observes the first audience's live state.
         if (Human(a) && a == world.Multiplayer.LocalHuman && NeedsAudience(a, b))

@@ -20,15 +20,18 @@ public static partial class FoundationSuite
         public List<ContactNotice> Notices { get; } = [];
         public ContactNoticeKind? FailNotice;
         public int NoHelp, Refreshed;
-        public ContactFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public ContactFixture(List<Choice>? choices = null, RevelationFixture? data = null, ScenarioPermissionActions? events = null)
         {
-            F = new(choices, data); World.Globals.Turn = 99; World.Globals.PlayerCiv = 1;
+            F = new(choices, data, events); World.Globals.Turn = 99; World.Globals.PlayerCiv = 1;
             World.Civilizations[2].Government = World.Civilizations[3].Government = Government.Republic;
             World.Civilizations[3].Tribe = 3;
             var war = War(Data, F.C.F.F.WarEffects, F.T.T.Random);
-            Service = new(World, Data.Process.Rules, F.C.Stance, F.Service,
-                new(World, Data.Process.Rules, F.T.T.Random, F.T.T.Research), war, new(World, F.C.Emissaries, war, this),
-                F.ExecuteEvent, n => { Notices.Add(n); if (FailNotice == n.Kind) { throw new InvalidOperationException("Required contact notice failed"); } });
+            void Notice(ContactNotice n) { Notices.Add(n); if (FailNotice == n.Kind) { throw new InvalidOperationException("Required contact notice failed"); } }
+            Service = events is null
+                ? new(World, Data.Process.Rules, F.C.Stance, F.Service,
+                    new(World, Data.Process.Rules, F.T.T.Random, F.T.T.Research), war, new(World, F.C.Emissaries, war, this), F.ExecuteEvent, Notice)
+                : new(World, Data.Process.Rules, F.C.Stance, F.Service,
+                    new(World, Data.Process.Rules, F.T.T.Random, F.T.T.Research), war, new(World, F.C.Emissaries, war, this), events, Notice);
         }
         public DiplomaticContact.Operation Begin(int a = 2, int b = 3) => Service.Begin(a, b, new(10, 8), "contact");
         public void DidNotHelp(AllyHelpRequest request) => ++NoHelp;

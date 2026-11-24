@@ -41,6 +41,7 @@ internal static class DiplomaticContactInteraction
 {
     public static ResearchReply? Reply(DiplomaticContactDecision? pending, OperationInput input) => pending switch
     {
+        DiplomaticContactDecision.Scenario d => LifecycleInteraction.ResearchReply(d.Value, input),
         DiplomaticContactDecision.Audience d => DiplomaticAudienceInteraction.Reply(d.Value, input),
         DiplomaticContactDecision.Grant d => ResearchGrantInteraction.ResearchReply(d.Value, input),
         DiplomaticContactDecision.Ally d => AllyHelpInteraction.Reply(d.Value, input) is { } reply ? new(reply) : null,
@@ -49,6 +50,7 @@ internal static class DiplomaticContactInteraction
     public static InteractionSpec Prompt(OperationContext context, DiplomaticContactDecision decision,
         Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec> intelligence, ref InteractionSpec? window) => decision switch
         {
+            DiplomaticContactDecision.Scenario d => LifecycleInteraction.Prompt(context, d.Value, recipient, ref window, intelligence),
             DiplomaticContactDecision.Audience d => DiplomaticAudienceInteraction.Prompt(context, d.Value, recipient, intelligence, ref window),
             DiplomaticContactDecision.Grant d => ResearchGrantInteraction.Prompt(context, d.Value, recipient, intelligence, ref window),
             DiplomaticContactDecision.Ally d => AllyHelpInteraction.Prompt(d.Value, recipient, intelligence, ref window),

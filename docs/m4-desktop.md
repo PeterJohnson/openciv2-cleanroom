@@ -6430,3 +6430,40 @@ callers that still use synchronous event callbacks remain integration work. Othe
 U01 creation callers, the general desktop graph, generated complete-game and
 graphical acceptance, and the recorded F04/A08/original-observation gaps remain
 open. Browser, cross-platform and network execution stay deferred. M4 is ongoing.
+
+## S02 retained dispatch and permission callers
+
+Implemented `ScenarioDispatcher` with all eleven action types, actual retained
+gameplay children, live action flags and final-only JustOnce consumption.
+`ScenarioPermissionActions` captures the first matching negotiation permission
+before actions and executes every matching NoSchism event. Actual contact,
+audience and civil-war callers retain their nested decisions before subsequent
+gameplay. City capture passes its operation identifier into civil war so separate
+event executions retain distinct replay keys.
+
+`ScenarioPresentationActions` implements wave search, CD retry/selection and
+text/autoplay policy through required presentation ports. `ScenarioEventOperation`
+routes private nested choices and local text acknowledgements, preserving
+completion diagnostics, cancellation defaults and stale-reply isolation. Thirteen
+shared groups exercise all-action order, live flags, actual grant-notice re-entry,
+real terrain/reset and destruction/Library children, creation/contact/permission
+nesting, audience entry, schism vetoes, replay identifiers and failure prefixes.
+
+Validation: root and App formatting and verification passed. Both Release builds
+completed with zero warnings/errors. Native tests passed **1699/1701**, with the
+two existing platform/audio skips. All **1666 shared groups** passed across
+**183 coverage families**; identity verified **833 compiled inputs**. The
+43-project graph, eight identity tests and three coverage tests passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-scenario-dispatch-native.json` | `2ef09b15090651fa621cf4cb61eb22ed841879be7eaf00f43334b923f86dce18` |
+| `m4-scenario-dispatch-identity.json` | `ac0d789f6776e737cd4859c8bd16d2eed7abc26f4d748cb1ced06ea681534fdd` |
+
+Desktop media playback, P04 authored text substitutions and S01 suppression
+consumption still require composition. Other S02 trigger families and caller
+hooks, remaining U01 creation callers and the general desktop graph remain open.
+These contract tests do not establish original-game behavior or generated-game,
+full-turn and graphical acceptance. The F04/A08/original-observation gaps remain;
+specified implementation can continue on Linux. Browser, cross-platform and
+network execution remain deferred. M4 is ongoing.

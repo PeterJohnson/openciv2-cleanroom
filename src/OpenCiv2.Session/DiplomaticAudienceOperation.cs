@@ -42,6 +42,7 @@ internal static class DiplomaticAudienceInteraction
 {
     public static ResearchReply? Reply(DiplomaticAudienceDecision? pending, OperationInput input) => pending switch
     {
+        DiplomaticAudienceDecision.Scenario d => LifecycleInteraction.ResearchReply(d.Value, input),
         DiplomaticAudienceDecision.Emissary d => EmissaryInteraction.Reply(d.Value, input) is { } answer ? new(answer) : null,
         DiplomaticAudienceDecision.Technology d => TechnologyNegotiationInteraction.Reply(d.Value, input),
         DiplomaticAudienceDecision.Grant d => ResearchGrantInteraction.ResearchReply(d.Value, input),
@@ -55,6 +56,8 @@ internal static class DiplomaticAudienceInteraction
     {
         switch (decision)
         {
+            case DiplomaticAudienceDecision.Scenario d:
+                return LifecycleInteraction.Prompt(context, d.Value, recipient, ref window, intelligence);
             case DiplomaticAudienceDecision.Emissary d:
                 return EmissaryInteraction.Prompt(d.Value, recipient, intelligence, ref window);
             case DiplomaticAudienceDecision.Technology d:

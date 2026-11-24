@@ -3551,7 +3551,7 @@
       "status": "partial",
       "contract": "V01 sections9-11 local civil war; S02 NoSchism predicate; C01 elementary transfer; C09 shared queries",
       "publicSurface": "CivilWar.Begin/Operation; CivilWarOperation; ScenarioPermissions.AllowSchism; CityTransfer.Transfer; CityCaptureQueries.TreasuryShare/CentralCity",
-      "review": "Actual civilization creation/reset and leader selection, highest eligible rebel slot, NoSchism matching without an events-loaded gate, region population partition and retained-target farthest-city fallback. Uses real C01 city/population transfer, W03 knowledge/exploration, U01 stack traversal and C09 central-city selection. Preserves partial reset/copy distinctions, mixed-stack ownership, unchanged unit counts, multiple Palaces and candidate-parent alias semantics. Fallback transfers and creation searches resume without restarting; failure/disposal retain prefixes. Required scenario action dispatch is an explicit integration boundary; predicate tests do not claim authored action execution. The C09 parent now composes civil war. Movement/mission capture callers, full scenario/desktop presentation and generated-game acceptance remain open. Browser/cross-platform and network orchestration are deferred. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full desktop composition remains pending.",
+      "review": "Actual civilization creation/reset and leader selection, highest eligible rebel slot, NoSchism matching without an events-loaded gate, region population partition and retained-target farthest-city fallback. Uses real C01 city/population transfer, W03 knowledge/exploration, U01 stack traversal and C09 central-city selection. Preserves partial reset/copy distinctions, mixed-stack ownership, unchanged unit counts, multiple Palaces and candidate-parent alias semantics. Fallback transfers and creation searches resume without restarting; failure/disposal retain prefixes. Required scenario action dispatch is an explicit integration boundary; predicate tests do not claim authored action execution. The C09 parent now composes civil war. Movement/mission capture callers, full scenario/desktop presentation and generated-game acceptance remain open. Browser/cross-platform and network orchestration are deferred. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full desktop composition remains pending. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "sources": [
         "src/OpenCiv2.Core/City/CityCaptureQueries.cs",
         "src/OpenCiv2.Core/City/CityTransfer.cs",
@@ -5422,7 +5422,7 @@
       "id": "scenario-permissions-actions",
       "contract": "S02 sections7-9 local negotiation, synchronous action ordering and ChangeMoney; F06 negotiation permission conversion",
       "publicSurface": "ScenarioPermissions.AllowNegotiation; ScenarioActions.Execute/ResolveCivilization/ChangeMoney; EventValues.DenyNegotiation",
-      "review": "Exact4096 denial conversion and canonical live export; first-match captured permission, stored-selector human classes, unbound Anybody, local orientation, caller-owned loaded/alive gates. Required synchronous action children execute in live flag order, ignore ordinary return values, publish Consumed late and retain reentrant/failure prefixes. Actual money actions use single indirection, alive admission and signed32 saturation from amount sign. Remaining action implementations, retained action decisions, parser and full desktop audience integration remain open. Network execution, browser and cross-platform qualification are deferred.",
+      "review": "Exact4096 denial conversion and canonical live export; first-match captured permission, stored-selector human classes, unbound Anybody, local orientation, caller-owned loaded/alive gates. Required synchronous action children execute in live flag order, ignore ordinary return values, publish Consumed late and retain reentrant/failure prefixes. Actual money actions use single indirection, alive admission and signed32 saturation from amount sign. Retained action decisions and caller joins are covered by scenario-retained-dispatch; parser, other trigger hooks and full desktop integration remain open. Network execution, browser and cross-platform qualification are deferred. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/ScenarioActions.cs",
@@ -5502,7 +5502,7 @@
       "id": "diplomatic-audience",
       "contract": "V05 section6 local audience entry, requests, threats, opening treaties and conversation cleanup; S02 negotiation admission",
       "publicSurface": "DiplomaticAudience.Begin/Operation/TechnologyGap; DiplomaticAudienceOperation",
-      "review": "Actual A08 evaluation, V05 emissaries and repeated mode-one technology exchanges, V03 grants, V04 war/alliance changes, opening treaties and conversation. Covers scenario denial without ordinary cleanup, initiation/refusal ordering, live tribute payment and second technology demand, fixed advance identities, target filtering, historical mode, aggression reconsideration/protection, threat failure prefixes and private nested government decisions. Shared Session adapters preserve zero-accepts treaty cancellation versus one-accepts demands. Controlled live changes occur only at retained player decisions. Full S02 action domains require owning adapters. Local V04 contact dispatch now composes the audience; movement/turn callers and graphical audience integration remain open; browser, cross-platform and network execution deferred.",
+      "review": "Actual A08 evaluation, V05 emissaries and repeated mode-one technology exchanges, V03 grants, V04 war/alliance changes, opening treaties and conversation. Covers scenario denial without ordinary cleanup, initiation/refusal ordering, live tribute payment and second technology demand, fixed advance identities, target filtering, historical mode, aggression reconsideration/protection, threat failure prefixes and private nested government decisions. Shared Session adapters preserve zero-accepts treaty cancellation versus one-accepts demands. Controlled live changes occur only at retained player decisions. Retained S02 permission/action joins are covered by scenario-retained-dispatch; media/text preparation still requires platform/P04 adapters. Local V04 contact dispatch now composes the audience; movement/turn callers and graphical audience integration remain open; browser, cross-platform and network execution deferred. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/DiplomaticAudience.cs",
@@ -5531,7 +5531,7 @@
       "id": "diplomatic-contact",
       "contract": "V04 section10 local contact dispatch and AI peace/alliance/war transitions; V05 audiences and ally help; A08 security and advance exchange; V04 section11 retained turn contact",
       "publicSurface": "DiplomaticContact.Begin/Operation/NeedsAudience; DiplomaticContactOperation; DiplomacyTurn.Operation.ResumeDecision",
-      "review": "Actual scenario permission/actions and full local audience preserve double permission checks and post-audience first-contact capture. AI paths use actual security, ordered advance exchange and retained V03 Library grants, raw peace/alliance/war primitives, observer-qualified ordered ally joins and retained ally help. Tests cover no extra alive/distinct gates, contact cadence, historical exclusions, force/ally/observer notices, player-civilization reputation, NATO nearest-city ties, repeated directed incident gate, no expulsion/reputation normalization, failure/disposal prefixes and private Session replies/cancel/timeout. Missing city text is represented semantically as absent, without a native formatter buffer. S02 full authored-action domains still require owning adapters. Actual movement/revelation now composes contact; desktop callers and complete-game acceptance remain open; network forwarding/parley, browser and cross-platform execution deferred. The actual turn contact child suspends before stale-contact cleanup and later relation work, retaining private Library grants and ally-help choices; failures preserve completed effects and the unresolved review delta stays explicit.",
+      "review": "Actual scenario permission/actions and full local audience preserve double permission checks and post-audience first-contact capture. AI paths use actual security, ordered advance exchange and retained V03 Library grants, raw peace/alliance/war primitives, observer-qualified ordered ally joins and retained ally help. Tests cover no extra alive/distinct gates, contact cadence, historical exclusions, force/ally/observer notices, player-civilization reputation, NATO nearest-city ties, repeated directed incident gate, no expulsion/reputation normalization, failure/disposal prefixes and private Session replies/cancel/timeout. Missing city text is represented semantically as absent, without a native formatter buffer. S02 full authored-action domains still require owning adapters. Actual movement/revelation now composes contact; desktop callers and complete-game acceptance remain open; network forwarding/parley, browser and cross-platform execution deferred. The actual turn contact child suspends before stale-contact cleanup and later relation work, retaining private Library grants and ally-help choices; failures preserve completed effects and the unresolved review delta stays explicit. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/DiplomacyTurn.cs",
@@ -5596,7 +5596,7 @@
       "id": "scenario-unit-actions",
       "contract": "U01 section5 retained creation; S02 section9 CreateUnit and MoveUnit",
       "publicSurface": "UnitCreation.Begin/Operation; ScenarioUnitActions.BeginCreate/Move; ScenarioUnitCreationOperation",
-      "review": "Scenario creation uses actual U01 initialization and retained W03/V04 contact before live veteran/home assignments. Preserves ordered location tests, sea occupancy exception, single selector resolution, first home-name match including foreign cities and byte-domain absence. MoveUnit keeps the classic slot-selector quirk, descending captured bounds, signed attack/orders and destination narrowing, rectangle comparisons and zero/negative/All quantities. Actual contact tests cover private replies, disposal, required failure and cancel/timeout diagnostics. Full retained S02 dispatch, other action domains, production desktop callers and complete-game acceptance remain open; browser/cross-platform/network execution deferred.",
+      "review": "Scenario creation uses actual U01 initialization and retained W03/V04 contact before live veteran/home assignments. Preserves ordered location tests, sea occupancy exception, single selector resolution, first home-name match including foreign cities and byte-domain absence. MoveUnit keeps the classic slot-selector quirk, descending captured bounds, signed attack/orders and destination narrowing, rectangle comparisons and zero/negative/All quantities. Actual contact tests cover private replies, disposal, required failure and cancel/timeout diagnostics. Full retained S02 dispatch, other action domains, production desktop callers and complete-game acceptance remain open; browser/cross-platform/network execution deferred. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "status": "partial",
       "sources": [
         "src/OpenCiv2.Core/ScenarioUnitActions.cs",
@@ -5621,7 +5621,7 @@
       "id": "civilization-forced-removal",
       "contract": "V01 \u00a78 local forced removal/retirement; S02 \u00a79 DestroyACivilization; actual V06/V03/V01 children",
       "publicSurface": "CivilizationRemoval.Begin/Operation.Resume; ScenarioDestruction.Begin; CivilizationRemovalOperation; ScenarioDestructionOperation",
-      "review": "Low-byte flags and retirement policy; live ascending unit/city scans; sticky relink state, retained fields, carrier wakeup and one-slot bound shortening; route removal, raw wonders, visibility and eliminated-owner radius repair including dead cities/Ocean. Actual foreign spy survival and last-settler loss retain nested Library decisions before later removals. Non-destructive recreation retains assets and actual placement contact. Session privacy, stale replies, cancellation/timeout and presentation diagnostics; required failure/disposal prefixes. S02 recipient resolution and defeat-before-removal are implemented; full retained scenario dispatcher and graphical/general-desktop integration remain pending. Network execution is deferred.",
+      "review": "Low-byte flags and retirement policy; live ascending unit/city scans; sticky relink state, retained fields, carrier wakeup and one-slot bound shortening; route removal, raw wonders, visibility and eliminated-owner radius repair including dead cities/Ocean. Actual foreign spy survival and last-settler loss retain nested Library decisions before later removals. Non-destructive recreation retains assets and actual placement contact. Session privacy, stale replies, cancellation/timeout and presentation diagnostics; required failure/disposal prefixes. S02 recipient resolution and defeat-before-removal are implemented; retained dispatch is covered by scenario-retained-dispatch; graphical/general-desktop integration remains pending. Network execution is deferred. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "sharedGroups": [
         "S02.destruction-admission",
         "S02.destruction-private-session",
@@ -5647,7 +5647,7 @@
       "id": "scenario-terrain",
       "contract": "S02 \u00a79 ChangeTerrain; W01 \u00a72 lookup and whole-byte terrain; actual C01/U01/V01 children",
       "publicSurface": "ScenarioTerrain.Begin/Operation.Resume; ScenarioTerrainEncoding; ScenarioTerrainOperation",
-      "review": "Two captured rectangle passes retain signed wrapping coordinates, rectangular parity aliases, post-deletion next-link lookup, live terrain operands, full terrain-flag replacement, remembered features and city radius refresh. Cityless scans ignore Alive, include barbarians, delete captured descending units, preserve human membership and publish local defeat before actual civilization creation/reset. Real last-settler and Library children retain private decisions. Cases cover empty rectangles, retained reset/deletion, cancellation/timeout, redraw diagnostics, disposal, bounded wrapping scans, network rejection and stale-allocation failure prefixes. W01 \u00a72 resolves the former S02 noncanonical-parity/fallback wording inconsistency. Full retained S02 dispatcher, general desktop composition, original observations and graphical acceptance remain open.",
+      "review": "Two captured rectangle passes retain signed wrapping coordinates, rectangular parity aliases, post-deletion next-link lookup, live terrain operands, full terrain-flag replacement, remembered features and city radius refresh. Cityless scans ignore Alive, include barbarians, delete captured descending units, preserve human membership and publish local defeat before actual civilization creation/reset. Real last-settler and Library children retain private decisions. Cases cover empty rectangles, retained reset/deletion, cancellation/timeout, redraw diagnostics, disposal, bounded wrapping scans, network rejection and stale-allocation failure prefixes. W01 \u00a72 resolves the former S02 noncanonical-parity/fallback wording inconsistency. Retained dispatch is covered by scenario-retained-dispatch; general desktop composition, original observations and graphical acceptance remain open. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "sharedGroups": [
         "S02.terrain-bounds-failures",
         "S02.terrain-cityless-empty",
@@ -5671,7 +5671,7 @@
       "id": "scenario-civilization-actions",
       "contract": "S02 \u00a79 MakeAggression/GiveTechnology; actual V04 force-war and V03 retained grant",
       "publicSurface": "ScenarioCivilizationActions.MakeAggression/BeginGrant; ScenarioTechnologyOperation",
-      "review": "One-level selector resolution and recipient/alive gates; forced war returns the real V04 result, admits same-civilization inputs to the child, performs actual alliance expulsion and preserves zero-result effects through ordinary dispatch. Technology captures recipient/advance once, uses source zero without an extra duplicate/technology gate or immediate ReceivedTechnology dispatch, and retains actual recursive Library government and emissary decisions. Cases cover turn-zero storage, future technologies, duplicate counts, retained child parameters, real city recalculation on revolution, disposal/failure prefixes, private reply authority, cancellation/timeout and completion diagnostics. Full retained event dispatch and general desktop composition remain pending; browser, cross-platform and network execution are deferred.",
+      "review": "One-level selector resolution and recipient/alive gates; forced war returns the real V04 result, admits same-civilization inputs to the child, performs actual alliance expulsion and preserves zero-result effects through ordinary dispatch. Technology captures recipient/advance once, uses source zero without an extra duplicate/technology gate or immediate ReceivedTechnology dispatch, and retains actual recursive Library government and emissary decisions. Cases cover turn-zero storage, future technologies, duplicate counts, retained child parameters, real city recalculation on revolution, disposal/failure prefixes, private reply authority, cancellation/timeout and completion diagnostics. Retained action dispatch is covered by scenario-retained-dispatch; general desktop composition remains pending; browser, cross-platform and network execution are deferred. The scenario-retained-dispatch family covers actual action composition and retained negotiation/schism callers; remaining trigger families and desktop adapter composition are separate gates.",
       "sharedGroups": [
         "S02.aggression-actual-effects",
         "S02.aggression-admission",
@@ -5688,6 +5688,47 @@
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/ScenarioCivilizationCases.cs"
+      ]
+    },
+    {
+      "id": "scenario-retained-dispatch",
+      "contract": "S02 \u00a7\u00a77\u201310 retained action dispatch and negotiation/schism matching; actual U01/W03/V04/V05/V03/V01 children",
+      "publicSurface": "ScenarioDispatcher.Begin/Operation; ScenarioPermissionActions.BeginNegotiation/BeginSchism; ScenarioPresentationActions; ScenarioEventOperation; retained DiplomaticContact/DiplomaticAudience/CivilWar constructors",
+      "review": "All eleven actions execute in live flag order, ordinary child results do not short-circuit, and JustOnce consumption occurs only after completion. Actual research-notice re-entry can run the same event before consumption. Wave search, Sound gating, CD retry/close/forced-track policy, sparse text lines, autoplay preparation and local acknowledgement are implemented through required media/P04/suppression ports. Actual terrain/reset, destruction, creation/contact and Library children retain decisions and presentation diagnostics. Negotiation captures the first-match permission before actions; NoSchism processes all matches without a Loaded gate and rejects invalidated current events. Real event\u2192creation\u2192contact\u2192permission\u2192Library tests and private Session replies cover delayed money/text/consumption, actor isolation, stale replies, cancellation/timeout, disposal and failure prefixes. Direct audience permission waits after meeting-active publication and before pair/offer initialization; civil war waits before rebel selection. Platform playback, authored substitution implementations, S01 suppression consumption, other trigger families/caller hooks, pending-operation persistence and general desktop/graphical acceptance remain open. Browser, cross-platform and network execution are deferred. Civil-war callers preserve operation-specific replay identifiers across retained scenario permission actions.",
+      "sharedGroups": [
+        "S02.audience-retained-entry",
+        "S02.creation-nested-permission",
+        "S02.dispatch-actual-reentry",
+        "S02.dispatch-all-actions",
+        "S02.dispatch-live-flags-failure",
+        "S02.dispatch-retained-lifecycle",
+        "S02.event-private-session",
+        "S02.media-cd-retries",
+        "S02.media-wave-search",
+        "S02.permission-retained-selection",
+        "S02.schism-call-identity",
+        "S02.schism-retained-events",
+        "S02.text-holes-autoplay"
+      ],
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/City/CityCapture.cs",
+        "src/OpenCiv2.Core/CivilWar.cs",
+        "src/OpenCiv2.Core/DiplomaticAudience.cs",
+        "src/OpenCiv2.Core/DiplomaticContact.cs",
+        "src/OpenCiv2.Core/LifecycleDecision.cs",
+        "src/OpenCiv2.Core/ScenarioActions.cs",
+        "src/OpenCiv2.Core/ScenarioDispatcher.cs",
+        "src/OpenCiv2.Core/ScenarioPermissionActions.cs",
+        "src/OpenCiv2.Core/ScenarioPermissions.cs",
+        "src/OpenCiv2.Core/ScenarioPresentationActions.cs",
+        "src/OpenCiv2.Session/DiplomaticAudienceOperation.cs",
+        "src/OpenCiv2.Session/DiplomaticContactOperation.cs",
+        "src/OpenCiv2.Session/LifecycleInteraction.cs",
+        "src/OpenCiv2.Session/ScenarioEventOperation.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ScenarioDispatchCases.cs"
       ]
     }
   ]

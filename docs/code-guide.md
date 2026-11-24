@@ -1232,8 +1232,8 @@ creation tutorials, returning the originally allocated slot. `ScenarioUnitAction
 uses it for S02 CreateUnit, then applies live veteran and home operands. It also
 owns MoveUnit order assignment, including the classic unit-slot selector and signed
 checks. `ScenarioUnitCreationOperation` forwards private contact choices and reports
-cosmetic failures after the action completes. Full S02 dispatch and other creation
-callers still need this retained path before general desktop composition.
+cosmetic failures after the action completes. The retained dispatcher uses this
+path; other creation callers still need it before general desktop composition.
 
 
 `CivilizationRemoval` implements V01 forced removal separately from last-city
@@ -1242,7 +1242,7 @@ records and radius-claim behavior; actual lifecycle spy escapes and recreation
 can retain private decisions. `ScenarioDestruction` resolves the S02 recipient,
 publishes local defeat when required, and waits for this removal before returning.
 The matching Session adapters retain full replies and completion diagnostics.
-Full retained event dispatch and the general desktop composition remain open.
+General trigger matching and the desktop composition remain open.
 
 `ScenarioTerrain` owns the S02 two-pass terrain action and cityless-civilization
 reset loop. It retains actual C01/U01 deletion and V01 creation decisions;
@@ -1250,10 +1250,27 @@ reset loop. It retains actual C01/U01 deletion and V01 creation decisions;
 path. `ScenarioTerrainEncoding` in Formats replaces the whole terrain encoding,
 including retained file flags, through allocation-bound `MapCompatibility`.
 W01 rectangular lookup aliases noncanonical parity; it does not select fallback
-for parity alone. Full scenario dispatch and desktop composition remain open.
+for parity alone. General trigger matching and desktop composition remain open.
 
 `ScenarioCivilizationActions` owns S02 MakeAggression and GiveTechnology
 admission. Forced war invokes the actual synchronous V04 child; technology uses
 the retained V03 grant with source zero. `ScenarioTechnologyOperation` routes
 Library and emissary decisions privately and preserves diagnostic completion.
-The full retained event dispatcher remains a separate integration step.
+The retained dispatcher now composes both actions.
+
+`ScenarioDispatcher` composes all eleven S02 action types with actual gameplay
+children, live flags and final-only one-shot consumption. It retains complete
+research replies through creation/contact and lifecycle chains. `ScenarioEventOperation`
+uses the shared private decision routing, including local scenario text acknowledgements.
+`ScenarioPermissionActions` performs first-match negotiation and all-match NoSchism
+execution through this dispatcher. Retained constructors on `DiplomaticContact`,
+`DiplomaticAudience` and `CivilWar` use it before their later effects; explicit
+synchronous constructors remain for bounded authored callers. The typed dispatcher
+factory closes the event/contact/creation dependency cycle.
+
+`ScenarioPresentationActions` owns S02 wave-search and CD-selection policy, collects
+all present text lines and applies the autoplay gate after required preparation.
+Its media port owns platform playback; its text preparation delegate owns P04 authored
+substitutions and its suppression delegate publishes the S01 request. Desktop adapters
+and these broader presentation integrations remain required. Other trigger families,
+general desktop composition and pending-operation persistence remain open.

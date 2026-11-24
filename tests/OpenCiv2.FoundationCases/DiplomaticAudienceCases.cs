@@ -24,7 +24,7 @@ public static partial class FoundationSuite
         public int Events, Refreshes;
         public bool FailRefresh, FailEvent;
         public AudienceNoticeKind? FailNotice;
-        public AudienceFixture(List<Choice>? choices = null, RevelationFixture? data = null)
+        public AudienceFixture(List<Choice>? choices = null, RevelationFixture? data = null, ScenarioPermissionActions? events = null)
         {
             C = new(choices, data);
             World.Diplomacy.AskedEmissary = false;
@@ -34,8 +34,11 @@ public static partial class FoundationSuite
             var opening = new OpeningTreaties(World, Data.Rules, T.T.Random, C.Emissaries,
                 new(World, Data.Rules, _ => throw new InvalidOperationException("Unexpected attack notice")), T.T.Research,
                 war, C.F.F.Treaties, this);
-            Service = new(World, Data.Process.Rules, T.T.Random, C.Stance, C.Emissaries, T.Service, T.T.Research,
-                war, opening, C.Conversation, ExecuteEvent, this);
+            Service = events is null
+                ? new(World, Data.Process.Rules, T.T.Random, C.Stance, C.Emissaries, T.Service, T.T.Research,
+                    war, opening, C.Conversation, ExecuteEvent, this)
+                : new(World, Data.Process.Rules, T.T.Random, C.Stance, C.Emissaries, T.Service, T.T.Research,
+                    war, opening, C.Conversation, events, this);
         }
         public void ExecuteEvent(Event entry)
         {

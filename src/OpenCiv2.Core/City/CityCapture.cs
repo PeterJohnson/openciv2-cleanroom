@@ -188,7 +188,7 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
         if (!Human(o) && Facility(originalCity, BuildingIds.Palace) && world.Civilizations[o].CityCount > 4
             && world.Globals.PowerRank[Human(n) ? n : world.Globals.WorstHumanRank] < world.Globals.PowerRank[o])
         {
-            using var schism = services.CivilWar.Begin(o);
+            using var schism = services.CivilWar.Begin(o, call + "/schism");
             while (schism.AdvanceDecision(answer: op.TakeReply()) is null)
             { yield return schism.Pending switch { ResearchGrantDecision grant => new CityCaptureDecision.Grant(grant), { } decision => new CityCaptureDecision.Lifecycle(decision), _ => null }; }
             if (schism.Result == 0)
