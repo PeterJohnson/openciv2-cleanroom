@@ -19,6 +19,10 @@ public static partial class FoundationSuite
 {
     private static readonly (string Name, Action Run)[] Cases =
     [
+        ("P04.notices-private-failure", PlayerNoticesPrivacyAndFailure),
+        ("P04.notices-bounds-reset", PlayerNoticesBoundsAndSessionReset),
+        ("V03.notices-retained-acquisition", ResearchNoticesRetainedAcquisition),
+        ("V03.notices-distinct-recipients", ResearchNoticesDistinctRecipients),
         ("P04.classic-expansion-tokens", ClassicExpansionTokenRules),
         ("P04.classic-expansion-boundaries", ClassicExpansionBoundaries),
         ("P04.classic-expansion-capture", ClassicExpansionCaptureAndCulture),

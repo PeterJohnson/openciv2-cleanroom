@@ -40,6 +40,9 @@ public interface IPlayerClient
     /// <summary>Returns the observer's status and city-window data in a supported local game.</summary>
     LocalPlayObservation? ObserveLocalPlay() => null;
 
+    /// <summary>Returns this observer's recent informational notices without consuming another controller's view.</summary>
+    PlayerNotices? ObserveNotices() => null;
+
     /// <summary>Drains this automation binding's own-city production completions.</summary>
     CityProductionEvents TakeCityProductionEvents() => CityProductionEvents.Empty;
 

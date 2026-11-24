@@ -12,6 +12,12 @@ production. Its content and presentation fixtures do not replace gameplay
 children. These native cases qualify construction and continuation ownership;
 desktop content/presentation binding and complete generated games remain open.
 
+Player-notice cases verify observer privacy independently of command ownership,
+same-seat snapshots, delivery before command failure, retained snapshots, bounded
+history, revocation/reassignment and new-session isolation. Actual V03 acquisition
+and government continuation use the desktop research presentation adapter. Native
+input checks inspect its rendered completion notice and clear history on reload.
+
 Retained research-goal cases cover category rebuilding, captured Help operands,
 reference/path acknowledgment, stable recommendations, cancellation/timeout,
 privacy and disposal. Existing theft and creation/contact cases now traverse the

@@ -7,6 +7,7 @@ public sealed record SessionView(ClientIdentity? Identity, LiveRecords<OwnUnit>?
     OwnedList<CommandDescriptor> Commands, CommandUpdate? Command, string Message, MapObservation? Map = null,
     LocalPlayObservation? Play = null)
 {
+    public PlayerNotices? Notices { get; init; }
     public static SessionView Empty { get; } = new(
         null,
         null,
@@ -51,7 +52,8 @@ public sealed class SessionPanel(bool observeMap = false)
             client.Updates();
             var map = observeMap && (View.Map?.Identity != identity || View.Map.Revision != units.Observation.Revision)
                 ? client.ObserveMap() : View.Map;
-            View = new(identity, units, cities, descriptors, current ?? View.Command, View.Message, map, play);
+            View = new(identity, units, cities, descriptors, current ?? View.Command, View.Message, map, play)
+            { Notices = client.ObserveNotices() };
         }
         catch (AccessException)
         {

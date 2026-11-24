@@ -395,6 +395,17 @@ calculation, publishes goals after research and upkeep, and runs A08 score
 adjustments before assessment. The F04 specification records the remaining
 city-analysis arithmetic.
 
+`IPlayerClient.ObserveNotices` returns an owned snapshot of the observer's recent
+informational notices. Trusted operations publish through `OperationContext.Notify`
+to an explicit civilization, independently of command ownership. Each civilization
+has a 64-entry history and an omitted count; same-seat controllers do not consume
+each other's view. Session replacement clears it. `SessionPanel` discards notices
+when rebinding or losing access, and the desktop shows a recent-notices panel.
+`SinglePlayerResearchPresentation` binds actual V03 announcements, advice,
+reference facts, tutorials and government notices to this feed. Local-viewer
+announcements remain distinct from explicitly owner-addressed notices; retained
+operations still own all required decisions. Desktop science uses this adapter.
+
 `IPlayerClient.TakeCityProductionEvents` exposes settled C06 completions to
 automation bindings in the authored game. The command runtime scopes each
 publication to the actor's participant and verifies the city's current owner

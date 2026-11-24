@@ -53,7 +53,8 @@ public sealed record OperationContext(
     CommandCorrelation Correlation,
     Action<string, OwnedList<NamedValue>> Effect,
     Action Publish,
-    Action<CityTarget, int>? CityProductionCompleted = null);
+    Action<CityTarget, int>? CityProductionCompleted = null,
+    Action<CivilizationSlot, string>? Notify = null);
 /// <summary>
 /// Owns the explicit state needed to suspend and resume one admitted command.
 /// </summary>

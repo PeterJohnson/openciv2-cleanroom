@@ -103,6 +103,7 @@ internal sealed class RuntimeState(ProcessContext process, RuntimeId identity)
     public SortedDictionary<string, CommandDefinition> Definitions { get; } = new(StringComparer.Ordinal);
     public SortedDictionary<ulong, CommandRecord> Commands { get; } = new();
     public Queue<Work> Ready { get; } = new();
+    public Dictionary<CivilizationSlot, PlayerNoticeHistory> Notices { get; } = new();
     public List<RoutedRequest> Requests { get; } = [];
     public List<RoutedReply> Replies { get; } = [];
     public Dictionary<(ConnectionId, CommandCorrelation), CommandId> Received { get; } = new();

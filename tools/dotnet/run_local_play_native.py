@@ -181,6 +181,9 @@ def drive(args, app, observation, storage):
         driver.key('Return')
 
     def select(slot):
+        # Bring the unit list's preceding anchor back into view before waiting for
+        # virtualized rows; reading lower sidebar notices can unmaterialize them.
+        sidebar_visible(lambda s: s['controls']['mapOptions'])
         def unit_index(state):
             return next(i for i, unit in enumerate(state['play']['units']) if unit['slot'] == slot)
 
@@ -319,6 +322,23 @@ def drive(args, app, observation, storage):
         seen_effects.update(play['effects'])
     assert {'unit.produced', 'research.completed'} <= seen_effects
     assert research_goal_checked
+    assert any('Research completed: Land Surveys.' == text for text in play['notices'])
+    notices = sidebar_visible(lambda s: s['play']['controls']['notices'])
+    assert 'Research completed: Land Surveys.' in notices['play']['noticesText']
+    from PIL import ImageGrab
+    # XGetImage can catch a partially painted software surface. Require two
+    # identical, populated frames before retaining visual evidence.
+    previous_capture = None
+    for _ in range(40):
+        capture = ImageGrab.grab(xdisplay=os.environ['DISPLAY'])
+        pixels = capture.tobytes()
+        if pixels == previous_capture and capture.getcolors(64) is None:
+            capture.save(args.report.with_suffix('.notices.png'))
+            break
+        previous_capture = pixels
+        time.sleep(.1)
+    else:
+        raise AssertionError('Notice panel capture did not reach a stable rendered frame')
     assert 0 in play['known'] and len(play['units']) >= 2
     select(1)
     command(lambda: click('fortify'))
@@ -358,6 +378,8 @@ def drive(args, app, observation, storage):
     end_turn(8)
     click('load')
     restored = wait(lambda s: s['message'] == 'Classic save loaded.')['play']
+    assert restored['notices'] == []
+    checks.append('native research notices are visible and cleared when loading a replacement session')
     assert semantic(saved) == semantic(restored)
     assert restored['runtime'] != saved['runtime'] and not restored['cityOpen']
     assert restored['city']['token'] != saved['city']['token']

@@ -350,3 +350,10 @@ See [ResearchGoalContinuationCases.cs](../../tests/OpenCiv2.FoundationCases/Rese
 and the [native input driver](../../tools/dotnet/run_local_play_native.py).
 Rule-reference pages use installed custom names and facts; full authored
 Civilopedia prose and general desktop gameplay binding remain open.
+
+The `player-notices` family covers recipient-scoped informational history and
+the production research presentation adapter. Its snapshots are independent of
+the initiating command's private effects, bounded, and cleared at session
+replacement. See [PlayerNoticeCases.cs](../../tests/OpenCiv2.FoundationCases/PlayerNoticeCases.cs).
+The desktop displays recent notices; general movement/diplomacy presentation
+and full authored reference/tutorial content remain open.

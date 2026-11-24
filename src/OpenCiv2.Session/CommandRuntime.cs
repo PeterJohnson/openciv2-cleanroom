@@ -449,7 +449,16 @@ public sealed partial class SessionRuntime
                         Deliver(state, record);
                     },
                     state.Publish,
-                    (city, item) => PublishCityProduction(state, record, city, item));
+                    (city, item) => PublishCityProduction(state, record, city, item),
+                    (recipient, text) =>
+                    {
+                        AdmitCivilization(recipient);
+                        ArgumentException.ThrowIfNullOrWhiteSpace(text);
+                        if (!state.Notices.TryGetValue(recipient, out var history))
+                        { state.Notices.Add(recipient, history = new()); }
+                        history.Add(state.World.Globals.Turn, text);
+                        state.Publish();
+                    });
                 step = record.Continuation.Resume(context, work.Input);
             }
             catch (ChoiceException error)

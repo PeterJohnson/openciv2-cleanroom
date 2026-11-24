@@ -663,9 +663,9 @@ public static partial class LocalPlayCommands
         {
             var world = context.World;
             var governments = CreateGovernments(context);
-            var researchEffects = new AuthoredResearchEffects(() => Current);
+            var researchEffects = new SinglePlayerResearchPresentation(() => Current, () => Current.World.Multiplayer.LocalHuman);
             var services = new SinglePlayerResearch(world, context.Process.Rules, context.Gameplay,
-                new(world, new(5_000_000, 64)), governments, CreateWonders(context), researchEffects, researchEffects, researchEffects);
+                new(world, new(5_000_000, 64)), governments, CreateWonders(context), researchEffects, researchEffects, new AuthoredEmissaryEffects());
             return services.Flow(CreateProductionOrders(context), researchEffects, researchEffects);
         }
 
@@ -713,37 +713,11 @@ public static partial class LocalPlayCommands
                 effects.Elimination(), CreateIncidents(context, stacks, () => context), presentation);
         }
 
-        // The admitted ordinary advances0..2 have no grant notices, emissary, Barracks or
-        // first-discovery wonder effects. Completion/next-selection remain session continuations.
-        private sealed class AuthoredResearchEffects(Func<OperationContext> current) : IResearchGrantEffects, IResearchGovernmentEffects, IResearchChoiceEffects, IResearchCompletionEffects, IEmissaryEffects
+        // No foreign civilization exists in Alder Valley. The general gameplay host owns
+        // leader/intelligence presentation when binding its diplomacy services.
+        private sealed class AuthoredEmissaryEffects : IEmissaryEffects
         {
-            public bool DiplomacyActive => false;
-            public int NoticeMode => 0;
-            public CitySlot? SelectedCity => null;
-            public void Completed(ResearchCompletionNotice notice) => current().Effect("research.completed", new([new("advance", new CommandValue.Integer(notice.Advance))]));
-            public void Selected(int civilization, int advance) => current().Effect("research.selected", new([new("advance", new CommandValue.Integer(advance))]));
-            public void Ability(ResearchAbilityNotice notice) => current().Effect("research.ability", new([new("ability", new CommandValue.Text(notice.Ability.ToString()))]));
-            public void FirstCivilization(int civilization) => current().Effect("research.first_civilization", new([]));
-            public void Advice(ResearchAdvice advice) => current().Effect("research.advice", new([new("advance", new CommandValue.Integer(advice.Recommendation))]));
-            public void CloseAdvice() { }
-            public void Encyclopedia(ResearchTopic topic, int identity) => throw OutsideProfile();
-            public ResearchReply GoalChoice(ResearchGoalNotice notice) => throw OutsideProfile();
-            public int GoalHelp(ResearchTopic topic, int identity, int prerequisite) => throw OutsideProfile();
-            public void GoalPath(ResearchPathNotice notice) => throw OutsideProfile();
-            private static InvalidOperationException OutsideProfile() => new("The authored profile has no research-grant presentation path");
-            public void Acquired(AdvanceAcquisitionNotice notice) => throw OutsideProfile();
-            public bool ReceiveEmissary(int civilization) => throw OutsideProfile();
-            public void EmissaryKnowledge(int civilization, int advance) => throw OutsideProfile();
-            public void ResetDiplomacy() => throw OutsideProfile();
-            public void Encyclopedia(int advance) => throw OutsideProfile();
-            public void BarracksSold(BarracksSaleNotice notice) => throw OutsideProfile();
-            public void GoldenAge(GoldenAgeNotice notice) => throw OutsideProfile();
-            public void WonderExpired(WonderExpiryNotice notice) => throw OutsideProfile();
-            public void RefreshStatus() => throw OutsideProfile();
-            public int ConfirmGovernment(ResearchGovernmentChoice choice) => throw OutsideProfile();
-            public void RevolutionStarting(int civilization) => current().Effect("government.revolution_started",
-                new([new("civilization", new CommandValue.Integer(civilization))]));
-            public void Tutorial(int civilization, ResearchTutorial tutorial) => throw OutsideProfile();
+            private static InvalidOperationException OutsideProfile() => new("The authored profile has no foreign emissary");
             public void Notice(EmissaryNotice notice) => throw OutsideProfile();
             public void OpenLeader(int counterpart) => throw OutsideProfile();
             public void CloseLeader() => throw OutsideProfile();

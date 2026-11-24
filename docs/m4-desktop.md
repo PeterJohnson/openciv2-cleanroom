@@ -8325,3 +8325,67 @@ independent original-game observations. This work does not complete M4.
 | `m4-research-goal-native.json` | `4b2ae353dd9cc814e45f6336dfac0bdf49d3d2f7c62cfb2997c166140e4db329` |
 | `m4-research-goal-identity.json` | `fcbf1eb957eb9ad0177f052ee35bdf4024180897b212faba5d44b48731718a9b` |
 | `m4-research-goal-desktop.json` | `d4cea177fd7384ab8bfc029ce693b7fe3e81987506af24719d5de57537971db7` |
+
+## Scoped player notices and research presentation
+
+The desktop gameplay binding audit found that committed command effects belong
+only to the initiating participant. Reusing them for every gameplay notice would
+misroute information about another human civilization. `OperationContext.Notify`
+now publishes informational text to an explicit civilization; it does not expose
+another participant's command identity, results or effects. `ObserveNotices`
+returns an owned snapshot after the usual lease/observer checks.
+
+Each civilization retains its latest 64 notices with private sequence numbers,
+turns and an omitted count. Same-seat controllers share the information without
+consuming each other's view. Command failure and retirement preserve delivered
+notices. Revocation and reassignment remove access; client-session replacement,
+new-game entry and staged load start a fresh presentation history. These notices
+are session presentation, not an added classic save field.
+
+`SessionPanel` clears notices on rebinding or lost access. The desktop displays
+them in an expandable, scrollable Recent notices panel. Science now uses
+`SinglePlayerResearchPresentation` for completion, advice, acquisitions, reference
+facts, abilities, barracks sales, golden ages, wonder expiry and government
+notices. Local announcements already gated by Core remain addressed to the
+host's viewer; explicitly owner-addressed notices use that civilization. Research
+command effects are recorded only for their owning actor, so they cannot leak a
+foreign decision through the initiating participant's result. Research
+guides use installed advance names and actual rule unlocks, including custom
+content. Full authored Civilopedia/tutorial prose and leader/media presentation
+remain content-host work. Required research/government/emissary choices still
+use their retained operations; this adapter cannot answer them synchronously.
+
+Four shared groups cover privacy independently of command ownership, same-seat
+snapshots, failure prefixes, command retirement, bounded history, revocation,
+reassignment and fresh-session isolation. The acquisition case uses actual V03
+services, suspends after granting a custom-named advance, and resumes through
+actual government change without repeating the notice. Recipient cases separate
+local announcements from foreign-owner barracks notices and verify custom guide
+content without gameplay mutation. The native driver now scrolls the notice
+panel into view, captures its rendered text, and verifies clearing on reload.
+
+General movement/diplomacy presentation binding, generated human/AI turns and
+complete-game acceptance remain open. Default movement still uses the bounded
+local handler. The two F04 formulas require independent original-game evidence;
+browser and cross-platform execution remain deferred. M4 is not complete.
+
+Root/App formatting and verification passed, and both Release builds completed
+with zero warnings/errors. Native tests passed **1926/1928**, with the two
+existing platform/audio skips. All **1891 shared groups** passed across **212
+coverage families**; compiled identity verified **935 inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. Lua automation code
+is unchanged; its optional native suite was not rerun.
+
+The isolated desktop input run passed **34 checks**, including rendered research
+notices, clearing on reload, the earlier goal/Help flow and existing save/replay
+scenarios. The driver restores sidebar visibility before waiting for virtualized
+unit rows and retains a stable screenshot. Visual review verified the notice text
+and wrapping; the PNG preview required an alternate-format review of the same
+captured pixels.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-player-notices-native.json` | `7fa00790325fbaedd4025a88f11dd2ed688fe7cf27a4d4bb629a2be9980c53a1` |
+| `m4-player-notices-identity.json` | `ab6c52df705564207e6d640eaa70ac8bd3cbed3fa9aef2b62137f8201fbca480` |
+| `m4-player-notices-desktop.json` | `f4300d99ec064c60615f69a273dd58e15a2e6cb443563bcb9cbfa2998f35af49` |
+| `m4-player-notices-desktop.notices.png` | `aae9f5b4b7af65ec46182f16840a5fe8b81eda12807617c2de18cee569bdc4d6` |

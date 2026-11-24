@@ -32,6 +32,8 @@ public sealed partial class SeamView : UserControl
     private ulong noticeSequence;
     private readonly ListBox units = new() { Height = 122 };
     private readonly TextBlock status = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly TextBlock gameplayNotices = new() { TextWrapping = TextWrapping.Wrap };
+    private readonly Expander gameplayNoticePanel = new() { Header = "Recent notices", IsExpanded = true, IsVisible = false };
     private readonly TextBlock details = new() { TextWrapping = TextWrapping.Wrap, MinHeight = 42 };
     private readonly TextBox input = new()
     {
@@ -172,6 +174,10 @@ public sealed partial class SeamView : UserControl
         side.Children.Add(input);
         side.Children.Add(run);
         side.Children.Add(status);
+        AutomationProperties.SetName(gameplayNotices, "Recent gameplay notices");
+        playControls["notices"] = gameplayNoticePanel;
+        gameplayNoticePanel.Content = new ScrollViewer { Content = gameplayNotices, MaxHeight = 180 };
+        side.Children.Add(gameplayNoticePanel);
         var scroll = new ScrollViewer { Content = side, Background = Brush.Parse("#f9f6ed") };
         Grid.SetColumn(scroll, 1);
         layout.Children.Add(scroll);
@@ -530,6 +536,13 @@ public sealed partial class SeamView : UserControl
         }
 
         RefreshPlay(view, previous, newBinding);
+        if (!Equals(view.Notices, previous?.Notices))
+        {
+            gameplayNoticePanel.IsVisible = view.Notices?.Items.Count > 0;
+            gameplayNotices.Text = view.Notices is { } notices
+                ? string.Join("\n\n", notices.Items.Reverse().Select(n => $"Turn {n.Turn}: {n.Text}"))
+                    + (notices.Omitted > 0 ? $"\n\n{notices.Omitted} earlier notices omitted." : "") : "";
+        }
         shell.IsEnabled = !Busy && !transferring && !cityOverlay.IsVisible && files?.IsVisible != true;
         bool gameActive = game is null || view.Play?.GameActive == true;
         map.IsVisible = overview.IsVisible = units.IsVisible = gameActive;

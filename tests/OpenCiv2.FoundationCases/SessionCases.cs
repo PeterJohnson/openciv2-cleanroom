@@ -11,7 +11,7 @@ public static partial class FoundationSuite
     private static IPlayerClient SessionClient(SessionRuntime runtime, byte civ = 1) => runtime.Bind(runtime.AddParticipant(new(civ)), ControllerKind.Scripted);
     private static void CheckRevoked(IPlayerClient client, AccessFailure failure)
     {
-        foreach (var action in new Action[] { () => _ = client.Identity, () => client.OwnUnits(), () => client.OwnCities(), () => client.Commands(),
+        foreach (var action in new Action[] { () => _ = client.Identity, () => client.OwnUnits(), () => client.OwnCities(), () => client.ObserveNotices(), () => client.Commands(),
             () => client.Submit(new("test", new([]))), () => client.Updates(), () => client.Result(new(1)), () => client.Reply(new(1), 1), () => client.Cancel(new(1)) })
         {
             try { action(); throw new Exception("Revoked client gained access"); }

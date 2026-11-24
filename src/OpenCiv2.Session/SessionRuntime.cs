@@ -219,6 +219,7 @@ public sealed partial class SessionRuntime : IDisposable
         state.Commands.Clear();
         state.Ready.Clear();
         state.Received.Clear();
+        state.Notices.Clear();
         state.Active = false;
     }
 

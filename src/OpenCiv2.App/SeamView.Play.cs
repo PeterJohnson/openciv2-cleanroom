@@ -637,6 +637,8 @@ public sealed partial class SeamView
                 ["orders"] = (int)u.Orders
             }).ToArray() ?? []),
             ["effects"] = new JsonArray(view.Command?.Committed.Select(e => (JsonNode?)JsonValue.Create(e.Name)).ToArray() ?? []),
+            ["notices"] = new JsonArray(view.Notices?.Items.Select(n => (JsonNode?)JsonValue.Create(n.Text)).ToArray() ?? []),
+            ["noticesText"] = gameplayNotices.Text,
             ["unitRows"] = new JsonArray(view.Units?.Records.Select((_, i) => (JsonNode)bounds(
                 units.ContainerFromIndex(i))).ToArray() ?? []),
             ["controls"] = new JsonObject(playControls.Where(pair => pair.Value.IsEffectivelyVisible).Select(pair =>

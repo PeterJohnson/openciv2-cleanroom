@@ -6530,6 +6530,37 @@
         "V03.goal-retained-selection",
         "V03.goal-session-privacy-help"
       ]
+    },
+    {
+      "id": "player-notices",
+      "status": "partial",
+      "contract": "P04/P05/X01 recipient-scoped informational presentation; V03 research announcements and retained grant integration",
+      "publicSurface": "IPlayerClient.ObserveNotices; PlayerNotice/PlayerNotices; OperationContext.Notify; SinglePlayerResearchPresentation; SessionView.Notices; desktop recent notices",
+      "review": "Notice histories are private to the observer civilization, bounded to 64 entries with explicit omitted count, immutable on observation, shared without consumption between same-seat controllers, and cleared on client-session replacement. Presentation survives command failure and retirement without exposing another actor command or effect history. Production desktop science uses the same V03 presentation adapter as actual acquisition/government tests. Announcements already gated for the local viewer remain distinct from explicitly owner-addressed barracks and wonder messages. Required decisions retain their own continuations. General movement/diplomacy presentation binding, authored Civilopedia/tutorial content and full-game desktop acceptance remain open; browser and cross-platform execution are deferred.",
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.App/SeamView.cs",
+        "src/OpenCiv2.Contracts/Clients.cs",
+        "src/OpenCiv2.Contracts/PlayerNotices.cs",
+        "src/OpenCiv2.Session/CommandRuntime.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/Operations.cs",
+        "src/OpenCiv2.Session/PlayerNotices.cs",
+        "src/OpenCiv2.Session/RuntimeState.cs",
+        "src/OpenCiv2.Session/SessionRuntime.cs",
+        "src/OpenCiv2.Session/SinglePlayerResearchPresentation.cs",
+        "src/OpenCiv2.ViewModels/SessionPanel.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/PlayerNoticeCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "P04.notices-bounds-reset",
+        "P04.notices-private-failure",
+        "V03.notices-distinct-recipients",
+        "V03.notices-retained-acquisition"
+      ]
     }
   ]
 }
