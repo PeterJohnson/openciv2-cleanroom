@@ -221,6 +221,9 @@ The [F04 original-game observation procedure](f04-original-observations.md)
 prepares Windows save captures for the two undefined city-analysis expressions.
 Its independent packaging tool uses stored F06 inspection; it neither runs our
 gameplay formulas nor establishes compatibility from existing historical saves.
+The handoff also records the reusable Windows process-reader audit, the clarified
+tooling reuse boundary, and optional stage-level observations when final saves
+cannot distinguish the missing expressions.
 
 ## Alder Valley local play
 

@@ -18,17 +18,22 @@ Implementation rules:
 
 - Write new code from these specifications and their declared input formats.
   Do not read, copy, translate, link, generate from, or otherwise derive game code
-  from `openciv2` or the Civ2 decompilation/reconstruction work. This includes
-  their renderers, build helpers, tests, and historical execution harnesses.
-  External code links, filenames and source-derived harness notes belong only
-  in clearly marked validation/provenance sections. They record historical
-  research and do not authorize consulting those sources for implementation,
-  tests or build integration. Keep implementation catalogs and algorithm prose
-  free of source-navigation shortcuts; specify required formats and behavior here.
+  from `openciv2` or the Civ2 decompilation/reconstruction work. Original game
+  executables and reconstructed game source must not be copied into this
+  repository or its build. Other material in those repositories is reusable,
+  including tools, capture drivers, build helpers, tests and documentation.
+  Exclude original or reconstructed game implementations embedded in otherwise
+  reusable files. Review game-specific assumptions against the owning contract
+  or independent observations and retain the reused material's provenance.
+  Reuse eligibility does not establish the correctness or independence of its
+  expected results. External game-source links remain historical research, not
+  shortcuts for filling algorithm gaps; specify required formats and behavior here.
 - Use the original game as an external comparison and interoperability target.
-  Independently authored drivers may supply inputs and capture observable state,
-  files, packets, and interaction outcomes. Original executable code is never
-  linked into the game or its portable tests.
+  Drivers, including reused observation tooling, may supply inputs and capture
+  observable state, files, packets, and interaction outcomes. Use an isolated
+  external installation for experiments; keep original binaries and executable
+  code captures outside the repository. Original executable code is never linked
+  into the game or its portable tests.
 - Record behavioral ambiguities as specification gaps, with the smallest
   affected operation and input domain. Obtain an original-game observation or
   clarify the specification before depending on an invented behavior. Keep
@@ -41,6 +46,11 @@ Implementation rules:
   codecs are permitted. Record pinned versions and notices. The designated
   `PeterJohnson/openciv2-assets` runtime content is an allowed data dependency;
   its comparison tools and old-game source integration are outside the game build.
+
+This reuse boundary reflects the user's clarification of 2026-11-23. It supersedes
+older blanket exclusions of tools or historical harnesses in provenance notes.
+Those notes still do not authorize copying reconstructed game code or treating
+reconstruction-generated snapshots as independent original-game evidence.
 
 Required compatibility includes simulation, classic AI and map generation,
 scenario-authored content, bidirectional original save/map/scenario interchange,

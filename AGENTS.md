@@ -2,13 +2,17 @@
 
 Follow the cleanroom boundary in [docs/architecture.md](docs/architecture.md).
 Implement gameplay from the repository's specifications; do not consult or
-derive code from OpenCiv2 or Civ2 reconstruction/decompilation sources.
-External source links, filenames and source-derived harnesses retained in
-validation/provenance sections are historical research records, not implementation
-or test inputs. Do not follow them to fill a missing algorithm detail; record a
-specification gap and resolve it through the behavioral contract or independent
-original-game observations. Required file/wire/data definitions in the specs
-remain implementation inputs even when documented in an appendix.
+derive game code from OpenCiv2 or Civ2 reconstruction/decompilation sources.
+Original game executables and reconstructed game source must not be copied into
+this repository or its build. Other material in those repositories, including
+tools, capture drivers, build helpers, tests and documentation, is reusable;
+exclude any embedded original or reconstructed game implementation. Review reused
+tools' assumptions and preserve provenance. Historical results retain their
+recorded scope; reconstruction-generated snapshots are not independent original-game
+observations. Do not use reconstructed game code to fill a missing algorithm
+detail; record a specification gap and resolve it through the behavioral contract
+or independent original-game observations. Required file/wire/data definitions
+in the specs remain implementation inputs even when documented in an appendix.
 
 Before committing C# changes:
 
