@@ -76,6 +76,7 @@ public sealed partial class SeamView
             case LocalPlayCommands.Score:
             case LocalPlayCommands.Power:
             case LocalPlayCommands.Spaceship:
+            case LocalPlayCommands.Commodities:
             case LocalPlayCommands.Retire:
             case LocalPlayCommands.Quit:
                 PlayCommand(id);

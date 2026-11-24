@@ -45,6 +45,12 @@ commodity lists are covered through the production/session parent. Dismissal of
 confirmation/report returns to selection; dismissal of the selection itself
 stops at the undefined negative-slot read, preserving the paid/created prefix.
 The authored desktop profile still excludes settler and trade production.
+C07 commodity search has direct/console and replay coverage through
+`trade.commodities`, using an admitted save with Trade known. Shared cases cover
+entry gating, live report rebuilding, private recipients and negative close.
+The native advisor scenario scrolls the commodity list, visits populated and
+empty reports, returns to search and compares complete saves before/after and
+after reload. Foreign supply filtering remains covered by shared multi-civ cases.
 V06 incident cases compose actual war, stance and Anarchy transitions. They cover
 directed treaty gates, live mission retention, human pretext without expulsion,
 leniency and senate draw order, scenario/autoplay gates and retained failures.

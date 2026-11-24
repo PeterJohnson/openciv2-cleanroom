@@ -928,6 +928,76 @@ def drive(args, app, observation, storage):
         checks.append('native Spaceships advisor shows actual statistics, declines and confirms launch once, matches the direct save and restores launched status')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
+        observation = observation.with_name('commodity-observation.json')
+        storage = storage.with_name('commodity-storage')
+        launch[launch.index('--observe') + 1] = str(observation)
+        launch[launch.index('--storage-directory') + 1] = str(storage)
+        app = subprocess.Popen(launch)
+        state = wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        assert not state['menu']['actions']['trade.commodities']['enabled']
+        commodities = [observation.with_name('commodity-' + name) for name in ['initial.sav', 'queried.sav', 'reloaded.sav']]
+        subprocess.run(['dotnet', str(args.probe), '--local-commodity-reference', *map(str, commodities)], check=True)
+        state = wait(lambda s: s['menu']['groups']['File']['bounds'] is not None)
+        menu_click(state, state['menu']['groups']['File']['bounds'])
+        state = wait(lambda s: s['menu']['actions']['file.library']['bounds'] is not None)
+        menu_click(state, state['menu']['actions']['file.library']['bounds'])
+        import_save(commodities[0])
+        stored_control('open')
+        wait(lambda s: not s['files']['visible'] and s['message'] == 'Classic save loaded.')
+
+        def commodity_choice(value):
+            state = wait(lambda s: s['dialog']['visible'] and f'choice.{value}' in s['dialog']['regions'])
+            for _ in range(48):
+                box = state['dialog']['regions'][f'choice.{value}']
+                if box['y'] >= 55 and box['y'] + box['height'] <= state['height'] - 55:
+                    click_box(box, state)
+                    return
+                scale = state['scaling']
+                driver.move(window, state['width'] / 2 * scale, state['height'] / 2 * scale)
+                wheel = 4 if box['y'] < 55 else 5
+                driver.button(wheel, 1)
+                driver.button(wheel, 0)
+                ticks = state['serviceTicks']
+                state = wait(lambda s: s['serviceTicks'] >= ticks + 2)
+            raise AssertionError('Commodity option did not scroll into view')
+
+        def search_commodities():
+            state = wait(lambda s: s['menu']['groups']['Advisors']['bounds'] is not None)
+            assert state['menu']['actions']['trade.commodities']['enabled']
+            menu_click(state, state['menu']['groups']['Advisors']['bounds'])
+            state = wait(lambda s: s['menu']['actions']['trade.commodities']['bounds'] is not None)
+            menu_click(state, state['menu']['actions']['trade.commodities']['bounds'])
+            state = wait(lambda s: s['dialog']['visible'] and s['prompt'] == 'Search commodities')
+            assert not state['play']['controls']['save']['enabled']
+            commodity_choice(3)
+            report = wait(lambda s: s['dialog']['visible'] and s['prompt'].startswith('Cloth supply and demand'))
+            assert 'Trade Port (1): Demands Cloth' in report['prompt']
+            assert 'Trade Port (1): Supplies Cloth' in report['prompt']
+            commodity_choice(0)
+            wait(lambda s: s['prompt'] == 'Search commodities' and s['dialog']['visible'])
+            commodity_choice(15)
+            wait(lambda s: s['dialog']['visible'] and 'No known cities' in s['prompt'])
+            commodity_choice(0)
+            wait(lambda s: s['prompt'] == 'Search commodities' and s['dialog']['visible'])
+            commodity_choice(-1)
+            wait(lambda s: s['status'] == 'Completed' and not s['dialog']['visible'])
+
+        search_commodities()
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(commodities[1])
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        search_commodities()
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(commodities[2])
+        checks.append('native Commodity search gates on Trade, shows supply/demand and empty reports, returns to search without mutation, and matches direct save/reload bytes')
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
         observation = observation.with_name('scheduled-observation.json')
         storage = storage.with_name('scheduled-storage')
         launch[launch.index('--observe') + 1] = str(observation)

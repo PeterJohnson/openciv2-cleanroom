@@ -9,6 +9,7 @@ using Avalonia.Media;
 using OpenCiv2.Console;
 using OpenCiv2.Contracts;
 using OpenCiv2.Core;
+using OpenCiv2.Core.Rules;
 using OpenCiv2.IO;
 using OpenCiv2.Session;
 using OpenCiv2.ViewModels;
@@ -54,6 +55,8 @@ public sealed partial class SeamView
         yield return new(LocalPlayCommands.Power, "Advisors", "Power history", null, ready);
         yield return new(LocalPlayCommands.Score, "Advisors", "Civilization score", null, ready);
         yield return new(LocalPlayCommands.Spaceship, "Advisors", "Spaceships", null, ready);
+        yield return new(LocalPlayCommands.Commodities, "Advisors", "Commodity search", null,
+            ready && play?.Discovered.Any(a => a.Id == AdvanceIds.Trade) == true);
         yield return new(LocalPlayCommands.EditRates, "Orders", "Tax rates", null, ready);
         yield return new(LocalPlayCommands.Revolution, "Orders", "Revolution", null, ready && play?.CanRevolt == true);
         yield return new(LocalPlayCommands.Fortify, "Orders", "Fortify unit", null,

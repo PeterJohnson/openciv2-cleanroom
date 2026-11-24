@@ -7106,3 +7106,48 @@ including save-byte comparisons and reload/continuation paths.
 These are implementation/contract regressions, not independent original-game
 observations. The full desktop M4 gate, undefined F04 formulas and original-game
 evidence remain open. Browser, cross-platform and network execution are deferred.
+
+## Desktop commodity search
+
+C07 `CommoditySearch` now retains the commodity-list/report loop behind its
+entry-only Trade prerequisite. It rebuilds all sixteen names in identity order,
+uses the actual private commodity report, returns to search on nonnegative report
+results and closes on negative results. Cached polls do not refresh the economy
+or alter report state. Unknown commodity names stop at their missing backing;
+failed/disposed operations cannot resume. A selected report city is not opened
+or zoomed to automatically.
+
+`CommoditySearchOperation` supplies private decisions and distinct city choices
+while retaining both demand and supply rows in the text. Empty reports offer a
+return to search or close. The local `trade.commodities` command and desktop
+Advisors menu use it; the menu requires known Trade. The authored rules now name
+all commodities and imported Trade knowledge without enabling a new research
+choice or broadening save admission. Four shared groups cover entry gates,
+live names/reports, negative close, disposal/failure, cross-recipient privacy,
+direct/console commands and replay. Full save-byte equality verifies that search
+does not mutate an admitted imported world, including its supply suppression.
+
+The native input driver adds a Trade-known save scenario, populated and empty
+reports, real scrolling through all sixteen options, return to search, ordinary
+save/reload and complete byte comparisons with the direct-client reference.
+General generated-game admission, city-zoom presentation, full F04 scheduling
+and independent original-game evidence remain separate work.
+
+Validation applied and verified root/App formatting. Both Release builds passed
+with zero warnings/errors. Native tests passed **1784/1786**, with the two
+existing platform/audio skips; all **1749 shared groups** passed across **193
+coverage families**. Identity verified **877 compiled inputs**. The 43-project
+graph, eight identity tests, three coverage tests and Python driver compilation
+passed. The isolated native driver passed **28 desktop checks** on its first
+run for this checkpoint, including the new menu, actual scroll input, Trade
+gate, report-return behavior and full saved/reloaded byte comparisons.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-commodity-search-native.json` | `0ebc64523c1c81200916f0ed051e4a1fac0fa1bc4c1086e200dd7666eae96569` |
+| `m4-commodity-search-identity.json` | `ee03983b64da0b60b3eec9e34b2dfba3432446f63ba33adbef0118907b2c76b0` |
+| `m4-commodity-search-play.json` | `a67a743a3f42366e3a2a2a95da94a41c14a89b13521f0d872ac7c56727960345` |
+
+M4 remains active: these report/search checks do not establish complete generated
+human/AI games or resolve the undefined F04 formulas. Browser, cross-platform and
+network execution remain deferred.

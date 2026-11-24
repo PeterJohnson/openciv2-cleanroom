@@ -74,6 +74,12 @@ In Alder Valley, the next turn divisible by four offers a new government and
 then the rate editor before play resumes. Anarchy games can be saved and
 reloaded. The console command is `civilization.revolution`.
 
+**Commodity search** in the Advisors menu lists known supply and demand when
+Trade is known. The console command is `trade.commodities`; without Trade it
+returns immediately. Selecting a city in the report returns to the commodity
+list without opening the city. The authored profile supplies names for imported
+Trade knowledge and commodities; its three researchable advances are unchanged.
+
 In the local game's console, `civilization.rates tax=6 science=4` sets rates
 in tenths. Tax, science and the remaining luxury rate must each respect the
 current government cap. Early-game changes write preferred rates to `CIV2.DAT`

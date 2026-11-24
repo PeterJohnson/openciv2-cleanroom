@@ -107,6 +107,9 @@ internal static class LocalGameRules
         tables.Advances[0] = Advance("land-surveys", "Land Surveys");
         tables.Advances[1] = Advance("clay-casting", "Clay Casting");
         tables.Advances[2] = Advance("field-ledgers", "Field Ledgers", 0);
+        tables.Advances[AdvanceIds.Trade] = tables.Advances[AdvanceIds.Trade] with { Identity = new("trade", "Trade") };
+        foreach (var commodity in Enum.GetValues<Commodity>())
+        { tables.Commodities[(int)commodity] = new(commodity.ToString().ToLowerInvariant(), commodity.ToString()); }
         tables.Tribes[0] = new()
         {
             Id = "alder",

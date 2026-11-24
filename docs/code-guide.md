@@ -153,6 +153,10 @@ confirmation and commodity reports; the synchronous entry keeps its supplied
 cargo callback. `CommodityReport` filters exact signed supply/demand membership
 for the viewer without recalculation. A02 selection is provided by
 `CityProductionChoice`; isolated production tests also retain controlled replies.
+`CommoditySearch` applies the Trade prerequisite once and retains the report/list
+loop; `CommoditySearchOperation` routes it privately. `trade.commodities` and the
+desktop Advisors menu expose the search for admitted Trade-known saves. Reporting
+does not change supply/demand, refresh the economy or automatically open a city.
 The AI common tail runs `AiProductionPurchase`
 with retained F04 human wonder ranges, regional policy and real V07 race queries.
 Alder Valley now calls this service instead of its previous completion shortcut and uses shared `UnitAvailability`.

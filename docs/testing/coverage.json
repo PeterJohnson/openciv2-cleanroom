@@ -5981,7 +5981,7 @@
       "status": "partial",
       "contract": "C07 AI/human production cargo and exact signed commodity-city report filtering; C06 retained production parent",
       "publicSurface": "CargoSelection.SelectAi/BeginHuman; CargoDecision; CommodityReport.Cities; UnitProductionCargo; CargoInteraction",
-      "review": "Published one/two-draw vectors, cyclic supply scanning, signed -128 fallback, zero suppression, slot-identified options, live acceptance, confirmation retry, Food and bounded unavailable reads. Reports preserve ordered demand/supply passes, private foreign supply filtering, revealed sizes and exact signed membership without refresh. Actual C06 unit creation precedes selection, and stock clearing/AI reconsideration follow it; private session tests exercise reports, rejection, final acceptance and stale/wrong-recipient replies. The parent exposes the accepted city-zoom request for its owning presentation caller. Commodity search entry, general city-zoom presentation and native cargo admission remain open; Alder Valley still excludes trade production. Browser/cross-platform execution is deferred. Cancel/timeout returns from confirmation/report but stops menu dismissal without selecting default Food, refunding stock or replaying unit creation.",
+      "review": "Published one/two-draw vectors, cyclic supply scanning, signed -128 fallback, zero suppression, slot-identified options, live acceptance, confirmation retry, Food and bounded unavailable reads. Reports preserve ordered demand/supply passes, private foreign supply filtering, revealed sizes and exact signed membership without refresh. Actual C06 unit creation precedes selection, and stock clearing/AI reconsideration follow it; private session tests exercise reports, rejection, final acceptance and stale/wrong-recipient replies. The parent exposes the accepted city-zoom request for its owning presentation caller. The commodity-search family supplies the search entry; general city-zoom presentation and native cargo admission remain open; Alder Valley still excludes trade production. Browser/cross-platform execution is deferred. Cancel/timeout returns from confirmation/report but stops menu dismissal without selecting default Food, refunding stock or replaying unit creation.",
       "sources": [
         "src/OpenCiv2.Core/City/CargoSelection.cs",
         "src/OpenCiv2.Core/City/CityProduction.cs",
@@ -6003,6 +6003,34 @@
         "C07.cargo-production-private-session",
         "C07.cargo-report-privacy",
         "C07.cargo-selection-stops"
+      ]
+    },
+    {
+      "id": "commodity-search",
+      "status": "partial",
+      "contract": "C07 Trade-gated commodity search and private exact-membership reports; native local-game advisor entry",
+      "publicSurface": "CommoditySearch; CommoditySearchOperation; trade.commodities; desktop Advisors / Commodity search",
+      "review": "Trade gates entry once. Sixteen identity-ordered names, live menu/report rebuilding, cached polls, nonnegative report return, negative close, unsupported name stop and disposal are covered. Private session routing uses actual commodity visibility filtering. Direct/console desktop commands and journal replay use an admitted Trade-known save and compare full before/after save bytes; fresh authored rules leave Trade unresearchable but name imported knowledge and all sixteen commodities. The native driver checks menu gating, populated/empty reports, actual scrolling, non-mutating search and reload. No automatic city opening/zoom is invented. General generated-game admission and original-game evidence remain open; browser/cross-platform execution is deferred.",
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Actions.cs",
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Core/City/CommodityReport.cs",
+        "src/OpenCiv2.Core/City/CommoditySearch.cs",
+        "src/OpenCiv2.Session/CommoditySearchOperation.cs",
+        "src/OpenCiv2.Session/LocalGameRules.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Trade.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/CommoditySearchCases.cs",
+        "tests/OpenCiv2.FoundationProbe/Program.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "C07.search-gate-live-reports",
+        "C07.search-private-session",
+        "C07.search-stops",
+        "M4.local-commodity-search-replay"
       ]
     }
   ]

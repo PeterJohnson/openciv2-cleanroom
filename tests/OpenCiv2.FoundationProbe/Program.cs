@@ -116,6 +116,16 @@ if (args is ["--local-work-reference" or "--local-city-jobs-reference", string i
     return 0;
 }
 
+if (args is ["--local-commodity-reference", string commodityInitial, string commodityQueried, string commodityReloaded])
+{
+    var reference = FoundationSuite.LocalCommodityReference();
+    foreach (var (path, bytes) in new[] { (commodityInitial, reference.Initial), (commodityQueried, reference.Queried), (commodityReloaded, reference.Reloaded) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew); output.Write(bytes);
+    }
+    return 0;
+}
+
 string report = FoundationSuite.RunJson(typeof(Program).Assembly);
 Console.WriteLine(report);
 using var parsed = JsonDocument.Parse(report);
