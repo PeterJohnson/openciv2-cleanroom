@@ -68,7 +68,10 @@ public sealed partial class SeamView
                 OpenOwnedCity();
                 break;
             case LocalPlayCommands.Fortify:
-                UnitCommand(LocalPlayCommands.Fortify);
+            case LocalPlayCommands.Wait:
+            case LocalPlayCommands.Sleep:
+            case LocalPlayCommands.Home:
+                UnitCommand(id);
                 break;
             case LocalPlayCommands.Hall:
                 PlayCommand(LocalPlayCommands.Hall);

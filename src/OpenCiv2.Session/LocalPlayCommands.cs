@@ -26,6 +26,7 @@ public static partial class LocalPlayCommands
         RegisterCityCommands(runtime);
         RegisterTurnCommands(runtime, preferences, rateChoices, hall, autosave);
         RegisterWorkCommands(runtime);
+        RegisterUnitOrders(runtime);
         RegisterRateCommands(runtime, preferences, rateChoices);
         RegisterGovernmentCommands(runtime, preferences, rateChoices);
     }

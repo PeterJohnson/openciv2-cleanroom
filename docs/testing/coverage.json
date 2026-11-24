@@ -6233,6 +6233,36 @@
         "F04.human-notices-tutorial-schedule",
         "F04.local-human-notices-replay"
       ]
+    },
+    {
+      "id": "unit-player-order-commands",
+      "status": "partial",
+      "contract": "U04 shared/player order mutations; U01 section 8 explicit home affiliation",
+      "publicSurface": "UnitPlayerOrders Fortify/Sleep/Home/Wait/BeginAutomation/EndPlayerTurn; desktop unit.wait/unit.sleep/unit.home/unit.fortify",
+      "review": "Fortify queues and exhausts without applying AI home changes; air/city/airbase and sleep carrier/submarine/coast gates retain their distinctions. Sleep uses actual U01 mutation without movement cost. Home refreshes old/new affiliation or invokes actual U04 recovery search; Trade refusal and foreign-city acceptance remain distinct. Wait joins actual selection/revelation/contact; End Player Turn only exhausts local units. Wait also hands selected queued Fortify/work orders to the existing desktop execution loop. Shared/custom-rule and direct/console/native save/replay tests cover the admitted desktop commands. Full movement/Skip/Disband composition, native off-city Home/Goto and automation hold production remain open; browser/cross-platform execution deferred.",
+      "sources": [
+        "src/OpenCiv2.App/SeamView.Actions.cs",
+        "src/OpenCiv2.App/SeamView.Play.cs",
+        "src/OpenCiv2.Core/Units/UnitPlayerOrders.cs",
+        "src/OpenCiv2.Session/LocalGame.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.UnitOrders.cs",
+        "src/OpenCiv2.Session/LocalPlayCommands.Work.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/UnitPlayerOrdersCases.cs",
+        "tests/OpenCiv2.FoundationProbe/Program.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "U04.local-player-orders-replay",
+        "U04.player-orders-automation-exhaust-failure",
+        "U04.player-orders-fortify",
+        "U04.player-orders-home",
+        "U04.player-orders-sleep-air",
+        "U04.player-orders-sleep-coast",
+        "U04.player-orders-wait-contact"
+      ]
     }
   ]
 }

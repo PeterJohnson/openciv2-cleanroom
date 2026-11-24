@@ -279,6 +279,14 @@ invitation/report/tutorial interactions. The authored desktop turn invokes it
 after upkeep/autosave and before unit activation. General generated scheduling
 and original council content admission remain open.
 
+`Units/UnitPlayerOrders` owns U04 Fortify/Sleep/Home/Wait, starting settlement
+automation and exhausting local units at End Player Turn. It uses actual stack,
+U01 sleep, U04 recovery and retained selection services. Cosmetic failures do not
+undo accepted orders or prevent later refreshes. Desktop Wait/Sleep and on-city
+Home use the service; Fortify and the existing end-phase caller share it too.
+The authored save profile now admits sleeping land units. Off-city Home/Goto,
+Skip's full movement finish and general automated native execution remain open.
+
 `TerrainWorkOrders` owns W04 player eligibility and all seven work executions.
 It uses actual stacks, movement exhaustion, map mutations, remembered features
 and C03 refresh for an eligible nearby city selection. It preserves per-unit

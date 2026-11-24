@@ -136,6 +136,16 @@ if (args is ["--local-human-notices-reference", string noticeInitial, string not
     return 0;
 }
 
+if (args is ["--local-unit-orders-reference", string ordersSleeping, string ordersHomed, string ordersContinued])
+{
+    var reference = FoundationSuite.LocalUnitOrdersReference();
+    foreach (var (path, bytes) in new[] { (ordersSleeping, reference.Sleeping), (ordersHomed, reference.Homed), (ordersContinued, reference.Continued) })
+    {
+        using var output = new FileStream(path, FileMode.CreateNew); output.Write(bytes);
+    }
+    return 0;
+}
+
 string report = FoundationSuite.RunJson(typeof(Program).Assembly);
 Console.WriteLine(report);
 using var parsed = JsonDocument.Parse(report);

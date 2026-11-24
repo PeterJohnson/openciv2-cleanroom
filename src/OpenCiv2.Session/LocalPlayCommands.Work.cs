@@ -47,13 +47,18 @@ public static partial class LocalPlayCommands
     /// yielding a manual unit. Goto/AI continuation requires the general movement caller.</summary>
     private static void SelectReadyUnit(OperationContext context)
     {
+        SelectReadyUnit(context.World, context.Process.Rules.Definitions);
+        ContinueReadyOrders(context);
+    }
+
+    private static void ContinueReadyOrders(OperationContext context)
+    {
         var world = context.World;
         var rules = context.Process.Rules.Definitions;
         var effects = new LocalWorkEffects(context);
         var work = new TerrainWorkOrders(world, context.Process.Rules, new(world, new(5_000_000, 64)), effects);
         while (true)
         {
-            SelectReadyUnit(world, rules);
             if (world.Globals.ActiveUnit is not { } slot)
             {
                 return;
@@ -72,6 +77,7 @@ public static partial class LocalPlayCommands
             {
                 return;
             }
+            SelectReadyUnit(world, rules);
         }
     }
 

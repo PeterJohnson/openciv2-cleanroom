@@ -41,10 +41,10 @@ public static partial class LocalPlayCommands
             return new(CommandStatus.Failed, Code: "order_not_available");
         }
 
-        unit.Orders = UnitOrder.Fortifying;
-        Exhaust(context.World, context.Process.Rules.Definitions, ref unit);
-        SelectReadyUnit(context);
-        return Commit(context, "unit.fortifying", new NamedValue("unit", new CommandValue.Unit(target)));
+        var result = PlayerOrders(context).Fortify(target.Slot);
+        if (result.Accepted)
+        { SelectReadyUnit(context); }
+        return OrderResult(context, target, result, "unit.fortifying");
     }
 
     private static void Exhaust(GameState world, RuleTables rules, ref Unit unit) =>
@@ -460,13 +460,7 @@ public static partial class LocalPlayCommands
             var world = context.World;
             var rules = context.Process.Rules.Definitions;
             int owner = context.Actor.Civilization.Value;
-            foreach (ref var unit in world.Entities.Units.Scanned)
-            {
-                if (unit.Token.Occupied && unit.Owner.Value == owner)
-                {
-                    Exhaust(world, rules, ref unit);
-                }
-            }
+            UnitPlayerOrders.EndPlayerTurn(world, rules);
             world.PlayerPhaseActive = false;
             world.Multiplayer.ResumeCiv = world.Multiplayer.Saved.ResumeCiv = 0;
 

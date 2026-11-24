@@ -15,6 +15,12 @@ now composes actual selection and active execution, with wait/city-window gates,
 bound-change reselection, distinct session/phase exits and private Session
 segments. General native human-phase admission remains open.
 
+U04 player-order cases cover Fortify versus applied fortification, air and coast
+Sleep gates, explicit Home versus recovery orders, real Wait contact and simple
+local-unit exhaustion. The desktop suite exercises Wait/Sleep, waking selection,
+Home/Fortify and saved continuation through direct, console and native inputs.
+Off-city Home execution and the general movement service graph remain open.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop

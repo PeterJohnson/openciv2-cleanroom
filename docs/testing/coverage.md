@@ -281,3 +281,11 @@ last-city writes, privacy and failure/disposal. Direct/console and native cases
 exercise turn 51, the council report, save/reload and turn 52. The stock P09 report
 uses current own-civilization facts without triggering unrelated game work;
 original opinion-keyed content parsing is not claimed.
+
+The U04 player-order family covers shared Fortify/Sleep/Home/Wait mutations,
+settler automation entry and local-unit exhaustion. It uses actual validated
+stacks, sleep mutation, recovery search and contact-capable activation, with
+custom-domain and failure cases. Desktop menus/console admit Wait, Sleep and
+on-city Home; direct/native complete saves and resumed turns are compared.
+Off-city Home execution, Skip/Disband's full service graph and general automated
+native play remain open.

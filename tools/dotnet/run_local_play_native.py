@@ -157,6 +157,10 @@ def drive(args, app, observation, storage):
                 driver.chord('Shift_L', 'semicolon')
             elif char == '_':
                 driver.chord('Shift_L', 'minus')
+            elif 'A' <= char <= 'Z':
+                # XKeysymToKeycode returns the physical key; uppercase also
+                # requires Shift in the injected keyboard state.
+                driver.chord('Shift_L', char.lower())
             else:
                 driver.key({' ': 'space', '.': 'period', '=': 'equal', '-': 'minus', '/': 'slash'}.get(char, char))
 
@@ -999,6 +1003,48 @@ def drive(args, app, observation, storage):
         wait(lambda s: s['message'] == 'Classic save written.')
         compare_work_save(commodities[2])
         checks.append('native Commodity search gates on Trade, shows supply/demand and empty reports, returns to search without mutation, and matches direct save/reload bytes')
+        driver.close_window(window)
+        assert app.wait(timeout=10) == 0
+        observation = observation.with_name('orders-observation.json')
+        storage = storage.with_name('orders-storage')
+        launch[launch.index('--observe') + 1] = str(observation)
+        launch[launch.index('--storage-directory') + 1] = str(storage)
+        app = subprocess.Popen(launch)
+        wait(lambda s: s['map']['composition'] == 'cpu' and s['play']['turn'] == 1)
+        window = driver.window_for(app.pid, visible=True)
+        assert window
+        driver.wait_placement(window)
+        orders = [observation.with_name('orders-' + name) for name in ('sleeping.sav', 'homed.sav', 'continued.sav')]
+        subprocess.run(['dotnet', str(args.probe), '--local-unit-orders-reference', *map(str, orders)], check=True)
+        select(0)
+        command(lambda: action('Orders', 'unit.wait'))
+        command(lambda: action('Orders', 'unit.sleep'))
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(orders[0])
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        select(0)
+        click('name')
+        driver.chord('Control_L', 'a')
+        type_text('Council')
+        command(lambda: click('found'))
+        click('city.close')
+        wait(lambda s: not s['play']['cityOpen'])
+        select(1)
+        command(lambda: click('move.5'))
+        command(lambda: action('Orders', 'unit.home'))
+        command(lambda: click('fortify'))
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(orders[1])
+        click('load')
+        wait(lambda s: s['message'] == 'Classic save loaded.')
+        end_turn(2)
+        click('save')
+        wait(lambda s: s['message'] == 'Classic save written.')
+        compare_work_save(orders[2])
+        checks.append('native Wait, Sleep, wake selection and Home/Fortify preserve movement and match direct saves across reload and the next turn')
         driver.close_window(window)
         assert app.wait(timeout=10) == 0
         observation = observation.with_name('notices-observation.json')

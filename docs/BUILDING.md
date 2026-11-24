@@ -68,6 +68,14 @@ Selecting an owned unit clears its orders and focuses an eligible unit. If the
 requested unit has exhausted its movement, focus advances to another eligible
 unit, or leaves no active unit when all are unavailable.
 
+The **Orders** menu offers **Wait unit**, **Sleep unit**, and **Set home city**.
+Wait selects another eligible unit without spending movement. Sleep preserves
+remaining movement; selecting the sleeping unit wakes it. Home is available at
+the owned city and changes its support affiliation. The same actions are
+`unit.wait`, `unit.sleep`, and `unit.home` in the console, each taking a unit
+identity. Sleeping units survive save/reload. Off-city return-home/Goto execution
+is not yet admitted by the authored profile.
+
 When High Council is enabled in a loaded game's options, turns 51, 101, 151,
 and subsequent fifty-turn intervals offer a council invitation before unit
 activation. **Consult council** shows a stock summary of military, research,

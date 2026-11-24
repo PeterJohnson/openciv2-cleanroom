@@ -7653,3 +7653,63 @@ This closes the authored desktop notice caller, not the full generated-game
 scheduler or complete M4. The two F04 city-analysis formula observations, U04
 hold producer, full-turn integration/evidence and other recorded gaps remain
 open. Browser, cross-platform qualification and network execution remain deferred.
+
+## U04 player orders and desktop commands
+
+`UnitPlayerOrders` implements the shared Fortify, Sleep, Home and Wait commands,
+settler automation entry and End Player Turn's local-unit exhaustion. Fortify
+queues `Fortifying` and exhausts movement; the later order execution still owns
+applied fortification and its AI home adjustment. Air Fortify accepts any city
+or airbase on land. Air Sleep instead requires an actual stack carrier/submarine
+condition on Ocean or a city; an airbase alone does not suffice. Coast-bound
+Sleep scans all eight neighbors plus the center with the current topology.
+Accepted Sleep invokes U01's shared mutation without exhausting movement.
+
+Home uses the actual city lookup, preserves the Trade-with-existing-home refusal,
+and refreshes both old and new affiliation, including absent or high-numbered
+homes. Off-city Home invokes the real recovery search without changing affiliation.
+Wait sets Waiting before actual next-unit selection and retained revelation/contact.
+Automation entry only sets the flag for a current Settle role. End Player Turn
+exhausts live local units without advancing turns or running movement finish.
+Cosmetic refresh failures remain diagnostics after accepted gameplay.
+
+The authored desktop menus and console now expose Wait, Sleep and on-city Home.
+Fortify and end-phase exhaustion also use the shared service. Sleeping land units
+are admitted by save/load. Off-city Home remains unavailable in this desktop
+profile until its Goto execution is connected to the full movement service graph.
+
+Seven shared groups cover domain/site gates, owner-specific stack membership,
+coast topology, repeated Sleep preservation, foreign-city Home and Trade refusal,
+real recovery search, retained Wait contact, automation/exhaustion boundaries and
+cosmetic failures. Direct/console cases compare full saves and replay after
+Wait/Sleep, wake-up selection, Home/Fortify, reload and the next turn. The native
+input driver exercises the same scenario through production menus and controls.
+Wait additionally hands a selected Fortify/terrain order to the existing desktop
+execution loop; imported queued-order cases verify execution before returning
+player input and compare direct/console save and replay bytes.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1850/1852**, with the two existing
+platform/audio skips. All **1815 shared groups** passed across **202 coverage
+families**; identity verified **905 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The isolated native input
+run passed **30 checks** against the final binaries, retaining exact complete-save
+comparisons. No Lua integration changed, so optional Lua was not run.
+
+The first native run exposed an input-driver error: uppercase letters were sent
+as physical keys without Shift. The new city's saved name differed in exactly
+one byte (`council` versus `Council`); the differing saves and failure log remain
+under `build/test-results/`. The driver now injects Shift for uppercase ASCII.
+The corrected comparison passed, followed by a complete successful rerun after
+the queued-order handoff change. Expected save bytes were not weakened.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-player-orders-native.json` | `d0987b98a270345400d8e35df28daac4e86fa09e9043c56568e9935f13612b5a` |
+| `m4-player-orders-identity.json` | `220eb42a0dac52cf75d8246756607788ad518b78ebe33619d2f7a28e74ee89b1` |
+| `m4-player-orders-play.json` | `302135522e0d343e3c101558155517723d0fd3c209658a891dfcaa1e7d8b911b` |
+
+M4 remains active and incomplete. Full native movement/Skip/Disband, off-city
+Home/Goto, generated human/AI scheduling and full-turn evidence remain open,
+alongside the recorded original-observation gaps. Browser and cross-platform
+qualification remain deferred.

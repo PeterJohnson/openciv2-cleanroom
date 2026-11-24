@@ -63,6 +63,14 @@ public sealed partial class SeamView
             ready && play?.Units.Any(u => u.Target == activeTarget && u.MovesLeft > 0) == true
             && model.View.Units?.Records.Any(u => new UnitTarget(u.Slot, u.Token) == activeTarget
                 && u.Orders == UnitOrder.None) == true);
+        bool unitReady = ready && play?.Units.Any(u => u.Target == activeTarget && u.MovesLeft > 0) == true
+            && model.View.Units?.Records.Any(u => new UnitTarget(u.Slot, u.Token) == activeTarget
+                && u.Orders is not (UnitOrder.Sleeping or UnitOrder.Fortified)) == true;
+        yield return new(LocalPlayCommands.Wait, "Orders", "Wait unit", null, unitReady);
+        yield return new(LocalPlayCommands.Sleep, "Orders", "Sleep unit", null, unitReady);
+        bool onCity = model.View.Units?.Records.Any(u => new UnitTarget(u.Slot, u.Token) == activeTarget
+            && model.View.Cities?.Records.Any(c => c.Position == u.Position) == true) == true;
+        yield return new(LocalPlayCommands.Home, "Orders", "Set home city", null, ready && onCity);
         yield return new(LocalPlayCommands.EndTurn, "Orders", "End turn", null, ready);
         var availableWork = play?.Units.FirstOrDefault(u => u.Target == activeTarget)?.Work;
         foreach (var job in LocalPlayCommands.WorkJobs)
