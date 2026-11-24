@@ -114,6 +114,10 @@ public static partial class LocalPlayCommands
         private ResearchOperation? research;
         private CityProduction.Operation? production;
         private CityRetirementOperation? retirement;
+        private CityFoodOperation? foodTurn;
+        private CityFood? food;
+        private CityTarget foodTarget;
+        private int previousFood, previousSize;
         private int foodSurplus;
         private ResearchDecision? pendingResearch;
         private InteractionSpec? researchIntelligence;
@@ -149,6 +153,9 @@ public static partial class LocalPlayCommands
             production?.Dispose();
             production = null;
             pendingResearch = null;
+            foodTurn?.Dispose();
+            foodTurn = null;
+            food = null;
             retirement?.Dispose();
             retirement = null;
             shipPresentation?.Dispose();
@@ -242,6 +249,30 @@ public static partial class LocalPlayCommands
             }
             while (true)
             {
+                if (foodTurn is not null)
+                {
+                    var result = foodTurn.Resume(context, input);
+                    if (!result.Status.Terminal())
+                    {
+                        return result;
+                    }
+
+                    RememberFailure(result);
+                    bool removed = foodTurn.Removed;
+                    foodTurn.Dispose();
+                    foodTurn = null;
+                    input = new();
+                    if (removed)
+                    {
+                        cityPass!.CompleteCity(null);
+                    }
+                    else
+                    {
+                        production = AfterFood(context, researchCity);
+                    }
+
+                    food = null;
+                }
                 if (production is not null)
                 {
                     pendingResearch = production.Resume(reply);
@@ -295,9 +326,8 @@ public static partial class LocalPlayCommands
                 }
 
                 researchCity = slot;
-                production = BeginCityProduction(context, slot);
-                if (production is null)
-                { cityPass.CompleteCity(null); }
+                foodTurn = BeginCityFood(context, slot);
+                input = new();
             }
             if (!cityPassFinished)
             {
@@ -513,38 +543,43 @@ public static partial class LocalPlayCommands
             cityPass!.CompleteCity(balance);
         }
 
-        private CityProduction.Operation? BeginCityProduction(OperationContext context, CitySlot slot)
+        private CityFoodOperation BeginCityFood(OperationContext context, CitySlot slot)
         {
             var world = context.World;
-            var rules = context.Process.Rules.Definitions;
             ref var city = ref world.Entities.Cities.At(slot);
             cityOwner = city.Owner.Value;
-            ref var civ = ref world.Civilizations[city.Owner.Value];
             if ((city.TurnsCaptured - 1 & 63) == (world.Globals.Turn & 63))
             {
                 city.Founder = city.Owner;
             }
             city.Flags.ImprovementSold = false;
             city.Flags.SettlerNearby = city.Flags.Investigated = false;
-            CityTarget target = new(slot, city.Token);
-            int before = city.Size;
-            int previousFood = city.FoodBox;
-            var food = CreateFood(context);
-            if (food.Run(slot))
-            {
-                return null;
-            }
+            foodTarget = new(slot, city.Token);
+            previousSize = city.Size;
+            previousFood = city.FoodBox;
+            food = CreateFood(context);
+            var stacks = new StackOperations(world, new(1000000, 64));
+            var effects = new CityTurnEffects(context);
+            return new(food.Begin(slot, effects.Elimination(), CreateIncidents(context, stacks),
+                $"local-food/{world.Globals.Turn}/{slot.Value}"),
+                owner => owner == context.Actor.Civilization.Value ? context.Actor.Participant
+                    : throw new InvalidOperationException("The authored profile has no other decision recipient"));
+        }
 
-            if (city.Size != before)
+        private CityProduction.Operation AfterFood(OperationContext context, CitySlot slot)
+        {
+            var world = context.World;
+            ref var city = ref world.Entities.Cities.At(slot);
+            if (city.Size != previousSize)
             {
-                civ.TotalCitySize = city.Size;
+                world.Civilizations[cityOwner].TotalCitySize = city.Size;
                 LocalCityEconomy.RememberCity(world, ref city);
-                context.Effect("city.population", new([new("city", new CommandValue.City(target)),
+                context.Effect("city.population", new([new("city", new CommandValue.City(foodTarget)),
                     new("size", new CommandValue.Integer(city.Size))]));
             }
 
             LocalCityEconomy.Recalculate(world, context.Process.Rules, slot);
-            foodSurplus = food.Accumulate(slot, previousFood);
+            foodSurplus = food!.Accumulate(slot, previousFood);
             return CreateProduction(context).Begin(slot, $"local-production/{world.Globals.Turn}/{slot.Value}");
         }
 
@@ -623,16 +658,21 @@ public static partial class LocalPlayCommands
             var effects = new CityTurnEffects(context);
             var deletion = new UnitDeletion(world, rules, budget, effects);
             var loss = new UnitLoss(world, rules, stacks, new(world, rules, stacks), deletion, effects);
+            return new(new CityRetirement(world, rules, deletion, loss, effects).Begin(city, effects.Elimination(),
+                CreateIncidents(context, stacks), $"local-retirement/{world.Globals.Turn}/{city.Value}"),
+                owner => owner == context.Actor.Civilization.Value ? context.Actor.Participant
+                    : throw new InvalidOperationException("The authored profile has no other decision recipient"));
+        }
+
+        private EspionageIncidents CreateIncidents(OperationContext context, StackOperations stacks)
+        {
+            var world = context.World;
+            var rules = context.Process.Rules.Definitions;
             var governments = CreateGovernments(context);
             var global = new GlobalEffects(() => Current);
             var policy = new GovernmentPolicy(world, context.Process.Rules, governments, context.Gameplay);
             var war = new DiplomaticWar(world, rules, stacks, new(world, rules, stacks), context.Gameplay, global);
-            var incidents = new EspionageIncidents(world, context.Gameplay, war, new(world, context.Process.Rules, policy),
-                governments, global.Incident);
-            return new(new CityRetirement(world, rules, deletion, loss, effects).Begin(city, effects.Elimination(), incidents,
-                $"local-retirement/{world.Globals.Turn}/{city.Value}"),
-                owner => owner == context.Actor.Civilization.Value ? context.Actor.Participant
-                    : throw new InvalidOperationException("The authored profile has no other decision recipient"));
+            return new(world, context.Gameplay, war, new(world, context.Process.Rules, policy), governments, global.Incident);
         }
 
         // The admitted ordinary advances0..2 have no grant notices, emissary, Barracks or

@@ -27,9 +27,12 @@ public interface ICityFoodContinuations
 
 /// <summary>C05 starvation/ordinary growth and the separate post-recalculation food accumulation.
 /// The incoming food-route workspace belongs to the preceding calculation, as required by F04.</summary>
-public sealed class CityFood(GameState world, RuleTables rules, CityRemoval removal, UnitLoss loss,
+public sealed partial class CityFood(GameState world, RuleTables rules, CityRemoval removal, UnitLoss loss,
     ICityFoodContinuations continuations, ICityFoodEffects effects)
 {
+    private GameState World => world;
+    private UnitLoss Loss => loss;
+    private CityRemoval Removal => removal;
     private CityCalculationWorkspace Work => world.Calculation;
     private bool Human(int owner) => world.Globals.HumanPlayers.Contains(owner & 31);
     private static int Partner(CitySlot? slot) => slot is { } value ? unchecked((short)value.Value) : -1;
@@ -37,15 +40,48 @@ public sealed class CityFood(GameState world, RuleTables rules, CityRemoval remo
     /// <returns>True only after famine removes the city and runs the elimination continuation.</returns>
     public bool Run(CitySlot slot)
     {
+        bool removed = false;
+        foreach (var action in Steps(slot, value => removed = value))
+        {
+            switch (action.Kind)
+            {
+                case FoodWork.RemoveCity:
+                    removal.Delete(action.Target);
+                    break;
+                case FoodWork.CheckOwner:
+                    continuations.CheckCivilization(action.Target, -1);
+                    break;
+                case FoodWork.LoseSettler:
+                    loss.EraseWithCargo(action.Target, true);
+                    break;
+            }
+        }
+        return removed;
+    }
+
+    /// <summary>Retain famine's loss and removal tails through actual lifecycle decisions.</summary>
+    public Operation Begin(CitySlot slot, CivilizationElimination elimination, EspionageIncidents incidents,
+        string call, int candidateBudget = 64) => new(this, slot, elimination, incidents, call, candidateBudget);
+
+    private enum FoodWork { RemoveCity, CheckOwner, LoseSettler }
+    private readonly record struct WorkItem(FoodWork Kind, int Target);
+
+    private IEnumerable<WorkItem> Steps(CitySlot slot, Action<bool> complete)
+    {
         MapKnowledge.RequireLocal(world);
-        ref var city = ref world.Entities.Cities.At(slot);
-        int owner = unchecked((sbyte)city.Owner.Value);
+        int owner = unchecked((sbyte)world.Entities.Cities.At(slot).Owner.Value);
         var support = new CitySupport(world, rules);
         support.FoodFactor(owner);
-        if (city.FoodBox < 0)
+        if (world.Entities.Cities.At(slot).FoodBox < 0)
         {
-            return Famine(slot, owner);
+            foreach (var action in Famine(slot, owner, complete))
+            {
+                yield return action;
+            }
+
+            yield break;
         }
+        ref var city = ref world.Entities.Cities.At(slot);
         int limit = unchecked((city.Size + 1) * Work.FoodRows);
         if (city.FoodBox >= limit)
         {
@@ -65,10 +101,10 @@ public sealed class CityFood(GameState world, RuleTables rules, CityRemoval remo
             }
         }
         effects.RedrawCity(slot);
-        return false;
+        complete(false);
     }
 
-    private bool Famine(CitySlot slot, int owner)
+    private IEnumerable<WorkItem> Famine(CitySlot slot, int owner, Action<bool> complete)
     {
         ref var city = ref world.Entities.Cities.At(slot);
         int selected = -1;
@@ -100,14 +136,15 @@ public sealed class CityFood(GameState world, RuleTables rules, CityRemoval remo
                 city.Size = unchecked((sbyte)(city.Size - 1));
                 if (city.Size < 1)
                 {
-                    removal.Delete(slot.Value);
-                    continuations.CheckCivilization(owner, -1);
-                    return true;
+                    yield return new(FoodWork.RemoveCity, slot.Value);
+                    yield return new(FoodWork.CheckOwner, owner);
+                    complete(true);
+                    yield break;
                 }
             }
             else if (Human(owner) || city.KnownTo.Intersects(world.Globals.HumanPlayers))
             {
-                loss.EraseWithCargo(selected, true);
+                yield return new(FoodWork.LoseSettler, selected);
             }
         }
         else
@@ -120,10 +157,10 @@ public sealed class CityFood(GameState world, RuleTables rules, CityRemoval remo
                 }
             }
         }
-        city.FoodBox = 0;
+        world.Entities.Cities.At(slot).FoodBox = 0;
         // X01 explicitly permits refreshing the affected city instead of using undefined native redraw locals.
         effects.RedrawCity(slot);
-        return false;
+        complete(false);
     }
 
     /// <summary>Call after C03, with the stock captured before Run. Does not run famine or growth again.</summary>

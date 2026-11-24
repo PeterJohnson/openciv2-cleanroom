@@ -2263,8 +2263,8 @@
     {
       "id": "city-food-turn",
       "contract": "C05 starvation, ordinary growth/refill and post-C03 food accumulation; C01/U01/C07 actual children; bounded desktop caller",
-      "publicSurface": "CityFood.Run/Accumulate; ICityFoodContinuations; ICityFoodEffects; LocalPlayCommands food phase",
-      "review": "Uses incoming route workspace before recalculation, ascending raw-home settler selection without owner filtering, known-to-human deletion gate, ordered food-route cancellation, actual city/cargo removal, fixed Pyramids and raw-rule granary refill. Tests cover blocked growth, AI factors, signed wrap, delayed accumulation, warnings, real C03 joins and direct/console save/resume. Elimination and AI request99 are explicit required continuation boundaries, not implemented policies. The authored profile cannot reach last-city famine with its admitted center yields and absence of food routes/homed settlers; general V01/end-sequence integration is pending. Presentation owns tutorial/preferences without emulating native hint bits. Full F04 and generated-game acceptance remain pending.",
+      "publicSurface": "CityFood.Run/Begin/Accumulate; CityFoodOperation; ICityFoodContinuations; ICityFoodEffects; LocalPlayCommands food phase",
+      "review": "Uses incoming route workspace before recalculation, ascending raw-home settler selection without owner filtering, known-to-human deletion gate, ordered food-route cancellation, actual city/cargo removal, fixed Pyramids and raw-rule granary refill. Synchronous and retained calls share the same steps. The retained path joins actual U01/V01 loss, private incidents, C01 cleanup, captured-owner elimination and bounded recreation before returning the removed-city sentinel or resetting food. Tests cover blocked growth, AI factors, signed wrap, delayed accumulation, warnings, real C03 joins, nested cargo loss, private session routing, cancel/timeout, disposal/failure prefixes and direct/console save/resume. AI request99 remains a required production callback. The authored profile cannot reach last-city famine with its admitted center yields and absence of food routes/homed settlers; shared removal cases do not claim that desktop domain. Presentation owns tutorial/preferences without emulating native hint bits. Full F04 and generated-game acceptance remain pending.",
       "sharedGroups": [
         "C05.famine-cargo-raw-home",
         "C05.famine-city-removal",
@@ -2274,6 +2274,11 @@
         "C05.food-ai-factors-production",
         "C05.food-growth-blocked-refill",
         "C05.food-recalculation-boundaries",
+        "C05.food-retained-cancel-dispose",
+        "C05.food-retained-city-removal",
+        "C05.food-retained-private-session",
+        "C05.food-retained-search-failure",
+        "C05.food-retained-settler-tail",
         "C05.food-wonders-scalar-wrap",
         "M3.land-step-zones",
         "M3.local-food-turn",
@@ -2291,12 +2296,15 @@
       ],
       "status": "partial",
       "sources": [
+        "src/OpenCiv2.Core/City/CityFood.Operation.cs",
         "src/OpenCiv2.Core/City/CityFood.cs",
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
+        "src/OpenCiv2.Session/CityFoodOperation.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/CityFoodCases.cs",
+        "tests/OpenCiv2.FoundationCases/CityFoodContinuationCases.cs",
         "tests/OpenCiv2.FoundationCases/LocalPlayCases.cs"
       ]
     },

@@ -81,6 +81,14 @@ def drive(args, app, observation, storage):
         failure = args.report.with_suffix('.failure.json')
         failure.parent.mkdir(parents=True, exist_ok=True)
         failure.write_text(json.dumps({**(state or {}), 'lastClick': last_click}, indent=2) + '\n')
+        # The application observation cannot describe an open native file picker.
+        # Capture this isolated test display before teardown so input timeouts can
+        # be diagnosed without guessing at the native dialog's state.
+        try:
+            from PIL import ImageGrab
+            ImageGrab.grab(xdisplay=os.environ['DISPLAY']).save(args.report.with_suffix('.failure.png'))
+        except Exception as capture_error:
+            print(f'Failure screenshot unavailable: {capture_error}', flush=True)
         raise AssertionError(f'Timed out waiting for the expected application state; current window saved to {failure}')
 
     def click_box(box, state):

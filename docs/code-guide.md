@@ -98,7 +98,10 @@ processing, real U01 role/stack queries, cargo loss, C07 route removal and C01
 radius repair. It notifies the view owner after committed removal; the remote
 request wrapper remains separate. `CityFood` runs C05 starvation/growth before
 recalculation and food accumulation after it, using actual removal/loss and
-routes. `CivilizationElimination` supplies V01's local last-city check with actual
+routes. Its retained operation waits through cargo loss, city cleanup, the captured
+owner's elimination and recreation. `CityFoodOperation` routes private decisions;
+the desktop caller retains incoming food/size across this child and bypasses
+later city stages when removal completes. `CivilizationElimination` supplies V01's local last-city check with actual
 U01 deletion, `SpyEscape`, `SpaceshipLifecycle` reset/loss and civilization
 recreation. Famine-to-defeat, recursive last-settler checks, history, AI restart
 and exploration clearing are tested together. `CivilizationElimination.Begin`

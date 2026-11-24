@@ -6939,3 +6939,63 @@ human/AI city/civilization scheduler. Retained famine/removal and maintenance
 parents, F04's missing government-score and best-shield formulas, generated-game
 acceptance and the other recorded M4 gates remain open. Browser, cross-platform
 and network execution remain deferred; the M4 goal continues on this host.
+
+## Retained food and famine before city production
+
+`CityFood.Begin` now shares the existing C05 growth/famine sequence with the
+synchronous entry and retains actual lifecycle children. A selected settler uses
+U01 cargo deletion without the destroy/redraw wrapper. Food reset and the final
+city redraw wait until nested V01 checks and private V06/research decisions finish.
+Population famine instead waits for C01 removal, including supported cargo loss
+and city cleanup, then checks the captured owner before returning the removed-city
+sentinel. This branch keeps the negative incoming food stock and skips the final
+famine redraw. Bounded recreation is pending work, not completed removal.
+
+The session's `CityFoodOperation` routes private decisions and reports deferred
+child presentation failures. Desktop upkeep captures incoming food, size and city
+identity before entering it. Only a surviving city proceeds to recalculation,
+accumulation and C06 production; a removed city bypasses those stages. The same
+required incident services now serve food and support retirement. Existing
+Alder Valley admission limits remain: its center yields and available content do
+not admit last-city famine, foreign espionage or AI recreation. Shared lifecycle
+cases cover those branches without claiming that they are reachable in this
+restricted desktop profile.
+
+Five new groups use actual U01/C01/V01/V06 children. They cover a foreign homed
+settler's loss, a supported ship whose unhomed last-settler cargo interrupts city
+removal, captured-owner elimination after cleanup, private replies, cancel/timeout,
+disposal, required-provider failure, bounded recreation and completion replay.
+The removal case includes two human creation gates and one actual AI recreation;
+controlled choices are consumed only by the latter. Existing growth, route,
+visibility, scalar-wrap, accumulation and direct/console desktop cases still run
+the shared food sequence.
+
+Root/App formatting and verification passed; both Release builds completed with
+zero warnings/errors. Native tests passed **1769/1771**, with the two existing
+platform/audio skips. All **1734 shared groups** passed across **191 coverage
+families**; identity verified **866 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed.
+
+The native input driver passed **27 desktop checks**, including complete save-byte
+comparisons and reload/continuation paths. An earlier run timed out during the
+scheduled-outcome scenario's import, with the application still waiting for the
+native picker. Its log and application observation remain in
+`m4-retained-food-play-attempt1.log` and
+`m4-retained-food-play-attempt1.failure.json`. The cause remains unestablished.
+The driver now captures an isolated-display screenshot on an ordinary wait timeout
+so a future failure can expose the native picker as well as the application state.
+Python compilation passed. This diagnostics-only change alters neither input
+sequencing nor acceptance assertions. A fresh isolated Xvfb/private-bus run passed.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-retained-food-native.json` | `cdb2bb4ed8b92af334a7bc1dfd0034ce6553575d8fbdba1b5f767572e1e757b7` |
+| `m4-retained-food-identity.json` | `fd02b5e1913d04eb9392dff4565243d5ce61ba88974f31e5e0a4cea9fb107170` |
+| `m4-retained-food-play.json` | `78ebed7c77861663c3c76a122c7c072a376a14d4d111294881505b16ffa2bd6a` |
+
+This closes the retained food/famine child and its authored desktop caller,
+not the full F04 city/civilization scheduler or complete human/AI games.
+Maintenance and other general parent integration, the undefined government-score
+and best-shield formulas, generated-game acceptance and independent original-game
+evidence remain open. Browser, cross-platform and network execution are deferred;
+M4 remains active.

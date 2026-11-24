@@ -28,8 +28,12 @@ through nested civilization elimination and private incident/research decisions.
 Tests distinguish committed loss from the delayed redraw/removal/restart tail,
 captured owner/government from live human membership, private reply routing,
 cancel/timeout, disposal and terminal failure. Desktop upkeep awaits this child
-before recalculation, mood and research. Famine and general city-turn composition
-still require retained parent integration.
+before recalculation, mood and research. C05 famine likewise retains cargo loss,
+city cleanup and captured-owner elimination/recreation before returning removal
+or resetting the surviving city's food stock. Private routing, cancel/timeout,
+bounded search and disposal/failure prefixes run through real lifecycle children.
+The desktop caller awaits food processing before its first recalculation and
+production; general city-turn composition remains open.
 V06 incident cases compose actual war, stance and Anarchy transitions. They cover
 directed treaty gates, live mission retention, human pretext without expulsion,
 leniency and senate draw order, scenario/autoplay gates and retained failures.
