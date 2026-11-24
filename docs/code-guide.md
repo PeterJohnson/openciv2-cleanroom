@@ -1158,8 +1158,8 @@ treaty-negotiation callers remain open.
 wrappers, including actual stance evaluation. `Core/TreatyNegotiation` owns V05
 §5's willingness, payment and solidarity stages and composes real grants, war and
 treaty effects. `Session/TreatyNegotiationOperation` routes actor choices and nested
-recipient research decisions. The local audience composes these services; general
-contact and desktop callers remain open.
+recipient research decisions. The local audience composes these services; production
+movement/turn and desktop callers remain open.
 
 `Core/DiplomaticDemands` owns V05 §5 aid, tribute, withdrawal and provocation;
 `DiplomaticProposals` supplies proposal options and response dispatch through real
@@ -1177,8 +1177,8 @@ post-reset intelligence/tutorial reads and the separate AI-meeting-active flag.
 `Session/DiplomaticConversationOperation` privately routes actor menus, nested
 recipient choices and intelligence. Direct and conversation callers share the
 gift, favor, proposal and conversation interaction adapters. The full local
-audience composes this continuation; general contact and desktop composition
-remain open.
+audience and local contact compose this continuation; production movement/turn
+and desktop composition remain open.
 
 `Core/OpeningTreaties` owns V05 §6's opening alliance, ceasefire and peace offers,
 separately from player-initiated bargaining. Explicit opening inputs carry paid,
@@ -1198,5 +1198,16 @@ owning adapter, not an assumed-success default. Replies retain live demand and
 technology reads; required failures preserve committed effects and cosmetic
 failures remain diagnostics. `Session/DiplomaticAudienceOperation` forwards private
 emissary, exchange, grant, treaty and conversation choices, sharing their existing
-interaction adapters. V04 general contact dispatch and production desktop audience
-composition remain open.
+interaction adapters. V04 local contact dispatch now composes this audience;
+production movement/turn/desktop callers remain open.
+
+`Core/DiplomaticContact` owns V04 §10 local contact dispatch, using actual S02
+permission checks and V05 audiences before common Contact/RecentContact writes.
+Its AI continuation composes A08 security and ordered advance exchange, V03 grants,
+V04 ally-war obligations and V05 ally help. AI peace/alliance/war paths retain their
+own notice, observer, directed flag and reputation behavior. NATO city information
+uses the actual C01 nearest query; absent city information is semantic absence.
+`Session/DiplomaticContactOperation` privately forwards audience, research and ally
+help decisions through shared interaction adapters. Production movement/revelation,
+diplomacy-turn and desktop contact callers remain open; network forwarding and
+two-human network parley belong to the network session.

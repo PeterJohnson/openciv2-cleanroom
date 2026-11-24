@@ -1143,7 +1143,7 @@ across bounded yields, direction-specific hostility, ceasefire expiration,
 ambassador intelligence, post-reset tutorial reads and required/cosmetic failures.
 Session cases verify actor-to-recipient-to-actor privacy, cancellation, timeout and
 single intelligence-window creation. The local audience now composes entry and
-opening; general contact and full desktop audience acceptance remain open.
+opening; production movement/turn and full desktop audience acceptance remain open.
 
 V05 opening-treaty groups cover alliance gates and later target ties without alive
 filtering, solidarity against slot zero, refused-solidarity outcomes, conditional
@@ -1152,7 +1152,7 @@ Actual government grants suspend before treaty publication; grovel grants scan l
 knowledge after earlier decisions. Tests verify cached versus live payments,
 required-notice failure after signed treaties, private grant routing and the distinct
 zero-accepts cancellation defaults. The local audience now supplies entry and
-parent composition; general contact and full desktop integration remain open.
+parent composition; production movement/turn and full desktop integration remain open.
 
 V05 audience groups now join actual scenario permission/actions, stance, emissary,
 mode-one technology exchange, opening requests/threats, treaties and common cleanup.
@@ -1162,4 +1162,13 @@ across different reply conventions. Controlled state changes occur at retained
 player decisions, not at formatting callbacks. The authored S02 action adapter
 executes the real money action; the remaining action domains are still required
 owning implementations. Native Core/Session coverage and the App build do not
-claim general contact dispatch or graphical audience acceptance.
+claim production movement/turn contact integration or graphical audience acceptance.
+
+V04 contact groups compose actual local audiences, security, advance exchange,
+research/Library grants, mediated ally-war joins and ally-help requests. They cover
+admission/cadence, post-audience contact publication, historical exclusions,
+observer/autoplay gates, raw AI treaty transitions, player-civilization reputation,
+NATO city ties, directed incidents and committed failure prefixes. Private Session
+cases exercise local-mode audience refusal, nested Library government decisions,
+cancel/timeout and presentation diagnostics. These service cases do not close
+production movement/turn contact integration or graphical audience acceptance.

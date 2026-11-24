@@ -21,11 +21,11 @@ public sealed class DiplomaticAudienceOperation(DiplomaticAudience.Operation ope
         try
         {
             var previous = pending;
-            pending = operation.Resume(Reply(input));
+            pending = operation.Resume(DiplomaticAudienceInteraction.Reply(pending, input));
             if (!ReferenceEquals(previous, pending))
             { window = null; }
             if (pending is not null)
-            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: Prompt(context, pending)); }
+            { context.Publish(); return new(CommandStatus.AwaitingInteraction, Interaction: DiplomaticAudienceInteraction.Prompt(context, pending, recipient, intelligence, ref window)); }
             if (!operation.Completed)
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var result = new OwnedList<NamedValue>([new("scenarioDenied", new CommandValue.Boolean(operation.ScenarioDenied))]);
@@ -35,7 +35,12 @@ public sealed class DiplomaticAudienceOperation(DiplomaticAudience.Operation ope
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }
-    private ResearchReply? Reply(OperationInput input) => pending switch
+    public void Dispose() => operation.Dispose();
+}
+
+internal static class DiplomaticAudienceInteraction
+{
+    public static ResearchReply? Reply(DiplomaticAudienceDecision? pending, OperationInput input) => pending switch
     {
         DiplomaticAudienceDecision.Emissary d => EmissaryInteraction.Reply(d.Value, input) is { } answer ? new(answer) : null,
         DiplomaticAudienceDecision.Technology d => TechnologyNegotiationInteraction.Reply(d.Value, input),
@@ -45,7 +50,8 @@ public sealed class DiplomaticAudienceOperation(DiplomaticAudience.Operation ope
         _ => input.Kind == OperationInputKind.Choice && input.Choice is { } choice ? new(choice)
             : input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout ? new(0) : null
     };
-    private InteractionSpec Prompt(OperationContext context, DiplomaticAudienceDecision decision)
+    public static InteractionSpec Prompt(OperationContext context, DiplomaticAudienceDecision decision,
+        Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec> intelligence, ref InteractionSpec? window)
     {
         switch (decision)
         {
@@ -75,5 +81,4 @@ public sealed class DiplomaticAudienceOperation(DiplomaticAudience.Operation ope
                 throw new InvalidOperationException("Unknown audience decision");
         }
     }
-    public void Dispose() => operation.Dispose();
 }

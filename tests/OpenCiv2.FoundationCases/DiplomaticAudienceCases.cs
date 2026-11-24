@@ -35,13 +35,14 @@ public static partial class FoundationSuite
                 new(World, Data.Rules, _ => throw new InvalidOperationException("Unexpected attack notice")), T.T.Research,
                 war, C.F.F.Treaties, this);
             Service = new(World, Data.Process.Rules, T.T.Random, C.Stance, C.Emissaries, T.Service, T.T.Research,
-                war, opening, C.Conversation, entry =>
-                {
-                    ++Events;
-                    if (FailEvent) { throw new InvalidOperationException("Required authored action failed"); }
-                    ScenarioActions.Execute(entry, (action, e) => action == ScenarioAction.ChangeMoney
-                        ? ScenarioActions.ChangeMoney(World, e) : throw new InvalidOperationException("Unexpected authored action"));
-                }, this);
+                war, opening, C.Conversation, ExecuteEvent, this);
+        }
+        public void ExecuteEvent(Event entry)
+        {
+            ++Events;
+            if (FailEvent) { throw new InvalidOperationException("Required authored action failed"); }
+            ScenarioActions.Execute(entry, (action, e) => action == ScenarioAction.ChangeMoney
+                ? ScenarioActions.ChangeMoney(World, e) : throw new InvalidOperationException("Unexpected authored action"));
         }
         public DiplomaticAudience.Operation Begin(bool player = false, int a = 1, int b = 2) => Service.Begin(a, b, player, new(10, 8), "audience");
         public void Notice(AudienceNotice n) { Notices.Add(n); if (FailNotice == n.Kind) { throw new InvalidOperationException("Required audience notice failed"); } }

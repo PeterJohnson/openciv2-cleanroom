@@ -6102,3 +6102,50 @@ turn orchestration and generated human/AI end-condition acceptance. There is sti
 specified implementation work available on Linux. Original MGE observations on
 Windows remain useful for resolving the evidence gaps. Browser, cross-platform
 qualification and network execution remain deferred; M4 is not complete.
+
+
+## V04 local contact dispatch and AI treaty transitions — 2026-11-23
+
+`DiplomaticContact` implements V04 §10 local dispatch through the actual V05
+parent, then publishes common contact flags from the live post-audience state.
+It preserves the initial barbarian/turn-zero gates, S02 admission and the audience's
+separate permission check, ordered local participant tests, first-contact capture,
+AI cadence and historical pair exclusions. The local-mode Session adapter routes
+private audience, grant and ally-help decisions through shared child adapters.
+
+AI peace, alliance and war transitions use their specified primitives and notices.
+They compose actual A08 security and advance exchange, V03 grants, V04 ally-war
+joins and V05 retained ally help. Alliance review retains third-party scan order,
+dead-slot eligibility, leader gaps, game-player reputation, observer/autoplay
+qualification, both ally joins and the repeated first-side War test for incidents.
+NATO notices use actual C01 nearest-city selection. Absent city information remains
+semantic absence, without retaining native formatter state. Raw alliance rejection
+preserves Peace and does not invoke expulsion. AI war retains its own directional
+Vendetta/Aggressor effects without adding declaration penalties.
+
+Thirteen new groups cover admission, cadence/history, forcing and observer notices,
+actual exchange and failure prefixes, alliance targets/reputation/nearest-city
+selection, incident direction, raw cancellation, war flags, actual ally help,
+post-audience contact publication, local-mode private refusal, cancel/timeout and
+cosmetic failure diagnostics. A real Great Library acquisition suspends an AI
+exchange for the human owner's private government choice before its second grant
+and peace publication. The initial and expanded shared probes pass. Production
+movement/revelation, diplomacy-turn and desktop caller integration remain open.
+
+Root/App formatting and verification passed; both Release builds completed with
+zero warnings/errors. Native tests passed **1639 of 1641**, with two existing
+platform/audio skips. The shared probe passed all **1606 groups** across 177
+coverage families; source identity verified **810 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. This is native
+Core/Session integration and an App build, not a new graphical input-driver run.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-contact-native.json` | `a4f441fd9182188c7d79b44405d1d52d51b9ab1bafcd73950080f56a83bbe1c3` |
+| `m4-contact-identity.json` | `93593791037bbaa7ac4334bf49b254559101b22ea61694033ed25fc159b905d7` |
+
+The remaining F04 formulas, A08 relation-review input, complete turn orchestration
+and generated human/AI end-condition acceptance remain open. S02 full action
+domains still need owning implementations. Network contact forwarding and
+two-human network parley, browser execution and cross-platform qualification
+remain deferred. M4 remains in progress.
