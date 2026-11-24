@@ -314,6 +314,8 @@ public static partial class LocalPlayCommands
                     }
                     if (!research.Finished)
                     { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
+                    if (research.PresentationFailures.Count != 0 && deferredFailure.Length == 0)
+                    { deferredFailure = "research_presentation_failed"; }
                     research.Dispose();
                     research = null;
                     if (cityMaintenance!.Run(researchCity, cityOwner, $"local-pollution/{world.Globals.Turn}/{researchCity.Value}").Count != 0
@@ -660,14 +662,11 @@ public static partial class LocalPlayCommands
         private ResearchFlow CreateResearch(OperationContext context)
         {
             var world = context.World;
-            var rules = context.Process.Rules.Definitions;
             var governments = CreateGovernments(context);
             var researchEffects = new AuthoredResearchEffects(() => Current);
-            var researchPrompts = new ResearchGovernmentPrompts(world, governments, researchEffects);
-            var grants = new ResearchGrants(world, rules, context.Gameplay, CreateWonders(context), researchPrompts.Run, researchEffects);
-            return new ResearchFlow(world, context.Process.Rules, context.Gameplay, grants, researchPrompts,
-                CreateProductionOrders(context),
-                new CityEconomy(world, context.Process.Rules, new(world, new(5_000_000, 64))), researchEffects, researchEffects);
+            var services = new SinglePlayerResearch(world, context.Process.Rules, context.Gameplay,
+                new(world, new(5_000_000, 64)), governments, CreateWonders(context), researchEffects, researchEffects, researchEffects);
+            return services.Flow(CreateProductionOrders(context), researchEffects, researchEffects);
         }
 
         private CityRetirementOperation RetireUnsupportedUnits(OperationContext context, CitySlot city)
@@ -716,7 +715,7 @@ public static partial class LocalPlayCommands
 
         // The admitted ordinary advances0..2 have no grant notices, emissary, Barracks or
         // first-discovery wonder effects. Completion/next-selection remain session continuations.
-        private sealed class AuthoredResearchEffects(Func<OperationContext> current) : IResearchGrantEffects, IResearchGovernmentEffects, IResearchChoiceEffects, IResearchCompletionEffects
+        private sealed class AuthoredResearchEffects(Func<OperationContext> current) : IResearchGrantEffects, IResearchGovernmentEffects, IResearchChoiceEffects, IResearchCompletionEffects, IEmissaryEffects
         {
             public bool DiplomacyActive => false;
             public int NoticeMode => 0;
@@ -745,6 +744,10 @@ public static partial class LocalPlayCommands
             public void RevolutionStarting(int civilization) => current().Effect("government.revolution_started",
                 new([new("civilization", new CommandValue.Integer(civilization))]));
             public void Tutorial(int civilization, ResearchTutorial tutorial) => throw OutsideProfile();
+            public void Notice(EmissaryNotice notice) => throw OutsideProfile();
+            public void OpenLeader(int counterpart) => throw OutsideProfile();
+            public void CloseLeader() => throw OutsideProfile();
+            public void EnsureVisible(MapPoint point, int observer) => throw OutsideProfile();
         }
 
         private CityProduction CreateProduction(OperationContext context)

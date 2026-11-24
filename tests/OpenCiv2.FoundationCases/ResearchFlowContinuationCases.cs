@@ -11,6 +11,78 @@ namespace OpenCiv2.FoundationCases;
 
 public static partial class FoundationSuite
 {
+    // Production composition: V03 science/capture share retained grants, V02 and V05 children.
+    private static void SinglePlayerResearchComposition()
+    {
+        var f = new ResearchFlowFixture(retainGrants: true);
+        f.Enable(0, 1, AdvanceIds.Monarchy, AdvanceIds.Trade);
+        var random = new GameplayRandom(321, "single-player-research");
+        var governments = new GovernmentChanges(f.World, f.Rules, f.Grant.Data.Stacks,
+            _ => throw new InvalidOperationException("Direct Anarchy has no selector"),
+            _ => throw new InvalidOperationException("Direct Anarchy has no rate editor"), _ => { });
+        var services = new SinglePlayerResearch(f.World, f.Rules, random, f.Grant.Data.Stacks, governments,
+            new(f.World, f.Rules.Definitions, f.Grant.Upgrades.Add, _ => { }), f.Retained!, f.Grant, f.Retained!);
+        int resets = 0;
+        var production = new ProductionOrders(f.World, f.Rules.Definitions, _ => { ++resets; return 2; }, _ => { });
+        f.World.Civilizations[1].Researching = AdvanceIds.Monarchy;
+        using (var completion = services.Flow(production, f, f).Complete(1, 1, "science"))
+        {
+            var grant = completion.Resume();
+            Equal(true, grant is ResearchDecision.Grant { Decision: ResearchGrantDecision.Government });
+            Equal(grant, completion.Resume()); Equal(0UL, random.Draws);
+            Equal(true, completion.Resume(new(0)) is ResearchChoiceNotice);
+            ulong draws = random.Draws; Equal(true, draws > 0);
+            var revolution = completion.Resume(new(0));
+            Equal(true, revolution is ResearchDecision.Grant { Decision: ResearchGrantDecision.Government });
+            Equal(revolution, completion.Resume()); Equal(draws, random.Draws);
+            completion.Resume(new(1)); Equal(true, completion.Finished);
+            Equal(Government.Anarchy, f.World.Civilizations[1].Government);
+            Equal((byte)1, f.World.Civilizations[1].NumAdvances);
+            Equal(0, f.Grant.GovernmentChoices.Count);
+        }
+
+        f.World.Civilizations[2].Advances = default(AdvanceSet).With(AdvanceIds.Trade);
+        using (var capture = services.Captured(production, f, _ => { }).Begin(1, 2, "capture"))
+        {
+            var choice = (CapturedTechnologyChoice)capture.Resume()!;
+            Sequence(new[] { AdvanceIds.Trade }, choice.Options.Select(o => o.Identity));
+            Equal(choice, capture.Resume()); Equal(false, f.World.Civilizations[1].Advances.Contains(AdvanceIds.Trade));
+            capture.Resume(new(AdvanceIds.Trade)); Equal(true, capture.Finished);
+            Equal((byte)2, f.World.Civilizations[1].NumAdvances);
+            Equal((byte)2, f.World.Civilizations[1].AdvanceSource[AdvanceIds.Trade]);
+            Equal(0, resets);
+        }
+
+        // The AI capture tail uses C06 reset after the actual grant, not a captured-item shortcut.
+        f.Grant.Data.AddCity(0, 3, new(10, 8));
+        f.World.Multiplayer.Saved.AutoplayActive = true;
+        using var aiCapture = services.Captured(production, f, _ => { }).Begin(3, 2, "ai-capture");
+        for (int i = 0; i < 20 && !aiCapture.Finished; ++i) Equal(null, aiCapture.Resume());
+        Equal(true, aiCapture.Finished); Equal(AdvanceIds.Trade, aiCapture.Result);
+        Equal(true, f.World.Civilizations[3].Advances.Contains(AdvanceIds.Trade)); Equal(1, resets);
+        Equal((sbyte)2, f.World.Entities.Cities.Storage[0].Production);
+    }
+
+    private static void ResearchFlowPresentationFailure()
+    {
+        var f = new ResearchFlowFixture(new GrantFixture(Choice.Create(new("V03.emissary", "complete/grant"),
+            new SamplingLaw.SecondaryRange(0, 2), ChoiceCode.Secondary(0))), retainGrants: true);
+        f.World.Civilizations[2].Researching = AdvanceIds.Monarchy;
+        f.Retained!.FailClose = true;
+        var effects = new List<string>();
+        var context = new OperationContext(f.World, f.Grant.Data.Process, f.Random, new PresentationRandom(1, "research"),
+            new(default, new(1)), default, (name, _) => effects.Add(name), () => { });
+        using var operation = new ResearchFlowOperation(f.Flow.Complete(2, 0, "complete"), c => new((ulong)c));
+        Equal(CommandStatus.AwaitingInteraction, operation.Resume(context, new()).Status);
+        var result = operation.Resume(context, new(OperationInputKind.Choice, 1));
+        Equal(CommandStatus.Failed, result.Status); Equal("research_presentation_failed", result.Code);
+        Equal(new CommandValue.Integer(AdvanceIds.Monarchy), result.Result!.Single().Value);
+        Equal((byte)2, f.World.Globals.FirstDiscoverer[AdvanceIds.Monarchy]);
+        Equal((byte)1, f.World.Civilizations[2].NumAdvances); Equal(1, f.Retained.Closed);
+        Equal(result, operation.Resume(context, new()));
+        Sequence(new[] { "research.flow.completed" }, effects); f.Grant.Random.RequireChoicesConsumed();
+    }
+
     // V03 §§8–11 and C06 Darwin: retained real grants precede later live queries and children.
     private static void ResearchCompletionRetainedOrder()
     {

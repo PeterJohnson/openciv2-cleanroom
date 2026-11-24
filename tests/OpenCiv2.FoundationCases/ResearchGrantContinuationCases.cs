@@ -18,6 +18,7 @@ public static partial class FoundationSuite
         public GameState World => G.World;
         public ResearchGrants Grants { get; }
         public ResearchGovernmentPrompts Governments { get; }
+        public SinglePlayerResearch Services { get; }
         public List<EmissaryNotice> EmissaryNotices { get; } = [];
         public int Closed;
         public bool FailClose, FailRevolution;
@@ -35,10 +36,10 @@ public static partial class FoundationSuite
             var setter = new GovernmentChanges(World, G.Data.Process.Rules, G.Data.Stacks,
                 _ => throw new InvalidOperationException("No government selector in direct Anarchy"),
                 _ => throw new InvalidOperationException("No rates dialog in direct Anarchy"), _ => { });
-            Governments = new(World, setter, this);
-            var emissary = new EmissaryReception(World, G.Rules, G.Random,
-                new DiplomaticStance(World, G.Data.Process.Rules, new(World, G.Data.Process.Rules, setter, G.Random)), this);
-            Grants = new(World, G.Rules, G.Random, new(World, G.Rules, G.Upgrades.Add, _ => { }), Governments, emissary, G);
+            Services = new(World, G.Data.Process.Rules, G.Random, G.Data.Stacks, setter,
+                new(World, G.Rules, G.Upgrades.Add, _ => { }), this, G, this);
+            Governments = Services.GovernmentPrompts;
+            Grants = Services.Grants;
         }
         public ResearchGrants.Operation Begin(int civilization = 1, int advance = AdvanceIds.Monarchy, int source = 1, string call = "grant") =>
             Grants.Begin(civilization, advance, source, false, call);
@@ -159,5 +160,24 @@ public static partial class FoundationSuite
             Equal(emissary ? Government.Despotism : Government.Anarchy, f.World.Civilizations[1].Government);
             Equal(emissary ? 1 : 0, f.Closed); f.G.Random.RequireChoicesConsumed();
         }
+    }
+
+    private static void ResearchGrantPresentationFailure()
+    {
+        var f = new RetainedGrantFixture([RetainedGrantEmissary()]) { FailClose = true };
+        var effects = new List<string>();
+        var context = new OperationContext(f.World, f.G.Data.Process, f.G.Random, new PresentationRandom(1, "grant"),
+            new(default, new(1)), default, (name, _) => effects.Add(name), () => { });
+        using var operation = new ResearchGrantOperation(f.Begin(2, source: 0), c => new((ulong)c),
+            _ => throw new InvalidOperationException("No intelligence request in this case"));
+        Equal(CommandStatus.AwaitingInteraction, operation.Resume(context, new()).Status);
+        var result = operation.Resume(context, new(OperationInputKind.Choice, 1));
+        Equal(CommandStatus.Failed, result.Status); Equal("research_grant_presentation_failed", result.Code);
+        Equal(new CommandValue.Boolean(true), result.Result!.Single().Value);
+        Equal((byte)2, f.World.Globals.FirstDiscoverer[AdvanceIds.Monarchy]);
+        Equal((byte)1, f.World.Civilizations[2].NumAdvances); Equal(1, f.Closed);
+        Equal(false, f.World.Diplomacy.MeetingActive || f.World.Diplomacy.AskedEmissary);
+        Equal(result, operation.Resume(context, new()));
+        Sequence(new[] { "research.granted" }, effects); f.G.Random.RequireChoicesConsumed();
     }
 }

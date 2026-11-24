@@ -31,7 +31,8 @@ public sealed class ResearchGrantOperation(ResearchGrants.Operation operation, F
             { context.Publish(); return new(CommandStatus.Pending) { ReadyToContinue = true }; }
             var values = new OwnedList<NamedValue>([new("granted", new CommandValue.Boolean(true))]);
             context.Effect("research.granted", values);
-            return completed = new(Result: values);
+            return completed = operation.PresentationFailures.Count == 0 ? new(Result: values)
+                : new(CommandStatus.Failed, values, "research_grant_presentation_failed");
         }
         catch { faulted = true; operation.Dispose(); context.Publish(); throw; }
     }

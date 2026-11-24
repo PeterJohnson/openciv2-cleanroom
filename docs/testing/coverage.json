@@ -2609,8 +2609,8 @@
     {
       "id": "research-grants",
       "contract": "V03 sections 5,7,10,11; C08 Leonardo/Barracks/ownership; V02 direct government setter; bounded desktop research caller",
-      "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller; retained ResearchGrants/ResearchGovernmentPrompts operations and private ResearchGrantOperation",
-      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Explicit synchronous adapters remain available; the implemented acquisition parents use retained grants, while desktop composition remains pending; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred. Begin also permits explicitly supplied synchronous adapters during caller migration; the retained constructor still rejects synchronous Grant. Captured technology, ordinary/targeted theft and hut scrolls now use Begin; civilization catch-up and research completion also retain their grant decisions. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full desktop composition remains pending.",
+      "publicSurface": "Research.Options/Cost and shared knowledge-store prefix; ResearchGrants local acquisition, Golden Age and recursive Great Library; ResearchGovernmentPrompts; ResearchFlow desktop accumulation caller; retained ResearchGrants/ResearchGovernmentPrompts operations and private ResearchGrantOperation; SinglePlayerResearch retained production bundle",
+      "review": "Specification vectors cover full human/AI/scenario cost, rank-as-slot, signed rule count, map scaling and unsigned counters; selection options preserve first-option and forced/scenario exemptions. Grants retain duplicate/future wraps, first-discoverer OR, source narrowing, local announcement/emissary gates and draw timing, Barracks removal/credit order, Philosophy, expiry at raw inactive city locations, real Leonardo upgrades and recursive Great Library acquisition including inactive knowledge holders. Government prompts call actual V02 Anarchy transitions and preserve tutorial/return gates. Direct/console desktop tests join tax/science collection to a shared grant and verify count wrap/first-discoverer state through save/resume. Retained grants now suspend for actual V05 emissary and V02 government choices, including recursive Library grants; private session routing, cancellation/timeout, disposal and committed failure prefixes are covered. Explicit synchronous adapters remain available; the implemented acquisition parents use retained grants, with the authored desktop caller now using the retained SinglePlayerResearch bundle; resumable selection/completion/accumulation is joined by the research-flow family; CityProduction joins Darwin; V01 catch-up now invokes this actual service; general desktop presentation and F04/generated games remain pending. Local mutation rejects network execution; browser/cross-platform execution is deferred. Begin also permits explicitly supplied synchronous adapters during caller migration; the retained constructor still rejects synchronous Grant. Captured technology, ordinary/targeted theft and hut scrolls now use Begin; civilization catch-up and research completion also retain their grant decisions. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open. Catch-up retains actual recursive Library government decisions before subsequent grants, alive restoration, unit-counter clearing and placement. Actual last-settler elimination, civil war and combat casualties propagate the decision; private creation/elimination sessions, cancellation/timeout, committed failure/disposal prefixes and synchronous-call rejection are covered. Full movement/diplomacy and generated-game composition remain pending. SinglePlayerResearch composes actual government policy/stance, emissaries and retained grants; science and capture share that graph and RNG. Session grant/flow adapters report cosmetic failures after committed gameplay, with idempotent terminal results. The authored desktop still restricts foreign actors and general grant presentation.",
       "status": "partial",
       "sharedGroups": [
         "C06.darwin-retained-government-order",
@@ -2639,6 +2639,7 @@
         "V03.captured-technology-retained-grant",
         "V03.completion-retained-emissary",
         "V03.completion-retained-order",
+        "V03.flow-presentation-failure",
         "V03.flow-private-government-failure",
         "V03.full-research-cost-vectors",
         "V03.golden-age-weighted-selection",
@@ -2651,6 +2652,7 @@
         "V03.grant-failure-prefixes",
         "V03.grant-leonardo-great-library",
         "V03.grant-philosophy-wonder-expiry",
+        "V03.grant-presentation-failure",
         "V03.grant-private-session",
         "V03.grant-retained-emissary",
         "V03.grant-retained-failure-disposal",
@@ -2659,6 +2661,7 @@
         "V03.grant-turn-zero-scalar-prefixes",
         "V03.scenario-cost-bounds",
         "V03.selection-option-rules",
+        "V03.single-player-research-composition",
         "V06.theft-retained-grant-ordering",
         "W06.hut-grant-emissary-routing",
         "W06.hut-retained-grant-cancellation"
@@ -2672,7 +2675,8 @@
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
         "src/OpenCiv2.Session/LifecycleInteraction.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
-        "src/OpenCiv2.Session/ResearchGrantOperation.cs"
+        "src/OpenCiv2.Session/ResearchGrantOperation.cs",
+        "src/OpenCiv2.Session/SinglePlayerResearch.cs"
       ],
       "tests": [
         "tests/OpenCiv2.FoundationCases/AcquisitionGrantCases.cs",
@@ -2686,8 +2690,8 @@
     {
       "id": "research-flow",
       "contract": "V03 sections 5\u20136,8\u20139; C06 production reset; C03 mood query; V02 research prompts; desktop city upkeep",
-      "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation; disposable ResearchOperation with ResearchDecision; private ResearchFlowOperation",
-      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs and generated-game callers remain open; V01 catch-up joins ResearchGrants; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open.",
+      "publicSurface": "ResearchSelection resumable choice; ResearchGoals advice/options/path/help; ResearchFlow completion and accumulation; desktop pending-research continuation; disposable ResearchOperation with ResearchDecision; private ResearchFlowOperation; SinglePlayerResearch retained production bundle",
+      "review": "Specification cases cover one retained recommendation across help/goal loops, forced and absent options, ordered five-item advice, goal category and theft paths, mode2 progress, future labels and abilities, Philosophy/free completion, signed beaker overflow, initial absent target, actual C06 production reset and V02 Anarchy, and terminal failure prefixes. Direct/console desktop tests suspend before maintenance and continue through save/resume. Isolated tests supply production choices and presentation replies; desktop composition now uses actual A02. General desktop dialogs and generated-game callers remain open; V01 catch-up joins ResearchGrants; CityProduction now joins sequential Darwin completions. Browser/cross-platform execution is deferred. Completion now retains actual grants and its post-selection government prompt, accumulation waits before consuming the one free-advance flag, and Darwin waits before its second completion and production tail. Actual AI emissary reception precedes production reset; private session routing, cancellation, failure/disposal prefixes and city recalculation are covered. The desktop turn accepts the shared decision union and disposes retained research/production children; general generated-game presentation remains open. SinglePlayerResearch composes actual government policy/stance, emissaries and retained grants; science and capture share that graph and RNG. Session grant/flow adapters report cosmetic failures after committed gameplay, with idempotent terminal results. The authored desktop still restricts foreign actors and general grant presentation.",
       "status": "partial",
       "sharedGroups": [
         "C06.darwin-retained-government-order",
@@ -2708,6 +2712,7 @@
         "V03.completion-government-failure",
         "V03.completion-retained-emissary",
         "V03.completion-retained-order",
+        "V03.flow-presentation-failure",
         "V03.flow-private-government-failure",
         "V03.research-accumulation-philosophy-and-free-advance",
         "V03.research-accumulation-widths-and-initial-choice",
@@ -2716,7 +2721,8 @@
         "V03.research-completion-modes-and-ability-order",
         "V03.research-goal-options-paths-and-replies",
         "V03.research-selection-gates-and-empty-options",
-        "V03.research-selection-resume-and-advice"
+        "V03.research-selection-resume-and-advice",
+        "V03.single-player-research-composition"
       ],
       "sources": [
         "src/OpenCiv2.Core/LocalResearch.cs",
@@ -2725,6 +2731,7 @@
         "src/OpenCiv2.Core/Rules/RuleIdentities.cs",
         "src/OpenCiv2.Session/LocalPlayCommands.Turn.cs",
         "src/OpenCiv2.Session/ResearchFlowOperation.cs",
+        "src/OpenCiv2.Session/SinglePlayerResearch.cs",
         "tools/dotnet/run_local_play_native.py"
       ],
       "tests": [
@@ -2765,7 +2772,9 @@
         "V03.accumulation-retained-free-order",
         "V03.completion-retained-emissary",
         "V03.completion-retained-order",
-        "V03.flow-private-government-failure"
+        "V03.flow-presentation-failure",
+        "V03.flow-private-government-failure",
+        "V03.single-player-research-composition"
       ],
       "sources": [
         "src/OpenCiv2.Core/City/CityProduction.cs",

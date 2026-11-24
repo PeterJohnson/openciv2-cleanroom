@@ -7773,3 +7773,47 @@ outcome integration. M4 remains active and incomplete: full movement/Skip/Goto,
 generated human/AI scheduling, full-turn evidence and the recorded original-game
 observation gaps remain open. Browser and cross-platform qualification remain
 deferred.
+
+## Shared retained research composition
+
+`Session/SinglePlayerResearch` owns the actual V02 government policy, A08 stance,
+V05 emissary reception and retained V03 grant/government children for one world
+and RNG. Its science and captured-technology factories compose those same grants
+with the caller's C06 production service and actual C03 economy. Presentation
+and the government's existing selection/rate ports remain explicit inputs.
+
+Desktop city science now uses this bundle instead of the synchronous grant
+constructor. The existing authored profile restrictions still apply; this does
+not admit foreign research recipients or complete the movement/diplomacy graph.
+The retained-grant integration cases also use the production bundle, covering
+government replies, real emissaries, recursive Library grants, private session
+routing, failure and disposal through this composition.
+
+Three additional shared groups exercise science followed by human/AI captured
+technology, pending-choice RNG stability, the real C06 AI reset, and terminal
+presentation failure reports. `ResearchGrantOperation` and `ResearchFlowOperation`
+now report cosmetic child failures after completing gameplay; their result values
+still identify the committed acquisition. Subsequent polls return the same result
+without granting again. Desktop upkeep preserves that failure while continuing
+its remaining city and turn work.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1861/1863**, with the two existing
+platform/audio skips. All **1826 shared groups** passed across **203 coverage
+families**; source identity verified **910 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. No Lua integration
+changed; optional Lua was not run.
+The isolated native input run passed all **32 checks**, including exact complete-save
+comparisons, on its first run. These are implementation regression results;
+original-game compatibility and full generated-game acceptance remain open.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-research-composition-native.json` | `59606d4498e2fb68272c64c54ff96e54a424314dda6db94826c8dbf3e5190b32` |
+| `m4-research-composition-identity.json` | `d2fa2fa203d0f5b52d2e46f0501defa59d6b84f23ac72802ffc980810900b2b9` |
+| `m4-research-composition-play.json` | `4bd53f73a5f4a09a40038c1ab0588a34a627ffb204095ba8c5b4b54eef2420f0` |
+
+M4 remains active and incomplete. The next composition work is the full retained
+diplomacy, scenario, lifecycle and movement graph; generated human/AI scheduling,
+full-turn evidence and the recorded original-game observations remain open.
+Browser and cross-platform work remain deferred.

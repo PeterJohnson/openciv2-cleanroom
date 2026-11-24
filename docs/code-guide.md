@@ -141,6 +141,16 @@ The local desktop turn now uses the shared mood handler and complete local
 production dispatch with actual A02 choice. Remaining V02 operations and general
 F04 scheduling remain separate work.
 
+`Session/SinglePlayerResearch` composes real V02 government policy, A08 stance,
+V05 emissaries and retained V03 government/grant operations for one world and
+RNG. Its science and captured-technology factories share those children, with
+the caller's actual C06 production service and presentation adapters. Desktop
+city science now uses this bundle. General movement/diplomacy composition and
+generated-game presentation remain open; the authored profile still excludes
+foreign research recipients. The grant and flow Session adapters report cosmetic
+failures after finishing committed gameplay, retaining their successful result
+values and preventing repeated grants on later polls.
+
 `CityUnitProduction` handles C06's unit-at-entry branch with actual U01 creation,
 veteran/transport initialization, first obsolete-type replacement, stock spending
 and settler population/city-removal consequences. Its retained entry shares the

@@ -26,6 +26,14 @@ local-unit exhaustion. The desktop suite exercises Wait/Sleep, waking selection,
 Home/Fortify and saved continuation through direct, console and native inputs.
 Off-city Home execution and the general movement service graph remain open.
 
+V03 retained-grant cases now use the production `SinglePlayerResearch` bundle.
+Joined science/capture cases verify actual government decisions, stable RNG
+across unanswered prompts and AI production reset after acquisition. Session
+failure cases retain the acquired technology and first-discovery tail while
+reporting failed cosmetic presentation, with no duplicate completion on polling.
+Desktop science uses this composition; full foreign-actor presentation remains
+outside the authored profile.
+
 F04 human-notice cases cover council scoring/schedules, tutorial/expansion gates,
 retained last-city updates, private report choices and failure/disposal. The
 stock council snapshot reads owned facts without city/AI recalculation. Desktop
