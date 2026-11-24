@@ -13,11 +13,14 @@ public sealed record ResearchOption(int Identity, string Name, int? FutureNumber
 public sealed record ResearchAdvice(int Recommendation, string Name, int? FutureNumber, ResearchAdviceKind Kind, OwnedList<ResearchOption> Items);
 public sealed record ResearchChoiceNotice(int Civilization, int Recommendation, bool HasInvention, bool AlternatePosition, OwnedList<ResearchOption> Options) : ResearchDecision;
 public readonly record struct ResearchReply(int Selected, int Extra = 0);
-public sealed record ResearchGoalNotice(int Civilization, ResearchTopic Category, bool Icons, OwnedList<ResearchOption> Options, OwnedList<ResearchTopic> OtherCategories);
-public sealed record ResearchPathNotice(int Civilization, int Goal, string Name, bool Stealing, OwnedList<ResearchOption> Path);
+public abstract record ResearchGoalDecision;
+public sealed record ResearchEncyclopediaNotice(int Civilization, ResearchTopic Topic, int Identity) : ResearchGoalDecision;
+public sealed record ResearchGoalHelp(int Civilization, ResearchTopic Category, int Identity, string Name, int Prerequisite, string PrerequisiteName) : ResearchGoalDecision;
+public sealed record ResearchGoalNotice(int Civilization, ResearchTopic Category, bool Icons, OwnedList<ResearchOption> Options, OwnedList<ResearchTopic> OtherCategories) : ResearchGoalDecision;
+public sealed record ResearchPathNotice(int Civilization, int Goal, string Name, bool Stealing, OwnedList<ResearchOption> Path) : ResearchGoalDecision;
 
-/// <summary>V03 semantic presentation and informational goal replies. Timing, localization and
-/// native widget histories belong to presentation. Research selection itself can suspend for a reply.</summary>
+/// <summary>V03 semantic presentation and compatibility replies for synchronous owners.
+/// Retained selection/goal entries return their own list, Help, reference and path decisions.</summary>
 public interface IResearchChoiceEffects
 {
     bool DiplomacyActive { get; }
@@ -33,6 +36,9 @@ public interface IResearchChoiceEffects
 /// <summary>V03 §§5–6 advice and informational goal operations. Goals never select research or grant knowledge.</summary>
 public sealed class ResearchGoals(GameState world, RuleTables rules, IResearchChoiceEffects effects)
 {
+    private readonly GameState world = world;
+    private readonly RuleTables rules = rules;
+    private readonly IResearchChoiceEffects effects = effects;
     private bool Knows(int c, int a) => CivilizationKnowledge.KnowsAdvance(world.Civilizations, c, a);
     public ResearchOption AdvanceOption(int c, int a) => new(a, rules.Advances[a].Identity.Name,
         a == CivilizationKnowledge.FutureTechnology ? world.Civilizations[c].FutureTechs + 1 : null);
@@ -149,70 +155,140 @@ public sealed class ResearchGoals(GameState world, RuleTables rules, IResearchCh
         return path.ToArray();
     }
 
+    public Operation Begin(int c, int excludeCurrent = 0, int otherCiv = 0) => new(this, c, excludeCurrent, otherCiv);
+
+    // Compatibility entry for owners that already supply synchronous dialogs.
     public void Run(int c, int excludeCurrent = 0, int otherCiv = 0)
     {
-        var category = ResearchTopic.Advance;
-        while (true)
+        using var operation = Begin(c, excludeCurrent, otherCiv);
+        for (var pending = operation.Resume(); pending is not null; pending = operation.Resume(Answer(pending)))
+        { }
+    }
+    internal ResearchReply Answer(ResearchGoalDecision decision)
+    {
+        switch (decision)
         {
-            var options = Options(c, category, excludeCurrent);
-            if (options.Length == 0)
+            case ResearchGoalNotice list:
+                return effects.GoalChoice(list);
+            case ResearchGoalHelp help:
+                return new(effects.GoalHelp(help.Category, help.Identity, help.Prerequisite));
+            case ResearchPathNotice path:
+                effects.GoalPath(path);
+                return new(0);
+            case ResearchEncyclopediaNotice page:
+                effects.Encyclopedia(page.Topic, page.Identity);
+                return new(0);
+            default:
+                throw new InvalidOperationException("Unknown research goal decision");
+        }
+    }
+
+    /// <summary>V03 §6 informational list, captured Help operands and path acknowledgment.
+    /// No knowledge or research target is changed. Rebuilds read live state after actual replies.</summary>
+    public sealed class Operation(ResearchGoals parent, int civilization, int excludeCurrent, int otherCiv) : IDisposable
+    {
+        private ResearchTopic category;
+        private bool disposed, faulted;
+        public ResearchGoalDecision? Pending { get; private set; }
+        public bool Completed { get; private set; }
+        public ResearchGoalDecision? Resume(ResearchReply? reply = null)
+        {
+            ObjectDisposedException.ThrowIf(disposed, this);
+            if (faulted)
             {
-                return;
+                throw new InvalidOperationException("A failed research goal cannot resume");
             }
 
-            var others = Enum.GetValues<ResearchTopic>().Where(t => t != category).ToArray();
-            var reply = effects.GoalChoice(new(c, category, !effects.DiplomacyActive, new(options), new(others)));
-            if (reply.Selected < 0)
+            if (Completed)
             {
-                return;
+                return null;
             }
 
-            if (reply.Extra == 1)
+            try
+            { return Advance(reply); }
+            catch { faulted = true; throw; }
+        }
+        private ResearchGoalDecision? Advance(ResearchReply? reply)
+        {
+            if (Pending is not null)
             {
-                if (!effects.DiplomacyActive)
+                if (reply is not { } answer)
                 {
-                    if (category == ResearchTopic.Advance)
+                    return Pending;
+                }
+
+                var previous = Pending;
+                Pending = null;
+                if (previous is ResearchPathNotice)
+                { Completed = true; return null; }
+                if (previous is ResearchGoalHelp help)
+                {
+                    if (answer.Selected == 0)
                     {
-                        effects.Encyclopedia(category, reply.Selected);
+                        return Pending = new ResearchEncyclopediaNotice(civilization, help.Category, help.Identity);
+                    }
+
+                    if (answer.Selected == 1)
+                    {
+                        return Pending = new ResearchEncyclopediaNotice(civilization, ResearchTopic.Advance, help.Prerequisite);
+                    }
+                }
+                else if (previous is ResearchGoalNotice list)
+                {
+                    if (answer.Selected < 0)
+                    { Completed = true; return null; }
+                    if (answer.Extra == 1)
+                    {
+                        if (!parent.effects.DiplomacyActive)
+                        {
+                            if (category == ResearchTopic.Advance)
+                            {
+                                return Pending = new ResearchEncyclopediaNotice(civilization, category, answer.Selected);
+                            }
+                            else
+                            {
+                                int prerequisite = Prerequisite(answer.Selected);
+                                string name = category == ResearchTopic.Unit ? parent.rules.Units[answer.Selected].Identity.Name
+                                    : parent.rules.Improvements[answer.Selected].Identity.Name;
+                                return Pending = new ResearchGoalHelp(civilization, category, answer.Selected, name,
+                                    prerequisite, parent.rules.Advances[prerequisite].Identity.Name);
+                            }
+                        }
+                    }
+                    else if (answer.Extra is 2 or 3)
+                    {
+                        category = list.OtherCategories[answer.Extra - 2];
                     }
                     else
                     {
-                        int prerequisite = category == ResearchTopic.Unit ? (int)rules.Units[reply.Selected].Prerequisite : (int)rules.Improvements[reply.Selected].Prerequisite;
-                        int help = effects.GoalHelp(category, reply.Selected, prerequisite);
-                        if (help == 0)
-                        {
-                            effects.Encyclopedia(category, reply.Selected);
-                        }
-                        else if (help == 1)
-                        {
-                            effects.Encyclopedia(ResearchTopic.Advance, prerequisite);
-                        }
+                        int goal = category == ResearchTopic.Advance ? answer.Selected : Prerequisite(answer.Selected);
+                        return Pending = new ResearchPathNotice(civilization, goal, parent.rules.Advances[goal].Identity.Name, otherCiv != 0,
+                            new(parent.Path(civilization, goal, excludeCurrent, otherCiv).Select(a => parent.AdvanceOption(civilization, a))));
                     }
                 }
-                continue;
             }
-            if (reply.Extra is 2 or 3)
-            { category = others[reply.Extra - 2]; continue; }
-            int goal = category switch
-            {
-                ResearchTopic.Advance => reply.Selected,
-                ResearchTopic.Unit => (int)rules.Units[reply.Selected].Prerequisite,
-                _ => (int)rules.Improvements[reply.Selected].Prerequisite
-            };
-            effects.GoalPath(new(c, goal, rules.Advances[goal].Identity.Name, otherCiv != 0,
-                new(Path(c, goal, excludeCurrent, otherCiv).Select(a => AdvanceOption(c, a)))));
-            return;
+            var options = parent.Options(civilization, category, excludeCurrent);
+            if (options.Length == 0)
+            { Completed = true; return null; }
+            return Pending = new ResearchGoalNotice(civilization, category, !parent.effects.DiplomacyActive, new(options),
+                new(Enum.GetValues<ResearchTopic>().Where(t => t != category)));
         }
+        private int Prerequisite(int identity) => category == ResearchTopic.Unit ? (int)parent.rules.Units[identity].Prerequisite
+            : (int)parent.rules.Improvements[identity].Prerequisite;
+        public void Dispose() { disposed = true; }
     }
+
 }
 
 /// <summary>V03 §5 retained recommendation and resumable player choice. Call Resume without a reply
 /// to inspect a pending request; accepting a reply stores it without rerunning availability.</summary>
 public sealed class ResearchSelection(GameState world, RuleState rules, GameplayRandom random, IResearchChoiceEffects effects,
-    int civilization, int forced, string call)
+    int civilization, int forced, string call) : IDisposable
 {
     private readonly ResearchGoals goals = new(world, rules.Definitions, effects);
-    private bool started, faulted;
+    private bool started, faulted, disposed;
+    private ResearchGoals.Operation? goal;
+    private ResearchEncyclopediaNotice? encyclopedia;
     private int recommendation;
     public bool Finished { get; private set; }
     public int Result { get; private set; } = -1;
@@ -220,6 +296,21 @@ public sealed class ResearchSelection(GameState world, RuleState rules, Gameplay
 
     public ResearchChoiceNotice? Resume(ResearchReply? reply = null)
     {
+        try
+        {
+            var pending = ResumeDecision(reply);
+            while (pending is ResearchDecision.Goal browsing)
+            {
+                pending = ResumeDecision(goals.Answer(browsing.Decision));
+            }
+            return (ResearchChoiceNotice?)pending;
+        }
+        catch { faulted = true; goal?.Dispose(); throw; }
+    }
+
+    public ResearchDecision? ResumeDecision(ResearchReply? reply = null)
+    {
+        ObjectDisposedException.ThrowIf(disposed, this);
         if (faulted)
         {
             throw new InvalidOperationException("A failed research selection cannot resume.");
@@ -227,10 +318,10 @@ public sealed class ResearchSelection(GameState world, RuleState rules, Gameplay
 
         try
         { return ResumeCore(reply); }
-        catch { faulted = true; throw; }
+        catch { faulted = true; goal?.Dispose(); throw; }
     }
 
-    private ResearchChoiceNotice? ResumeCore(ResearchReply? reply)
+    private ResearchDecision? ResumeCore(ResearchReply? reply)
     {
         MapKnowledge.RequireLocal(world);
         if (Finished)
@@ -238,6 +329,27 @@ public sealed class ResearchSelection(GameState world, RuleState rules, Gameplay
             return null;
         }
 
+        if (encyclopedia is not null)
+        {
+            if (reply is null)
+            {
+                return new ResearchDecision.Goal(encyclopedia);
+            }
+
+            encyclopedia = null;
+            reply = null;
+        }
+        if (goal is not null)
+        {
+            if (goal.Resume(reply) is { } pending)
+            {
+                return new ResearchDecision.Goal(pending);
+            }
+
+            goal.Dispose();
+            goal = null;
+            reply = null;
+        }
         if (!started)
         {
             recommendation = Research.Recommend(world, rules, civilization, random, call);
@@ -262,7 +374,8 @@ public sealed class ResearchSelection(GameState world, RuleState rules, Gameplay
 
             if (answer.Extra == 2)
             {
-                goals.Run(civilization);
+                goal = goals.Begin(civilization);
+                return ResumeCore(null);
             }
             else if (answer.Extra == 0)
             {
@@ -270,7 +383,8 @@ public sealed class ResearchSelection(GameState world, RuleState rules, Gameplay
             }
             else
             {
-                effects.Encyclopedia(ResearchTopic.Advance, answer.Selected);
+                encyclopedia = new(civilization, ResearchTopic.Advance, answer.Selected);
+                return ResumeCore(null);
             }
         }
         if (world.Globals.GameOptions.Advice && forced == 0)
@@ -297,4 +411,6 @@ public sealed class ResearchSelection(GameState world, RuleState rules, Gameplay
         effects.Selected(civilization, selected);
         return null;
     }
+    public void Dispose() { disposed = true; goal?.Dispose(); }
+
 }

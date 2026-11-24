@@ -58,6 +58,7 @@ def drive(args, app, observation, storage):
     driver = X11()
     checks = []
     last_click = None
+    research_goal_checked = False
 
     def wait(predicate):
         deadline = time.monotonic() + 10
@@ -199,6 +200,7 @@ def drive(args, app, observation, storage):
         click_box(state['dialog']['regions'][f'choice.{value}'], state)
 
     def end_turn(turn, console_reply=False):
+        nonlocal research_goal_checked
         click('end')
         confirmation = wait(lambda s: s['status'] == 'AwaitingInteraction')
         assert not confirmation['play']['controls']['save']['enabled']
@@ -214,6 +216,26 @@ def drive(args, app, observation, storage):
             assert not state['dialog']['regions']['cancel']['enabled']
             old_prompt = state['prompt']
             offered = sorted(int(key.split('.')[1]) for key in state['dialog']['regions'] if key.startswith('choice.'))
+            if old_prompt == 'Choose the next advance.' and not research_goal_checked:
+                before = state['play']
+                choice(100)
+                goals = wait(lambda s: s['prompt'].startswith('Choose a research goal'))
+                goal = min(int(key.split('.')[1]) for key in goals['dialog']['regions']
+                           if key.startswith('choice.') and int(key.split('.')[1]) < 100)
+                choice(1000 + goal)
+                reference = wait(lambda s: 'Requires:' in s['prompt'])
+                assert reference['play']['research'] == before['research']
+                assert reference['play']['known'] == before['known']
+                choice(0)
+                wait(lambda s: s['prompt'].startswith('Choose a research goal'))
+                choice(goal)
+                wait(lambda s: 'toward' in s['prompt'] and not s['prompt'].startswith('Choose'))
+                choice(0)
+                rebuilt = wait(lambda s: s['prompt'] == old_prompt)
+                assert rebuilt['play']['research'] == before['research']
+                assert rebuilt['play']['known'] == before['known']
+                research_goal_checked = True
+                checks.append('native research goal, rule reference, path acknowledgment and return preserve research and knowledge')
             choice(offered[0])
             state = wait(lambda s: s['play']['turn'] == turn and
                          (s['status'] == 'Completed' or (s['status'] == 'AwaitingInteraction' and s['prompt'] != old_prompt)))
@@ -296,6 +318,7 @@ def drive(args, app, observation, storage):
         play = end_turn(turn, console_reply=turn == 2)
         seen_effects.update(play['effects'])
     assert {'unit.produced', 'research.completed'} <= seen_effects
+    assert research_goal_checked
     assert 0 in play['known'] and len(play['units']) >= 2
     select(1)
     command(lambda: click('fortify'))

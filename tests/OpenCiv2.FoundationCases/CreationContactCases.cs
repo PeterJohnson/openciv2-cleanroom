@@ -107,10 +107,11 @@ public static partial class FoundationSuite
         var choose = op.Resume(context, new(OperationInputKind.Choice, 1)); Equal(CommandStatus.AwaitingInteraction, choose.Status);
         Equal(true, f.World.Civilizations[2].Advances.Contains(95)); Equal(false, f.World.Civilizations[1].Advances.Contains(90));
         f.Data.Rules.Advances[90] = f.Data.Rules.Advances[90] with { Enabled = true };
-        f.Contact.F.T.T.GoalReplies.Enqueue(new(90));
         var help = op.Resume(context, new(OperationInputKind.Choice, 100)); Equal(CommandStatus.AwaitingInteraction, help.Status);
-        Equal(1, f.Contact.F.T.T.GoalNotices.Count); Equal(false, f.World.Civilizations[1].Advances.Contains(0));
+        Equal(0, f.Contact.F.T.T.GoalNotices.Count); Equal(false, f.World.Civilizations[1].Advances.Contains(0));
         Equal((short)77, f.World.Civilizations[2].CapitalX); Equal(1, f.World.UnitTotals[2]);
+        Equal(CommandStatus.AwaitingInteraction, op.Resume(context, new(OperationInputKind.Choice, 90)).Status); // Path page.
+        Equal(CommandStatus.AwaitingInteraction, op.Resume(context, new(OperationInputKind.Choice, 0)).Status); // Rebuilt capture list.
         Equal(CommandStatus.AwaitingInteraction, op.Resume(context, new(OperationInputKind.Choice, 90)).Status);
         var done = op.Resume(context, new(OperationInputKind.Choice, 0)); Equal(CommandStatus.Completed, done.Status);
         Equal(true, f.World.Civilizations[1].Advances.Contains(90)); Equal((short)10, f.World.Civilizations[2].CapitalX); f.Consumed();

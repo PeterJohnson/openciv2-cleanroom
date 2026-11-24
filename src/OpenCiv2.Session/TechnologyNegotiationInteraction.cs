@@ -9,6 +9,8 @@ internal static class TechnologyNegotiationInteraction
 {
     public static ResearchReply? Reply(TechnologyNegotiationDecision? pending, OperationInput input)
     {
+        if (pending is TechnologyNegotiationDecision.Captured { Decision: CapturedTechnologyDecision.Goal goal })
+        { return ResearchGoalInteraction.Reply(goal.Decision, input); }
         if (pending is TechnologyNegotiationDecision.Grant grant)
         { return ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
         if (pending is TechnologyNegotiationDecision.Captured { Decision: CapturedTechnologyDecision.Grant acquired })
@@ -23,6 +25,8 @@ internal static class TechnologyNegotiationInteraction
     public static InteractionSpec Prompt(OperationContext context, TechnologyNegotiationDecision decision,
         Func<int, ParticipantId> recipient, Func<EmissaryIntelligence, InteractionSpec> intelligence, ref InteractionSpec? window)
     {
+        if (decision is TechnologyNegotiationDecision.Captured { Decision: CapturedTechnologyDecision.Goal goal })
+        { return ResearchGoalInteraction.Prompt(context, goal.Decision, recipient); }
         if (decision is TechnologyNegotiationDecision.Emissary emissary)
         { return EmissaryInteraction.Prompt(emissary.Decision, recipient, intelligence, ref window); }
         if (decision is TechnologyNegotiationDecision.Grant grant)

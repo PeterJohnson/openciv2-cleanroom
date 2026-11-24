@@ -10,6 +10,7 @@ namespace OpenCiv2.Core;
 
 public abstract record CapturedTechnologyDecision
 {
+    public sealed record Goal(ResearchGoalDecision Decision) : CapturedTechnologyDecision;
     public sealed record Grant(ResearchGrantDecision Decision) : CapturedTechnologyDecision;
 }
 public sealed record CapturedTechnologyChoice(int Civilization, int Victim, bool Interactive, int Recommendation, OwnedList<ResearchOption> Options) : CapturedTechnologyDecision;
@@ -35,6 +36,7 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
         private int best = -1, bestValue = -999;
         private int selected;
         private ResearchGrants.Operation? grant;
+        private ResearchGoals.Operation? goal;
         private readonly List<Exception> presentationFailures = [];
         public IReadOnlyList<Exception> PresentationFailures => presentationFailures.AsReadOnly();
         public bool Finished { get; private set; }
@@ -49,7 +51,7 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
             { return null; }
             try
             { return Advance(reply); }
-            catch { faulted = true; grant?.Dispose(); throw; }
+            catch { faulted = true; grant?.Dispose(); goal?.Dispose(); throw; }
         }
         private CapturedTechnologyDecision? Advance(ResearchReply? reply)
         {
@@ -57,6 +59,23 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
             MapKnowledge.RequireLocal(w);
             if (grant is not null)
             { return AdvanceGrant(reply?.Selected); }
+            if (goal is not null)
+            {
+                if (Pending is not null && reply is null)
+                {
+                    return Pending;
+                }
+
+                if (goal.Resume(reply) is { } browsing)
+                {
+                    return Pending = new CapturedTechnologyDecision.Goal(browsing);
+                }
+
+                goal.Dispose();
+                goal = null;
+                Pending = null;
+                reply = null;
+            }
             if (!started)
             {
                 ArgumentException.ThrowIfNullOrEmpty(call);
@@ -72,7 +91,8 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
                 Pending = null;
                 if (reply.Value.Extra == 0)
                 { return Finish(reply.Value.Selected); }
-                parent.Goals.Run(civilization, 0, victim);
+                goal = parent.Goals.Begin(civilization, 0, victim);
+                return Advance(null);
             }
             List<ResearchOption> options = [];
             for (int a = 0; a < RuleLimits.Advances; ++a)
@@ -124,6 +144,6 @@ public sealed class CapturedTechnology(GameState world, RuleState rules, Researc
             Finished = true;
             return null;
         }
-        public void Dispose() { disposed = true; grant?.Dispose(); }
+        public void Dispose() { disposed = true; grant?.Dispose(); goal?.Dispose(); }
     }
 }

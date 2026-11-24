@@ -78,7 +78,7 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
                 if (pending is not null && reply is null)
                 { return pending; }
                 ResearchReply? incidentReply = pending is CityEspionageDecision.Lifecycle ? reply : null;
-                ResearchReply? selectionReply = selection is not null && pending is CityEspionageDecision.Technology or CityEspionageDecision.Grant ? reply : null;
+                ResearchReply? selectionReply = selection is not null && pending is CityEspionageDecision.Technology or CityEspionageDecision.Grant or CityEspionageDecision.Goal ? reply : null;
                 int? grantReply = grant is not null && pending is CityEspionageDecision.Grant ? reply?.Selected : null;
                 if (pending is CityEspionageDecision.Question)
                 { answer = reply!.Value.Selected; }
@@ -104,6 +104,8 @@ public sealed class CityTechnologyTheft(GameState world, RuleTables rules, Gamep
                         selectionReply = null;
                         if (choice is CapturedTechnologyChoice technology)
                         { return pending = new CityEspionageDecision.Technology(technology); }
+                        if (choice is CapturedTechnologyDecision.Goal goal)
+                        { return pending = new CityEspionageDecision.Goal(goal.Decision); }
                         if (choice is CapturedTechnologyDecision.Grant granted)
                         { return pending = new CityEspionageDecision.Grant(granted.Decision); }
                         if (!selection.Finished)

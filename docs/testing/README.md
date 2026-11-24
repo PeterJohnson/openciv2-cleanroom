@@ -12,6 +12,12 @@ production. Its content and presentation fixtures do not replace gameplay
 children. These native cases qualify construction and continuation ownership;
 desktop content/presentation binding and complete generated games remain open.
 
+Retained research-goal cases cover category rebuilding, captured Help operands,
+reference/path acknowledgment, stable recommendations, cancellation/timeout,
+privacy and disposal. Existing theft and creation/contact cases now traverse the
+actual goal decisions. The native desktop driver also opens goal and reference
+pages during upkeep and returns to research selection before continuing the turn.
+
 U04 activation cases now join the next-unit search to real contact-capable W03
 revelation. They check the combat-loss origin, order-sensitive timer clearing,
 retained contact, live simultaneous-mode tail and private reply routing. Failures

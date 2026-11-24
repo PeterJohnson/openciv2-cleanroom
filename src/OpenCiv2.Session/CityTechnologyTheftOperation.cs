@@ -29,6 +29,8 @@ public sealed class CityTechnologyTheftOperation(CityTechnologyTheft.Operation o
         { reply = pending is CityEspionageDecision.Technology && value == 100 ? new(0, 1) : new(value); }
         else if (input.Kind is OperationInputKind.Cancel or OperationInputKind.Timeout && pending is not CityEspionageDecision.Technology)
         { reply = new(pending is CityEspionageDecision.Lifecycle ? 0 : -1); }
+        if (pending is CityEspionageDecision.Goal goal)
+        { reply = ResearchGoalInteraction.Reply(goal.Decision, input); }
         if (pending is CityEspionageDecision.Grant grant)
         { reply = ResearchGrantInteraction.ResearchReply(grant.Decision, input); }
         if (pending is CityEspionageDecision.Lifecycle lifecycle)
@@ -38,7 +40,9 @@ public sealed class CityTechnologyTheftOperation(CityTechnologyTheft.Operation o
         {
             context.Publish();
             InteractionSpec prompt;
-            if (pending is CityEspionageDecision.Lifecycle incident)
+            if (pending is CityEspionageDecision.Goal browsing)
+            { prompt = ResearchGoalInteraction.Prompt(context, browsing.Decision, recipient); }
+            else if (pending is CityEspionageDecision.Lifecycle incident)
             { prompt = LifecycleInteraction.Prompt(context, incident.Decision, recipient, ref intelligenceWindow, intelligence); }
             else if (pending is CityEspionageDecision.Grant granted)
             {

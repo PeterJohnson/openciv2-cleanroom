@@ -48,6 +48,11 @@ internal static class CityCaptureInteraction
 {
     internal static ResearchReply? Reply(CityCaptureDecision? decision, OperationInput input)
     {
+        if (decision is CityCaptureDecision.Goal goal)
+        {
+            return ResearchGoalInteraction.Reply(goal.Decision, input);
+        }
+
         if (decision is CityCaptureDecision.Lifecycle lifecycle)
         { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
         if (decision is CityCaptureDecision.Grant grant)
@@ -66,6 +71,8 @@ internal static class CityCaptureInteraction
         InteractionSpec prompt;
         switch (pending)
         {
+            case CityCaptureDecision.Goal goal:
+                return ResearchGoalInteraction.Prompt(context, goal.Decision, recipient);
             case CityCaptureDecision.Grant grant:
                 return ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
                     intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);

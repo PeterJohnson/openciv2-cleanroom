@@ -43,6 +43,10 @@ internal static class ResearchFlowInteraction
 {
     internal static ResearchReply? Reply(ResearchDecision? pending, OperationInput input) => pending switch
     {
+        ResearchDecision.Goal goal => ResearchGoalInteraction.Reply(goal.Decision, input),
+        ResearchChoiceNotice when input.Kind == OperationInputKind.Choice && input.Choice == 100 => new(0, 2),
+        ResearchChoiceNotice help when input.Kind == OperationInputKind.Choice && input.Choice is { } encoded
+            && help.Options.Any(o => o.Identity == encoded - ResearchGoalInteraction.HelpBase) => new(encoded - ResearchGoalInteraction.HelpBase, 1),
         ResearchDecision.Grant grant => ResearchGrantInteraction.ResearchReply(grant.Decision, input),
         ResearchChoiceNotice choice when input.Kind == OperationInputKind.Choice && input.Choice is { } value
             && choice.Options.Any(o => o.Identity == value) => new(value),
@@ -51,17 +55,22 @@ internal static class ResearchFlowInteraction
     internal static InteractionSpec Prompt(OperationContext context, ResearchDecision pending, Func<int, ParticipantId> recipient,
         ref InteractionSpec? intelligenceWindow, Func<EmissaryIntelligence, InteractionSpec>? intelligence = null)
     {
+        if (pending is ResearchDecision.Goal goal)
+        {
+            return ResearchGoalInteraction.Prompt(context, goal.Decision, recipient);
+        }
+
         if (pending is ResearchDecision.Grant grant)
         {
             return ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
             intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);
         }
         var choice = (ResearchChoiceNotice)pending;
+        var options = choice.Options.Select(o => new InteractionOption(o.Identity, ResearchGoalInteraction.Label(o))).ToList();
+        options.Add(new(100, "Research goal"));
+        options.AddRange(choice.Options.Select(o => new InteractionOption(ResearchGoalInteraction.HelpBase + o.Identity, $"Help: {ResearchGoalInteraction.Label(o)}")));
         return new("Choose the next advance.", recipient(choice.Civilization), null,
-            new(choice.Options.Select(o => o.Identity)), Cancellable: false)
-        {
-            Options = new(choice.Options.Select(o => new InteractionOption(o.Identity,
-            o.FutureNumber is { } number ? $"{o.Name} {number}" : o.Name)))
-        };
+            new(options.Select(o => o.Value)), Cancellable: false)
+        { Options = new(options) };
     }
 }

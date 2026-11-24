@@ -471,7 +471,16 @@ completion before its free-advance check. Darwin retains both sequential complet
 before its production tail. `ResearchFlowOperation` and the desktop turn route the
 shared decisions and dispose their nested operations on exit.
 `ResearchSelection` suspends for an accepted choice and retains its recommendation;
-`ResearchGoals` owns informational goal/advice data. The desktop city pass waits
+`ResearchGoals` owns informational goal/advice data. `Begin` retains goal lists,
+Help operands, rule-reference requests and path acknowledgments;
+`ResearchSelection.ResumeDecision` carries them through science without rerolling
+the recommendation. Captured technology carries the same decisions through
+capture, diplomacy, theft and their enclosing lifecycle/movement operations.
+Session's `ResearchGoalInteraction` routes private replies and displays reference
+facts from installed rules through `ResearchReference`. Full authored Civilopedia
+prose remains a content-host concern. Synchronous compatibility entries drive
+the same state machines with their supplied presentation callbacks.
+The desktop city pass waits
 on this flow before maintenance. `LocalResearch` retains only authored-profile
 eligibility/cost queries. Darwin now invokes two sequential completions from
 `CityProduction`. `CivilizationCreationServices.CatchupResearch` supplies the

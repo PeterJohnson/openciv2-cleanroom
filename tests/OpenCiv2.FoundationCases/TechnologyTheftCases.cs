@@ -78,8 +78,11 @@ public static partial class FoundationSuite
         Sequence(new[] { 90, 91 }, first.Options.Select(o => o.Identity)); Equal(91, first.Recommendation); Equal(true, first.Interactive);
         Equal(first, op.Resume()); f.Rules.Advances[91] = f.Rules.Advances[91] with { AiValue = 1 };
         f.Rules.Advances[90] = f.Rules.Advances[90] with { AiValue = 1, Enabled = true };
-        f.GoalReplies.Enqueue(new(90)); var rebuilt = (CapturedTechnologyChoice)op.Resume(new(0, 9))!;
-        Equal(91, rebuilt.Recommendation); Equal(1, f.GoalNotices.Count); Equal(true, f.Paths.Single().Stealing);
+        Equal(true, op.Resume(new(0, 9)) is CapturedTechnologyDecision.Goal { Decision: ResearchGoalNotice });
+        var path = (CapturedTechnologyDecision.Goal)op.Resume(new(90))!;
+        Equal(true, ((ResearchPathNotice)path.Decision).Stealing); Equal(path, op.Resume());
+        var rebuilt = (CapturedTechnologyChoice)op.Resume(new(0))!;
+        Equal(91, rebuilt.Recommendation); Equal(0, f.GoalNotices.Count); Equal(0, f.Paths.Count);
         Equal(0, f.Grant.Acquisitions.Count); Equal(false, f.World.Civilizations[1].Advances.Contains(91));
         // Accepted custom reply is not checked against victim knowledge or the options.
         op.Resume(new(88)); Equal(88, op.Result); Equal(true, op.Finished);
@@ -265,8 +268,10 @@ public static partial class FoundationSuite
         var specific = RequiredInteraction(actor, command); Equal(true, actor.Reply(specific, 1).Accepted); runtime.AdvanceOne();
         var choose = RequiredInteraction(actor, command); Equal(false, actor.Reply(choose, 89).Accepted); Equal(false, victim.Reply(choose, 91).Accepted);
         Equal(false, actor.Cancel(command).Accepted); f.Rules.Advances[90] = f.Rules.Advances[90] with { Enabled = true };
-        f.GoalReplies.Enqueue(new(-1)); Equal(true, actor.Reply(choose, 100).Accepted); runtime.AdvanceOne();
-        choose = RequiredInteraction(actor, command); Equal(1, f.GoalNotices.Count); Equal(true, actor.Reply(choose, 91).Accepted); runtime.AdvanceOne();
+        Equal(true, actor.Reply(choose, 100).Accepted); runtime.AdvanceOne();
+        var goal = RequiredInteraction(actor, command); Equal(false, victim.Reply(goal, 90).Accepted);
+        Equal(true, actor.Cancel(command).Accepted); runtime.AdvanceOne();
+        choose = RequiredInteraction(actor, command); Equal(0, f.GoalNotices.Count); Equal(true, actor.Reply(choose, 91).Accepted); runtime.AdvanceOne();
         var incident = RequiredInteraction(victim, command); Equal(false, actor.Reply(incident, 1).Accepted);
         Equal(true, f.World.Civilizations[1].Advances.Contains(91)); Equal(false, f.City.Flags.TechnologyStolen);
         Equal(true, victim.Reply(incident, 0).Accepted); runtime.AdvanceOne();

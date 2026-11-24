@@ -342,3 +342,11 @@ Its [shared cases](../../tests/OpenCiv2.FoundationCases/SinglePlayerGameplayCase
 supply authored state and presentation, while the root constructs all gameplay
 children. Polling and disposal preserve committed prefixes. Native binding,
 generated turns and complete-game acceptance remain open.
+
+The `research-goal-continuation` family adds retained V03 lists, Help/reference
+pages and path acknowledgment to science and captured technology. Actual capture,
+diplomacy, espionage and creation/contact parents preserve the full nested reply.
+See [ResearchGoalContinuationCases.cs](../../tests/OpenCiv2.FoundationCases/ResearchGoalContinuationCases.cs)
+and the [native input driver](../../tools/dotnet/run_local_play_native.py).
+Rule-reference pages use installed custom names and facts; full authored
+Civilopedia prose and general desktop gameplay binding remain open.

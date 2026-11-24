@@ -26,6 +26,7 @@ public interface ICityCaptureEffects
 }
 public abstract record CityCaptureDecision
 {
+    public sealed record Goal(ResearchGoalDecision Decision) : CityCaptureDecision;
     public sealed record Palace(PalaceEscapeChoice Choice) : CityCaptureDecision;
     public sealed record Lifecycle(LifecycleDecision Decision) : CityCaptureDecision;
     public sealed record Technology(CapturedTechnologyChoice Choice) : CityCaptureDecision;
@@ -272,6 +273,8 @@ public sealed partial class CityCapture(GameState world, RuleTables rules, Stack
                 var pending = technology.Resume(op.TakeReply());
                 if (pending is CapturedTechnologyChoice choice)
                 { yield return new CityCaptureDecision.Technology(choice); }
+                else if (pending is CapturedTechnologyDecision.Goal goal)
+                { yield return new CityCaptureDecision.Goal(goal.Decision); }
                 else if (pending is CapturedTechnologyDecision.Grant grant)
                 { yield return new CityCaptureDecision.Grant(grant.Decision); }
                 else if (!technology.Finished)

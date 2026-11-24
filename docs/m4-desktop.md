@@ -8271,3 +8271,57 @@ without changing desktop command admission or automation.
 | --- | --- |
 | `m4-gameplay-construction-native.json` | `6c63fb047c5606bc0e49c8339dee19c0790c9fa2cafa8161ec8ba8ff1885e607` |
 | `m4-gameplay-construction-identity.json` | `75deea28d9ddaf4b7eccecd4e9f2f94561a993881471725c86a59c7c050f327f` |
+
+## Retained research goals and desktop Help
+
+The desktop gameplay binding audit found V03's synchronous goal-choice and
+Help callbacks inside otherwise retained science/captured-technology operations.
+`ResearchGoals.Begin` now returns private list, Help, reference and path decisions.
+It captures Help's item/prerequisite before waiting, rebuilds live options after
+actual replies and leaves research/knowledge unchanged. Empty categories and
+negative selections preserve their existing early returns. Path acknowledgment
+finishes only the informational child. The informational browser preserves its
+existing mode-independent availability; retained selection/acquisition keeps its
+own local gameplay gate.
+
+`ResearchSelection.ResumeDecision` retains one recommendation across those
+decisions. Captured technology retains its best valuation while browsing; city
+capture, diplomacy, theft, mission and creation/contact parents forward the full
+reply. Disposal releases the pending child, and failures remain terminal. The
+synchronous compatibility entries drive the same operation with their supplied
+callbacks; production science/capture use retained entries.
+
+Session routes goal/category/Help replies to their private recipient. Cancel or
+timeout closes the appropriate informational page/list and returns to the parent
+selection; required research/captured-technology selection remains non-cancellable.
+The desktop research dialog now offers research goals and Help. Its reference
+pages show installed custom rule names, prerequisites, advance unlocks, unit
+combat values and improvement maintenance. These are rule-derived reference
+pages; full authored Civilopedia prose remains a content-host requirement.
+
+Five shared groups cover captured Help operands versus rebuilt lists, diplomacy
+gates, empty/cancel/failure/disposal behavior, stable recommendations, private and
+stale replies, custom reference content and timeout. Existing theft and nested
+creation/contact cases now traverse actual goal decisions before acquisition or
+placement continues. The native driver adds goal browsing, a reference page,
+path acknowledgment and return to research during real upkeep, asserting unchanged
+research and knowledge before continuing its existing save/replay checks.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1922/1924**, with the two existing
+platform/audio skips. All **1887 shared groups** passed across **211 coverage
+families**; identity verified **931 compiled inputs**. The 43-project graph,
+eight identity tests and three coverage tests passed. The isolated Linux desktop
+input run passed **33 checks**, including the new goal/reference/path route and
+the existing save/replay scenarios. Lua automation code is
+unchanged; browser and cross-platform qualification remain deferred.
+
+General gameplay content/presentation binding, generated human/AI turns and
+complete-game acceptance remain open. The two F04 formulas still require
+independent original-game observations. This work does not complete M4.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-research-goal-native.json` | `4b2ae353dd9cc814e45f6336dfac0bdf49d3d2f7c62cfb2997c166140e4db329` |
+| `m4-research-goal-identity.json` | `fcbf1eb957eb9ad0177f052ee35bdf4024180897b212faba5d44b48731718a9b` |
+| `m4-research-goal-desktop.json` | `d4cea177fd7384ab8bfc029ce693b7fe3e81987506af24719d5de57537971db7` |

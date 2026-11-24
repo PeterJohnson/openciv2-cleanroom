@@ -47,6 +47,8 @@ internal static class CityMissionInteraction
 {
     internal static ResearchReply? Reply(CityMissionDecision? decision, OperationInput input)
     {
+        if (decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Goal goal })
+        { return ResearchGoalInteraction.Reply(goal.Decision, input); }
         if (decision is CityMissionDecision.Mission { Decision: CityEspionageDecision.Lifecycle lifecycle })
         { return LifecycleInteraction.ResearchReply(lifecycle.Decision, input); }
         if (decision is CityMissionDecision.Revolt revolt)
@@ -91,6 +93,8 @@ internal static class CityMissionInteraction
     {
         switch (decision)
         {
+            case CityEspionageDecision.Goal goal:
+                return ResearchGoalInteraction.Prompt(context, goal.Decision, recipient);
             case CityEspionageDecision.Grant grant:
                 return ResearchGrantInteraction.Prompt(context, grant.Decision, recipient,
                     intelligence ?? ResearchGrantInteraction.RequiredIntelligence, ref intelligenceWindow);

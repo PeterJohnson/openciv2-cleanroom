@@ -14,6 +14,7 @@ public enum CityEspionageQuestion { TreatyBreach, SpecificSabotage, SabotageTarg
 public sealed record CitySabotageTarget(int Building, string Name);
 public abstract record CityEspionageDecision
 {
+    public sealed record Goal(ResearchGoalDecision Decision) : CityEspionageDecision;
     public sealed record Question(CityEspionageQuestion Kind, int Actor, CityTarget City, string Name,
         OwnedList<CitySabotageTarget>? Targets = null) : CityEspionageDecision;
     public sealed record Lifecycle(LifecycleDecision Decision) : CityEspionageDecision;

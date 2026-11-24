@@ -22,6 +22,7 @@ public interface IResearchCompletionEffects
 
 public abstract record ResearchDecision
 {
+    public sealed record Goal(ResearchGoalDecision Decision) : ResearchDecision;
     public sealed record Grant(ResearchGrantDecision Decision) : ResearchDecision;
 }
 
@@ -105,7 +106,7 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
 
                         break;
                     case Phase.InitialChoice:
-                        if (selection!.Resume(reply) is { } initial)
+                        if (selection!.ResumeDecision(reply) is { } initial)
                         {
                             return initial;
                         }
@@ -156,7 +157,7 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                         phase = Phase.Done;
                         break;
                     case Phase.FinalChoice:
-                        if (selection!.Resume(reply) is { } next)
+                        if (selection!.ResumeDecision(reply) is { } next)
                         {
                             return next;
                         }
@@ -180,7 +181,7 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                 }
             }
         }
-        protected override void Release() { grant?.Dispose(); government?.Dispose(); }
+        protected override void Release() { selection?.Dispose(); grant?.Dispose(); government?.Dispose(); }
     }
 
     private void LocalNotices(int c, int completed, string call)
@@ -314,7 +315,7 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
 
                         break;
                     case Phase.Choice:
-                        if (selection!.Resume(reply) is { } choice)
+                        if (selection!.ResumeDecision(reply) is { } choice)
                         {
                             return choice;
                         }
@@ -328,6 +329,6 @@ public sealed class ResearchFlow(GameState world, RuleState ruleState, GameplayR
                 }
             }
         }
-        protected override void Release() => completion?.Dispose();
+        protected override void Release() { selection?.Dispose(); completion?.Dispose(); }
     }
 }

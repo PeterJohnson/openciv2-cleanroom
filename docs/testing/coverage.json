@@ -6497,6 +6497,39 @@
         "U02.gameplay-movement-contact",
         "V01.gameplay-deletion"
       ]
+    },
+    {
+      "id": "research-goal-continuation",
+      "status": "partial",
+      "contract": "V03 sections 5, 6 and 12 retained informational goals and Help through science, capture, diplomacy and espionage",
+      "publicSurface": "ResearchGoals.Begin/Operation; ResearchSelection.ResumeDecision; ResearchGoalDecision; ResearchDecision.Goal; CapturedTechnologyDecision.Goal; CityCaptureDecision.Goal; CityEspionageDecision.Goal; private ResearchGoalInteraction and installed-rule ResearchReference pages",
+      "review": "Retains category lists, captured Help subjects/prerequisites, encyclopedia references and path acknowledgments. Actual replies rebuild live options; negative goal selection precedes category dispatch; diplomacy suppresses Help; no goal grants knowledge or selects research. Science keeps one recommendation, captured technology keeps its best valuation, and parent creation/contact continuations wait for all goal pages. Cancellation and timeout leave informational children before returning to required research/capture selection. Native Session cases cover wrong/stale recipients, Help-page routing, custom names, disposal and terminal synchronous compatibility failures. Desktop selection offers goal and Help entries using installed rule facts. Full authored Civilopedia prose and general gameplay desktop binding remain open; browser and cross-platform execution remain deferred.",
+      "sources": [
+        "src/OpenCiv2.Core/CapturedTechnology.cs",
+        "src/OpenCiv2.Core/City/CityCapture.cs",
+        "src/OpenCiv2.Core/CityEspionageDamage.cs",
+        "src/OpenCiv2.Core/CityTechnologyTheft.cs",
+        "src/OpenCiv2.Core/ResearchFlow.cs",
+        "src/OpenCiv2.Core/ResearchSelection.cs",
+        "src/OpenCiv2.Session/CityCaptureOperation.cs",
+        "src/OpenCiv2.Session/CityMissionOperation.cs",
+        "src/OpenCiv2.Session/CityTechnologyTheftOperation.cs",
+        "src/OpenCiv2.Session/ResearchFlowOperation.cs",
+        "src/OpenCiv2.Session/ResearchGoalInteraction.cs",
+        "src/OpenCiv2.Session/ResearchReference.cs",
+        "src/OpenCiv2.Session/TechnologyNegotiationInteraction.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ResearchGoalContinuationCases.cs",
+        "tools/dotnet/run_local_play_native.py"
+      ],
+      "sharedGroups": [
+        "V03.goal-cancel-failure-disposal",
+        "V03.goal-reference-timeout",
+        "V03.goal-retained-help-live-list",
+        "V03.goal-retained-selection",
+        "V03.goal-session-privacy-help"
+      ]
     }
   ]
 }
