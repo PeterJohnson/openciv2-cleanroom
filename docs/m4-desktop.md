@@ -5911,3 +5911,47 @@ remain open, together with the previously recorded F04 formulas, relation-review
 input gap, complete turn orchestration and generated human/AI end-condition
 acceptance. Browser, cross-platform qualification and network execution remain
 deferred.
+
+## S02 local negotiation permission and action ordering — 2026-11-23
+
+The next V05 audience dependency exposed an event conversion defect: negotiation
+permission had been decoded as an arbitrary nonzero Boolean and exported as1.
+S02 §7 and Appendix A require exact equality to4096 for Deny. The semantic field
+is now `DenyNegotiation`; live conversion/export uses4096 or0, while the stored
+codec continues to preserve arbitrary input values. Cases exercise both the
+stored codec and actual live event writer across denial and non-denial values.
+
+`ScenarioPermissions.AllowNegotiation` implements the local first-match gate,
+capturing permission before required actions. It classifies the stored selectors,
+including Anybody's absent membership bit, does not bind wildcards, and does not
+reverse local human participants. Loaded-event, turn and civilization-admission
+gates remain with V04/V05 callers. Network calls are explicitly outside this local
+entry point.
+
+`ScenarioActions.Execute` supplies synchronous S02 §8 action ordering with required
+owning children. It reads each enabled flag live, ignores ordinary child results,
+publishes one-shot consumption only after children return, and permits specified
+reentry before consumption. `ChangeMoney` implements actual single-indirection
+recipient resolution, alive admission, signed32 wrapping and amount-sign
+saturation. Six new groups include consumed records that continue denying
+negotiation without repeating payment, action mutations and committed failure
+prefixes. Other authored actions and a retained dispatcher for participant choices
+remain open; no assumed-success event handler was installed in the audience.
+
+Root/App formatting and verification passed. Both Release builds completed with
+zero warnings/errors. Native tests passed **1594 of 1596**, with two existing
+platform/audio skips. The shared probe passed all **1561 groups** across 173
+coverage families; source identity verified **795 compiled inputs**. The 43-project
+graph, eight identity tests and three coverage tests passed. No new graphical
+input-driver run was performed for these Core/Formats services.
+
+| Receipt under `build/test-results/` | SHA-256 |
+| --- | --- |
+| `m4-scenario-native.json` | `4d094ad1be73ca95c278c0c66cf21a1a59f35fb6745ca8b635801519438b1253` |
+| `m4-scenario-identity.json` | `2091e90309b6bf46d6c235cc756ff1348573156dccc0bd59aa5587269652fa36` |
+
+Full V05 audience orchestration, the recorded F04 formulas and relation-review
+input gap, complete turn orchestration and generated human/AI end-condition
+acceptance remain open. This checkpoint needed no original-game observations;
+the Windows installation remains available for the unresolved behavioral gaps.
+Browser, cross-platform qualification and network execution remain deferred.

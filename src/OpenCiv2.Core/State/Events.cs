@@ -24,7 +24,7 @@ public record struct EventValues
     public int CreateLocationCount;
     public bool CreateVeteran;
     public int AuxiliaryScalar, MoneyReceiverCiv, MoneyAmount;
-    public bool NegotiationFlag;
+    public bool DenyNegotiation;
     public int CdTrack, TerrainType;
     public Fixed4<MapPoint> TerrainRectangle;
     public int DestroyCiv, GiveTech, GiveTechCiv;

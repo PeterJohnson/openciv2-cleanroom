@@ -234,7 +234,7 @@ public static partial class StateConversion
         result.AuxiliaryScalar = value.AuxiliaryScalar;
         result.MoneyReceiverCiv = value.MoneyReceiverCiv;
         result.MoneyAmount = value.MoneyAmount;
-        result.NegotiationFlag = value.NegotiationFlag != 0;
+        result.DenyNegotiation = value.NegotiationFlag == 4096;
         result.CdTrack = value.CdTrack;
         result.TerrainType = value.TerrainType;
         LivePoints(value.TerrainRectangle, result.TerrainRectangle);
@@ -272,7 +272,7 @@ public static partial class StateConversion
         AuxiliaryScalar = value.AuxiliaryScalar,
         MoneyReceiverCiv = value.MoneyReceiverCiv,
         MoneyAmount = value.MoneyAmount,
-        NegotiationFlag = value.NegotiationFlag ? (int)1 : (int)0,
+        NegotiationFlag = value.DenyNegotiation ? 4096 : 0,
         CdTrack = value.CdTrack,
         TerrainType = value.TerrainType,
         TerrainRectangle = StoredPoints(value.TerrainRectangle),

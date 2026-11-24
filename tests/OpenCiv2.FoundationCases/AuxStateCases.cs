@@ -91,11 +91,11 @@ public static partial class FoundationSuite
             WaveFile = 0,
             Retained = new(new byte[40]),
             CreateVeteran = 1,
-            NegotiationFlag = 1,
+            NegotiationFlag = 0,
         };
         Equal(expected, StateConversion.ToStored(live)); Equal(live with { Trigger = EventTrigger.None }, StateConversion.ToLive(ClassicRecords.DecodeEventRecord(ClassicRecords.Encode(expected))));
         var snapshot = StateConversion.ToStored(live); live.CreateLocations[9] = default; Equal(stored.CreateLocations[19], snapshot.CreateLocations[19]);
-        live.CreateVeteran = false; live.NegotiationFlag = false; Equal(0, StateConversion.ToStored(live).CreateVeteran); Equal(0, StateConversion.ToStored(live).NegotiationFlag);
+        live.CreateVeteran = false; live.DenyNegotiation = false; Equal(0, StateConversion.ToStored(live).CreateVeteran); Equal(0, StateConversion.ToStored(live).NegotiationFlag);
         Throws<ArgumentException>(() => StateConversion.ToLive(stored with { TerrainRectangle = new(new int[9]) }));
         Throws<ArgumentException>(() => StateConversion.ToLive(stored with { CreateLocations = new(new int[19]) }));
     }

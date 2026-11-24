@@ -657,8 +657,15 @@ desktop presentation remain with those owners.
 partition, unit reassignment and capitals. `City/CityTransfer` supplies C01's
 elementary transfer without capture policy; `City/CityCaptureQueries` owns C09's
 shared treasury share and central-city queries. `ScenarioPermissions.AllowSchism`
-runs the S02 predicate with a required authored-action dispatcher; it does not
-implement those actions. `Session/CivilWarOperation` publishes bounded progress.
+and local `AllowNegotiation` run S02 predicates with a required authored-action
+dispatcher. Negotiation captures the first matching record's permission before
+actions, using stored-selector control classes without binding Anybody.
+`ScenarioActions.Execute` supplies synchronous live-flag action ordering and late
+one-shot consumption; every enabled child remains required. `ChangeMoney` supplies
+the actual S02 treasury mutation. The other authored actions and a retained
+dispatcher for participant decisions remain open. Formats converts only the exact
+stored negotiation value4096 to semantic `DenyNegotiation`, exporting4096 or0.
+`Session/CivilWarOperation` publishes bounded progress.
 Movement/mission capture dispatch and full scenario/presentation callers remain open.
 
 `City/CapturePopulationLoss` owns C09's signed population/exceptional preservation

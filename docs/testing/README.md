@@ -84,6 +84,14 @@ retained population targets, candidate aliases, multiple Palaces, failure prefix
 and bounded session continuation. NoSchism cases verify predicate/action routing
 without claiming the still-required authored-action dispatcher. C09 query cases
 exercise treasury rounding/faults and central-city ties.
+S02 negotiation groups cover exact denial-value conversion and live event output,
+first-match permission capture, stored-selector control classes, persistent
+wildcards, local orientation and caller-owned loaded/alive gates. Action-dispatch
+groups cover required child order, live enable flags, ignored ordinary results,
+late one-shot consumption, reentry and committed failure prefixes. Actual money
+actions verify single indirection, signed overflow/saturation and repeated denial
+by consumed records. These synchronous service tests do not close the retained
+authored-action dispatcher, parser or desktop audience integration.
 C09 loss groups cover exceptional size-one admission, signed size/zero deletion,
 captured-center regional input, filtered supported-unit loss and cargo/restart
 behavior. Actual nested C01/U01/V01 incidents delay city route/wonder/spatial

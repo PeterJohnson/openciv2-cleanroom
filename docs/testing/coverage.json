@@ -5404,6 +5404,30 @@
         "V05.proposal-private-grant",
         "V05.proposal-session-cancellation"
       ]
+    },
+    {
+      "id": "scenario-permissions-actions",
+      "contract": "S02 sections7-9 local negotiation, synchronous action ordering and ChangeMoney; F06 negotiation permission conversion",
+      "publicSurface": "ScenarioPermissions.AllowNegotiation; ScenarioActions.Execute/ResolveCivilization/ChangeMoney; EventValues.DenyNegotiation",
+      "review": "Exact4096 denial conversion and canonical live export; first-match captured permission, stored-selector human classes, unbound Anybody, local orientation, caller-owned loaded/alive gates. Required synchronous action children execute in live flag order, ignore ordinary return values, publish Consumed late and retain reentrant/failure prefixes. Actual money actions use single indirection, alive admission and signed32 saturation from amount sign. Remaining action implementations, retained action decisions, parser and full desktop audience integration remain open. Network execution, browser and cross-platform qualification are deferred.",
+      "status": "partial",
+      "sources": [
+        "src/OpenCiv2.Core/ScenarioActions.cs",
+        "src/OpenCiv2.Core/ScenarioPermissions.cs",
+        "src/OpenCiv2.Core/State/Events.cs",
+        "src/OpenCiv2.Formats/StateAuxConversion.cs"
+      ],
+      "tests": [
+        "tests/OpenCiv2.FoundationCases/ScenarioPermissionCases.cs"
+      ],
+      "sharedGroups": [
+        "S02.action-order-live-flags",
+        "S02.action-reentry-failures",
+        "S02.money-consumed-denial",
+        "S02.negotiation-first-match",
+        "S02.negotiation-permission-encoding",
+        "S02.negotiation-stored-classification"
+      ]
     }
   ]
 }
